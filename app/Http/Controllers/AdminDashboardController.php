@@ -4,18 +4,18 @@ namespace App\Http\Controllers;
 
 use App\Models\Building;
 use App\Models\Organization;
-use App\Models\User;  
+use App\Models\User;
 
 use Illuminate\Http\Request;
 
 class AdminDashboardController extends Controller
 {
     //
-    public function index(){  
+    public function index(){
 
-        return view('Admin/admin_dashboard');
+        return view('Admin/admin_dashboard2');
 
-    } 
+    }
 
     public function data()
     {
@@ -26,12 +26,12 @@ class AdminDashboardController extends Controller
 
         return response()->json([
             'counts' => [
-                'buildings' => $buildings, 
-                'organizations' => $organizations, 
-                'owners' => $owners, 
-                'buildingsForApproval' => $buildingsForApproval, 
-            ], 
+                'buildings' => $buildings,
+                'organizations' => $organizations,
+                'owners' => $owners,
+                'buildingsForApproval' => $buildingsForApproval,
+            ],
         ]);
     }
-    
+
 }
