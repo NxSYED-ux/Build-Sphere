@@ -1,0 +1,39 @@
+:root { 
+        /* Top Navbar */
+        --topnavbar-text-color: black;  
+        --topnavbar-background-color: #ffff;   
+        --topnavbar-border-color: #808080;   
+        --topnavbar-icon-color: black;    
+        --topnavbar-notification-icon-color: #5f5f5f;  
+        --topnavbar-seperator-color: grey;
+
+        
+        /* Side Navbar */
+        --sidenavbar-body-color: #F1F2F7; 
+        --sidenavbar-text-color: #5f5f5f; 
+        --sidenavbar-text-hover-color: #008CFF;  
+        --sidenavbar-hpver-background-color: rgb(0 140 255 / 5%);    
+        --sidenavbar-border-color: #008CFF;  
+        --sidenavbar-seperator-color: grey;  
+        
+        /* Application Logo */
+        --fill1-color: #F1F2F7;  
+        --fill2-color: #008CFF;  
+        --fill3-color: #B9CCDD;  
+        --fill4-color: #008CFF;  
+        --fill5-color: #008CFF; 
+        --fill1-top-nav-color: white; 
+
+        /* Body */
+            /* breadcrumb */
+            --breadcrumb-text1-color: black; 
+            --breadcrumb-text2-color: #008CFF; 
+            --breadcrumb-separator-color: #008CFF;
+            /* content-top-border */
+            --content-top-border-color: #008CFF; 
+
+            --body-background-color: #ffff;
+            --main-background-color: #ffff;
+            --main-text-color: black;
+    } 
+
