@@ -67,8 +67,8 @@ class AssignUnitController extends Controller
 
         try {
             $existingUnit = UserBuildingUnit::where([
-                ['user_id', '=', $request->userId],
-                // ['unit_id', '=', $request->unitId], Active this only when one unit can assigned to multiple users at the same time
+                ['unit_id', '=', $request->unitId],
+                // ['user_id', '=', $request->userId], Active this only when one unit can assigned to multiple users at the same time
                 ['contract_status', '=', 1]
             ])->exists();
 
