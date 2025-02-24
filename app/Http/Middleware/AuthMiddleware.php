@@ -10,6 +10,7 @@ use Tymon\JWTAuth\Exceptions\JWTException;
 use Tymon\JWTAuth\Exceptions\TokenExpiredException;
 use Tymon\JWTAuth\Exceptions\TokenInvalidException;
 use Illuminate\Http\Request;
+use App\Models\User;
 
 class AuthMiddleware
 {
@@ -42,22 +43,34 @@ class AuthMiddleware
 
             Log::info('User Payload:', [$payload]);
             $user = $payload['user'];
-            Log::info('User Data:', [$user]);
+            Log::info('User Id:', [$user['id']]);
+            Log::info('Role Id:', [$user['role_id']]);
+
+            $checkUser = User::select('id', 'name')
+                ->where([
+                    ['id', '=', $user['id']],
+                    ['role_id', '=', $user['role_id']],
+                    ['status', '=', 1]
+                ])->get();
+
+            if ($checkUser->isEmpty()) {
+                return redirect('/login')->with('error', 'User account is deactivated or deleted by administrator');
+            }
 
             if (!$user) {
-                return response()->json(['message' => 'Invalid or expired token'], 403);
+                return redirect('/login')->with('error', 'Your session has been expired');
             }
 
             $request->merge(['user' => $user]);
 
         } catch (TokenExpiredException $e) {
-            return redirect('/login')->with('error', 'Token has expired');
+            return redirect('/login')->with('error', 'Session has expired');
         } catch (TokenInvalidException $e) {
-            return redirect('/login')->with('error', 'Invalid token');
+            return redirect('/login')->with('error', 'Invalid Session id');
         } catch (JWTException $e) {
             return redirect('/login')->with('error', 'Could not parse token');
         } catch (Exception $e) {
-            return redirect('/login')->with('error', 'Invalid or expired token');
+            return redirect('/login')->with('error', 'Invalid or expired Session Id');
         }
 
         return $next($request);
