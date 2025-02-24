@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use Closure;
+use Illuminate\Support\Facades\Log;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Exception;
 use Tymon\JWTAuth\Exceptions\JWTException;
@@ -27,16 +28,21 @@ class AuthMiddleware
                         return response()->json(['message' => 'Authorization format is invalid. Use Bearer <token>'], 400);
                     }
                 }
-            } 
+            }
             elseif ($tokenSource === 'cookie') {
-                $token = $request->cookie('jwt_token');  
+                $token = $request->cookie('jwt_token');
             }
 
-            if (!$token) { 
+            if (!$token) {
                 return redirect('/login')->with('error', 'Authorization required');
             }
 
-            $user = JWTAuth::setToken($token)->authenticate();
+            $userData = JWTAuth::setToken($token)->authenticate();
+            $payload = JWTAuth::setToken($token)->getPayload();
+
+            Log::info('User Payload:', [$payload]);
+            $user = $payload['user'];
+            Log::info('User Data:', [$user]);
 
             if (!$user) {
                 return response()->json(['message' => 'Invalid or expired token'], 403);
@@ -45,15 +51,13 @@ class AuthMiddleware
             $request->merge(['user' => $user]);
 
         } catch (TokenExpiredException $e) {
-            
-            return redirect()->route('login')->with('message', 'Token has expired. Please login again');
-            // return response()->json(['message' => 'Token has expired'], 401);
+            return redirect('/login')->with('error', 'Token has expired');
         } catch (TokenInvalidException $e) {
-            return response()->json(['message' => 'Invalid token'], 403);
+            return redirect('/login')->with('error', 'Invalid token');
         } catch (JWTException $e) {
-            return response()->json(['message' => 'Could not parse token'], 400);
+            return redirect('/login')->with('error', 'Could not parse token');
         } catch (Exception $e) {
-            return response()->json(['message' => 'Invalid or expired token'], 403);
+            return redirect('/login')->with('error', 'Invalid or expired token');
         }
 
         return $next($request);

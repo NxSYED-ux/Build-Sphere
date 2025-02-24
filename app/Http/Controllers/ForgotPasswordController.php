@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers; 
+namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -23,8 +23,13 @@ class ForgotPasswordController extends Controller
     {
         $request->validate(['email' => 'required|email|exists:users,email']);
 
-        $token = Str::random(60);
- 
+        $payload = [
+            'exp' => Carbon::now()->addMinutes(5)->timestamp,
+            'message' => 'Reset Token'
+        ];
+
+        $token = JWTAuth::make($payload);
+
         DB::table('password_reset_tokens')->updateOrInsert(
             ['email' => $request->email],
             [
@@ -41,7 +46,7 @@ class ForgotPasswordController extends Controller
 
         return back()->with('success', 'A password reset link has been sent to your email.');
     }
-    
+
     // Show Reset Password Form
     public function showResetForm($token)
     {
@@ -62,7 +67,7 @@ class ForgotPasswordController extends Controller
         if (!$record || !Hash::check($request->token, $record->token)) {
             return back()->withErrors(['email' => 'Invalid or expired token.']);
         }
- 
+
         User::where('email', $request->email)->update([
             'password' => Hash::make($request->password)
         ]);

@@ -29,10 +29,10 @@ class AuthController extends Controller
             $user = User::where('email', $email)->first();
 
             if (!$user || !Hash::check($request->password, $user->password)) {
-                return redirect()->back()->withErrors(['password' => 'Password is incorrect.'])->withInput(); 
+                return redirect()->back()->withErrors(['password' => 'Password is incorrect.'])->withInput();
             }
 
-            $token = JWTAuth::fromUser($user); 
+            $token = JWTAuth::fromUser($user);
             $cookie = cookie('jwt_token', $token);
 
             // 1 -> Admin, 2 -> Owner, 3 -> Manager, 4 -> Staff, 5 -> User
@@ -40,21 +40,11 @@ class AuthController extends Controller
                 return redirect()->route('admin_dashboard')->with('success', 'Login successful')->cookie($cookie);
             } elseif ($user->role_id === 2 || $user->role_id === 3) {
                 return redirect()->route('owner_manager_dashboard')->with('success', 'Login successful')->cookie($cookie);
-            } else {
-                return response()->json([
-                    'token' => $token,
-                    'user' => [
-                        'id' => $user->id,
-                        'name' => $user->name,
-                        'email' => $user->email,
-                        'role_id' => $user->role_id,
-                    ],
-                ], 200);
             }
         } catch (\Exception $e) {
             return redirect()->route('login')->with('error', 'Internal server error. Please try again.');
         }
-    }   
+    }
 
     public function destroy(Request $request): RedirectResponse
     {
