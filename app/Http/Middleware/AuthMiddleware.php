@@ -38,22 +38,17 @@ class AuthMiddleware
                 return redirect('/login')->with('error', 'Authorization required');
             }
 
-            $payload = JWTAuth::setToken($token)->getPayload();
-            $user = $payload['user'];
+            $userData = JWTAuth::setToken($token)->authenticate();
 
-            $checkUser = User::select('id', 'name')
-                ->where([
-                    ['id', '=', $user['id']],
-                    ['role_id', '=', $user['role_id']],
-                    ['status', '=', 1]
-                ])->get();
-
-            if ($checkUser->isEmpty()) {
+            if (!$userData || $userData->status === 0) {
                 return redirect('/login')->with('error', 'User account is deactivated or deleted by administrator');
             }
 
+            $payload = JWTAuth::setToken($token)->getPayload();
+            $user = $payload['user'];
+
             if (!$user) {
-                return redirect('/login')->with('error', 'Your session has been expired');
+                return redirect('/login')->with('error', 'Your session is malformed');
             }
 
             $request->merge(['user' => $user]);
