@@ -8,27 +8,16 @@ use Illuminate\Http\Request;
 
 class AssignUnitController extends Controller
 {
-//     public function index()
-//     {
-//         $selectedUnitId = $request->input('unit_id', null);
-//
-//         $users = User::where('role_id',4)->pluck('name', 'id');  //Assuming Users role_id = 4 and use this only when you are 100% sure that this is the id and can never delete
-//         $users = User::select('id', 'name')->whereHas('role', fn ($query) => $query->where('name', 'user'))->get();    // otherwise use this
-//         $units = BuildingUnit::select('id', 'unit_name')->whereDoesntHave('userUnits', fn($q) => $q->where('contract_status', 1)) ->get();
-//         return $selectedUnitId, $users, $units;
-//     }
-
     public function index(Request $request)
     {
-        $selectedUnitId = $request->integer('unit_id', null); // Strict type casting
+        $selectedUnitId = $request->input('unit_id', null);
+        $selectedUserId = $request->input('user_id', null);
 
-        $users = User::select('id', 'name')
-            ->whereHas('role', fn ($query) => $query->where('name', 'user'))
-            ->get();
+        //$users = User::where('role_id',4)->pluck('name', 'id');  //Assuming Users role_id = 4 and use this only when you are 100% sure that this is the id and can never delete
+        $users = User::select('id', 'name')->whereHas('role', fn ($query) => $query->where('name', 'User'))->get();    // otherwise use this
+        $units = BuildingUnit::select('id', 'unit_name')->whereDoesntHave('userUnits', fn($q) => $q->where('contract_status', 1)) ->get();
 
-        $units = BuildingUnit::select('id', 'unit_name')
-            ->whereDoesntHave('userUnits', fn($q) => $q->where('contract_status', 1))
-            ->get();
+        return view('your-view-name', compact('selectedUnitId','selectedUserId' , 'users', 'units'));
     }
 
     public function create()
