@@ -264,6 +264,7 @@
 @endsection
 
 @push('scripts') 
+<!-- <script src="https://balkan.app/js/OrgChart.js"></script> -->
     <script src="{{ asset('js/orgchart.js') }}"></script> 
     <script>
         //JavaScript

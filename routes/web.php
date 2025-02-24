@@ -15,6 +15,7 @@ use App\Http\Controllers\DropdownValueController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\OrganizationController; 
 use App\Http\Controllers\BuildingTreeController; 
+use App\Http\Controllers\OwnerBuildingController; 
 
 Route::get('/', function () {
     return view('auth.login');
@@ -55,6 +56,7 @@ Route::middleware(['auth.jwt:cookie'])->group(function () {
     Route::resource('levels', BuildingLevelController::class);
     Route::resource('units', BuildingUnitController::class);
     Route::resource('organizations', OrganizationController::class);
+    Route::resource('owner_buildings', OwnerBuildingController::class);
 
     Route::get('/organizations/{id}/buildings', [BuildingUnitController::class, 'getBuildings'])->name('organization.buildings'); 
     Route::get('/buildings/{id}/levels', [BuildingUnitController::class, 'getLevels'])->name('building.levels');
