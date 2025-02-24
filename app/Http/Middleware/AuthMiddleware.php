@@ -38,13 +38,8 @@ class AuthMiddleware
                 return redirect('/login')->with('error', 'Authorization required');
             }
 
-            $userData = JWTAuth::setToken($token)->authenticate();
             $payload = JWTAuth::setToken($token)->getPayload();
-
-            Log::info('User Payload:', [$payload]);
             $user = $payload['user'];
-            Log::info('User Id:', [$user['id']]);
-            Log::info('Role Id:', [$user['role_id']]);
 
             $checkUser = User::select('id', 'name')
                 ->where([
