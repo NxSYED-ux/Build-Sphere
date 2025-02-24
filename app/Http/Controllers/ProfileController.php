@@ -27,25 +27,6 @@ class ProfileController extends Controller
         }
     }
 
-//    public function owner(Request $request): View
-//    {
-//        $user = $request->user()->load(['address', 'role']);
-//
-//        return view('Profiles.owner_profile', [
-//            'user' => $user,
-//        ]);
-//    }
-
-    /**
-     * Display the user's profile form.
-     */
-//    public function edit(Request $request): View
-//    {
-//        return view('profile.edit', [
-//            'user' => $request->user(),
-//        ]);
-//    }
-
     public function updatePersonal(Request $request, string $id)
     {
         // Validate the incoming request data
