@@ -6,11 +6,11 @@ use App\Models\Address;
 use App\Models\Building;
 use App\Models\BuildingDocument;
 use App\Models\Organization;
-use App\Models\DropdownType;   
-use App\Models\BuildingPicture; 
+use App\Models\DropdownType;
+use App\Models\BuildingPicture;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;  
-use Illuminate\Support\Facades\File; 
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\File;
 
 use Illuminate\Http\Request;
 
@@ -37,49 +37,31 @@ class OwnerBuildingController extends Controller
         return view('Heights.Owner.Buildings.index', compact('buildings'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
         //
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         //
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(string $id)
     {
         //
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(string $id)
     {
         //
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, string $id)
     {
         //
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(string $id)
     {
         //

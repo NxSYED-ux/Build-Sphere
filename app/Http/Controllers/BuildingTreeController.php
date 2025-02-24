@@ -28,6 +28,6 @@ class BuildingTreeController extends Controller
         $levels = $building->levels;
         $units = $levels->flatMap->units;
 
-        return view('Heights.Buildings.tree', compact('building', 'levels', 'units', 'owner'));
+        return view('Heights.Owner.Buildings.tree', compact('building', 'levels', 'units', 'owner'));
     }
 }

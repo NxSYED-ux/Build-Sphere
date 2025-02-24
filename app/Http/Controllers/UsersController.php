@@ -3,13 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
-use App\Models\Role;     
-use App\Models\Address;     
-use App\Models\DropdownType;     
-use App\Models\Organization;     
-use Illuminate\Http\Request;  
-use Illuminate\Support\Facades\Hash; 
-use Illuminate\Support\Facades\File; 
+use App\Models\Role;
+use App\Models\Address;
+use App\Models\DropdownType;
+use App\Models\Organization;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\File;
 
 class UsersController extends Controller
 {
@@ -17,9 +17,9 @@ class UsersController extends Controller
      * Display a listing of the resource.
      */
     public function index(Request $request)
-    { 
+    {
         $search = $request->input('search');
-         
+
         $users = User::with('role', 'address')
                     ->when($search, function($query, $search) {
                         return $query->where('name', 'like', "%{$search}%")
@@ -34,20 +34,20 @@ class UsersController extends Controller
                                      });
                     })
                     ->paginate(10);
-    
-        return view('Heights.Users.index', compact('users'));
+
+        return view('Heights.Admin.Users.index', compact('users'));
     }
-    
+
 
     /**
      * Show the form for creating a new resource.
      */
     public function create()
-    { 
-        $roles = Role::pluck('name','id')->all();  
+    {
+        $roles = Role::pluck('name','id')->all();
         $dropdownData = DropdownType::with(['values.childs.childs'])->where('type_name', 'Country')->get(); // Country -> Province -> City
 
-        return view('Heights.Users.create',compact('roles', 'dropdownData')); 
+        return view('Heights.Admin.Users.create',compact('roles', 'dropdownData'));
     }
 
     /**
@@ -57,31 +57,31 @@ class UsersController extends Controller
     {
         $validatedData = $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:users,email'], 
-            'phone_no' => ['nullable', 'string', 'max:20'], 
+            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:users,email'],
+            'phone_no' => ['nullable', 'string', 'max:20'],
             'cnic' => ['nullable','max:18', 'unique:users,cnic'],
             'picture' => ['nullable', 'file', 'mimes:png,jpg,jpeg', 'max:6048'],
-            'role_id' => ['required', 'integer', 'exists:roles,id'],   
+            'role_id' => ['required', 'integer', 'exists:roles,id'],
             'gender' => ['nullable', 'in:Male,Female,Other'],
             'date_of_birth' => 'nullable|date',
-            // 'organization_id' => ['nullable', 'integer', 'exists:organizations,id'],  
-            'location' => ['nullable', 'string', 'max:255'],  
-            'country' => ['nullable', 'string', 'max:50'],  
-            'province' => ['nullable', 'string', 'max:50'],  
-            'city' => ['nullable', 'string', 'max:50'],  
+            // 'organization_id' => ['nullable', 'integer', 'exists:organizations,id'],
+            'location' => ['nullable', 'string', 'max:255'],
+            'country' => ['nullable', 'string', 'max:50'],
+            'province' => ['nullable', 'string', 'max:50'],
+            'city' => ['nullable', 'string', 'max:50'],
             'postal_code' => ['nullable', 'string', 'max:50'],
-        ]); 
-        
+        ]);
+
         $password = "Admin@123";
-    
+
         // Handle profile image upload
         $profileImageName = null;
         if ($request->hasFile('picture')) {
             $profileImage = $request->file('picture');
             $profileImageName = time() . '_' . $profileImage->getClientOriginalName();
             $profileImagePath = 'uploads/users/images/' . $profileImageName;
-            $profileImage->move(public_path('uploads/users/images'), $profileImageName); 
-        }  
+            $profileImage->move(public_path('uploads/users/images'), $profileImageName);
+        }
 
         $address = Address::create([
             'location' => $request->location,
@@ -95,18 +95,18 @@ class UsersController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($password),
-            'phone_no' => $request->phone_no, 
+            'phone_no' => $request->phone_no,
             'cnic' => $request->cnic,
-            'picture' => $profileImagePath, // Store the filename with path, 
+            'picture' => $profileImagePath, // Store the filename with path,
             'gender' => $request->gender,
-            'role_id' => $request->role_id, 
+            'role_id' => $request->role_id,
             'address_id' => $address->id,
             'date_of_birth' => $request->date_of_birth,
             'status' => 1,
-        
+
         ]);
- 
-        return redirect()->route('users.index')->with('success', 'User created successfully.'); 
+
+        return redirect()->route('users.index')->with('success', 'User created successfully.');
 
     }
 
@@ -115,26 +115,26 @@ class UsersController extends Controller
      * Display the specified resource.
      */
     public function show(string $id)
-    { 
-        $user = User::with('role')->findorfail($id); 
-  
+    {
+        $user = User::with('role')->findorfail($id);
+
         return response()->json([
-            'user' => $user,  
-        ]); 
+            'user' => $user,
+        ]);
     }
 
     /**
      * Show the form for editing the specified resource.
      */
     public function edit(string $id)
-    { 
-        $user = User::with('role','address')->findOrFail($id);  
-        $roles = Role::all(); 
- 
- 
+    {
+        $user = User::with('role','address')->findOrFail($id);
+        $roles = Role::all();
+
+
         $dropdownData = DropdownType::with(['values.childs.childs'])->where('type_name', 'Country')->get(); // Country -> Province -> City
 
-        return view('Heights.Users.edit',compact('user', 'roles', 'dropdownData'));  
+        return view('Heights.Admin.Users.edit',compact('user', 'roles', 'dropdownData'));
     }
 
     /**
@@ -146,21 +146,21 @@ class UsersController extends Controller
         $validatedData = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email,' . $id,
-            'password' => 'nullable|string|min:8',  
-            'phone_no' => 'nullable|string|max:15', 
-            'cnic' => 'nullable|string|max:18|unique:users,cnic,' . $id,  
+            'password' => 'nullable|string|min:8',
+            'phone_no' => 'nullable|string|max:15',
+            'cnic' => 'nullable|string|max:18|unique:users,cnic,' . $id,
             'gender' => ['nullable', 'in:Male,Female,Other'],
-            'picture' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', 
+            'picture' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'role_id' => 'nullable|exists:roles,id',
             'date_of_birth' => 'nullable|date',
-            // 'organization_id' => 'nullable|exists:organizations,id', 
-            'location' => 'nullable|string|max:255',  
-            'country' => 'nullable|string|max:50',  
-            'province' => 'nullable|string|max:50',  
-            'city' => 'nullable|string|max:50',  
-            'postal_code' => 'nullable', 'string', 'max:50',  
+            // 'organization_id' => 'nullable|exists:organizations,id',
+            'location' => 'nullable|string|max:255',
+            'country' => 'nullable|string|max:50',
+            'province' => 'nullable|string|max:50',
+            'city' => 'nullable|string|max:50',
+            'postal_code' => 'nullable', 'string', 'max:50',
             'status' => 'required|integer|in:0,1',
-        ]);    
+        ]);
 
         // Fetch the user by ID
         $user = User::findOrFail($id);
@@ -168,7 +168,7 @@ class UsersController extends Controller
 
         $address->update([
             'location' => $request->location,
-            'country' => $request->country,  
+            'country' => $request->country,
             'province' => $request->province,
             'city' => $request->city,
             'postal_code' => $request->postal_code,
@@ -182,16 +182,16 @@ class UsersController extends Controller
             $validatedData['picture'] = $user->picture;
             if ($user->picture != $profileImageName) {
 
-                $profileImage->move(public_path('uploads/users/images/'), $profileImageName); 
+                $profileImage->move(public_path('uploads/users/images/'), $profileImageName);
 
                 $oldProfileImagePath = public_path($user->picture);
                 if (File::exists($oldProfileImagePath)) {
                     File::delete($oldProfileImagePath);
-                } 
+                }
 
                 $validatedData['picture'] = $profileImagePath;
             }
-        } 
+        }
 
         $user->update([
             'name' => $validatedData['name'],
@@ -204,7 +204,7 @@ class UsersController extends Controller
             'role_id' => $validatedData['role_id'],
             'status' => $validatedData['status'],
             'date_of_birth' => $validatedData['date_of_birth'],
-        ]); 
+        ]);
 
         return redirect()->route('users.index')->with('success', 'User updated successfully.');
     }
@@ -217,13 +217,13 @@ class UsersController extends Controller
         // Fetch the user by ID
         $user = User::findOrFail($id);
 
-        // Delete the user's picture if it exists 
+        // Delete the user's picture if it exists
         if ($user->picture) {
             $oldProfileImagePath = public_path('uploads/users/images/' . $user->picture);
             if (File::exists($oldProfileImagePath)) {
                 File::delete($oldProfileImagePath);
-            } 
-        } 
+            }
+        }
 
         // Delete the user
         $user->delete();
@@ -232,5 +232,5 @@ class UsersController extends Controller
         return redirect()->route('users.index')->with('success', 'User deleted successfully.');
     }
 
-    
+
 }

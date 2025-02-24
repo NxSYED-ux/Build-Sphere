@@ -17,7 +17,7 @@ class DropdownTypeController extends Controller
         $activeTab = 'Types';
         $types = DropdownType::with('values','parent')->get();
         $values = DropdownVALUE::with('type','parent')->get();
-        return view('Heights.Dropdown.index', compact('types', 'values', 'activeTab'));
+        return view('Heights.Admin.Dropdown.index', compact('types', 'values', 'activeTab'));
     }
 
     /**
@@ -39,7 +39,7 @@ class DropdownTypeController extends Controller
             'parent_type_id' => 'nullable|integer',
             'status' => 'required|boolean',
         ]);
-    
+
         try {
             DropdownType::create($validatedData);
             return redirect()->route('types.index')->with('success', 'Type added successfully.');
@@ -77,14 +77,14 @@ class DropdownTypeController extends Controller
         if (!$type) {
             return redirect()->back()->with('error', 'Dropdown Type not found.');
         }
-    
+
         $validatedData = $request->validate([
             'type_name' => 'required|string|max:255|unique:dropdowntypes,type_name,' . $id . ',id',
             'description' => 'nullable|string',
             'parent_type_id' => 'nullable|integer',
-            'status' => 'required|boolean', 
+            'status' => 'required|boolean',
         ]);
-    
+
         try {
             $type->update($validatedData);
             return redirect()->route('types.index')->with('success', 'Type updated successfully.');

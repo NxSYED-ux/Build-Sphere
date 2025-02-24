@@ -5,31 +5,30 @@ namespace App\Http\Controllers;
 use App\Models\BuildingLevel;
 use App\Models\Building;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;  
-use Illuminate\Support\Facades\File; 
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\File;
 
-use Illuminate\Http\Request; 
+use Illuminate\Http\Request;
 
 class BuildingLevelController extends Controller
 {
-    
     public function index(Request $request)
     {
-        $buildingId = $request->input('building_id'); 
-        $levelsQuery = BuildingLevel::with('building', 'creator', 'updater');      
+        $buildingId = $request->input('building_id');
+        $levelsQuery = BuildingLevel::with('building', 'creator', 'updater');
         if ($buildingId) {
             $levelsQuery->where('building_id', $buildingId);
-        }        
+        }
         $levels = $levelsQuery->get();
-        return view('Heights.Levels.index', compact('levels'));
+        return view('Heights.Admin.Levels.index', compact('levels'));
     }
- 
+
     public function create()
     {
         $buildings = Building::all();
-        return view('Heights.Levels.create', compact('buildings'));
+        return view('Heights.Admin.Levels.create', compact('buildings'));
     }
- 
+
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -44,19 +43,19 @@ class BuildingLevelController extends Controller
 
         return redirect()->route('levels.index')->with('success', 'Building Level created successfully.');
     }
- 
+
     public function show(BuildingLevel $buildingLevel)
     {
-        return view('Heights.Levels.show', compact('buildingLevel'));
+        return view('Heights.Admin.Levels.show', compact('buildingLevel'));
     }
- 
+
     public function edit(BuildingLevel $level)
     {
         $level->load(['building']);
         $buildings = Building::all();
-        return view('Heights.Levels.edit', compact('level', 'buildings'));
-    }  
- 
+        return view('Heights.Admin.Levels.edit', compact('level', 'buildings'));
+    }
+
     public function update(Request $request, string $id)
     {
         $validated = $request->validate([
@@ -69,7 +68,7 @@ class BuildingLevelController extends Controller
 
         $buildingLevel = BuildingLevel::findorfail($id);
 
-        $buildingLevel->update([ 
+        $buildingLevel->update([
             'level_name' => $request->level_name,
             'description' => $request->description,
             'level_number' => $request->level_number,
@@ -78,7 +77,7 @@ class BuildingLevelController extends Controller
         ]);
 
         if(!$buildingLevel){
-            return redirect()->back()->withInput()->with('error', 'An error occurred while creating the building.'); 
+            return redirect()->back()->withInput()->with('error', 'An error occurred while creating the building.');
         }
 
         return redirect()->route('levels.index')->with('success', 'Building Level updated successfully.');

@@ -15,8 +15,8 @@ class RoleController extends Controller
     public function index()
     {
         $roles = Role::all();
-        return view('Heights.Roles.index',['roles'=>$roles]);  
-    } 
+        return view('Heights.Admin.Roles.index',['roles'=>$roles]);
+    }
 
     /**
      * Store a newly created resource in storage.
@@ -34,7 +34,7 @@ class RoleController extends Controller
         }
 
         // Create a new role permission
-        Role::create($validator->validated()); 
+        Role::create($validator->validated());
 
         return redirect()->route('roles.index')->with('success', 'Role Created successfully');
     }
@@ -57,7 +57,7 @@ class RoleController extends Controller
      * Show the form for editing the specified resource.
      */
     public function edit(string $id)
-    { 
+    {
 
         $role = Role::findOrFail($id);
         if ($role) {
@@ -65,7 +65,7 @@ class RoleController extends Controller
             return response()->json(['role' => $role]);
         }
         return response()->json(['message' => 'Role not found'], 404);
-         
+
     }
 
     /**
@@ -88,11 +88,11 @@ class RoleController extends Controller
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
         }
-        
+
 
         $role->update($validator->validated());
 
-        return redirect()->route('roles.index')->with('success', 'Role updated successfully'); 
+        return redirect()->route('roles.index')->with('success', 'Role updated successfully');
     }
     /**
      * Remove the specified resource from storage.
@@ -107,6 +107,6 @@ class RoleController extends Controller
 
         $role->delete();
 
-        return redirect()->route('roles.index')->with('success', 'Role deleted successfully'); 
+        return redirect()->route('roles.index')->with('success', 'Role deleted successfully');
     }
 }

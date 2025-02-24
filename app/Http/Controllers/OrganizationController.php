@@ -2,28 +2,28 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Organization; 
+use App\Models\Organization;
 use App\Models\DropdownType;
-use App\Models\Address;     
-use App\Models\User;     
-use App\Models\OrganizationPicture; 
+use App\Models\Address;
+use App\Models\User;
+use App\Models\OrganizationPicture;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;  
-use Illuminate\Support\Facades\File;  
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\File;
 use Illuminate\Http\Request;
 
 class OrganizationController extends Controller
-{ 
+{
 
     public function index()
     {
-        $activeTab = 'Tab1'; 
+        $activeTab = 'Tab1';
         $organizations = Organization::with('address', 'pictures', 'owner')->get();
         $dropdownData = DropdownType::with(['values.childs.childs'])->where('type_name', 'Country')->get(); // Country -> Province -> City
         $owners = User::where('role_id',2)->pluck('name', 'id');
-        return view('Heights.Organizations.index', compact('organizations', 'activeTab', 'dropdownData', 'owners'));
-    } 
- 
+        return view('Heights.Admin.Organizations.index', compact('organizations', 'activeTab', 'dropdownData', 'owners'));
+    }
+
     public function store(Request $request)
     {
         $validatedData = $request->validate([
@@ -39,7 +39,7 @@ class OrganizationController extends Controller
             'organization_pictures.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
-        DB::beginTransaction(); 
+        DB::beginTransaction();
 
         try {
 
@@ -73,30 +73,30 @@ class OrganizationController extends Controller
                 }
             }
 
-            DB::commit(); 
+            DB::commit();
 
             return redirect()->route('organizations.index')->with('success', 'Organization created successfully.');
 
         } catch (\Exception $e) {
-            DB::rollBack();   
-            return redirect()->back()->withInput()->with('error', 'An error occurred while creating the organization.'); 
-        } 
+            DB::rollBack();
+            return redirect()->back()->withInput()->with('error', 'An error occurred while creating the organization.');
+        }
     }
 
- 
+
     public function show(string $id)
     {
         //
     }
- 
+
     public function edit(string $id)
     {
-        $organization = Organization::with('address','pictures')->findOrFail($id); 
-        $dropdownData = DropdownType::with(['values.childs.childs'])->where('type_name', 'Country')->get(); // Country -> Province -> City 
+        $organization = Organization::with('address','pictures')->findOrFail($id);
+        $dropdownData = DropdownType::with(['values.childs.childs'])->where('type_name', 'Country')->get(); // Country -> Province -> City
         $owners = User::where('role_id',2)->pluck('name', 'id');
-        return view('Heights.Organizations.edit',compact('organization','dropdownData', 'owners'));  
+        return view('Heights.Admin.Organizations.edit',compact('organization','dropdownData', 'owners'));
     }
- 
+
     public function update(Request $request, string $id)
     {
         $validatedData = $request->validate([
@@ -113,7 +113,7 @@ class OrganizationController extends Controller
             'organization_pictures.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
-        DB::beginTransaction();  
+        DB::beginTransaction();
 
         try {
 
@@ -150,15 +150,15 @@ class OrganizationController extends Controller
                 }
             }
 
-            DB::commit(); 
+            DB::commit();
 
             return redirect()->route('organizations.index')->with('success', 'Organization updated successfully.');
 
         } catch (\Exception $e) {
-            DB::rollBack();   
-            return redirect()->back()->withInput()->with('error', 'An error occurred while updating the organization.'); 
-        } 
-    } 
+            DB::rollBack();
+            return redirect()->back()->withInput()->with('error', 'An error occurred while updating the organization.');
+        }
+    }
 
     public function destroyImage(string $id)
     {
@@ -169,11 +169,11 @@ class OrganizationController extends Controller
             if (File::exists($oldImagePath)) {
                 File::delete($oldImagePath);
             }
-            
+
             // Delete the image record from the database
             $image->delete();
         }
 
         return response()->json(['success' => true]);
-    } 
+    }
 }

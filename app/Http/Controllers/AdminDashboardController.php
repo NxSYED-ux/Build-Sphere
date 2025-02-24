@@ -13,7 +13,7 @@ class AdminDashboardController extends Controller
     //
     public function index(){
 
-        return view('Admin/admin_dashboard');
+        return view('Heights.Admin.Dashboard.admin_dashboard');
 
     }
 

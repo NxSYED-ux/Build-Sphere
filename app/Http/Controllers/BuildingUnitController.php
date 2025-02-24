@@ -9,23 +9,23 @@ use App\Models\Organization;
 use App\Models\UnitPicture;
 use App\Models\DropdownType;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;  
-use Illuminate\Support\Facades\File; 
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\File;
 
 use Illuminate\Http\Request;
 
 class BuildingUnitController extends Controller
-{  
+{
     public function index(Request $request)
-    { 
+    {
         $search = $request->input('search');
-        $levelId = $request->input('level_id'); 
+        $levelId = $request->input('level_id');
 
         $unitsQuery = BuildingUnit::with(['level.building', 'organization', 'pictures']);
-     
+
         if (!empty($search)) {
             $unitsQuery->where(function ($query) use ($search) {
-                $query->where('unit_name', 'LIKE', "%{$search}%") 
+                $query->where('unit_name', 'LIKE', "%{$search}%")
                     ->orWhereHas('level', function ($subQuery) use ($search) {
                         $subQuery->where('level_name', 'LIKE', "%{$search}%")
                             ->orWhereHas('building', function ($subSubQuery) use ($search) {
@@ -39,23 +39,23 @@ class BuildingUnitController extends Controller
         }
         if ($levelId) {
             $unitsQuery->where('level_id', $levelId);
-        }  
+        }
         $units = $unitsQuery->paginate(10);
-     
+
         $units->appends(['search' => $search]);
-    
-        return view('Heights.Units.index', compact('units', 'search')); 
+
+        return view('Heights.Admin.Units.index', compact('units', 'search'));
     }
- 
+
     public function create()
-    { 
+    {
         $buildings = Building::all();
         $levels = BuildingLevel::all();
         $organizations = Organization::all();
-        $unitTypes = DropdownType::with(['values'])->where('type_name', 'Unit-type')->first()->values; 
-        return view('Heights.Units.create', compact('buildings', 'levels', 'organizations', 'unitTypes'));
+        $unitTypes = DropdownType::with(['values'])->where('type_name', 'Unit-type')->first()->values;
+        return view('Heights.Admin.Units.create', compact('buildings', 'levels', 'organizations', 'unitTypes'));
     }
- 
+
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -72,7 +72,7 @@ class BuildingUnitController extends Controller
             'unit_pictures.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
-        DB::beginTransaction(); 
+        DB::beginTransaction();
 
         try {
 
@@ -91,19 +91,19 @@ class BuildingUnitController extends Controller
                 }
             }
 
-            DB::commit(); 
+            DB::commit();
 
-            return redirect()->route('units.index')->with('success', 'Unit created successfully.'); 
+            return redirect()->route('units.index')->with('success', 'Unit created successfully.');
 
         } catch (\Exception $e) {
-            DB::rollBack();    
-            return redirect()->back()->withInput()->with('error', 'An error occurred while creating the unit.'); 
-        }   
+            DB::rollBack();
+            return redirect()->back()->withInput()->with('error', 'An error occurred while creating the unit.');
+        }
     }
- 
+
     public function show(BuildingUnit $buildingUnit)
     {
-         
+
     }
 
     public function edit(BuildingUnit $unit)
@@ -112,10 +112,10 @@ class BuildingUnitController extends Controller
         $buildings = Building::all();
         $levels = BuildingLevel::all();
         $organizations = Organization::all();
-        $unitTypes = DropdownType::with(['values'])->where('type_name', 'Unit-type')->first()->values; 
-        return view('Heights.Units.edit', compact('buildings', 'unit', 'levels', 'organizations', 'unitTypes'));
+        $unitTypes = DropdownType::with(['values'])->where('type_name', 'Unit-type')->first()->values;
+        return view('Heights.Admin.Units.edit', compact('buildings', 'unit', 'levels', 'organizations', 'unitTypes'));
     }
- 
+
     public function update(Request $request, BuildingUnit $unit)
     {
         $validated = $request->validate([
@@ -132,7 +132,7 @@ class BuildingUnitController extends Controller
             'unit_pictures.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
-        DB::beginTransaction();  
+        DB::beginTransaction();
 
         try {
 
@@ -142,7 +142,7 @@ class BuildingUnitController extends Controller
                 foreach ($request->file('unit_pictures') as $image) {
                     $imageName = time() . '_' . $image->getClientOriginalName();
                     $imagePath = 'uploads/units/images/' . $imageName;
-                    $image->move(public_path('uploads/units/images'), $imageName); 
+                    $image->move(public_path('uploads/units/images'), $imageName);
                     UnitPicture::create([
                         'unit_id' => $unit->id,
                         'file_path' => $imagePath,
@@ -151,15 +151,15 @@ class BuildingUnitController extends Controller
                 }
             }
 
-            DB::commit(); 
+            DB::commit();
 
-            return redirect()->route('units.index')->with('success', 'Building unit updated successfully.'); 
+            return redirect()->route('units.index')->with('success', 'Building unit updated successfully.');
 
         } catch (\Exception $e) {
-            DB::rollBack();   
+            DB::rollBack();
             \Log::error("Error creating unit: " . $e->getMessage());
-            return redirect()->back()->withInput()->with('error', 'An error occurred while updating the building unit.'); 
-        }   
+            return redirect()->back()->withInput()->with('error', 'An error occurred while updating the building unit.');
+        }
     }
 
     public function destroyImage(string $id)
@@ -171,13 +171,13 @@ class BuildingUnitController extends Controller
             if (File::exists($oldImagePath)) {
                 File::delete($oldImagePath);
             }
-            
+
             // Delete the image record from the database
             $image->delete();
         }
 
         return response()->json(['success' => true]);
-    } 
+    }
 
     public function getBuildings($id)
     {
