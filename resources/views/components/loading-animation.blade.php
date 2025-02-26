@@ -8,7 +8,7 @@
         display: flex;
         justify-content: center;
         align-items: center;
-        background-color: rgba(255, 255, 255, 0.9);
+        /*background-color: rgba(255, 255, 255, 0.9);*/
         z-index: 9999; /* Ensures the loading animation is on top of other content */
     }
 
@@ -34,8 +34,9 @@
 </style>
 
 <div class="loading-animation" id="loadingAnimation">
-    <div class="loading-spinner"></div>
-</div> 
+    <img src="{{ asset('img/loading.gif') }}" alt="Loading..." class="loading-gif">
+{{--    <div class="loading-spinner"></div>--}}
+</div>
 
 <!-- Add JavaScript to show/hide loading animation -->
 <script>

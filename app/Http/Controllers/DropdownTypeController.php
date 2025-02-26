@@ -17,6 +17,7 @@ class DropdownTypeController extends Controller
         $activeTab = 'Types';
         $types = DropdownType::with('values','parent')->get();
         $values = DropdownVALUE::with('type','parent')->get();
+
         return view('Heights.Admin.Dropdown.index', compact('types', 'values', 'activeTab'));
     }
 

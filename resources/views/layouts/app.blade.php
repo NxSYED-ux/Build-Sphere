@@ -7,7 +7,7 @@
     <link href="{{ asset('css/bootstrap.min.css') }}" rel="stylesheet">
     <!-- <link id="theme-stylesheet" rel="stylesheet" href="{{ asset('css/light.css?v=' . time()) }}"> -->
     <link id="theme-stylesheet" rel="stylesheet" href="{{ asset('css/light.css') }}">
-  
+
     <script>
     (function() {
         const themeStylesheet = document.getElementById('theme-stylesheet');

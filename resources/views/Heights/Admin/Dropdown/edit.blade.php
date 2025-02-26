@@ -4,11 +4,11 @@
 
 @push('styles')
     <style>
-        body { 
+        body {
         }
-        #main { 
+        #main {
             margin-top: 45px;
-        } 
+        }
 
         #add_button {
             width: 45px;
@@ -21,9 +21,9 @@
             font-weight: bold;
             align-items: center;
             justify-content: center;
-        } 
+        }
     </style>
-@endpush 
+@endpush
 
 @section('content')
 
@@ -31,7 +31,7 @@
     <x-Admin.top-navbar :searchVisible="false"/>
     <!--  -->
     <x-Admin.side-navbar :openSections="['AdminControl', 'Dropdown']" />
-    <x-error-success-model /> 
+    <x-error-success-model />
 
     <div id="main">
         <section class="content-header pt-2">
@@ -53,7 +53,7 @@
                                 <div class="d-flex justify-content-between align-items-center mb-2">
                                     <h4 class="mb-0">Edit Drop Down Values</h4>
                                     <a href="{{ route('values.index') }}" class="btn btn-secondary">Go Back</a>
-                                </div>     
+                                </div>
                                 <div class="card shadow p-3 mb-5 bg-body rounded" style="border: none;">
                                     <div class="card-body">
                                         @if ($errors->any())
@@ -84,7 +84,7 @@
 
                                                 <div class="col-md-4 mb-3">
                                                     <label for="description" class="form-label">Description</label>
-                                                    <input class="form-control" id="description" name="description" value="{{ old('description', $value->description) }}" maxlength="250" placeholder="Description"> 
+                                                    <input class="form-control" id="description" name="description" value="{{ old('description', $value->description) }}" maxlength="250" placeholder="Description">
                                                     @error('description')
                                                         <div class="invalid-feedback">
                                                             {{ $message }}
@@ -111,7 +111,7 @@
                                                 </div>
                                             </div>
 
-                                            <div class="row"> 
+                                            <div class="row">
                                                 <div class="col-md-4 mb-3">
                                                     <label for="parent_value_id" class="form-label">
                                                         Parent Value
@@ -139,13 +139,13 @@
                                                         </div>
                                                     @enderror
                                                 </div>
-                                            </div> 
-                                            
+                                            </div>
+
                                             <div class="row">
                                                 <div class="col-md-4">
                                                     <button type="submit" class="btn btn-primary w-100">Submit</button>
                                                 </div>
-                                            </div> 
+                                            </div>
                                         </form>
                                     </div>
                                 </div>
@@ -155,11 +155,11 @@
                 </div>
             </div>
         </section>
-    </div> 
+    </div>
 
 @endsection
 
-@push('scripts') 
+@push('scripts')
 
     <!-- Control logic for link type and value ids -->
     <script>
@@ -223,5 +223,5 @@
             updateParentValues();
         });
     </script>
-    
+
 @endpush

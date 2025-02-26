@@ -15,12 +15,13 @@ class BuildingLevelController extends Controller
     public function index(Request $request)
     {
         $buildingId = $request->input('building_id');
+        $buildings = Building::all();
         $levelsQuery = BuildingLevel::with('building', 'creator', 'updater');
         if ($buildingId) {
             $levelsQuery->where('building_id', $buildingId);
         }
         $levels = $levelsQuery->get();
-        return view('Heights.Admin.Levels.index', compact('levels'));
+        return view('Heights.Admin.Levels.index', compact('levels', 'buildings'));
     }
 
     public function create()
@@ -52,8 +53,10 @@ class BuildingLevelController extends Controller
     public function edit(BuildingLevel $level)
     {
         $level->load(['building']);
-        $buildings = Building::all();
-        return view('Heights.Admin.Levels.edit', compact('level', 'buildings'));
+        if ($level) {
+            return response()->json($level);
+        }
+        return response()->json(['message' => 'Not found'], 404);
     }
 
     public function update(Request $request, string $id)

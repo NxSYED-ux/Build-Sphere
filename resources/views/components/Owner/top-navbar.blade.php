@@ -7,7 +7,7 @@
   height: 27px;
 }
 
-.switch input { 
+.switch input {
   opacity: 0;
   width: 0;
   height: 0;
@@ -50,8 +50,8 @@ input:checked + .slider.round:before {
 
         <!-- Sidenav toggler button -->
         <span class="inline-span" id="sidenav_toggler" onclick="openNav()">
-            <i class='bx bx-menu-alt-left'></i>  
-        </span>  
+            <i class='bx bx-menu-alt-left'></i>
+        </span>
 
         <a href="{{url('admin_dashboard')}}" id="top-nav-logo">
             <svg  width="48" height="48" class="application-logo" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -67,24 +67,27 @@ input:checked + .slider.round:before {
                 <rect width="48" height="48" fill="white"/>
                 </clipPath>
                 </defs>
-            </svg> 
+            </svg>
 
             <!-- <img src="{{ asset('icons/Logo.png') }}" loading="lazy" class="application-logo" alt="">  -->
             <span class="application-logo-text">HEIGHTS</span>
         </a>
 
-        <div style="display: {{ $searchVisible ? 'block' : 'none' }};"> 
-            <div class="position-relative" id="top-nav-search"> 
-                <input type="text" name="search" class="form-control pe-5" style="width: 800px; background-color: #F1F2F7; margin-left: 20px; box-shadow: none; height: 30px;" placeholder="Search" value="{{ request('search') }}" > 
-                <i class="bx bx-search position-absolute top-50 end-0 translate-middle-y me-2 text-muted" style="pointer-events: none;"> </i> 
-            </div>
-        </div> 
+        <div style="display: {{ $searchVisible ? 'block' : 'none' }};">
+            <!-- <div class="position-relative mx-auto" id="top-nav-search" style="width: 90%;">
+                <input type="text" name="search" class="form-control pe-5"
+                    style="width: 100%; background-color: #F1F2F7; box-shadow: none; height: 30px;"
+                    placeholder="Search" value="{{ request('search') }}">
+                <i class="bx bx-search position-absolute top-50 end-0 translate-middle-y me-2 text-muted"
+                    style="pointer-events: none;"></i>
+            </div> -->
+        </div>
 
-        
+
 
         <!-- For Large Screen -->
         <ul class="navbar-nav navbar-lg text-center justify-content-between d-none d-md-flex ms-auto align-items-center">
-            
+
             <label class="switch">
                 <input type="checkbox" id="theme-toggle" checked>
                 <span class="slider round"></span>
@@ -94,11 +97,11 @@ input:checked + .slider.round:before {
             <li class="nav-item dropdown d-flex align-items-center" style="padding-left: 1rem;">
                 <a class="nav-link d-flex align-items-center" href="#" id="userMenu" data-bs-toggle="dropdown" aria-expanded="false">
                     <!-- Profile Image -->
-                    <img src="{{ Auth::user() && Auth::user()->picture ? asset(Auth::user()->picture) : asset('img/avatar.png') }}" 
-                        class="rounded-circle me-2" 
-                        alt="User Image" 
+                    <img src="{{ Auth::user() && Auth::user()->picture ? asset(Auth::user()->picture) : asset('img/avatar.png') }}"
+                        class="rounded-circle me-2"
+                        alt="User Image"
                         style="width: 2.5rem; height: auto;">
-                    
+
                     <!-- User Info -->
                     <div class="d-flex flex-column text-start user-info">
                         <span class="fw-bold">{{ Auth::user()->name }}</span>
@@ -109,7 +112,7 @@ input:checked + .slider.round:before {
                     <li>
                         <a class="dropdown-item d-flex align-items-center" href="{{ route('admin_profile') }}">
                             <i class="bx bxs-user me-2"></i> Profile
-                        </a> 
+                        </a>
                     </li>
                     <li>
                         <a class="dropdown-item d-flex align-items-center" href="#">
@@ -172,26 +175,26 @@ input:checked + .slider.round:before {
             </li>
 
 
-            
+
         </ul>
 
- 
+
         <!-- For small Screen -->
         <ul class="navbar-nav navbar-sm text-center d-md-none ms-auto">
-            <li class="nav-item dropdown"> 
+            <li class="nav-item dropdown">
                 <a class="nav-link d-flex align-items-center" href="#" id="userMenu" data-bs-toggle="dropdown" aria-expanded="false">
                     <!-- Profile Image -->
-                    <img src="{{ Auth::user() && Auth::user()->picture ? asset(Auth::user()->picture) : asset('img/avatar.png') }}" 
-                        class="rounded-circle me-2" 
-                        alt="User Image" 
+                    <img src="{{ Auth::user() && Auth::user()->picture ? asset(Auth::user()->picture) : asset('img/avatar.png') }}"
+                        class="rounded-circle me-2"
+                        alt="User Image"
                         style="width: 2.5rem; height: auto;">
-                    
+
                     <!-- User Info -->
                     <div class="d-flex flex-column text-start user-info">
                         <span class="fw-bold">{{ Auth::user()->name }}</span>
                         <small class="">{{ Auth::user()->email }}</small>
                     </div>
-                </a> 
+                </a>
                 <ul class="dropdown-menu dropdown-menu-end" style="z-index: 1050;" aria-labelledby="userMenu">
                     <li>
                         <a class="dropdown-item" href="{{ route('admin_profile') }}">
@@ -201,7 +204,7 @@ input:checked + .slider.round:before {
                     <li>
                         <a class="dropdown-item" href="#">
                             <i class="fa fa-bell me-2"></i> Notifications
-                            <span class="badge bg-danger badge-counter">3+</span>                            
+                            <span class="badge bg-danger badge-counter">3+</span>
                         </a>
                     </li>
                     <li>

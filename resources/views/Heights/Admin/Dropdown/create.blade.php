@@ -4,33 +4,20 @@
 
 @push('styles')
     <style>
-        body { 
+        body {
         }
-        #main { 
+        #main {
             margin-top: 45px;
-        } 
-
-        #add_button {
-            width: 45px;
-            height: 45px;
-            margin-right: 10px;
-            background-color: #adadad;
-            color: black;
-            border: 1px solid grey;
-            font-size: 25px;
-            font-weight: bold;
-            align-items: center;
-            justify-content: center;
-        } 
+        }
     </style>
-@endpush 
+@endpush
 
 @section('content')
 
     <!--  -->
     <x-Admin.top-navbar :searchVisible="false"/>
     <!--  -->
-    <x-Admin.side-navbar :openSections="['AdminControl', 'Dropdown']" /> 
+    <x-Admin.side-navbar :openSections="['AdminControl', 'Dropdown']" />
     <x-error-success-model />
 
     <div id="main" style="margin-top: 70px;">
@@ -53,7 +40,7 @@
                                 <div class="d-flex justify-content-between align-items-center mb-2">
                                     <h4 class="mb-0">Create Dropdown Values</h4>
                                     <a href="{{ route('values.index') }}" class="btn btn-secondary">Go Back</a>
-                                </div>        
+                                </div>
                                 <div class="card">
                                     <div class="card-body">
                                         @if ($errors->any())
@@ -95,7 +82,7 @@
                                                 </div>
                                             </div>
 
-                                            <div class="row"> 
+                                            <div class="row">
                                                 <div class="col-md-4 mb-3">
                                                     <label for="parent_value_id" class="form-label">
                                                         Parent Value
@@ -112,7 +99,7 @@
                                                         <option value="0" {{ old('status', 1) == 0 ? 'selected' : '' }}>Inactive</option>
                                                     </select>
                                                 </div>
-                                            </div>                                          
+                                            </div>
 
                                             <div class="row">
                                                 <div class="col-md-4">
@@ -132,7 +119,7 @@
 
 @endsection
 
-@push('scripts') 
+@push('scripts')
 
     <!-- Error/Success script -->
     <script>

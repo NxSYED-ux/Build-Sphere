@@ -74,9 +74,10 @@ class DropdownValueController extends Controller
     public function edit(string $id)
     {
         $value = DropdownVALUE::findOrFail($id);
-        $types = DropdownType::with(['values', 'parent'])->get();
-        $values = DropdownVALUE::all();
-        return view('Heights.Admin.Dropdown.edit', compact('value', 'types', 'values'));
+        if ($value) {
+            return response()->json($value);
+        }
+        return response()->json(['message' => 'Not found'], 404);
     }
 
     /**
