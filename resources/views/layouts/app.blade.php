@@ -9,19 +9,19 @@
     <link id="theme-stylesheet" rel="stylesheet" href="{{ asset('css/light.css') }}">
 
     <script>
-    (function() {
-        const themeStylesheet = document.getElementById('theme-stylesheet');
-        const savedTheme = localStorage.getItem('theme') || 'light'; // Default to light
+        (function() {
+            const themeStylesheet = document.getElementById('theme-stylesheet');
+            const savedTheme = localStorage.getItem('theme') || 'light'; // Default to light
 
-        if (savedTheme === 'dark') {
-            themeStylesheet.setAttribute('href', '{{ asset('css/dark.css') }}');
-            document.documentElement.classList.add('dark');
-        } else {
-            themeStylesheet.setAttribute('href', '{{ asset('css/light.css') }}');
-            document.documentElement.classList.remove('dark');
-        }
-    })();
-</script>
+            if (savedTheme === 'dark') {
+                themeStylesheet.setAttribute('href', '{{ asset('css/dark.css') }}');
+                document.documentElement.classList.add('dark');
+            } else {
+                themeStylesheet.setAttribute('href', '{{ asset('css/light.css') }}');
+                document.documentElement.classList.remove('dark');
+            }
+        })();
+    </script>
 
 
     <link href="{{ asset('css/topnavbar.css') }}" rel="stylesheet">
@@ -59,22 +59,41 @@
             color: var(--main-text-color);
         }
 
+        .breadcrumb-item + .breadcrumb-item::before {
+            content: " / ";
+            color: var(--breadcrumb-separator-color);
+        }
         .breadcrumb ol li{
-            color: var(--breadcrumb-text2-color);
+            color: var(--breadcrumb-text2-color) !important;
         }
         .breadcrumb-item a {
-            text-decoration: none;
-            color: var(--breadcrumb-text1-color);
+            text-decoration: none !important;
+            color: var(--breadcrumb-text1-color) !important;
         }
 
         .breadcrumb-item.active a {
-            text-decoration: none;
-            color: var(--breadcrumb-text2-color);
+            text-decoration: none !important;
+            color: var(--breadcrumb-text2-color) !important;
         }
 
         .content-top{
             border-top: 5px solid var(--breadcrumb-text2-color);
         }
+
+        /*  Body Cards  */
+        .card{
+            background-color: var(--body-card-bg) !important;)
+        }
+
+        th{
+            background-color: var(--th-bg) !important;
+            color: var(--th-color) !important;
+        }
+        td{
+            background-color: var(--td-bg) !important;
+            color: var(--td-color) !important;
+        }
+
 
     </style>
     @stack('styles')

@@ -21,6 +21,37 @@
             align-items: center;
             justify-content: center;
         }
+
+        /* Model Windows */
+        .modal-content{
+            background: var(--modal-header-bg);
+            color: var(--modal-text);
+        }
+
+        .modal-header {
+            background: var(--modal-header-bg);
+            color: var(--modal-text);
+        }
+
+        .modal-title {
+            font-weight: bold;
+            width: 100%;
+            text-align: center;
+        }
+
+        .modal-body {
+            background: var(--modal-bg);
+            color: var(--modal-text);
+        }
+
+        .modal-footer {
+            background: var(--modal-bg);
+            border-top: 1px solid var(--modal-border);
+        }
+
+        .btn-close {
+            filter: invert(var(--invert, 0));
+        }
     </style>
 @endpush
 
@@ -104,7 +135,7 @@
         <div class="modal-dialog modal-md modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="createLevelModalLabel">Create Dropdown Type</h5>
+                    <h5 class="modal-title" id="createLevelModalLabel">Add New Level</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <form id="createLevelForm" method="POST" action="{{ route('levels.store') }}">
@@ -190,14 +221,12 @@
         <div class="modal-dialog modal-md modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="editLevelModalLabel">Edit Lov Type</h5>
+                    <h5 class="modal-title" id="editLevelModalLabel">Edit Level</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <!-- The edit form will be loaded here via AJAX -->
-                    <form id="editLevelForm" action="" method="POST">
-                        @method('PUT')
-
+                </div><!-- The edit form will be loaded here via AJAX -->
+                <form id="editLevelForm" action="" method="POST">
+                    @method('PUT')
+                    <div class="modal-body">
                         <div class="row mb-4">
                             <div class="col-12">
                                 <div class="form-group mb-3">
@@ -276,12 +305,12 @@
                             </div>
 
                         </div>
-
-
-                        <button type="submit" class="btn btn-primary">Update Level</button>
+                    </div>
+                    <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    </form>
-                </div>
+                        <button type="submit" class="btn btn-primary">Update</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>

@@ -1,39 +1,68 @@
-:root { 
+:root {
         /* Top Navbar */
-        --topnavbar-text-color: black;  
-        --topnavbar-background-color: #ffff;   
-        --topnavbar-border-color: #808080;   
-        --topnavbar-icon-color: black;    
-        --topnavbar-notification-icon-color: #5f5f5f;  
+        --topnavbar-text-color: black;
+        --topnavbar-background-color: #ffff;
+        --topnavbar-border-color: #808080;
+        --topnavbar-icon-color: black;
+        --topnavbar-notification-icon-color: #5f5f5f;
         --topnavbar-seperator-color: grey;
 
-        
         /* Side Navbar */
-        --sidenavbar-body-color: #F1F2F7; 
-        --sidenavbar-text-color: #5f5f5f; 
-        --sidenavbar-text-hover-color: #008CFF;  
-        --sidenavbar-hpver-background-color: rgb(0 140 255 / 5%);    
-        --sidenavbar-border-color: #008CFF;  
-        --sidenavbar-seperator-color: grey;  
-        
+        --sidenavbar-body-color: #F1F2F7;
+        --sidenavbar-text-color: #5f5f5f;
+        --sidenavbar-text-hover-color: #008CFF;
+        --sidenavbar-hpver-background-color: rgb(0 140 255 / 5%);
+        --sidenavbar-border-color: #008CFF;
+        --sidenavbar-seperator-color: grey;
+
         /* Application Logo */
-        --fill1-color: #F1F2F7;  
-        --fill2-color: #008CFF;  
-        --fill3-color: #B9CCDD;  
-        --fill4-color: #008CFF;  
-        --fill5-color: #008CFF; 
-        --fill1-top-nav-color: white; 
+        --fill1-color: #F1F2F7;
+        --fill2-color: #008CFF;
+        --fill3-color: #B9CCDD;
+        --fill4-color: #008CFF;
+        --fill5-color: #008CFF;
+        --fill1-top-nav-color: white;
 
         /* Body */
             /* breadcrumb */
-            --breadcrumb-text1-color: black; 
-            --breadcrumb-text2-color: #008CFF; 
+            --breadcrumb-text1-color: black;
+            --breadcrumb-text2-color: #008CFF;
             --breadcrumb-separator-color: #008CFF;
             /* content-top-border */
-            --content-top-border-color: #008CFF; 
+            --content-top-border-color: #008CFF;
 
             --body-background-color: #ffff;
             --main-background-color: #ffff;
             --main-text-color: black;
-    } 
+
+            --body-card-bg: #ffff;
+            --th-bg: initial;
+            --th-color: black;
+            --td-bg: initial;
+            --td-color: black;
+
+            /* Models */
+            --modal-bg: #ffffff;
+            --modal-header-bg: #f8f9fa;
+            --modal-text: #000000;
+            --modal-border: #dee2e6;
+            --modal-btn-bg: #0d6efd;
+            --modal-btn-text: #ffffff;
+            --status-active: #28a745;
+            --status-inactive: #dc3545;
+            --invert: 0;
+
+            /* DataTables Paginate Menu */
+            --dataTable-paginate-menu-bg-color: initial;
+            --dataTable-paginate-menu-text-color: black;
+            --dataTable-paginate-menu-border-color: #5f5f5f;
+            --dataTable-paginate-menu-label-color: black;
+
+            /* DataTables Search Box */
+            --dataTable-search-input-bg-color: initial;
+            --dataTable-search-input-text-color: black;
+            --dataTable-search-input-border-color: #5f5f5f;
+            --dataTable-search-label-color: black;
+            --dataTable-search-placeholder-color: initial;
+    }
 

@@ -48,6 +48,72 @@
             align-items: center;
             justify-content: center;
         }
+
+        /* Model Windows */
+        .modal-content{
+            background: var(--modal-header-bg);
+            color: var(--modal-text);
+        }
+
+        .modal-header {
+            background: var(--modal-header-bg);
+            color: var(--modal-text);
+        }
+
+        .modal-title {
+            font-weight: bold;
+            width: 100%;
+            text-align: center;
+        }
+
+        .modal-body {
+            background: var(--modal-bg);
+            color: var(--modal-text);
+        }
+
+        .modal-footer {
+            background: var(--modal-bg);
+            border-top: 1px solid var(--modal-border);
+        }
+
+        .btn-close {
+            filter: invert(var(--invert, 0));
+        }
+
+
+        /* DataTables Entries Dropdown */
+        .dataTables_wrapper .dataTables_length select {
+            background-color: var(--dataTable-paginate-menu-bg-color);
+            color: var(--dataTable-paginate-menu-text-color);
+            border: 1px solid var(--dataTable-paginate-menu-border-color);
+        }
+        .dataTables_wrapper .dataTables_length label {
+            color: var(--dataTable-paginate-menu-label-color);
+        }
+        /* DataTables Search Box */
+        .dataTables_wrapper .dataTables_filter input {
+            background-color: var(--dataTable-search-input-bg-color);
+            color: var(--dataTable-search-input-text-color);
+            border: 1px solid var(--dataTable-search-input-border-color);
+        }
+        .dataTables_wrapper .dataTables_filter label {
+            color: var(--dataTable-search-label-color);
+        }
+        .dataTables_filter input::placeholder {
+            color: var(--dataTable-search-placeholder-color); /* Standard */
+        }
+        .dataTables_filter input::-webkit-input-placeholder {
+            color: var(--dataTable-search-placeholder-color); /* WebKit browsers */
+        }
+        .dataTables_filter input::-moz-placeholder {
+            color: var(--dataTable-search-placeholder-color); /* Mozilla Firefox 19+ */
+        }
+        .dataTables_filter input:-ms-input-placeholder {
+            color: var(--dataTable-search-placeholder-color); /* Internet Explorer 10+ */
+        }
+
+
+
     </style>
 @endpush
 
@@ -240,7 +306,7 @@
         <div class="modal-dialog modal-md modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="editDropdownTypeModalLabel">Edit Lov Type</h5>
+                    <h5 class="modal-title" id="editDropdownTypeModalLabel">Edit Dropdwon Type</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div><!-- The edit form will be loaded here via AJAX -->
                 <form id="editForm" action="" method="POST">
@@ -281,8 +347,8 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="submit" class="btn btn-primary">Update Type</button>
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Update Type</button>
                     </div>
                 </form>
             </div>
@@ -294,7 +360,7 @@
         <div class="modal-dialog modal-md modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="createDropdownValueModalLabel">Create Dropdown Type</h5>
+                    <h5 class="modal-title" id="createDropdownValueModalLabel">Create Dropdown Value</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <form id="createDropdownValueForm" method="POST" action="{{ route('values.store') }}">
@@ -357,7 +423,7 @@
         <div class="modal-dialog modal-md modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="editDropdownValueModalLabel">Edit Lov Type</h5>
+                    <h5 class="modal-title" id="editDropdownValueModalLabel">Edit Dropdwon Value</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <!-- The edit form will be loaded here via AJAX -->
@@ -433,8 +499,8 @@
                             </div>
                         </div>
                     <div class="modal-footer">
-                        <button type="submit" class="btn btn-primary">Update Value</button>
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Update Value</button>
                     </div>
                 </form>
             </div>
@@ -471,7 +537,8 @@
                         "last": "Last",
                         "next": "Next",
                         "previous": "Previous"
-                    }
+                    },
+                    "searchPlaceholder": "Search users..."
                 }
             });
         });
@@ -485,7 +552,8 @@
                         "last": "Last",
                         "next": "Next",
                         "previous": "Previous"
-                    }
+                    },
+                    "searchPlaceholder": "Search users..."
                 }
             });
 

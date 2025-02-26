@@ -4,11 +4,11 @@
 
 @push('styles')
     <style>
-        body { 
+        body {
         }
-        #main { 
+        #main {
             margin-top: 45px;
-        } 
+        }
 
         #add_button {
             width: 45px;
@@ -21,7 +21,7 @@
             font-weight: bold;
             align-items: center;
             justify-content: center;
-        } 
+        }
 
         .image-thumbnail {
             display: inline-block;
@@ -39,17 +39,49 @@
             cursor: pointer;
             font-size: 16px;
         }
+
+
+        /* DataTables Entries Dropdown */
+        .dataTables_wrapper .dataTables_length select {
+            background-color: var(--dataTable-paginate-menu-bg-color);
+            color: var(--dataTable-paginate-menu-text-color);
+            border: 1px solid var(--dataTable-paginate-menu-border-color);
+        }
+        .dataTables_wrapper .dataTables_length label {
+            color: var(--dataTable-paginate-menu-label-color);
+        }
+        /* DataTables Search Box */
+        .dataTables_wrapper .dataTables_filter input {
+            background-color: var(--dataTable-search-input-bg-color);
+            color: var(--dataTable-search-input-text-color);
+            border: 1px solid var(--dataTable-search-input-border-color);
+        }
+        .dataTables_wrapper .dataTables_filter label {
+            color: var(--dataTable-search-label-color);
+        }
+        .dataTables_filter input::placeholder {
+            color: var(--dataTable-search-placeholder-color); /* Standard */
+        }
+        .dataTables_filter input::-webkit-input-placeholder {
+            color: var(--dataTable-search-placeholder-color); /* WebKit browsers */
+        }
+        .dataTables_filter input::-moz-placeholder {
+            color: var(--dataTable-search-placeholder-color); /* Mozilla Firefox 19+ */
+        }
+        .dataTables_filter input:-ms-input-placeholder {
+            color: var(--dataTable-search-placeholder-color); /* Internet Explorer 10+ */
+        }
     </style>
-@endpush 
+@endpush
 
 @section('content')
 
     <!--  -->
     <x-Admin.top-navbar :searchVisible="false"/>
     <!--  -->
-    <x-Admin.side-navbar :openSections="['Organizations']" /> 
+    <x-Admin.side-navbar :openSections="['Organizations']" />
     <x-error-success-model />
- 
+
     @php
         $activeTab = old('activeTab', 'Tab1');
     @endphp
@@ -69,7 +101,7 @@
                 <div class="row">
                     <div class="col-md-12">
                         <div class="box" style="overflow-x: auto;">
-                            <div class="container mt-2"> 
+                            <div class="container mt-2">
                                 <ul class="nav nav-tabs" id="myTab" role="tablist">
                                     <li class="nav-item" role="presentation">
                                         <a class="nav-link {{ $activeTab === 'Tab1' ? 'active' : '' }}" id="dropdwon-types-tab" data-bs-toggle="tab" href="#dropdwon-types" role="tab" aria-controls="dropdwon-types" aria-selected="{{ $activeTab === 'Tab1' ? 'true' : 'false' }}">Organization</a>
@@ -79,20 +111,20 @@
                                     </li>
                                 </ul>
                                 <div class="tab-content mt-0" id="myTabContent">
-                                    <!-- Organization Tab --> 
-                                    <div class="tab-pane fade {{ $activeTab === 'Tab1' ? 'show active' : '' }}" id="dropdwon-types" role="tabpanel" aria-labelledby="dropdwon-types-tab"> 
+                                    <!-- Organization Tab -->
+                                    <div class="tab-pane fade {{ $activeTab === 'Tab1' ? 'show active' : '' }}" id="dropdwon-types" role="tabpanel" aria-labelledby="dropdwon-types-tab">
                                         <div class="card shadow p-3 mb-5 bg-body rounded" style="border: none;">
-                                            <div class="card-body" style="overflow-x: auto;"> 
+                                            <div class="card-body" style="overflow-x: auto;">
                                                 <h3 class="mb-4">Organizations</h3>
                                                 <div style="overflow-x: auto;">
-                                                    <table id="organizationTable" class="table shadow-sm table-hover table-striped"> 
+                                                    <table id="organizationTable" class="table shadow-sm table-hover table-striped">
                                                         <thead class="shadow">
                                                             <tr>
                                                                 <th>ID</th>
                                                                 <th>Picture</th>
-                                                                <th>Name</th> 
-                                                                <th>Owner</th> 
-                                                                <th>City</th> 
+                                                                <th>Name</th>
+                                                                <th>Owner</th>
+                                                                <th>City</th>
                                                                 <th>Membership Start Date</th>
                                                                 <th>Membership End Date</th>
                                                                 <th>Status</th>
@@ -102,19 +134,19 @@
                                                         <tbody>
                                                             @foreach ($organizations as $organization)
                                                                 <tr>
-                                                                    <td>{{ $organization->id }}</td> 
-                                                                    <td> 
-                                                                        <img src="{{ $organization->pictures->isNotEmpty() ? asset($organization->pictures->first()->file_path) : asset('https://via.placeholder.com/150') }}" alt="Organization Picture" class="rounded-circle" width="50" height="50">     
+                                                                    <td>{{ $organization->id }}</td>
+                                                                    <td>
+                                                                        <img src="{{ $organization->pictures->isNotEmpty() ? asset($organization->pictures->first()->file_path) : asset('https://via.placeholder.com/150') }}" alt="Organization Picture" class="rounded-circle" width="50" height="50">
                                                                     </td>
                                                                     <td>{{ $organization->name }}</td>
                                                                     <td>{{ $organization->owner->name }}</td>
                                                                     <td>{{ $organization->address->city ?? 'N/A' }}</td>
-                                                                    <td>{{ $organization->membership_start_date ? $organization->membership_start_date->format('Y-m-d') : '' }}</td> 
-                                                                    <td>{{ $organization->membership_end_date ? $organization->membership_end_date->format('Y-m-d') : '' }}</td> 
+                                                                    <td>{{ $organization->membership_start_date ? $organization->membership_start_date->format('Y-m-d') : '' }}</td>
+                                                                    <td>{{ $organization->membership_end_date ? $organization->membership_end_date->format('Y-m-d') : '' }}</td>
                                                                     <td>{{ $organization->status }}</td>
                                                                     <td class="text-center" style="width: 70px;">
                                                                         <a href="{{ route('organizations.edit', $organization->id) }}" class="text-warning" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit"> <i class="fa fa-pencil mx-2" style="font-size: 20px;"></i> </a>
-                                                                          
+
                                                                     </td>
                                                                 </tr>
                                                             @endforeach
@@ -125,12 +157,12 @@
                                         </div>
                                     </div>
                                     <!-- Add Organization Tab -->
-                                    <div class="tab-pane fade {{ $activeTab === 'Tab2' ? 'show active' : '' }}" id="dropdwon-values" role="tabpanel" aria-labelledby="dropdwon-values-tab"> 
+                                    <div class="tab-pane fade {{ $activeTab === 'Tab2' ? 'show active' : '' }}" id="dropdwon-values" role="tabpanel" aria-labelledby="dropdwon-values-tab">
                                         <div class="card shadow p-3 mb-5 bg-body rounded" style="border: none;">
-                                            <div class="card-body" style="overflow-x: auto;"> 
-                                                <h3 class="mb-4">Add Organization</h3> 
+                                            <div class="card-body" style="overflow-x: auto;">
+                                                <h3 class="mb-4">Add Organization</h3>
                                                 <div class="card shadow p-3 mb-5 bg-body rounded" style="border: none;">
-                                                    <div class="card-body " > 
+                                                    <div class="card-body " >
 
                                                         <form action="{{ route('organizations.store') }}" method="POST" enctype="multipart/form-data">
                                                             @csrf
@@ -139,14 +171,14 @@
                                                                     <div class="form-group mb-3">
                                                                         <label for="name">Name</label>
                                                                         <span class="required__field">*</span><br>
-                                                                        <input type="text" name="name" id="name" class="form-control @error('name') is-invalid @enderror" value="{{ old('name') }}" maxlength="50" placeholder="Organization Name" required> 
+                                                                        <input type="text" name="name" id="name" class="form-control @error('name') is-invalid @enderror" value="{{ old('name') }}" maxlength="50" placeholder="Organization Name" required>
                                                                         @error('name')
                                                                             <span class="invalid-feedback" role="alert">
                                                                                 <strong>{{ $message }}</strong>
                                                                             </span>
                                                                         @enderror
                                                                     </div>
-                                                                </div>   
+                                                                </div>
 
                                                                 <!-- Organization -->
                                                                 <div class="col-sm-12 col-md-6 col-lg-4">
@@ -186,37 +218,37 @@
                                                                     @error('membership_end_date')
                                                                         <div class="text-danger">{{ $message }}</div>
                                                                     @enderror
-                                                                </div> 
+                                                                </div>
 
                                                                 <!--  -->
                                                                 <div class="col-lg-4 col-md-6 col-sm-12">
                                                                     <div class="form-group mb-3">
-                                                                        <label for="country" >Country</label> 
+                                                                        <label for="country" >Country</label>
                                                                         <select class="form-select" id="country" name="country">
-                                                                            <option value="" selected>Select Country</option> 
+                                                                            <option value="" selected>Select Country</option>
                                                                         </select>
                                                                         @error('country')
                                                                             <div class="text-danger">{{ $message }}</div>
                                                                         @enderror
-                                                                    </div> 
-                                                                </div> 
+                                                                    </div>
+                                                                </div>
                                                                 <!--  -->
                                                                 <div class="col-lg-4 col-md-6 col-sm-12">
                                                                     <div class="form-group mb-3">
-                                                                        <label for="province" >Province</label> 
+                                                                        <label for="province" >Province</label>
                                                                         <select class="form-select" id="province" name="province">
                                                                             <option value="" selected>Select Province</option>
                                                                         </select>
                                                                         @error('province')
                                                                             <div class="text-danger">{{ $message }}</div>
                                                                         @enderror
-                                                                    </div> 
-                                                                </div> 
+                                                                    </div>
+                                                                </div>
 
                                                                 <!--  -->
                                                                 <div class="col-lg-4 col-md-6 col-sm-12">
                                                                     <div class="form-group mb-3">
-                                                                        <label for="city" >City</label> 
+                                                                        <label for="city" >City</label>
                                                                         <select class="form-select" id="city" name="city">
                                                                             <option value="" selected>Select Province</option>
                                                                         </select>
@@ -225,12 +257,12 @@
                                                                         @enderror
                                                                     </div>
                                                                 </div>
-                                                                
+
                                                                 <!--  -->
                                                                 <div class="col-sm-12 col-md-6 col-lg-4">
                                                                     <div class="form-group mb-3">
-                                                                        <label for="location">Location</label> 
-                                                                        <input type="text" name="location" id="location" class="form-control @error('location') is-invalid @enderror" value="{{ old('location') }}" maxlength="100" placeholder="Enter Location"> 
+                                                                        <label for="location">Location</label>
+                                                                        <input type="text" name="location" id="location" class="form-control @error('location') is-invalid @enderror" value="{{ old('location') }}" maxlength="100" placeholder="Enter Location">
                                                                         @error('location')
                                                                             <span class="invalid-feedback" role="alert">
                                                                                 <strong>{{ $message }}</strong>
@@ -242,8 +274,8 @@
                                                                 <!--  -->
                                                                 <div class="col-sm-12 col-md-6 col-lg-4">
                                                                     <div class="form-group mb-3">
-                                                                        <label for="postal_code">Postal Code</label> 
-                                                                        <input type="text" name="postal_code" id="postal_code" class="form-control @error('postal_code') is-invalid @enderror" value="{{ old('postal_code') }}" maxlength="100" placeholder="Enter Postal Code"> 
+                                                                        <label for="postal_code">Postal Code</label>
+                                                                        <input type="text" name="postal_code" id="postal_code" class="form-control @error('postal_code') is-invalid @enderror" value="{{ old('postal_code') }}" maxlength="100" placeholder="Enter Postal Code">
                                                                         @error('postal_code')
                                                                             <span class="invalid-feedback" role="alert">
                                                                                 <strong>{{ $message }}</strong>
@@ -254,7 +286,7 @@
                                                             </div>
 
                                                             <!--  -->
-                                                            <div class="row">                                                           
+                                                            <div class="row">
                                                                 <div class="col-lg-4 col-md-4 col-sm-12 mb-3">
                                                                     <label for="imageInput" class="form-label">Organization Images </label>
                                                                     <input type="file" id="imageInput" name="organization_images[]" class="form-control" accept="image/png, image/jpeg, image/jpg, image/gif" multiple>
@@ -267,8 +299,8 @@
                                                                     <div id="imageThumbnails" class="mt-3">
                                                                         <!-- Image thumbnails will be inserted here -->
                                                                     </div>
-                                                                </div> 
-                                                            </div> 
+                                                                </div>
+                                                            </div>
 
                                                             <button type="submit" class="btn btn-primary">Create Organizations</button>
                                                         </form>
@@ -279,17 +311,17 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>                        
+                        </div>
                     </div>
                 </div>
             </div>
         </section>
-    </div>    
+    </div>
 
 
 @endsection
 
-@push('scripts') 
+@push('scripts')
 
     <!-- Add DataTables JS -->
     <script src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.min.js"></script>
@@ -326,11 +358,12 @@
                         "last": "Last",
                         "next": "Next",
                         "previous": "Previous"
-                    }
+                    },
+                    "searchPlaceholder": "Search users..."
                 }
-            }); 
-        }); 
-    </script>  
+            });
+        });
+    </script>
 
     <!-- Tool tip script -->
     <script>
@@ -340,28 +373,28 @@
                 return new bootstrap.Tooltip(tooltipTriggerEl);
             });
         });
-    </script> 
+    </script>
 
     <!-- Dates valdations  -->
-    <script> 
+    <script>
         document.getElementById('membership_start_date').addEventListener('change', validateDates);
-        document.getElementById('membership_end_date').addEventListener('change', validateDates); 
+        document.getElementById('membership_end_date').addEventListener('change', validateDates);
 
         function validateDates() {
             const membership_start_date = new Date(document.getElementById('membership_start_date').value);
             const membership_end_date = new Date(document.getElementById('membership_end_date').value);
 
-            if (membership_start_date && membership_end_date && membership_end_date <= membership_start_date) { 
-                document.getElementById('membership_end_date').value = '';  
+            if (membership_start_date && membership_end_date && membership_end_date <= membership_start_date) {
+                document.getElementById('membership_end_date').value = '';
                 Swal.fire({
                     title: 'Invalid End Date',
                     text: 'Membership End Date must be after or equal the Start Date.',
                     icon: 'error',
                     confirmButtonText: 'OK'
-                });  
+                });
             }
-        } 
-    </script> 
+        }
+    </script>
 
     <!-- Country/Province/City dropdowns  -->
     <script>
@@ -429,5 +462,5 @@
             });
         });
     </script>
-    
+
 @endpush
