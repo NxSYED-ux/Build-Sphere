@@ -1,8 +1,26 @@
-<!-- Include SweetAlert2 CSS and JS from CDN -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    
+
 @if (session('success') || session('error') || $errors->any())
+    <style>
+        .theme-swal-popup {
+            border: 1px solid var(--swal-border-color);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        }
+        .theme-swal-button {
+            background-color: var(--swal-button-bg) !important;
+            color: var(--swal-button-text) !important;
+            border: 1px solid var(--swal-button-border) !important;
+        }
+        .theme-swal-button:hover {
+            opacity: 0.9;
+        }
+        .swal2-confirm {
+            box-shadow: none !important;
+            outline: none !important;
+        }
+        .swal2-timer-progress-bar {
+            background-color: var(--swal-timer-progress-bar-color) !important;
+        }
+    </style>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             let title = '';
@@ -14,10 +32,12 @@
                 title = 'Success!';
                 text = '{{ session('success') }}';
                 icon = 'success';
+                iconColor = getComputedStyle(document.documentElement).getPropertyValue('--swal-icon-success-color').trim();
             @elseif (session('error'))
                 title = 'Error!';
                 text = '{{ session('error') }}';
                 icon = 'error';
+                iconColor = getComputedStyle(document.documentElement).getPropertyValue('--swal-icon-error-color').trim();
             @endif
 
             @if ($errors->any())
@@ -28,16 +48,24 @@
                 @endforeach
                 text += '</ul>';
                 icon = 'error';
+                iconColor = getComputedStyle(document.documentElement).getPropertyValue('--swal-icon-error-color').trim();
             @endif
 
             // Show SweetAlert
             Swal.fire({
                 title: title,
-                html: text, // Use HTML for the errors list
+                html: text,
                 icon: icon,
                 confirmButtonText: 'OK',
-                timer: 3000, // Auto-close after 3 seconds
+                timer: 3000,
                 timerProgressBar: true,
+                background: getComputedStyle(document.documentElement).getPropertyValue('--swal-bg-color').trim(),
+                color: getComputedStyle(document.documentElement).getPropertyValue('--swal-text-color').trim(),
+                iconColor: iconColor,
+                customClass: {
+                    popup: 'theme-swal-popup',
+                    confirmButton: 'theme-swal-button'
+                }
             });
         });
     </script>

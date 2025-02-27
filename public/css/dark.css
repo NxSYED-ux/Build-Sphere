@@ -36,6 +36,8 @@
             --main-text-color: #ffff;
 
             --body-card-bg: #252525;
+            --body-card-label-color: #fff;
+            --body-card-span-color: #fff;
             --th-bg: black;
             --th-color: #ffff;
             --td-bg: #333333;
@@ -64,4 +66,22 @@
             --dataTable-search-input-border-color: #555;
             --dataTable-search-label-color: #fff;
             --dataTable-search-placeholder-color: #888;
+
+            /* Sweet Alert */
+            --swal-bg-color: #222;
+            --swal-text-color: #fff;
+            --swal-icon-success-color: #28a745;
+            --swal-icon-error-color: #ff5b61;
+            --swal-border-color: #444;
+            --swal-button-bg: #444;
+            --swal-button-text: #fff;
+            --swal-button-border: white;
+            --swal-timer-progress-bar-color: #007bff;
+
+            /* Nav Tabs */
+            --nav-tabs-inactive-bg-color: #333333;
+            --nav-tabs-inactive-text-color: #fff;
+            --nav-tabs-inactive-border-color: #ffff;
+            --nav-tabs-active-bg-color: #252525;
+            --nav-tabs-active-text-color: #fff;
 }

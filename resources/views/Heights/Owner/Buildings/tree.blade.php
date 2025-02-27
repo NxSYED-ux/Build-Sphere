@@ -2,13 +2,13 @@
 
 @section('title', 'Tree')
 
-@push('styles') 
+@push('styles')
     <style>
-        body {  
+        body {
         }
-        #main { 
+        #main {
             margin-top: 45px;
-        } 
+        }
 
         .modal-content{
             background-color: var(--main-background-color);
@@ -17,31 +17,31 @@
         .modal-body{
             background-color: var(--main-background-color);
             color: var(--main-text-color);
-        } 
+        }
 
         .model-btn-close {
-            background-color: transparent; 
-            color: black !important; 
-            border: none;  
-        } 
+            background-color: transparent;
+            color: black !important;
+            border: none;
+        }
 
         .model-btn-close {
-            background-color: transparent; 
-            color: var(--main-text-color) !important; 
-            border: none;  
+            background-color: transparent;
+            color: var(--main-text-color) !important;
+            border: none;
         }
 
         .model-btn-close:focus {
-            box-shadow: none; 
-        } 
-        
+            box-shadow: none;
+        }
+
         #tree>svg {
-            background-color: var(--main-background-color); 
-        } 
+            background-color: var(--main-background-color);
+        }
         /*partial*/
         [lcn='levels']>rect {
             fill: #3498db;
-        } 
+        }
 
         [lcn='buildings']>rect {
             fill: #f2f2f2;
@@ -63,7 +63,7 @@
 
         .assistant [data-ctrl-n-menu-id]>circle {
             fill: #aeaeae;
-        } 
+        }
 
         .levels>rect {
             fill: #D3FFFF;
@@ -79,7 +79,7 @@
 
         .levels>g>.ripple {
             fill: #ecaf00;
-        } 
+        }
 
         .units>rect {
             fill: #fff5d8;
@@ -95,7 +95,7 @@
 
         .levels>g>.ripple {
             fill: #ecaf00;
-        } 
+        }
 
         [lcn='units']>rect {
             fill: red;
@@ -111,7 +111,7 @@
 
         .Apartment>rect {
             fill: #ecaf00;
-        } 
+        }
 
         .Restaurant>rect {
             fill: grey;
@@ -119,23 +119,23 @@
 
         .Gym>rect {
             fill: orange;
-        } 
+        }
 
     </style>
 
-@endpush 
+@endpush
 
-@section('content') 
+@section('content')
 
     <!--  -->
     <x-Admin.top-navbar :searchVisible="false"/>
     <!--  -->
-    <x-Owner.side-navbar :openSections="['Buildings-Tree']"/>   
+    <x-Owner.side-navbar :openSections="['Buildings-Tree']"/>
 
-    <div id="main"> 
+    <div id="main">
         <div id="tree">
-        </div> 
-    </div>  
+        </div>
+    </div>
 
     <!-- Building Modal -->
     <div class="modal fade" id="BuildingModal" tabindex="-1" aria-labelledby="buildingModalLabel" aria-hidden="true">
@@ -146,15 +146,15 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                        <div id="nodeDetailsBuilding"> 
-                        </div> 
+                        <div id="nodeDetailsBuilding">
+                        </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 </div>
             </div>
         </div>
-    </div>  
+    </div>
 
     <!-- Owner Modal -->
     <div class="modal fade" id="OwnerModal" tabindex="-1" aria-hidden="true">
@@ -165,8 +165,8 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body" >
-                    <div id="nodeDetailsOwner"> 
-                    </div> 
+                    <div id="nodeDetailsOwner">
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -175,7 +175,7 @@
         </div>
     </div>
 
-    <!-- Level Modal --> 
+    <!-- Level Modal -->
     <div class="modal fade" id="LevelModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
@@ -213,7 +213,7 @@
                         </div>
                     </div>
 
-                </div> 
+                </div>
             </div>
         </div>
     </div>
@@ -231,18 +231,18 @@
                     <div id="nodeDetailsUnit"></div>
 
                     <!-- <div class="card shadow-sm border-success p-3">
-                        <div class="d-flex align-items-center"> 
+                        <div class="d-flex align-items-center">
                             <div class="flex-shrink-0">
                                 <img src="{{ asset('img/buildings/Apartment_1.jpeg') }}" class="rounded img-fluid border" width="150" alt="Unit Image">
                             </div>
- 
+
                             <div class="ms-3">
                                 <h5 class="text-success mb-2">SALE - Apartment A1</h5>
                                 <p class="mb-1"><strong>Type:</strong> Apartment</p>
                                 <p class="mb-1"><strong>Price:</strong> 12,500,000 PKR (For Sale)</p>
                             </div>
                         </div>
- 
+
                         <div class="alert alert-success mt-3">
                             <div class="d-flex align-items-center">
                                 <img src="{{ asset('img/buildings/user_2.jpg') }}" class="rounded-circle border" width="50" height="50" alt="Buyer">
@@ -253,8 +253,8 @@
                             </div>
                         </div>
                     </div> -->
-                    
-                </div> 
+
+                </div>
             </div>
         </div>
     </div>
@@ -263,17 +263,17 @@
 
 @endsection
 
-@push('scripts') 
+@push('scripts')
 <!-- <script src="https://balkan.app/js/OrgChart.js"></script> -->
-    <script src="{{ asset('js/orgchart.js') }}"></script> 
+    <script src="{{ asset('js/orgchart.js') }}"></script>
     <script>
         //JavaScript
-        OrgChart.templates.ana.plus = 
+        OrgChart.templates.ana.plus =
             `<circle cx="15" cy="15" r="15" fill="#ffffff" stroke="#aeaeae" stroke-width="1"></circle>
             <text text-anchor="middle" style="font-size: 18px;cursor:pointer;" fill="#757575" x="15" y="22">{collapsed-children-count}</text>`;
-  
 
-    
+
+
         OrgChart.templates.itTemplate = Object.assign({}, OrgChart.templates.ana);
         OrgChart.templates.itTemplate.nodeMenuButton = "";
         OrgChart.templates.itTemplate.nodeCircleMenuButton = {
@@ -283,8 +283,8 @@
             color: '#fff',
             stroke: '#aeaeae',
             show: false
-        }; 
- 
+        };
+
        // Get the options and merge with toolbar settings
         let options = Object.assign(getOptions(), {
             toolbar: {
@@ -316,7 +316,7 @@
                 zoom: true,
                 fit: true,
                 expandAll: true
-            },  
+            },
             nodeBinding: {
                 field_0: "name",
                 field_1: "title",
@@ -362,16 +362,16 @@
                     nodeMenu:  null
                 },
             },
-        }); 
+        });
 
         chart.load([
             { id: "buildings", tags: ["buildings"] },
-            { id: "Building {{ $building->id }}", stpid: "buildings", name: "{{ $building->name }}", title: "Building", img: "{{ asset( $building->pictures->first() ?  $building->pictures->first()->file_path : '') }}", tags: ["top"] },            
+            { id: "Building {{ $building->id }}", stpid: "buildings", name: "{{ $building->name }}", title: "Building", img: "{{ asset( $building->pictures->first() ?  $building->pictures->first()->file_path : '') }}", tags: ["top"] },
             { id: "Owner {{ $owner->id }}", pid: "buildings", name: "{{ $owner->name }}", title: "Owner", img: "{{ asset( $owner->picture ?? 'img/buildings/User_2.jpg') }}", tags: ["assistant"] },
 
             @foreach( $levels as $level )
             { id: "levels {{ $level->id }}", pid: "buildings", tags: ["levels", "department"], name: "{{ $level->level_name }}" },
-            @endforeach 
+            @endforeach
 
             @foreach( $levels as $level )
                 { id: "Level {{ $level->id }}", stpid: "levels {{ $level->id }}", name: "{{ $level->level_name }}", title: "Level {{ $level->level_number }}" },
@@ -379,8 +379,8 @@
 
             @foreach( $units as $unit )
                 { id: "Unit {{ $unit->id }}", pid: "Level {{ $unit->level_id }}", name: "{{ $unit->unit_name }}", title: "{{ $unit->availability_status }}", img: "{{ asset( $unit->pictures->first() ? $unit->pictures->first()->file_path : 'img/buildings/Shop_1.jpeg') }}", tags: ["{{ $unit->unit_type }}"] },
-            @endforeach 
-        ]); 
+            @endforeach
+        ]);
 
         // chart.load([
         //     { id: "buildings", tags: ["buildings"] },
@@ -401,7 +401,7 @@
         //     { id: 13, pid: 11, name: "Appartment 2", title: "Sold", img: "{{ asset('img/buildings/Apartment_2.jpeg') }}", tags: ["apartments"] },
         //     { id: 14, pid: 11, name: "Appartment 3", title: "Rented", img: "{{ asset('img/buildings/Apartment_3.jpeg') }}", tags: ["apartments"] },
         //     { id: 15, pid: "buildings", name: "Usman Iqbal", title: "Owner", img: "{{ asset('img/buildings/User_2.jpg') }}", tags: ["assistant"] }
-        // ]); 
+        // ]);
 
         // Add event listener to each node in the OrgChart
         chart.on('click', function(event, node) {
@@ -431,11 +431,11 @@
             if (modalId) {
                 let modal = new bootstrap.Modal(document.getElementById(modalId), {
                     keyboard: false
-                }); 
+                });
 
                 modal.show();
             }
-        }); 
+        });
 
         function fetchUnitDetails(unitId) {
             let numericUnitId = parseInt(unitId);
@@ -445,7 +445,7 @@
             }
 
             $.ajax({
-                url: `{{ route('building.unit.details', ':id') }}`.replace(':id', numericUnitId), 
+                url: `{{ route('units.details', ':id') }}`.replace(':id', numericUnitId),
                 type: 'GET',
                 success: function(data) {
                     if (data.error) {
@@ -520,9 +520,9 @@
                             <img src="${userImage}" class="rounded-circle border" width="50" height="50" alt="Tenant">
                             <div class="ms-2">
                                 <p class="mb-1"><strong>Rented By:</strong> ${userName}</p>
-                                <p class="mb-0"><strong>Rent Period:</strong> 
-                                    ${userUnit ? new Date(userUnit.rent_start_date).toLocaleDateString() : 'N/A'} 
-                                    to 
+                                <p class="mb-0"><strong>Rent Period:</strong>
+                                    ${userUnit ? new Date(userUnit.rent_start_date).toLocaleDateString() : 'N/A'}
+                                    to
                                     ${userUnit ? new Date(userUnit.rent_end_date).toLocaleDateString() : 'N/A'}
                                 </p>
                             </div>

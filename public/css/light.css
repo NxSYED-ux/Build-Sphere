@@ -36,6 +36,8 @@
             --main-text-color: black;
 
             --body-card-bg: #ffff;
+            --body-card-label-color: initial;
+            --body-card-span-color: initial;
             --th-bg: initial;
             --th-color: black;
             --td-bg: initial;
@@ -64,5 +66,23 @@
             --dataTable-search-input-border-color: #5f5f5f;
             --dataTable-search-label-color: black;
             --dataTable-search-placeholder-color: initial;
+
+            /* Sweet Alert */
+            --swal-bg-color: #fff;
+            --swal-text-color: #000;
+            --swal-icon-success-color: #28a745;
+            --swal-icon-error-color: #ff5b61;
+            --swal-border-color: #ddd;
+            --swal-button-bg: #007bff;
+            --swal-button-text: #fff;
+            --swal-button-border: white;
+            --swal-timer-progress-bar-color: grey;
+
+            /* Nav Tabs */
+            --nav-tabs-inactive-bg-color: initial;
+            --nav-tabs-inactive-text-color: black;
+            --nav-tabs-inactive-border-color: initial;
+            --nav-tabs-active-bg-color: #ffff;
+            --nav-tabs-active-text-color: black;
     }
 

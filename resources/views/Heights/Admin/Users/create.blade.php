@@ -4,11 +4,11 @@
 
 @push('styles')
     <style>
-        body { 
+        body {
         }
-        #main { 
+        #main {
             margin-top: 45px;
-        }  
+        }
         .avatar {
             width: 100px;
             height: 100px;
@@ -16,13 +16,13 @@
             margin-bottom: 20px;
             object-fit: cover;
         }
-    </style>     
-@endpush 
+    </style>
+@endpush
 
-@section('content') 
+@section('content')
     <x-Admin.top-navbar :searchVisible="false"/>
     <x-Admin.side-navbar :openSections="['AdminControl', 'UserManagement']" />
-    <x-error-success-model /> 
+    <x-error-success-model />
 
     <div id="main">
         <section class="content-header pt-2">
@@ -44,18 +44,18 @@
                                 <div class="d-flex justify-content-between align-items-center mb-2">
                                     <h4 class="mb-0">Create New User</h4>
                                     <a href="{{ route('users.index') }}" class="btn btn-secondary">Go Back</a>
-                                </div> 
+                                </div>
                                 <div class="card shadow p-3 mb-5 bg-body rounded" style="border: none;">
-                                    <div class="card-body " > 
+                                    <div class="card-body " >
 
                                         <form action="{{ route('users.store') }}" method="POST" enctype="multipart/form-data">
                                             @csrf
-                                            <div class="row my-0 py-0">
+                                            <div class="row">
                                                 <div class="col-sm-12 col-md-6 col-lg-4">
                                                     <div class="form-group mb-3">
                                                         <label for="name">Name</label>
                                                         <span class="required__field">*</span><br>
-                                                        <input type="text" name="name" id="name" class="form-control @error('name') is-invalid @enderror" value="{{ old('name') }}" maxlength="50" placeholder="User Name" required> 
+                                                        <input type="text" name="name" id="name" class="form-control @error('name') is-invalid @enderror" value="{{ old('name') }}" maxlength="50" placeholder="User Name" required>
                                                         @error('name')
                                                             <span class="invalid-feedback" role="alert">
                                                                 <strong>{{ $message }}</strong>
@@ -63,6 +63,7 @@
                                                         @enderror
                                                     </div>
                                                 </div>
+                                                <!--  -->
                                                 <div class="col-sm-12 col-md-6 col-lg-4">
                                                     <div class="form-group mb-3">
                                                         <label for="email">Email</label>
@@ -74,8 +75,7 @@
                                                             </span>
                                                         @enderror
                                                     </div>
-                                                </div>                                                  
-
+                                                </div>
                                                 <!--  -->
                                                 <div class="col-sm-12 col-md-6 col-lg-4">
                                                     <div class="form-group mb-3">
@@ -94,34 +94,33 @@
                                                         @enderror
                                                     </div>
                                                 </div>
-
+                                                <!--  -->
                                                 <div class="col-sm-12 col-md-6 col-lg-4">
                                                     <div class="form-group mb-3">
                                                         <label for="contact">Phone no:</label><br>
-                                                        <input type="text" name="phone_no" id="contact" value="{{ old('phone_no') }}" 
-                                                            class="form-control contact" placeholder="0312-3456789" maxlength="14"><br>
+                                                        <input type="text" name="phone_no" id="contact" value="{{ old('phone_no') }}"
+                                                            class="form-control contact" placeholder="0312-3456789" maxlength="14">
                                                         @error('phone_no')
                                                             <span class="invalid-feedback" role="alert">
                                                                 <strong>{{ $message }}</strong>
                                                             </span>
-                                                        @enderror 
+                                                        @enderror
                                                     </div>
-                                                </div> 
-
+                                                </div>
+                                                <!--  -->
                                                 <div class="col-sm-12 col-md-6 col-lg-4">
                                                     <div class="form-group mb-3">
                                                         <label for="cnic">CNIC</label>
                                                         <span id="cnic_status"></span><br>
-                                                        <input type="text" name="cnic" id="cnic" class="form-control @error('cnic') is-invalid @enderror" 
+                                                        <input type="text" name="cnic" id="cnic" class="form-control @error('cnic') is-invalid @enderror"
                                                             value="{{ old('cnic') }}" maxlength="15" placeholder="12345-1234567-1">
                                                         @error('cnic')
                                                             <span class="invalid-feedback" role="alert">
                                                                 <strong>{{ $message }}</strong>
                                                             </span>
                                                         @enderror
-                                                    </div>  
-                                                </div>  
-
+                                                    </div>
+                                                </div>
                                                 <!--  -->
                                                 <div class="col-sm-12 col-md-6 col-lg-4">
                                                     <div class="form-group mb-3">
@@ -132,7 +131,6 @@
                                                         @enderror
                                                     </div>
                                                 </div>
-
                                                 <!--  -->
                                                 <div class="col-sm-12 col-md-6 col-lg-4">
                                                     <div class="form-group mb-3">
@@ -152,42 +150,39 @@
                                                             </span>
                                                         @enderror
                                                     </div>
-                                                </div> 
-                                                
+                                                </div>
                                             </div>
 
                                             <!--  -->
                                             <div class="row">
-
                                                 <!--  -->
                                                 <div class="col-lg-4 col-md-6 col-sm-12">
                                                     <div class="form-group mb-3">
-                                                        <label for="country" class="form-label">Country</label> 
+                                                        <label for="country" class="form-label">Country</label>
                                                         <select class="form-select" id="country" name="country">
-                                                            <option value="" selected>Select Country</option> 
+                                                            <option value="" selected>Select Country</option>
                                                         </select>
                                                         @error('country')
                                                             <div class="text-danger">{{ $message }}</div>
                                                         @enderror
-                                                    </div> 
-                                                </div> 
+                                                    </div>
+                                                </div>
                                                 <!--  -->
                                                 <div class="col-lg-4 col-md-6 col-sm-12">
                                                     <div class="form-group mb-3">
-                                                        <label for="province" class="form-label">Province</label> 
+                                                        <label for="province" class="form-label">Province</label>
                                                         <select class="form-select" id="province" name="province">
                                                             <option value="" selected>Select Province</option>
                                                         </select>
                                                         @error('province')
                                                             <div class="text-danger">{{ $message }}</div>
                                                         @enderror
-                                                    </div> 
-                                                </div> 
-
+                                                    </div>
+                                                </div>
                                                 <!--  -->
                                                 <div class="col-lg-4 col-md-6 col-sm-12">
                                                     <div class="form-group mb-3">
-                                                        <label for="city" class="form-label">City</label> 
+                                                        <label for="city" class="form-label">City</label>
                                                         <select class="form-select" id="city" name="city">
                                                             <option value="" selected>Select Province</option>
                                                         </select>
@@ -196,12 +191,11 @@
                                                         @enderror
                                                     </div>
                                                 </div>
-                                                
                                                 <!--  -->
                                                 <div class="col-sm-12 col-md-6 col-lg-4">
                                                     <div class="form-group mb-3">
-                                                        <label for="location">Location</label> 
-                                                        <input type="text" name="location" id="location" class="form-control @error('location') is-invalid @enderror" value="{{ old('location') }}" maxlength="100" placeholder="Enter Location"> 
+                                                        <label for="location">Location</label>
+                                                        <input type="text" name="location" id="location" class="form-control @error('location') is-invalid @enderror" value="{{ old('location') }}" maxlength="100" placeholder="Enter Location">
                                                         @error('location')
                                                             <span class="invalid-feedback" role="alert">
                                                                 <strong>{{ $message }}</strong>
@@ -209,12 +203,11 @@
                                                         @enderror
                                                     </div>
                                                 </div>
-
                                                 <!--  -->
                                                 <div class="col-sm-12 col-md-6 col-lg-4">
                                                     <div class="form-group mb-3">
-                                                        <label for="postal_code">Postal Code</label> 
-                                                        <input type="text" name="postal_code" id="postal_code" class="form-control @error('postal_code') is-invalid @enderror" value="{{ old('postal_code') }}" maxlength="100" placeholder="Enter Postal Code"> 
+                                                        <label for="postal_code">Postal Code</label>
+                                                        <input type="text" name="postal_code" id="postal_code" class="form-control @error('postal_code') is-invalid @enderror" value="{{ old('postal_code') }}" maxlength="100" placeholder="Enter Postal Code">
                                                         @error('postal_code')
                                                             <span class="invalid-feedback" role="alert">
                                                                 <strong>{{ $message }}</strong>
@@ -227,15 +220,15 @@
                                             <!--  -->
                                             <div class="row">
                                                 <div class="col-sm-12 col-md-6 col-lg-4">
-                                                    <div class="form-group mb-3">
+                                                    <div class="form-group mb-2">
                                                         <label for="picture">Picture</label>
                                                         <input type="file" name="picture" id="picture" class="form-control" accept="image/*" onchange="previewImage(event)">
-                                                    </div> 
+                                                    </div>
                                                 </div>
                                                 <div class="col-sm-12 col-md-6 col-lg-4 d-flex align-items-center">
-                                                    <img id="avatar" class="avatar" src="{{ old('picture') ? asset(old('picture')) : 'https://via.placeholder.com/150' }}" alt="User Picture">
+                                                    <img id="avatar" class="avatar" src="{{ old('picture') ? asset(old('picture')) : asset('img/placeholder-profile.png') }}" alt="User Picture">
                                                 </div>
-                                            </div> 
+                                            </div>
 
                                             <button type="submit" class="btn btn-primary">Create User</button>
                                         </form>
@@ -251,7 +244,7 @@
 
 @endsection
 
-@push('scripts')  
+@push('scripts')
 
     <!-- Image avatar script -->
     <script>
@@ -263,7 +256,7 @@
             }
             reader.readAsDataURL(event.target.files[0]);
         }
-    </script> 
+    </script>
 
     <!-- Cnic script -->
     <script>
@@ -271,8 +264,8 @@
             var x = e.target.value.replace(/\D/g, '').match(/(\d{0,5})(\d{0,7})(\d{0,1})/);
             e.target.value = !x[2] ? x[1] : x[1] + '-' + x[2] + (x[3] ? '-' + x[3] : '');
         });
-    </script> 
- 
+    </script>
+
 
     <!-- Country/Province/City dropdowns  -->
     <script>
@@ -341,4 +334,4 @@
         });
     </script>
 
-@endpush 
+@endpush

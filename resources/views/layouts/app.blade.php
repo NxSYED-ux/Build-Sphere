@@ -26,6 +26,8 @@
 
     <link href="{{ asset('css/topnavbar.css') }}" rel="stylesheet">
     <link href="{{ asset('css/sidenavbar.css') }}" rel="stylesheet">
+    <!-- Include SweetAlert2 CSS from CDN -->
+    <link rel="stylesheet" href="{{ asset('css/sweetalert.css') }}">
 
     <!-- Add DataTables CSS link -->
     <link href="https://cdn.datatables.net/1.11.3/css/dataTables.bootstrap5.min.css" rel="stylesheet">
@@ -53,6 +55,7 @@
             font-style: normal !important;
             transition: margin-left 0.3s;
             margin: 0;
+            margin-left: 250px;
             padding-top: 13px;
             overflow-y: auto;
             background-color: var(--main-background-color);
@@ -85,6 +88,17 @@
             background-color: var(--body-card-bg) !important;)
         }
 
+        .card-body{
+            color: var(--main-text-color) !important;
+        }
+
+        .card label{
+            color: var(--body-card-label-color) !important;
+        }
+        .card span{
+            color: var(--body-card-span-color) !important;
+        }
+
         th{
             background-color: var(--th-bg) !important;
             color: var(--th-color) !important;
@@ -111,6 +125,8 @@
 
     <!-- Include jQuery library -->
     <script src="{{ asset('jquery/jquery-3.7.1.min.js') }}"></script>
+    <!-- Include SweetAlert2 JS from CDN -->
+    <script src="{{ asset('js/sweetalert.js') }}"></script>
 
     <!-- Toogle script -->
     <script>

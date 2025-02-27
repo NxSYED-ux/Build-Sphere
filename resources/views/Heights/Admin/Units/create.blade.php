@@ -4,12 +4,12 @@
 
 @push('styles')
     <style>
-        body { 
+        body {
         }
-        #main { 
+        #main {
             margin-top: 45px;
-        } 
-         
+        }
+
         /* Center the input and preview */
         .image-input-container {
             text-align: center;
@@ -96,11 +96,11 @@
             background-color: red;
         }
     </style>
-@endpush 
+@endpush
 
 @section('content')
     <x-Admin.top-navbar :searchVisible="false"/>
-    <x-Admin.side-navbar :openSections="['Buildings', 'Units']" /> 
+    <x-Admin.side-navbar :openSections="['Buildings', 'Units']" />
     <x-error-success-model />
 
     <div id="main">
@@ -123,9 +123,9 @@
                                 <div class="d-flex justify-content-between align-items-center mb-2">
                                     <h4 class="mb-0">Add New Unit</h4>
                                     <a href="{{ route('units.index') }}" class="btn btn-secondary">Go Back</a>
-                                </div> 
+                                </div>
                                 <div class="card shadow p-3 mb-5 bg-body rounded" style="border: none;">
-                                    <div class="card-body " > 
+                                    <div class="card-body " >
 
                                         <form action="{{ route('units.store') }}" method="POST" enctype="multipart/form-data">
                                             @csrf
@@ -136,7 +136,7 @@
                                                             <div class="form-group mb-3">
                                                                 <label for="unit_name">Unit Name</label>
                                                                 <span class="required__field">*</span><br>
-                                                                <input type="text" name="unit_name" id="unit_name" class="form-control @error('unit_name') is-invalid @enderror" value="{{ old('unit_name') }}" maxlength="50" placeholder="User Name" required> 
+                                                                <input type="text" name="unit_name" id="unit_name" class="form-control @error('unit_name') is-invalid @enderror" value="{{ old('unit_name') }}" maxlength="50" placeholder="User Name" required>
                                                                 @error('unit_name')
                                                                     <span class="invalid-feedback" role="alert">
                                                                         <strong>{{ $message }}</strong>
@@ -150,13 +150,13 @@
                                                             <div class="form-group mb-3">
                                                                 <label for="unit_type">Unit Type</label>
                                                                 <span class="required__field">*</span><br>
-                                                                <select name="unit_type" id="unit_type" class="form-select" required> 
-                                                                    <option value="" selected>Select Type</option> 
+                                                                <select name="unit_type" id="unit_type" class="form-select" required>
+                                                                    <option value="" selected>Select Type</option>
                                                                     @foreach($unitTypes as $value)
                                                                         <option value="{{ $value->value_name }}" {{ old('unit_type') == $value->value_name ? 'selected' : '' }}>
                                                                             {{ $value->value_name }}
                                                                         </option>
-                                                                    @endforeach  
+                                                                    @endforeach
                                                                 </select>
                                                                 @error('unit_type')
                                                                     <span class="invalid-feedback" role="alert">
@@ -169,13 +169,13 @@
                                                         <!--  -->
                                                         <div class="col-lg-6 col-md-6 col-sm-12">
                                                             <div class="form-group mb-3">
-                                                                <label for="sale_or_rent">Sale or Rent</label> 
+                                                                <label for="sale_or_rent">Sale or Rent</label>
                                                                 <span class="required__field">*</span><br>
-                                                                <select name="sale_or_rent" id="sale_or_rent" class="form-select" required> 
-                                                                    <option value="" selected>Select Sale or Rent</option> 
-                                                                    <option value="sale" {{ old('sale_or_rent') == 'sale' ? 'selected' : '' }}>Sale</option>  
-                                                                    <option value="rent" {{ old('unit_type') == 'rent' ? 'selected' : '' }}>Rent</option>  
-                                                                    <option value="not available" {{ old('unit_type') == 'not available' ? 'selected' : '' }}>Not Available</option>   
+                                                                <select name="sale_or_rent" id="sale_or_rent" class="form-select" required>
+                                                                    <option value="" selected>Select Sale or Rent</option>
+                                                                    <option value="sale" {{ old('sale_or_rent') == 'sale' ? 'selected' : '' }}>Sale</option>
+                                                                    <option value="rent" {{ old('unit_type') == 'rent' ? 'selected' : '' }}>Rent</option>
+                                                                    <option value="not available" {{ old('unit_type') == 'not available' ? 'selected' : '' }}>Not Available</option>
                                                                 </select>
                                                                 @error('sale_or_rent')
                                                                     <span class="invalid-feedback" role="alert">
@@ -183,19 +183,19 @@
                                                                     </span>
                                                                 @enderror
                                                             </div>
-                                                        </div> 
+                                                        </div>
 
                                                         <!--  -->
                                                         <div class="col-lg-6 col-md-6 col-sm-12">
                                                             <div class="form-group mb-3">
-                                                                <label for="availability_status">Availability Status</label> 
+                                                                <label for="availability_status">Availability Status</label>
                                                                 <span class="required__field">*</span><br>
-                                                                <select name="availability_status" id="availability_status" class="form-select" required> 
-                                                                    <option value="" selected>Select Availability Status</option> 
-                                                                    <option value="available" {{ old('availability_status') == 'available' ? 'selected' : '' }}>Available</option>    
-                                                                    <option value="rented" {{ old('availability_status') == 'rented' ? 'selected' : '' }}>Rented</option>    
-                                                                    <option value="sold" {{ old('availability_status') == 'sold' ? 'selected' : '' }}>Sold</option>    
-                                                                    <option value="not available" {{ old('availability_status') == 'not available' ? 'selected' : '' }}>Not Available</option>    
+                                                                <select name="availability_status" id="availability_status" class="form-select" required>
+                                                                    <option value="" selected>Select Availability Status</option>
+                                                                    <option value="available" {{ old('availability_status') == 'available' ? 'selected' : '' }}>Available</option>
+                                                                    <option value="rented" {{ old('availability_status') == 'rented' ? 'selected' : '' }}>Rented</option>
+                                                                    <option value="sold" {{ old('availability_status') == 'sold' ? 'selected' : '' }}>Sold</option>
+                                                                    <option value="not available" {{ old('availability_status') == 'not available' ? 'selected' : '' }}>Not Available</option>
                                                                 </select>
                                                                 @error('availability_status')
                                                                     <span class="invalid-feedback" role="alert">
@@ -210,7 +210,7 @@
                                                             <div class="form-group mb-3">
                                                                 <label for="price">Price</label>
                                                                 <span class="required__field">*</span><br>
-                                                                <input type="number" name="price" id="price" class="form-control @error('price') is-invalid @enderror" value="{{ old('price') }}" placeholder="Enter unit price" required> 
+                                                                <input type="number" name="price" id="price" class="form-control @error('price') is-invalid @enderror" value="{{ old('price') }}" placeholder="Enter unit price" required>
                                                                 @error('price')
                                                                     <span class="invalid-feedback" role="alert">
                                                                         <strong>{{ $message }}</strong>
@@ -224,7 +224,7 @@
                                                             <div class="form-group mb-3">
                                                                 <label for="area">Area</label>
                                                                 <span class="required__field">*</span><br>
-                                                                <input type="number" name="area" id="area" class="form-control @error('area') is-invalid @enderror" value="{{ old('area') }}" placeholder="1234" required> 
+                                                                <input type="number" name="area" id="area" class="form-control @error('area') is-invalid @enderror" value="{{ old('area') }}" placeholder="1234" required>
                                                                 @error('area')
                                                                     <span class="invalid-feedback" role="alert">
                                                                         <strong>{{ $message }}</strong>
@@ -236,16 +236,16 @@
                                                         <!--  -->
                                                         <div class="col-sm-12 col-md-6 col-lg-6">
                                                             <div class="form-group mb-3">
-                                                                <label for="description">Description</label> 
-                                                                <input type="text" name="description" id="description" class="form-control @error('description') is-invalid @enderror" value="{{ old('description') }}" maxlength="50" placeholder="Description"> 
+                                                                <label for="description">Description</label>
+                                                                <input type="text" name="description" id="description" class="form-control @error('description') is-invalid @enderror" value="{{ old('description') }}" maxlength="50" placeholder="Description">
                                                                 @error('description')
                                                                     <span class="invalid-feedback" role="alert">
                                                                         <strong>{{ $message }}</strong>
                                                                     </span>
                                                                 @enderror
                                                             </div>
-                                                        </div> 
-                                                        
+                                                        </div>
+
                                                         <!-- Oganization -->
                                                         <div class="col-sm-12 col-md-6 col-lg-6">
                                                             <div class="form-group mb-3">
@@ -297,11 +297,11 @@
                                                                     </span>
                                                                 @enderror
                                                             </div>
-                                                        </div>   
-                                                        
-                                                    </div> 
-                                                </div> 
-                                                <div class="col-lg-4 col-md-4 col-sm-12 col-12"> 
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-4 col-md-4 col-sm-12 col-12">
                                                     <div class="image-input-container mt-4">
                                                         <label for="image-input" class="custom-file-label">
                                                             <span>Choose Images</span>
@@ -310,9 +310,9 @@
                                                         <div class="image-preview" id="image-preview">
                                                             <p>No images selected</p>
                                                         </div>
-                                                    </div>                                                    
+                                                    </div>
                                                 </div>
-                                            </div>  
+                                            </div>
 
                                             <input type="hidden" name="status" value="Approved">
                                             <button type="submit" class="btn btn-primary">Save</button>
@@ -330,7 +330,7 @@
 
 @endsection
 
-@push('scripts')  
+@push('scripts')
     <!-- Image script -->
     <script>
         const imageInput = document.getElementById('image-input');
@@ -385,7 +385,7 @@
 
                 if (organizationId) {
                     $.ajax({
-                        url: '{{ route('organization.buildings', ':id') }}'.replace(':id', organizationId),
+                        url: '{{ route('organizations.buildings', ':id') }}'.replace(':id', organizationId),
                         type: 'GET',
                         dataType: 'json',
                         success: function(data) {
@@ -415,7 +415,7 @@
 
                 if (buildingId) {
                     $.ajax({
-                        url: '{{ route('building.levels', ':id') }}'.replace(':id', buildingId),
+                        url: '{{ route('buildings.levels', ':id') }}'.replace(':id', buildingId),
                         type: 'GET',
                         dataType: 'json',
                         success: function(data) {

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Building;
 use App\Models\Organization;
 use App\Models\DropdownType;
 use App\Models\Address;
@@ -158,6 +159,12 @@ class OrganizationController extends Controller
             DB::rollBack();
             return redirect()->back()->withInput()->with('error', 'An error occurred while updating the organization.');
         }
+    }
+
+    public function getBuildings($id)
+    {
+        $buildings = Building::where('organization_id', $id)->pluck('name', 'id'); // Fetch buildings for the organization
+        return response()->json(['buildings' => $buildings]);
     }
 
     public function destroyImage(string $id)

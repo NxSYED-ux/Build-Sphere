@@ -49,6 +49,17 @@
             justify-content: center;
         }
 
+        .nav-tabs .nav-link {
+            background-color: var(--nav-tabs-inactive-bg-color) !important; /* Change to your desired color */
+            color: var(--nav-tabs-inactive-text-color) !important;
+            border-bottom: 1px solid var(--nav-tabs-inactive-border-color) !important; /* Corrected */
+        }
+        .nav-tabs .nav-link.active {
+            background-color: var(--nav-tabs-active-bg-color) !important; /* Change to your desired color */
+            color: var(--nav-tabs-active-text-color) !important;
+        }
+
+
         /* Model Windows */
         .modal-content{
             background: var(--modal-header-bg);
@@ -79,7 +90,6 @@
         .btn-close {
             filter: invert(var(--invert, 0));
         }
-
 
         /* DataTables Entries Dropdown */
         .dataTables_wrapper .dataTables_length select {

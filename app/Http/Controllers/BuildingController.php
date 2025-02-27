@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Address;
 use App\Models\Building;
 use App\Models\BuildingDocument;
+use App\Models\BuildingLevel;
 use App\Models\Organization;
 use App\Models\DropdownType;
 use App\Models\BuildingPicture;
@@ -246,6 +247,12 @@ class BuildingController extends Controller
             DB::rollBack();
             return redirect()->back()->withInput()->with('error', 'An error occurred while updating the building.');
         }
+    }
+
+    public function getLevels($buildingId)
+    {
+        $levels = BuildingLevel::where('building_id', $buildingId)->pluck('level_name', 'id');
+        return response()->json(['levels' => $levels]);
     }
 
     public function destroyImage(string $id)

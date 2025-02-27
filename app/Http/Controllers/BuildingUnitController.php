@@ -179,17 +179,9 @@ class BuildingUnitController extends Controller
         return response()->json(['success' => true]);
     }
 
-    public function getBuildings($id)
-    {
-        $buildings = Building::where('organization_id', $id)->pluck('name', 'id'); // Fetch buildings for the organization
-        return response()->json(['buildings' => $buildings]);
-    }
 
-    public function getLevels($buildingId)
-    {
-        $levels = BuildingLevel::where('building_id', $buildingId)->pluck('level_name', 'id');
-        return response()->json(['levels' => $levels]);
-    }
+
+
 
     public function getUnitData(string $id)
     {

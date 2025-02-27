@@ -81,7 +81,7 @@ class RoleController extends Controller
 
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|unique:roles,name,' . $id . ',id',
-            'description' => 'nullable|string',
+            'description' => 'nullable|string|max:255',
             'status' => 'required|integer|in:0,1',
         ]);
 
