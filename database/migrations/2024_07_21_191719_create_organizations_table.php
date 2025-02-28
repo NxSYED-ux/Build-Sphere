@@ -12,7 +12,7 @@ return new class extends Migration
             $table->id();
             $table->string('name',50)->unique();
             $table->unsignedBigInteger('address_id');
-            $table->enum('status', ['Enable', 'Disable', 'Block']);
+            $table->enum('status', ['Enable', 'Disable', 'Block'])->default('Enable');
             $table->date('membership_start_date');
             $table->date('membership_end_date');
             $table->unsignedBigInteger('owner_id');
