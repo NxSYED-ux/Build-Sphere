@@ -19,7 +19,8 @@ return new class extends Migration
             $table->enum('status', ['Open', 'In Progress', 'Closed', 'Rejected']);
             $table->dateTime('expected_closure_date')->nullable();
             $table->text('remarks')->nullable();
-            $table->timestamps();
+            $table->timestamp('created_at')->useCurrent();
+            $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
         });
     }
 

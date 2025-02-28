@@ -13,12 +13,13 @@ return new class extends Migration
     {
         Schema::create('restaurantgymmemberships', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('membership_id');  
-            $table->unsignedBigInteger('unit_id');   
-            $table->text('description');    
+            $table->unsignedBigInteger('membership_id');
+            $table->unsignedBigInteger('unit_id');
+            $table->text('description');
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
-            $table->timestamps();
+            $table->timestamp('created_at')->useCurrent();
+            $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
         });
     }
 

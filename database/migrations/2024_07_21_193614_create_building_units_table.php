@@ -23,7 +23,8 @@ return new class extends Migration
             $table->enum('status', ['Approved', 'Rejected']);
             $table->unsignedBigInteger('created_by');
             $table->unsignedBigInteger('updated_by');
-            $table->timestamps();
+            $table->timestamp('created_at')->useCurrent();
+            $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
         });
     }
 

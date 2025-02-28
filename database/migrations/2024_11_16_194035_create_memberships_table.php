@@ -12,14 +12,15 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('memberships', function (Blueprint $table) {
-            $table->id(); 
-            $table->string('membership_name',50);  
-            $table->decimal('price', 10, 2)->nullable()->default(0); 
-            $table->integer('duration');   
-            $table->text('description');   
+            $table->id();
+            $table->string('membership_name',50);
+            $table->decimal('price', 10, 2)->nullable()->default(0);
+            $table->integer('duration');
+            $table->text('description');
             $table->unsignedBigInteger('created_by')->nullable();
-            $table->unsignedBigInteger('updated_by')->nullable(); 
-            $table->timestamps();
+            $table->unsignedBigInteger('updated_by')->nullable();
+            $table->timestamp('created_at')->useCurrent();
+            $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
         });
     }
 

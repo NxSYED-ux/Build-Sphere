@@ -14,7 +14,8 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->unsignedBigInteger('parent_type_id')->nullable();
             $table->tinyInteger('status')->default(1);
-            $table->timestamps();
+            $table->timestamp('created_at')->useCurrent();
+            $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
         });
     }
 

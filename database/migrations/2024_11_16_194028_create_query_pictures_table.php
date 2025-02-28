@@ -13,7 +13,8 @@ return new class extends Migration
             $table->unsignedBigInteger('query_id');
             $table->string('file_path',255)->nullable();
             $table->string('file_name',255)->nullable();
-            $table->timestamps();
+            $table->timestamp('created_at')->useCurrent();
+            $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
         });
     }
 

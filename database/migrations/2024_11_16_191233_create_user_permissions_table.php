@@ -14,7 +14,8 @@ return new class extends Migration
             $table->unsignedInteger('permission_id');
             $table->tinyInteger('status')->default(1);
             $table->unsignedBigInteger('granted_by');
-            $table->timestamps();
+            $table->timestamp('created_at')->useCurrent();
+            $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
         });
     }
 

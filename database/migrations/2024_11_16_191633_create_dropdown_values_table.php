@@ -15,7 +15,8 @@ return new class extends Migration
             $table->unsignedInteger('dropdown_type_id');
             $table->unsignedInteger('parent_value_id')->nullable();
             $table->tinyInteger('status')->default(1);
-            $table->timestamps();
+            $table->timestamp('created_at')->useCurrent();
+            $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
         });
     }
 
