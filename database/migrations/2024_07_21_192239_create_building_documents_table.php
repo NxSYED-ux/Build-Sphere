@@ -11,14 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('buildingunitdocuments', function (Blueprint $table) {
+        Schema::create('buildingdocuments', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('unit_id');  
-            $table->string('document_type',50);  
+            $table->unsignedBigInteger('building_id');
+            $table->string('document_type');
             $table->date('issue_date')->nullable();
             $table->date('expiry_date')->nullable();
-            $table->string('file_path',255)->nullable();  
-            $table->string('file_name',255)->nullable();   
+            $table->string('file_path')->nullable();
+            $table->string('file_name')->nullable()->unique();
             $table->timestamps();
         });
     }
@@ -28,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('buildingunitdocuments');
+        Schema::dropIfExists('buildingdocuments');
     }
 };

@@ -9,28 +9,21 @@ class BuildingPicture extends Model
 {
     use HasFactory;
 
-    /**
-     * The table associated with the model.
-     *
-     * @var string
-    */
     protected $table = 'buildingpictures';
 
-    /**
-     * The primary key associated with the table.
-     *
-     * @var string
-    */
     protected $primaryKey = 'id';
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-    */
     protected $fillable = [
         'building_id',
         'file_path',
-        'file_name', 
+        'file_name',
     ];
+
+    public $timestamps = true;
+
+    // Belongs to Relations
+    public function building()
+    {
+        return $this->belongsTo(Building::class, 'building_id', 'id');
+    }
 }

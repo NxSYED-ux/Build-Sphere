@@ -10,43 +10,67 @@ class UserBuildingUnit extends Model
     use HasFactory;
 
     protected $table = 'userbuildingunits';
- 
+
     protected $primaryKey = 'id';
- 
+
     protected $fillable = [
         'user_id',
         'unit_id',
+        'type',
+        'price',
         'rent_start_date',
-        'rent_end_date',  
+        'rent_end_date',
         'purchase_date',
-        'contract_status', 
-    ]; 
- 
-    public $timestamps = true; 
-
-    protected $casts = [
-        'rent_start_date' => 'datetime', 
-        'rent_end_date' => 'datetime', 
-        'purchase_date' => 'datetime', 
+        'contract_status',
     ];
 
-    public function user() { return $this->belongsTo(User::class, 'user_id'); }
+    public $timestamps = true;
+
+    protected $casts = [
+        'rent_start_date' => 'date',
+        'rent_end_date' => 'date',
+        'purchase_date' => 'date',
+    ];
+
+    // Belongs to Relations
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id', 'id');
+    }
+    public function unit()
+    {
+        return $this->belongsTo(BuildingUnit::class, 'unit_id', 'id');
+    }
+    public function creator()
+    {
+        return $this->belongsTo(User::class, 'created_by', 'id');
+    }
+    public function updater()
+    {
+        return $this->belongsTo(User::class, 'updated_by', 'id');
+    }
+
+    // Has Many Relations
+    public function pictures()
+    {
+        return $this->hasMany(UserUnitPicture::class, 'user_unit_id', 'id');
+    }
 
     protected static function booted()
     {
         static::creating(function ($model) {
-            $user = request()->user;  
+            $user = request()->user;
 
             if ($user) {
                 $model->created_by = $user->id;
-                $model->updated_by = $user->id; 
+                $model->updated_by = $user->id;
             }
         });
 
         static::updating(function ($model) {
-            $user = request()->user; 
+            $user = request()->user;
             if ($user) {
-                $model->updated_by = $user->id; 
+                $model->updated_by = $user->id;
             }
         });
     }

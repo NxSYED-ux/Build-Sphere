@@ -10,24 +10,37 @@ class Address extends Model
     use HasFactory;
 
     protected $table = 'address';
- 
+
     protected $primaryKey = 'id';
- 
+
     protected $fillable = [
         'location',
         'country',
-        'province', 
-        'city', 
-        'postal_code', 
+        'province',
+        'city',
+        'postal_code',
         'latitude',
         'longitude',
     ];
 
-    protected $casts = [ 
+    protected $casts = [
         'latitude' => 'decimal:10,8',
-        'longitude' => 'decimal:10,8', 
-    ]; 
- 
-    public $timestamps = true; 
- 
+        'longitude' => 'decimal:10,8',
+    ];
+
+    public $timestamps = true;
+
+    // Has One Relations
+    public function user()
+    {
+        return $this->hasOne(User::class, 'address_id');
+    }
+    public function organization()
+    {
+        return $this->hasOne(Organization::class, 'address_id');
+    }
+    public function building()
+    {
+        return $this->hasOne(Building::class, 'address_id');
+    }
 }

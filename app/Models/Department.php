@@ -10,62 +10,61 @@ class Department extends Model
 {
     use HasFactory;
 
-    /**
-     * The table associated with the model.
-     *
-     * @var string
-    */
     protected $table = 'departments';
 
-    /**
-     * The primary key associated with the table.
-     *
-     * @var string
-    */
     protected $primaryKey = 'id';
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-    */
     protected $fillable = [
         'name',
         'description',
-        'organization_id', 
+        'organization_id',
     ];
 
-    /**
-     * Indicates if the model should be timestamped.
-     *
-     * @var bool
-    */
     public $timestamps = true;
 
-    public function createdBy()
+    // Belongs to Relations
+    public function creator()
     {
-        return $this->belongsTo(User::class, 'created_by');
-    }
- 
-    public function updatedBy()
-    {
-        return $this->belongsTo(User::class, 'updated_by');
+        return $this->belongsTo(User::class, 'created_by', 'id');
     }
 
-    /**
-     * Boot method for setting created_by and updated_by automatically.
-    */
-    protected static function boot()
+    public function updater()
     {
-        parent::boot();
- 
+        return $this->belongsTo(User::class, 'updated_by', 'id');
+    }
+
+    public function organization()
+    {
+        return $this->belongsTo(Organization::class, 'organization_id', 'id');
+    }
+
+    // Has Many Relations
+    public function staffMembers()
+    {
+        return $this->hasMany(StaffMember::class, 'department_id', 'id');
+    }
+    public function queries()
+    {
+        return $this->hasMany(Query::class, 'department_id', 'id');
+    }
+
+    protected static function booted()
+    {
         static::creating(function ($model) {
-            $model->created_by = Auth::id();
-            $model->updated_by = Auth::id();
+            $user = request()->user;
+
+            if ($user) {
+                $model->created_by = $user->id;
+                $model->updated_by = $user->id;
+            }
         });
- 
+
         static::updating(function ($model) {
-            $model->updated_by = Auth::id();
+            $user = request()->user;
+            if ($user) {
+                $model->updated_by = $user->id;
+            }
         });
     }
+
 }

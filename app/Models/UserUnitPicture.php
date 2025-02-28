@@ -5,24 +5,25 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class OrganizationPicture extends Model
+class UserUnitPicture extends Model
 {
     use HasFactory;
 
-    protected $table = 'organizationpictures';
+    protected $table = 'buildingunitpictures';
 
     protected $primaryKey = 'id';
 
     protected $fillable = [
-        'organization_id',
+        'user_unit_id',
         'file_path',
         'file_name',
     ];
 
     public $timestamps = true;
 
-    public function organization()
+    // Belongs to Relations
+    public function userUnit()
     {
-        return $this->belongsTo(Organization::class, 'organization_id', 'id');
+        return $this->belongsTo(UserBuildingUnit::class, 'user_unit_id', 'id');
     }
 }

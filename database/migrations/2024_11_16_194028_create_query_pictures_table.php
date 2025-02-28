@@ -8,16 +8,17 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('managerbuildings', function (Blueprint $table) {
+        Schema::create('querypictures', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('staff_id')->nullable();
-            $table->unsignedBigInteger('building_id')->nullable();
+            $table->unsignedBigInteger('query_id');
+            $table->string('file_path',255)->nullable();
+            $table->string('file_name',255)->nullable();
             $table->timestamps();
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('managerbuildings');
+        Schema::dropIfExists('querypictures');
     }
 };

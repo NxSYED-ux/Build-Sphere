@@ -6,25 +6,19 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('departments', function (Blueprint $table) {
-            $table->id(); 
-            $table->string('name',50);  
-            $table->text('description');  
-            $table->unsignedBigInteger('organization_id'); 
-            $table->unsignedBigInteger('created_by')->nullable();
-            $table->unsignedBigInteger('updated_by')->nullable();
+            $table->id();
+            $table->string('name',50);
+            $table->text('description')->nullable();
+            $table->unsignedBigInteger('organization_id');
+            $table->unsignedBigInteger('created_by');
+            $table->unsignedBigInteger('updated_by');
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('departments');

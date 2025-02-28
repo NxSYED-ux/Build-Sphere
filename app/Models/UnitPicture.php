@@ -9,28 +9,20 @@ class UnitPicture extends Model
 {
     use HasFactory;
 
-    /**
-     * The table associated with the model.
-     *
-     * @var string
-    */
-    protected $table = 'buildingunitpictures';
+    protected $table = 'unitpictures';
 
-    /**
-     * The primary key associated with the table.
-     *
-     * @var string
-    */
     protected $primaryKey = 'id';
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-    */
     protected $fillable = [
         'unit_id',
         'file_path',
-        'file_name', 
+        'file_name',
     ];
+
+    public $timestamps = true;
+
+    public function unit()
+    {
+        return $this->belongsTo(BuildingUnit::class, 'unit_id', 'id');
+    }
 }

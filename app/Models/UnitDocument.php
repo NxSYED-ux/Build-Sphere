@@ -5,16 +5,16 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class OrganizationDocument extends Model
+class UnitDocument extends Model
 {
     use HasFactory;
 
-    protected $table = 'organizationdocuments';
+    protected $table = 'unitdocuments';
 
     protected $primaryKey = 'id';
 
     protected $fillable = [
-        'organization_id',
+        'unit_id',
         'document_type',
         'file_path',
         'file_name',
@@ -29,8 +29,9 @@ class OrganizationDocument extends Model
         'expiry_date' => 'date',
     ];
 
-    // Belongs to relations
-    public function organization(){
-        return $this->belongsTo(Organization::class, 'organization_id');
+    // Belongs to Relations
+    public function unit(){
+        return $this->belongsTo(BuildingUnit::class, 'unit_id');
     }
+
 }

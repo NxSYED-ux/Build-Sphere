@@ -6,28 +6,21 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
-        Schema::create('buildingdocuments', function (Blueprint $table) {
+        Schema::create('organizationdocuments', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('building_id');  
-            $table->string('document_type');  
+            $table->unsignedBigInteger('organization_id');
+            $table->string('document_type',50);
             $table->date('issue_date')->nullable();
             $table->date('expiry_date')->nullable();
-            $table->string('file_path')->nullable();  
-            $table->string('file_name')->nullable();  
+            $table->string('file_path',255)->nullable();
+            $table->string('file_name',255)->nullable();
             $table->timestamps();
         });
     }
-
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
-        Schema::dropIfExists('buildingdocuments');
+        Schema::dropIfExists('organizationdocuments');
     }
 };

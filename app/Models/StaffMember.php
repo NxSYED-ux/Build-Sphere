@@ -5,28 +5,44 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class BuildingLevel extends Model
+class StaffMember extends Model
 {
     use HasFactory;
 
-    protected $table = 'buildinglevels';
+    protected $table = 'staffmembers';
+
     protected $primaryKey = 'id';
 
     protected $fillable = [
-        'level_name',
-        'description',
-        'level_number',
-        'status',  //'approved', 'rejected'
-
+        'user_id',
+        'department_id',
         'building_id',
+        'organization_id',
+
+        'salary',
+        'active_load',
+        'accept_queries',
+        'status',
     ];
 
     public $timestamps = true;
 
     // Belongs to Relations
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id', 'id');
+    }
+    public function department()
+    {
+        return $this->belongsTo(Department::class, 'department_id', 'id');
+    }
     public function building()
     {
         return $this->belongsTo(Building::class, 'building_id', 'id');
+    }
+    public function organization()
+    {
+        return $this->belongsTo(Organization::class, 'organization_id', 'id');
     }
     public function creator()
     {
@@ -38,11 +54,10 @@ class BuildingLevel extends Model
     }
 
     // Has Many Relations
-    public function units()
+    public function queries()
     {
-        return $this->hasMany(BuildingUnit::class, 'level_id', 'id');
+        return $this->hasMany(Query::class, 'staff_member_id', 'id');
     }
-
 
     protected static function booted()
     {

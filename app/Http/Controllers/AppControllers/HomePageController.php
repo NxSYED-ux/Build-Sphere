@@ -1,124 +1,114 @@
 <?php
 
-namespace App\Http\Controllers\AppControllers; 
+namespace App\Http\Controllers\AppControllers;
 
-use App\Models\Building;
-use App\Models\BuildingLevel;
-use App\Models\BuildingUnit;
-use App\Models\UnitPicture;
-use App\Models\User;
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Response;
-use Illuminate\Support\Facades\DB;
+use App\Models\User;
+use App\Models\BuildingUnit;
 
 class HomePageController extends Controller
 {
     public function homePage(Request $request)
     {
         try {
-            // Fetch user data
-            $userData = User::select('name', 'picture')
-                ->find($request->user()->id);
-
-            if (!$userData) {
-                return response()->json(['message' => 'User not found'], 404);
+            if (!$request->user()) {
+                return response()->json(['error' => 'User ID is required'], 400);
             }
 
-            // Get query parameters
+            $user = User::select('name', 'picture')->find($request->user()->id);
+            if (!$user) {
+                return response()->json(['error' => 'User not found'], 404);
+            }
+
             $search = $request->query('search');
             $minPrice = $request->query('minPrice');
             $maxPrice = $request->query('maxPrice');
             $unitType = $request->query('unitType');
             $saleOrRent = $request->query('saleOrRent');
-            $location = $request->query('location');
+            $city = $request->query('city');
             $limit = $request->query('limit', 20);
-            $offset = $request->query('offset', 0);
             $excludeUnit = $request->query('exclude_unit');
 
-            // Build filters
-            $filters = [
-                'sale_or_rent' => ($saleOrRent && $saleOrRent !== 'any') ? $saleOrRent : ['!=', 'Not Available'],
-                'availability_status' => 'Available',
-                'status' => 'Approved',
-            ];
+            $query = BuildingUnit::query();
 
-            if ($excludeUnit) {
-                $filters['id'] = ['!=', $excludeUnit];
+            if ($saleOrRent) {
+                $query->whereIn('sale_or_rent', explode(',', $saleOrRent));
+            } else {
+                $query->where('sale_or_rent', '<>', 'Not Available');
             }
 
-            if ($minPrice && $maxPrice) {
-                $filters['price'] = ['between', [(float)$minPrice, (float)$maxPrice]];
-            } elseif ($minPrice) {
-                $filters['price'] = ['>=', (float)$minPrice];
-            } elseif ($maxPrice) {
-                $filters['price'] = ['<=', (float)$maxPrice];
+            $query->where('availability_status', 'Available')
+                ->where('status', 'Approved');
+
+            if ($excludeUnit) {
+                $query->where('id', '<>', (int) $excludeUnit);
+            }
+
+            if ($minPrice) {
+                $query->where('price', '>=', (float) $minPrice);
+            }
+            if ($maxPrice) {
+                $query->where('price', '<=', (float) $maxPrice);
             }
 
             if ($unitType) {
-                $types = array_map('trim', explode(',', $unitType));
-                $filters['unit_type'] = count($types) > 1 ? ['in', $types] : $types[0];
+                $unitTypes = explode(',', $unitType);
+                $query->whereIn('unit_type', $unitTypes);
             }
 
-            // Location filter
-            $locationFilters = [];
-            if ($location) {
-                $locationFilters['location'] = ['like', "%$location%"];
-            }
-
-            // Search filter
-            $searchFilter = [];
             if ($search) {
-                $searchFilter = [
-                    DB::raw('(
-                        building.address.location LIKE ? OR 
-                        building.address.city LIKE ? OR 
-                        building.address.province LIKE ? OR 
-                        building.address.country LIKE ? OR 
-                        level.level_name LIKE ? OR 
-                        building.name LIKE ? OR 
-                        unit_name LIKE ?
-                    )', [
-                        "%$search%", "%$search%", "%$search%", "%$search%", "%$search%", "%$search%", "%$search%"
-                    ])
-                ];
+                $query->where(function ($q) use ($search) {
+                    $q->where('unit_name', 'like', "%{$search}%")
+                        ->orWhereHas('level.building.address', function ($q) use ($search) {
+                            $q->where('location', 'like', "%{$search}%")
+                                ->orWhere('province', 'like', "%{$search}%");
+                        })
+                        ->orWhereHas('level', function ($q) use ($search) {
+                            $q->where('level_name', 'like', "%{$search}%");
+                        })
+                        ->orWhereHas('level.building', function ($q) use ($search) {
+                            $q->where('name', 'like', "%{$search}%");
+                        });
+                });
             }
 
-            // Fetch available units with filters and relationships
-            $availableUnits = BuildingUnit::with([
+            if ($city) {
+                $query->whereHas('level.building.address', function ($q) use ($city) {
+                    $q->where('city', '=', $city);
+                });
+            }
+
+            $availableUnits = $query->with([
                 'level' => function ($query) {
-                    $query->select('level_name');
-                },
-                'level.building' => function ($query) use ($locationFilters) {
-                    $query->select('name')
+                    $query->select('id', 'level_name')
                         ->with([
-                            'address' => function ($query) use ($locationFilters) {
-                                $query->select('location', 'city', 'province', 'country')
-                                    ->where($locationFilters);
+                            'building' => function ($query) {
+                                $query->select('id', 'name')
+                                    ->with([
+                                        'address' => function ($query) {
+                                            $query->select('id', 'location', 'city', 'province', 'country');
+                                        }
+                                    ]);
                             }
                         ]);
                 },
                 'pictures' => function ($query) {
-                    $query->select('file_path');
-                },
-            ])
-                ->where($filters)
-                ->where($searchFilter)
-                ->select('id', 'unit_name', 'unit_type', 'price', 'sale_or_rent', 'availability_status', 'updated_at')
-                ->limit($limit)
-                ->offset($offset)
-                ->orderBy('updated_at', 'desc')
-                ->get();
+                    $query->select('id', 'file_path');
+                }
+            ])->select('id', 'unit_name', 'unit_type', 'price', 'sale_or_rent', 'availability_status', 'updated_at')
+                ->orderBy('updated_at', 'DESC')
+                ->paginate($limit);
 
             return response()->json([
-                'user' => $userData,
-                'units' => $availableUnits
-            ], 200);
+                'user' => $user,
+                'units' => $availableUnits,
+            ]);
 
         } catch (\Exception $e) {
-            \Log::error('Error in homePage controller:', ['error' => $e->getMessage(), 'trace' => $e->getTraceAsString()]);
-            return response()->json([
-                'error' => $e->getMessage() ?: 'An error occurred while fetching home page data.'
-            ], 500);
+            return response()->json(['error' => $e->getMessage() ?: 'An error occurred while fetching home page data.'], 500);
         }
     }
+
 }
+
