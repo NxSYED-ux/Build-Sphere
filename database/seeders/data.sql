@@ -1,21 +1,21 @@
 INSERT INTO `address` (`id`, `location`, `country`, `province`, `city`, `postal_code`, `latitude`, `longitude`, `created_at`, `updated_at`) VALUES
-(1, 'Gulberg', 'Pakistan', 'Punjab', 'Lahore', '54000', NULL, NULL, '2025-02-28 18:50:27', '2025-02-28 19:42:44'),
-(2, 'Clifton Beach', 'Pakistan', 'Sindh', 'Karachi', '72000', NULL, NULL, '2025-02-28 18:50:27', '2025-02-28 19:43:48'),
-(3, 'Quetta Cantt', 'Pakistan', 'Balochistan', 'Queta', '87800', NULL, NULL, '2025-02-28 18:50:27', '2025-02-28 18:50:27'),
-(4, 'Daman-e-Koh', 'Pakistan', 'Punjab', 'Islamabad', '44050', NULL, NULL, '2025-02-28 18:50:27', '2025-02-28 18:50:27'),
-(5, 'Gulberg', 'Pakistan', 'Punjab', 'Lahore', '54000', NULL, NULL, '2025-02-28 19:16:35', '2025-02-28 19:42:44'),
-(6, 'Clifton Beach', 'Pakistan', 'Sindh', 'Karachi', '72000', NULL, NULL, '2025-02-28 19:16:35', '2025-02-28 19:43:48'),
-(7, 'Quetta Cantt', 'Pakistan', 'Balochistan', 'Queta', '87800', NULL, NULL, '2025-02-28 19:16:35', '2025-02-28 19:16:35'),
-(8, 'Daman-e-Koh', 'Pakistan', 'Punjab', 'Islamabad', '44050', NULL, NULL, '2025-02-28 19:16:35', '2025-02-28 19:16:35'),
-(9, 'Gulberg', 'Pakistan', 'Punjab', 'Lahore', '54000', NULL, NULL, '2025-02-28 19:16:35', '2025-02-28 19:42:44'),
-(10, 'Clifton Beach', 'Pakistan', 'Sindh', 'Karachi', '72000', NULL, NULL, '2025-02-28 19:16:35', '2025-02-28 19:43:48'),
-(11, 'Quetta Cantt', 'Pakistan', 'Balochistan', 'Queta', '87800', NULL, NULL, '2025-02-28 19:16:35', '2025-02-28 19:16:35'),
-(12, 'Daman-e-Koh', 'Pakistan', 'Punjab', 'Islamabad', '44050', NULL, NULL, '2025-02-28 19:16:35', '2025-02-28 19:16:35'),
-(13, 'Gulberg', 'Pakistan', 'Punjab', 'Lahore', '54000', NULL, NULL, '2025-02-28 19:16:35', '2025-02-28 19:42:44'),
-(14, 'Clifton Beach', 'Pakistan', 'Sindh', 'Karachi', '72000', NULL, NULL, '2025-02-28 19:16:35', '2025-02-28 19:43:48'),
-(15, 'Quetta Cantt', 'Pakistan', 'Balochistan', 'Queta', '87800', NULL, NULL, '2025-02-28 19:16:35', '2025-02-28 19:16:35'),
-(16, 'Daman-e-Koh', 'Pakistan', 'Punjab', 'Islamabad', '44050', NULL, NULL, '2025-02-28 19:16:35', '2025-02-28 19:16:35'),
-(17, 'Gulberg', 'Pakistan', 'Punjab', 'Lahore', '54000', NULL, NULL, '2025-02-28 19:42:17', '2025-02-28 19:42:44');
+(1, 'Gulberg', 'Pakistan', 'Punjab', 'Lahore', '54000', NULL, NULL, '2025-02-28 13:50:27', '2025-02-28 14:42:44'),
+(2, 'Clifton Beach', 'Pakistan', 'Sindh', 'Karachi', '72000', NULL, NULL, '2025-02-28 13:50:27', '2025-02-28 14:43:48'),
+(3, 'Quetta Cantt', 'Pakistan', 'Balochistan', 'Queta', '87800', NULL, NULL, '2025-02-28 13:50:27', '2025-02-28 13:50:27'),
+(4, 'Daman-e-Koh', 'Pakistan', 'Punjab', 'Islamabad', '44050', NULL, NULL, '2025-02-28 13:50:27', '2025-02-28 13:50:27'),
+(5, 'Gulberg', 'Pakistan', 'Punjab', 'Lahore', '54000', NULL, NULL, '2025-02-28 14:16:35', '2025-02-28 14:42:44'),
+(6, 'Clifton Beach', 'Pakistan', 'Sindh', 'Karachi', '72000', NULL, NULL, '2025-02-28 14:16:35', '2025-02-28 14:43:48'),
+(7, 'Quetta Cantt', 'Pakistan', 'Balochistan', 'Queta', '87800', NULL, NULL, '2025-02-28 14:16:35', '2025-03-01 10:39:26'),
+(8, 'Daman-e-Koh', 'Pakistan', 'Punjab', 'Islamabad', '44050', NULL, NULL, '2025-02-28 14:16:35', '2025-02-28 14:16:35'),
+(9, 'Gulberg', 'Pakistan', 'Punjab', 'Lahore', '54000', NULL, NULL, '2025-02-28 14:16:35', '2025-02-28 14:42:44'),
+(10, 'Clifton Beach', 'Pakistan', 'Sindh', 'Karachi', '72000', NULL, NULL, '2025-02-28 14:16:35', '2025-02-28 14:43:48'),
+(11, 'Quetta Cantt', 'Pakistan', 'Balochistan', 'Queta', '87800', NULL, NULL, '2025-02-28 14:16:35', '2025-02-28 14:16:35'),
+(12, 'Daman-e-Koh', 'Pakistan', 'Punjab', 'Islamabad', '44050', NULL, NULL, '2025-02-28 14:16:35', '2025-02-28 14:16:35'),
+(13, 'Gulberg', 'Pakistan', 'Punjab', 'Lahore', '54000', NULL, NULL, '2025-02-28 14:16:35', '2025-02-28 14:42:44'),
+(14, 'Clifton Beach', 'Pakistan', 'Sindh', 'Karachi', '72000', NULL, NULL, '2025-02-28 14:16:35', '2025-02-28 14:43:48'),
+(15, 'Quetta Cantt', 'Pakistan', 'Balochistan', 'Queta', '87800', NULL, NULL, '2025-02-28 14:16:35', '2025-02-28 14:16:35'),
+(16, 'Daman-e-Koh', 'Pakistan', 'Punjab', 'Islamabad', '44050', NULL, NULL, '2025-02-28 14:16:35', '2025-02-28 14:16:35'),
+(17, 'Gulberg', 'Pakistan', 'Punjab', 'Lahore', '54000', NULL, NULL, '2025-02-28 14:42:17', '2025-02-28 14:42:44');
 
 
 INSERT INTO `roles` (`id`, `name`, `description`, `status`, `created_at`, `updated_at`) VALUES
@@ -26,18 +26,19 @@ INSERT INTO `roles` (`id`, `name`, `description`, `status`, `created_at`, `updat
 
 
 INSERT INTO `users` (`id`, `name`, `email`, `password`, `phone_no`, `cnic`, `date_of_birth`, `gender`, `picture`, `role_id`, `address_id`, `status`, `reset_token`, `created_by`, `updated_by`, `created_at`, `updated_at`) VALUES
-(1, 'Rehan Manzoor', 'admin@gmail.com', '$2y$12$yk.kQEOK1BYrrYEW1yG1Z.FmvVDAKFXMD.TWmsOsMy9Pmwh4HDcnS', '0300-0000001', '35202-0000000-1', '2024-12-01', 'Male', 'uploads/users/images/1738263413_User_1.jpg', 1, 6, 1, NULL, 1, 1, '2025-02-28 19:17:27', '2025-02-28 19:44:21'),
-(2, 'Usman Iqbal', 'owner1@gmail.com', '$2y$12$yk.kQEOK1BYrrYEW1yG1Z.FmvVDAKFXMD.TWmsOsMy9Pmwh4HDcnS', '0300-0000002', '35202-0000000-2', '2019-07-03', 'Male', 'uploads/users/images/1739705181_User_2.jpg', 2, 7, 1, NULL, 1, 1, '2025-02-28 19:17:27', '2025-02-28 21:10:49'),
-(3, 'Abdullah Aasir', 'owner2@gmail.com', '$2y$12$yk.kQEOK1BYrrYEW1yG1Z.FmvVDAKFXMD.TWmsOsMy9Pmwh4HDcnS', '0300-0000003', '35202-0000000-3', '2019-07-03', 'Male', 'uploads/users/images/1738263430_User_3.jpg', 2, 8, 1, NULL, 1, 1, '2025-02-28 19:17:27', '2025-02-28 21:10:49'),
-(4, 'Arham Nasir', 'fa21-bse-062@example.com', '$2y$12$yk.kQEOK1BYrrYEW1yG1Z.FmvVDAKFXMD.TWmsOsMy9Pmwh4HDcnS', '0300-0000004', '35202-0000000-4', '2019-07-03', 'Male', 'uploads/users/images/1738263443_User_4.jpg', 3, 9, 1, NULL, 1, 1, '2025-02-28 19:17:27', '2025-02-28 19:51:49'),
-(5, 'Syed Ibrahim', 'smibrahim297@example.com', '$2y$12$yk.kQEOK1BYrrYEW1yG1Z.FmvVDAKFXMD.TWmsOsMy9Pmwh4HDcnS', '0300-0000005', '35202-0000000-5', '2024-12-15', 'Male', 'uploads/users/images/1738263454_User_5.jpg', 3, 10, 1, NULL, 1, 1, '2025-02-28 19:17:27', '2025-02-28 19:44:21'),
-(6, 'Rehan Manzoor', 'rh7081789@example.com', '$2y$12$yk.kQEOK1BYrrYEW1yG1Z.FmvVDAKFXMD.TWmsOsMy9Pmwh4HDcnS', '0300-0000006', '35202-0000000-6', '2024-12-16', 'Male', 'uploads/users/images/1739383093_User_1.jpg', 3, 11, 1, NULL, 1, 1, '2025-02-28 19:17:27', '2025-02-28 19:44:21'),
-(7, 'Rehan Manzoor', 'fa21-bse-002@cuilahore.edu.pk', '$2y$12$yk.kQEOK1BYrrYEW1yG1Z.FmvVDAKFXMD.TWmsOsMy9Pmwh4HDcnS', '0300-0000007', '35202-0000000-7', '2024-12-01', 'Male', 'uploads/users/images/1738263413_User_1.jpg', 3, 12, 1, NULL, 1, 1, '2025-02-28 19:17:27', '2025-02-28 21:01:45'),
-(8, 'Usman Iqbal', 'fa21-bse-014@cuilahore.edu.pk', '$2y$12$yk.kQEOK1BYrrYEW1yG1Z.FmvVDAKFXMD.TWmsOsMy9Pmwh4HDcnS', '0300-0000008', '35202-0000000-8', '2019-07-03', 'Male', 'uploads/users/images/1739705181_User_2.jpg', 3, 13, 1, NULL, 1, 1, '2025-02-28 19:17:27', '2025-02-28 21:03:20'),
-(9, 'Abdullah Aasir', 'fa21-bse-119@cuilahore.edu.pk', '$2y$12$yk.kQEOK1BYrrYEW1yG1Z.FmvVDAKFXMD.TWmsOsMy9Pmwh4HDcnS', '0300-0000009', '35202-0000000-9', '2019-07-03', 'Male', 'uploads/users/images/1738263430_User_3.jpg', 4, 14, 1, NULL, 1, 1, '2025-02-28 19:17:27', '2025-02-28 19:44:21'),
-(10, 'Arham Nasir', 'Arham@example.com', '$2y$12$yk.kQEOK1BYrrYEW1yG1Z.FmvVDAKFXMD.TWmsOsMy9Pmwh4HDcnS', '0300-0000010', '35202-0000001-0', '2019-07-03', 'Male', 'uploads/users/images/1738263443_User_4.jpg', 4, 15, 1, NULL, 1, 1, '2025-02-28 19:17:27', '2025-02-28 19:44:21'),
-(11, 'Syed Ibrahim', 'smibrahim297@gmail.com', '$2y$12$yk.kQEOK1BYrrYEW1yG1Z.FmvVDAKFXMD.TWmsOsMy9Pmwh4HDcnS', '0300-0000011', '35202-0000001-1', '2024-12-15', 'Male', 'uploads/users/images/1738263454_User_5.jpg', 4, 16, 1, NULL, 1, 1, '2025-02-28 19:17:27', '2025-02-28 19:44:21'),
-(12, 'Rehan Manzoor', 'rh7081789@gmail.com', '$2y$12$yk.kQEOK1BYrrYEW1yG1Z.FmvVDAKFXMD.TWmsOsMy9Pmwh4HDcnS', '0300-0000012', '35202-0000001-2', '2024-12-16', 'Male', 'uploads/users/images/1739383093_User_1.jpg', 4, 17, 1, NULL, 1, 1, '2025-02-28 19:17:27', '2025-02-28 19:44:21');
+(1, 'Rehan Manzoor', 'admin@gmail.com', '$2y$12$yk.kQEOK1BYrrYEW1yG1Z.FmvVDAKFXMD.TWmsOsMy9Pmwh4HDcnS', '0300-0000001', '35202-0000000-1', '2024-12-01', 'Male', 'uploads/users/images/1738263413_User_1.jpg', 1, 6, 1, NULL, 1, 1, '2025-02-28 14:17:27', '2025-02-28 14:44:21'),
+(2, 'Usman Iqbal', 'owner1@gmail.com', '$2y$12$yk.kQEOK1BYrrYEW1yG1Z.FmvVDAKFXMD.TWmsOsMy9Pmwh4HDcnS', '0300-0000002', '35202-0000000-2', '2019-07-03', 'Male', 'uploads/users/images/1738263414_User_2.jpg', 2, 7, 1, NULL, 1, 1, '2025-02-28 14:17:27', '2025-03-01 10:38:33'),
+(3, 'Abdullah Aasir', 'owner2@gmail.com', '$2y$12$yk.kQEOK1BYrrYEW1yG1Z.FmvVDAKFXMD.TWmsOsMy9Pmwh4HDcnS', '0300-0000003', '35202-0000000-3', '2019-07-03', 'Male', 'uploads/users/images/1738263430_User_3.jpg', 2, 8, 1, NULL, 1, 1, '2025-02-28 14:17:27', '2025-02-28 16:10:49'),
+(4, 'Arham Nasir', 'fa21-bse-062@example.com', '$2y$12$yk.kQEOK1BYrrYEW1yG1Z.FmvVDAKFXMD.TWmsOsMy9Pmwh4HDcnS', '0300-0000004', '35202-0000000-4', '2019-07-03', 'Male', 'uploads/users/images/1738263443_User_4.jpg', 3, 9, 1, NULL, 1, 1, '2025-02-28 14:17:27', '2025-02-28 14:51:49'),
+(5, 'Syed Ibrahim', 'smibrahim297@example.com', '$2y$12$yk.kQEOK1BYrrYEW1yG1Z.FmvVDAKFXMD.TWmsOsMy9Pmwh4HDcnS', '0300-0000005', '35202-0000000-5', '2024-12-15', 'Male', 'uploads/users/images/1738263454_User_5.jpg', 3, 10, 1, NULL, 1, 1, '2025-02-28 14:17:27', '2025-02-28 14:44:21'),
+(6, 'Rehan Manzoor', 'rh7081789@example.com', '$2y$12$yk.kQEOK1BYrrYEW1yG1Z.FmvVDAKFXMD.TWmsOsMy9Pmwh4HDcnS', '0300-0000006', '35202-0000000-6', '2024-12-16', 'Male', 'uploads/users/images/1739383093_User_6.jpg', 3, 11, 1, NULL, 1, 1, '2025-02-28 14:17:27', '2025-03-01 10:37:36'),
+(7, 'Rehan Manzoor', 'fa21-bse-002@cuilahore.edu.pk', '$2y$12$yk.kQEOK1BYrrYEW1yG1Z.FmvVDAKFXMD.TWmsOsMy9Pmwh4HDcnS', '0300-0000007', '35202-0000000-7', '2024-12-01', 'Male', 'uploads/users/images/1740824784_User_7.jpg', 3, 12, 1, NULL, 1, 1, '2025-02-28 14:17:27', '2025-03-01 10:37:36'),
+(8, 'Usman Iqbal', 'fa21-bse-014@cuilahore.edu.pk', '$2y$12$yk.kQEOK1BYrrYEW1yG1Z.FmvVDAKFXMD.TWmsOsMy9Pmwh4HDcnS', '0300-0000008', '35202-0000000-8', '2019-07-03', 'Male', 'uploads/users/images/1740824785_User_8.jpg', 3, 13, 1, NULL, 1, 1, '2025-02-28 14:17:27', '2025-03-01 10:37:36'),
+(9, 'Abdullah Aasir', 'fa21-bse-119@cuilahore.edu.pk', '$2y$12$yk.kQEOK1BYrrYEW1yG1Z.FmvVDAKFXMD.TWmsOsMy9Pmwh4HDcnS', '0300-0000009', '35202-0000000-9', '2019-07-03', 'Male', 'uploads/users/images/1740824786_User_9.jpg', 4, 14, 1, NULL, 1, 1, '2025-02-28 14:17:27', '2025-03-01 10:37:36'),
+(10, 'Arham Nasir', 'Arham@example.com', '$2y$12$yk.kQEOK1BYrrYEW1yG1Z.FmvVDAKFXMD.TWmsOsMy9Pmwh4HDcnS', '0300-0000010', '35202-0000001-0', '2019-07-03', 'Male', 'uploads/users/images/1740824787_User_10.jpg', 4, 15, 1, NULL, 1, 1, '2025-02-28 14:17:27', '2025-03-01 10:37:36'),
+(11, 'Syed Ibrahim', 'smibrahim297@gmail.com', '$2y$12$yk.kQEOK1BYrrYEW1yG1Z.FmvVDAKFXMD.TWmsOsMy9Pmwh4HDcnS', '0300-0000011', '35202-0000001-1', '2024-12-15', 'Male', 'uploads/users/images/1740824788_User_11.jpg', 4, 16, 1, NULL, 1, 1, '2025-02-28 14:17:27', '2025-03-01 10:37:36'),
+(12, 'Rehan Manzoor', 'rh7081789@gmail.com', '$2y$12$yk.kQEOK1BYrrYEW1yG1Z.FmvVDAKFXMD.TWmsOsMy9Pmwh4HDcnS', '0300-0000012', '35202-0000001-2', '2024-12-16', 'Male', 'uploads/users/images/1740824789_User_12.jpg', 4, 17, 1, NULL, 1, 1, '2025-02-28 14:17:27', '2025-03-01 10:35:18');
+
 
 
 INSERT INTO `organizations` (`id`, `name`, `address_id`, `status`, `membership_start_date`, `membership_end_date`, `owner_id`, `created_by`, `updated_by`, `created_at`, `updated_at`) VALUES

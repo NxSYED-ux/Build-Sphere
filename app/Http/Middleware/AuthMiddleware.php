@@ -45,13 +45,18 @@ class AuthMiddleware
             }
 
             $payload = JWTAuth::setToken($token)->getPayload();
-            $user = $payload['user'];
+            $userData = $payload['user'];
 
-            if (!$user) {
+            if (!$userData) {
                 return redirect('/login')->with('error', 'Your session is malformed');
             }
 
-            $request->merge(['user' => $user]);
+            $user = (object) ['id' => $userData['id'], 'role_id' => $userData['role_id']];
+
+            Log::debug('User ID: ' . $user->id);
+            Log::debug('Role ID: ' . $user->role_id);
+
+            $request->attributes->set('user', $user);
 
         } catch (TokenExpiredException $e) {
             return redirect('/login')->with('error', 'Session has expired');
