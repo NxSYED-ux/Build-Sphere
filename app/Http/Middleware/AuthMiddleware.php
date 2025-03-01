@@ -26,7 +26,7 @@ class AuthMiddleware
                     if (count($parts) === 2 && $parts[0] === 'Bearer') {
                         $token = $parts[1];
                     } else {
-                        return response()->json(['message' => 'Authorization format is invalid. Use Bearer <token>'], 400);
+                        return response()->json(['error' => 'Authorization format is invalid. Use Bearer <token>'], 400);
                     }
                 }
             }
@@ -35,22 +35,31 @@ class AuthMiddleware
             }
 
             if (!$token) {
-                return redirect('/login')->with('error', 'Authorization required');
+                return $tokenSource === 'header'
+                    ? response()->json(['error' => 'Authorization required'], 401)
+                    : redirect('/login')->with('error', 'Authorization required');
             }
+
             $user = JWTAuth::setToken($token)->authenticate();
             $payload = JWTAuth::setToken($token)->getPayload();
-            $tokenData = $payload['user'];
+            $tokenData = $payload['user'] ?? null;
 
             if (!$user || $user->status === 0) {
-                return redirect('/login')->with('error', 'User account is deactivated or deleted by administrator');
+                return $tokenSource === 'header'
+                    ? response()->json(['error' => 'User account is deactivated or deleted by administrator'], 403)
+                    : redirect('/login')->with('error', 'User account is deactivated or deleted by administrator');
             }
 
-            if ( $tokenData['role_id'] !== $user->role_id) {
-                return redirect('/login')->with('error', 'Your role has been changed by the administrator');
+            if ($tokenData['role_id'] !== $user->role_id) {
+                return $tokenSource === 'header'
+                    ? response()->json(['error' => 'Your role has been changed by administrator'], 403)
+                    : redirect('/login')->with('error', 'Your role has been changed by administrator');
             }
 
             if (!$tokenData) {
-                return redirect('/login')->with('error', 'Your session is malformed');
+                return $tokenSource === 'header'
+                    ? response()->json(['error' => 'Malformed session'], 400)
+                    : redirect('/login')->with('error', 'Your session is malformed');
             }
 
             $request->merge(['user' => $user]);
@@ -58,13 +67,21 @@ class AuthMiddleware
             return $next($request);
 
         } catch (TokenExpiredException $e) {
-            return redirect('/login')->with('error', 'Session has expired');
+            return $tokenSource === 'header'
+                ? response()->json(['error' => 'Session has expired'], 401)
+                : redirect('/login')->with('error', 'Session has expired');
         } catch (TokenInvalidException $e) {
-            return redirect('/login')->with('error', 'Invalid Session id');
+            return $tokenSource === 'header'
+                ? response()->json(['error' => 'Invalid session ID'], 400)
+                : redirect('/login')->with('error', 'Invalid session ID');
         } catch (JWTException $e) {
-            return redirect('/login')->with('error', 'Could not parse token');
+            return $tokenSource === 'header'
+                ? response()->json(['error' => 'Could not parse token'], 400)
+                : redirect('/login')->with('error', 'Could not parse token');
         } catch (Exception $e) {
-            return redirect('/login')->with('error', 'Invalid or expired Session Id');
+            return $tokenSource === 'header'
+                ? response()->json(['error' => 'Invalid or expired session ID'], 400)
+                : redirect('/login')->with('error', 'Invalid or expired session ID');
         }
     }
 }
