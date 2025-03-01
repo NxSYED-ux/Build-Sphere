@@ -444,7 +444,7 @@
                                 <div class="col-12 mb-3">
                                     <label for="edit_value_name" class="form-label">Value Name</label>
                                     <span class="required__field">*</span><br>
-                                    <input type="text" class="form-control" id="edit_value_name" name="value_name" value="{{ old('value_name', $value->value_name) }}" maxlength="50" placeholder="Value Name" required>
+                                    <input type="text" class="form-control" id="edit_value_name" name="value_name" value="{{ old('value_name' ) }}" maxlength="50" placeholder="Value Name" required>
                                     @error('value_name')
                                     <div class="invalid-feedback">
                                         {{ $message }}
@@ -454,7 +454,7 @@
 
                                 <div class="col-12 mb-3">
                                     <label for="edit_description" class="form-label">Description</label>
-                                    <input class="form-control" id="edit_description" name="description" value="{{ old('description', $value->description) }}" maxlength="250" placeholder="Description">
+                                    <input class="form-control" id="edit_description" name="description" value="{{ old('description' ) }}" maxlength="250" placeholder="Description">
                                     @error('description')
                                     <div class="invalid-feedback">
                                         {{ $message }}

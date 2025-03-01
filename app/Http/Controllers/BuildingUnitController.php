@@ -52,7 +52,8 @@ class BuildingUnitController extends Controller
         $buildings = Building::all();
         $levels = BuildingLevel::all();
         $organizations = Organization::all();
-        $unitTypes = DropdownType::with(['values'])->where('type_name', 'Unit-type')->first()->values;
+        $unitType = DropdownType::with(['values'])->where('type_name', 'Unit-type')->first();
+        $unitTypes = $unitType ? $unitType->values : collect();
         return view('Heights.Admin.Units.create', compact('buildings', 'levels', 'organizations', 'unitTypes'));
     }
 
@@ -112,7 +113,8 @@ class BuildingUnitController extends Controller
         $buildings = Building::all();
         $levels = BuildingLevel::all();
         $organizations = Organization::all();
-        $unitTypes = DropdownType::with(['values'])->where('type_name', 'Unit-type')->first()->values;
+        $unitType = DropdownType::with(['values'])->where('type_name', 'Unit-type')->first();
+        $unitTypes = $unitType ? $unitType->values : collect();
         return view('Heights.Admin.Units.edit', compact('buildings', 'unit', 'levels', 'organizations', 'unitTypes'));
     }
 

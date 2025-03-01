@@ -232,7 +232,7 @@
                                 <div class="form-group mb-3">
                                     <label for="level_name">Level Name</label>
                                     <span class="required__field">*</span><br>
-                                    <input type="text" name="level_name" id="level_name" class="form-control @error('level_name') is-invalid @enderror" value="{{ old('level_name', $level->level_name) }}" maxlength="50" placeholder="Level Name" required>
+                                    <input type="text" name="level_name" id="level_name" class="form-control @error('level_name') is-invalid @enderror" value="{{ old('level_name') }}" maxlength="50" placeholder="Level Name" required>
                                     @error('level_name')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
@@ -246,7 +246,7 @@
                                 <div class="form-group mb-3">
                                     <label for="level_number">Level Number</label>
                                     <span class="required__field">*</span><br>
-                                    <input type="number" name="level_number" id="level_number" class="form-control @error('level_number') is-invalid @enderror" value="{{ old('level_number', $level->level_number ) }}" placeholder="Enter Level/Floor no" required>
+                                    <input type="number" name="level_number" id="level_number" class="form-control @error('level_number') is-invalid @enderror" value="{{ old('level_number' ) }}" placeholder="Enter Level/Floor no" required>
                                     @error('level_number')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
@@ -258,7 +258,7 @@
                             <div class="col-12">
                                 <div class="form-group mb-3">
                                     <label for="description">Description</label>
-                                    <input type="text" name="description" id="description" class="form-control @error('description') is-invalid @enderror" value="{{ old('description', $level->description) }}" maxlength="50" placeholder="Description">
+                                    <input type="text" name="description" id="description" class="form-control @error('description') is-invalid @enderror" value="{{ old('description') }}" maxlength="50" placeholder="Description">
                                     @error('description')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
