@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\WebControllers;
 
+use App\Http\Controllers\Controller;
 use App\Models\DropdownType;
 use App\Models\DropdownValue;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
 
 class DropdownValueController extends Controller
 {

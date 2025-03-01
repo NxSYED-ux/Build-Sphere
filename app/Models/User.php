@@ -36,14 +36,10 @@ class User extends Authenticatable implements JWTSubject
         'password',
     ];
 
-    protected function casts(): array
-    {
-        return [
-            'password' => 'hashed',
-            'date_of_birth' => 'date',
-        ];
-    }
-
+    protected $casts = [
+        'password' => 'hashed',
+        'date_of_birth' => 'date:Y-m-d',
+    ];
 
     // Belongs to Relations
     public function role()

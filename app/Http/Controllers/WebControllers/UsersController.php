@@ -1,15 +1,15 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\WebControllers;
 
-use App\Models\User;
-use App\Models\Role;
+use App\Http\Controllers\Controller;
 use App\Models\Address;
 use App\Models\DropdownType;
-use App\Models\Organization;
+use App\Models\Role;
+use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Hash;
 
 class UsersController extends Controller
 {

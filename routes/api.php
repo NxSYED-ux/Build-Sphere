@@ -1,10 +1,14 @@
 <?php
 
-use Illuminate\Http\Request;
+use App\Http\Controllers\AppControllers\HomePageController;
+use App\Http\Controllers\AppControllers\ProfileController;
 use Illuminate\Support\Facades\Route;
- 
-use App\Http\Controllers\AppControllers\BuildingUnitController;
 
-Route::get('/home', [BuildingUnitController::class, 'homePage']);
+Route::prefix('user')->middleware(['auth.jwt'])->group(function () {
+    Route::get('/home', [HomePageController::class, 'homePage']);
+    Route::get('/profile', [ProfileController::class, 'userProfile']);
+    Route::put('/profile', [ProfileController::class, 'updateProfileData']);
+    
+});
 
-Route::get('/building_units/{id}', [BuildingUnitController::class, 'specificBuildingUnits']);
+

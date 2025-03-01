@@ -4,22 +4,18 @@ namespace App\Http\Controllers\AppControllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\User;
 use App\Models\BuildingUnit;
+use Illuminate\Support\Facades\Log;
 
 class HomePageController extends Controller
 {
     public function homePage(Request $request)
     {
         try {
-            if (!$request->user()) {
-                return response()->json(['error' => 'User ID is required'], 400);
-            }
-
-            $user = User::select('name', 'picture')->find($request->user()->id);
-            if (!$user) {
-                return response()->json(['error' => 'User not found'], 404);
-            }
+            $user = [
+                'name' => $request->user()->name,
+                'picture' => $request->user()->picture
+            ];
 
             $search = $request->query('search');
             $minPrice = $request->query('minPrice');
@@ -27,7 +23,8 @@ class HomePageController extends Controller
             $unitType = $request->query('unitType');
             $saleOrRent = $request->query('saleOrRent');
             $city = $request->query('city');
-            $limit = $request->query('limit', 20);
+            $limit = (int) $request->query('limit', 20);
+            $offset = (int) $request->query('offset', 0);
             $excludeUnit = $request->query('exclude_unit');
 
             $query = BuildingUnit::query();
@@ -79,26 +76,27 @@ class HomePageController extends Controller
                 });
             }
 
-            $availableUnits = $query->with([
+            $availableUnits = $query->whereHas('level')
+            ->whereHas('level.building')
+            ->whereHas('level.building.address')
+            ->with([
                 'level' => function ($query) {
-                    $query->select('id', 'level_name')
+                    $query->select('id', 'level_name', 'building_id')
                         ->with([
                             'building' => function ($query) {
-                                $query->select('id', 'name')
-                                    ->with([
-                                        'address' => function ($query) {
-                                            $query->select('id', 'location', 'city', 'province', 'country');
-                                        }
-                                    ]);
+                                $query->select('id', 'name', 'address_id')
+                                    ->with('address');
                             }
                         ]);
                 },
                 'pictures' => function ($query) {
-                    $query->select('id', 'file_path');
+                    $query->select('unit_id', 'file_path');
                 }
-            ])->select('id', 'unit_name', 'unit_type', 'price', 'sale_or_rent', 'availability_status', 'updated_at')
+            ])->select('id', 'unit_name', 'unit_type', 'price', 'sale_or_rent', 'availability_status', 'level_id')
+                ->limit($limit)
+                ->offset($offset)
                 ->orderBy('updated_at', 'DESC')
-                ->paginate($limit);
+                ->get();
 
             return response()->json([
                 'user' => $user,
@@ -106,9 +104,8 @@ class HomePageController extends Controller
             ]);
 
         } catch (\Exception $e) {
+            Log::error("Error in HomePage : " . $e->getMessage());
             return response()->json(['error' => $e->getMessage() ?: 'An error occurred while fetching home page data.'], 500);
         }
     }
-
 }
-

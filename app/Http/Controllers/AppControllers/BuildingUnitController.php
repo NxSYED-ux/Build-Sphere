@@ -1,27 +1,26 @@
 <?php
 
-namespace App\Http\Controllers\AppControllers;
-
 use App\Models\Building;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller; 
+use App\Http\Controllers\AppControllers;
 use Illuminate\Support\Facades\Response;
- 
+
+use App\Http\Controllers\Controller;
 use App\Models\BuildingLevel;
 use App\Models\BuildingUnit;
 use App\Models\UnitPicture;
-use App\Models\User;  
+use App\Models\User;
 use Illuminate\Support\Facades\DB;
 
 class BuildingUnitController extends Controller
 {
     public function specificBuildingUnits(Request $request, $id)
     {
-        try { 
+        try {
             if (!is_numeric($id)) {
                 return Response::json(['error' => 'Invalid building ID'], 400);
             }
- 
+
             $building = Building::with([
                 'address' => function ($query) {
                     $query->select('location', 'city', 'province', 'country');
@@ -37,13 +36,13 @@ class BuildingUnitController extends Controller
                 ->where('id', $id)
                 ->select('id', 'name')
                 ->first();
- 
+
             if (!$building) {
                 return Response::json(['error' => 'Building not found'], 404);
             }
- 
+
             return Response::json(['buildingUnits' => $building], 200);
-        } catch (\Exception $e) { 
+        } catch (\Exception $e) {
             return Response::json([
                 'error' => $e->getMessage() ?: 'An error occurred while fetching specific Building Units.',
             ], 500);
@@ -110,12 +109,12 @@ class BuildingUnitController extends Controller
             if ($search) {
                 $searchFilter = [
                     DB::raw('(
-                        building.address.location LIKE ? OR 
-                        building.address.city LIKE ? OR 
-                        building.address.province LIKE ? OR 
-                        building.address.country LIKE ? OR 
-                        level.level_name LIKE ? OR 
-                        building.name LIKE ? OR 
+                        building.address.location LIKE ? OR
+                        building.address.city LIKE ? OR
+                        building.address.province LIKE ? OR
+                        building.address.country LIKE ? OR
+                        level.level_name LIKE ? OR
+                        building.name LIKE ? OR
                         unit_name LIKE ?
                     )', [
                         "%$search%", "%$search%", "%$search%", "%$search%", "%$search%", "%$search%", "%$search%"
