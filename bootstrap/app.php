@@ -13,10 +13,11 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
         //
-        $middleware->alias([ 
+        $middleware->alias([
             'auth.jwt'  => \App\Http\Middleware\AuthMiddleware::class,
+            'check.permission' => \App\Http\Middleware\ValidatePermission::class,
             'theme'  => \App\Http\Middleware\ThemeMiddleware::class,
-        ]); 
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

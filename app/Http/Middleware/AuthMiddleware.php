@@ -26,18 +26,15 @@ class AuthMiddleware
                     if (count($parts) === 2 && $parts[0] === 'Bearer') {
                         $token = $parts[1];
                     } else {
-                        return response()->json(['error' => 'Authorization format is invalid. Use Bearer <token>'], 400);
+                        return $this->handleResponse($tokenSource, 'Authorization format is invalid. Use Bearer <token>', 400);
                     }
                 }
-            }
-            elseif ($tokenSource === 'cookie') {
+            } elseif ($tokenSource === 'cookie') {
                 $token = $request->cookie('jwt_token');
             }
 
             if (!$token) {
-                return $tokenSource === 'header'
-                    ? response()->json(['error' => 'Authorization required'], 401)
-                    : redirect('/login')->with('error', 'Authorization required');
+                return $this->handleResponse($tokenSource, 'Authorization required', 401);
             }
 
             $user = JWTAuth::setToken($token)->authenticate();
@@ -45,21 +42,15 @@ class AuthMiddleware
             $tokenData = $payload['user'] ?? null;
 
             if (!$user || $user->status === 0) {
-                return $tokenSource === 'header'
-                    ? response()->json(['error' => 'User account is deactivated or deleted by administrator'], 403)
-                    : redirect('/login')->with('error', 'User account is deactivated or deleted by administrator');
-            }
-
-            if ($tokenData['role_id'] !== $user->role_id) {
-                return $tokenSource === 'header'
-                    ? response()->json(['error' => 'Your role has been changed by administrator'], 403)
-                    : redirect('/login')->with('error', 'Your role has been changed by administrator');
+                return $this->handleResponse($tokenSource, 'User account is deactivated or deleted by administrator', 403);
             }
 
             if (!$tokenData) {
-                return $tokenSource === 'header'
-                    ? response()->json(['error' => 'Malformed session'], 400)
-                    : redirect('/login')->with('error', 'Your session is malformed');
+                return $this->handleResponse($tokenSource, 'Malformed session', 400);
+            }
+
+            if ($tokenData['role_id'] !== $user->role_id) {
+                return $this->handleResponse($tokenSource, 'Your role has been changed by administrator', 403);
             }
 
             $request->merge(['user' => $user]);
@@ -67,21 +58,20 @@ class AuthMiddleware
             return $next($request);
 
         } catch (TokenExpiredException $e) {
-            return $tokenSource === 'header'
-                ? response()->json(['error' => 'Session has expired'], 401)
-                : redirect('/login')->with('error', 'Session has expired');
+            return $this->handleResponse($tokenSource, 'Session has expired', 401);
         } catch (TokenInvalidException $e) {
-            return $tokenSource === 'header'
-                ? response()->json(['error' => 'Invalid session ID'], 400)
-                : redirect('/login')->with('error', 'Invalid session ID');
+            return $this->handleResponse($tokenSource, 'Invalid session ID', 400);
         } catch (JWTException $e) {
-            return $tokenSource === 'header'
-                ? response()->json(['error' => 'Could not parse token'], 400)
-                : redirect('/login')->with('error', 'Could not parse token');
+            return $this->handleResponse($tokenSource, 'Could not parse token', 400);
         } catch (Exception $e) {
-            return $tokenSource === 'header'
-                ? response()->json(['error' => 'Invalid or expired session ID'], 400)
-                : redirect('/login')->with('error', 'Invalid or expired session ID');
+            return $this->handleResponse($tokenSource, 'Invalid or expired session ID', 400);
         }
+    }
+
+    private function handleResponse($tokenSource, $message, $statusCode)
+    {
+        return $tokenSource === 'header'
+            ? response()->json(['error' => $message], $statusCode)
+            : redirect('/login')->with('error', $message);
     }
 }
