@@ -21,7 +21,7 @@
         body {
             font-family: 'Poppins', sans-serif;
             overflow: hidden;
-        } 
+        }
 
         .container {
             width: 100vw;
@@ -30,31 +30,38 @@
             grid-template-columns: repeat(2, 1fr);
             grid-gap: 7rem;
             padding: 0 2rem;
-        } 
+        }
 
         .login-content {
             display: flex;
             justify-content: flex-start;
             align-items: center;
             text-align: center;
-        } 
+        }
 
         form {
             width: 360px;
-        } 
+        }
 
         .login-content h2 {
             margin: 15px 0;
             color: black;
-            text-transform: uppercase;
-            font-size: 1.7rem;
+            /*text-transform: uppercase;*/
+            font-size: 1rem;
+        }
+
+        .login-content h3 {
+            margin: 5px 0 10px 0;
+            color: grey;
+            /*text-transform: uppercase;*/
+            font-size: 0.8rem;
         }
 
         .login-content .input-div {
             position: relative;
             display: grid;
             grid-template-columns: 7% 93%;
-            margin: 25px 0;
+            margin: 15px 0;
             padding: 5px 0;
             border-bottom: 2px solid black;
         }
@@ -148,6 +155,7 @@
             color: #999;
             font-size: 0.9rem;
             transition: .3s;
+            margin: 10px 0 10px 0 ;
         }
 
         a:hover {
@@ -158,7 +166,7 @@
             display: block;
             width: 100%;
             height: 50px;
-            border-radius: 25px;
+            border-radius: 5px;
             outline: none;
             border: none;
             /* background-image: linear-gradient(to right, #32be8f, #38d39f, #32be8f); */
@@ -179,8 +187,8 @@
 
         .container {
             grid-template-columns: 1fr;
-        } 
-        
+        }
+
 
         .login-content {
             justify-content: center;
@@ -199,16 +207,21 @@
             }
 
             .login-content h2 {
-                font-size: 2.4rem;
+                font-size: 1rem;
                 margin: 8px 0;
-            } 
+            }
+
+            .login-content h3 {
+                font-size: 1rem;
+                margin: 8px 0 10px 0;
+            }
         }
 
         @media screen and (max-width: 900px) {
             .container {
                 grid-template-columns: 1fr;
-            } 
-            
+            }
+
 
             .login-content {
                 justify-content: center;
@@ -305,7 +318,7 @@
         <div id="main-content" style="display: none;">
             <div class="container">
                 <div class="login-content">
-                    <form method="POST" action="{{ route('login') }}" class="m-2"> 
+                    <form method="POST" action="{{ route('login') }}" class="m-2">
                         <svg width="100" height="100" viewBox="0 0 48 48" fill="none"
                             xmlns="http://www.w3.org/2000/svg">
                             <g clip-path="url(#clip0_27_397)">
@@ -331,7 +344,8 @@
                                 </clippath>
                             </defs>
                         </svg>
-                        <h2 class="title">Welcome</h2>
+                        <h2 class="title">Log in to your account</h2>
+                        <h3 class="title">Enter your email and password below to log in</h3>
                         <div class="input-div one">
                             <div class="i">
                                 <i class="fa fa-user"></i>
@@ -344,19 +358,21 @@
                         @error('email')
                         <div class="text-danger">{{ $message }}</div>
                         @enderror
+
+
                         <div class="input-div pass">
                             <div class="i">
                                 <i class="fa fa-lock"></i>
                             </div>
                             <div class="div">
                                 <h5>Password</h5>
-                                <input id="password" class="input block mt-1 w-full" type="password" name="password" required autocomplete="current-password" />                                
+                                <input id="password" class="input block mt-1 w-full" type="password" name="password" required autocomplete="current-password" />
                             </div>
                         </div>
                         @error('password')
                             <div class="text-danger">{{ $message }}</div>
                         @enderror
-                        
+
                         <a href="{{ route('password.request') }}">Forgot Password?</a>
                         <input type="submit" class="btn" value="Login">
                     </form>

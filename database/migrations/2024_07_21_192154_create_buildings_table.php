@@ -17,7 +17,7 @@ return new class extends Migration
             $table->text('remarks')->nullable();
             $table->decimal('area', 10, 2);
             $table->year('construction_year')->nullable();
-            $table->unsignedBigInteger('address_id');
+            $table->unsignedBigInteger('address_id')->unique();
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
             $table->timestamp('created_at')->useCurrent();

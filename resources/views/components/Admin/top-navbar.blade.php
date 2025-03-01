@@ -90,7 +90,7 @@ input:checked + .slider.round:before {
         <ul class="navbar-nav navbar-lg text-center justify-content-between d-none d-md-flex ms-auto align-items-center">
 
             <label class="switch">
-                <input type="checkbox" id="theme-toggle" checked>
+                <input type="checkbox" id="theme-toggle">
                 <span class="slider round"></span>
             </label>
 

@@ -114,7 +114,7 @@
 </head>
 <body>
 
-    <x-loading-animation />
+{{--    <x-loading-animation />--}}
     <!-- Main Content -->
     <div class="content">
         @yield('content')

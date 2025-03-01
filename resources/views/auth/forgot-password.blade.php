@@ -21,7 +21,7 @@
             body {
                 font-family: 'Poppins', sans-serif;
                 overflow: hidden;
-            } 
+            }
 
             .container {
                 width: 100vw;
@@ -30,24 +30,31 @@
                 grid-template-columns: repeat(2, 1fr);
                 grid-gap: 7rem;
                 padding: 0 2rem;
-            } 
+            }
 
             .login-content {
                 display: flex;
                 justify-content: flex-start;
                 align-items: center;
                 text-align: center;
-            } 
+            }
 
             form {
                 width: 360px;
-            } 
+            }
 
             .login-content h2 {
                 margin: 15px 0;
                 color: black;
-                text-transform: uppercase;
-                font-size: 1.7rem;
+                /*text-transform: uppercase;*/
+                font-size: 1rem;
+            }
+
+            .login-content h3 {
+                margin: 5px 0 10px 0;
+                color: grey;
+                /*text-transform: uppercase;*/
+                font-size: 0.8rem;
             }
 
             .login-content .input-div {
@@ -141,24 +148,11 @@
                 margin-bottom: 4px;
             }
 
-            a {
-                display: block;
-                text-align: right;
-                text-decoration: none;
-                color: #999;
-                font-size: 0.9rem;
-                transition: .3s;
-            }
-
-            a:hover {
-                color: black;
-            }
-
             .btn {
                 display: block;
                 width: 100%;
                 height: 50px;
-                border-radius: 25px;
+                border-radius: 5px;
                 outline: none;
                 border: none;
                 /* background-image: linear-gradient(to right, #32be8f, #38d39f, #32be8f); */
@@ -177,10 +171,24 @@
                 background-position: right;
             }
 
+            a {
+                display: block;
+                text-align: center;
+                text-decoration: none;
+                color: #999;
+                font-size: 0.9rem;
+                transition: .3s;
+                margin: 10px 0 10px 0 ;
+            }
+
+            a:hover {
+                color: black;
+            }
+
             .container {
                 grid-template-columns: 1fr;
-            } 
-            
+            }
+
 
             .login-content {
                 justify-content: center;
@@ -199,16 +207,21 @@
                 }
 
                 .login-content h2 {
-                    font-size: 2.4rem;
+                    font-size: 1rem;
                     margin: 8px 0;
-                } 
+                }
+
+                .login-content h3 {
+                    font-size: 1rem;
+                    margin: 8px 0 10px 0;
+                }
             }
 
             @media screen and (max-width: 900px) {
                 .container {
                     grid-template-columns: 1fr;
-                } 
-                
+                }
+
 
                 .login-content {
                     justify-content: center;
@@ -238,16 +251,16 @@
                 width: 200px;
                 height: 200px;
                 animation: fadeInScale 1s ease-in-out forwards;
-            } 
+            }
         </style>
     </head>
 
-    <body> 
+    <body>
 
         <div id="main-content">
             <div class="container">
                 <div class="login-content">
-                    <form method="POST" action="{{ route('password.email') }}" class="m-2"> 
+                    <form method="POST" action="{{ route('password.email') }}" class="m-2">
                         <svg width="100" height="100" viewBox="0 0 48 48" fill="none"
                             xmlns="http://www.w3.org/2000/svg">
                             <g clip-path="url(#clip0_27_397)">
@@ -285,10 +298,13 @@
                         </div>
                         @error('email')
                         <div class="text-danger">{{ $message }}</div>
-                        @enderror  
+                        @enderror
 
                         <input type="submit" class="btn" value="SUBMIT">
-                        <p style="font-weight: normal important!;"><b  style="font-weight: bolder; font-size: 18px;">Note:</b> Enter the email address you used to login to system. We will send you a link to reset your password at your email.</p>
+
+                            <a href="{{ route('login') }}" class="text-decoration-none">Back to Login</a>
+
+                        <p style="font-weight: normal; color: grey; font-size: 15px;"><b  style="font-weight: bolder; font-size: 18px; color: black;">Note:</b> Enter the email address you used to login to system. We will send you a link to reset your password at your email.</p>
                     </form>
                 </div>
             </div>
@@ -325,12 +341,12 @@
                     input.addEventListener("blur", removeFocus);
                 });
             });
-        </script> 
+        </script>
 
         <script>
             document.addEventListener("DOMContentLoaded", function () {
                 // Select input fields
-                const emailInput = document.getElementById("email"); 
+                const emailInput = document.getElementById("email");
 
                 // Function to remove error messages when input is focused
                 function removeError(input) {
@@ -342,7 +358,7 @@
                     });
                 }
 
-                removeError(emailInput); 
+                removeError(emailInput);
             });
         </script>
 

@@ -83,8 +83,6 @@
     <x-Admin.side-navbar :openSections="['AdminControl', 'UserManagement']" />
     <x-error-success-model />
 
-    <!-- filter: invert(1); -->
-
     <div id="main">
         <section class="content-header pt-2">
             <nav aria-label="breadcrumb">
