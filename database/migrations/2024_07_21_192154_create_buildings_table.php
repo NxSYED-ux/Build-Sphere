@@ -18,8 +18,8 @@ return new class extends Migration
             $table->decimal('area', 10, 2);
             $table->year('construction_year')->nullable();
             $table->unsignedBigInteger('address_id')->unique();
-            $table->unsignedBigInteger('created_by')->nullable();
-            $table->unsignedBigInteger('updated_by')->nullable();
+            $table->unsignedBigInteger('created_by');
+            $table->unsignedBigInteger('updated_by');
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
 
