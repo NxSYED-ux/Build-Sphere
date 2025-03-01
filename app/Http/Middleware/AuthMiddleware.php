@@ -39,22 +39,22 @@ class AuthMiddleware
             }
             $user = JWTAuth::setToken($token)->authenticate();
             $payload = JWTAuth::setToken($token)->getPayload();
-            $Token = $payload['user'];
+            $tokenData = $payload['user'];
 
             if (!$user || $user->status === 0) {
                 return redirect('/login')->with('error', 'User account is deactivated or deleted by administrator');
             }
 
-            if ( $Token['role_id'] !== $user->role_id) {
+            if ( $tokenData['role_id'] !== $user->role_id) {
                 return redirect('/login')->with('error', 'Your role has been changed by the administrator');
             }
 
-            if (!$Token) {
+            if (!$tokenData) {
                 return redirect('/login')->with('error', 'Your session is malformed');
             }
 
             $request->merge(['user' => $user]);
-            $request->attributes->set('userToken', $Token);
+            $request->attributes->set('token', $tokenData);
             return $next($request);
 
         } catch (TokenExpiredException $e) {
