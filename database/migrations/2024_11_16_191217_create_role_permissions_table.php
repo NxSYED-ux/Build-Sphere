@@ -18,6 +18,10 @@ return new class extends Migration
             $table->unsignedBigInteger('granted_by');
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
+
+            $table->foreign('role_id')->references('id')->on('roles');
+            $table->foreign('permission_id')->references('id')->on('permissions');
+            $table->foreign('granted_by')->references('id')->on('users');
         });
     }
 

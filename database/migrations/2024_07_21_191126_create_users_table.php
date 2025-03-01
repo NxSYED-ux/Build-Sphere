@@ -19,13 +19,18 @@ return new class extends Migration
             $table->enum('gender', ['Male', 'Female', 'Other']);
             $table->string('picture',255)->nullable();
             $table->unsignedInteger('role_id');
-            $table->unsignedBigInteger('address_id');
+            $table->unsignedBigInteger('address_id')->unique();
             $table->tinyInteger('status')->default(1);
             $table->string('reset_token',255)->nullable();
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
+
+            $table->foreign('role_id')->references('id')->on('roles');
+            $table->foreign('address_id')->references('id')->on('address');
+            $table->foreign('created_by')->references('id')->on('users');
+            $table->foreign('updated_by')->references('id')->on('users');
         });
 
         Schema::create('sessions', function (Blueprint $table) {

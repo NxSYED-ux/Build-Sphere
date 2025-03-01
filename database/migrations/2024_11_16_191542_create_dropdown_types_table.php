@@ -12,10 +12,12 @@ return new class extends Migration
             $table->unsignedInteger('id',true);
             $table->string('type_name')->unique();
             $table->text('description')->nullable();
-            $table->unsignedBigInteger('parent_type_id')->nullable();
+            $table->unsignedInteger('parent_type_id')->nullable();
             $table->tinyInteger('status')->default(1);
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
+
+            $table->foreign('parent_type_id')->references('id')->on('dropdowntypes');
         });
     }
 

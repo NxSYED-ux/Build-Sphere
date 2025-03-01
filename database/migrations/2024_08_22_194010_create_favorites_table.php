@@ -14,6 +14,9 @@ return new class extends Migration
             $table->unsignedBigInteger('unit_id');
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
+
+            $table->foreign('user_id')->references('id')->on('users');
+            $table->foreign('unit_id')->references('id')->on('buildingunits');
         });
     }
 

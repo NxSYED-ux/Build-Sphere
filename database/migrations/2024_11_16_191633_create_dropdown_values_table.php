@@ -17,6 +17,9 @@ return new class extends Migration
             $table->tinyInteger('status')->default(1);
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
+
+            $table->foreign('dropdown_type_id')->references('id')->on('dropdowntypes');
+            $table->foreign('parent_value_id')->references('id')->on('dropdownvalues');
         });
     }
 

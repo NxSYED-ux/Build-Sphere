@@ -15,9 +15,11 @@ return new class extends Migration
             $table->date('issue_date')->nullable();
             $table->date('expiry_date')->nullable();
             $table->string('file_path')->nullable();
-            $table->string('file_name')->nullable()->unique();
+            $table->string('file_name')->nullable();
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
+
+            $table->foreign('building_id')->references('id')->on('buildings');
         });
     }
 

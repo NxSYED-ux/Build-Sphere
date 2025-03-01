@@ -21,6 +21,12 @@ return new class extends Migration
             $table->text('remarks')->nullable();
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
+
+            $table->foreign('user_id')->references('id')->on('users');
+            $table->foreign('unit_id')->references('id')->on('buildingunits');
+            $table->foreign('building_id')->references('id')->on('buildings');
+            $table->foreign('department_id')->references('id')->on('departments');
+            $table->foreign('staff_member_id')->references('id')->on('staffmembers');
         });
     }
 

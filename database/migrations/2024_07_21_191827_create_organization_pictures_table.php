@@ -15,6 +15,8 @@ return new class extends Migration
             $table->string('file_name',255)->nullable();
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
+
+            $table->foreign('organization_id')->references('id')->on('organizations');
         });
     }
 
