@@ -37,26 +37,25 @@ class AuthMiddleware
             if (!$token) {
                 return redirect('/login')->with('error', 'Authorization required');
             }
+            $user = JWTAuth::setToken($token)->authenticate();
+            $payload = JWTAuth::setToken($token)->getPayload();
+            $Token = $payload['user'];
 
-            $userData = JWTAuth::setToken($token)->authenticate();
-
-            if (!$userData || $userData->status === 0) {
+            if (!$user || $user->status === 0) {
                 return redirect('/login')->with('error', 'User account is deactivated or deleted by administrator');
             }
 
-            $payload = JWTAuth::setToken($token)->getPayload();
-            $userData = $payload['user'];
+            if ( $Token['role_id'] !== $user->role_id) {
+                return redirect('/login')->with('error', 'Your role has been changed by the administrator');
+            }
 
-            if (!$userData) {
+            if (!$Token) {
                 return redirect('/login')->with('error', 'Your session is malformed');
             }
 
-            $user = (object) ['id' => $userData['id'], 'role_id' => $userData['role_id']];
-
-            Log::debug('User ID: ' . $user->id);
-            Log::debug('Role ID: ' . $user->role_id);
-
-            $request->attributes->set('user', $user);
+            $request->merge(['user' => $user]);
+            $request->attributes->set('userToken', $Token);
+            return $next($request);
 
         } catch (TokenExpiredException $e) {
             return redirect('/login')->with('error', 'Session has expired');
@@ -67,7 +66,5 @@ class AuthMiddleware
         } catch (Exception $e) {
             return redirect('/login')->with('error', 'Invalid or expired Session Id');
         }
-
-        return $next($request);
     }
 }
