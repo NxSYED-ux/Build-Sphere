@@ -181,7 +181,7 @@
                                                                     <select class="form-select" id="owner_id" name="owner_id" required>
                                                                         <option value="" disabled {{ old('owner_id') === null ? 'selected' : '' }}>Select Organization</option>
                                                                         @foreach($owners as $id => $name)
-                                                                            <option value="{{ $id }}" {{ old('owner_id', $organization->owner_id) == $id ? 'selected' : '' }}>
+                                                                            <option value="{{ $id }}" {{ old('owner_id') == $id ? 'selected' : '' }}>
                                                                                 {{ $name }}
                                                                             </option>
                                                                         @endforeach

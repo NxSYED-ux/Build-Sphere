@@ -41,8 +41,10 @@ class BuildingController extends Controller
     {
         $organizations = Organization::all();
         $dropdownData = DropdownType::with(['values.childs.childs'])->where('type_name', 'Country')->get(); // Country -> Province -> City
-        $documentTypes = DropdownType::with(['values'])->where('type_name', 'Building-document-type')->first()->values->pluck('value_name', 'id');
-        $buildingTypes = DropdownType::with(['values'])->where('type_name', 'Building-type')->first()->values()->where('status', 1)->get();
+        $documentType = DropdownType::with(['values'])->where('type_name', 'Building-document-type')->first();
+        $buildingType = DropdownType::with(['values'])->where('type_name', 'Building-type')->first();
+        $documentTypes = $documentType ? $documentType->values->pluck('value_name', 'id') : collect();
+        $buildingTypes = $buildingType ? $buildingType->values()->where('status', 1)->get() : collect();
         return view('Heights.Admin.Buildings.create', compact('organizations', 'dropdownData', 'buildingTypes', 'documentTypes'));
     }
 
@@ -155,9 +157,12 @@ class BuildingController extends Controller
     {
         $building->load(['address', 'organization','pictures', 'documents']);
         $organizations = Organization::all();
+
         $dropdownData = DropdownType::with(['values.childs.childs'])->where('type_name', 'Country')->get(); // Country -> Province -> City
-        $documentTypes = DropdownType::with(['values']) ->where('type_name', 'Building-document-type')->first()->values->pluck('value_name', 'id');
-        $buildingTypes = DropdownType::with(['values'])->where('type_name', 'Building-type')->first()->values;
+        $documentType = DropdownType::with(['values'])->where('type_name', 'Building-document-type')->first();
+        $buildingType = DropdownType::with(['values'])->where('type_name', 'Building-type')->first();
+        $documentTypes = $documentType ? $documentType->values->pluck('value_name', 'id') : collect();
+        $buildingTypes = $buildingType ? $buildingType->values()->where('status', 1)->get() : collect();
         return view('Heights.Admin.Buildings.edit', compact('building', 'dropdownData', 'organizations', 'buildingTypes', 'documentTypes'));
     }
 

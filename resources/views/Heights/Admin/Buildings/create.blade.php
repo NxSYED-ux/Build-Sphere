@@ -4,11 +4,11 @@
 
 @push('styles')
     <style>
-        body { 
+        body {
         }
-        #main { 
+        #main {
             margin-top: 45px;
-        } 
+        }
         .padding-y {
             padding-top: .5rem !important;
             padding-bottom: .5rem !important;
@@ -17,7 +17,7 @@
         .padding-y:hover {
             padding-top: .3rem !important;
             padding-bottom: .7rem !important;
-        } 
+        }
         #add_button {
             width: 45px;
             height: 45px;
@@ -29,7 +29,7 @@
             font-weight: bold;
             align-items: center;
             justify-content: center;
-        } 
+        }
 
         /* Center the input and preview */
         .image-input-container {
@@ -119,11 +119,11 @@
 
 
     </style>
-@endpush 
+@endpush
 
 @section('content')
 <x-Admin.top-navbar :searchVisible="false"/>
-    <x-Admin.side-navbar :openSections="['Buildings', 'Building']" /> 
+    <x-Admin.side-navbar :openSections="['Buildings', 'Building']" />
     <x-error-success-model />
 
     <div id="main">
@@ -146,9 +146,9 @@
                                 <div class="d-flex justify-content-between align-items-center mb-2">
                                     <h4 class="mb-0">Add New Building</h4>
                                     <a href="{{ route('buildings.index') }}" class="btn btn-secondary">Go Back</a>
-                                </div> 
+                                </div>
                                 <div class="card shadow p-3 mb-5 bg-body rounded" style="border: none;">
-                                    <div class="card-body " > 
+                                    <div class="card-body " >
 
                                         <form action="{{ route('buildings.store') }}" method="POST" enctype="multipart/form-data">
                                             @csrf
@@ -161,7 +161,7 @@
                                                             <div class="form-group mb-3">
                                                                 <label for="name">Name</label>
                                                                 <span class="required__field">*</span><br>
-                                                                <input type="text" name="name" id="name" class="form-control @error('name') is-invalid @enderror" value="{{ old('name') }}" maxlength="50" placeholder="Building Name" required> 
+                                                                <input type="text" name="name" id="name" class="form-control @error('name') is-invalid @enderror" value="{{ old('name') }}" maxlength="50" placeholder="Building Name" required>
                                                                 @error('name')
                                                                     <span class="invalid-feedback" role="alert">
                                                                         <strong>{{ $message }}</strong>
@@ -175,12 +175,12 @@
                                                                 <label for="building_type">Building Type</label>
                                                                 <span class="required__field">*</span><br>
                                                                 <select name="building_type" id="building_type" class="form-select" required>
-                                                                    <option value="" selected>Select Type</option> 
+                                                                    <option value="" selected>Select Type</option>
                                                                     @foreach($buildingTypes as $value)
                                                                         <option value="{{ $value->value_name }}" {{ old('building_type') == $value->value_name ? 'selected' : '' }}>
                                                                             {{ $value->value_name }}
                                                                         </option>
-                                                                    @endforeach 
+                                                                    @endforeach
                                                                 </select>
                                                                 @error('building_type')
                                                                     <span class="invalid-feedback" role="alert">
@@ -196,7 +196,7 @@
                                                             <div class="form-group mb-3">
                                                                 <label for="area">Area</label>
                                                                 <span class="required__field">*</span><br>
-                                                                <input type="number" name="area" id="area" class="form-control @error('area') is-invalid @enderror" value="{{ old('area') }}" placeholder="1234" required> 
+                                                                <input type="number" name="area" id="area" class="form-control @error('area') is-invalid @enderror" value="{{ old('area') }}" placeholder="1234" required>
                                                                 @error('area')
                                                                     <span class="invalid-feedback" role="alert">
                                                                         <strong>{{ $message }}</strong>
@@ -224,50 +224,50 @@
                                                                     </span>
                                                                 @enderror
                                                             </div>
-                                                        </div>  
+                                                        </div>
 
                                                         <!-- Construction Year -->
                                                         <div class="col-sm-12 col-md-6 col-lg-6">
                                                             <div class="form-group mb-3">
-                                                                <label for="construction_year">Construction Year</label> 
-                                                                <input type="number" name="construction_year" id="construction_year" class="form-control @error('construction_year') is-invalid @enderror" value="{{ old('construction_year') }}" placeholder="2024"> 
+                                                                <label for="construction_year">Construction Year</label>
+                                                                <input type="number" name="construction_year" id="construction_year" class="form-control @error('construction_year') is-invalid @enderror" value="{{ old('construction_year') }}" placeholder="2024">
                                                                 @error('construction_year')
                                                                     <span class="invalid-feedback" role="alert">
                                                                         <strong>{{ $message }}</strong>
                                                                     </span>
                                                                 @enderror
                                                             </div>
-                                                        </div> 
+                                                        </div>
 
                                                         <!-- Country -->
                                                         <div class="col-lg-6 col-md-6 col-sm-12">
                                                             <div class="form-group mb-3">
-                                                                <label for="country">Country</label> 
+                                                                <label for="country">Country</label>
                                                                 <select class="form-select" id="country" name="country">
-                                                                    <option value="" selected>Select Country</option> 
+                                                                    <option value="" selected>Select Country</option>
                                                                 </select>
                                                                 @error('country')
                                                                     <div class="text-danger">{{ $message }}</div>
                                                                 @enderror
-                                                            </div> 
-                                                        </div> 
+                                                            </div>
+                                                        </div>
                                                         <!-- Province -->
                                                         <div class="col-lg-6 col-md-6 col-sm-12">
                                                             <div class="form-group mb-3">
-                                                                <label for="province">Province</label> 
+                                                                <label for="province">Province</label>
                                                                 <select class="form-select" id="province" name="province">
                                                                     <option value="" selected>Select Province</option>
                                                                 </select>
                                                                 @error('province')
                                                                     <div class="text-danger">{{ $message }}</div>
                                                                 @enderror
-                                                            </div> 
-                                                        </div> 
+                                                            </div>
+                                                        </div>
 
                                                         <!-- City -->
                                                         <div class="col-lg-6 col-md-6 col-sm-12">
                                                             <div class="form-group mb-3">
-                                                                <label for="city">City</label> 
+                                                                <label for="city">City</label>
                                                                 <select class="form-select" id="city" name="city">
                                                                     <option value="" selected>Select City</option>
                                                                 </select>
@@ -276,12 +276,12 @@
                                                                 @enderror
                                                             </div>
                                                         </div>
-                                                        
+
                                                         <!--  -->
                                                         <div class="col-sm-12 col-md-6 col-lg-6">
                                                             <div class="form-group mb-3">
-                                                                <label for="location">Location</label> 
-                                                                <input type="text" name="location" id="location" class="form-control @error('location') is-invalid @enderror" value="{{ old('location') }}" maxlength="100" placeholder="Enter Location"> 
+                                                                <label for="location">Location</label>
+                                                                <input type="text" name="location" id="location" class="form-control @error('location') is-invalid @enderror" value="{{ old('location') }}" maxlength="100" placeholder="Enter Location">
                                                                 @error('location')
                                                                     <span class="invalid-feedback" role="alert">
                                                                         <strong>{{ $message }}</strong>
@@ -293,8 +293,8 @@
                                                         <!--  -->
                                                         <div class="col-sm-12 col-md-6 col-lg-6">
                                                             <div class="form-group mb-3">
-                                                                <label for="postal_code">Postal Code</label> 
-                                                                <input type="text" name="postal_code" id="postal_code" class="form-control @error('postal_code') is-invalid @enderror" value="{{ old('postal_code') }}" maxlength="100" placeholder="Enter Postal Code"> 
+                                                                <label for="postal_code">Postal Code</label>
+                                                                <input type="text" name="postal_code" id="postal_code" class="form-control @error('postal_code') is-invalid @enderror" value="{{ old('postal_code') }}" maxlength="100" placeholder="Enter Postal Code">
                                                                 @error('postal_code')
                                                                     <span class="invalid-feedback" role="alert">
                                                                         <strong>{{ $message }}</strong>
@@ -302,12 +302,12 @@
                                                                 @enderror
                                                             </div>
                                                         </div>
-                                                    </div> 
+                                                    </div>
 
                                                     <!--  -->
-                                                     
+
                                                 </div>
-                                                <div class="col-lg-4 col-md-4 col-sm-12 col-12 mb-3"> 
+                                                <div class="col-lg-4 col-md-4 col-sm-12 col-12 mb-3">
                                                     <div class="image-input-container mt-4">
                                                         <label for="image-input" class="custom-file-label">
                                                             <span>Choose Images</span>
@@ -316,7 +316,7 @@
                                                         <div class="image-preview" id="image-preview">
                                                             <p>No images selected</p>
                                                         </div>
-                                                    </div>                                                    
+                                                    </div>
                                                 </div>
                                             </div>
 
@@ -329,7 +329,7 @@
                                                 <button type="button" id="add-document" class="btn btn-light mt-21 mb-2">Add Document</button>
                                                 <div id="documents-container" class="container">
                                                     <!-- Document fields will be appended here -->
-                                                </div> 
+                                                </div>
                                             </div>
 
                                             <div class="col-4">
@@ -348,7 +348,7 @@
 
 @endsection
 
-@push('scripts')  
+@push('scripts')
 
     <!-- Country/Province/City dropdowns  -->
     <script>
@@ -482,7 +482,7 @@
                 } else {
                     img.classList.remove('active');
                 }
-            } 
+            }
 
             function removeImage(index) {
                 selectedImages.splice(index, 1);
@@ -501,7 +501,7 @@
             }
 
             document.querySelector('form').addEventListener('submit', function(event) {
-                updateImageInput();  
+                updateImageInput();
             });
         });
     </script> -->
@@ -578,7 +578,7 @@
         const selectedDocumentTypes = new Set();
         const documentTypeMap = new Map();
 
-        // Ensure DocumentsTypes is available globally or set it from Blade template 
+        // Ensure DocumentsTypes is available globally or set it from Blade template
         const DocumentsTypes = @json($documentTypes);
         // const DocumentsTypes = {
         //     1: "Building Permit",
@@ -603,7 +603,7 @@
         document.getElementById('add-document').addEventListener('click', function () {
             const container = document.getElementById('documents-container');
             const documentTypesCount = getDocumentTypesCount();
-            
+
             if (documentIndex < documentTypesCount) {
                 const div = document.createElement('div');
                 div.classList.add('mb-3');
@@ -617,12 +617,12 @@
                             </select>
                         </div>
                         <div class="col-md-2">
-                            <label for="issue_date_${documentIndex}" class="form-label">Issue Date</label> 
+                            <label for="issue_date_${documentIndex}" class="form-label">Issue Date</label>
                             <input type="date" class="form-control" id="issue_date_${documentIndex}" name="documents[${documentIndex}][issue_date]"  >
                         </div>
                         <div class="col-md-2">
-                            <label for="expiry_date_${documentIndex}" class="form-label">Expiry Date</label> 
-                            <input type="date" class="form-control" id="expiry_date_${documentIndex}" name="documents[${documentIndex}][expiry_date]" > 
+                            <label for="expiry_date_${documentIndex}" class="form-label">Expiry Date</label>
+                            <input type="date" class="form-control" id="expiry_date_${documentIndex}" name="documents[${documentIndex}][expiry_date]" >
                         </div>
                         <div class="col-md-4">
                             <label for="document-file-${documentIndex}" class="form-label">Document Files</label>
@@ -660,7 +660,7 @@
                         text: 'This document type has already been selected.',
                         icon: 'error',
                         confirmButtonText: 'OK'
-                    }); 
+                    });
                     selectElement.value = "";
                 } else {
                     selectedDocumentTypes.add(selectedType);
@@ -681,7 +681,7 @@
                 const index = event.target.dataset.index;
                 const documentDiv = document.querySelector(`div[data-index='${index}']`);
                 const documentType = documentDiv.querySelector('.document-type-select').value;
-                
+
                 // Remove document type from selectedDocumentTypes
                 selectedDocumentTypes.delete(documentType);
                 documentTypeMap.delete(index);
@@ -704,6 +704,6 @@
                 }
             });
         });
-    </script> 
+    </script>
 
 @endpush
