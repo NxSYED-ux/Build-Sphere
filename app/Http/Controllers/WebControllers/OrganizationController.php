@@ -1,17 +1,17 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\WebControllers;
 
-use App\Models\Building;
-use App\Models\Organization;
-use App\Models\DropdownType;
+use App\Http\Controllers\Controller;
 use App\Models\Address;
-use App\Models\User;
+use App\Models\Building;
+use App\Models\DropdownType;
+use App\Models\Organization;
 use App\Models\OrganizationPicture;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\File;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
 
 class OrganizationController extends Controller
 {

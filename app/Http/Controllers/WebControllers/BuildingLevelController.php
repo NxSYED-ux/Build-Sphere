@@ -1,13 +1,10 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\WebControllers;
 
-use App\Models\BuildingLevel;
+use App\Http\Controllers\Controller;
 use App\Models\Building;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\File;
-
+use App\Models\BuildingLevel;
 use Illuminate\Http\Request;
 
 class BuildingLevelController extends Controller

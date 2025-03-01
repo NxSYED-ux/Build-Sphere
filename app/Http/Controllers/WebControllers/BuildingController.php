@@ -1,19 +1,18 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\WebControllers;
 
+use App\Http\Controllers\Controller;
 use App\Models\Address;
 use App\Models\Building;
 use App\Models\BuildingDocument;
 use App\Models\BuildingLevel;
-use App\Models\Organization;
-use App\Models\DropdownType;
 use App\Models\BuildingPicture;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\File;
-
+use App\Models\DropdownType;
+use App\Models\Organization;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
 
 class BuildingController extends Controller
 {

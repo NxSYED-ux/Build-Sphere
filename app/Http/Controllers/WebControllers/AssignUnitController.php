@@ -1,10 +1,14 @@
 <?php
 
-namespace App\Http\Controllers;
-use App\Models\User;
+namespace App\Http\Controllers\WebControllers;
+use App\Http\Controllers\Controller;
 use App\Models\BuildingUnit;
-
+use App\Models\User;
+use App\Models\UserBuildingUnit;
+use App\Models\UserUnitPicture;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class AssignUnitController extends Controller
 {
@@ -103,7 +107,7 @@ class AssignUnitController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Unit assignment failed: ' . $e->getMessage());
+            Log::error('Error in unit assignment : ' . $e->getMessage());
             // return 'error' => 'Internal server error.'
         }
 

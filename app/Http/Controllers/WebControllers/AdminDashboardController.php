@@ -1,12 +1,11 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\WebControllers;
 
+use App\Http\Controllers\Controller;
 use App\Models\Building;
 use App\Models\Organization;
 use App\Models\User;
-
-use Illuminate\Http\Request;
 
 class AdminDashboardController extends Controller
 {

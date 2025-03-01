@@ -1,17 +1,9 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\WebControllers;
 
-use App\Models\Address;
+use App\Http\Controllers\Controller;
 use App\Models\Building;
-use App\Models\BuildingDocument;
-use App\Models\Organization;
-use App\Models\DropdownType;
-use App\Models\BuildingPicture;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\File;
-
 use Illuminate\Http\Request;
 
 class OwnerBuildingController extends Controller

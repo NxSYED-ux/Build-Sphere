@@ -1,21 +1,21 @@
 <?php
 
+use App\Http\Controllers\WebControllers\AdminDashboardController;
+use App\Http\Controllers\WebControllers\AuthController;
+use App\Http\Controllers\WebControllers\BuildingController;
+use App\Http\Controllers\WebControllers\BuildingLevelController;
+use App\Http\Controllers\WebControllers\BuildingTreeController;
+use App\Http\Controllers\WebControllers\BuildingUnitController;
+use App\Http\Controllers\WebControllers\DropdownTypeController;
+use App\Http\Controllers\WebControllers\DropdownValueController;
+use App\Http\Controllers\WebControllers\ForgotPasswordController;
+use App\Http\Controllers\WebControllers\OrganizationController;
+use App\Http\Controllers\WebControllers\OwnerBuildingController;
+use App\Http\Controllers\WebControllers\OwnerDashboardController;
+use App\Http\Controllers\WebControllers\ProfileController;
+use App\Http\Controllers\WebControllers\RoleController;
+use App\Http\Controllers\WebControllers\UsersController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\AuthController;
-use App\Http\Controllers\UsersController;
-use App\Http\Controllers\ForgotPasswordController;
-use App\Http\Controllers\RoleController;
-use App\Http\Controllers\AdminDashboardController;
-use App\Http\Controllers\OwnerDashboardController;
-use App\Http\Controllers\BuildingController;
-use App\Http\Controllers\BuildingLevelController;
-use App\Http\Controllers\BuildingUnitController;
-use App\Http\Controllers\DropdownTypeController;
-use App\Http\Controllers\DropdownValueController;
-use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\OrganizationController;
-use App\Http\Controllers\BuildingTreeController;
-use App\Http\Controllers\OwnerBuildingController;
 
 Route::get('/', function () {
     return view('auth.login');
@@ -138,3 +138,4 @@ Route::middleware(['auth.jwt:cookie'])->group(function () {
 
 
 require __DIR__.'/auth.php';
+require __DIR__.'/api.php';

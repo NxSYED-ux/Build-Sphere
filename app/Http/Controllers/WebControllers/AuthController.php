@@ -1,16 +1,17 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\WebControllers;
 
 use App\Http\Controllers\Controller;
-use Illuminate\View\View;
+use App\Http\Controllers\JWTException;
+use App\Http\Requests\LoginRequest;
 use App\Models\User;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Http\RedirectResponse;
+use Illuminate\View\View;
 use Tymon\JWTAuth\Facades\JWTAuth;
-use App\Http\Requests\LoginRequest;
 
 
 class AuthController extends Controller
@@ -34,6 +35,7 @@ class AuthController extends Controller
 
             $token = JWTAuth::fromUser($user);
             $cookie = cookie('jwt_token', $token);
+            Log::info('Token : ' . $token);
 
             // 1 -> Admin, 2 -> Owner, 3 -> Manager, 4 -> Staff, 5 -> User
             if ($user->role_id === 1) {

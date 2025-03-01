@@ -1,18 +1,18 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\WebControllers;
 
+use App\Http\Controllers\Controller;
 use App\Models\Building;
-use App\Models\BuildingUnit;
 use App\Models\BuildingLevel;
+use App\Models\BuildingUnit;
+use App\Models\DropdownType;
 use App\Models\Organization;
 use App\Models\UnitPicture;
-use App\Models\DropdownType;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\File;
-
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Log;
 
 class BuildingUnitController extends Controller
 {
@@ -157,7 +157,7 @@ class BuildingUnitController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
-            \Log::error("Error creating unit: " . $e->getMessage());
+            Log::error("Error creating unit: " . $e->getMessage());
             return redirect()->back()->withInput()->with('error', 'An error occurred while updating the building unit.');
         }
     }
