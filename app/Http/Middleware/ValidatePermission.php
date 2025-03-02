@@ -13,13 +13,13 @@ use App\Models\RolePermission;
 
 class ValidatePermission
 {
-    public function handle(Request $request, Closure $next, $requiredPermissionName, $responseType = 'json')
+    public function handle(Request $request, Closure $next, $requiredPermissionName, $ignoreUserPermission = true)
     {
         try {
             $user = $request->user();
 
             if (!$user) {
-                return $this->handleResponse($responseType, 'Unauthorized: Invalid user data', 401);
+                return $this->handleResponse($request, 'Unauthorized: Invalid user data', 401);
             }
 
             $permission = Permission::where('name', $requiredPermissionName)
@@ -27,22 +27,27 @@ class ValidatePermission
                 ->first(['id']);
 
             if (!$permission) {
-                return $this->handleResponse($responseType, "Access Denied: The permission for \"$requiredPermissionName\" is either inactive or does not exist.", 400);
+                return $this->handleResponse($request, "Access Denied: The permission for \"$requiredPermissionName\" is either inactive or does not exist.", 400);
             }
 
             $permissionId = $permission->id;
 
-            $userPermissionPromise = new Promise(function () use (&$userPermissionPromise, $user, $permissionId) {
-                $userPermissionPromise->resolve(
-                    UserPermission::where('user_id', $user->id)
-                        ->where('permission_id', $permissionId)
-                        ->where('status', 1)
-                        ->exists()
-                );
-            });
+            $promises = [];
 
-            $rolePermissionPromise = new Promise(function () use (&$rolePermissionPromise, $user, $permissionId) {
-                $rolePermissionPromise->resolve(
+            if (!$ignoreUserPermission) {
+                $promises[] = new Promise(function () use (&$promises, $user, $permissionId) {
+                    $promises[0]->resolve(
+                        UserPermission::where('user_id', $user->id)
+                            ->where('permission_id', $permissionId)
+                            ->where('status', 1)
+                            ->exists()
+                    );
+                });
+            }
+
+            $promises[] = new Promise(function () use (&$promises, $user, $permissionId, $ignoreUserPermission) {
+                $index = $ignoreUserPermission ? 0 : 1;
+                $promises[$index]->resolve(
                     RolePermission::where('role_id', $user->role_id)
                         ->where('permission_id', $permissionId)
                         ->where('status', 1)
@@ -50,22 +55,23 @@ class ValidatePermission
                 );
             });
 
-            [$userPermissionExists, $rolePermissionExists] = Utils::unwrap([$userPermissionPromise, $rolePermissionPromise]);
+            $results = Utils::unwrap($promises);
+            $hasPermission = $results[0] || ($results[1] ?? false);
 
-            if ($userPermissionExists || $rolePermissionExists) {
+            if ($hasPermission) {
                 return $next($request);
             }
 
-            return $this->handleResponse($responseType, 'Access denied: insufficient permissions', 403);
+            return $this->handleResponse($request, 'Access denied: insufficient permissions', 403);
         } catch (\Exception $e) {
             Log::error('Permission validation error: ' . $e->getMessage());
-            return $this->handleResponse($responseType, 'Internal server error', 500);
+            return $this->handleResponse($request, 'Internal server error', 500);
         }
     }
 
-    private function handleResponse($responseType, $message, $statusCode)
+    private function handleResponse(Request $request, $message, $statusCode)
     {
-        return $responseType === 'json'
+        return $request->wantsJson()
             ? response()->json(['error' => $message], $statusCode)
             : redirect('/login')->with('error', $message);
     }
