@@ -98,37 +98,17 @@ class ProfileController extends Controller
 
                 if (!$addressUpdated) {
                     DB::rollBack();
-                    return response()->json(['error' => 'No address changes detected.'], 404);
+                    return $this->handleResponse($request,404,'error','No address changes detected.');
                 }
             }
 
             DB::commit();
-            return response()->json(['message' => 'Profile updated successfully.'], 200);
+            return $this->handleResponse($request,200,'message','Profile updated successfully.');
 
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error("Error in updateProfileData: " . $e->getMessage());
-            return response()->json(['error' => 'An error occurred while updating user profile data.'], 500);
+            return $this->handleResponse($request,500,'error','An error occurred while updating user profile data.');
         }
-    }
-
-    public function updatePersonal(Request $request, string $id)
-    {
-        $validatedData = $request->validate([
-            'name' => 'required|string|max:255',
-            'phone_no' => 'nullable|string|max:15',
-            'cnic' => 'nullable|string|max:18|unique:users,cnic,' . $id,
-            'date_of_birth' => 'nullable|date',
-        ]);
-
-        $user = User::findOrFail($id);
-
-        $user->name = $validatedData['name'];
-        $user->phone_no = $validatedData['phone_no'];
-        $user->cnic = $validatedData['cnic'];
-        $user->date_of_birth = $validatedData['date_of_birth'];
-        $user->save();
-
-        return redirect()->back()->with('success', 'Profile updated successfully!');
     }
 }
