@@ -103,7 +103,7 @@ class ProfileController extends Controller
             }
 
             DB::commit();
-            return $this->handleResponse($request,200,'message','Profile updated successfully.');
+            return $this->handleResponse($request,200,'success','Profile updated successfully.');
 
         } catch (\Exception $e) {
             DB::rollBack();
