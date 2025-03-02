@@ -39,8 +39,11 @@ Route::middleware(['auth.jwt:cookie'])->group(function () {
 
     // Admin & Owner
     Route::post('logout', [AuthController::class, 'destroy'])->name('logout');
-    Route::get('admin_profile', [ProfileController::class, 'index'])->name('admin_profile');
-    Route::put('profile/update/{id}', [ProfileController::class, 'updatePersonal'])->name('users.profile.update');
+
+    Route::get('admin/profile', [ProfileController::class, 'index'])->name('admin.profile');
+    Route::put('admin/profile/{id}', [ProfileController::class, 'updatePersonal'])->name('admin.profile.update');
+    Route::get('owner/profile', [ProfileController::class, 'index'])->name('admin.profile');
+    Route::put('owner/profile/{id}', [ProfileController::class, 'updatePersonal'])->name('owner.profile.update');
 
     //Admin
     Route::get('dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
