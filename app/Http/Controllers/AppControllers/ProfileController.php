@@ -7,6 +7,7 @@ use App\Models\Address;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
 
 class ProfileController extends Controller
@@ -97,6 +98,42 @@ class ProfileController extends Controller
         }
     }
 
+    public function uploadProfilePic(Request $request)
+    {
+        try {
+            $user = $request->user();
+            if (!$user) {
+                return response()->json(['error' => 'User ID is required'], 400);
+            }
 
+            $request->validate([
+                'picture' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+            ]);
+
+            $image = $request->file('picture');
+
+            $imageName = time() . '_' . $image->getClientOriginalName();
+            $imagePath = 'uploads/users/images/' . $imageName;
+            $image->move(public_path('uploads/users/images'), $imageName);
+
+            $oldProfileImagePath = public_path($user->picture);
+            if (File::exists($oldProfileImagePath)) {
+                File::delete($oldProfileImagePath);
+            }
+
+            $user->update(['picture' => $imagePath]);
+
+
+            return response()->json([
+                'message' => 'Profile picture updated successfully!',
+                'path' => $imagePath,
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => $e->getMessage() ?: 'An error occurred while changing the profile picture.'
+            ], 500);
+        }
+    }
 
 }
