@@ -12,7 +12,7 @@ use App\Http\Controllers\WebControllers\ForgotPasswordController;
 use App\Http\Controllers\WebControllers\OrganizationController;
 use App\Http\Controllers\WebControllers\OwnerBuildingController;
 use App\Http\Controllers\WebControllers\OwnerDashboardController;
-use App\Http\Controllers\WebControllers\ProfileController;
+use App\Http\Controllers\GeneralControllers\ProfileController;
 use App\Http\Controllers\WebControllers\RoleController;
 use App\Http\Controllers\WebControllers\UsersController;
 use Illuminate\Support\Facades\Route;
@@ -39,8 +39,10 @@ Route::middleware(['auth.jwt:cookie'])->group(function () {
 
     // Admin & Owner
     Route::post('logout', [AuthController::class, 'destroy'])->name('logout');
-    Route::get('admin_profile', [ProfileController::class, 'index'])->name('admin_profile');
-    Route::put('profile/update/{id}', [ProfileController::class, 'updatePersonal'])->name('users.profile.update');
+    Route::get('admin/profile', [ProfileController::class, 'adminProfile'])->name('admin.profile');
+    Route::put('admin/profile/{id}', [ProfileController::class, 'updateProfileData'])->name('admin.profile.update');
+    Route::get('owner/profile', [ProfileController::class, 'ownerProfile'])->name('owner.profile');
+    Route::put('owner/profile/{id}', [ProfileController::class, 'updateProfileData'])->name('owner.profile.update');
 
     //Admin
     Route::get('dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
