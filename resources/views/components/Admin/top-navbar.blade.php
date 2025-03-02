@@ -111,7 +111,7 @@ input:checked + .slider.round:before {
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end p-0" style="z-index: 1050;" aria-labelledby="userMenu">
                     <li>
-                        <a class="dropdown-item d-flex align-items-center" href="{{ route('admin_profile') }}">
+                        <a class="dropdown-item d-flex align-items-center" href="{{ route('admin.profile') }}">
                             <i class="bx bxs-user me-2"></i> Profile
                         </a>
                     </li>
@@ -195,7 +195,7 @@ input:checked + .slider.round:before {
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end" style="z-index: 1050;" aria-labelledby="userMenu">
                     <li>
-                        <a class="dropdown-item" href="{{ route('admin_profile') }}">
+                        <a class="dropdown-item" href="{{ route('admin.profile') }}">
                         <img src="{{ Auth::user() && Auth::user()->picture ? asset(Auth::user()->picture) : asset('img/avatar.png') }}" class="rounded-circle" alt="User Image" style="width: 1.5rem; height: auto;"> Profile
                         </a>
                     </li>
