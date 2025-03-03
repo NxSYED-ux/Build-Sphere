@@ -4,9 +4,10 @@ namespace App\Http\Controllers\GeneralControllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\Address;
-use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
 
@@ -108,7 +109,99 @@ class ProfileController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error("Error in updateProfileData: " . $e->getMessage());
-            return $this->handleResponse($request,500,'error','An error occurred while updating user profile data.');
+            return $this->handleResponse($request,500,'error',$e->getMessage());
+        }
+    }
+
+    // Upload Profile Pic
+    public function uploadProfilePic(Request $request)
+    {
+        try {
+            $user = $request->user();
+            if (!$user) {
+                return $this->handleResponse($request,400,'error','User ID is required.');
+            }
+
+            $request->validate([
+                'picture' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+            ]);
+
+            $image = $request->file('picture');
+
+            $imageName = time() . '_' . $image->getClientOriginalName();
+            $imagePath = 'uploads/users/images/' . $imageName;
+            $image->move(public_path('uploads/users/images'), $imageName);
+
+            $oldProfileImagePath = public_path($user->picture);
+            if (File::exists($oldProfileImagePath)) {
+                File::delete($oldProfileImagePath);
+            }
+
+            $user->update(['picture' => $imagePath]);
+
+            return $this->handleResponse($request,200,'success','Profile picture updated successfully.');
+
+        } catch (\Exception $e) {
+            return $this->handleResponse($request,500,'error',$e->getMessage());
+        }
+    }
+
+    // Delete Profile Picture
+    public function deleteProfilePic(Request $request){
+        try {
+            $user = $request->user();
+            if (!$user) {
+                return $this->handleResponse($request,400,'error','User ID is required.');
+            }
+
+            if (!$user->picture) {
+                return $this->handleResponse($request, 400, 'error', 'No profile picture to delete.');
+            }
+
+            $oldProfileImagePath = public_path($user->picture);
+            if (File::exists($oldProfileImagePath)) {
+                File::delete($oldProfileImagePath);
+            }
+
+            $user->update(['picture' => null]);
+
+            return $this->handleResponse($request,200,'success','Profile picture removed successfully.');
+        } catch (\Exception $e) {
+            return $this->handleResponse($request,500,'error',$e->getMessage());
+        }
+    }
+
+    // Change Password
+    public function changePassword(Request $request)
+    {
+        try {
+            $user = $request->user();
+            if (!$user) {
+                return response()->json(['error' => 'User not found'], 400);
+            }
+
+            $validated = $request->validate([
+                'old_password' => 'required|string|min:8',
+                'new_password' => 'required|string|min:8',
+                'confirm_password' => 'required|string|min:8|same:new_password',
+            ]);
+
+            if (!Hash::check($validated['old_password'], $user->password)) {
+                return $this->handleResponse($request, 400, 'error', 'Old password is incorrect.');
+            }
+
+            $user->password = Hash::make($validated['new_password']);
+            $userUpdated = $user->save();
+
+            if (!$userUpdated) {
+                return $this->handleResponse($request, 500, 'error', 'Failed to update password.');
+            }
+
+            return $this->handleResponse($request, 200, 'success', 'Password changed successfully.');
+
+        } catch (\Exception $e) {
+            Log::error("Error in changePassword: " . $e->getMessage());
+            return $this->handleResponse($request, 500, 'error', $e->getMessage());
         }
     }
 }

@@ -21,7 +21,7 @@ return new class extends Migration
             $table->unsignedInteger('role_id');
             $table->unsignedBigInteger('address_id')->unique();
             $table->tinyInteger('status')->default(1);
-            $table->string('reset_token',255)->nullable();
+            $table->text('reset_token')->nullable();
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
             $table->timestamp('created_at')->useCurrent();

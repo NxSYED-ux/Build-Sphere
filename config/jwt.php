@@ -145,12 +145,12 @@ return [
     */
 
     'required_claims' => [
-        // 'iss',
+         'iss',
         'iat',
         'exp',
-        // 'nbf',
-        // 'sub',
-        // 'jti',
+         'nbf',
+         'sub',
+         'jti',
     ],
 
     /*
@@ -217,7 +217,7 @@ return [
     |
     */
 
-    'blacklist_enabled' => env('JWT_BLACKLIST_ENABLED', true),
+    'blacklist_enabled' => env('JWT_BLACKLIST_ENABLED', true),  // If false then check line no 61 authController or logout function
 
     /*
     | -------------------------------------------------------------------------

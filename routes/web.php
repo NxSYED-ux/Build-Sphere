@@ -1,18 +1,18 @@
 <?php
 
+use App\Http\Controllers\GeneralControllers\AuthController;
+use App\Http\Controllers\GeneralControllers\ForgotPasswordController;
+use App\Http\Controllers\GeneralControllers\ProfileController;
 use App\Http\Controllers\WebControllers\AdminDashboardController;
-use App\Http\Controllers\WebControllers\AuthController;
 use App\Http\Controllers\WebControllers\BuildingController;
 use App\Http\Controllers\WebControllers\BuildingLevelController;
 use App\Http\Controllers\WebControllers\BuildingTreeController;
 use App\Http\Controllers\WebControllers\BuildingUnitController;
 use App\Http\Controllers\WebControllers\DropdownTypeController;
 use App\Http\Controllers\WebControllers\DropdownValueController;
-use App\Http\Controllers\WebControllers\ForgotPasswordController;
 use App\Http\Controllers\WebControllers\OrganizationController;
 use App\Http\Controllers\WebControllers\OwnerBuildingController;
 use App\Http\Controllers\WebControllers\OwnerDashboardController;
-use App\Http\Controllers\GeneralControllers\ProfileController;
 use App\Http\Controllers\WebControllers\RoleController;
 use App\Http\Controllers\WebControllers\UsersController;
 use Illuminate\Support\Facades\Route;
@@ -22,10 +22,12 @@ Route::get('/', function () {
 });
 
 // Authentication routes
-Route::get('login', [AuthController::class, 'create'])->name('login');
-Route::post('login', [AuthController::class, 'store'])->name('login');
+Route::get('login', [AuthController::class, 'index'])->name('login');
+Route::post('login', [AuthController::class, 'adminLogin'])->name('login');
+//Route::post('admin-login', [AuthController::class, 'adminLogin'])->name('admin-login');
+//Route::post('owner-login', [AuthController::class, 'ownerLogin'])->name('owner-login');
 
-Route::get('forget-password', [ForgotPasswordController::class, 'showForgotPasswordForm'])->name('password.request');
+Route::get('forget-password', [ForgotPasswordController::class, 'showForgetForm'])->name('password.request');
 Route::post('forget-password', [ForgotPasswordController::class, 'sendResetLink'])->name('password.email');
 
 Route::get('reset-password/{token}', [ForgotPasswordController::class, 'showResetForm'])->name('password.reset');
@@ -38,11 +40,11 @@ Route::fallback(function () {
 Route::middleware(['auth.jwt:cookie'])->group(function () {
 
     // Admin & Owner
-    Route::post('logout', [AuthController::class, 'destroy'])->name('logout');
+    Route::post('logout', [AuthController::class, 'logOut'])->name('logout');
     Route::get('admin/profile', [ProfileController::class, 'adminProfile'])->name('admin.profile');
-    Route::put('admin/profile/{id}', [ProfileController::class, 'updateProfileData'])->name('admin.profile.update');
+    Route::put('admin/profile', [ProfileController::class, 'updateProfileData'])->name('admin.profile.update');
     Route::get('owner/profile', [ProfileController::class, 'ownerProfile'])->name('owner.profile');
-    Route::put('owner/profile/{id}', [ProfileController::class, 'updateProfileData'])->name('owner.profile.update');
+    Route::put('owner/profile', [ProfileController::class, 'updateProfileData'])->name('owner.profile.update');
 
     //Admin
     Route::get('dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');

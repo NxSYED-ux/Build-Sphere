@@ -1,10 +1,10 @@
 <?php
 
+use App\Http\Controllers\GeneralControllers\AuthController;
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\GeneralControllers\ProfileController;
 use App\Http\Controllers\AppControllers\HomePageController;
-//use App\Http\Controllers\AppControllers\ProfileController;
 use App\Http\Controllers\AppControllers\UnitDetailsController;
 use App\Http\Controllers\AppControllers\BuildingUnitsController;
 use App\Http\Controllers\AppControllers\OrganizationDetailsController;
@@ -13,23 +13,26 @@ use App\Http\Controllers\AppControllers\MyPropertiesController;
 use App\Http\Controllers\AppControllers\QueryController;
 use App\Http\Controllers\AppControllers\DropdownController;
 
+Route::post('auth/user-login', [AuthController::class, 'login']);
+
 Route::prefix('user')->middleware(['auth.jwt'])->group(function () {
 
     Route::middleware('check.permission:View User Profile')->group(function () {
         Route::get('/profile', [ProfileController::class, 'getProfile']);
     });
-
     Route::middleware('check.permission:Update User Profile')->group(function () {
         Route::put('/profile', [ProfileController::class, 'updateProfileData']);
     });
-
     Route::middleware('check.permission:Upload User Profile Picture')->group(function () {
         Route::post('/update-profile-pic', [ProfileController::class, 'uploadProfilePic']);
     });
-
     Route::middleware('check.permission:Remove User Profile Picture')->group(function () {
-        Route::put('/remove-profile-pic', [ProfileController::class, 'removeProfilePic']);
+        Route::put('/remove-profile-pic', [ProfileController::class, 'deleteProfilePic']);
     });
+    Route::middleware('check.permission:Remove User Profile Picture')->group(function () {
+        Route::put('/change-password', [ProfileController::class, 'changePassword']);
+    });
+
 
     Route::middleware('check.permission:User Homepage Access,json')->group(function () {
         Route::get('/home', [HomePageController::class, 'homePage']);
