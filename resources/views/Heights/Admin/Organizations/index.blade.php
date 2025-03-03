@@ -73,7 +73,11 @@
 @section('content')
 
     <!--  -->
-    <x-Admin.top-navbar :searchVisible="false"/>
+    <x-Admin.top-navbar :searchVisible="false" :breadcrumbLinks="[
+            ['url' => url('admin_dashboard'), 'label' => 'Dashboard'],
+            ['url' => '', 'label' => 'Organizations']
+        ]"
+    />
     <!--  -->
     <x-Admin.side-navbar :openSections="['Organizations']" />
     <x-error-success-model />
@@ -83,16 +87,8 @@
     @endphp
 
     <div id="main">
-        <section class="content-header pt-2">
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb mx-5">
-                    <li class="breadcrumb-item"><a href="{{ url('admin_dashboard') }}">Dashboard</a></li>
-                    <li class="breadcrumb-item active" aria-current="page"><a href="">Organizations</a></li>
-                </ol>
-            </nav>
-        </section>
 
-        <section class="content content-top  my-3 mx-2">
+        <section class="content my-3 mx-2">
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-md-12">
@@ -111,7 +107,7 @@
                                     <div class="tab-pane fade {{ $activeTab === 'Tab1' ? 'show active' : '' }}" id="dropdwon-types" role="tabpanel" aria-labelledby="dropdwon-types-tab">
                                         <div class="card shadow p-3 mb-5 bg-body rounded" style="border: none;">
                                             <div class="card-body" style="overflow-x: auto;">
-                                                <h4 class="mb-4">Organizations</h4>
+{{--                                                <h4 class="mb-4">Organizations</h4>--}}
                                                 <div style="overflow-x: auto;">
                                                     <table id="organizationTable" class="table shadow-sm table-hover table-striped">
                                                         <thead class="shadow">
@@ -156,7 +152,7 @@
                                     <div class="tab-pane fade {{ $activeTab === 'Tab2' ? 'show active' : '' }}" id="dropdwon-values" role="tabpanel" aria-labelledby="dropdwon-values-tab">
                                         <div class="card shadow p-3 mb-5 bg-body rounded" style="border: none;">
                                             <div class="card-body" style="overflow-x: auto;">
-                                                <h4 class="mb-4">Add Organization</h4>
+{{--                                                <h4 class="mb-4">Add Organization</h4>--}}
                                                     <form action="{{ route('organizations.store') }}" method="POST" enctype="multipart/form-data">
                                                         @csrf
                                                         <div class="row my-0 py-0">

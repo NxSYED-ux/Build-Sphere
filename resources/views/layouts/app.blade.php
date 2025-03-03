@@ -65,6 +65,10 @@
         .breadcrumb-item + .breadcrumb-item::before {
             content: " / ";
             color: var(--breadcrumb-separator-color);
+            font-size: 20px;
+            line-height: 1.8rem;
+            display: inline-flex;
+            align-items: center;
         }
         .breadcrumb ol li{
             color: var(--breadcrumb-text2-color) !important;

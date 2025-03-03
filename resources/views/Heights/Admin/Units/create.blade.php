@@ -99,22 +99,18 @@
 @endpush
 
 @section('content')
-    <x-Admin.top-navbar :searchVisible="false"/>
+    <x-Admin.top-navbar :searchVisible="false" :breadcrumbLinks="[
+            ['url' => url('admin_dashboard'), 'label' => 'Dashboard'],
+            ['url' => route('units.index'), 'label' => 'Units'],
+            ['url' => '', 'label' => 'Create Unit']
+        ]"
+    />
     <x-Admin.side-navbar :openSections="['Buildings', 'Units']" />
     <x-error-success-model />
 
     <div id="main">
-        <section class="content-header pt-2">
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb mx-5">
-                    <li class="breadcrumb-item"><a href="{{ url('admin_dashboard') }}">Dashboard</a></li>
-                    <li class="breadcrumb-item"><a href="{{ route('units.index') }}">Units</a></li>
-                    <li class="breadcrumb-item active" aria-current="page"><a href="">Create Unit</a></li>
-                </ol>
-            </nav>
-        </section>
 
-        <section class="content content-top  my-3 mx-2">
+        <section class="content my-3 mx-2">
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-md-12">

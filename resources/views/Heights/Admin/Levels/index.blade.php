@@ -58,7 +58,11 @@
 @section('content')
 
     <!-- Top Navbar -->
-    <x-Admin.top-navbar :searchVisible="false"/>
+    <x-Admin.top-navbar :searchVisible="false" :breadcrumbLinks="[
+            ['url' => url('admin_dashboard'), 'label' => 'Dashboard'],
+            ['url' => '', 'label' => 'Levels']
+        ]"
+    />
 
     <!-- Side Navbar -->
     <x-Admin.side-navbar :openSections="['Buildings', 'Levels']" />
@@ -66,16 +70,8 @@
 
 
     <div id="main">
-        <section class="content-header pt-2">
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb mx-5">
-                    <li class="breadcrumb-item"><a href="{{url('admin_dashboard')}}">Dashboard</a></li>
-                    <li class="breadcrumb-item active" aria-current="page"><a href="">Levels</a></li>
-                </ol>
-            </nav>
-        </section>
 
-        <section class="content content-top my-3 mx-2">
+        <section class="content my-3 mx-2">
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-md-12">

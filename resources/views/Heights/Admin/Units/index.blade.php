@@ -3,12 +3,12 @@
 @section('title', 'Units')
 
 @push('styles')
-    <style> 
-        body { 
+    <style>
+        body {
         }
-        #main { 
+        #main {
             margin-top: 45px;
-        } 
+        }
         #add_button {
             width: 45px;
             height: 45px;
@@ -20,7 +20,7 @@
             font-weight: bold;
             align-items: center;
             justify-content: center;
-        } 
+        }
 
         th, td {
             white-space: nowrap;
@@ -29,32 +29,28 @@
         .dataTables_wrapper {
             width: 100%;
             overflow-x: auto;
-        } 
-    </style> 
+        }
+    </style>
 @endpush
 
-@section('content') 
+@section('content')
 
     <!-- Top Navbar -->
-    <x-Admin.top-navbar :searchVisible="false"/>
+    <x-Admin.top-navbar :searchVisible="false" :breadcrumbLinks="[
+            ['url' => url('admin_dashboard'), 'label' => 'Dashboard'],
+            ['url' => '', 'label' => 'Units']
+        ]"
+    />
 
     <!-- Side Navbar -->
-    <x-Admin.side-navbar :openSections="['Buildings', 'Units']" /> 
+    <x-Admin.side-navbar :openSections="['Buildings', 'Units']" />
     <!--  -->
     <x-error-success-model />
 
 
     <div id="main">
-        <section class="content-header pt-2">
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb mx-5">
-                    <li class="breadcrumb-item"><a href="{{url('admin_dashboard')}}">Dashboard</a></li>
-                    <li class="breadcrumb-item active" aria-current="page"><a href="">Units</a></li>
-                </ol>
-            </nav> 
-        </section>
 
-        <section class="content content-top  my-3 mx-2">
+        <section class="content  my-3 mx-2">
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-md-12">
@@ -62,19 +58,19 @@
                             <div class="container mt-2">
                                 <div class="d-flex justify-content-between align-items-center mb-2">
                                     <h3 class="mb-1">Units</h3>
-                                    <a href="{{ route('units.create') }}" class="btn float-end" id="add_button"  data-bs-toggle="tooltip" data-bs-placement="top" title="Add Unit"><i class="fa fa-plus"></i></a> 
-                                </div>  
+                                    <a href="{{ route('units.create') }}" class="btn float-end" id="add_button"  data-bs-toggle="tooltip" data-bs-placement="top" title="Add Unit"><i class="fa fa-plus"></i></a>
+                                </div>
                                 <div class="card shadow p-3 pt-1 mb-5 bg-body rounded" style="border: none;">
                                     <div class="card-body">
-                                        <div class="d-flex justify-content-between align-items-center"> 
+                                        <div class="d-flex justify-content-between align-items-center">
 
-                                            <div  class="d-flex align-items-center"> 
+                                            <div  class="d-flex align-items-center">
                                                 <button class="btn btn-light" type="button" id="menu-icon" data-bs-toggle="dropdown" aria-expanded="false">
                                                     <!-- <i class="bx bx-menu"></i> -->
                                                     <i class='bx bx-export' style="font-size: 20px;"></i>
                                                 </button>
- 
-                                                <ul id="button-list" class="dropdown-menu dropdown-menu-end" > 
+
+                                                <ul id="button-list" class="dropdown-menu dropdown-menu-end" >
                                                     <li><button class="dropdown-item" type="button" id="copyButton">Copy</button></li>
                                                     <li><button class="dropdown-item" type="button" id="csvButton">CSV</button></li>
                                                     <li><button class="dropdown-item" type="button" id="excelButton">Excel</button></li>
@@ -82,7 +78,7 @@
                                                     <li><button class="dropdown-item" type="button" id="printButton">Print</button></li>
                                                     <!-- <li><button class="dropdown-item" type="button" id="colvisButton">Column Visibility</button></li> -->
                                                 </ul>
-                                            </div> 
+                                            </div>
 
                                             <form method="GET" action="{{ route('units.index') }}" class="d-flex" style="margin-left: 6px;">
                                                 <input
@@ -155,19 +151,19 @@
 
                                     </div>
                                 </div>
-                            </div> 
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </section>
-    </div> 
+    </div>
 
 @endsection
 
 
- 
-@push('scripts') 
+
+@push('scripts')
     <!-- Add DataTables JS -->
     <script src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.11.3/js/dataTables.bootstrap5.min.js"></script>
@@ -180,16 +176,16 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
- 
+
     <!-- Data Table script -->
     <script>
-        $(document).ready(function () {  
+        $(document).ready(function () {
 
-            var table = $('#unitsTable').DataTable({ 
+            var table = $('#unitsTable').DataTable({
                 searching: false,
                 paging: false,
-                info: false,  
-                dom: 'Bfrtip', 
+                info: false,
+                dom: 'Bfrtip',
                 buttons: [
                         {
                             extend: 'csv',
@@ -212,7 +208,7 @@
                             className: 'btn btn-secondary d-none'
                         }
                 ]
-            }); 
+            });
 
             // CSV Button Click
             $('#csvButton').on('click', function () {
@@ -306,4 +302,4 @@
 });
 
 </script> -->
-@endpush 
+@endpush

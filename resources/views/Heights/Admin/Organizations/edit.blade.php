@@ -4,17 +4,17 @@
 
 @push('styles')
     <style>
-        body { 
+        body {
         }
-        #main { 
+        #main {
             margin-top: 45px;
-        }  
+        }
 
         .image-thumbnail {
             display: inline-block;
             margin: 5px;
             position: relative;
-        } 
+        }
         .thumbnail-image {
             width: 100px;
             height: 100px;
@@ -27,43 +27,39 @@
             background: rgba(255, 255, 255, 0.7);
             border: none;
             cursor: pointer;
-        } 
-        
+        }
+
     </style>
-@endpush 
+@endpush
 
 @section('content')
 
     <!--  -->
-    <x-Admin.top-navbar :searchVisible="false"/>
-    <!--  --> 
+    <x-Admin.top-navbar :searchVisible="false" :breadcrumbLinks="[
+            ['url' => url('admin_dashboard'), 'label' => 'Dashboard'],
+            ['url' => route('organizations.index'), 'label' => 'Organizations'],
+            ['url' => '', 'label' => 'Edit Organization']
+        ]"
+    />
+    <!--  -->
     <x-Admin.side-navbar :openSections="['Organizations']" />
-    <x-error-success-model /> 
- 
-    <div id="main"> 
-        <section class="content-header pt-2"> 
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb mx-5">
-                    <li class="breadcrumb-item"><a href="{{url('admin_dashboard')}}">Dashboard</a></li> 
-                    <li class="breadcrumb-item"><a href="{{ route('organizations.index') }}">Organizations</a></li>
-                    <li class="breadcrumb-item active" aria-current="page"><a href="">Edit Organization</a></li>
-                </ol>
-            </nav> 
-        </section>  
+    <x-error-success-model />
 
-        <section class="content content-top  my-3 mx-2">
+    <div id="main">
+
+        <section class="content my-3 mx-2">
             <div class="container-fluid ">
-                <div class="row"> 
+                <div class="row">
                     <div class="col-md-12">
                         <div class="box" style="overflow-x: auto;">
                             <div class="container mt-2">
                                 <div class="d-flex justify-content-between align-items-center mb-2">
                                     <h4 class="mb-0">Edit Organization</h4>
                                     <a href="{{ route('organizations.index') }}" class="btn btn-secondary">Go Back</a>
-                                </div>  
+                                </div>
                                 <div class="card shadow p-3 mb-5 bg-body rounded" style="border: none;">
-                                    <div class="card-body"> 
-                                        <form action="{{ route('organizations.update', $organization->id) }}" method="POST" enctype="multipart/form-data"> 
+                                    <div class="card-body">
+                                        <form action="{{ route('organizations.update', $organization->id) }}" method="POST" enctype="multipart/form-data">
                                             @method('PUT')
 
                                             <div class="row mb-3">
@@ -78,8 +74,8 @@
                                                             </span>
                                                         @enderror
                                                     </div>
-                                                </div> 
-                                                
+                                                </div>
+
                                                 <!-- Organization -->
                                                 <div class="col-sm-12 col-md-6 col-lg-4">
                                                     <div class="form-group mb-3">
@@ -138,37 +134,37 @@
                                                             <div class="text-danger">{{ $message }}</div>
                                                         @enderror
                                                     </div>
-                                                </div> 
+                                                </div>
 
                                                 <!--  -->
                                                 <div class="col-lg-4 col-md-6 col-sm-12">
                                                     <div class="form-group mb-3">
-                                                        <label for="country">Country</label> 
+                                                        <label for="country">Country</label>
                                                         <select class="form-select" id="country" name="country">
-                                                            <option value="" selected>Select Country</option> 
+                                                            <option value="" selected>Select Country</option>
                                                         </select>
                                                         @error('country')
                                                             <div class="text-danger">{{ $message }}</div>
                                                         @enderror
-                                                    </div> 
-                                                </div> 
+                                                    </div>
+                                                </div>
                                                 <!--  -->
                                                 <div class="col-lg-4 col-md-6 col-sm-12">
                                                     <div class="form-group mb-3">
-                                                        <label for="province">Province</label> 
+                                                        <label for="province">Province</label>
                                                         <select class="form-select" id="province" name="province">
                                                             <option value="" selected>Select Province</option>
                                                         </select>
                                                         @error('province')
                                                             <div class="text-danger">{{ $message }}</div>
                                                         @enderror
-                                                    </div> 
-                                                </div> 
+                                                    </div>
+                                                </div>
 
                                                 <!--  -->
                                                 <div class="col-lg-4 col-md-6 col-sm-12">
                                                     <div class="form-group mb-3">
-                                                        <label for="city">City</label> 
+                                                        <label for="city">City</label>
                                                         <select class="form-select" id="city" name="city">
                                                             <option value="" selected>Select Province</option>
                                                         </select>
@@ -177,12 +173,12 @@
                                                         @enderror
                                                     </div>
                                                 </div>
-                                                
+
                                                 <!--  -->
                                                 <div class="col-sm-12 col-md-6 col-lg-4">
                                                     <div class="form-group mb-3">
-                                                        <label for="location">Location</label> 
-                                                        <input type="text" name="location" id="location" class="form-control @error('location') is-invalid @enderror" value="{{ old('location', $organization->address->location ) }}" maxlength="100" placeholder="Enter Location"> 
+                                                        <label for="location">Location</label>
+                                                        <input type="text" name="location" id="location" class="form-control @error('location') is-invalid @enderror" value="{{ old('location', $organization->address->location ) }}" maxlength="100" placeholder="Enter Location">
                                                         @error('location')
                                                             <span class="invalid-feedback" role="alert">
                                                                 <strong>{{ $message }}</strong>
@@ -194,8 +190,8 @@
                                                 <!--  -->
                                                 <div class="col-sm-12 col-md-6 col-lg-4">
                                                     <div class="form-group mb-3">
-                                                        <label for="postal_code">Postal Code</label> 
-                                                        <input type="text" name="postal_code" id="postal_code" class="form-control @error('postal_code') is-invalid @enderror" value="{{ old('postal_code', $organization->address->postal_code ) }}" maxlength="100" placeholder="Enter Postal Code"> 
+                                                        <label for="postal_code">Postal Code</label>
+                                                        <input type="text" name="postal_code" id="postal_code" class="form-control @error('postal_code') is-invalid @enderror" value="{{ old('postal_code', $organization->address->postal_code ) }}" maxlength="100" placeholder="Enter Postal Code">
                                                         @error('postal_code')
                                                             <span class="invalid-feedback" role="alert">
                                                                 <strong>{{ $message }}</strong>
@@ -203,7 +199,7 @@
                                                         @enderror
                                                     </div>
                                                 </div>
-                                            </div> 
+                                            </div>
 
                                             <div class="row">
                                                 <!-- Organization Images -->
@@ -235,20 +231,20 @@
 
                                             <button type="submit" class="btn btn-primary">Update Organization</button>
                                             <a href="{{ route('organizations.index') }}" class="btn btn-secondary">Cancel</a>
-                                        </form> 
+                                        </form>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>  
+            </div>
         </section>
-    </div>   
+    </div>
 
 @endsection
 
-@push('scripts') 
+@push('scripts')
 
 
     <!-- Password Script -->
@@ -260,11 +256,11 @@
             if (passwordField.value.length === 0) {
                 passwordField.classList.remove('is-invalid');
                 passwordHelp.textContent = '';
-            } 
+            }
             else if (passwordField.value.length < 8) {
                 passwordField.classList.add('is-invalid');
                 passwordHelp.textContent = 'Password must be at least 8 characters long.';
-            } 
+            }
              else {
                 passwordField.classList.remove('is-invalid');
                 passwordHelp.textContent = '';
@@ -278,10 +274,10 @@
             var x = e.target.value.replace(/\D/g, '').match(/(\d{0,3})(\d{0,4})(\d{0,7})(\d{0,1})/);
             e.target.value = !x[2] ? x[1] : x[1] + '-' + x[2] + (x[3] ? '-' + x[3] + (x[4] ? '-' + x[4] : '') : '');
         });
-    </script> 
+    </script>
 
     <!-- Remove or delete organization pictures script -->
-    <script> 
+    <script>
 
         function removeExistingImage(imageId) {
             Swal.fire({
@@ -293,7 +289,7 @@
                 cancelButtonText: 'Cancel',
                 reverseButtons: true
             }).then((result) => {
-                if (result.isConfirmed) { 
+                if (result.isConfirmed) {
                     fetch(`{{ route('organizations.remove_picture', ':id') }}`.replace(':id', imageId), {
                         method: 'DELETE',
                         headers: {
@@ -311,7 +307,7 @@
                                 icon: 'success',
                                 confirmButtonText: 'OK'
                             });
-                        } else { 
+                        } else {
                             Swal.fire({
                                 title: 'Error!',
                                 text: 'Failed to remove image.',
@@ -325,7 +321,7 @@
             });
         }
 
-    </script> 
+    </script>
 
     <!-- Organization Pictures script -->
     <script>
@@ -339,8 +335,8 @@
 
             function handleImageSelection(event) {
                 const files = Array.from(event.target.files);
-                selectedImages = [...selectedImages, ...files];  
-                currentIndex = selectedImages.length - files.length; 
+                selectedImages = [...selectedImages, ...files];
+                currentIndex = selectedImages.length - files.length;
                 renderThumbnails();
                 showImage();
             }
@@ -393,7 +389,7 @@
                 } else {
                     img.classList.remove('active');
                 }
-            } 
+            }
 
             function removeImage(index) {
                 selectedImages.splice(index, 1);
@@ -512,7 +508,7 @@
             if (userProvince) {
                 populateCities();
             }
-        }); 
+        });
     </script>
-    
+
 @endpush

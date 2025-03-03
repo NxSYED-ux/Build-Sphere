@@ -4,17 +4,17 @@
 
 @push('styles')
     <style>
-        body { 
+        body {
         }
-        #main { 
+        #main {
             margin-top: 45px;
-        } 
+        }
 
         .image-thumbnail {
             display: inline-block;
             margin: 5px;
             position: relative;
-        } 
+        }
         .thumbnail-image {
             width: 100px;
             height: 100px;
@@ -27,43 +27,39 @@
             background: rgba(255, 255, 255, 0.7);
             border: none;
             cursor: pointer;
-        } 
-        
+        }
+
     </style>
-@endpush 
+@endpush
 
 @section('content')
 
     <!--  -->
-    <x-Admin.top-navbar :searchVisible="false"/>
-    <!--  --> 
-    <x-Admin.side-navbar :openSections="['Buildings', 'Building']" /> 
+    <x-Admin.top-navbar :searchVisible="false" :breadcrumbLinks="[
+            ['url' => url('admin_dashboard'), 'label' => 'Dashboard'],
+            ['url' => route('buildings.index'), 'label' => 'Buildings'],
+            ['url' => '', 'label' => 'Edit Building']
+        ]"
+    />
+    <!--  -->
+    <x-Admin.side-navbar :openSections="['Buildings', 'Building']" />
     <x-error-success-model />
- 
-    <div id="main">
-        <section class="content-header pt-2"> 
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb mx-5">
-                    <li class="breadcrumb-item"><a href="{{url('admin_dashboard')}}">Dashboard</a></li> 
-                    <li class="breadcrumb-item"><a href="{{ route('buildings.index') }}">Buildings</a></li>
-                    <li class="breadcrumb-item active" aria-current="page"><a href="">Edit Building</a></li>
-                </ol>
-            </nav> 
-        </section>  
 
-        <section class="content content-top my-3 mx-2">
+    <div id="main">
+
+        <section class="content my-3 mx-2">
             <div class="container-fluid ">
-                <div class="row"> 
+                <div class="row">
                     <div class="col-md-12">
                         <div class="box" style="overflow-x: auto;">
                             <div class="container mt-2">
                                 <div class="d-flex justify-content-between align-items-center mb-2">
                                     <h4 class="mb-0">Edit Building</h4>
                                     <a href="{{ route('buildings.index') }}" class="btn btn-secondary">Go Back</a>
-                                </div>  
+                                </div>
                                 <div class="card shadow p-3 mb-5 bg-body rounded" style="border: none;">
-                                    <div class="card-body"> 
-                                        <form action="{{ route('buildings.update', $building->id) }}" method="POST" enctype="multipart/form-data"> 
+                                    <div class="card-body">
+                                        <form action="{{ route('buildings.update', $building->id) }}" method="POST" enctype="multipart/form-data">
                                             @method('PUT')
 
                                             <div class="row mb-3">
@@ -78,7 +74,7 @@
                                                             </span>
                                                         @enderror
                                                     </div>
-                                                </div>  
+                                                </div>
 
                                                 <div class="col-lg-4 col-md-6 col-sm-12">
                                                     <div class="form-group mb-3">
@@ -89,7 +85,7 @@
                                                                 <option value="{{ $value->value_name }}" {{ old('building_type', $building->building_type) == $value->value_name ? 'selected' : '' }}>
                                                                     {{ $value->value_name }}
                                                                 </option>
-                                                            @endforeach 
+                                                            @endforeach
                                                         </select>
                                                         @error('building_type')
                                                             <span class="invalid-feedback" role="alert">
@@ -103,12 +99,12 @@
                                                     <div class="form-group">
                                                         <label for="status">Status</label>
                                                         <span class="required__field">*</span><br>
-                                                        <select name="status" id="status" class="form-select" required> 
-                                                            <option value="Approved" {{ old('status', $building->status) == 'Approved' ? 'selected' : '' }}>Approved</option> 
-                                                            <option value="Under Review" {{ old('status', $building->status) == 'Under Review' ? 'selected' : '' }}>Under Review</option> 
-                                                            <option value="Rejected" {{ old('status', $building->status) == 'Rejected' ? 'selected' : '' }}>Rejected</option> 
-                                                            <option value="Under Process" {{ old('status', $building->status) == 'Under Process' ? 'selected' : '' }}>Under Process</option> 
-                                                            <option value="Reapproved" {{ old('status', $building->status) == 'Reapproved' ? 'selected' : '' }}>Reapproved</option> 
+                                                        <select name="status" id="status" class="form-select" required>
+                                                            <option value="Approved" {{ old('status', $building->status) == 'Approved' ? 'selected' : '' }}>Approved</option>
+                                                            <option value="Under Review" {{ old('status', $building->status) == 'Under Review' ? 'selected' : '' }}>Under Review</option>
+                                                            <option value="Rejected" {{ old('status', $building->status) == 'Rejected' ? 'selected' : '' }}>Rejected</option>
+                                                            <option value="Under Process" {{ old('status', $building->status) == 'Under Process' ? 'selected' : '' }}>Under Process</option>
+                                                            <option value="Reapproved" {{ old('status', $building->status) == 'Reapproved' ? 'selected' : '' }}>Reapproved</option>
                                                         </select>
                                                         @error('status')
                                                             <span class="invalid-feedback" role="alert">
@@ -123,7 +119,7 @@
                                                     <div class="form-group mb-3">
                                                         <label for="area">Area</label>
                                                         <span class="required__field">*</span><br>
-                                                        <input type="number" name="area" id="area" class="form-control @error('area') is-invalid @enderror" value="{{ old('area', $building->area) }}" placeholder="1234" required> 
+                                                        <input type="number" name="area" id="area" class="form-control @error('area') is-invalid @enderror" value="{{ old('area', $building->area) }}" placeholder="1234" required>
                                                         @error('area')
                                                             <span class="invalid-feedback" role="alert">
                                                                 <strong>{{ $message }}</strong>
@@ -155,20 +151,20 @@
 
                                                 <!-- <div class="col-sm-12 col-md-6 col-lg-4">
                                                     <div class="form-group mb-3">
-                                                        <label for="remarks">Remarks</label> 
+                                                        <label for="remarks">Remarks</label>
                                                         <input type="text" name="remarks" id="remarks" class="form-control @error('remarks') is-invalid @enderror" value="{{ old('remarks', $building->remarks) }}" placeholder="Remarks"  maxlength="50">
                                                         @error('remarks')
                                                             <span class="invalid-feedback" role="alert">
                                                                 <strong>{{ $message }}</strong>
                                                             </span>
                                                         @enderror
-                                                    </div>  
+                                                    </div>
                                                 </div>  -->
                                                 <!-- Construction Year -->
                                                 <div class="col-sm-12 col-md-6 col-lg-4">
                                                     <div class="form-group mb-3">
-                                                        <label for="construction_year">Construction Year</label> 
-                                                        <input type="number" name="construction_year" id="construction_year" class="form-control @error('construction_year') is-invalid @enderror" value="{{ old('construction_year', $building->construction_year) }}" placeholder="2024"> 
+                                                        <label for="construction_year">Construction Year</label>
+                                                        <input type="number" name="construction_year" id="construction_year" class="form-control @error('construction_year') is-invalid @enderror" value="{{ old('construction_year', $building->construction_year) }}" placeholder="2024">
                                                         @error('construction_year')
                                                             <span class="invalid-feedback" role="alert">
                                                                 <strong>{{ $message }}</strong>
@@ -180,32 +176,32 @@
                                                 <!--  -->
                                                 <div class="col-lg-4 col-md-6 col-sm-12">
                                                     <div class="form-group mb-3">
-                                                        <label for="country">Country</label> 
+                                                        <label for="country">Country</label>
                                                         <select class="form-select" id="country" name="country">
-                                                            <option value="" selected>Select Country</option> 
+                                                            <option value="" selected>Select Country</option>
                                                         </select>
                                                         @error('country')
                                                             <div class="text-danger">{{ $message }}</div>
                                                         @enderror
-                                                    </div> 
-                                                </div> 
+                                                    </div>
+                                                </div>
                                                 <!--  -->
                                                 <div class="col-lg-4 col-md-6 col-sm-12">
                                                     <div class="form-group mb-3">
-                                                        <label for="province">Province</label> 
+                                                        <label for="province">Province</label>
                                                         <select class="form-select" id="province" name="province">
                                                             <option value="" selected>Select Province</option>
                                                         </select>
                                                         @error('province')
                                                             <div class="text-danger">{{ $message }}</div>
                                                         @enderror
-                                                    </div> 
-                                                </div> 
+                                                    </div>
+                                                </div>
 
                                                 <!--  -->
                                                 <div class="col-lg-4 col-md-6 col-sm-12">
                                                     <div class="form-group mb-3">
-                                                        <label for="city">City</label> 
+                                                        <label for="city">City</label>
                                                         <select class="form-select" id="city" name="city">
                                                             <option value="" selected>Select Province</option>
                                                         </select>
@@ -214,12 +210,12 @@
                                                         @enderror
                                                     </div>
                                                 </div>
-                                                
+
                                                 <!--  -->
                                                 <div class="col-sm-12 col-md-6 col-lg-4">
                                                     <div class="form-group mb-3">
-                                                        <label for="location">Location</label> 
-                                                        <input type="text" name="location" id="location" class="form-control @error('location') is-invalid @enderror" value="{{ old('location', $organization->address->location ) }}" maxlength="100" placeholder="Enter Location"> 
+                                                        <label for="location">Location</label>
+                                                        <input type="text" name="location" id="location" class="form-control @error('location') is-invalid @enderror" value="{{ old('location', $organization->address->location ) }}" maxlength="100" placeholder="Enter Location">
                                                         @error('location')
                                                             <span class="invalid-feedback" role="alert">
                                                                 <strong>{{ $message }}</strong>
@@ -231,8 +227,8 @@
                                                 <!--  -->
                                                 <div class="col-sm-12 col-md-6 col-lg-4">
                                                     <div class="form-group mb-3">
-                                                        <label for="postal_code">Postal Code</label> 
-                                                        <input type="text" name="postal_code" id="postal_code" class="form-control @error('postal_code') is-invalid @enderror" value="{{ old('postal_code', $organization->address->postal_code ) }}" maxlength="100" placeholder="Enter Postal Code"> 
+                                                        <label for="postal_code">Postal Code</label>
+                                                        <input type="text" name="postal_code" id="postal_code" class="form-control @error('postal_code') is-invalid @enderror" value="{{ old('postal_code', $organization->address->postal_code ) }}" maxlength="100" placeholder="Enter Postal Code">
                                                         @error('postal_code')
                                                             <span class="invalid-feedback" role="alert">
                                                                 <strong>{{ $message }}</strong>
@@ -240,7 +236,7 @@
                                                         @enderror
                                                     </div>
                                                 </div>
-                                            </div> 
+                                            </div>
 
                                             <h4>
                                                 <button class="btn w-100 text-start" style="background-color: #D3D3D3;" type="button" data-bs-toggle="collapse" data-bs-target="#pictures" aria-expanded="false" aria-controls="pictures">
@@ -340,18 +336,18 @@
                                             </div>
 
                                             <div class="col-lg-4 col-md-4 col-12">
-                                                <button type="submit" class="btn btn-primary w-100">Update</button> 
-                                            </div>                                                
-                                        </form> 
+                                                <button type="submit" class="btn btn-primary w-100">Update</button>
+                                            </div>
+                                        </form>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>  
+            </div>
         </section>
-    </div>   
+    </div>
 
     <!-- Edit File Modal -->
     <div class="modal fade" id="editFileModal" tabindex="-1" aria-labelledby="editFileModalLabel" aria-hidden="true">
@@ -363,7 +359,7 @@
                 </div>
                 <div class="modal-body">
                     <!-- The edit form will be loaded here via AJAX -->
-                    <form id="editFileForm" action="" method="POST" enctype="multipart/form-data"> 
+                    <form id="editFileForm" action="" method="POST" enctype="multipart/form-data">
                         @method('PUT')
 
                         <div class="mb-3">
@@ -414,10 +410,10 @@
 
 @endsection
 
-@push('scripts')  
+@push('scripts')
 
     <!-- Remove or delete building pictures script -->
-    <script> 
+    <script>
 
         function removeExistingImage(imageId) {
             Swal.fire({
@@ -429,7 +425,7 @@
                 cancelButtonText: 'Cancel',
                 reverseButtons: true
             }).then((result) => {
-                if (result.isConfirmed) { 
+                if (result.isConfirmed) {
                     fetch(`{{ route('buildings.remove_picture', ':id') }}`.replace(':id', imageId), {
                         method: 'DELETE',
                         headers: {
@@ -447,7 +443,7 @@
                                 icon: 'success',
                                 confirmButtonText: 'OK'
                             });
-                        } else { 
+                        } else {
                             Swal.fire({
                                 title: 'Error!',
                                 text: 'Failed to remove image.',
@@ -461,7 +457,7 @@
             });
         }
 
-    </script> 
+    </script>
 
     <!-- Organization Pictures script -->
     <script>
@@ -475,8 +471,8 @@
 
             function handleImageSelection(event) {
                 const files = Array.from(event.target.files);
-                selectedImages = [...selectedImages, ...files];  
-                currentIndex = selectedImages.length - files.length; 
+                selectedImages = [...selectedImages, ...files];
+                currentIndex = selectedImages.length - files.length;
                 renderThumbnails();
                 showImage();
             }
@@ -529,7 +525,7 @@
                 } else {
                     img.classList.remove('active');
                 }
-            } 
+            }
 
             function removeImage(index) {
                 selectedImages.splice(index, 1);
@@ -648,7 +644,7 @@
             if (userProvince) {
                 populateCities();
             }
-        }); 
+        });
     </script>
 
     <!-- Collapse Script -->
@@ -683,7 +679,7 @@
                 cancelButtonText: 'Cancel',
                 reverseButtons: true
             }).then((result) => {
-                if (result.isConfirmed) {  
+                if (result.isConfirmed) {
                     fetch(`{{ route('building_documents.removeDocument', ':id') }}`.replace(':id', fileId), {
                         method: 'DELETE',
                         headers: {
@@ -694,7 +690,7 @@
                     .then(response => response.json())
                     .then(data => {
                         if (data.success) {
-                            // Remove the image from the DOM 
+                            // Remove the image from the DOM
                             document.querySelector(`button[data-file-id="${fileId}"]`).closest('.row').remove();
                         } else {
                             alert('Failed to remove file.');
@@ -704,27 +700,27 @@
                 }
             });
         }
-    </script> 
+    </script>
 
     <!-- Document max control script -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const documentContainer = document.getElementById('documents');
-            
+
             documentContainer.addEventListener('change', function (event) {
                 if (event.target.type === 'file') {
                     const fileInput = event.target;
                     const parentDiv = fileInput.closest('div[data-type]');
                     const maxFiles = parseInt(fileInput.getAttribute('max-files'), 10);
-                    
-                    if (fileInput.files.length > maxFiles) { 
+
+                    if (fileInput.files.length > maxFiles) {
                         alert(`You can only upload a maximum of ${maxFiles} files.`);
                         fileInput.value = ""; // Clear the selected files
                     }
                 }
             });
         });
-    </script> 
+    </script>
 
     <!-- Update file script -->
     <script>
@@ -773,6 +769,6 @@
                 });
             });
         });
-    </script> 
-    
+    </script>
+
 @endpush

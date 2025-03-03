@@ -4,12 +4,12 @@
 
 @push('styles')
     <style>
-        body { 
+        body {
         }
-        #main { 
+        #main {
             margin-top: 45px;
-        }  
-        
+        }
+
         .avatar {
             width: 100px;
             height: 100px;
@@ -17,45 +17,41 @@
             object-fit: cover;
             margin-bottom: 1rem;
         }
-        
-    </style>
-@endpush 
 
-@section('content') 
+    </style>
+@endpush
+
+@section('content')
 
     <!--  -->
-    <x-Admin.top-navbar :searchVisible="false"/>
-    <!--  --> 
-    <x-Admin.side-navbar :openSections="['AdminControl', 'UserManagement']" /> 
-    <x-error-success-model /> 
- 
-    <div id="main"> 
-        <section class="content-header pt-2"> 
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb mx-5">
-                    <li class="breadcrumb-item"><a href="{{url('admin_dashboard')}}">Dashboard</a></li> 
-                    <li class="breadcrumb-item"><a href="{{ route('users.index') }}">Users</a></li>
-                    <li class="breadcrumb-item active" aria-current="page"><a href="">Edit User</a></li>
-                </ol>
-            </nav> 
-        </section> 
+    <x-Admin.top-navbar :searchVisible="false" :breadcrumbLinks="[
+            ['url' => url('admin_dashboard'), 'label' => 'Dashboard'],
+            ['url' => route('users.index'), 'label' => 'Users'],
+            ['url' => '', 'label' => 'Edit User']
+        ]"
+    />
+    <!--  -->
+    <x-Admin.side-navbar :openSections="['AdminControl', 'UserManagement']" />
+    <x-error-success-model />
+
+    <div id="main">
         @php
         $errorsFromQuery = request()->get('errors', []);
         @endphp
 
-        <section class="content content-top my-3 mx-2">
+        <section class="content my-3 mx-2">
             <div class="container-fluid ">
-                <div class="row"> 
+                <div class="row">
                     <div class="col-md-12">
                         <div class="box" style="overflow-x: auto;">
                             <div class="container mt-2">
                                 <div class="d-flex justify-content-between align-items-center mb-2">
                                     <h4 class="mb-0">Edit User</h4>
                                     <a href="{{ route('users.index') }}" class="btn btn-secondary">Go Back</a>
-                                </div>  
+                                </div>
                                 <div class="card shadow p-3 mb-5 bg-body rounded" style="border: none;">
-                                    <div class="card-body"> 
-                                        <form action="{{ route('users.update', $user->id) }}" method="POST" enctype="multipart/form-data"> 
+                                    <div class="card-body">
+                                        <form action="{{ route('users.update', $user->id) }}" method="POST" enctype="multipart/form-data">
                                             @method('PUT')
 
                                             <div class="row">
@@ -80,7 +76,7 @@
                                                             <span class="invalid-feedback" role="alert">
                                                                 <strong>{{ $message }}</strong>
                                                             </span>
-                                                        @enderror 
+                                                        @enderror
                                                     </div>
                                                 </div>
 
@@ -113,20 +109,20 @@
                                                             </span>
                                                         @enderror
                                                     </div>
-                                                </div> --> 
+                                                </div> -->
 
                                                 <div class="col-md-4">
                                                     <div class="form-group mb-3">
                                                         <label for="contact">Phone no:</label><br>
-                                                        <input type="text" name="phone_no" id="contact" value="{{ old('phone_no', $user->phone_no) }}" class="form-control contact" placeholder="0312-3456789" maxlength="14"> 
+                                                        <input type="text" name="phone_no" id="contact" value="{{ old('phone_no', $user->phone_no) }}" class="form-control contact" placeholder="0312-3456789" maxlength="14">
                                                         @error('phone_no')
                                                             <span class="invalid-feedback" role="alert">
                                                                 <strong>{{ $message }}</strong>
                                                             </span>
-                                                        @enderror 
+                                                        @enderror
                                                     </div>
                                                 </div>
- 
+
                                                 <div class="col-md-4">
                                                     <div class="form-group mb-3">
                                                         <label for="cnic">CNIC</label>
@@ -137,7 +133,7 @@
                                                             </span>
                                                         @enderror
                                                     </div>
-                                                </div> 
+                                                </div>
 
                                                 <!--  -->
                                                 <div class="col-md-4">
@@ -148,8 +144,8 @@
                                                             <div class="text-danger">{{ $message }}</div>
                                                         @enderror
                                                     </div>
-                                                </div>                                                
-                                                
+                                                </div>
+
                                                 <div class="col-md-4">
                                                     <div class="form-group mb-3">
                                                         <label for="status">Status</label>
@@ -164,8 +160,8 @@
                                                             </span>
                                                         @enderror
                                                     </div>
-                                                </div> 
-                                                
+                                                </div>
+
                                                 <div class="col-md-4">
                                                     <div class="form-group mb-3">
                                                         <label for="role_id">Role</label>
@@ -192,32 +188,32 @@
                                                 <!--  -->
                                                 <div class="col-lg-4 col-md-6 col-sm-12">
                                                     <div class="form-group mb-3">
-                                                        <label for="country" class="form-label">Country</label> 
+                                                        <label for="country" class="form-label">Country</label>
                                                         <select class="form-select" id="country" name="country">
-                                                            <option value="" selected>Select Country</option> 
+                                                            <option value="" selected>Select Country</option>
                                                         </select>
                                                         @error('country')
                                                             <div class="text-danger">{{ $message }}</div>
                                                         @enderror
-                                                    </div> 
-                                                </div> 
+                                                    </div>
+                                                </div>
                                                 <!--  -->
                                                 <div class="col-lg-4 col-md-6 col-sm-12">
                                                     <div class="form-group mb-3">
-                                                        <label for="province" class="form-label">Province</label> 
+                                                        <label for="province" class="form-label">Province</label>
                                                         <select class="form-select" id="province" name="province">
                                                             <option value="" selected>Select Province</option>
                                                         </select>
                                                         @error('province')
                                                             <div class="text-danger">{{ $message }}</div>
                                                         @enderror
-                                                    </div> 
-                                                </div> 
+                                                    </div>
+                                                </div>
 
                                                 <!--  -->
                                                 <div class="col-lg-4 col-md-6 col-sm-12">
                                                     <div class="form-group mb-3">
-                                                        <label for="city" class="form-label">City</label> 
+                                                        <label for="city" class="form-label">City</label>
                                                         <select class="form-select" id="city" name="city">
                                                             <option value="" selected>Select Province</option>
                                                         </select>
@@ -226,12 +222,12 @@
                                                         @enderror
                                                     </div>
                                                 </div>
-                                                
+
                                                 <!--  -->
                                                 <div class="col-sm-12 col-md-6 col-lg-4">
                                                     <div class="form-group mb-3">
-                                                        <label for="location">Location</label> 
-                                                        <input type="text" name="location" id="location" class="form-control @error('location') is-invalid @enderror" value="{{ old('location', $user->address->location ) }}" maxlength="100" placeholder="Enter Location"> 
+                                                        <label for="location">Location</label>
+                                                        <input type="text" name="location" id="location" class="form-control @error('location') is-invalid @enderror" value="{{ old('location', $user->address->location ) }}" maxlength="100" placeholder="Enter Location">
                                                         @error('location')
                                                             <span class="invalid-feedback" role="alert">
                                                                 <strong>{{ $message }}</strong>
@@ -243,8 +239,8 @@
                                                 <!--  -->
                                                 <div class="col-sm-12 col-md-6 col-lg-4">
                                                     <div class="form-group mb-3">
-                                                        <label for="postal_code">Postal Code</label> 
-                                                        <input type="text" name="postal_code" id="postal_code" class="form-control @error('postal_code') is-invalid @enderror" value="{{ old('postal_code', $user->address->postal_code ) }}" maxlength="100" placeholder="Enter Postal Code"> 
+                                                        <label for="postal_code">Postal Code</label>
+                                                        <input type="text" name="postal_code" id="postal_code" class="form-control @error('postal_code') is-invalid @enderror" value="{{ old('postal_code', $user->address->postal_code ) }}" maxlength="100" placeholder="Enter Postal Code">
                                                         @error('postal_code')
                                                             <span class="invalid-feedback" role="alert">
                                                                 <strong>{{ $message }}</strong>
@@ -254,7 +250,7 @@
                                                 </div>
                                             </div>
 
-                                            <div class="row mb-3">                                                 
+                                            <div class="row mb-3">
                                                 <div class="col-md-4">
                                                     <div class="form-group">
                                                         <label for="picture">Picture (Leave blank to keep current picture)</label>
@@ -273,20 +269,20 @@
 
                                             <button type="submit" class="btn btn-primary">Update User</button>
                                             <a href="{{ route('users.index') }}" class="btn btn-secondary">Cancel</a>
-                                        </form> 
+                                        </form>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>  
+            </div>
         </section>
-    </div>   
+    </div>
 
 @endsection
 
-@push('scripts') 
+@push('scripts')
 
     <!-- Password Script -->
     <script>
@@ -297,11 +293,11 @@
             if (passwordField.value.length === 0) {
                 passwordField.classList.remove('is-invalid');
                 passwordHelp.textContent = '';
-            } 
+            }
             else if (passwordField.value.length < 8) {
                 passwordField.classList.add('is-invalid');
                 passwordHelp.textContent = 'Password must be at least 8 characters long.';
-            } 
+            }
              else {
                 passwordField.classList.remove('is-invalid');
                 passwordHelp.textContent = '';
@@ -422,7 +418,7 @@
             if (userProvince) {
                 populateCities();
             }
-        }); 
+        });
     </script>
 
 @endpush
