@@ -23,7 +23,7 @@ Route::get('/', function () {
 
 // Authentication routes
 Route::get('login', [AuthController::class, 'index'])->name('login');
-Route::post('login', [AuthController::class, 'adminLogin'])->name('login');
+Route::post('login', [AuthController::class, 'ownerLogin'])->name('login');
 //Route::post('admin-login', [AuthController::class, 'adminLogin'])->name('admin-login');
 //Route::post('owner-login', [AuthController::class, 'ownerLogin'])->name('owner-login');
 

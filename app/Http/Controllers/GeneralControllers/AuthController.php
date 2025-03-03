@@ -72,11 +72,11 @@ class AuthController extends Controller
             $token = $request->header('Authorization') ?? $request->cookie('jwt_token');
             if ($token) {
                 JWTAuth::setToken($token)->invalidate(true);
-                return $this->handleResponse($request, 200, 'success', 'Logout successful', '/login');
+                return $this->handleResponse($request, 200, 'success', 'Logout successful', 'login');
             }
-            return $this->handleResponse($request, 200, 'success', 'Logout successful');
+            return $this->handleResponse($request, 200, 'success', 'Logout successful', 'login');
         } catch (JWTException $e) {
-            return $this->handleResponse($request, 500, 'error', $e->getMessage(), '/login');
+            return $this->handleResponse($request, 500, 'error', $e->getMessage(), 'login');
         }
     }
 
