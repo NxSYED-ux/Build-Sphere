@@ -16,10 +16,16 @@ use App\Http\Controllers\WebControllers\OwnerDashboardController;
 use App\Http\Controllers\WebControllers\RoleController;
 use App\Http\Controllers\WebControllers\UsersController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AppControllers\ImageApiController;
+
 
 Route::get('/', function () {
     return view('auth.login');
 });
+
+//Image Routes
+Route::post('/upload-images', [ImageApiController::class, 'update']);
+Route::post('/destroy-image', [ImageApiController::class, 'destroyImage']);
 
 // Authentication routes
 Route::get('login', [AuthController::class, 'index'])->name('login');

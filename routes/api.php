@@ -41,14 +41,13 @@ Route::prefix('user')->middleware(['auth.jwt'])->group(function () {
         Route::get('/building-units/{id}', [BuildingUnitsController::class, 'specificBuildingUnits']);
     });
 
+    Route::get('/favorites-list', [FavouritesController::class, 'favouritesList']);
     Route::middleware('check.permission:Show Favorites Access,json')->group(function () {
         Route::get('/favorites', [FavouritesController::class, 'showFavourites']);
     });
-
     Route::middleware('check.permission:Add Favorites Access,json')->group(function () {
         Route::post('/favorites', [FavouritesController::class, 'insertFavorite']);
     });
-
     Route::middleware('check.permission:Remove Favorites Access,json')->group(function () {
         Route::delete('/favorites/{unit_id}', [FavouritesController::class, 'deleteFavorite']);
     });
