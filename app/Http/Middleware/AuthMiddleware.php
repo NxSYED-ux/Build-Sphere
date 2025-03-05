@@ -46,7 +46,7 @@ class AuthMiddleware
             }
 
             if (!$tokenData) {
-                return $this->handleResponse($tokenSource, 'Malformed session', 400);
+                return $this->handleResponse($tokenSource, 'Invalid session ID', 400);
             }
 
             if ($tokenData['role_id'] !== $user->role_id) {
