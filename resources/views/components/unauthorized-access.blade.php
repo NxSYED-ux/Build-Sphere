@@ -15,7 +15,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background-color: rgba(0, 0, 0, 0.5);
+            background-color: #343a40;
             color: white;
             text-align: center;
             z-index: 9999;
@@ -38,13 +38,13 @@
     </style>
 </head>
 <body>
-    <div class="unauthorized-container">
-        <div class="unauthorized-message">
-            <button type="button" class="btn-close" aria-label="Close" onclick="window.history.back();"></button>
-            <h1>Unauthorized Access</h1>
-            <p>You do not have permission to access this page as a <strong>{{ $roleName }}</strong>.</p>
-            <a href="{{ url()->previous() }}" class="btn btn-light mt-3">Go to Home</a>
-        </div>
+<div class="unauthorized-container">
+    <div class="unauthorized-message">
+        <h1>{{ $error_code }}</h1>
+        <h1>An error has occured</h1>
+        <p>{!! $message !!}</p>
+{{--        <a href="{{ url()->previous() }}" class="btn btn-light mt-3">Go to Home</a>--}}
     </div>
+</div>
 </body>
 </html>

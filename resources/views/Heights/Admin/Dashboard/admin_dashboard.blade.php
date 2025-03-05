@@ -101,9 +101,7 @@
 @section('content')
 
     <!--  -->
-    <x-Admin.top-navbar :searchVisible="false" :breadcrumbLinks="[
-            ['url' => url('admin_dashboard'), 'label' => 'Dashboard']
-        ]"
+    <x-Admin.top-navbar :searchVisible="false"
     />
     <!--  -->
     <x-Admin.side-navbar :openSections="['Dashboard']"/>
@@ -118,7 +116,7 @@
                     <div class="content-wrapper" style="min-height: 751px;">
                         <section class="content-header mt-1">
                         <!-- <span class="inline-span " style="position: absolute; left: 0px; top: 15px; " id="sidenav_toggler" onclick="openNav()"><i class="fa fa-circle" style="font-size:36px;"></i> </span> -->
-{{--                            <h3 class="inline-span dashboard_Header">Dashboard</h3>--}}
+                            <h3 class="inline-span dashboard_Header">Dashboard</h3>
 
                         </section>
                         <section class="content">

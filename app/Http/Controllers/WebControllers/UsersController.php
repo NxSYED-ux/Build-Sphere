@@ -35,6 +35,7 @@ class UsersController extends Controller
                     })
                     ->paginate(10);
 
+
         return view('Heights.Admin.Users.index', compact('users'));
     }
 

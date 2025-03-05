@@ -70,6 +70,7 @@ class BuildingUnitController extends Controller
             'availability_status' => 'required|string',
             'level_id' => 'required|integer',
             'organization_id' => 'required|integer',
+            'building_id' => 'required|integer',
             'unit_pictures.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
@@ -98,6 +99,11 @@ class BuildingUnitController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
+            // Log the error message with details
+            Log::error('Error creating unit', [
+                'error_message' => $e->getMessage(),
+                'exception' => $e,
+            ]);
             return redirect()->back()->withInput()->with('error', 'An error occurred while creating the unit.');
         }
     }
@@ -131,6 +137,7 @@ class BuildingUnitController extends Controller
             'availability_status' => 'required|string',
             'level_id' => 'required|integer',
             'organization_id' => 'required|integer',
+            'building_id' => 'required|integer',
             'unit_pictures.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 

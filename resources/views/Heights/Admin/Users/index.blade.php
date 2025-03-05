@@ -96,7 +96,7 @@
                         <div class="box ">
                             <div class="container mt-2">
                                 <div class="d-flex justify-content-between align-items-center mb-2">
-                                    <h3 class="mb-1">All users</h3>
+                                    <h3 class="mb-1">User Management</h3>
                                     <a href="{{ route('users.create') }}" class="btn float-end" id="add_button"  data-bs-toggle="tooltip" data-bs-placement="top" title="Add User"><i class="fa fa-plus"></i></a>
                                 </div>
                                 <div class="card shadow p-1 mb-5 bg-body rounded" style="border: none;">

@@ -84,4 +84,19 @@
             --nav-tabs-inactive-border-color: #ffff;
             --nav-tabs-active-bg-color: #252525;
             --nav-tabs-active-text-color: #fff;
+
+            /* Notifications */
+            --notification-bg-color: #1e1e1e;
+            --notification-text-color: #e0e0e0;
+            --notification-border-color: #444;
+            --notification-muted-text-color: #aaa;
+            --notification-dropdown-bg: #2a2a2a;
+            --notification-dropdown-hover-bg: #333;
+            --notification-icon-color: #B0C3CC;
+            --notification-badge-color: #EC5252;
+            --notification-button-primary-bg: #007bff;
+            --notification-button-primary-hover-bg: #0056b3;
+            --notification-button-outline-text: #e0e0e0;
+            --notification-button-outline-border: #666;
+            --notification-button-outline-hover-bg: #444;
 }

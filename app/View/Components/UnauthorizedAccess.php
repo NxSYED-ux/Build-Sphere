@@ -6,17 +6,19 @@ use Illuminate\View\Component;
 
 class UnauthorizedAccess extends Component
 {
-    public $roleName;
+    public $error_code;
+    public $message;
 
     /**
      * Create a new component instance.
      *
-     * @param string $roleName
-     * @return void
+     * @param string $error_code
+     * @param string $message
      */
-    public function __construct($roleName = 'User')
+    public function __construct($error_code, $message )
     {
-        $this->roleName = $roleName;
+        $this->$error_code = $error_code;
+        $this->message = $message;
     }
 
     /**
@@ -29,3 +31,4 @@ class UnauthorizedAccess extends Component
         return view('components.unauthorized-access');
     }
 }
+

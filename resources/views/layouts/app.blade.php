@@ -41,17 +41,21 @@
     <link href='https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css' rel='stylesheet'>
 
     <title>@yield('title', 'My App')</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+
 
     <style>
         body {
-            font-family: CircularXX,sans-serif;
+            font-family: 'Poppins', CircularXX, sans-serif;
+            /*font-family: CircularXX,sans-serif;*/
             font-size: 14px;
             font-style: normal !important;
             position: relative;
             background-color: var(--body-background-color);
         }
         #main{
-            font-family: CircularXX,sans-serif !important;
+            font-family: 'Poppins', CircularXX, sans-serif;
+            /*font-family: CircularXX,sans-serif !important;*/
             font-style: normal !important;
             transition: margin-left 0.3s;
             margin: 0;
@@ -62,23 +66,23 @@
             color: var(--main-text-color);
         }
 
-        .breadcrumb-item + .breadcrumb-item::before {
+        .header-breadcrumb .breadcrumb-item + .breadcrumb-item::before {
             content: " / ";
             color: var(--breadcrumb-separator-color);
-            font-size: 20px;
-            line-height: 1.8rem;
+            font-size: 16px;
+            line-height: 1.6rem;
             display: inline-flex;
             align-items: center;
         }
-        .breadcrumb ol li{
+        .header-breadcrumb .breadcrumb ol li{
             color: var(--breadcrumb-text2-color) !important;
         }
-        .breadcrumb-item a {
+        .header-breadcrumb .breadcrumb-item a {
             text-decoration: none !important;
             color: var(--breadcrumb-text1-color) !important;
         }
 
-        .breadcrumb-item.active a {
+        .header-breadcrumb .breadcrumb-item.active a {
             text-decoration: none !important;
             color: var(--breadcrumb-text2-color) !important;
         }
