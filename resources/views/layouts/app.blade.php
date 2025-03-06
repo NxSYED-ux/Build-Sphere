@@ -66,26 +66,6 @@
             color: var(--main-text-color);
         }
 
-        .header-breadcrumb .breadcrumb-item + .breadcrumb-item::before {
-            content: " / ";
-            color: var(--breadcrumb-separator-color);
-            font-size: 16px;
-            line-height: 1.6rem;
-            display: inline-flex;
-            align-items: center;
-        }
-        .header-breadcrumb .breadcrumb ol li{
-            color: var(--breadcrumb-text2-color) !important;
-        }
-        .header-breadcrumb .breadcrumb-item a {
-            text-decoration: none !important;
-            color: var(--breadcrumb-text1-color) !important;
-        }
-
-        .header-breadcrumb .breadcrumb-item.active a {
-            text-decoration: none !important;
-            color: var(--breadcrumb-text2-color) !important;
-        }
 
         .content-top{
             border-top: 5px solid var(--breadcrumb-text2-color);
@@ -122,7 +102,7 @@
 </head>
 <body>
 
-{{--    <x-loading-animation />--}}
+    <x-loading-animation />
     <!-- Main Content -->
     <div class="content">
         @yield('content')

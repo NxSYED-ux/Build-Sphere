@@ -199,6 +199,33 @@
                                 </div>
                             @enderror
                         </div>
+                        <!-- Permissions -->
+                        <div class="mb-3">
+                            <label class="form-label">Permissions</label>
+                            <div class="row">
+                                @foreach($permissions as $permission)
+                                    <div class="col-md-4">
+                                        <div class="form-check">
+                                            <input class="form-check-input permission-checkbox"
+                                                   type="checkbox"
+                                                   name="permissions[{{ $permission->id }}][selected]"
+                                                   value="1"
+                                                   id="permission_{{ $permission->id }}"
+                                                   data-name="{{ $permission->name }}"
+                                                   data-header="Permission Header"
+                                                {{ isset($assignedPermissions) && in_array($permission->id, $assignedPermissions) ? 'checked' : '' }}>
+                                            <label class="form-check-label" for="permission_{{ $permission->id }}">
+                                                {{ $permission->name }}
+                                            </label>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                            @error('permissions')
+                            <div class="invalid-feedback d-block">{{ $message }}</div>
+                            @enderror
+                        </div>
+
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -329,4 +356,39 @@
         });
     </script>
 
+    <!-- JavaScript to ensure only checked permissions are submitted -->
+    <script>
+        document.getElementById('createRoleForm').addEventListener('submit', function(e) {
+            // Remove any previously added dynamic hidden fields
+            document.querySelectorAll('.dynamic-hidden').forEach(el => el.remove());
+
+            // For each checked permission, add additional hidden fields
+            document.querySelectorAll('.permission-checkbox:checked').forEach(checkbox => {
+                const permissionId = checkbox.id.replace('permission_', '');
+                const permissionName = checkbox.getAttribute('data-name');
+                const permissionHeader = checkbox.getAttribute('data-header');
+
+                const hiddenId = document.createElement('input');
+                hiddenId.type = 'hidden';
+                hiddenId.name = `permissions[${permissionId}][id]`;
+                hiddenId.value = permissionId;
+                hiddenId.classList.add('dynamic-hidden');
+                this.appendChild(hiddenId);
+
+                const hiddenName = document.createElement('input');
+                hiddenName.type = 'hidden';
+                hiddenName.name = `permissions[${permissionId}][name]`;
+                hiddenName.value = permissionName;
+                hiddenName.classList.add('dynamic-hidden');
+                this.appendChild(hiddenName);
+
+                const hiddenHeader = document.createElement('input');
+                hiddenHeader.type = 'hidden';
+                hiddenHeader.name = `permissions[${permissionId}][header]`;
+                hiddenHeader.value = permissionHeader;
+                hiddenHeader.classList.add('dynamic-hidden');
+                this.appendChild(hiddenHeader);
+            });
+        });
+    </script>
 @endpush

@@ -20,20 +20,40 @@
         transition: 0.2s ease;
     }
 
-    #mySidenav .application-box{
+    #mySidenav .application-box {
         flex-shrink: 0;
         width: 100%;
         height: 58px;
         border-bottom: 1px solid var(--sidenavbar-seperator-color);
         text-decoration: none;
+        display: flex;
+        align-items: center;
     }
 
-
-    #mySidenav .application-logo{
+    #mySidenav .application-logo {
         width: 62px;
         height: auto;
-        padding-left: 10px;
+        padding-left: 15px;
     }
+
+    #mySidenav .application-text {
+        display: flex;
+        flex-direction: column;
+        margin-left: 7px;
+    }
+
+    #mySidenav .application-logo-text {
+        font-size: 20px;
+        font-weight: bold;
+        color: var(--sidenavbar-text-color);
+    }
+
+    #mySidenav .application-tagline {
+        font-size: 8px;
+        color: var(--sidenavbar-text-color);
+        opacity: 0.8;
+    }
+
 
     #mySidenav .application-logo #fill1{
         fill: var(--fill1-color);
@@ -49,14 +69,6 @@
     }
     #mySidenav .application-logo #fill5{
         fill: var(--fill5-color);
-    }
-
-    #mySidenav .application-logo-text{
-        font-size: 20px;
-        font-weight: bold;
-        margin-left: 7px;
-        color: var(--sidenavbar-text-color);
-        margin-top: 0px !important;
     }
 
     #mySidenav .scrollable-content{
