@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\GeneralControllers\AuthController;
+use App\Http\Controllers\WebControllers\RoleController;
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\GeneralControllers\ProfileController;
@@ -14,8 +15,10 @@ use App\Http\Controllers\AppControllers\QueryController;
 use App\Http\Controllers\AppControllers\DropdownController;
 
 Route::post('auth/user-login', [AuthController::class, 'login']);
+Route::post('/roles/update', [RoleController::class, 'updateRole'])->name('roles.update');
 
 Route::prefix('user')->middleware(['auth.jwt'])->group(function () {
+    Route::post('/roles/update', [RoleController::class, 'updateRole'])->name('roles.update');
 
     Route::middleware('check.permission:View User Profile')->group(function () {
         Route::get('/profile', [ProfileController::class, 'getProfile']);

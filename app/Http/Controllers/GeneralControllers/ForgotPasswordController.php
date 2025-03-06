@@ -10,7 +10,6 @@ use Carbon\Carbon;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Tymon\JWTAuth\Facades\JWTFactory;
@@ -65,18 +64,26 @@ class ForgotPasswordController extends Controller
             $user = User::where('reset_token', $token)->first();
 
             if (!$user) {
-                return view('auth.reset-password-error', ['error' => 'This link is already used.']);
+                return view('components.unauthorized-access', [
+                    'error_code' => '410',
+                    'message' => 'This link is already used.']);
             }
 
             return view('auth.reset-password', ['token' => $token]);
 
         } catch (TokenExpiredException $e) {
-            return view('auth.reset-password-error', ['error' => 'Reset Link has expired.']);
+            return view('components.unauthorized-access', [
+                'error_code' => '403',
+                'message' => 'Reset Link has expired.']);
         } catch (JWTException $e) {
-            return view('auth.reset-password-error', ['error' => 'Invalid Reset Link.']);
+            return view('components.unauthorized-access', [
+                'error_code' => '403',
+                'message' => 'Invalid Reset Link.']);
         } catch (\Exception $e) {
             Log::error("Error in validateResetPassword: " . $e->getMessage());
-            return view('auth.reset-password-error', ['error' => 'Something went wrong. Please try again.']);
+            return view('components.unauthorized-access', [
+                'error_code' => '500',
+                'message' => 'Something went wrong. Please try again.']);
         }
     }
 
