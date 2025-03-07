@@ -157,70 +157,57 @@
 
     <!-- Create Role Modal -->
     <div class="modal fade" id="createRoleModal" tabindex="-1" aria-labelledby="createRoleModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-md modal-dialog-centered">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
             <div class="modal-content">
-                <div class="modal-header">
+            <div class="modal-header">
                     <h5 class="modal-title" id="createRoleModalLabel">Create new role</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form id="createRoleForm" method="POST" action="{{ route('roles.store') }}">
+                <form id="createRoleForm" method="POST" action="{{ route('roles.store') }}" >
                     @csrf
-                    <div class="modal-body">
-                        <div class="mb-3">
-                            <label for="name" class="form-label">Role Name</label>
-                            <span class="required__field">*</span><br>
-                            <input type="text" class="form-control" id="name" name="name" value="{{ old('name') }}" maxlength="20" placeholder="Role Name" required>
-                            @error('name')
+                    <div class="modal-body" style="max-height: 400px; overflow-y: auto;">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="name" class="form-label">Role Name</label>
+                                <span class="required__field">*</span><br>
+                                <input type="text" class="form-control" id="name" name="name" value="{{ old('name') }}" maxlength="20" placeholder="Role Name" required>
+                                @error('name')
                                 <div class="invalid-feedback">
                                     {{ $message }}
                                 </div>
-                            @enderror
+                                @enderror
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="status" class="form-label">Status</label>
+                                <span class="required__field">*</span><br>
+                                <select class="form-select @error('status') is-invalid @enderror" id="status" name="status" required>
+                                    <option value="1" {{ old('status', 1) == 1 ? 'selected' : '' }}>Active</option>
+                                    <option value="0" {{ old('status', 1) == 0 ? 'selected' : '' }}>Inactive</option>
+                                </select>
+                                @error('status')
+                                <div class="invalid-feedback">
+                                    {{ $message }}
+                                </div>
+                                @enderror
+                            </div>
+                            <div class="col-md-12 mb-3">
+                                <label for="description" class="form-label">Description</label>
+                                <textarea class="form-control" id="description" name="description" maxlength="250" placeholder="Description">{{ old('description') }}</textarea>
+                                @error('description')
+                                <div class="invalid-feedback">
+                                    {{ $message }}
+                                </div>
+                                @enderror
+                            </div>
                         </div>
 
-                        <div class="mb-3">
-                            <label for="description" class="form-label">Description</label>
-                            <textarea class="form-control" id="description" name="description" maxlength="250" placeholder="Description">{{ old('description') }}</textarea>
-                            @error('description')
-                                <div class="invalid-feedback">
-                                    {{ $message }}
-                                </div>
-                            @enderror
-                        </div>
-                        <div class="mb-3">
-                            <label for="status" class="form-label">Status</label>
-                            <span class="required__field">*</span><br>
-                            <select class="form-select @error('status') is-invalid @enderror" id="status" name="status" required>
-                                <option value="1" {{ old('status', 1) == 1 ? 'selected' : '' }}>Active</option>
-                                <option value="0" {{ old('status', 1) == 0 ? 'selected' : '' }}>Inactive</option>
-                            </select>
-                            @error('status')
-                                <div class="invalid-feedback">
-                                    {{ $message }}
-                                </div>
-                            @enderror
-                        </div>
                         <!-- Permissions -->
                         <div class="mb-3">
-                            <label class="form-label">Permissions</label>
-                            <div class="row">
-                                @foreach($permissions as $permission)
-                                    <div class="col-md-4">
-                                        <div class="form-check">
-                                            <input class="form-check-input permission-checkbox"
-                                                   type="checkbox"
-                                                   name="permissions[{{ $permission->id }}][selected]"
-                                                   value="1"
-                                                   id="permission_{{ $permission->id }}"
-                                                   data-name="{{ $permission->name }}"
-                                                   data-header="Permission Header"
-                                                {{ isset($assignedPermissions) && in_array($permission->id, $assignedPermissions) ? 'checked' : '' }}>
-                                            <label class="form-check-label" for="permission_{{ $permission->id }}">
-                                                {{ $permission->name }}
-                                            </label>
-                                        </div>
-                                    </div>
-                                @endforeach
+                            <label class="form-label">Permissions <span class="text-danger">*</span></label>
+                            <div class="row" id="permissions-container">
+                                {{-- Permissions checkboxes will be loaded here via AJAX --}}
                             </div>
+                            <div id="permissions-error" class="text-danger mt-2"></div>
                             @error('permissions')
                             <div class="invalid-feedback d-block">{{ $message }}</div>
                             @enderror
@@ -238,7 +225,7 @@
 
     <!-- Edit Role Modal -->
     <div class="modal fade" id="editRoleModal" tabindex="-1" aria-labelledby="editRoleModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-md modal-dialog-centered">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="editRoleModalLabel">Edit Role</h5>
@@ -247,26 +234,35 @@
                 <!-- The edit form will be loaded here via AJAX -->
                 <form id="editForm" action="" method="POST">
                     @method('PUT')
-                    <div class="modal-body">
+                    <div class="modal-body" style="max-height: 400px; overflow-y: auto;">
+                        <input type="hidden" name="role_id" id="edit_role_id">
+                        <input type="hidden" name="updated_at" id="edit_updated_at">
 
-
-                        <div class="mb-3">
-                            <label for="name" class="form-label">Role Name</label>
-                            <span class="required__field">*</span><br>
-                            <input type="text" class="form-control" id="name" name="name" maxlength="20" placeholder="Role Name" required>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="name" class="form-label">Role Name</label>
+                                <span class="required__field">*</span><br>
+                                <input type="text" class="form-control" id="name" name="name" maxlength="20" placeholder="Role Name" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="status" class="form-label">Status</label>
+                                <span class="required__field">*</span><br>
+                                <select class="form-select" id="status" name="status" required>
+                                    <option value="1" >Active</option>
+                                    <option value="0" >Inactive</option>
+                                </select>
+                            </div>
+                            <div class="col-md-12 mb-3">
+                                <label for="description" class="form-label">Description</label>
+                                <textarea class="form-control" id="description" name="description" maxlength="250" placeholder="Description"></textarea>
+                            </div>
                         </div>
 
+                        <!-- Permissions -->
                         <div class="mb-3">
-                            <label for="description" class="form-label">Description</label>
-                            <textarea class="form-control" id="description" name="description" maxlength="250" placeholder="Description"></textarea>
-                        </div>
-                        <div class="mb-3">
-                            <label for="status" class="form-label">Status</label>
-                            <span class="required__field">*</span><br>
-                            <select class="form-select" id="status" name="status" required>
-                                <option value="1" >Active</option>
-                                <option value="0" >Inactive</option>
-                            </select>
+                            <label class="form-label">Permissions <span class="text-danger">*</span></label>
+                            <div class="row" id="permissionsContainer"></div>
+                            <small class="text-danger d-none" id="permissionsError">At least one permission must be selected.</small>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -317,10 +313,6 @@
     <!-- Roles Scripts -->
     <script>
         $(document).ready(function () {
-            $('#add_button').on('click', function (e) {
-                e.preventDefault();
-                $('#createRoleModal').modal('show');
-            });
 
             $(document).on('click', '.edit-role-button', function (e) {
                 e.preventDefault();
@@ -336,10 +328,31 @@
                             $('#editRoleModal #name').val(role.name);
                             $('#editRoleModal #description').val(role.description);
                             $('#editRoleModal #status').val(role.status);
+                            $('#editRoleModal #edit_role_id').val(role.id);
+                            $('#editRoleModal #edit_updated_at').val(role.updated_at);
+
+                            // Clear old permissions
+                            $('#permissionsContainer').empty();
+
+                            if (data.permissions.length > 0) {
+                                data.permissions.forEach(permission => {
+                                    const isChecked = data.activePermissionsId.includes(permission.id) ? 'checked' : '';
+                                    $('#permissionsContainer').append(`
+                                <div class="col-md-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="permissions[]" value="${permission.id}" id="permission_${permission.id}" ${isChecked}>
+                                        <label class="form-check-label" for="permission_${permission.id}">${permission.name}</label>
+                                    </div>
+                                </div>
+                            `);
+                                });
+                            } else {
+                                $('#permissionsContainer').html('<p class="text-danger">No permissions available.</p>');
+                            }
 
                             // Set the form action URL
                             $('#editForm').attr('action', `{{ route('roles.update', ':id') }}`.replace(':id', id));
-                            $('#editForm').append('<input type="hidden" name="_method" value="PUT">'); // Adding the PUT method input
+                            $('#editForm').append('<input type="hidden" name="_method" value="PUT">');
 
                             // Show the modal
                             var editRoleModal = new bootstrap.Modal(document.getElementById('editRoleModal'));
@@ -353,42 +366,65 @@
                     }
                 });
             });
-        });
-    </script>
 
-    <!-- JavaScript to ensure only checked permissions are submitted -->
-    <script>
-        document.getElementById('createRoleForm').addEventListener('submit', function(e) {
-            // Remove any previously added dynamic hidden fields
-            document.querySelectorAll('.dynamic-hidden').forEach(el => el.remove());
-
-            // For each checked permission, add additional hidden fields
-            document.querySelectorAll('.permission-checkbox:checked').forEach(checkbox => {
-                const permissionId = checkbox.id.replace('permission_', '');
-                const permissionName = checkbox.getAttribute('data-name');
-                const permissionHeader = checkbox.getAttribute('data-header');
-
-                const hiddenId = document.createElement('input');
-                hiddenId.type = 'hidden';
-                hiddenId.name = `permissions[${permissionId}][id]`;
-                hiddenId.value = permissionId;
-                hiddenId.classList.add('dynamic-hidden');
-                this.appendChild(hiddenId);
-
-                const hiddenName = document.createElement('input');
-                hiddenName.type = 'hidden';
-                hiddenName.name = `permissions[${permissionId}][name]`;
-                hiddenName.value = permissionName;
-                hiddenName.classList.add('dynamic-hidden');
-                this.appendChild(hiddenName);
-
-                const hiddenHeader = document.createElement('input');
-                hiddenHeader.type = 'hidden';
-                hiddenHeader.name = `permissions[${permissionId}][header]`;
-                hiddenHeader.value = permissionHeader;
-                hiddenHeader.classList.add('dynamic-hidden');
-                this.appendChild(hiddenHeader);
+            $('#editForm').submit(function (e) {
+                if ($('input[name="permissions[]"]:checked').length === 0) {
+                    e.preventDefault();
+                    $('#permissionsError').removeClass('d-none');
+                }
             });
+
         });
+
+        $(document).ready(function() {
+            $('#add_button').on('click', function (e) {
+                e.preventDefault();
+                $('#createRoleModal').modal('show');
+
+                // Fetch permissions only when the modal opens
+                fetchPermissions();
+            });
+
+            function fetchPermissions() {
+                $.ajax({
+                    url: "{{ route('roles.create') }}", // Ensure this route exists
+                    type: "GET",
+                    dataType: "json",
+                    success: function(response) {
+                        if (response.permissions) {
+                            let permissionsHtml = "";
+                            response.permissions.forEach(permission => {
+                                permissionsHtml += `
+                            <div class="col-md-4">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox"
+                                           name="permissions[]"
+                                           value="${permission.id}"
+                                           id="permission_${permission.id}">
+                                    <label class="form-check-label" for="permission_${permission.id}">
+                                        ${permission.name}
+                                    </label>
+                                </div>
+                            </div>
+                        `;
+                            });
+
+                            $("#permissions-container").html(permissionsHtml);
+                        } else {
+                            $("#permissions-container").html('<p class="text-danger">No permissions found.</p>');
+                        }
+                    },
+                    error: function(xhr) {
+                        console.log(xhr.responseText);
+                        $("#permissions-error").text("Failed to load permissions. Please try again.");
+                    }
+                });
+            }
+        });
+
+
+
     </script>
+
+
 @endpush

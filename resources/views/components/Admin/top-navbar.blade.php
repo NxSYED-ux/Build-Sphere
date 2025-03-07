@@ -65,7 +65,7 @@
                     <img src="{{ Auth::user() && Auth::user()->picture ? asset(Auth::user()->picture) : asset('img/avatar.png') }}"
                         class="rounded-circle me-2"
                         alt="User Image"
-                        style="width: 2.5rem; height: auto;">
+                        style="width: 2.5rem; height: 2.5rem;">
 
                     <!-- User Info -->
                     <div class="d-flex flex-column text-start user-info">
@@ -102,7 +102,6 @@
                         <path d="M6.4 17.2222C5.51684 17.2178 4.80073 16.5053 4.792 15.6222H7.992C7.99369 15.8361 7.9529 16.0482 7.872 16.2462C7.66212 16.7278 7.23345 17.079 6.72 17.1902H6.716H6.704H6.6896H6.6824C6.58945 17.2095 6.49492 17.2202 6.4 17.2222ZM12.8 14.8222H0V13.2222L1.6 12.4222V8.02217C1.55785 6.89346 1.81275 5.77347 2.3392 4.77417C2.86323 3.84738 3.75896 3.18927 4.8 2.96617V1.22217H8V2.96617C10.0632 3.45737 11.2 5.25257 11.2 8.02217V12.4222L12.8 13.2222V14.8222Z" fill="#B0C3CC"/>
                         <circle cx="11" cy="3" r="3" fill="#EC5252"/>
                     </svg>
-
 
                 </a>
                 <div class="dropdown-menu mt-3 dropdown-menu-end shadow animated--grow-in notification-menu" aria-labelledby="alertsDropdown">

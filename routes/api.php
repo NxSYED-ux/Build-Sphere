@@ -19,7 +19,7 @@ Route::post('auth/user-login', [AuthController::class, 'login']);
 Route::get('/roles/{roleId}/permissions', [PermissionController::class, 'getRolePermissions']);
 
 Route::prefix('user')->middleware(['auth.jwt'])->group(function () {
-    Route::post('/roles/update', [RoleController::class, 'updateRole'])->name('roles.update');
+    Route::post('/roles/update', [RoleController::class, 'updateRole']);
 
     Route::middleware('check.permission:View User Profile')->group(function () {
         Route::get('/profile', [ProfileController::class, 'getProfile']);
