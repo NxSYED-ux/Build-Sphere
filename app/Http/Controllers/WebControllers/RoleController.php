@@ -18,7 +18,7 @@ class RoleController extends Controller
     {
         try {
             $roles = Role::paginate(10);
-            $permissions = Permission::all(['id', 'name']);  // Due to the conflict wit the edit sending all permissions otherwise send only those which have status 1
+            $permissions = Permission::where('status', 1)->get(['id', 'name']);
             return view('Heights.Admin.Roles.index', compact('roles', 'permissions'));
         } catch (\Exception $exception) {
             Log::error('Roles index error: ' . $exception->getMessage());
@@ -29,7 +29,7 @@ class RoleController extends Controller
     public function create()
     {
         try {
-            $permissions = Permission::all(['id', 'name']);  // Due to the conflict wit the edit sending all permissions otherwise send only those which have status 1
+            $permissions = Permission::where('status', 1)->get(['id', 'name']);
             return response()->json([
                 'permissions' => $permissions
             ]);
@@ -108,7 +108,10 @@ class RoleController extends Controller
     {
         try {
             $role = Role::select('id', 'name', 'description', 'status', 'updated_at')->findOrFail($id);
-            $rolePermissionIds = RolePermission::where('role_id', $role->id)->pluck('permission_id');
+            $rolePermissionIds = RolePermission::where([
+                ['role_id', '=', $role->id],
+                ['status', '=', '1']
+            ])->pluck('permission_id');
             $permissions = Permission::select('id', 'name')->get();
 
             return response()->json([

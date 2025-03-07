@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\GeneralControllers\AuthController;
+use App\Http\Controllers\WebControllers\PermissionController;
 use App\Http\Controllers\WebControllers\RoleController;
 use Illuminate\Support\Facades\Route;
 
@@ -15,6 +16,7 @@ use App\Http\Controllers\AppControllers\QueryController;
 use App\Http\Controllers\AppControllers\DropdownController;
 
 Route::post('auth/user-login', [AuthController::class, 'login']);
+Route::get('/roles/{roleId}/permissions', [PermissionController::class, 'getRolePermissions']);
 
 Route::prefix('user')->middleware(['auth.jwt'])->group(function () {
     Route::post('/roles/update', [RoleController::class, 'updateRole'])->name('roles.update');
