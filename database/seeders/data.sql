@@ -217,3 +217,23 @@ INSERT INTO `dropdownvalues` (`id`, `value_name`, `description`, `dropdown_type_
 (29, 'Apartment', 'null', 6, NULL, 1, '2025-02-28 20:35:57', '2025-02-28 20:35:57'),
 (30, 'Restaurant', 'null', 6, NULL, 1, '2025-02-28 20:35:57', '2025-02-28 20:35:57'),
 (31, 'Gym', 'null', 6, NULL, 1, '2025-02-28 20:35:57', '2025-02-28 20:35:57');
+
+INSERT INTO `permissions` (`id`, `name`, `header`, `description`, `status`, `created_at`, `updated_at`) VALUES
+(1, 'View User Profile', 'User Application', 'User Application', 1, '2025-03-07 03:46:27', '2025-03-07 03:46:27'),
+(2, 'Update User Profile', 'User Application', 'User Application', 1, '2025-03-07 03:46:27', '2025-03-07 03:46:27'),
+(3, 'Remove User Profile Picture', 'User Application', 'User Application', 1, '2025-03-07 03:46:27', '2025-03-07 03:46:27'),
+(4, 'Upload User Profile Picture', 'User Application', 'User Application', 1, '2025-03-07 03:46:27', '2025-03-07 03:46:27'),
+(5, 'User Homepage', 'User Application', 'User Application', 1, '2025-03-07 03:46:27', '2025-03-07 03:54:17'),
+(6, 'Show Favorites', 'User Application', 'User Application', 1, '2025-03-07 03:46:27', '2025-03-07 03:46:27'),
+(7, 'Add Favorites', 'User Application', 'User Application', 1, '2025-03-07 03:46:27', '2025-03-07 03:46:27'),
+(8, 'Remove Favorites', 'User Application', 'User Application', 1, '2025-03-07 03:46:27', '2025-03-07 03:46:27'),
+(9, 'Show My Properties', 'User Application', 'User Application', 1, '2025-03-07 03:46:27', '2025-03-07 03:46:27'),
+(10, 'Log Queries', 'User Application', 'User Application', 1, '2025-03-07 03:46:27', '2025-03-07 03:46:27'),
+(11, 'View User Queries', 'User Application', 'User Application', 1, '2025-03-07 03:46:27', '2025-03-07 03:46:27'),
+(12, 'View Staff Profile', 'Staff Application', 'Staff Application', 1, '2025-03-07 03:46:27', '2025-03-07 03:46:27'),
+(13, 'Update Staff Profile', 'Staff Application', 'Staff Application', 1, '2025-03-07 03:46:27', '2025-03-07 03:46:27'),
+(14, 'Remove Staff Profile Picture', 'Staff Application', 'Staff Application', 1, '2025-03-07 03:46:27', '2025-03-07 03:46:27'),
+(15, 'Upload Staff Profile Picture', 'Staff Application', 'Staff Application', 1, '2025-03-07 03:46:27', '2025-03-07 03:46:27'),
+(16, 'View Staff Queries', 'Staff Application', 'Staff Application', 1, '2025-03-07 03:46:27', '2025-03-07 03:46:27'),
+(17, 'Accept Queries', 'Staff Application', 'Staff Application', 1, '2025-03-07 03:46:27', '2025-03-07 03:46:27'),
+(18, 'Reject Queries', 'Staff Application', 'Staff Application', 1, '2025-03-07 03:46:27', '2025-03-07 03:46:27');

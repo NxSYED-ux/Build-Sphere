@@ -15,7 +15,6 @@ use App\Http\Controllers\AppControllers\QueryController;
 use App\Http\Controllers\AppControllers\DropdownController;
 
 Route::post('auth/user-login', [AuthController::class, 'login']);
-Route::post('/roles/update', [RoleController::class, 'updateRole'])->name('roles.update');
 
 Route::prefix('user')->middleware(['auth.jwt'])->group(function () {
     Route::post('/roles/update', [RoleController::class, 'updateRole'])->name('roles.update');

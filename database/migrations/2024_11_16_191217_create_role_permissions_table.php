@@ -12,8 +12,6 @@ return new class extends Migration
             $table->unsignedInteger('id',true);
             $table->unsignedInteger('role_id');
             $table->unsignedInteger('permission_id');
-            $table->string('name', 255);
-            $table->string('header', 255);
             $table->tinyInteger('status')->default(1);
             $table->unsignedBigInteger('granted_by');
             $table->timestamp('created_at')->useCurrent();

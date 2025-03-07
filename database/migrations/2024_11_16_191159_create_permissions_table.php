@@ -11,6 +11,7 @@ return new class extends Migration
         Schema::create('permissions', function (Blueprint $table) {
             $table->unsignedInteger('id',true);
             $table->string('name',255)->unique();
+            $table->string('header',255);
             $table->text('description')->nullable();
             $table->tinyInteger('status')->default(1);
             $table->timestamp('created_at')->useCurrent();

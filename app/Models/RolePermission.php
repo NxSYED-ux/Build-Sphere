@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Log;
 
 class RolePermission extends Model
 {
@@ -15,8 +14,6 @@ class RolePermission extends Model
     protected $primaryKey = 'id';
 
     protected $fillable = [
-        'name',
-        'header',
         'status',
 
         'role_id',
@@ -43,7 +40,6 @@ class RolePermission extends Model
     {
         static::creating(function ($model) {
             $user = request()->user;
-            Log::info('User : ' . $user->id);
             if ($user) {
                 $model->granted_by = $user->id;
             }

@@ -7,212 +7,200 @@ use App\Http\Controllers\Controller;
 use App\Models\Permission;
 use App\Models\Role;
 use App\Models\RolePermission;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class RoleController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        $roles = Role::all();
-        $permissions = Permission::all();
-        return view('Heights.Admin.Roles.index',['roles'=>$roles,'permissions'=>$permissions]);
+        try {
+            $roles = Role::paginate(10);
+            $permissions = Permission::all(['id', 'name']);  // Due to the conflict wit the edit sending all permissions otherwise send only those which have status 1
+            return view('Heights.Admin.Roles.index', compact('roles', 'permissions'));
+        } catch (\Exception $exception) {
+            Log::error('Roles index error: ' . $exception->getMessage());
+            return redirect()->back()->with('error', 'An unexpected error occurred. Please try again later.');
+        }
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
+    public function create()
+    {
+        try {
+            $permissions = Permission::all(['id', 'name']);  // Due to the conflict wit the edit sending all permissions otherwise send only those which have status 1
+            return response()->json([
+                'permissions' => $permissions
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Roles create error: ' . $e->getMessage());
+            return response()->json(['error' => 'An error occurred while fetching permissions. Please try again.'], 500);
+        }
+    }
+
     public function store(Request $request)
     {
-        $user = $request->user;
-        $request->validate([
-            'name'                   => 'required|string|unique:roles,name',
-            'description'            => 'nullable|string',
-            'status'                 => 'required|integer|in:0,1',
-            'permissions'            => 'required|array',
-            'permissions.*.id'       => 'exists:permissions,id',
-            'permissions.*.name'     => 'required|string',
-            'permissions.*.header'   => 'required|string',
-            'permissions.*.selected' => 'sometimes|accepted',
-        ]);
+        $user = $request->user() ?? abort(401, 'Unauthorized');
 
-        $selectedPermissions = collect($request->permissions)
-            ->filter(function ($permission) {
-                return isset($permission['selected']);
-            })
-            ->map(function ($permission) {
-                return [
-                    'id'     => $permission['id'],
-                    'name'   => $permission['name'],
-                    'header' => $permission['header'],
-                ];
-            })->toArray();
+        $request->validate([
+            'name' => 'required|string|unique:roles,name',
+            'description' => 'nullable|string',
+            'status' => 'required|integer|in:0,1',
+            'permissions' => 'required|array|min:1',
+            'permissions.*' => 'required|integer|exists:permissions,id',
+        ] , [
+            'permissions.required' => 'At least one permission must be assigned to create the role.',
+            'permissions.min' => 'At least one permission must be assigned to create the role.',
+            'permissions.*.exists' => 'One or more selected permissions are invalid or may have been deleted while you were creating the role.',
+        ]);
 
         DB::beginTransaction();
         try {
-            Log::info('Working 1');
             $role = Role::create([
-                'name'        => $request->name,
+                'name' => $request->name,
                 'description' => $request->description,
-                'status'      => $request->status,
+                'status' => $request->status,
             ]);
 
-            $roleId = $role->id;
-            $rolePermissions = collect($selectedPermissions)->map(function ($permission) use ($user, $roleId) {
+            $rolePermissions = collect($request->permissions)->map(function ($permissionId) use ($user, $role) {
                 return [
-                    'role_id'       => $roleId,
-                    'permission_id' => $permission['id'],
-                    'name'          => $permission['name'],
-                    'header'        => $permission['header'],
-                    'granted_by'    => $user->id,
+                    'role_id' => $role->id,
+                    'permission_id' => $permissionId,
+                    'granted_by' => $user->id,
                 ];
             })->toArray();
 
-            Log::info('Working 2');
             if (!empty($rolePermissions)) {
                 RolePermission::insert($rolePermissions);
             }
 
-            Log::info('Working 3');
             DB::commit();
             return redirect()->route('roles.index')->with('success', 'Role created successfully.');
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Role creation failed: ' . $e->getMessage());
-            return redirect()->back()->withInput()->with('error', 'An error occurred while creating the role.');
+            return redirect()->back()->withInput()->with('error', 'Failed to create the role. Please try again.');
         }
     }
-    /**
-     * Display the specified resource.
-     */
+
     public function show(string $id)
     {
-        $role = Role::find($id);
+        try {
+            $role = Role::select('name', 'description', 'status')->findOrFail($id);
+            $rolePermissionIds = RolePermission::where('role_id', $id)->pluck('permission_id');
+            $permissions = Permission::whereIn('id', $rolePermissionIds)->get(['id', 'name', 'status']);
 
-        if (!$role) {
+            return response()->json([
+                'role' => $role,
+                'permissions' => $permissions
+            ]);
+
+        } catch (ModelNotFoundException $e) {
             return response()->json(['error' => 'Role not found'], 404);
+        } catch (\Exception $e) {
+            Log::error('Failed to retrieve role data: ' . $e->getMessage());
+            return response()->json(['error' => 'An error occurred while retrieving the role data. Please try again.'], 500);
         }
-
-        return response()->json($role);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(string $id)
     {
+        try {
+            $role = Role::select('id', 'name', 'description', 'status', 'updated_at')->findOrFail($id);
+            $rolePermissionIds = RolePermission::where('role_id', $role->id)->pluck('permission_id');
+            $permissions = Permission::select('id', 'name')->get();
 
-        $role = Role::findOrFail($id);
-        if ($role) {
-            // Returning role details wrapped in an object with key 'role'
-            return response()->json(['role' => $role]);
-        }
-        return response()->json(['message' => 'Role not found'], 404);
+            return response()->json([
+                'role' => $role,
+                'activePermissionsId' => $rolePermissionIds,
+                'permissions' => $permissions
+            ]);
 
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        $role = Role::findOrFail($id);
-
-        if (!$role) {
-            return redirect()->route('roles.index')->with('error', 'Role not found');
-        }
-
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|string|unique:roles,name,' . $id . ',id',
-            'description' => 'nullable|string|max:255',
-            'status' => 'required|integer|in:0,1',
-        ]);
-
-        if ($validator->fails()) {
-            return redirect()->back()->withErrors($validator)->withInput();
-        }
-
-
-        $role->update($validator->validated());
-
-        return redirect()->route('roles.index')->with('success', 'Role updated successfully');
-    }
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        $role = Role::find($id);
-
-        if (!$role) {
+        } catch (ModelNotFoundException $e) {
             return response()->json(['error' => 'Role not found'], 404);
+        } catch (\Exception $e) {
+            Log::error('Failed to retrieve role data: ' . $e->getMessage());
+            return response()->json(['error' => 'An error occurred while retrieving the role data. Please try again.'], 500);
         }
-
-        $role->delete();
-
-        return redirect()->route('roles.index')->with('success', 'Role deleted successfully');
     }
 
-    public function updateRole(Request $request)
+    public function update(Request $request)
     {
-        $user = $request->user;
-        if (!$user) {
-            return response()->json(['error' => 'User not found'], 404);
-        }
+        $user = $request->user() ?? abort(401, 'Unauthorized');
 
         $request->validate([
-            'role_id' => 'required|exists:roles,id',
-            'permissions' => 'required|array',
-            'permissions.*.id' => 'exists:permissions,id',
-            'permissions.*.name' => 'required|string',
-            'permissions.*.header' => 'required|string',
+            'role_id' => 'required|integer|exists:roles,id',
+            'name' => 'required|string|unique:roles,name,' . $request->role_id . ',id',
+            'description' => 'nullable|string',
+            'status' => 'required|integer|in:0,1',
+            'permissions' => 'required|array|min:1',
+            'permissions.*' => 'required|integer|exists:permissions,id',
+            'updated_at' => 'required|date_format:Y-m-d H:i:s'
+        ], [
+            'permissions.required' => 'At least one permission must be assigned to save the role.',
+            'permissions.min' => 'At least one permission must be assigned to save the role.',
+            'permissions.*.exists' => 'One or more selected permissions are invalid or may have been deleted while you were creating the role.',
         ]);
-        $roleId = $request->role_id;
 
-        $selectedPermissions = collect($request->permissions)
-            ->where('selected', true)
-            ->map(function ($permission) {
-                return [
-                    'id' => $permission['id'],
-                    'name' => $permission['name'],
-                    'header' => $permission['header']
-                ];
-            })->toArray();
+        $roleId = $request->role_id;
 
         DB::beginTransaction();
         try {
-            Log::info('Working 1');
+            $role = Role::where([
+                ['id', '=', $roleId],
+                ['updated_at', '=', $request->updated_at]
+            ])->first();
+
+            if (!$role) {
+                DB::rollBack();
+                return redirect()->back()->withInput()->with('error', 'This role has been updated by another user. Please refresh the page and try again.');
+            }
+
+            $role->update([
+                'name' => $request->name,
+                'description' => $request->description,
+                'status' => $request->status,
+            ]);
+
             RolePermission::where('role_id', $roleId)->delete();
 
-
-            $rolePermissions = collect($selectedPermissions)->map(function ($permission) use ($user, $roleId) {
+            $rolePermissions = collect($request->permissions)->map(function ($permissionId) use ($user, $roleId) {
                 return [
                     'role_id' => $roleId,
-                    'permission_id' => $permission['id'],
-                    'name' => $permission['name'],
-                    'header' => $permission['header'],
+                    'permission_id' => $permissionId,
                     'granted_by' => $user->id,
                 ];
             })->toArray();
 
-            Log::info('Working 2');
-            if (!empty($rolePermissions)) {
-                RolePermission::insert($rolePermissions);
-            }
+            RolePermission::insert($rolePermissions);
 
-            Log::info('Working 3');
             DB::commit();
-            return response()->json(['message' => 'Role updated successfully!']);
+            return redirect()->route('roles.index')->with('success', 'Role updated successfully');
 
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::info('Not Working : '.$e->getMessage());
-            return response()->json(['error' => 'Something went wrong!'], 500);
+            Log::error('Role update failed: ' . $e->getMessage());
+            return redirect()->back()->withInput()->with('error', 'Failed to update the role. Please try again.');
+        }
+    }
+
+    public function destroy(string $id)
+    {
+        DB::beginTransaction();
+        try {
+            $role = Role::find($id);
+            if (!$role) return redirect()->back()->with('error', 'Role not Found');
+
+            RolePermission::where('role_id', $role->id)->delete();
+            $role->delete();
+
+            DB::commit();
+            return redirect()->route('roles.index')->with('success', 'Role deleted successfully');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Role deletion failed for ID {$id}: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'An error occurred while deleting the role. Please try again.');
         }
     }
 }
