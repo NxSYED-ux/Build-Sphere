@@ -13,47 +13,48 @@ use Illuminate\Support\Facades\Hash;
 
 class UsersController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index(Request $request)
     {
-        $search = $request->input('search');
+        try {
+            $search = $request->input('search');
 
-        $users = User::with('role', 'address')
-                    ->when($search, function($query, $search) {
-                        return $query->where('name', 'like', "%{$search}%")
-                                     ->orWhere('email', 'like', "%{$search}%")
-                                     ->orWhere('phone_no', 'like', "%{$search}%")
-                                     ->orWhereHas('address', function($query) use ($search) {
-                                         $query->where('city', 'like', "%{$search}%");
-                                     })
-                                     ->orWhere('status', 'like', "%{$search}%") // Matching with the status
-                                     ->orWhereHas('role', function($query) use ($search) {
-                                         $query->where('name', 'like', "%{$search}%"); // Matching with the role name
-                                     });
-                    })
-                    ->paginate(10);
-
-
-        return view('Heights.Admin.Users.index', compact('users'));
+            $users = User::with('role', 'address')
+                ->when($search, function ($query, $search) {
+                    return $query->where('name', 'like', "%{$search}%")
+                        ->orWhere('email', 'like', "%{$search}%")
+                        ->orWhere('phone_no', 'like', "%{$search}%")
+                        ->orWhereHas('address', function ($query) use ($search) {
+                            $query->where('city', 'like', "%{$search}%");
+                        })
+                        ->orWhere('status', 'like', "%{$search}%")
+                        ->orWhereHas('role', function ($query) use ($search) {
+                            $query->where('name', 'like', "%{$search}%");
+                        });
+                })
+                ->paginate(10);
+            return view('Heights.Admin.Users.index', compact('users'));
+        } catch (\Exception $e) {
+            return back()->with('error', 'Something went wrong. Please try again.');
+        }
     }
 
-
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
-        $roles = Role::pluck('name','id')->all();
-        $dropdownData = DropdownType::with(['values.childs.childs'])->where('type_name', 'Country')->get(); // Country -> Province -> City
+        try {
+            $roles = Role::pluck('name', 'id')->all();
+            $genderDropDown = DropdownType::with(['values.childs'])
+                ->where('type_name','Gender')
+                ->get();
+            $dropdownData = DropdownType::with(['values.childs.childs'])
+                ->where('type_name', 'Country')
+                ->get();
 
-        return view('Heights.Admin.Users.create',compact('roles', 'dropdownData'));
+            return view('Heights.Admin.Users.create', compact('roles', 'dropdownData', 'genderDropDown'));
+        } catch (\Exception $e) {
+            return back()->with('error', 'Something went wrong while loading the form. Please try again.');
+        }
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         $validatedData = $request->validate([
@@ -65,7 +66,6 @@ class UsersController extends Controller
             'role_id' => ['required', 'integer', 'exists:roles,id'],
             'gender' => ['nullable', 'in:Male,Female,Other'],
             'date_of_birth' => 'nullable|date',
-            // 'organization_id' => ['nullable', 'integer', 'exists:organizations,id'],
             'location' => ['nullable', 'string', 'max:255'],
             'country' => ['nullable', 'string', 'max:50'],
             'province' => ['nullable', 'string', 'max:50'],
@@ -75,7 +75,6 @@ class UsersController extends Controller
 
         $password = "Admin@123";
 
-        // Handle profile image upload
         $profileImageName = null;
         if ($request->hasFile('picture')) {
             $profileImage = $request->file('picture');
@@ -111,10 +110,6 @@ class UsersController extends Controller
 
     }
 
-
-    /**
-     * Display the specified resource.
-     */
     public function show(string $id)
     {
         $user = User::with('role')->findorfail($id);
