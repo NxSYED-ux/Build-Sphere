@@ -18,8 +18,7 @@ class RoleController extends Controller
     {
         try {
             $roles = Role::paginate(10);
-            $permissions = Permission::where('status', 1)->get(['id', 'name']);
-            return view('Heights.Admin.Roles.index', compact('roles', 'permissions'));
+            return view('Heights.Admin.Roles.index', compact('roles'));
         } catch (\Exception $exception) {
             Log::error('Roles index error: ' . $exception->getMessage());
             return redirect()->back()->with('error', 'An unexpected error occurred. Please try again later.');
@@ -29,7 +28,7 @@ class RoleController extends Controller
     public function create()
     {
         try {
-            $permissions = Permission::where('status', 1)->get(['id', 'name']);
+            $permissions = Permission::all(['id', 'name']);
             return response()->json([
                 'permissions' => $permissions
             ]);
@@ -131,7 +130,6 @@ class RoleController extends Controller
     public function update(Request $request)
     {
         $user = $request->user() ?? abort(401, 'Unauthorized');
-
         $request->validate([
             'role_id' => 'required|integer|exists:roles,id',
             'name' => 'required|string|unique:roles,name,' . $request->role_id . ',id',
@@ -139,7 +137,7 @@ class RoleController extends Controller
             'status' => 'required|integer|in:0,1',
             'permissions' => 'required|array|min:1',
             'permissions.*' => 'required|integer|exists:permissions,id',
-            'updated_at' => 'required|date_format:Y-m-d H:i:s'
+            'updated_at' => 'required'
         ], [
             'permissions.required' => 'At least one permission must be assigned to save the role.',
             'permissions.min' => 'At least one permission must be assigned to save the role.',
@@ -164,19 +162,32 @@ class RoleController extends Controller
                 'name' => $request->name,
                 'description' => $request->description,
                 'status' => $request->status,
+                'updated_at' => now()
             ]);
 
-            RolePermission::where('role_id', $roleId)->delete();
+            $existingPermissions = RolePermission::where('role_id', $roleId)->pluck('permission_id')->toArray();
+            $newPermissions = $request->permissions;
 
-            $rolePermissions = collect($request->permissions)->map(function ($permissionId) use ($user, $roleId) {
-                return [
-                    'role_id' => $roleId,
-                    'permission_id' => $permissionId,
-                    'granted_by' => $user->id,
-                ];
-            })->toArray();
+            $permissionsToAdd = array_diff($newPermissions, $existingPermissions);
+            $permissionsToRemove = array_diff($existingPermissions, $newPermissions);
 
-            RolePermission::insert($rolePermissions);
+            if (!empty($permissionsToRemove)) {
+                RolePermission::where('role_id', $roleId)
+                    ->whereIn('permission_id', $permissionsToRemove)
+                    ->delete();
+            }
+
+            if (!empty($permissionsToAdd)) {
+                $rolePermissions = collect($permissionsToAdd)->map(function ($permissionId) use ($user, $roleId) {
+                    return [
+                        'role_id' => $roleId,
+                        'permission_id' => $permissionId,
+                        'granted_by' => $user->id,
+                    ];
+                })->toArray();
+
+                RolePermission::insert($rolePermissions);
+            }
 
             DB::commit();
             return redirect()->route('roles.index')->with('success', 'Role updated successfully');

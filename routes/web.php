@@ -13,6 +13,7 @@ use App\Http\Controllers\WebControllers\DropdownValueController;
 use App\Http\Controllers\WebControllers\OrganizationController;
 use App\Http\Controllers\WebControllers\OwnerBuildingController;
 use App\Http\Controllers\WebControllers\OwnerDashboardController;
+use App\Http\Controllers\WebControllers\RolePermissionController;
 use App\Http\Controllers\WebControllers\RoleController;
 use App\Http\Controllers\WebControllers\UsersController;
 use Illuminate\Support\Facades\Route;
@@ -72,7 +73,7 @@ Route::middleware(['auth.jwt:cookie'])->group(function () {
     Route::post('roles', [RoleController::class, 'store'])->name('roles.store');
     Route::get('roles/{role}', [RoleController::class, 'show'])->name('roles.show');
     Route::get('roles/{role}/edit', [RoleController::class, 'edit'])->name('roles.edit');
-    Route::put('roles/{role}', [RoleController::class, 'update'])->name('roles.update');
+    Route::put('/roles/update', [RoleController::class, 'update'])->name('roles.update');
     Route::delete('roles/{role}', [RoleController::class, 'destroy'])->name('roles.destroy');
 
     //Route::resource('types', DropdownTypeController::class);
@@ -138,14 +139,15 @@ Route::middleware(['auth.jwt:cookie'])->group(function () {
     Route::delete('organizations/{id}/remove-picture', [OrganizationController::class, 'destroyImage'])->name('organizations.remove_picture');
     Route::get('organizations/{id}/buildings', [OrganizationController::class, 'getBuildings'])->name('organizations.buildings');
 
-
     //Owner
     Route::get('owner_manager_dashboard', [OwnerDashboardController::class, 'index'])->name('owner_manager_dashboard');
     Route::resource('owner_buildings', OwnerBuildingController::class);
     Route::get('buildings/{id}/tree', [BuildingTreeController::class, 'tree'])->name('building.tree');
 
+    //Role Permissions
+    Route::get('/role-permissions', [RolePermissionController::class, 'showRolePermissions'])->name('role.permissions');
+    Route::post('/role-permission/toggle', [RolePermissionController::class, 'toggleRolePermission'])->name('toggle.role.permission');
 });
-
 
 require __DIR__.'/auth.php';
 require __DIR__.'/api.php';
