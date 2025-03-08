@@ -59,11 +59,17 @@
             font-style: normal !important;
             transition: margin-left 0.3s;
             margin: 0;
-            margin-left: 250px;
+            margin-left: 0;
             padding-top: 13px;
             overflow-y: auto;
             background-color: var(--main-background-color);
             color: var(--main-text-color);
+        }
+
+        @media screen and (min-width: 769px) {
+            #main {
+                margin-left: 250px;
+            }
         }
 
 

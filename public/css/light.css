@@ -99,5 +99,9 @@
             --notification-button-outline-text: #333;
             --notification-button-outline-border: #aaa;
             --notification-button-outline-hover-bg: #e9ecef;
+
+            --permission-header-bg: #f8f9fa;
+            --permission-header-color: #6c757d;
+            --permission-card-bg-color: #ffff;
     }
 

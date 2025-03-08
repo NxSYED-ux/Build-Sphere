@@ -59,7 +59,7 @@
                         <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
                             <li><a href="{{ route('users.index') }}" class="link-dark {{ in_array('UserManagement', $openSections) ? 'Link-background-color' : '' }}" data-bs-target="#AdminControl "><i class="bx bxs-user-account icons"></i> Users Management</a></li>
                             <li><a href="{{ route('roles.index') }}" class="link-dark {{ in_array('UserRoles', $openSections) ? 'Link-background-color' : '' }}" data-bs-target="#AdminControl" ><i class="bx bx-street-view icons"></i> User Roles</a></li>
-                            <li><a href="#" class="link-dark {{ in_array('UserPermissions', $openSections) ? 'Link-background-color' : '' }}" data-bs-target="#AdminControl" ><i class="bx bxs-low-vision icons"></i> Role Permissions</a></li>
+                            <li><a href="{{ route('role.permissions') }}" class="link-dark {{ in_array('RolePermissions', $openSections) ? 'Link-background-color' : '' }}" data-bs-target="#AdminControl" ><i class="bx bxs-low-vision icons"></i> Role Permissions</a></li>
                             <li><a href="{{ route('types.index') }}" class="link-dark {{ in_array('Dropdown', $openSections) ? 'Link-background-color' : '' }}" data-bs-target="#AdminControl"><i class="bx bx-menu icons"></i> List of values</a></li>
                         </ul>
                     </div>
@@ -204,39 +204,6 @@
             }
         }
 
-        // function closeNav() {
-        //     // Check if the screen width is greater than a certain threshold (e.g., 768px)
-        //     if (window.innerWidth > 768) {
-        //         document.getElementById("mySidenav").style.width = "0";
-        //         document.getElementById("main").style.marginLeft = "0";
-        //         document.getElementById("navbar_top").style.marginLeft = "0";
-        //         var togglerElement = document.getElementById("sidenav_toggler");
-        //         var topNavLogo = document.getElementById("top-nav-logo");
-        //         var closeBtn = document.getElementsByClassName("closebtn")[0];
-        //         if (togglerElement) {
-        //             togglerElement.style.display = 'block';
-        //         }
-        //         if(closeBtn){
-        //             closeBtn.style.display = 'none';
-        //         }
-        //         topNavLogo.style.display = 'block';
-        //     } else {
-        //         // For smaller screens, simply close the sidebar
-        //         document.getElementById("mySidenav").style.width = "0";
-        //         document.getElementById("main").style.marginLeft = "0";
-        //         document.getElementById("navbar_top").style.marginLeft = "0";
-        //         var togglerElement = document.getElementById("sidenav_toggler");
-        //         var topNavLogo = document.getElementById("top-nav-logo");
-        //         var closeBtn = document.getElementsByClassName("closebtn")[0];
-        //         if (togglerElement) {
-        //             togglerElement.style.display = 'block';
-        //         }
-        //         if(closeBtn){
-        //             closeBtn.style.display = 'none';
-        //         }
-        //         topNavLogo.style.display = 'block';
-        //     }
-        // }
         function closeNav() {
             if (window.innerWidth > 768) {
                 document.getElementById("mySidenav").style.width = "0";
