@@ -17,6 +17,8 @@ class Role extends Model
         'name',
         'description',
         'status',
+
+        'updated_at',
     ];
 
     public $timestamps = true;

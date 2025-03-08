@@ -17,7 +17,7 @@ class RoleController extends Controller
     public function index()
     {
         try {
-            $roles = Role::paginate(10);
+            $roles = Role::all();
             return view('Heights.Admin.Roles.index', compact('roles'));
         } catch (\Exception $exception) {
             Log::error('Roles index error: ' . $exception->getMessage());
