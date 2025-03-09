@@ -7,9 +7,16 @@ use App\Models\Address;
 use App\Models\DropdownType;
 use App\Models\Role;
 use App\Models\User;
+use GuzzleHttp\Promise\Promise;
+use GuzzleHttp\Promise\Utils;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
 
 class UsersController extends Controller
 {
@@ -23,12 +30,12 @@ class UsersController extends Controller
                     return $query->where('name', 'like', "%{$search}%")
                         ->orWhere('email', 'like', "%{$search}%")
                         ->orWhere('phone_no', 'like', "%{$search}%")
-                        ->orWhereHas('address', function ($query) use ($search) {
-                            $query->where('city', 'like', "%{$search}%");
-                        })
                         ->orWhere('status', 'like', "%{$search}%")
                         ->orWhereHas('role', function ($query) use ($search) {
                             $query->where('name', 'like', "%{$search}%");
+                        })
+                        ->orWhereHas('address', function ($query) use ($search) {
+                            $query->where('city', 'like', "%{$search}%");
                         });
                 })
                 ->paginate(10);
@@ -41,7 +48,7 @@ class UsersController extends Controller
     public function create()
     {
         try {
-            $roles = Role::pluck('name', 'id')->all();
+            $roles = Role::where('status', 1)->pluck('name', 'id')->all();
             $genderDropDown = DropdownType::with(['values.childs'])
                 ->where('type_name','Gender')
                 ->get();
@@ -51,182 +58,198 @@ class UsersController extends Controller
 
             return view('Heights.Admin.Users.create', compact('roles', 'dropdownData', 'genderDropDown'));
         } catch (\Exception $e) {
+            Log::error('Error in User Controller Create' . $e->getMessage());
             return back()->with('error', 'Something went wrong while loading the form. Please try again.');
         }
     }
 
     public function store(Request $request)
     {
-        $validatedData = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:users,email'],
-            'phone_no' => ['nullable', 'string', 'max:20'],
-            'cnic' => ['nullable','max:18', 'unique:users,cnic'],
-            'picture' => ['nullable', 'file', 'mimes:png,jpg,jpeg', 'max:6048'],
-            'role_id' => ['required', 'integer', 'exists:roles,id'],
-            'gender' => ['nullable', 'in:Male,Female,Other'],
-            'date_of_birth' => 'nullable|date',
-            'location' => ['nullable', 'string', 'max:255'],
-            'country' => ['nullable', 'string', 'max:50'],
-            'province' => ['nullable', 'string', 'max:50'],
-            'city' => ['nullable', 'string', 'max:50'],
-            'postal_code' => ['nullable', 'string', 'max:50'],
+        $request->validate([
+            'name' => ['bail', 'required', 'string', 'max:255'],
+            'email' => ['bail', 'required', 'string', 'email', 'max:255', 'unique:users,email'],
+            'role_id' => ['bail', 'required', 'integer', 'exists:roles,id'],
+            'phone_no' => ['bail', 'nullable', 'string', 'max:20'],
+            'cnic' => ['bail', 'nullable', 'max:18', 'unique:users,cnic'],
+            'picture' => ['bail', 'nullable', 'file', 'mimes:png,jpg,jpeg', 'max:5120'],
+            'gender' => ['bail', 'nullable', 'in:Male,Female,Other'],
+            'date_of_birth' => ['bail', 'nullable', 'date'],
+            'country' => ['bail', 'nullable', 'string', 'max:50'],
+            'province' => ['bail', 'nullable', 'string', 'max:50'],
+            'city' => ['bail', 'nullable', 'string', 'max:50'],
+            'location' => ['bail', 'nullable', 'string', 'max:255'],
+            'postal_code' => ['bail', 'nullable', 'string', 'max:50'],
         ]);
 
-        $password = "Admin@123";
-
-        $profileImageName = null;
-        if ($request->hasFile('picture')) {
-            $profileImage = $request->file('picture');
-            $profileImageName = time() . '_' . $profileImage->getClientOriginalName();
-            $profileImagePath = 'uploads/users/images/' . $profileImageName;
-            $profileImage->move(public_path('uploads/users/images'), $profileImageName);
+        $password = Str::random(8);
+        if($request->hasFile('picture')){
+            $profileImagePath = $this->handleFileUpload($request);
         }
 
-        $address = Address::create([
-            'location' => $request->location,
-            'country' => $request->location,
-            'province' => $request->location,
-            'city' => $request->location,
-            'postal_code' => $request->location,
-        ]);
+        DB::beginTransaction();
+        try {
+            $address = Address::create([
+                'location' => $request->location,
+                'country' => $request->country,
+                'province' => $request->province,
+                'city' => $request->city,
+                'postal_code' => $request->postal_code,
+            ]);
 
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($password),
-            'phone_no' => $request->phone_no,
-            'cnic' => $request->cnic,
-            'picture' => $profileImagePath, // Store the filename with path,
-            'gender' => $request->gender,
-            'role_id' => $request->role_id,
-            'address_id' => $address->id,
-            'date_of_birth' => $request->date_of_birth,
-            'status' => 1,
+            $user = User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => Hash::make($password),
+                'phone_no' => $request->phone_no,
+                'cnic' => $request->cnic,
+                'picture' => $profileImagePath,
+                'gender' => $request->gender,
+                'role_id' => $request->role_id,
+                'address_id' => $address->id,
+                'date_of_birth' => $request->date_of_birth,
+            ]);
 
-        ]);
+            DB::commit();
 
-        return redirect()->route('users.index')->with('success', 'User created successfully.');
+            return redirect()->route('users.index')->with('success', 'User created successfully.');
 
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('User creation failed: ' . $e->getMessage());
+            return redirect()->back()->withInput()->with('error', 'Failed to create user. Please try again.');
+        }
     }
 
     public function show(string $id)
     {
-        $user = User::with('role')->findorfail($id);
+        try {
+            $user = User::with('role')->findOrFail($id);
 
-        return response()->json([
-            'user' => $user,
-        ]);
+            return response()->json([
+                'user' => $user,
+            ], 200);
+        } catch (\Exception $e) {
+            Log::error('User show failed: ' . $e->getMessage());
+            return response()->json(['error' => 'User not found'], 404);
+        }
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(string $id)
     {
-        $user = User::with('role','address')->findOrFail($id);
-        $roles = Role::all();
+        try {
+            $user = User::with('role', 'address')->findOrFail($id);
+            $roles = Role::where('status', 1)
+                ->orWhere('id', $user->role_id)
+                ->get();
+            $dropdownData = DropdownType::with(['values.childs.childs'])
+                ->where('type_name', 'Country')
+                ->get();
+            $genderDropDown = DropdownType::with(['values.childs'])
+                ->where('type_name', 'Gender')
+                ->get();
 
-
-        $dropdownData = DropdownType::with(['values.childs.childs'])->where('type_name', 'Country')->get(); // Country -> Province -> City
-
-        return view('Heights.Admin.Users.edit',compact('user', 'roles', 'dropdownData'));
+            return view('Heights.Admin.Users.edit', compact('user', 'roles', 'dropdownData', 'genderDropDown'));
+        } catch (\Exception $e) {
+            Log::error('User edit failed: ' . $e->getMessage());
+            return redirect()->route('users.index')->with('error', 'Something went wrong while loading the edit form. Please try again.');
+        }
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    public function update(Request $request)
     {
-        // Validate the incoming request data
-        $validatedData = $request->validate([
+        $request->validate([
+            'user_id' => 'required|integer|exists:users,id',
             'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users,email,' . $id,
-            'password' => 'nullable|string|min:8',
+            'email' => 'required|string|email|max:255|unique:users,email,' . $request->user_id . ',id',
             'phone_no' => 'nullable|string|max:15',
-            'cnic' => 'nullable|string|max:18|unique:users,cnic,' . $id,
+            'cnic' => 'nullable|string|max:18|unique:users,cnic,' . $request->user_id . ',id',
             'gender' => ['nullable', 'in:Male,Female,Other'],
             'picture' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'role_id' => 'nullable|exists:roles,id',
             'date_of_birth' => 'nullable|date',
-            // 'organization_id' => 'nullable|exists:organizations,id',
             'location' => 'nullable|string|max:255',
             'country' => 'nullable|string|max:50',
             'province' => 'nullable|string|max:50',
             'city' => 'nullable|string|max:50',
-            'postal_code' => 'nullable', 'string', 'max:50',
+            'postal_code' => 'nullable|string|max:50',
             'status' => 'required|integer|in:0,1',
+            'updated_at' => 'required',
         ]);
 
-        // Fetch the user by ID
-        $user = User::findOrFail($id);
-        $address = Address::findOrFail($user->address_id);
+        try {
+            DB::beginTransaction();
 
-        $address->update([
-            'location' => $request->location,
-            'country' => $request->country,
-            'province' => $request->province,
-            'city' => $request->city,
-            'postal_code' => $request->postal_code,
-        ]);
+            $user = User::where([
+                ['id', '=', $request->user_id],
+                ['updated_at', '=', $request->updated_at]
+            ])->first();
 
-        if ($request->hasFile('picture')) {
-            $profileImage = $request->file('picture');
-            $profileImageName = time() . '_' . $profileImage->getClientOriginalName();
-            $profileImagePath = 'uploads/users/images/' . $profileImageName;
+            if (!$user) {
+                DB::rollBack();
+                return redirect()->back()->with('error', 'This user record was modified. Please refresh the page and try again.');
+            }
 
-            $validatedData['picture'] = $user->picture;
-            if ($user->picture != $profileImageName) {
+            $address = Address::findOrFail($user->address_id);
 
-                $profileImage->move(public_path('uploads/users/images/'), $profileImageName);
-
+            if ($request->hasFile('picture')) {
+                $profileImagePath = $this->handleFileUpload($request);
                 $oldProfileImagePath = public_path($user->picture);
                 if (File::exists($oldProfileImagePath)) {
                     File::delete($oldProfileImagePath);
                 }
-
-                $validatedData['picture'] = $profileImagePath;
             }
+
+            $user->update([
+                'name' => $request->name,
+                'email' => $request->email,
+                'phone_no' => $request->phone_no,
+                'cnic' => $request->cnic,
+                'gender' => $request->gender,
+                'picture' => $profileImagePath ?? $user->picture,
+                'role_id' => $request->role_id,
+                'status' => $request->status,
+                'date_of_birth' => $request->date_of_birth,
+                'updated_at' => now()
+            ]);
+
+            $address->update([
+                'location' => $request->location,
+                'country' => $request->country,
+                'province' => $request->province,
+                'city' => $request->city,
+                'postal_code' => $request->postal_code,
+            ]);
+
+            DB::commit();
+            return redirect()->route('users.index')->with('success', 'User updated successfully.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->with('error', 'Failed to update user. Please try again.');
         }
-
-        $user->update([
-            'name' => $validatedData['name'],
-            'email' => $validatedData['email'],
-            'password' => $request->filled('password') ? Hash::make($validatedData['password']) : $user->password,
-            'phone_no' => $validatedData['phone_no'],
-            'cnic' => $validatedData['cnic'],
-            'gender' => $validatedData['gender'],
-            'picture' => $validatedData['picture'] ?? $user->picture,
-            'role_id' => $validatedData['role_id'],
-            'status' => $validatedData['status'],
-            'date_of_birth' => $validatedData['date_of_birth'],
-        ]);
-
-        return redirect()->route('users.index')->with('success', 'User updated successfully.');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
+    protected function handleFileUpload(Request $request): ?string
     {
-        // Fetch the user by ID
-        $user = User::findOrFail($id);
-
-        // Delete the user's picture if it exists
-        if ($user->picture) {
-            $oldProfileImagePath = public_path('uploads/users/images/' . $user->picture);
-            if (File::exists($oldProfileImagePath)) {
-                File::delete($oldProfileImagePath);
-            }
-        }
-
-        // Delete the user
-        $user->delete();
-
-        // Redirect to the users index page with a success message
-        return redirect()->route('users.index')->with('success', 'User deleted successfully.');
+        $profileImage = $request->file('picture');
+        $profileImageName = time() . '_' . $profileImage->getClientOriginalName();
+        $profileImagePath = 'uploads/users/images/' . $profileImageName;
+        $profileImage->move(public_path('uploads/users/images'), $profileImageName);
+        return $profileImagePath;
     }
 
+    protected function verifyEmail(string $email): bool
+    {
+        $apiKey = env('EMAIL_VALIDATION_API_KEY');
+        $url = "http://apilayer.net/api/check?access_key={$apiKey}&email={$email}&smtp=1&format=1";
 
+        try {
+            $response = Http::get($url);
+            $data = $response->json();
+
+            return ($data['format_valid'] ?? false) && ($data['smtp_check'] ?? false);
+        } catch (\Exception $e) {
+            Log::error("Verify Email failed: " . $e->getMessage());
+            return false;
+        }
+    }
 }

@@ -1,8 +1,6 @@
 <?php
 
 use App\Http\Controllers\GeneralControllers\AuthController;
-use App\Http\Controllers\WebControllers\RolePermissionController;
-use App\Http\Controllers\WebControllers\RoleController;
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\GeneralControllers\ProfileController;
@@ -16,10 +14,8 @@ use App\Http\Controllers\AppControllers\QueryController;
 use App\Http\Controllers\AppControllers\DropdownController;
 
 Route::post('auth/user-login', [AuthController::class, 'login']);
-Route::get('/roles/{roleId}/permissions', [RolePermissionController::class, 'getRolePermissions']);
 
 Route::prefix('user')->middleware(['auth.jwt'])->group(function () {
-
     Route::middleware('check.permission:View User Profile')->group(function () {
         Route::get('/profile', [ProfileController::class, 'getProfile']);
     });
@@ -37,7 +33,7 @@ Route::prefix('user')->middleware(['auth.jwt'])->group(function () {
     });
 
 
-    Route::middleware('check.permission:User Homepage Access,json')->group(function () {
+    Route::middleware('check.permission:User Homepage,json')->group(function () {
         Route::get('/home', [HomePageController::class, 'homePage']);
         Route::get('/unit-details/{id}', [UnitDetailsController::class, 'unitDetails']);
         Route::get('/organization-details/{id}', [OrganizationDetailsController::class, 'organizationDetails']);
@@ -45,26 +41,26 @@ Route::prefix('user')->middleware(['auth.jwt'])->group(function () {
     });
 
     Route::get('/favorites-list', [FavouritesController::class, 'favouritesList']);
-    Route::middleware('check.permission:Show Favorites Access,json')->group(function () {
+    Route::middleware('check.permission:Show Favorites,json')->group(function () {
         Route::get('/favorites', [FavouritesController::class, 'showFavourites']);
     });
-    Route::middleware('check.permission:Add Favorites Access,json')->group(function () {
+    Route::middleware('check.permission:Add Favorites,json')->group(function () {
         Route::post('/favorites', [FavouritesController::class, 'insertFavorite']);
     });
-    Route::middleware('check.permission:Remove Favorites Access,json')->group(function () {
+    Route::middleware('check.permission:Remove Favorites,json')->group(function () {
         Route::delete('/favorites/{unit_id}', [FavouritesController::class, 'deleteFavorite']);
     });
 
-    Route::middleware('check.permission:Show My Properties Access,json')->group(function () {
+    Route::middleware('check.permission:Show My Properties,json')->group(function () {
         Route::get('/my-properties', [MyPropertiesController::class, 'showMyProperties']);
         Route::get('/my-properties/{id}', [MyPropertiesController::class, 'myPropertyDetails']);
     });
 
-    Route::middleware('check.permission:Log Queries Access,json')->group(function () {
+    Route::middleware('check.permission:Log Queries,json')->group(function () {
         Route::post('/log-query', [QueryController::class, 'logQuery']);
     });
 
-    Route::middleware('check.permission:View User Queries Access,json')->group(function () {
+    Route::middleware('check.permission:View User Queries,json')->group(function () {
         Route::get('/get-queries', [QueryController::class, 'getQueriesByField']);
         Route::get('/query/{id}', [QueryController::class, 'getQueryDetails']);
     });

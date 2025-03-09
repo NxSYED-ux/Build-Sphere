@@ -24,11 +24,11 @@ class ForgotPasswordController extends Controller
     public function sendResetLink(Request $request)
     {
         $request->validate(['email' => 'required|email|exists:users,email']);
-
+        $expirationTime = 5;
         $payload = JWTFactory::customClaims([
             'sub' => 'reset-password',
             'iat' => Carbon::now()->timestamp,
-            'exp' => Carbon::now()->addMinutes(5)->timestamp,
+            'exp' => Carbon::now()->addMinutes($expirationTime)->timestamp,
             'nbf' => Carbon::now()->timestamp,
             'message' => 'Reset Token'
         ])->make();
@@ -43,7 +43,7 @@ class ForgotPasswordController extends Controller
         }
 
         try {
-            Mail::send('auth.password-reset', ['token' => $token], function ($message) use ($request) {
+            Mail::send('auth.password-reset', ['token' => $token, 'expirationTime' => $expirationTime], function ($message) use ($request) {
                 $message->to($request->email)
                     ->subject('Password Reset Link');
             });

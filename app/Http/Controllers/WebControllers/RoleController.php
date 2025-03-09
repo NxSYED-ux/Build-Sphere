@@ -34,7 +34,7 @@ class RoleController extends Controller
             ]);
         } catch (\Exception $e) {
             Log::error('Roles create error: ' . $e->getMessage());
-            return response()->json(['error' => 'An error occurred while fetching permissions. Please try again.'], 500);
+            return response()->json(['error' => 'An error occurred. Please try again.'], 500);
         }
     }
 
@@ -107,10 +107,7 @@ class RoleController extends Controller
     {
         try {
             $role = Role::select('id', 'name', 'description', 'status', 'updated_at')->findOrFail($id);
-            $rolePermissionIds = RolePermission::where([
-                ['role_id', '=', $role->id],
-                ['status', '=', '1']
-            ])->pluck('permission_id');
+            $rolePermissionIds = RolePermission::where('role_id', '=', $role->id)->pluck('permission_id');
             $permissions = Permission::select('id', 'name')->get();
 
             return response()->json([
@@ -155,7 +152,7 @@ class RoleController extends Controller
 
             if (!$role) {
                 DB::rollBack();
-                return redirect()->back()->withInput()->with('error', 'This role has been updated by another user. Please refresh the page and try again.');
+                return redirect()->back()->with('error', 'This role has been updated by another user. Please refresh the page and try again.');
             }
 
             $role->update([

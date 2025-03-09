@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="JetClientState">
+    <option name="draftsState">
+      <draftsState>
+        <option name="requests">
+          <list>
+            <requestState>
+              <option name="auth">
+                <authState>
+                  <option name="bearer">
+                    <pw>
+                      <option name="token" value="eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvbG9naW4iLCJpYXQiOjE3NDA4MzczNjUsImV4cCI6MTc0MDg1MTc2NSwibmJmIjoxNzQwODM3MzY1LCJqdGkiOiJnWmtNa1dKWjVjb0ROYlZtIiwic3ViIjoiOSIsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjciLCJ1c2VyIjp7ImlkIjo5LCJyb2xlX2lkIjo0LCJvcmdhbml6YXRpb25faWQiOm51bGx9fQ.mGrN2avREDWQ5swZwMjiUvBnrphaALOXvDNIQR9fsXs" />
+                    </pw>
+                  </option>
+                  <option name="type" value="BEARER" />
+                </authState>
+              </option>
+              <option name="id" value="63bb341a-e75e-4bab-a20f-5c9113fb3214" />
+              <option name="method" value="GET" />
+              <option name="name" value="Assign Role Permissions" />
+              <option name="pathVariables">
+                <list>
+                  <pathVariableState>
+                    <option name="key" value="roleId" />
+                    <option name="value" value="4" />
+                  </pathVariableState>
+                </list>
+              </option>
+              <option name="url" value="http://localhost:8000/roles/{roleId}/permissions" />
+            </requestState>
+          </list>
+        </option>
+      </draftsState>
+    </option>
+    <option name="id" value="609f5591-dffd-4732-8d21-3a796c9855a2" />
+    <option name="version" value="6" />
+  </component>
+</project>

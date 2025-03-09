@@ -31,6 +31,10 @@ return new class extends Migration
             $table->foreign('address_id')->references('id')->on('address');
             $table->foreign('created_by')->references('id')->on('users');
             $table->foreign('updated_by')->references('id')->on('users');
+
+            $table->index('role_id');
+            $table->index('status');
+            $table->index('cnic');
         });
 
         Schema::create('sessions', function (Blueprint $table) {

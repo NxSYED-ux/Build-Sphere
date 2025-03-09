@@ -28,6 +28,8 @@ class User extends Authenticatable implements JWTSubject
         'role_id',
         'address_id',
         'status',
+
+        'updated_at',
     ];
 
     public $timestamps = true;
