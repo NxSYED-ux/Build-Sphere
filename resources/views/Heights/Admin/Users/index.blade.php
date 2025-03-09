@@ -3,6 +3,9 @@
 @section('title', 'Dashboard')
 
 @push('styles')
+
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100;300;400;600;700;900&display=swap" rel="stylesheet">
+
     <style>
         body {
         }
@@ -31,39 +34,62 @@
             overflow-x: auto;
         }
 
-        .theme-modal-header {
+        .modal-content{
+            max-width: 450px;
+        }
+        #userModal h5{
+            font-size: 16px;
+            font-weight: bold;
+            color: var(--modal-text);
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        #userModal span{
+            font-size: 15px;
+            color: var(--modal-text);
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .user-modal-header {
             background: var(--modal-header-bg);
             color: var(--modal-text);
+            font-family: 'Montserrat', sans-serif;
         }
 
-        .theme-modal-body {
+        #userModalLabel{
+            font-size: 18px !important;
+            font-weight: bold;
+        }
+
+        .user-modal-body {
             background: var(--modal-bg);
             color: var(--modal-text);
+            font-family: 'Montserrat', sans-serif;
         }
 
-        .theme-modal-footer {
+        .user-modal-footer {
             background: var(--modal-bg);
             border-top: 1px solid var(--modal-border);
         }
 
-        .theme-modal-close-btn {
+        .user-modal-close-btn {
             background: var(--modal-btn-bg);
             color: var(--modal-btn-text);
             border: none;
         }
 
-        .theme-modal-close-btn:hover {
+        .user-modal-close-btn:hover {
             background: var(--modal-btn-bg);
             color: var(--modal-btn-text);
             opacity: 0.8;
             border: none;
         }
 
-        .theme-close-btn {
+        .user-close-btn {
             filter: invert(var(--invert, 0));
         }
 
-        .theme-img-border {
+        .user-img-border {
             border: 2px solid var(--modal-border);
         }
 
@@ -184,46 +210,51 @@
         <div class="modal-dialog modal-md modal-dialog-centered">
             <div class="modal-content shadow-lg border-0 rounded-4">
                 <!-- Header -->
-                <div class="modal-header theme-modal-header position-relative">
+                <div class="modal-header user-modal-header position-relative">
                     <h5 class="modal-title fw-bold w-100 text-center" id="userModalLabel">User Details</h5>
-                    <button type="button" class="btn-close theme-close-btn position-absolute end-0 me-2" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close user-close-btn position-absolute end-0 me-2" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
 
                 <!-- Body -->
-                <div class="modal-body theme-modal-body">
-                    <div class="text-center mb-3">
-                        <img id="userPicture" src="" alt="User Picture" class="img-fluid rounded-circle shadow-sm border theme-img-border" style="width: 120px; height: 120px; object-fit: cover;">
+                <div class="modal-body user-modal-body">
+                    <div class="d-flex flex-column align-items-center justify-content-center mb-3">
+                        <div class="d-flex align-items-center">
+                            <img id="userPicture" src="" alt="User Picture" class="img-fluid rounded-circle shadow-sm border user-img-border"
+                                 style="width: 150px; height: 150px; object-fit: cover;">
+                            <div class="ms-3 text-center">
+                                <h5 id="userName" class="fw-semibold mb-1"></h5>
+                                <p class="mb-0"><span id="userRole"></span> <span id="userStatus" class="rounded-circle d-inline-block mt-2 mx-2" style="width: 10px; height: 10px;"></span></p>
+
+                            </div>
+                        </div>
                     </div>
-                    <h5 id="userName" class="text-center fw-semibold mb-3"></h5>
+
                     <div class="container">
                         <div class="row px-3">
-                            <div class="col-md-6">
-                                <p><strong>Email:</strong> <span id="userEmail"></span></p>
+                            <div class="col-6 mb-2">
+                                <h5>Email</h5>
+                                <span id="userEmail"></span>
+{{--                                <p><strong>Email</strong> <br> <span id="userEmail"></span></p>--}}
                             </div>
-                            <div class="col-md-6">
-                                <p><strong>Phone no:</strong> <span id="userPhone"></span></p>
+                            <div class="col-6 mb-2">
+                                <h5>Gender</h5>
+                                <span id="userGender"></span>
                             </div>
-                            <div class="col-md-6">
-                                <p><strong>CNIC:</strong> <span id="userCnic"></span></p>
+                            <div class="col-6 mb-2">
+                                <h5>CNIC</h5>
+                                <span id="userCnic"></span>
                             </div>
-                            <div class="col-md-6">
-                                <p><strong>Gender:</strong> <span id="userGender"></span></p>
-                            </div>
-                            <div class="col-md-6">
-                                <p><strong>Role:</strong> <span id="userRole"></span></p>
-                            </div>
-                            <div class="col-md-6">
-                                <p><strong>Status:</strong>
-                                    <span id="userStatus" class="badge rounded-pill px-3 py-2"></span>
-                                </p>
+                            <div class="col-6 mb-2">
+                                <h5>Phone no</h5>
+                                <span id="userPhone"></span>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Footer -->
-                <div class="modal-footer theme-modal-footer">
-                    <button type="button" class="btn theme-modal-close-btn w-100" data-bs-dismiss="modal">Close</button>
+                <div class="modal-footer user-modal-footer">
+                    <button type="button" class="btn user-modal-close-btn w-100" data-bs-dismiss="modal">Close</button>
                 </div>
             </div>
         </div>
@@ -330,7 +361,8 @@
                         $('#userModal #userCnic').text(data.cnic);
                         $('#userModal #userGender').text(data.gender);
                         $('#userModal #userRole').text(data.role.name);
-                        $('#userModal #userStatus') .text(data.status ? 'Active' : 'Inactive') .removeClass('bg-success bg-danger text-light text-dark').addClass(data.status ? 'bg-success text-dark' : 'bg-danger text-light');
+                        $('#userModal #userStatus') .removeClass('bg-success bg-danger') .addClass(data.status ? 'bg-success' : 'bg-danger');
+                        // $('#userModal #userStatus') .text(data.status ? 'Active' : 'Inactive') .removeClass('bg-success bg-danger text-light text-dark').addClass(data.status ? 'bg-success text-dark' : 'bg-danger text-light');
                         $('#userModal').modal('show');
                     },
                     error: function (xhr, status, error) {
