@@ -49,7 +49,8 @@
             --modal-text: #ffffff;
             --modal-border: #333;
             --modal-btn-bg: #43AAFF;
-            --modal-btn-text: #121212;
+            --modal-btn-text: #43AAFF;
+            --modal-btn-text-hover: #ffff;
             --status-active: #198754;
             --status-inactive: #dc3545;
             --invert: 1;
@@ -103,4 +104,7 @@
             --permission-header-bg: #252525;
             --permission-header-color: #fff;
             --permission-card-bg-color: #252525;
+
+            /* Profile */
+            --profile-card-bg-color: #252525;
 }

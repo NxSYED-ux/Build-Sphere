@@ -4,6 +4,7 @@ namespace App\Http\Controllers\GeneralControllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\Address;
+use App\Models\DropdownType;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
@@ -24,6 +25,11 @@ class ProfileController extends Controller
             ->select('location', 'city', 'province', 'country', 'postal_code')
             ->first();
 
+        $dropdownData = DropdownType::with(['values.childs.childs'])
+            ->where('type_name', 'Country')
+            ->get();
+
+
         $userData = (object)[
             'id' => $user->id,
             'name' => $user->name,
@@ -34,6 +40,7 @@ class ProfileController extends Controller
             'picture' => $user->picture,
             'date_of_birth' => $user->date_of_birth ? $user->date_of_birth->format('Y-m-d') : null,
             'address' => $address,
+            'dropdownData' => $dropdownData,
             'role' => (object)[
                 'name' => $role_name,
             ],
@@ -74,10 +81,12 @@ class ProfileController extends Controller
                 'cnic' => 'nullable|string|max:25',
                 'gender' => 'nullable|string|max:10',
                 'date_of_birth' => 'nullable|date',
+                'address' => 'nullable|array',
                 'address.location' => 'nullable|string|max:255',
                 'address.city' => 'nullable|string|max:50',
                 'address.province' => 'nullable|string|max:50',
                 'address.country' => 'nullable|string|max:50',
+                'address.postal_code' => 'nullable|string|max:50',
             ]);
 
             $userUpdated = $user->update(array_filter($validated));

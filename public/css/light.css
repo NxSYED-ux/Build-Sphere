@@ -48,8 +48,9 @@
             --modal-header-bg: #f8f9fa;
             --modal-text: #5F5F5F;
             --modal-border: #dee2e6;
-            --modal-btn-bg: #0d6efd;
-            --modal-btn-text: #ffffff;
+            --modal-btn-bg: #008CFF;
+            --modal-btn-text: #008CFF;
+            --modal-btn-text-hover: #ffff;
             --status-active: #28a745;
             --status-inactive: #dc3545;
             --invert: 0;
@@ -103,5 +104,8 @@
             --permission-header-bg: #f8f9fa;
             --permission-header-color: #6c757d;
             --permission-card-bg-color: #ffff;
+
+            /* Profile */
+            --profile-card-bg-color: #ffff;
     }
 

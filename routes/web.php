@@ -50,6 +50,8 @@ Route::middleware(['auth.jwt:cookie'])->group(function () {
     Route::post('logout', [AuthController::class, 'logOut'])->name('logout');
     Route::get('admin/profile', [ProfileController::class, 'adminProfile'])->name('admin.profile');
     Route::put('admin/profile', [ProfileController::class, 'updateProfileData'])->name('admin.profile.update');
+    Route::put('admin/profile/picture', [ProfileController::class, 'uploadProfilePic'])->name('admin.profile.picture.update');
+    Route::put('admin/profile/password', [ProfileController::class, 'changePassword'])->name('admin.profile.password.update');
     Route::get('owner/profile', [ProfileController::class, 'ownerProfile'])->name('owner.profile');
     Route::put('owner/profile', [ProfileController::class, 'updateProfileData'])->name('owner.profile.update');
 

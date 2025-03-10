@@ -34,9 +34,29 @@
             overflow-x: auto;
         }
 
-        .modal-content{
-            max-width: 450px;
+        .modal-dialog {
+            max-width: 400px;
+            border-radius: 20px !important;
+            overflow: hidden;
         }
+
+        .modal-content {
+            max-width: 400px;
+            border-radius: 20px !important;
+            overflow: hidden; /* Ensures the content respects the border radius */
+            box-shadow: none !important; /* Remove Bootstrap shadow */
+            border: 2px solid var(--modal-border); /* Ensures corners have a visible border */
+        }
+
+        .user-modal-content {
+            border-radius: 20px !important;
+            overflow: hidden; /* Important for applying radius properly */
+        }
+
+        .user-modal-dialog {
+            border-radius: 20px !important;
+        }
+
         #userModal h5{
             font-size: 16px;
             font-weight: bold;
@@ -51,7 +71,8 @@
         }
 
         .user-modal-header {
-            background: var(--modal-header-bg);
+            background: var(--modal-bg);
+            /*background: var(--modal-header-bg);*/
             color: var(--modal-text);
             font-family: 'Montserrat', sans-serif;
         }
@@ -73,16 +94,16 @@
         }
 
         .user-modal-close-btn {
-            background: var(--modal-btn-bg);
+            background: white;
             color: var(--modal-btn-text);
-            border: none;
+            border: 2px solid var(--modal-btn-bg);
+            border-radius: 10px;
         }
 
         .user-modal-close-btn:hover {
             background: var(--modal-btn-bg);
-            color: var(--modal-btn-text);
+            color: var(--modal-btn-text-hover);
             opacity: 0.8;
-            border: none;
         }
 
         .user-close-btn {
@@ -208,11 +229,11 @@
     <!-- User Details Modal -->
     <div class="modal fade" id="userModal" tabindex="-1" aria-labelledby="userModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-md modal-dialog-centered">
-            <div class="modal-content shadow-lg border-0 rounded-4">
+            <div class="modal-content shadow-lg user-modal-content">
                 <!-- Header -->
                 <div class="modal-header user-modal-header position-relative">
                     <h5 class="modal-title fw-bold w-100 text-center" id="userModalLabel">User Details</h5>
-                    <button type="button" class="btn-close user-close-btn position-absolute end-0 me-2" data-bs-dismiss="modal" aria-label="Close"></button>
+{{--                    <button type="button" class="btn-close user-close-btn position-absolute end-0 me-2" data-bs-dismiss="modal" aria-label="Close"></button>--}}
                 </div>
 
                 <!-- Body -->
@@ -220,8 +241,8 @@
                     <div class="d-flex flex-column align-items-center justify-content-center mb-3">
                         <div class="d-flex align-items-center">
                             <img id="userPicture" src="" alt="User Picture" class="img-fluid rounded-circle shadow-sm border user-img-border"
-                                 style="width: 150px; height: 150px; object-fit: cover;">
-                            <div class="ms-3 text-center">
+                                 style="width: 140px; height: 140px; object-fit: cover;">
+                            <div class="ms-3" style="padding-left: 10px !important;">
                                 <h5 id="userName" class="fw-semibold mb-1"></h5>
                                 <p class="mb-0"><span id="userRole"></span> <span id="userStatus" class="rounded-circle d-inline-block mt-2 mx-2" style="width: 10px; height: 10px;"></span></p>
 
@@ -231,20 +252,20 @@
 
                     <div class="container">
                         <div class="row px-3">
-                            <div class="col-6 mb-2">
+                            <div class="col-7 mb-2">
                                 <h5>Email</h5>
                                 <span id="userEmail"></span>
 {{--                                <p><strong>Email</strong> <br> <span id="userEmail"></span></p>--}}
                             </div>
-                            <div class="col-6 mb-2">
+                            <div class="col-5 mb-2">
                                 <h5>Gender</h5>
                                 <span id="userGender"></span>
                             </div>
-                            <div class="col-6 mb-2">
+                            <div class="col-7 mb-2">
                                 <h5>CNIC</h5>
                                 <span id="userCnic"></span>
                             </div>
-                            <div class="col-6 mb-2">
+                            <div class="col-5 mb-2">
                                 <h5>Phone no</h5>
                                 <span id="userPhone"></span>
                             </div>
