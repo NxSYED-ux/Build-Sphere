@@ -182,7 +182,7 @@ class UsersController extends Controller
             $user = User::where([
                 ['id', '=', $request->user_id],
                 ['updated_at', '=', $request->updated_at]
-            ])->first();
+            ])->sharedLock()->first();
 
             if (!$user) {
                 DB::rollBack();

@@ -148,7 +148,7 @@ class RoleController extends Controller
             $role = Role::where([
                 ['id', '=', $roleId],
                 ['updated_at', '=', $request->updated_at]
-            ])->first();
+            ])->sharedLock()->first();
 
             if (!$role) {
                 DB::rollBack();
