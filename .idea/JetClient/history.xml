@@ -783,6 +783,616 @@
           </option>
           <option name="workspaceId" value="drafts" />
         </requestHistoryState>
+        <requestHistoryState>
+          <option name="dateTime" value="1741609326241" />
+          <option name="id" value="19102cf4-7a2a-4288-8552-75413edd07d8" />
+          <option name="request">
+            <requestState>
+              <option name="id" value="e7ed79e6-368d-4f9c-89ad-3ae1bcda5f4c" />
+              <option name="method" value="GET" />
+              <option name="name" value="Draft" />
+              <option name="url" value="http://localhost:8000/test-notification" />
+            </requestState>
+          </option>
+          <option name="response">
+            <responseState>
+              <option name="bodyBytesBase64" value="Tm90aWZpY2F0aW9uIFNlbnQh" />
+              <option name="bodyString" value="Notification Sent!" />
+              <option name="code" value="200" />
+              <option name="connectionEstablishingTime" value="3" />
+              <option name="contentType" value="text/html; charset=UTF-8" />
+              <option name="headers">
+                <list>
+                  <headerState>
+                    <option name="key" value="Host" />
+                    <option name="value" value="localhost:8000" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Connection" />
+                    <option name="value" value="close" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="X-Powered-By" />
+                    <option name="value" value="PHP/8.2.12" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Content-Type" />
+                    <option name="value" value="text/html; charset=UTF-8" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Cache-Control" />
+                    <option name="value" value="no-cache, private" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Date" />
+                    <option name="value" value="Mon, 10 Mar 2025 12:22:06 GMT" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Set-Cookie" />
+                    <option name="value" value="heights_session=eyJpdiI6ImRRVXV2QzhLY1RrUVE2QTNyalV5NHc9PSIsInZhbHVlIjoiS3BlSWZ5UC8xZmcxaEpMbFYyTnh0aVRNdmxuVWtSWGsyRjVSNFVMbTFWdzYwVU1rZkx2Q3Q1azJZVzIyblV6N2NsUE92blJONkphRFpLWEhnaDB1cjZIaXNKeTJ0Um9IZHNaOHFTRUlPTE9mZmpGa0xJUzI0bFFkK2JkYUtUWXkiLCJtYWMiOiIxNGY0MTIzNmVjY2U4N2RkZDgyMmQwMDQ0N2RmNjU1OGEyMGI0MDE2ZWRhNGE5MTBmZGM2YWM2ZmI5YjA1ZTA2IiwidGFnIjoiIn0%3D; expires=Mon, 10 Mar 2025 14:22:06 GMT; Max-Age=7200; path=/; httponly; samesite=lax" />
+                  </headerState>
+                </list>
+              </option>
+              <option name="id" value="19102cf4-7a2a-4288-8552-75413edd07d8" />
+              <option name="message" value="OK" />
+              <option name="prettyResponseType" value="HTML" />
+              <option name="previewType" value="HTML" />
+              <option name="rawBodyString" value="Notification Sent!" />
+              <option name="size" value="18" />
+              <option name="time" value="207" />
+            </responseState>
+          </option>
+          <option name="workspaceId" value="drafts" />
+        </requestHistoryState>
+        <requestHistoryState>
+          <option name="dateTime" value="1741609344933" />
+          <option name="id" value="8ef1d5b8-a433-411c-900c-954b9dba3469" />
+          <option name="request">
+            <requestState>
+              <option name="id" value="e7ed79e6-368d-4f9c-89ad-3ae1bcda5f4c" />
+              <option name="method" value="GET" />
+              <option name="name" value="Draft" />
+              <option name="url" value="http://localhost:8000/test-notification" />
+            </requestState>
+          </option>
+          <option name="response">
+            <responseState>
+              <option name="bodyBytesBase64" value="Tm90aWZpY2F0aW9uIFNlbnQh" />
+              <option name="bodyString" value="Notification Sent!" />
+              <option name="code" value="200" />
+              <option name="connectionEstablishingTime" value="1" />
+              <option name="contentType" value="text/html; charset=UTF-8" />
+              <option name="headers">
+                <list>
+                  <headerState>
+                    <option name="key" value="Host" />
+                    <option name="value" value="localhost:8000" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Connection" />
+                    <option name="value" value="close" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="X-Powered-By" />
+                    <option name="value" value="PHP/8.2.12" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Content-Type" />
+                    <option name="value" value="text/html; charset=UTF-8" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Cache-Control" />
+                    <option name="value" value="no-cache, private" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Date" />
+                    <option name="value" value="Mon, 10 Mar 2025 12:22:24 GMT" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Set-Cookie" />
+                    <option name="value" value="heights_session=eyJpdiI6IkloQ3J6RStMdGU3WDY2VTdMdTF1T3c9PSIsInZhbHVlIjoiWUNNdERmZUhVWFZtWlA4cUJCSUN0R3UybHp4OFZLcGN3VnFDNTF5SU52aDVnKzJKMWxWWHVtdzJmSXozOURqdEJGK2FCUkhsUER0WkIwMVZrUXNra1ZOVzJYd3pyZWN2V3pXbndSaEZGcE92enNTa2NTNmNuZm1ZeCtPLzR0N2ciLCJtYWMiOiIzMDY1MTQ0YzAzNTY4ZDIyM2YzN2E0MjU4ZjY3NmI4ZDA4NmJlYzQ3Yzc3ZjgzNTljYjE4YjQwMDAzZTIzY2EzIiwidGFnIjoiIn0%3D; expires=Mon, 10 Mar 2025 14:22:24 GMT; Max-Age=7200; path=/; httponly; samesite=lax" />
+                  </headerState>
+                </list>
+              </option>
+              <option name="id" value="8ef1d5b8-a433-411c-900c-954b9dba3469" />
+              <option name="message" value="OK" />
+              <option name="prettyResponseType" value="HTML" />
+              <option name="previewType" value="HTML" />
+              <option name="rawBodyString" value="Notification Sent!" />
+              <option name="size" value="18" />
+              <option name="time" value="224" />
+            </responseState>
+          </option>
+          <option name="workspaceId" value="drafts" />
+        </requestHistoryState>
+        <requestHistoryState>
+          <option name="dateTime" value="1741609410185" />
+          <option name="id" value="4d1a266a-8ba1-49a6-9e8f-9b42c041d2be" />
+          <option name="request">
+            <requestState>
+              <option name="id" value="e7ed79e6-368d-4f9c-89ad-3ae1bcda5f4c" />
+              <option name="method" value="GET" />
+              <option name="name" value="Draft" />
+              <option name="url" value="http://localhost:8000/test-notification" />
+            </requestState>
+          </option>
+          <option name="response">
+            <responseState>
+              <option name="bodyBytesBase64" value="Tm90aWZpY2F0aW9uIFNlbnQh" />
+              <option name="bodyString" value="Notification Sent!" />
+              <option name="code" value="200" />
+              <option name="connectionEstablishingTime" value="2" />
+              <option name="contentType" value="text/html; charset=UTF-8" />
+              <option name="headers">
+                <list>
+                  <headerState>
+                    <option name="key" value="Host" />
+                    <option name="value" value="localhost:8000" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Connection" />
+                    <option name="value" value="close" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="X-Powered-By" />
+                    <option name="value" value="PHP/8.2.12" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Content-Type" />
+                    <option name="value" value="text/html; charset=UTF-8" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Cache-Control" />
+                    <option name="value" value="no-cache, private" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Date" />
+                    <option name="value" value="Mon, 10 Mar 2025 12:23:30 GMT" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Set-Cookie" />
+                    <option name="value" value="heights_session=eyJpdiI6Im9tR3dvNWZrSVc0aThwNndXeWlaYnc9PSIsInZhbHVlIjoiNnZSdEIySXExakdTSmpaRUlzR0NMY1VjazYvdW0vaUdtUGV4ZXM1TTByTXJidWptQ0w0OTJId2QyOTFGRVJCcjZMQnlxZTJjVzNpcnVHLzZudCtLSHJhbnlKQm9hdU8rdC81QkphQ3NQdEVGd0ZmRHZMbXpMSGtmZlBrS1RLOVMiLCJtYWMiOiI4ODc5ODM5OThhNDhhMWUyZmNlMDllZDI0MjFlNzAyNGMyMzhiNmE5NjY0NTA2NDc3OTk3NTk4ZGUyOGFmZDFiIiwidGFnIjoiIn0%3D; expires=Mon, 10 Mar 2025 14:23:30 GMT; Max-Age=7200; path=/; httponly; samesite=lax" />
+                  </headerState>
+                </list>
+              </option>
+              <option name="id" value="4d1a266a-8ba1-49a6-9e8f-9b42c041d2be" />
+              <option name="message" value="OK" />
+              <option name="prettyResponseType" value="HTML" />
+              <option name="previewType" value="HTML" />
+              <option name="rawBodyString" value="Notification Sent!" />
+              <option name="size" value="18" />
+              <option name="time" value="254" />
+            </responseState>
+          </option>
+          <option name="workspaceId" value="drafts" />
+        </requestHistoryState>
+        <requestHistoryState>
+          <option name="dateTime" value="1741609517306" />
+          <option name="id" value="31f7d0b4-479a-46dd-8620-ea5803db06b9" />
+          <option name="request">
+            <requestState>
+              <option name="id" value="e7ed79e6-368d-4f9c-89ad-3ae1bcda5f4c" />
+              <option name="method" value="GET" />
+              <option name="name" value="Draft" />
+              <option name="url" value="http://localhost:8000/test-notification" />
+            </requestState>
+          </option>
+          <option name="response">
+            <responseState>
+              <option name="bodyBytesBase64" value="Tm90aWZpY2F0aW9uIFNlbnQh" />
+              <option name="bodyString" value="Notification Sent!" />
+              <option name="code" value="200" />
+              <option name="connectionEstablishingTime" value="10" />
+              <option name="contentType" value="text/html; charset=UTF-8" />
+              <option name="headers">
+                <list>
+                  <headerState>
+                    <option name="key" value="Host" />
+                    <option name="value" value="localhost:8000" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Connection" />
+                    <option name="value" value="close" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="X-Powered-By" />
+                    <option name="value" value="PHP/8.2.12" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Content-Type" />
+                    <option name="value" value="text/html; charset=UTF-8" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Cache-Control" />
+                    <option name="value" value="no-cache, private" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Date" />
+                    <option name="value" value="Mon, 10 Mar 2025 12:25:17 GMT" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Set-Cookie" />
+                    <option name="value" value="heights_session=eyJpdiI6InpNOVBiajRjc1Axa20yMmZrZ3dIRkE9PSIsInZhbHVlIjoiUU5XN2RlazkvdVVhNTlBajgwb3dTWFRhbWU3WDRHM2taaDlUallUUzdSUm91NnBPMXBkbko5Vzhpc01xZjNVcFl0aGNrY3VkTGtlcER1K1NTUE8zTGpFWk1yamRrN0d2aTFXWkNlN3ZKVGlpRnd1TituRDc4L2xDUXNnVWEvN3oiLCJtYWMiOiI5N2M1OGYyMmJkNDdjNjQ1MWIyMjcwMzgwNWZlZmMwNjhkNDNjMzFlMDk1YWYzMTMzYjlkZWZkZTlhNGI4MjI3IiwidGFnIjoiIn0%3D; expires=Mon, 10 Mar 2025 14:25:17 GMT; Max-Age=7200; path=/; httponly; samesite=lax" />
+                  </headerState>
+                </list>
+              </option>
+              <option name="id" value="31f7d0b4-479a-46dd-8620-ea5803db06b9" />
+              <option name="message" value="OK" />
+              <option name="prettyResponseType" value="HTML" />
+              <option name="previewType" value="HTML" />
+              <option name="rawBodyString" value="Notification Sent!" />
+              <option name="size" value="18" />
+              <option name="time" value="227" />
+            </responseState>
+          </option>
+          <option name="workspaceId" value="drafts" />
+        </requestHistoryState>
+        <requestHistoryState>
+          <option name="dateTime" value="1741609565357" />
+          <option name="id" value="76ef72a9-3856-4a6f-a96c-a4e589e73778" />
+          <option name="request">
+            <requestState>
+              <option name="id" value="e7ed79e6-368d-4f9c-89ad-3ae1bcda5f4c" />
+              <option name="method" value="GET" />
+              <option name="name" value="Draft" />
+              <option name="url" value="http://localhost:8000/test-notification" />
+            </requestState>
+          </option>
+          <option name="response">
+            <responseState>
+              <option name="bodyBytesBase64" value="Tm90aWZpY2F0aW9uIFNlbnQh" />
+              <option name="bodyString" value="Notification Sent!" />
+              <option name="code" value="200" />
+              <option name="connectionEstablishingTime" value="3" />
+              <option name="contentType" value="text/html; charset=UTF-8" />
+              <option name="headers">
+                <list>
+                  <headerState>
+                    <option name="key" value="Host" />
+                    <option name="value" value="localhost:8000" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Connection" />
+                    <option name="value" value="close" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="X-Powered-By" />
+                    <option name="value" value="PHP/8.2.12" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Content-Type" />
+                    <option name="value" value="text/html; charset=UTF-8" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Cache-Control" />
+                    <option name="value" value="no-cache, private" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Date" />
+                    <option name="value" value="Mon, 10 Mar 2025 12:26:05 GMT" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Set-Cookie" />
+                    <option name="value" value="heights_session=eyJpdiI6IjcwRm5DbXNMT0VVMGoyeU1uakdxU1E9PSIsInZhbHVlIjoiSlhSSjlTQTFkamJmaEVrZ2JlWjBYVXMzNE9URG82aEhIbTZUT0FTb1NBajd3OFdldlBFTi9GL2hObjZVWTBiV0xtWUphQU5UM3hRV2VDWGFlZktsM2lWSVU4cS9OSm5YeUlNSm43eXNxRzVSRWRGZXBrZEFmN0wrUjZ4L0JvZTkiLCJtYWMiOiI5ZThiNmQyYmUwMTA3MWVmZWQyNDU1N2E0NDgyMDMwYjg4MTk2MmFkNTgzZTc5MTc4ZGQ3NGRlZTEyY2I5NDE1IiwidGFnIjoiIn0%3D; expires=Mon, 10 Mar 2025 14:26:05 GMT; Max-Age=7200; path=/; httponly; samesite=lax" />
+                  </headerState>
+                </list>
+              </option>
+              <option name="id" value="76ef72a9-3856-4a6f-a96c-a4e589e73778" />
+              <option name="message" value="OK" />
+              <option name="prettyResponseType" value="HTML" />
+              <option name="previewType" value="HTML" />
+              <option name="rawBodyString" value="Notification Sent!" />
+              <option name="size" value="18" />
+              <option name="time" value="245" />
+            </responseState>
+          </option>
+          <option name="workspaceId" value="drafts" />
+        </requestHistoryState>
+        <requestHistoryState>
+          <option name="dateTime" value="1741609783551" />
+          <option name="id" value="6c8a2d36-0270-4d9e-b95a-3faf9245a665" />
+          <option name="request">
+            <requestState>
+              <option name="id" value="e7ed79e6-368d-4f9c-89ad-3ae1bcda5f4c" />
+              <option name="method" value="GET" />
+              <option name="name" value="Draft" />
+              <option name="url" value="http://localhost:8000/test-notification" />
+            </requestState>
+          </option>
+          <option name="response">
+            <responseState>
+              <option name="bodyBytesBase64" value="Tm90aWZpY2F0aW9uIFNlbnQh" />
+              <option name="bodyString" value="Notification Sent!" />
+              <option name="code" value="200" />
+              <option name="connectionEstablishingTime" value="4" />
+              <option name="contentType" value="text/html; charset=UTF-8" />
+              <option name="headers">
+                <list>
+                  <headerState>
+                    <option name="key" value="Host" />
+                    <option name="value" value="localhost:8000" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Connection" />
+                    <option name="value" value="close" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="X-Powered-By" />
+                    <option name="value" value="PHP/8.2.12" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Content-Type" />
+                    <option name="value" value="text/html; charset=UTF-8" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Cache-Control" />
+                    <option name="value" value="no-cache, private" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Date" />
+                    <option name="value" value="Mon, 10 Mar 2025 12:29:43 GMT" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Set-Cookie" />
+                    <option name="value" value="heights_session=eyJpdiI6Im51YzVnTDRlZmtZWHhLVXpEeXo2Rnc9PSIsInZhbHVlIjoiZDRCZmtEN2hiR0loVWVVa01BL0s0dTBUd2Y0YmVMYnoyejRpVWZac1h6MFVjYUk4a29qMVkrb2FLODhqQnUrbVcrRzNBS0F3eGl3Z3VmaEh3UFQwb3R0VzhsTVVtQktVZ1hhTjZtNUVSbDVjVHpXV0JPMTExeVFwSHVFcEFrZW4iLCJtYWMiOiIwNmM4M2QwZmUzNTI1OGRlNzFiMDFhMGZiOGNmMGQ0YjcwZjkzNjM2MjJkOGQ5NzcwOWU2YjMwZDhhNzM0NWJjIiwidGFnIjoiIn0%3D; expires=Mon, 10 Mar 2025 14:29:43 GMT; Max-Age=7200; path=/; httponly; samesite=lax" />
+                  </headerState>
+                </list>
+              </option>
+              <option name="id" value="6c8a2d36-0270-4d9e-b95a-3faf9245a665" />
+              <option name="message" value="OK" />
+              <option name="prettyResponseType" value="HTML" />
+              <option name="previewType" value="HTML" />
+              <option name="rawBodyString" value="Notification Sent!" />
+              <option name="size" value="18" />
+              <option name="time" value="282" />
+            </responseState>
+          </option>
+          <option name="workspaceId" value="drafts" />
+        </requestHistoryState>
+        <requestHistoryState>
+          <option name="dateTime" value="1741610193425" />
+          <option name="id" value="2f692079-00ae-4687-b9ce-db7f5304c0e4" />
+          <option name="request">
+            <requestState>
+              <option name="id" value="e7ed79e6-368d-4f9c-89ad-3ae1bcda5f4c" />
+              <option name="method" value="GET" />
+              <option name="name" value="Draft" />
+              <option name="url" value="http://localhost:8000/test-notification" />
+            </requestState>
+          </option>
+          <option name="response">
+            <responseState>
+              <option name="bodyBytesBase64" value="Tm90aWZpY2F0aW9uIFNlbnQh" />
+              <option name="bodyString" value="Notification Sent!" />
+              <option name="code" value="200" />
+              <option name="connectionEstablishingTime" value="3" />
+              <option name="contentType" value="text/html; charset=UTF-8" />
+              <option name="headers">
+                <list>
+                  <headerState>
+                    <option name="key" value="Host" />
+                    <option name="value" value="localhost:8000" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Connection" />
+                    <option name="value" value="close" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="X-Powered-By" />
+                    <option name="value" value="PHP/8.2.12" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Content-Type" />
+                    <option name="value" value="text/html; charset=UTF-8" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Cache-Control" />
+                    <option name="value" value="no-cache, private" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Date" />
+                    <option name="value" value="Mon, 10 Mar 2025 12:36:33 GMT" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Set-Cookie" />
+                    <option name="value" value="heights_session=eyJpdiI6ImluUFd4VElJak5BUjZqSEdIRGtmamc9PSIsInZhbHVlIjoiemx0R2lGamNqNTZqRFZFRzJ6VDBTTXNxTFZ5VUp4eGJqZHI0YW04YW5PT3NBUFZnOXM2OFZIYW1xWkp4dDRuWTNERTZTdEtXQVltM0d6SWY5b245TWNiL3lCd3hZZFREOGNXb1NTMDBHWlVLU3JNbDlvOXFSdkhPNDJPSkhad2YiLCJtYWMiOiIzNDNhMzA0Y2U1M2E0MzE2ZTUxMGUwMGNjZjc2YzlhYTZmYzI3Y2I0OGJiNGZmOTdlNWFhMmRiZWJhY2UxYmZjIiwidGFnIjoiIn0%3D; expires=Mon, 10 Mar 2025 14:36:33 GMT; Max-Age=7200; path=/; httponly; samesite=lax" />
+                  </headerState>
+                </list>
+              </option>
+              <option name="id" value="2f692079-00ae-4687-b9ce-db7f5304c0e4" />
+              <option name="message" value="OK" />
+              <option name="prettyResponseType" value="HTML" />
+              <option name="previewType" value="HTML" />
+              <option name="rawBodyString" value="Notification Sent!" />
+              <option name="size" value="18" />
+              <option name="time" value="495" />
+            </responseState>
+          </option>
+          <option name="workspaceId" value="drafts" />
+        </requestHistoryState>
+        <requestHistoryState>
+          <option name="dateTime" value="1741614449500" />
+          <option name="id" value="e22510fe-47a2-4037-afd2-47ccd03e65e3" />
+          <option name="request">
+            <requestState>
+              <option name="id" value="e7ed79e6-368d-4f9c-89ad-3ae1bcda5f4c" />
+              <option name="method" value="GET" />
+              <option name="name" value="Draft" />
+              <option name="url" value="http://localhost:8000/test-notification" />
+            </requestState>
+          </option>
+          <option name="response">
+            <responseState>
+              <option name="bodyBytesBase64" value="Tm90aWZpY2F0aW9uIFNlbnQh" />
+              <option name="bodyString" value="Notification Sent!" />
+              <option name="code" value="200" />
+              <option name="connectionEstablishingTime" value="11" />
+              <option name="contentType" value="text/html; charset=UTF-8" />
+              <option name="headers">
+                <list>
+                  <headerState>
+                    <option name="key" value="Host" />
+                    <option name="value" value="localhost:8000" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Connection" />
+                    <option name="value" value="close" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="X-Powered-By" />
+                    <option name="value" value="PHP/8.2.12" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Content-Type" />
+                    <option name="value" value="text/html; charset=UTF-8" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Cache-Control" />
+                    <option name="value" value="no-cache, private" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Date" />
+                    <option name="value" value="Mon, 10 Mar 2025 13:47:29 GMT" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Set-Cookie" />
+                    <option name="value" value="heights_session=eyJpdiI6IitQb28xbyt4WW10S29UaWd5MFlIbHc9PSIsInZhbHVlIjoiUlJINlZ2NHdaREhwSGl2MUF6VVNZQW1CNlNzSWNIQ0RIN1Vvb2x2UUM4cHhOMktkTXYzZ1pUZzFOZDNkR0N0TmtDZmxrSkJvOHYvaWtYcEQvQnhrTzFDN2c5R05QQTMwY2NabC8wcERGK0dqWkxZM0FyYy9jSUZyMCs3YWszeWkiLCJtYWMiOiIwYmQ2ODZlNzE2NGU1YWIxMjA1MmMwMWM1OTBmOGQ1NjExMzI2OGFmNGY2YTlmZWYwZmU4MGFmZmU0YjVhMmQ3IiwidGFnIjoiIn0%3D; expires=Mon, 10 Mar 2025 15:47:29 GMT; Max-Age=7200; path=/; httponly; samesite=lax" />
+                  </headerState>
+                </list>
+              </option>
+              <option name="id" value="e22510fe-47a2-4037-afd2-47ccd03e65e3" />
+              <option name="message" value="OK" />
+              <option name="prettyResponseType" value="HTML" />
+              <option name="previewType" value="HTML" />
+              <option name="rawBodyString" value="Notification Sent!" />
+              <option name="size" value="18" />
+              <option name="time" value="486" />
+            </responseState>
+          </option>
+          <option name="workspaceId" value="drafts" />
+        </requestHistoryState>
+        <requestHistoryState>
+          <option name="dateTime" value="1741615279297" />
+          <option name="id" value="b29c43d5-e688-4640-be00-81a07c72db29" />
+          <option name="request">
+            <requestState>
+              <option name="id" value="e7ed79e6-368d-4f9c-89ad-3ae1bcda5f4c" />
+              <option name="method" value="GET" />
+              <option name="name" value="Draft" />
+              <option name="url" value="http://localhost:8000/test-notification" />
+            </requestState>
+          </option>
+          <option name="response">
+            <responseState>
+              <option name="bodyBytesBase64" value="Tm90aWZpY2F0aW9uIFNlbnQh" />
+              <option name="bodyString" value="Notification Sent!" />
+              <option name="code" value="200" />
+              <option name="connectionEstablishingTime" value="4" />
+              <option name="contentType" value="text/html; charset=UTF-8" />
+              <option name="headers">
+                <list>
+                  <headerState>
+                    <option name="key" value="Host" />
+                    <option name="value" value="localhost:8000" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Connection" />
+                    <option name="value" value="close" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="X-Powered-By" />
+                    <option name="value" value="PHP/8.2.12" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Content-Type" />
+                    <option name="value" value="text/html; charset=UTF-8" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Cache-Control" />
+                    <option name="value" value="no-cache, private" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Date" />
+                    <option name="value" value="Mon, 10 Mar 2025 14:01:19 GMT" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Set-Cookie" />
+                    <option name="value" value="heights_session=eyJpdiI6IlRObFFzRGhwelROVUVHSEJjYkh3cFE9PSIsInZhbHVlIjoicG96ZzFidG5XR2ZMZDRFQmxSR3ZIVFhtcmpncHg0NkFObHdQbXR1dlBtYlRnVVRIcmI5RGpuR3lLaVJ4ZEIwYkNmdU1kSTFOa2hqdkE2L0JPRit3ZCtYeEdLanJEWG0vQ3RUK3RyMHVzL3NnbVdiWWlHRHVvWkdWZ2h6UGZUbkQiLCJtYWMiOiI1MmI1MTc5ZWMxMTZmMzBmODg1YzI1ZTgxY2QwZTAxNDY1YWIzODA1NjU3OTI0N2Y1YjBkZDU0YmM1NGNiNWU4IiwidGFnIjoiIn0%3D; expires=Mon, 10 Mar 2025 16:01:19 GMT; Max-Age=7200; path=/; httponly; samesite=lax" />
+                  </headerState>
+                </list>
+              </option>
+              <option name="id" value="b29c43d5-e688-4640-be00-81a07c72db29" />
+              <option name="message" value="OK" />
+              <option name="prettyResponseType" value="HTML" />
+              <option name="previewType" value="HTML" />
+              <option name="rawBodyString" value="Notification Sent!" />
+              <option name="size" value="18" />
+              <option name="time" value="563" />
+            </responseState>
+          </option>
+          <option name="workspaceId" value="drafts" />
+        </requestHistoryState>
+        <requestHistoryState>
+          <option name="dateTime" value="1741672445620" />
+          <option name="id" value="ef23c194-d0b4-49aa-9cec-7213e7bd7a2f" />
+          <option name="request">
+            <requestState>
+              <option name="id" value="e7ed79e6-368d-4f9c-89ad-3ae1bcda5f4c" />
+              <option name="method" value="GET" />
+              <option name="name" value="Draft" />
+              <option name="url" value="http://localhost:8000/test-notification" />
+            </requestState>
+          </option>
+          <option name="response">
+            <responseState>
+              <option name="bodyBytesBase64" value="Tm90aWZpY2F0aW9uIFNlbnQh" />
+              <option name="bodyString" value="Notification Sent!" />
+              <option name="code" value="200" />
+              <option name="connectionEstablishingTime" value="34" />
+              <option name="contentType" value="text/html; charset=UTF-8" />
+              <option name="headers">
+                <list>
+                  <headerState>
+                    <option name="key" value="Host" />
+                    <option name="value" value="localhost:8000" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Connection" />
+                    <option name="value" value="close" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="X-Powered-By" />
+                    <option name="value" value="PHP/8.2.12" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Content-Type" />
+                    <option name="value" value="text/html; charset=UTF-8" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Cache-Control" />
+                    <option name="value" value="no-cache, private" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Date" />
+                    <option name="value" value="Tue, 11 Mar 2025 05:54:05 GMT" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Set-Cookie" />
+                    <option name="value" value="heights_session=eyJpdiI6IklWVHo2SE5Fd0FKWldSSldMMWVPa2c9PSIsInZhbHVlIjoiL2xmdFNlZWhONTdTVkpFSXgwbDYvWEFzTDJhV0d5K0UwR1RrRGNTYTFHSEFRNW44eEZHbVNRUUR3amVvSmhDYU1Yblpvbkh4c2dwUUJTS0ZKR0tTQVFKNE15dW1pVlUzQVRLSko4V3h2K1Qxcm1XU0k3bWRKUXA5UDU1UlhmZ0EiLCJtYWMiOiI3ZGQwMDVhZmNkMTI0ZDIwNjM0ZjVkOGM4YzE0OTU3OTU0ZTcwMDMxMjFhNzU2MzgxMjViMWViMjQxMGNkNjgxIiwidGFnIjoiIn0%3D; expires=Tue, 11 Mar 2025 07:54:05 GMT; Max-Age=7200; path=/; httponly; samesite=lax" />
+                  </headerState>
+                </list>
+              </option>
+              <option name="id" value="ef23c194-d0b4-49aa-9cec-7213e7bd7a2f" />
+              <option name="message" value="OK" />
+              <option name="prettyResponseType" value="HTML" />
+              <option name="previewType" value="HTML" />
+              <option name="rawBodyString" value="Notification Sent!" />
+              <option name="size" value="18" />
+              <option name="time" value="1010" />
+            </responseState>
+          </option>
+          <option name="workspaceId" value="drafts" />
+        </requestHistoryState>
       </list>
     </option>
   </component>
