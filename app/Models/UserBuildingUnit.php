@@ -27,9 +27,9 @@ class UserBuildingUnit extends Model
     public $timestamps = true;
 
     protected $casts = [
-        'rent_start_date' => 'date',
-        'rent_end_date' => 'date',
-        'purchase_date' => 'date',
+        'rent_start_date' => 'date:Y-m-d',
+        'rent_end_date' => 'date:Y-m-d',
+        'purchase_date' => 'date:Y-m-d',
     ];
 
     // Belongs to Relations

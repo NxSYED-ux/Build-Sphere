@@ -9,6 +9,19 @@ use Illuminate\Support\Facades\Log;
 
 class HomePageController extends Controller
 {
+    public function index(Request $request){
+        if(!$request->user()) return response()->json(['error' => 'User not authenticated.'], 401);
+
+        $user = [
+            'name' => $request->user()->name,
+            'picture' => $request->user()->picture
+        ];
+
+        return response()->json([
+            'user' => $user,
+        ]);
+    }
+
     public function homePage(Request $request)
     {
         try {

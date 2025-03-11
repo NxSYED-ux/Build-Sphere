@@ -15,7 +15,11 @@ use App\Http\Controllers\AppControllers\DropdownController;
 
 Route::post('auth/user-login', [AuthController::class, 'login']);
 
+Route::get('/user/values-by-type/{type}', [DropdownController::class, 'getDropdownValuesByType']);
+Route::get('/user/values-by-value/{value}', [DropdownController::class, 'getDropdownValuesByValue']);
+
 Route::prefix('user')->middleware(['auth.jwt'])->group(function () {
+
     Route::middleware('check.permission:View User Profile')->group(function () {
         Route::get('/profile', [ProfileController::class, 'getProfile']);
     });
@@ -32,15 +36,15 @@ Route::prefix('user')->middleware(['auth.jwt'])->group(function () {
         Route::put('/change-password', [ProfileController::class, 'changePassword']);
     });
 
-
     Route::middleware('check.permission:User Homepage,json')->group(function () {
         Route::get('/home', [HomePageController::class, 'homePage']);
-        Route::get('/unit-details/{id}', [UnitDetailsController::class, 'unitDetails']);
-        Route::get('/organization-details/{id}', [OrganizationDetailsController::class, 'organizationDetails']);
-        Route::get('/building-units/{id}', [BuildingUnitsController::class, 'specificBuildingUnits']);
+        Route::get('/unit_details/{id}', [UnitDetailsController::class, 'unitDetails']);
+        Route::get('/organization_details/{id}', [OrganizationDetailsController::class, 'organizationDetails']);
+        Route::get('/building_units/{id}', [BuildingUnitsController::class, 'specificBuildingUnits']);
     });
 
     Route::get('/favorites-list', [FavouritesController::class, 'favouritesList']);
+
     Route::middleware('check.permission:Show Favorites,json')->group(function () {
         Route::get('/favorites', [FavouritesController::class, 'showFavourites']);
     });
@@ -52,8 +56,8 @@ Route::prefix('user')->middleware(['auth.jwt'])->group(function () {
     });
 
     Route::middleware('check.permission:Show My Properties,json')->group(function () {
-        Route::get('/my-properties', [MyPropertiesController::class, 'showMyProperties']);
-        Route::get('/my-properties/{id}', [MyPropertiesController::class, 'myPropertyDetails']);
+        Route::get('/my_properties', [MyPropertiesController::class, 'showMyProperties']);
+        Route::get('/my_properties/{id}', [MyPropertiesController::class, 'myPropertyDetails']);
     });
 
     Route::middleware('check.permission:Log Queries,json')->group(function () {
@@ -61,13 +65,10 @@ Route::prefix('user')->middleware(['auth.jwt'])->group(function () {
     });
 
     Route::middleware('check.permission:View User Queries,json')->group(function () {
-        Route::get('/get-queries', [QueryController::class, 'getQueriesByField']);
+        Route::get('/get-queries', [QueryController::class, 'getUserQueries']);
         Route::get('/query/{id}', [QueryController::class, 'getQueryDetails']);
     });
 
     Route::get('/my-unit-names', [QueryController::class, 'userUnitNames']);
     Route::get('/corresponding-departments/{organizationId}', [QueryController::class, 'correspondingDepartments']);
-
-    Route::get('/values-by-type/{type}', [DropdownController::class, 'getDropdownValuesByType']);
-    Route::get('/values-by-value/{value}', [DropdownController::class, 'getDropdownValuesByValue']);
 });

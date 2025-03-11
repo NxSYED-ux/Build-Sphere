@@ -21,7 +21,7 @@ class QueryPicture extends Model
 
     public $timestamps = true;
 
-    public function query(){
+    public function queryAttachment(){
         return $this->belongsTo(Query::class, 'query_id');
     }
 }

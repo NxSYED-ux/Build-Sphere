@@ -12,7 +12,7 @@ class FavouritesController extends Controller
     public function showFavourites(Request $request)
     {
         try {
-            $user = $request->user;
+            $user = $request->user() ?? null;
             if (!$user) {
                 return response()->json(['error' => 'User not authenticated.'], 401);
             }
@@ -68,7 +68,7 @@ class FavouritesController extends Controller
     public function insertFavorite(Request $request)
     {
         try {
-            $user = $request->user;
+            $user = $request->user() ?? null;
             $unit_id = $request->input('unit_id');
 
             if (!$user) {
@@ -107,7 +107,7 @@ class FavouritesController extends Controller
     public function deleteFavorite(Request $request, $unit_id)
     {
         try {
-            $user = $request->user;
+            $user = $request->user() ?? null;
             if (!$user) {
                 return response()->json(['error' => 'User not authenticated.'], 401);
             }
@@ -137,7 +137,7 @@ class FavouritesController extends Controller
     public function favouritesList(Request $request)
     {
         try {
-            $user = $request->user;
+            $user = $request->user() ?? null;
             if (!$user) {
                 return response()->json(['error' => 'User not authenticated.'], 401);
             }

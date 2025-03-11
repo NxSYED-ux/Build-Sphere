@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\GeneralControllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use App\Models\Address;
 use App\Models\DropdownType;
 use Illuminate\Http\Request;
@@ -97,15 +98,15 @@ class ProfileController extends Controller
 
             if (!$checking) {
                 DB::rollBack();
-                return redirect()->back()->with('error', 'Please refresh the page and try again.');
+                return $this->handleResponse($request,404,'error','Please refresh the page and try again.');
             }
 
-            $userUpdated = $user->update([
-                'name' => $request->name,
-                'phone_no' => $request->phone_no,
-                'cnic' => $request->cnic,
-                'date_of_birth' => $request->date_of_birth,
-                'gender' => $request->gender,
+            $userUpdated = $checking->update([
+                'name' => $request->name ?? $user->name,
+                'phone_no' => $request->phone_no ?? $user->phone_no,
+                'cnic' => $request->cnic ?? $user->cnic,
+                'date_of_birth' => $request->date_of_birth ?? $user->date_of_birth,
+                'gender' => $request->gender ?? $user->gender,
                 'updated_at' => now(),
             ]);
 
@@ -136,7 +137,7 @@ class ProfileController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error("Error in updateProfileData: " . $e->getMessage());
-            return $this->handleResponse($request,500,'error',$e->getMessage());
+            return $this->handleResponse($request,500,'error','Internal Server Error.');
         }
     }
 
