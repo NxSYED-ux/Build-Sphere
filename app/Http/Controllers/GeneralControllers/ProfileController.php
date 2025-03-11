@@ -40,10 +40,11 @@ class ProfileController extends Controller
             'picture' => $user->picture,
             'date_of_birth' => $user->date_of_birth ? $user->date_of_birth->format('Y-m-d') : null,
             'address' => $address,
-            'dropdownData' => $dropdownData,
+            'updated_at' => $user->updated_at,
             'role' => (object)[
                 'name' => $role_name,
             ],
+            'dropdownData' => $dropdownData,
         ];
 
         $view = match ($role) {
@@ -67,29 +68,46 @@ class ProfileController extends Controller
     // Update Profile:
     public function updateProfileData(Request $request)
     {
-        DB::beginTransaction();
+        $user = $request->user();
+        if (!$user) {
+            return response()->json(['error' => 'User ID is required'], 400);
+        }
+        $request->validate([
+            'name' => 'required|string|max:50',
+            'phone_no' => 'nullable|string|max:20',
+            'cnic' => 'nullable|string|max:25',
+            'gender' => 'nullable|string|max:10',
+            'date_of_birth' => 'nullable|date',
+            'updated_at' => 'required',
+            'address' => 'nullable|array',
+            'address.location' => 'nullable|string|max:255',
+            'address.city' => 'nullable|string|max:50',
+            'address.province' => 'nullable|string|max:50',
+            'address.country' => 'nullable|string|max:50',
+            'address.postal_code' => 'nullable|string|max:50',
+        ]);
 
+        DB::beginTransaction();
         try {
-            $user = $request->user();
-            if (!$user) {
-                return response()->json(['error' => 'User ID is required'], 400);
+
+            $checking = User::where([
+                ['id', '=', $user->id],
+                ['updated_at', '=', $request->updated_at]
+            ])->sharedLock()->first();
+
+            if (!$checking) {
+                DB::rollBack();
+                return redirect()->back()->with('error', 'Please refresh the page and try again.');
             }
 
-            $validated = $request->validate([
-                'name' => 'required|string|max:50',
-                'phone_no' => 'nullable|string|max:20',
-                'cnic' => 'nullable|string|max:25',
-                'gender' => 'nullable|string|max:10',
-                'date_of_birth' => 'nullable|date',
-                'address' => 'nullable|array',
-                'address.location' => 'nullable|string|max:255',
-                'address.city' => 'nullable|string|max:50',
-                'address.province' => 'nullable|string|max:50',
-                'address.country' => 'nullable|string|max:50',
-                'address.postal_code' => 'nullable|string|max:50',
+            $userUpdated = $user->update([
+                'name' => $request->name,
+                'phone_no' => $request->phone_no,
+                'cnic' => $request->cnic,
+                'date_of_birth' => $request->date_of_birth,
+                'gender' => $request->gender,
+                'updated_at' => now(),
             ]);
-
-            $userUpdated = $user->update(array_filter($validated));
 
             if (!$userUpdated) {
                 DB::rollBack();

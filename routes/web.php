@@ -16,6 +16,8 @@ use App\Http\Controllers\WebControllers\OwnerDashboardController;
 use App\Http\Controllers\WebControllers\RolePermissionController;
 use App\Http\Controllers\WebControllers\RoleController;
 use App\Http\Controllers\WebControllers\UsersController;
+use App\Models\User;
+use App\Notifications\GeneralNotification;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AppControllers\ImageApiController;
 
@@ -42,6 +44,15 @@ Route::post('reset-password', [ForgotPasswordController::class, 'resetPassword']
 
 Route::fallback(function () {
     return back();
+});
+
+Route::get('/test-notification', function () {
+    $user = User::find(11);
+    $user->notify(new GeneralNotification(
+        'Your Account Credentials',
+        url('/'),
+    ));
+    return 'Notification Sent!';
 });
 
 Route::middleware(['auth.jwt:cookie'])->group(function () {
