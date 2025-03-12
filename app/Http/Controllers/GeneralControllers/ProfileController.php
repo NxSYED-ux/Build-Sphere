@@ -147,7 +147,7 @@ class ProfileController extends Controller
         try {
             $user = $request->user();
             if (!$user) {
-                return $this->handleResponse($request,400,'error','User ID is required.');
+                return response()->json(['error' => 'User ID is required.'], 400);
             }
 
             $request->validate([
@@ -179,11 +179,11 @@ class ProfileController extends Controller
         try {
             $user = $request->user();
             if (!$user) {
-                return $this->handleResponse($request,400,'error','User ID is required.');
+                return response()->json(['error' => 'User ID is required.'], 400);
             }
 
             if (!$user->picture) {
-                return $this->handleResponse($request, 400, 'error', 'No profile picture to delete.');
+                return response()->json(['error' => 'No profile picture to delete.'], 400);
             }
 
             $oldProfileImagePath = public_path($user->picture);

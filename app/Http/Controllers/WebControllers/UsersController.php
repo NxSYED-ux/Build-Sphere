@@ -79,6 +79,7 @@ class UsersController extends Controller
         ]);
 
         $password = Str::random(8);
+        $profileImagePath = null;
         if($request->hasFile('picture')){
             $profileImagePath = $this->handleFileUpload($request);
         }

@@ -102,12 +102,14 @@ class QueryController extends Controller
             ]);
 
             $staffMember->increment('active_load');
+//            Log::info("Pictures: " . $request->picture);
 
             if ($request->hasFile('picture')) {
-                foreach ($request->file('picture') as $picture) {
-                    $imageName = time() . '_' . $picture->getClientOriginalName();
-                    $imagePath = 'uploads/queries/images/' . $imageName;
-                    $picture->move(public_path('uploads/queries/images'), $imageName);
+                foreach ($request->file('picture') as $image) {
+                    Log::info('Working');
+                    $imageName = time() . '_' . $image->getClientOriginalName();
+                    $imagePath = 'uploads/query/images/' . $imageName;
+                    $image->move(public_path('uploads/query/images'), $imageName);
                     QueryPicture::create([ 'query_id' => $query->id, 'file_path' => $imagePath, 'file_name' => $imageName ]);
                 }
             }

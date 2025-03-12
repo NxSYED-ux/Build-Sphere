@@ -29,10 +29,10 @@ Route::prefix('user')->middleware(['auth.jwt'])->group(function () {
     Route::middleware('check.permission:Upload User Profile Picture')->group(function () {
         Route::post('/update-profile-pic', [ProfileController::class, 'uploadProfilePic']);
     });
-    Route::middleware('check.permission:Remove User Profile Picture')->group(function () {
-        Route::put('/remove-profile-pic', [ProfileController::class, 'deleteProfilePic']);
-    });
-    Route::middleware('check.permission:Remove User Profile Picture')->group(function () {
+//    Route::middleware('check.permission:Remove User Profile Picture')->group(function () {
+    Route::put('/remove-profile-pic', [ProfileController::class, 'deleteProfilePic']);
+//    });
+    Route::middleware('check.permission:Change Password')->group(function () {
         Route::put('/change-password', [ProfileController::class, 'changePassword']);
     });
 
