@@ -104,7 +104,6 @@
 
 
 
-
     </style>
     @stack('styles')
 </head>
