@@ -164,9 +164,9 @@
                 <a class="nav-link d-flex align-items-center" href="#" id="userMenu" data-bs-toggle="dropdown" aria-expanded="false">
                     <!-- Profile Image -->
                     <img src="{{ Auth::user() && Auth::user()->picture ? asset(Auth::user()->picture) : asset('img/avatar.png') }}"
-                        class="rounded-circle me-2"
-                        alt="User Image"
-                        style="width: 2.5rem; height: auto;">
+                         class="rounded-circle me-2"
+                         alt="User Image"
+                         style="width: 2.5rem; height: 2.5rem;">
 
                     <!-- User Info -->
                     <div class="d-flex flex-column text-start user-info">
@@ -174,20 +174,19 @@
                         <small class="">{{ Auth::user()->email }}</small>
                     </div>
                 </a>
-                <ul class="dropdown-menu dropdown-menu-end" style="z-index: 1050;" aria-labelledby="userMenu">
+                <ul class="dropdown-menu dropdown-menu-end user-menu" aria-labelledby="userMenu">
                     <li>
-                        <a class="dropdown-item" href="{{ route('admin.profile') }}">
-                        <img src="{{ Auth::user() && Auth::user()->picture ? asset(Auth::user()->picture) : asset('img/avatar.png') }}" class="rounded-circle" alt="User Image" style="width: 1.5rem; height: auto;"> Profile
+                        <a class="dropdown-item d-flex align-items-center" href="{{ route('admin.profile') }}">
+                            <i class="bx bxs-user me-2"></i> Profile
                         </a>
                     </li>
                     <li>
-                        <a class="dropdown-item" href="#">
-                            <i class="fa fa-bell me-2"></i> Notifications
-                            <span class="badge bg-danger badge-counter">3+</span>
+                        <a class="dropdown-item d-flex align-items-center" href="#">
+                            <i class="bx bxs-cog me-2"></i> Settings
                         </a>
                     </li>
                     <li>
-                        <a class="dropdown-item" href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                        <a class="dropdown-item d-flex align-items-center" href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                             <i class="fa fa-power-off me-2"></i> Logout
                         </a>
                         <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">

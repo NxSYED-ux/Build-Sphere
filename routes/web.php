@@ -62,9 +62,14 @@ Route::middleware(['auth.jwt:cookie'])->group(function () {
     Route::get('admin/profile', [ProfileController::class, 'adminProfile'])->name('admin.profile');
     Route::put('admin/profile', [ProfileController::class, 'updateProfileData'])->name('admin.profile.update');
     Route::put('admin/profile/picture', [ProfileController::class, 'uploadProfilePic'])->name('admin.profile.picture.update');
+    Route::delete('admin/profile/picture', [ProfileController::class, 'deleteProfilePic'])->name('admin.profile.picture.delete');
     Route::put('admin/profile/password', [ProfileController::class, 'changePassword'])->name('admin.profile.password.update');
+
     Route::get('owner/profile', [ProfileController::class, 'ownerProfile'])->name('owner.profile');
     Route::put('owner/profile', [ProfileController::class, 'updateProfileData'])->name('owner.profile.update');
+    Route::put('owner/profile/picture', [ProfileController::class, 'uploadProfilePic'])->name('owner.profile.picture.update');
+    Route::delete('owner/profile/picture', [ProfileController::class, 'deleteProfilePic'])->name('owner.profile.picture.delete');
+    Route::put('owner/profile/password', [ProfileController::class, 'changePassword'])->name('owner.profile.password.update');
 
     //Admin
     Route::get('dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
