@@ -163,11 +163,11 @@ class QueryController extends Controller
 
             $queries = Query::where($field, $userId)
                 ->whereIn('status', $statusArray)
-                ->select(['id', 'description', 'status', 'expected_closure_date', 'remarks', 'created_at'])
+                ->select(['id', 'description', 'status', 'expected_closure_date', 'remarks', 'created_at', 'unit_id'])
                 ->with([
-                    'unit:id,unit_name',
-                    'building:id,name',
-                    'building.pictures:id,building_id,file_path'
+                    'unit:id,unit_name,building_id',
+                    'unit.building:id,name',
+                    'unit.building.pictures:building_id,file_path'
                 ])
                 ->orderBy('created_at', 'DESC')
                 ->get();

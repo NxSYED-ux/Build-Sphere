@@ -167,10 +167,10 @@ class ProfileController extends Controller
 
             $user->update(['picture' => $imagePath]);
 
-            return $this->handleResponse($request,200,'success','Profile picture updated successfully.');
-
+            return response()->json(['success' => 'Profile picture updated successfully.', 'picture' => $imagePath], 200);
         } catch (\Exception $e) {
-            return $this->handleResponse($request,500,'error',$e->getMessage());
+            Log::error("Error in uploadProfilePic: " . $e->getMessage());
+            return response()->json(['error' => 'Internal Server Error'], 500);
         }
     }
 
@@ -193,9 +193,11 @@ class ProfileController extends Controller
 
             $user->update(['picture' => null]);
 
-            return $this->handleResponse($request,200,'success','Profile picture removed successfully.');
+            return response()->json(['success' => 'Profile picture removed successfully.'], 200);
+
         } catch (\Exception $e) {
-            return $this->handleResponse($request,500,'error',$e->getMessage());
+            Log::error("Error in Remove Profile Pic: " . $e->getMessage());
+            return response()->json(['error' => 'Internal Server Error'], 500);
         }
     }
 
