@@ -49,14 +49,11 @@ class UsersController extends Controller
     {
         try {
             $roles = Role::where('status', 1)->pluck('name', 'id')->all();
-            $genderDropDown = DropdownType::with(['values.childs'])
-                ->where('type_name','Gender')
-                ->get();
             $dropdownData = DropdownType::with(['values.childs.childs'])
                 ->where('type_name', 'Country')
                 ->get();
 
-            return view('Heights.Admin.Users.create', compact('roles', 'dropdownData', 'genderDropDown'));
+            return view('Heights.Admin.Users.create', compact('roles', 'dropdownData'));
         } catch (\Exception $e) {
             Log::error('Error in User Controller Create' . $e->getMessage());
             return back()->with('error', 'Something went wrong while loading the form. Please try again.');
@@ -144,11 +141,8 @@ class UsersController extends Controller
             $dropdownData = DropdownType::with(['values.childs.childs'])
                 ->where('type_name', 'Country')
                 ->get();
-            $genderDropDown = DropdownType::with(['values.childs'])
-                ->where('type_name', 'Gender')
-                ->get();
 
-            return view('Heights.Admin.Users.edit', compact('user', 'roles', 'dropdownData', 'genderDropDown'));
+            return view('Heights.Admin.Users.edit', compact('user', 'roles', 'dropdownData'));
         } catch (\Exception $e) {
             Log::error('User edit failed: ' . $e->getMessage());
             return redirect()->route('users.index')->with('error', 'Something went wrong while loading the edit form. Please try again.');

@@ -12,24 +12,33 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Log;
 
 class OrganizationController extends Controller
 {
 
     public function index()
     {
-        $activeTab = 'Tab1';
-        $organizations = Organization::with('address', 'pictures', 'owner')->get();
-        $dropdownData = DropdownType::with(['values.childs.childs'])->where('type_name', 'Country')->get(); // Country -> Province -> City
-        $owners = User::where('role_id',2)->pluck('name', 'id');
-        return view('Heights.Admin.Organizations.index', compact('organizations', 'activeTab', 'dropdownData', 'owners'));
+        try {
+            $activeTab = 'Tab1';
+            $organizations = Organization::with('address', 'pictures', 'owner')->get();
+            $dropdownData = DropdownType::with(['values.childs.childs'])->where('type_name', 'Country')->get(); // Country -> Province -> City
+            $owners = User::where('role_id', 2)
+                ->whereNotIn('id', Organization::pluck('owner_id'))
+                ->pluck('name', 'id');
+
+            return view('Heights.Admin.Organizations.index', compact('organizations', 'activeTab', 'dropdownData', 'owners'));
+        } catch (\Exception $e) {
+            Log::error("Error in index method: " . $e->getMessage());
+            return back()->with('error', 'An error occurred while fetching data.');
+        }
     }
 
     public function store(Request $request)
     {
-        $validatedData = $request->validate([
+        $request->validate([
             'name' => ['required', 'string', 'max:255', 'unique:organizations,name'],
-            'owner_id' => ['required', 'integer'],
+            'owner_id' => ['required', 'integer','unique:organizations,owner_id'],
             'location' => ['nullable', 'string', 'max:255'],
             'country' => ['nullable', 'string', 'max:50'],
             'province' => ['nullable', 'string', 'max:50'],
@@ -56,7 +65,6 @@ class OrganizationController extends Controller
                 'name' => $request->name,
                 'owner_id' => $request->owner_id,
                 'address_id' => $address->id,
-                'status' => 'enable',
                 'membership_start_date' => $request->membership_start_date,
                 'membership_end_date' => $request->membership_end_date,
             ]);
@@ -66,6 +74,7 @@ class OrganizationController extends Controller
                     $imageName = time() . '_' . $image->getClientOriginalName();
                     $imagePath = 'uploads/organizations/images/' . $imageName;
                     $image->move(public_path('uploads/organizations/images'), $imageName);
+
                     OrganizationPicture::create([
                         'organization_id' => $organization->id,
                         'file_path' => $imagePath,

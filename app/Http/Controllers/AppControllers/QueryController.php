@@ -210,7 +210,7 @@ class QueryController extends Controller
         return $this->acceptOrRejectQuery($request,'Rejected');
     }
 
-    public function acceptOrRejectQuery(Request $request, $status)
+    private function acceptOrRejectQuery(Request $request, $status)
     {
         try {
             $user = $request->user() ?? null;
