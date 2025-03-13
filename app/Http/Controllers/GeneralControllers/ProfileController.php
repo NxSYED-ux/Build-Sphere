@@ -38,6 +38,7 @@ class ProfileController extends Controller
             'phone_no' => $user->phone_no,
             'cnic' => $user->cnic,
             'gender' => $user->gender,
+            'status' => $user->status,
             'picture' => $user->picture,
             'date_of_birth' => $user->date_of_birth ? $user->date_of_birth->format('Y-m-d') : null,
             'address' => $address,

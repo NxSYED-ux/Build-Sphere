@@ -26,6 +26,7 @@ class UsersController extends Controller
             $search = $request->input('search');
 
             $users = User::with('role', 'address')
+                ->whereNot('id', $request->user()->id)
                 ->when($search, function ($query, $search) {
                     return $query->where('name', 'like', "%{$search}%")
                         ->orWhere('email', 'like', "%{$search}%")

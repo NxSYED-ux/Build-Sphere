@@ -66,7 +66,7 @@ class QueryController extends Controller
             'departmentId' => 'required|integer',
             'UnitId' => 'required|integer',
             'description' => 'required|string',
-            'picture.*' => 'nullable|image|max:2048',
+            'picture.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
         $userId = $request->user()->id ?? null;
@@ -102,15 +102,18 @@ class QueryController extends Controller
             ]);
 
             $staffMember->increment('active_load');
-//            Log::info("Pictures: " . $request->picture);
 
             if ($request->hasFile('picture')) {
                 foreach ($request->file('picture') as $image) {
-                    Log::info('Working');
                     $imageName = time() . '_' . $image->getClientOriginalName();
                     $imagePath = 'uploads/query/images/' . $imageName;
                     $image->move(public_path('uploads/query/images'), $imageName);
-                    QueryPicture::create([ 'query_id' => $query->id, 'file_path' => $imagePath, 'file_name' => $imageName ]);
+
+                    QueryPicture::create([
+                        'query_id' => $query->id,
+                        'file_path' => $imagePath,
+                        'file_name' => $imageName,
+                    ]);
                 }
             }
 
