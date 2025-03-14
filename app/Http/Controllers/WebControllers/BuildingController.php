@@ -224,7 +224,7 @@ class BuildingController extends Controller
             if ($portal == 'admin') {
                 return redirect()->route('buildings.index')->with('success', 'Building created successfully.');
             } elseif ($portal == 'owner') {
-                return redirect()->route('Owner.buildings.index')->with('success', 'Building created successfully.');
+                return redirect()->route('owner.buildings.index')->with('success', 'Building created successfully.');
             } else {
                 abort(404, 'Page not found');
             }
