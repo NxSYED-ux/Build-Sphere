@@ -328,7 +328,7 @@ class BuildingController extends Controller
 
 
     // Update Functions
-    public function update(Request $request, Building $building)
+    public function update(Request $request, Building $building, String $portal)
     {
         $request->validate([
             'name' => 'required|string|max:255',
@@ -386,7 +386,6 @@ class BuildingController extends Controller
                 }
             }
 
-            // Handle document uploads
             foreach ($request->documents ?? [] as $document) {
                 if (isset($document['files'])) {
                     $file = $document['files'];
@@ -412,6 +411,23 @@ class BuildingController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             return redirect()->back()->withInput()->with('error', 'An error occurred while updating the building.');
+        }
+    }
+
+    public function submitBuilding(Request $request){
+        $request->validate([
+            'building_id' => 'required|integer|exists:buildings,id',
+        ]);
+
+        try {
+            $building = Building::find($request->building_id);
+            $building->update([
+                'status' => 'Under Review',
+            ]);
+            return redirect()->route('Heights.Owner.Buildings.index')->with('success', 'Building Submitted successfully.');
+        }catch (\Exception $e) {
+            Log::error('Error in submit building: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'An error occurred while updating the building.');
         }
     }
 
