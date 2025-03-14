@@ -327,14 +327,14 @@ class BuildingController extends Controller
 
 
     // Update Functions
-    public function adminUpdate(Request $request, Building $building)
+    public function adminUpdate(Request $request)
     {
         $request->validate([
             'organization_id' => 'required|exists:organizations,id',
         ]);
-        return $this->update($request, $building, 'admin', $request->organization_id);
+        return $this->update($request, 'admin', $request->organization_id);
     }
-    public function ownerUpdate(Request $request, Building $building)
+    public function ownerUpdate(Request $request)
     {
         $token = $request->attributes->get('token');
 
@@ -344,7 +344,7 @@ class BuildingController extends Controller
 
         $organization_id = $token['organization_id'];
 
-        return $this->update($request, $building, 'owner', $organization_id);
+        return $this->update($request, 'owner', $organization_id);
     }
 
     private function update(Request $request, String $portal, $organization_id)
