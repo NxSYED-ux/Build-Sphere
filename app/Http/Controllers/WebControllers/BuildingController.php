@@ -25,7 +25,7 @@ class BuildingController extends Controller
             $search = $request->input('search');
 
             $buildings = Building::with(['pictures', 'address', 'organization'])
-                ->whereNotIn('status', ['Under Processing'])
+                ->whereNotIn('status', ['Under Processing', 'Rejected'])
                 ->where(function ($query) use ($search) {
                     $query->where('name', 'like', '%' . $search . '%')
                         ->orWhere('remarks', 'like', '%' . $search . '%')
@@ -327,10 +327,30 @@ class BuildingController extends Controller
 
 
     // Update Functions
-    public function update(Request $request, Building $building, String $portal)
+    public function adminUpdate(Request $request, Building $building)
     {
         $request->validate([
-            'name' => 'required|string|max:255',
+            'organization_id' => 'required|exists:organizations,id',
+        ]);
+        return $this->update($request, $building, 'admin', $request->organization_id);
+    }
+    public function ownerUpdate(Request $request, Building $building)
+    {
+        $token = $request->attributes->get('token');
+
+        if (!$token || !isset($token['organization_id'])) {
+            return redirect()->back()->withInput()->with('error', 'You cannot perform this action because they are not linked to any organization. Please switch to an organization account to proceed.');
+        }
+
+        $organization_id = $token['organization_id'];
+
+        return $this->update($request, $building, 'owner', $organization_id);
+    }
+
+    private function update(Request $request, Building $building, String $portal, $organization_id)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255|unique:buildings,name,'. $building->id . 'id',
             'building_type' => 'required|string|max:50',
             'area' => 'nullable|numeric',
             'status' => 'required|string',
@@ -340,7 +360,6 @@ class BuildingController extends Controller
             'province' => 'nullable|string|max:50',
             'city' => 'nullable|string|max:50',
             'postal_code' => 'nullable|string|max:50',
-            'organization_id' => 'required|exists:organizations,id',
             'building_pictures.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
 
             'documents.*.type' => 'nullable|string|distinct',
@@ -405,7 +424,13 @@ class BuildingController extends Controller
 
             DB::commit();
 
-            return redirect()->route('buildings.index')->with('success', 'Building updated successfully.');
+            if ($portal == 'admin') {
+                return redirect()->route('buildings.index')->with('success', 'Building updated successfully.');
+            } elseif ($portal == 'owner') {
+                return redirect()->route('owner.buildings.index')->with('success', 'Building updated successfully.');
+            } else {
+                abort(404, 'Page not found');
+            }
 
         } catch (\Exception $e) {
             DB::rollBack();
