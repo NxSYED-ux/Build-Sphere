@@ -124,7 +124,6 @@ class BuildingController extends Controller
 
 
     // Store Functions
-
     public function adminStore(Request $request)
     {
         $request->validate([
@@ -410,10 +409,13 @@ class BuildingController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
+            Log::error('Error in update method: ' . $e->getMessage());
             return redirect()->back()->withInput()->with('error', 'An error occurred while updating the building.');
         }
     }
 
+
+    // Approve/Reject/Submit for Approval Functions
     public function submitBuilding(Request $request){
         $request->validate([
             'building_id' => 'required|integer|exists:buildings,id',
@@ -421,6 +423,8 @@ class BuildingController extends Controller
 
         try {
             $building = Building::find($request->building_id);
+            if(!$building)  abort(404, 'Page not found');
+
             $building->update([
                 'status' => 'Under Review',
             ]);
@@ -431,23 +435,56 @@ class BuildingController extends Controller
         }
     }
 
+    public function rejectBuilding(Request $request){
+        $request->validate([
+            'building_id' => 'required|integer|exists:buildings,id',
+            'remarks' => 'required|string',
+        ]);
 
+        try {
+            $building = Building::find($request->building_id);
+            if(!$building)  abort(404, 'Page not found');
 
+            $building->update([
+                'status' => 'Rejected',
+                'remarks' => $request->remarks,
+            ]);
+            return redirect()->route('buildings.index')->with('success', 'Building rejected successfully.');
+        }catch (\Exception $e) {
+            Log::error('Error in submit building: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'An error occurred while updating the building.');
+        }
+    }
 
+    public function approveBuilding(Request $request){
+        $request->validate([
+            'building_id' => 'required|integer|exists:buildings,id',
+            'remarks' => 'string',
+        ]);
 
+        try {
+            DB::beginTransaction();
 
+            $building = Building::find($request->building_id);
+            if (!$building) abort(404, 'Page not found');
 
+            $building->update([
+                'status' => 'Approved',
+                'remarks' => $request->remarks ?? null,
+            ]);
 
+            $building->levels()->update(['status' => 'Approved']);
+            $building->units()->update(['status' => 'Approved']);
 
+            DB::commit();
 
-
-
-
-
-
-
-
-
+            return redirect()->route('buildings.index')->with('success', 'Building, levels, and units approved successfully.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Error in approving building: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'An error occurred while updating the building.');
+        }
+    }
 
 
     // Other Functions
