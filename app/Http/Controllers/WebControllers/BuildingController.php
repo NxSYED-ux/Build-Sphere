@@ -134,7 +134,7 @@ class BuildingController extends Controller
         $token = $request->attributes->get('token');
 
         if (!$token || !isset($token['organization_id'])) {
-            return redirect()->back()->withInput()->with('error', 'Oops! It looks like you’re trying to perform an action meant for organizations. Please ensure you are logged in with an organization-linked account.');
+            return redirect()->back()->withInput()->with('error', 'Admins cannot perform this action because they are not linked to any organization. Please switch to an organization account to proceed.');
         }
 
         $organization_id = $token['organization_id'];
@@ -231,30 +231,35 @@ class BuildingController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Error in store: ' . $e->getMessage());
+            Log::error('Error in store buildings: ' . $e->getMessage());
             return redirect()->back()->withInput()->with('error', 'An error occurred while creating the building.');
         }
     }
 
     public function show(Building $building)
     {
-        $building->load([
-            'address',
-            'pictures',
-            'organization.owner',
-            'levels.units.pictures'
-        ]);
+        try {
+            $building->load([
+                'address',
+                'pictures',
+                'organization.owner',
+                'levels.units.pictures'
+            ]);
 
-        $owner = $building->organization->owner;
-        $levels = $building->levels;
-        $units = $levels->flatMap->units;
+            $owner = $building->organization->owner ?? null;
+            $levels = $building->levels ?? collect();
+            $units = $levels->flatMap->units ?? collect();
 
-        return view('Heights.Admin.Buildings.show', compact('building', 'levels', 'units', 'owner'));
+            return view('Heights.Admin.Buildings.show', compact('building', 'levels', 'units', 'owner'));
+        } catch (\Exception $e) {
+            Log::error('Error in show building: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'An error occurred while retrieving building details.');
+        }
     }
 
     public function edit(Building $building)
     {
-        $building->load(['address', 'organization','pictures', 'documents']);
+
         $organizations = Organization::all();
 
         $dropdownData = DropdownType::with(['values.childs.childs'])->where('type_name', 'Country')->get(); // Country -> Province -> City
