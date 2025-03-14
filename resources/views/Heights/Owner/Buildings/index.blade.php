@@ -50,7 +50,7 @@
                             <div class="container mt-2">
                                 <div class="d-flex justify-content-between align-items-center mb-2">
                                     <h3 class="mb-1">Buildings</h3>
-                                    <a href="{{ route('buildings.create') }}" class="btn float-end" id="add_button"  data-bs-toggle="tooltip" data-bs-placement="top" title="Add Building"><i class="fa fa-plus"></i></a>
+                                    <a href="{{ route('owner.buildings.create') }}" class="btn float-end" id="add_button"  data-bs-toggle="tooltip" data-bs-placement="top" title="Add Building"><i class="fa fa-plus"></i></a>
                                 </div>
                                 <div class="card shadow p-3 pt-1 mb-5 bg-body rounded" style="border: none;">
                                     <div class="card-body " style="overflow-x: auto;">
@@ -73,7 +73,7 @@
                                                 </ul>
                                             </div>
 
-                                            <form method="GET" action="{{ route('buildings.index') }}" class="d-flex" style="margin-left: 6px;">
+                                            <form method="GET" action="{{ route('owner.buildings.index') }}" class="d-flex" style="margin-left: 6px;">
                                                 <input type="text"  name="search" class="form-control me-2" placeholder="Search buildings..." value="{{ request('search') }}">
                                                 <button type="submit" class="btn btn-primary d-flex justify-content-center align-items-center" style="height: 40px; width: 40px;">
                                                     <i class='bx bx-search' style="font-size: 20px;"></i>
@@ -97,7 +97,8 @@
                                             </tr>
                                             </thead>
                                             <tbody>
-                                            @foreach($buildings as $building)
+                                            @if(!empty($buildings) && $buildings->count())
+                                                @foreach($buildings as $building)
                                                 <tr>
                                                     <td>{{ $building->id }}</td>
                                                     <td>
@@ -120,12 +121,19 @@
                                                     </td>
                                                 </tr>
                                             @endforeach
+                                            @else
+                                                <tr>
+                                                    <td colspan="9" class="text-center">No buildings found.</td>
+                                                </tr>
+                                            @endif
                                             </tbody>
                                         </table>
 
-                                        <div class="mt-3">
-                                            {{ $buildings->links('pagination::bootstrap-5') }}
-                                        </div>
+                                        @if ($buildings)
+                                            <div class="mt-3">
+                                                {{ $buildings->links('pagination::bootstrap-5') }}
+                                            </div>
+                                        @endif
 
                                     </div>
                                 </div>

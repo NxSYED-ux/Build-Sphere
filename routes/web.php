@@ -162,7 +162,13 @@ Route::middleware(['auth.jwt:cookie'])->group(function () {
     Route::resource('owner_buildings', OwnerBuildingController::class);
     Route::get('buildings/{id}/tree', [BuildingTreeController::class, 'tree'])->name('building.tree');
 
+    // Owner Buildings
     Route::get('owner/buildings', [BuildingController::class, 'ownerIndex'])->name('owner.buildings.index');
+    Route::get('owner/buildings/create', [BuildingController::class, 'ownerCreate'])->name('owner.buildings.create');
+    Route::post('owner/buildings', [BuildingController::class, 'ownerStore'])->name('owner.buildings.store');
+    Route::get('owner/buildings/{building}', [BuildingController::class, 'show'])->name('owner.buildings.show');
+    Route::get('owner/buildings/{building}/edit', [BuildingController::class, 'edit'])->name('owner.buildings.edit');
+    Route::put('owner/buildings/{building}', [BuildingController::class, 'update'])->name('owner.buildings.update');
 
     //Role Permissions
     Route::get('/role-permissions', [RolePermissionController::class, 'showRolePermissions'])->name('role.permissions');

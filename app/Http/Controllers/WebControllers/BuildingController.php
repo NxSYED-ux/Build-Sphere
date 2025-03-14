@@ -25,15 +25,18 @@ class BuildingController extends Controller
 
             $buildings = Building::with(['pictures', 'address', 'organization'])
                 ->whereNotIn('status', ['Under Processing'])
-                ->where('name', 'like', '%' . $search . '%')
-                ->orWhere('remarks', 'like', '%' . $search . '%')
-                ->orWhereHas('organization', function ($query) use ($search) {
-                    $query->where('name', 'like', '%' . $search . '%');
-                })
-                ->orWhereHas('address', function ($query) use ($search) {
-                    $query->where('city', 'like', '%' . $search . '%');
+                ->where(function ($query) use ($search) {
+                    $query->where('name', 'like', '%' . $search . '%')
+                        ->orWhere('remarks', 'like', '%' . $search . '%')
+                        ->orWhereHas('organization', function ($subQuery) use ($search) {
+                            $subQuery->where('name', 'like', '%' . $search . '%');
+                        })
+                        ->orWhereHas('address', function ($subQuery) use ($search) {
+                            $subQuery->where('city', 'like', '%' . $search . '%');
+                        });
                 })
                 ->paginate(10);
+
 
             return view('Heights.Admin.Buildings.index', compact('buildings'));
         } catch (\Exception $e) {
