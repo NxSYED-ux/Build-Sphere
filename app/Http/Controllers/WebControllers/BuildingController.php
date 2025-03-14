@@ -10,6 +10,7 @@ use App\Models\BuildingLevel;
 use App\Models\BuildingPicture;
 use App\Models\DropdownType;
 use App\Models\Organization;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
@@ -92,8 +93,6 @@ class BuildingController extends Controller
     private function create(string $portal)
     {
         try {
-            $organizations = null;
-
             $dropdownData = DropdownType::with(['values.childs.childs'])
                 ->where('type_name', 'Country')
                 ->get();
@@ -240,7 +239,19 @@ class BuildingController extends Controller
         }
     }
 
-    public function show(Building $building)
+
+    // Show Functions
+    public function adminShow(Building $building)
+    {
+        return $this->show('admin', $building);
+    }
+
+    public function ownerShow(Building $building)
+    {
+        return $this->show('owner',$building);
+    }
+
+    private function show(string $portal, Building $building)
     {
         try {
             $building->load([
@@ -254,26 +265,69 @@ class BuildingController extends Controller
             $levels = $building->levels ?? collect();
             $units = $levels->flatMap->units ?? collect();
 
-            return view('Heights.Admin.Buildings.show', compact('building', 'levels', 'units', 'owner'));
+            if ($portal == 'admin') {
+                return view('Heights.Admin.Buildings.show', compact('building', 'levels', 'units', 'owner'));
+            } elseif ($portal == 'owner') {
+                return view('Heights.Owner.Buildings.show', compact('building', 'levels', 'units', 'owner'));
+            } else {
+                abort(404, 'Page not found');
+            }
         } catch (\Exception $e) {
             Log::error('Error in show building: ' . $e->getMessage());
             return redirect()->back()->with('error', 'An error occurred while retrieving building details.');
         }
     }
 
-    public function edit(Building $building)
+
+    // Edit Functions
+    public function adminEdit(Building $building)
     {
-
-        $organizations = Organization::all();
-
-        $dropdownData = DropdownType::with(['values.childs.childs'])->where('type_name', 'Country')->get(); // Country -> Province -> City
-        $documentType = DropdownType::with(['values'])->where('type_name', 'Building-document-type')->first();
-        $buildingType = DropdownType::with(['values'])->where('type_name', 'Building-type')->first();
-        $documentTypes = $documentType ? $documentType->values->pluck('value_name', 'id') : collect();
-        $buildingTypes = $buildingType ? $buildingType->values()->where('status', 1)->get() : collect();
-        return view('Heights.Admin.Buildings.edit', compact('building', 'dropdownData', 'organizations', 'buildingTypes', 'documentTypes'));
+        return $this->edit('admin', $building);
     }
 
+    public function ownerEdit(Building $building)
+    {
+        return $this->edit('owner',$building);
+    }
+
+    private function edit(string $portal,Building $building)
+    {
+        try {
+            $building->load(['address', 'organization','pictures', 'documents']);
+
+            $dropdownData = DropdownType::with(['values.childs.childs'])
+                ->where('type_name', 'Country')
+                ->get();
+
+            $documentType = DropdownType::with(['values'])
+                ->where('type_name', 'Building-document-type')
+                ->first();
+
+            $buildingType = DropdownType::with(['values'])
+                ->where('type_name', 'Building-type')
+                ->first();
+
+            $documentTypes = $documentType ? $documentType->values->pluck('value_name', 'id') : collect();
+            $buildingTypes = $buildingType ? $buildingType->values()->where('status', 1)->get() : collect();
+
+            if ($portal == 'admin') {
+                $organizations = Organization::where('status', 'Enable')
+                    ->orWhere('id', $building->organization->id)
+                    ->get();
+                return view('Heights.Admin.Buildings.edit', compact('building','organizations', 'dropdownData', 'buildingTypes', 'documentTypes'));
+            } elseif ($portal == 'owner') {
+                return view('Heights.Owner.Buildings.edit', compact('building','dropdownData', 'buildingTypes', 'documentTypes'));
+            } else {
+                abort(404, 'Page not found');
+            }
+        } catch (\Exception $e) {
+            Log::error('Error in create method: ' . $e->getMessage());
+            return back()->with('error', 'Something went wrong! Please try again.');
+        }
+    }
+
+
+    // Update Functions
     public function update(Request $request, Building $building)
     {
         $request->validate([
@@ -361,6 +415,26 @@ class BuildingController extends Controller
         }
     }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // Other Functions
     public function getLevels($buildingId)
     {
         $levels = BuildingLevel::where('building_id', $buildingId)->pluck('level_name', 'id');
@@ -372,30 +446,27 @@ class BuildingController extends Controller
         $image = BuildingPicture::findOrFail($id);
 
         if ($image) {
-            $oldImagePath = public_path($image->file_path); // Corrected variable name
+            $oldImagePath = public_path($image->file_path);
             if (File::exists($oldImagePath)) {
                 File::delete($oldImagePath);
             }
 
-            // Delete the image record from the database
             $image->delete();
         }
 
         return response()->json(['success' => true]);
     }
 
-    public function removeDocument(Request $request, $fileId)
+    public function removeDocument($fileId)
     {
         $document = BuildingDocument::find($fileId);
 
         if ($document) {
-            // Delete the file from the storage
-            $oldImagePath = public_path($document->file_path); // Corrected variable name
+            $oldImagePath = public_path($document->file_path);
             if (File::exists($oldImagePath)) {
                 File::delete($oldImagePath);
             }
 
-            // Delete the record from the database
             $document->delete();
 
             return response()->json(['success' => true]);
@@ -418,32 +489,34 @@ class BuildingController extends Controller
     {
         $file = BuildingDocument::find($id);
 
-        if ($file) {
-            // Validate request data
-            $request->validate([
-                'document_type' => 'required|string',
-                'issue_date' => 'nullable|date',
-                'expiry_date' => 'nullable|date',
-                'file' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:5048'
-            ]);
+        if (!$file) {
+            return redirect()->back()->with('error', 'Document not found.')->setStatusCode(404);
+        }
+        $request->validate([
+            'document_type' => 'required|string',
+            'issue_date' => 'nullable|date',
+            'expiry_date' => 'nullable|date',
+            'file' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:5048'
+        ]);
 
-            // Update document fields
+        try {
             $file->document_type = $request->document_type;
             $file->issue_date = $request->issue_date;
             $file->expiry_date = $request->expiry_date;
 
             if ($request->hasFile('file')) {
-                // Delete the old file
-                $oldImagePath = public_path($file->file_path);
-                if (File::exists($oldImagePath)) {
-                    File::delete($oldImagePath);
+                if (!empty($file->file_path)) {
+                    $oldImagePath = public_path($file->file_path);
+                    if (File::exists($oldImagePath)) {
+                        File::delete($oldImagePath);
+                    }
                 }
 
-                // Store the new file
                 $newFile = $request->file('file');
                 $fileName = time() . '_' . $newFile->getClientOriginalName();
                 $filePath = 'uploads/buildings/document/' . $request->document_type . '/' . $fileName;
                 $newFile->move(public_path('uploads/buildings/document/' . $request->document_type), $fileName);
+
                 $file->file_path = $filePath;
                 $file->file_name = $fileName;
             }
@@ -451,8 +524,9 @@ class BuildingController extends Controller
             $file->save();
 
             return redirect()->back()->with('success', 'Document updated successfully!');
-        } else {
-            return redirect()->back()->with('error', 'Document not found.')->setStatusCode(404);
+        } catch (Exception $e) {
+            Log::error('Error in Update Document' . $e->getMessage());
+            return redirect()->back()->with('error', 'An error occurred: ' . $e->getMessage());
         }
     }
 }

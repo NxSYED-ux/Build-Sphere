@@ -116,8 +116,8 @@ Route::middleware(['auth.jwt:cookie'])->group(function () {
     Route::get('buildings', [BuildingController::class, 'adminIndex'])->name('buildings.index');
     Route::get('buildings/create', [BuildingController::class, 'adminCreate'])->name('buildings.create');
     Route::post('buildings', [BuildingController::class, 'adminStore'])->name('buildings.store');
-    Route::get('buildings/{building}', [BuildingController::class, 'show'])->name('buildings.show');
-    Route::get('buildings/{building}/edit', [BuildingController::class, 'edit'])->name('buildings.edit');
+    Route::get('buildings/{building}', [BuildingController::class, 'adminShow'])->name('buildings.show');
+    Route::get('buildings/{building}/edit', [BuildingController::class, 'adminEdit'])->name('buildings.edit');
     Route::put('buildings/{building}', [BuildingController::class, 'update'])->name('buildings.update');
     Route::delete('buildings/{building}', [BuildingController::class, 'destroy'])->name('buildings.destroy');
     Route::delete('/buildings/{id}/remove-picture', [BuildingController::class, 'destroyImage'])->name('buildings.remove_picture');
@@ -166,8 +166,8 @@ Route::middleware(['auth.jwt:cookie'])->group(function () {
     Route::get('owner/buildings', [BuildingController::class, 'ownerIndex'])->name('owner.buildings.index');
     Route::get('owner/buildings/create', [BuildingController::class, 'ownerCreate'])->name('owner.buildings.create');
     Route::post('owner/buildings', [BuildingController::class, 'ownerStore'])->name('owner.buildings.store');
-    Route::get('owner/buildings/{building}', [BuildingController::class, 'show'])->name('owner.buildings.show');
-    Route::get('owner/buildings/{building}/edit', [BuildingController::class, 'edit'])->name('owner.buildings.edit');
+    Route::get('owner/buildings/{building}', [BuildingController::class, 'ownerShow'])->name('owner.buildings.show');
+    Route::get('owner/buildings/{building}/edit', [BuildingController::class, 'ownerEdit'])->name('owner.buildings.edit');
     Route::put('owner/buildings/{building}', [BuildingController::class, 'update'])->name('owner.buildings.update');
 
     //Role Permissions
