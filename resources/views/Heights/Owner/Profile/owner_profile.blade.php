@@ -50,31 +50,19 @@
             color: white;
         }
 
-        label{
-            font-size: 14px;
+        .form label{
             font-weight: bold;
-            color: var(--label-color)#5F5F5F;
         }
 
-        input, select {
-            background-color: var(--input-bg-color) !important;
-            color:  var(--input-text-color) !important;
-            border: 1px solid var(--input-border-color) !important;
+        .form input:not(.form-check-input):not(.is-invalid),
+        select:not(.is-invalid),
+        textarea:not(.is-invalid) {
             padding: 8px !important;
             border-radius: 5px !important;
         }
 
-        input i{
+        .form i{
             color: var(--input-icon-color) !important;
-        }
-
-        input[type="date"]::-webkit-calendar-picker-indicator {
-            filter: invert(var(--invert, 0));
-        }
-
-        input:focus, select:focus {
-            border: 1px solid #ccc !important;
-            box-shadow: none !important;
         }
 
         /* Model Windows */
@@ -110,11 +98,12 @@
 
     </style>
 @endpush
+
 @section('content')
 
     <!-- Top Navbar -->
     <x-Owner.top-navbar :searchVisible="false" :breadcrumbLinks="[
-            ['url' => url('admin_dashboard'), 'label' => 'Dashboard'],
+            ['url' => url('owner_manager_dashboard'), 'label' => 'Dashboard'],
             ['url' => '', 'label' => 'Profile']
         ]"
     />
@@ -183,25 +172,21 @@
 
 
 
-                                <form method="POST" action="{{ route('admin.profile.update', $user->id) }}" id="profile-form">
+                                <form method="POST" class="form" action="{{ route('owner.profile.update', $user->id) }}" id="profile-form">
                                     @method('PUT')
 
                                     <input type="hidden" name="updated_at" value="{{ $user->updated_at }}">
                                     <!-- Personal Information -->
                                     <div class="profile-card">
-                                        {{--                                        <div class="d-flex justify-content-between align-items-center mb-3">--}}
-                                        {{--                                            <div class="section-title">Personal</div>--}}
-                                        {{--                                            <button type="submit" class="btn btn-primary" form="profile-form">Save</button>--}}
-                                        {{--                                        </div>--}}
 
                                         <div class="row">
 
                                             <div class="col-lg-4 col-md-4 col-12 mb-3">
                                                 <label for="name">Name</label>
                                                 <div class="position-relative">
-                                                    <input type="text" name="name" id="name" class="form-control pe-5 custom-input @error('name') is-invalid @enderror"
+                                                    <input type="text" name="name" id="name" class="form-control pe-5 custom-input  "
                                                            value="{{ old('name', $user->name) }}" maxlength="50" placeholder="User Name" required>
-                                                    <i class='bx bxs-user position-absolute top-50 end-0 translate-middle-y me-3 text-muted'></i>
+                                                    <i class='bx bxs-user input-icon position-absolute top-50 end-0 translate-middle-y me-3'></i>
                                                 </div>
                                                 @error('name')
                                                 <div class="text-danger">{{ $message }}</div>
@@ -214,8 +199,8 @@
                                                     <input type="text" name="email" id="email"
                                                            class="form-control custom-input pe-5 @error('email') is-invalid @enderror"
                                                            value="{{ old('email', $user->email) }}" maxlength="50"
-                                                           placeholder="Email" required>
-                                                    <i class='bx bxs-envelope position-absolute top-50 end-0 translate-middle-y me-3 text-muted'></i>
+                                                           placeholder="Email" required readonly>
+                                                    <i class='bx bxs-envelope input-icon position-absolute top-50 end-0 translate-middle-y me-3'></i>
                                                 </div>
                                                 @error('email')
                                                 <div class="text-danger">{{ $message }}</div>
@@ -227,7 +212,7 @@
                                                 <div class="position-relative">
                                                     <input type="text" name="cnic" id="cnic" class="form-control pe-5 custom-input @error('cnic') is-invalid @enderror"
                                                            value="{{ old('cnic', $user->cnic) }}" maxlength="15" placeholder="12345-1234567-1" required>
-                                                    <i class='bx bxs-id-card position-absolute top-50 end-0 translate-middle-y me-3 text-muted'></i>
+                                                    <i class='bx bxs-id-card input-icon position-absolute top-50 end-0 translate-middle-y me-3'></i>
                                                 </div>
                                                 @error('cnic')
                                                 <div class="text-danger">{{ $message }}</div>
@@ -240,7 +225,7 @@
                                                     <input type="text" name="phone_no" id="contact"
                                                            class="form-control pe-5 custom-input @error('phone_no') is-invalid @enderror"
                                                            value="{{ old('phone_no', $user->phone_no) }}" placeholder="0312-3456789" maxlength="14">
-                                                    <i class='bx bxs-mobile position-absolute top-50 end-0 translate-middle-y me-3 text-muted'></i>
+                                                    <i class='bx bxs-mobile input-icon position-absolute top-50 end-0 translate-middle-y me-3'></i>
                                                 </div>
                                                 @error('phone_no')
                                                 <div class="text-danger">{{ $message }}</div>
@@ -282,7 +267,7 @@
                                                 <label for="location">Location</label>
                                                 <div class="position-relative">
                                                     <input type="text" name="address[location]" id="location" class="form-control pe-5 custom-input @error('location') is-invalid @enderror" value="{{ old('location', $user->address->location ) }}" maxlength="100" placeholder="Enter Location">
-                                                    <i class='bx bxs-edit-location position-absolute top-50 end-0 translate-middle-y me-3 text-muted'></i>
+                                                    <i class='bx bxs-edit-location input-icon position-absolute top-50 end-0 translate-middle-y me-3'></i>
                                                 </div>
                                                 @error('location')
                                                 <span class="invalid-feedback" role="alert">
@@ -296,7 +281,7 @@
                                                 <label for="postal_code">Postal Code</label>
                                                 <div class="position-relative">
                                                     <input type="text" name="address[postal_code]" id="postal_code" class="form-control pe-5 custom-input @error('postal_code') is-invalid @enderror" value="{{ old('postal_code', $user->address->postal_code ) }}" maxlength="100" placeholder="Enter Postal Code">
-                                                    <i class='bx bx-current-location position-absolute top-50 end-0 translate-middle-y me-3 text-muted'></i>
+                                                    <i class='bx bx-current-location input-icon position-absolute top-50 end-0 translate-middle-y me-3'></i>
                                                 </div>
                                                 @error('postal_code')
                                                 <span class="invalid-feedback" role="alert">
@@ -363,7 +348,7 @@
                     <h5 class="modal-title" id="changePasswordModalLabel">Change Password</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form id="changePasswordForm" method="POST" action="{{ route('admin.profile.password.update') }}">
+                <form id="changePasswordForm" method="POST" action="{{ route('owner.profile.password.update') }}">
                     @method('PUT')
                     <div class="modal-body">
                         <div class="mb-3">
@@ -422,7 +407,7 @@
                     return;
                 }
 
-                fetch("{{ route('admin.profile.picture.delete') }}", {
+                fetch("{{ route('owner.profile.picture.delete') }}", {
                     method: "DELETE",
                     headers: {
                         "X-CSRF-TOKEN": "{{ csrf_token() }}",
@@ -462,7 +447,7 @@
                     formData.append('_method', 'PUT'); // Required for Laravel PUT request
 
                     $.ajax({
-                        url: "{{ route('admin.profile.picture.update') }}",
+                        url: "{{ route('owner.profile.picture.update') }}",
                         type: "POST",
                         data: formData,
                         contentType: false,

@@ -40,19 +40,9 @@
     <!--  -->
     <x-Owner.side-navbar :openSections="['Buildings', 'Building']"/>
 
-    <x-error-success-model />
-
     <div id="main">
-        <section class="content-header pt-2">
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb mx-5">
-                    <li class="breadcrumb-item"><a href="{{url('owner_manager_dashboard')}}">Dashboard</a></li>
-                    <li class="breadcrumb-item active" aria-current="page"><a href="">Buildings</a></li>
-                </ol>
-            </nav>
-        </section>
 
-        <section class="content content-top my-3 mx-2">
+        <section class="content my-3 mx-2">
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-md-12">
@@ -94,20 +84,20 @@
 
                                         <table id="buildingsTable" class="table shadow-sm table-hover table-striped">
                                             <thead class="shadow">
-                                                <tr>
-                                                    <th>ID</th>
-                                                    <th>Picture</th>
-                                                    <th>Name</th>
-                                                    <th>Remarks</th>
-                                                    <th>Area</th>
-                                                    <th>Organization</th>
-                                                    <th>City</th>
-                                                    <th>Status</th>
-                                                    <th class="w-170 text-center">Actions</th>
-                                                </tr>
+                                            <tr>
+                                                <th>ID</th>
+                                                <th>Picture</th>
+                                                <th>Name</th>
+                                                <th>Remarks</th>
+                                                <th>Area</th>
+                                                <th>Organization</th>
+                                                <th>City</th>
+                                                <th>Status</th>
+                                                <th class="w-170 text-center">Actions</th>
+                                            </tr>
                                             </thead>
                                             <tbody>
-                                                @foreach($buildings as $building)
+                                            @foreach($buildings as $building)
                                                 <tr>
                                                     <td>{{ $building->id }}</td>
                                                     <td>
@@ -129,7 +119,7 @@
                                                         </a>
                                                     </td>
                                                 </tr>
-                                                @endforeach
+                                            @endforeach
                                             </tbody>
                                         </table>
 
@@ -174,26 +164,26 @@
                 info: false,
                 dom: 'Bfrtip',
                 buttons: [
-                        {
-                            extend: 'csv',
-                            text: 'CSV',
-                            className: 'btn btn-secondary d-none'
-                        },
-                        {
-                            extend: 'excel',
-                            text: 'Excel',
-                            className: 'btn btn-secondary d-none'
-                        },
-                        {
-                            extend: 'pdf',
-                            text: 'PDF',
-                            className: 'btn btn-secondary d-none'
-                        },
-                        {
-                            extend: 'print',
-                            text: 'Print',
-                            className: 'btn btn-secondary d-none'
-                        }
+                    {
+                        extend: 'csv',
+                        text: 'CSV',
+                        className: 'btn btn-secondary d-none'
+                    },
+                    {
+                        extend: 'excel',
+                        text: 'Excel',
+                        className: 'btn btn-secondary d-none'
+                    },
+                    {
+                        extend: 'pdf',
+                        text: 'PDF',
+                        className: 'btn btn-secondary d-none'
+                    },
+                    {
+                        extend: 'print',
+                        text: 'Print',
+                        className: 'btn btn-secondary d-none'
+                    }
                 ]
             });
 
@@ -231,3 +221,4 @@
     </script>
 
 @endpush
+

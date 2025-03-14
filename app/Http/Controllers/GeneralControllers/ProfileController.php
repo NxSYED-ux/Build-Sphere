@@ -75,7 +75,7 @@ class ProfileController extends Controller
             return response()->json(['error' => 'User ID is required'], 400);
         }
         $request->validate([
-            'name' => 'required|string|max:50',
+            'name' => 'required|string|max:5',
             'phone_no' => 'nullable|string|max:20',
             'cnic' => 'nullable|string|max:25',
             'gender' => 'nullable|string|max:10',

@@ -97,6 +97,7 @@
             background-color: var(--th-bg) !important;
             color: var(--th-color) !important;
         }
+
         td{
             background-color: var(--td-bg) !important;
             color: var(--td-color) !important;

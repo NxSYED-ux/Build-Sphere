@@ -26,6 +26,10 @@ Route::get('/', function () {
     return view('auth.login');
 });
 
+Route::get('/index', function () {
+    return view('layouts.index');
+});
+
 //Image Routes
 Route::post('/upload-images', [ImageApiController::class, 'update']);
 Route::post('/destroy-image', [ImageApiController::class, 'destroyImage']);
@@ -161,6 +165,8 @@ Route::middleware(['auth.jwt:cookie'])->group(function () {
     Route::get('owner_manager_dashboard', [OwnerDashboardController::class, 'index'])->name('owner_manager_dashboard');
     Route::resource('owner_buildings', OwnerBuildingController::class);
     Route::get('buildings/{id}/tree', [BuildingTreeController::class, 'tree'])->name('building.tree');
+
+    Route::get('owner/buildings', [BuildingController::class, 'index'])->name('owner.buildings.index');
 
     //Role Permissions
     Route::get('/role-permissions', [RolePermissionController::class, 'showRolePermissions'])->name('role.permissions');

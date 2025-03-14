@@ -51,30 +51,18 @@
         }
 
         .form label{
-            font-size: 14px;
             font-weight: bold;
-            color: var(--label-color);
         }
 
-        .form input, select {
-            background-color: var(--input-bg-color) !important;
-            color:  var(--input-text-color) !important;
-            border: 1px solid var(--input-border-color) !important;
+        .form input:not(.form-check-input):not(.is-invalid),
+        select:not(.is-invalid),
+        textarea:not(.is-invalid) {
             padding: 8px !important;
             border-radius: 5px !important;
         }
 
         .form i{
             color: var(--input-icon-color) !important;
-        }
-
-        .form input[type="date"]::-webkit-calendar-picker-indicator {
-            filter: invert(var(--invert, 0));
-        }
-
-        .form input:focus, select:focus {
-            border: 1px solid #ccc !important;
-            box-shadow: none !important;
         }
 
         /* Model Windows */
@@ -196,7 +184,7 @@
                                             <div class="col-lg-4 col-md-4 col-12 mb-3">
                                                 <label for="name">Name</label>
                                                 <div class="position-relative">
-                                                <input type="text" name="name" id="name" class="form-control pe-5 custom-input @error('name') is-invalid @enderror"
+                                                <input type="text" name="name" id="name" class="form-control pe-5 custom-input  "
                                                     value="{{ old('name', $user->name) }}" maxlength="50" placeholder="User Name" required>
                                                     <i class='bx bxs-user input-icon position-absolute top-50 end-0 translate-middle-y me-3'></i>
                                                 </div>
