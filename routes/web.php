@@ -169,6 +169,7 @@ Route::middleware(['auth.jwt:cookie'])->group(function () {
     Route::get('owner/buildings/{building}', [BuildingController::class, 'ownerShow'])->name('owner.buildings.show');
     Route::get('owner/buildings/{building}/edit', [BuildingController::class, 'ownerEdit'])->name('owner.buildings.edit');
     Route::put('owner/buildings/{building}', [BuildingController::class, 'update'])->name('owner.buildings.update');
+    Route::post('owner/buildings/submit', [BuildingController::class, 'submitBuilding'])->name('owner.buildings.submit');
 
     //Role Permissions
     Route::get('/role-permissions', [RolePermissionController::class, 'showRolePermissions'])->name('role.permissions');

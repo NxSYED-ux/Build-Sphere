@@ -90,7 +90,6 @@
                                                 <th>Name</th>
                                                 <th>Remarks</th>
                                                 <th>Area</th>
-                                                <th>Organization</th>
                                                 <th>City</th>
                                                 <th>Status</th>
                                                 <th class="w-170 text-center">Actions</th>
@@ -107,13 +106,16 @@
                                                     <td>{{ $building->name }}</td>
                                                     <td>{{ $building->remarks ?? 'N/A' }}</td>
                                                     <td>{{ $building->area ?? 'N/A' }}</td>
-                                                    <td>{{ $building->organization->name ?? 'N/A' }}</td>
                                                     <td>{{ $building->address->city ?? 'N/A' }}</td>
                                                     <td>
                                                         {{ $building->status ?? 'N/A' }}
                                                     </td>
                                                     <td class="w-170 text-center">
-                                                        <a href="{{ route('buildings.show', ['building' => $building->id]) }}" class="text-info" title="View Levels"><i class="fa fa-eye mx-2" style="font-size: 20px;margin-right:5px;;"></i></a>
+                                                        @if($building->status === "Under Processing" || $building->status === "Reapproved")
+                                                            <a href="{{ route('owner.buildings.show', ['building' => $building->id]) }}" class="text-info" title="Submit"><i class='bx bxs-right-top-arrow-circle' style="font-size: 20px;margin-right:5px; color: orange;"></i></a>
+                                                        @else
+                                                        <a href="{{ route('owner.buildings.show', ['building' => $building->id]) }}" class="text-info" title="View"><i class="fa fa-eye mx-2" style="font-size: 20px;margin-right:5px;;"></i></a>
+                                                        @endif
                                                         <a href="{{ route('levels.index', ['building_id' => $building->id]) }}" class="text-info" title="View Levels"><i class="bx bxs-city icons" style="font-size: 20px;margin-right:5px;;"></i></a>
                                                         <a href="{{ route('buildings.edit', $building->id) }}" class="text-warning" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit">
                                                             <i class="fa fa-pencil mx-2" style="font-size: 20px;"></i>

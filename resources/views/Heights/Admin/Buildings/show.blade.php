@@ -20,6 +20,11 @@
             object-fit: cover;
         }
 
+        .tree-card{
+            background-color: var(--main-background-color);
+            color: var(--main-text-color);
+        }
+
 
         .modal-content{
             background-color: var(--main-background-color);
@@ -46,7 +51,9 @@
             box-shadow: none;
         }
 
-
+        #tree{
+            background-color: var(--main-background-color);
+        }
 
         #tree>svg {
             background-color: var(--main-background-color);
@@ -135,6 +142,40 @@
             fill: orange;
         }
 
+
+        /**/
+        #reject-btn{
+            border-radius: 5px;
+            border: 1px solid #EC5252;
+            color: #EC5252;
+            background-color: white;
+        }
+
+        #reject-btn:hover{
+            border: 1px solid #EC5252;
+            color: #fff;
+            background-color: #EC5252;
+        }
+
+        #approved-btn{
+            border-radius: 5px;
+            border: 1px solid #008CFF;
+            color: white;
+            background-color: #008CFF;
+        }
+
+        #approved-btn:hover{
+            border: 1px solid #008CFF;
+            color: #008CFF;
+            background-color: #fff;
+        }
+
+        @media (max-width: 992px) {
+            .d-flex.flex-wrap {
+                flex-direction: column;
+            }
+        }
+
     </style>
 
 @endpush
@@ -156,36 +197,70 @@
     <div id="main">
         <section class="content my-3 mx-2">
             <div class="container-fluid">
-                <div class="row">
-                    <div class="col-lg-4">
-                        <div class="card shadow-sm border rounded p-3">
-                            <img src="{{ asset('img/buildings/building1.jpeg') }}" class="card-img-top rounded" alt="Building Image">
-                            <div class="card-body text-center">
-                                <h5 class="card-title text-success fw-bold">Islamabad SKY Apartments</h5>
-                                <p class="text-muted">
-                                    <i class="bi bi-geo-alt-fill text-danger"></i> Daman-e-Koh, Islamabad, Punjab, Pakistan
-                                </p>
-                                <div class="text-start text-center">
-                                    <p><strong>Organization:</strong> Etihad Town</p>
-                                    <p><strong>Building Type:</strong> Commercial</p>
-                                    <p><strong>Total Levels:</strong> 3</p>
-                                    <p><strong>Total Units:</strong> 5</p>
-                                </div>
-                                <div class="d-flex justify-content-between mt-3">
-                                    <button class="btn btn-outline-danger w-50 me-2">Reject</button>
-                                    <button class="btn btn-primary w-50">Approve</button>
+                <div class="d-flex flex-wrap flex-lg-nowrap gap-3">
+                    <div class="card shadow-sm border p-3 h-100 d-flex flex-column"
+                         style="border-radius: 25px; max-width: 400px; min-width: 300px;">
+                        <h4 style="font-size: 18px; font-weight: bold">Building Detail</h4>
+
+                        <!-- Image Container -->
+                        <div class="position-relative" style="width: 100%; height: 200px; overflow: hidden;">
+                            <img src="{{ asset( $building->pictures->first() ?  $building->pictures->first()->file_path : '') }}"
+                                 class="img-fluid rounded w-100 h-100 object-fit-cover"
+                                 alt="Building Image">
+                        </div>
+
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title text-success fw-bold text-center">{{ $building->name }}</h5>
+                            <p class="text-center mb-0 pb-0">
+                                <svg width="15" height="15" viewBox="0 0 17 20" fill="none"
+                                     xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M14.173 14.8819L13.053 16.0558C12.2275 16.9144 11.1564 18.0184 9.83928 19.3679C9.0163 20.2113 7.71058 20.2112 6.88769 19.3677L3.59355 15.9718C3.17955 15.541 2.83301 15.1777 2.55386 14.8819C-0.654672 11.4815 -0.654672 5.9683 2.55386 2.56789C5.76239 -0.832524 10.9645 -0.832524 14.173 2.56789C17.3815 5.9683 17.3815 11.4815 14.173 14.8819ZM10.7226 8.9996C10.7226 7.61875 9.66633 6.49936 8.36344 6.49936C7.06056 6.49936 6.0043 7.61875 6.0043 8.9996C6.0043 10.3804 7.06056 11.4998 8.36344 11.4998C9.66633 11.4998 10.7226 10.3804 10.7226 8.9996Z" fill="red"/>
+                                </svg>
+                                {{ $building->address->location }}, {{ $building->address->city }}, {{ $building->address->province }}, {{ $building->address->country }}
+                            </p>
+
+                            <hr class="mt-3">
+
+                            <div class="text-center flex-grow-1">
+                                <p><strong>Organization:</strong> {{ $building->organization->name }}</p>
+                                <p><strong>Type:</strong> {{ $building->building_type }}</p>
+                                <div class="row">
+                                    <div class="col-5">
+                                        <p><strong>Levels:</strong> {{ $building->levels->count() }}</p>
+                                    </div>
+                                    <div class="col-7">
+                                        <p><strong>Units:</strong> {{ $building->levels->sum(fn($level) => $level->units->count()) }}</p>
+                                    </div>
+                                    <div class="col-5">
+                                        <p><strong>Area:</strong> {{ $building->area }}</p>
+                                    </div>
+                                    <div class="col-7">
+                                        <p><strong>Construction Year:</strong> {{ $building->construction_year }}</p>
+                                    </div>
                                 </div>
                             </div>
+
+                            @if($building->status === "Under Review")
+                                <hr class="mb-0">
+                                <div class="d-flex justify-content-between mt-3">
+                                    <a href="{{ route('buildings.index') }}" class="btn w-50 me-2 status-button" id="reject-btn">Reject</a>
+                                    <button class="btn w-50 status-button" id="approved-btn">Approve</button>
+                                </div>
+                            @else
+                                <hr>
+                                <div class="d-flex justify-content-between mt-3">
+                                    <a href="{{ route('buildings.index') }}" class="btn btn-outline-primary w-100 me-2 status-button">Close</a>
+                                </div>
+                            @endif
                         </div>
                     </div>
 
-                    <div class="col-lg-8">
-                        <div class="card shadow-sm border rounded p-1">
-                        <div id="tree">
-                        </div>
-                        </div>
+                    <div class="card tree-card border p-1 flex-grow-1" style="border-radius: 25px;">
+                        <div id="tree" class="py-0" style="border-radius: 25px;"></div>
                     </div>
                 </div>
+
+
             </div>
         </section>
     </div>
