@@ -240,7 +240,7 @@
                                 </div>
                             </div>
 
-                            @if($building->status === "Under Processing")
+                            @if($building->status === "Under Processing" || $building->status === "Rejected" )
                                 <hr class="mb-0">
                                 <div class="d-flex justify-content-between align-items-stretch mt-3">
                                     <a href="{{ route('owner.buildings.index') }}" class="btn btn-outline-primary w-50 me-2 status-button">Close</a>

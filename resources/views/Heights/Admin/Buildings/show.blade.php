@@ -165,9 +165,32 @@
         }
 
         #approved-btn:hover{
-            border: 1px solid #008CFF;
-            color: #008CFF;
-            background-color: #fff;
+            border: 1px solid #008CFF !important;
+            color: #008CFF !important;
+            background-color: #fff !important;
+        }
+
+        .model-btn-close{
+            color: #008CFF !important;
+            background-color: #ffff !important;
+            border: 1px solid #008CFF !important;
+        }
+        .model-btn-close:hover{
+            color: #008CFF !important;
+            background-color: #ffff !important;
+            border: 1px solid #008CFF !important;
+        }
+
+        .model-btn-submit{
+            color: #ffff !important;
+            background-color: #008CFF !important;
+            border: 1px solid #008CFF !important;
+        }
+
+        .model-btn-submit:hover{
+            color: #ffff !important;
+            background-color: #008CFF !important;
+            border: 1px solid #008CFF !important;
         }
 
         @media (max-width: 992px) {
@@ -243,8 +266,12 @@
                             @if($building->status === "Under Review")
                                 <hr class="mb-0">
                                 <div class="d-flex justify-content-between mt-3">
-                                    <a href="{{ route('buildings.index') }}" class="btn w-50 me-2 status-button" id="reject-btn">Reject</a>
-                                    <button class="btn w-50 status-button" id="approved-btn">Approve</button>
+                                    <button class="btn w-50 me-2 status-button" id="reject-btn">Reject</button>
+                                    <form action="{{ route('owner.buildings.submit') }}" method="POST" class="w-50 mx-1">
+                                        @csrf
+                                        <input type="hidden" name="building_id" value="{{ $building->id }}">
+                                        <button type="submit" class="btn w-100 status-button" id="approved-btn">Approve</button>
+                                    </form>
                                 </div>
                             @else
                                 <hr>
@@ -320,6 +347,63 @@
             </div>
         </div>
     </div>
+
+
+
+    <!-- Reject Building Modal -->
+    <div class="modal fade" id="RejectBuildingModal" tabindex="-1" aria-labelledby="RejectBuildingModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content" style="border-radius: 25px;">
+                <form id="rejectBuildingForm" method="POST" action="{{ route('buildings.reject') }}">
+                    <input type="hidden" name="building_id" value="{{ $building->id }}">
+                    <div class="modal-body" style="border-radius: 25px;">
+                        <div class="mb-3">
+                            <label for="remarks" class="form-label mx-2 " style="font-weight: bold;">Write Remarks</label>
+                            <span class="required__field text-danger">*</span><br>
+                            <textarea class="form-control @error('remarks') is-invalid @enderror" id="remarks" name="remarks" value="{{ old('remarks') }}" maxlength="100" placeholder="Write your remarks here....." required></textarea>
+                            @error('remarks')
+                            <div class="text-danger">{{ $message }}</div>
+                            @enderror
+
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-end gap-2 mb-3 mx-4">
+                        <button type="button" class="btn model-btn-close" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn model-btn-submit">Submit</button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Approved Building Modal -->
+    <div class="modal fade" id="ApprovedBuildingModal" tabindex="-1" aria-labelledby="ApprovedBuildingModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content" style="border-radius: 25px;">
+                <form id="approvedBuildingForm" method="POST" action="{{ route('buildings.approve') }}">
+                    <input type="hidden" name="building_id" value="{{ $building->id }}">
+                    <div class="modal-body" style="border-radius: 25px;">
+                        <div class="mb-3">
+                            <label for="remarks" class="form-label mx-2 " style="font-weight: bold;">Write Remarks</label>
+                            <textarea class="form-control @error('remarks') is-invalid @enderror" id="remarks" name="remarks" value="{{ old('remarks') }}" maxlength="100" placeholder="Write your remarks here....."></textarea>
+                            @error('remarks')
+                            <div class="text-danger">{{ $message }}</div>
+                            @enderror
+
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-end gap-2 mb-3 mx-4">
+                        <button type="button" class="btn model-btn-close" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn model-btn-submit">Submit</button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+
+
 
 @endsection
 
@@ -548,5 +632,22 @@
         }
 
 
+    </script>
+
+
+    <script>
+        $(document).ready(function () {
+            $('#reject-btn').on('click', function (e) {
+                e.preventDefault();
+                $('#RejectBuildingModal').modal('show');
+            });
+        });
+
+        $(document).ready(function () {
+            $('#approved-btn').on('click', function (e) {
+                e.preventDefault();
+                $('#ApprovedBuildingModal').modal('show');
+            });
+        });
     </script>
 @endpush
