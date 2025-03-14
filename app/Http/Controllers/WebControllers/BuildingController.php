@@ -400,7 +400,7 @@ class BuildingController extends Controller
                 'area' => $request->area,
                 'status' => $request->status,
                 'construction_year' => $request->construction_year,
-                'organization_id' => $request->organization_id,
+                'organization_id' => $organization_id,
             ]);
 
             if ($request->hasFile('building_pictures')) {
