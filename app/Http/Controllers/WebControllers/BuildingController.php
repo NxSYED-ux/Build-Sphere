@@ -424,7 +424,7 @@ class BuildingController extends Controller
             $building->update([
                 'status' => 'Under Review',
             ]);
-            return redirect()->route('Heights.Owner.Buildings.index')->with('success', 'Building Submitted successfully.');
+            return redirect()->route('owner.Buildings.index')->with('success', 'Building Submitted successfully.');
         }catch (\Exception $e) {
             Log::error('Error in submit building: ' . $e->getMessage());
             return redirect()->back()->with('error', 'An error occurred while updating the building.');
