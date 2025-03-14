@@ -26,10 +26,12 @@ class ProfileController extends Controller
             ->select('location', 'city', 'province', 'country', 'postal_code')
             ->first();
 
-        $dropdownData = DropdownType::with(['values.childs.childs'])
-            ->where('type_name', 'Country')
-            ->get();
-
+        $dropdownData = null;
+        if(!$request->wantsJson()){
+            $dropdownData = DropdownType::with(['values.childs.childs'])
+                ->where('type_name', 'Country')
+                ->get();
+        }
 
         $userData = (object)[
             'id' => $user->id,
@@ -75,9 +77,9 @@ class ProfileController extends Controller
             return response()->json(['error' => 'User ID is required'], 400);
         }
         $request->validate([
-            'name' => 'required|string|max:5',
+            'name' => 'required|string|max:50',
             'phone_no' => 'nullable|string|max:20',
-            'cnic' => 'nullable|string|max:25',
+            'cnic' => 'nullable|string|max:25|unique:users,cnic,' . $user->id . 'id',
             'gender' => 'nullable|string|max:10',
             'date_of_birth' => 'nullable|date',
             'updated_at' => 'required',

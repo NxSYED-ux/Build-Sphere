@@ -30,10 +30,6 @@ Route::get('/index', function () {
     return view('layouts.index');
 });
 
-//Image Routes
-Route::post('/upload-images', [ImageApiController::class, 'update']);
-Route::post('/destroy-image', [ImageApiController::class, 'destroyImage']);
-
 // Authentication routes
 Route::get('login', [AuthController::class, 'index'])->name('login');
 Route::post('login', [AuthController::class, 'adminLogin'])->name('login');
@@ -117,9 +113,9 @@ Route::middleware(['auth.jwt:cookie'])->group(function () {
     Route::delete('values/{value}', [DropdownValueController::class, 'destroy'])->name('values.destroy');
 
     //Route::resource('buildings', BuildingController::class);
-    Route::get('buildings', [BuildingController::class, 'index'])->name('buildings.index');
-    Route::get('buildings/create', [BuildingController::class, 'create'])->name('buildings.create');
-    Route::post('buildings', [BuildingController::class, 'store'])->name('buildings.store');
+    Route::get('buildings', [BuildingController::class, 'adminIndex'])->name('buildings.index');
+    Route::get('buildings/create', [BuildingController::class, 'adminCreate'])->name('buildings.create');
+    Route::post('buildings', [BuildingController::class, 'adminStore'])->name('buildings.store');
     Route::get('buildings/{building}', [BuildingController::class, 'show'])->name('buildings.show');
     Route::get('buildings/{building}/edit', [BuildingController::class, 'edit'])->name('buildings.edit');
     Route::put('buildings/{building}', [BuildingController::class, 'update'])->name('buildings.update');
@@ -166,7 +162,7 @@ Route::middleware(['auth.jwt:cookie'])->group(function () {
     Route::resource('owner_buildings', OwnerBuildingController::class);
     Route::get('buildings/{id}/tree', [BuildingTreeController::class, 'tree'])->name('building.tree');
 
-    Route::get('owner/buildings', [BuildingController::class, 'index'])->name('owner.buildings.index');
+    Route::get('owner/buildings', [BuildingController::class, 'ownerIndex'])->name('owner.buildings.index');
 
     //Role Permissions
     Route::get('/role-permissions', [RolePermissionController::class, 'showRolePermissions'])->name('role.permissions');

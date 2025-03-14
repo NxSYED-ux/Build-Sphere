@@ -13,42 +13,136 @@ use App\Models\Organization;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Log;
 
 class BuildingController extends Controller
 {
-    public function index(Request $request)
+    // Index Functions
+    public function adminIndex(Request $request)
     {
-        // Get the search query from the input
-        $search = $request->input('search');
+        try {
+            $search = $request->input('search');
 
-        // Query buildings and filter by search if a search term is provided
-        $buildings = Building::with(['pictures', 'address', 'organization'])
-            ->where('name', 'like', '%' . $search . '%')  // Search by name
-            ->orWhere('remarks', 'like', '%' . $search . '%')  // Search by remarks
-            ->orWhereHas('organization', function($query) use ($search) {
-                $query->where('name', 'like', '%' . $search . '%');  // Search by organization name
-            })
-            ->orWhereHas('address', function($query) use ($search) {
-                $query->where('city', 'like', '%' . $search . '%');  // Search by city
-            })
-            ->paginate(10);  // Paginate the results
+            $buildings = Building::with(['pictures', 'address', 'organization'])
+                ->where('name', 'like', '%' . $search . '%')
+                ->orWhere('remarks', 'like', '%' . $search . '%')
+                ->orWhereHas('organization', function ($query) use ($search) {
+                    $query->where('name', 'like', '%' . $search . '%');
+                })
+                ->orWhereHas('address', function ($query) use ($search) {
+                    $query->where('city', 'like', '%' . $search . '%');
+                })
+                ->paginate(10);
 
-        // Return the view with the filtered buildings
-        return view('Heights.Admin.Buildings.index', compact('buildings'));
+            return view('Heights.Admin.Buildings.index', compact('buildings'));
+        } catch (\Exception $e) {
+            Log::error('Error in adminIndex: ' . $e->getMessage());
+            return back()->with('error', 'An error occurred while fetching buildings.');
+        }
     }
 
-    public function create()
+    public function ownerIndex(Request $request)
     {
-        $organizations = Organization::all();
-        $dropdownData = DropdownType::with(['values.childs.childs'])->where('type_name', 'Country')->get(); // Country -> Province -> City
-        $documentType = DropdownType::with(['values'])->where('type_name', 'Building-document-type')->first();
-        $buildingType = DropdownType::with(['values'])->where('type_name', 'Building-type')->first();
-        $documentTypes = $documentType ? $documentType->values->pluck('value_name', 'id') : collect();
-        $buildingTypes = $buildingType ? $buildingType->values()->where('status', 1)->get() : collect();
-        return view('Heights.Admin.Buildings.create', compact('organizations', 'dropdownData', 'buildingTypes', 'documentTypes'));
+        try {
+            $buildings = null;
+            $token = $request->attributes->get('token');
+
+            if (!$token || !isset($token['organization_id'])) {
+                return view('Heights.Owner.Buildings.index', compact('buildings'));
+            }
+
+            $organization_id = $token['organization_id'];
+            $search = $request->input('search');
+
+            $buildings = Building::with(['pictures', 'address'])
+                ->where('organization_id', $organization_id)
+                ->where(function ($query) use ($search) {
+                    $query->where('name', 'like', '%' . $search . '%')
+                        ->orWhere('remarks', 'like', '%' . $search . '%')
+                        ->orWhereHas('address', function ($q) use ($search) {
+                            $q->where('city', 'like', '%' . $search . '%');
+                        });
+                })
+                ->paginate(10);
+
+            return view('Heights.Owner.Buildings.index', compact('buildings'));
+
+        } catch (\Exception $e) {
+            Log::error('Error in ownerIndex: ' . $e->getMessage());
+            return back()->with('error', 'Something went wrong! Please try again.');
+        }
     }
 
-    public function store(Request $request)
+
+    // Create Functions
+    public function adminCreate()
+    {
+        return $this->create('admin');
+    }
+
+    public function ownerCreate()
+    {
+        return $this->create('owner');
+    }
+
+    private function create(string $portal)
+    {
+        try {
+            $organizations = null;
+
+            $dropdownData = DropdownType::with(['values.childs.childs'])
+                ->where('type_name', 'Country')
+                ->get();
+
+            $documentType = DropdownType::with(['values'])
+                ->where('type_name', 'Building-document-type')
+                ->first();
+
+            $buildingType = DropdownType::with(['values'])
+                ->where('type_name', 'Building-type')
+                ->first();
+
+            $documentTypes = $documentType ? $documentType->values->pluck('value_name', 'id') : collect();
+            $buildingTypes = $buildingType ? $buildingType->values()->where('status', 1)->get() : collect();
+
+            if ($portal == 'admin') {
+                $organizations = Organization::where('status', 'Enable')->get();
+                return view('Heights.Admin.Buildings.create', compact('organizations', 'dropdownData', 'buildingTypes', 'documentTypes'));
+            } elseif ($portal == 'owner') {
+                return view('Heights.Owner.Buildings.create', compact('dropdownData', 'buildingTypes', 'documentTypes'));
+            } else {
+                abort(404, 'Page not found');
+            }
+        } catch (\Exception $e) {
+            Log::error('Error in create method: ' . $e->getMessage());
+            return back()->with('error', 'Something went wrong! Please try again.');
+        }
+    }
+
+
+    // Store Functions
+
+    public function adminStore(Request $request)
+    {
+        $request->validate([
+            'organization_id' => 'required|exists:organizations,id',
+        ]);
+        return $this->store($request, 'admin',$request->organization_id,'Approved',"This building is added by admin {$request->user()->name}");
+    }
+    public function ownerStore(Request $request)
+    {
+        $token = $request->attributes->get('token');
+
+        if (!$token || !isset($token['organization_id'])) {
+            return redirect()->back()->withInput()->with('error', 'Oops! It looks like you’re trying to perform an action meant for organizations. Please ensure you are logged in with an organization-linked account.');
+        }
+
+        $organization_id = $token['organization_id'];
+
+        return $this->store($request, 'owner',$organization_id,'Under Processing',null);
+    }
+
+    private function store(Request $request, String $portal, $organization_id, $status, $remarks)
     {
         $request->validate([
             'name' => 'required|string|max:255',
@@ -62,7 +156,6 @@ class BuildingController extends Controller
             'province' => 'nullable|string|max:50',
             'city' => 'nullable|string|max:50',
             'postal_code' => 'nullable|string|max:50',
-            'organization_id' => 'required|exists:organizations,id',
             'building_pictures.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
 
             'documents.*.type' => 'nullable|string|distinct',
@@ -88,10 +181,10 @@ class BuildingController extends Controller
                 'building_type' => $request->building_type,
                 'address_id' => $address->id,
                 'area' => $request->area,
-                'remarks' => $request->remarks,
-                'status' => 4,
+                'remarks' => $remarks,
+                'status' => $status,
                 'construction_year' => $request->construction_year,
-                'organization_id' => $request->organization_id,
+                'organization_id' => $organization_id,
             ]);
 
             if ($request->hasFile('building_pictures')) {
@@ -99,6 +192,7 @@ class BuildingController extends Controller
                     $imageName = time() . '_' . $image->getClientOriginalName();
                     $imagePath = 'uploads/buildings/images/' . $imageName;
                     $image->move(public_path('uploads/buildings/images'), $imageName);
+
                     BuildingPicture::create([
                         'building_id' => $building->id,
                         'file_path' => $imagePath,
@@ -107,7 +201,6 @@ class BuildingController extends Controller
                 }
             }
 
-            // Handle document uploads
             foreach ($request->documents ?? [] as $document) {
                 if (isset($document['files'])) {
                     $file = $document['files'];
@@ -128,10 +221,17 @@ class BuildingController extends Controller
 
             DB::commit();
 
-            return redirect()->route('buildings.index')->with('success', 'Building created successfully.');
+            if ($portal == 'admin') {
+                return redirect()->route('buildings.index')->with('success', 'Building created successfully.');
+            } elseif ($portal == 'owner') {
+                return redirect()->route('Owner.buildings.index')->with('success', 'Building created successfully.');
+            } else {
+                abort(404, 'Page not found');
+            }
 
         } catch (\Exception $e) {
             DB::rollBack();
+            Log::error('Error in store: ' . $e->getMessage());
             return redirect()->back()->withInput()->with('error', 'An error occurred while creating the building.');
         }
     }
@@ -145,7 +245,6 @@ class BuildingController extends Controller
             'levels.units.pictures'
         ]);
 
-        // Extract necessary data
         $owner = $building->organization->owner;
         $levels = $building->levels;
         $units = $levels->flatMap->units;
