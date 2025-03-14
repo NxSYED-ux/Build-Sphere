@@ -59,8 +59,11 @@
                                 </div>
                                 <div class="card shadow p-3 mb-5 bg-body rounded" style="border: none;">
                                     <div class="card-body">
-                                        <form action="{{ route('buildings.update', $building->id) }}" method="POST" enctype="multipart/form-data">
+                                        <form action="{{ route('buildings.update') }}" method="POST" enctype="multipart/form-data">
                                             @method('PUT')
+
+                                            <input type="hidden" name="id" value="{{ $building->id }}">
+                                            <input type="hidden" name="updated_at" value="{{ $building->updated_at }}">
 
                                             <div class="row mb-3">
                                                 <div class="col-lg-4 col-md-6 col-sm-12">

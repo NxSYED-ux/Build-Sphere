@@ -118,7 +118,7 @@ Route::middleware(['auth.jwt:cookie'])->group(function () {
     Route::post('buildings', [BuildingController::class, 'adminStore'])->name('buildings.store');
     Route::get('buildings/{building}', [BuildingController::class, 'adminShow'])->name('buildings.show');
     Route::get('buildings/{building}/edit', [BuildingController::class, 'adminEdit'])->name('buildings.edit');
-    Route::put('buildings/{building}', [BuildingController::class, 'adminUpdate'])->name('buildings.update');
+    Route::put('buildings', [BuildingController::class, 'adminUpdate'])->name('buildings.update');
     Route::delete('buildings/{building}', [BuildingController::class, 'destroy'])->name('buildings.destroy');
     Route::delete('/buildings/{id}/remove-picture', [BuildingController::class, 'destroyImage'])->name('buildings.remove_picture');
     Route::delete('/building_documents/{id}', [BuildingController::class, 'removeDocument'])->name('building_documents.removeDocument');
@@ -170,7 +170,7 @@ Route::middleware(['auth.jwt:cookie'])->group(function () {
     Route::post('owner/buildings', [BuildingController::class, 'ownerStore'])->name('owner.buildings.store');
     Route::get('owner/buildings/{building}', [BuildingController::class, 'ownerShow'])->name('owner.buildings.show');
     Route::get('owner/buildings/{building}/edit', [BuildingController::class, 'ownerEdit'])->name('owner.buildings.edit');
-    Route::put('owner/buildings/{building}', [BuildingController::class, 'ownerUpdate'])->name('owner.buildings.update');
+    Route::put('owner/buildings', [BuildingController::class, 'ownerUpdate'])->name('owner.buildings.update');
     Route::post('owner/buildings/submit', [BuildingController::class, 'submitBuilding'])->name('owner.buildings.submit');
 
     //Role Permissions
