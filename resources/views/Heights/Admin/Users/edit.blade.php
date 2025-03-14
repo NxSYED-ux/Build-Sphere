@@ -288,37 +288,36 @@
     <!-- Password Script -->
     <script>
         document.getElementById('password').addEventListener('input', function() {
-            var passwordField = this;
-            var passwordHelp = document.getElementById('passwordHelp');
+            const passwordField = this;
+            const passwordHelp = document.getElementById('passwordHelp');
 
             if (passwordField.value.length === 0) {
                 passwordField.classList.remove('is-invalid');
                 passwordHelp.textContent = '';
-            }
-            else if (passwordField.value.length < 8) {
+            } else if (passwordField.value.length < 8) {
                 passwordField.classList.add('is-invalid');
                 passwordHelp.textContent = 'Password must be at least 8 characters long.';
-            }
-             else {
+            } else {
                 passwordField.classList.remove('is-invalid');
                 passwordHelp.textContent = '';
             }
         });
+
     </script>
 
     <script>
         document.getElementById('cnic').addEventListener('input', function (e) {
-            var x = e.target.value.replace(/\D/g, '').match(/(\d{0,3})(\d{0,4})(\d{0,7})(\d{0,1})/);
-            e.target.value = !x[2] ? x[1] : x[1] + '-' + x[2] + (x[3] ? '-' + x[3] + (x[4] ? '-' + x[4] : '') : '');
+            const x = e.target.value.replace(/\D/g, '').match(/(\d{0,5})(\d{0,7})(\d{0,1})/);
+            e.target.value = !x[2] ? x[1] : x[1] + '-' + x[2] + (x[3] ? '-' + x[3] : '');
         });
     </script>
 
     <!-- Image avatr script -->
     <script>
         function previewImage(event) {
-            var reader = new FileReader();
+            const reader = new FileReader();
             reader.onload = function() {
-                var avatar = document.getElementById('avatar');
+                const avatar = document.getElementById('avatar');
                 avatar.src = reader.result;
             }
             reader.readAsDataURL(event.target.files[0]);
@@ -326,7 +325,7 @@
 
         document.addEventListener('DOMContentLoaded', function() {
             @if (session('success') || session('error'))
-                var messageModal = new bootstrap.Modal(document.getElementById('messageModal'));
+                const messageModal = new bootstrap.Modal(document.getElementById('messageModal'));
                 messageModal.show();
             @endif
         });

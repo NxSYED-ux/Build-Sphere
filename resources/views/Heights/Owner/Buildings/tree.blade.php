@@ -444,20 +444,26 @@
                 return;
             }
 
-            $.ajax({
-                url: `{{ route('units.details', ':id') }}`.replace(':id', numericUnitId),
-                type: 'GET',
-                success: function(data) {
+            // Unit Details Fetch
+            fetch(`{{ route('units.details', ':id') }}`.replace(':id', numericUnitId), {
+                method: "GET",
+                headers: {
+                    "X-Requested-With": "XMLHttpRequest",
+                    "Accept": "application/json"
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
                     if (data.error) {
                         console.error("Error:", data.error);
                         return;
                     }
                     populateUnitModal(data);
-                },
-                error: function() {
+                })
+                .catch(() => {
                     console.error("An error occurred while retrieving the data.");
-                }
-            });
+                });
+
         }
 
         function populateUnitModal(unitData) {

@@ -250,6 +250,16 @@
                                         <button type="submit" class="btn w-100 status-button" id="approved-btn">Submit</button>
                                     </form>
                                 </div>
+                            @elseif($building->status === "Under Review" || $building->status === "For Reaproval" )
+                                <hr class="mb-0">
+                                <div class="d-flex justify-content-between align-items-stretch mt-3">
+                                    <a href="{{ route('owner.buildings.index') }}" class="btn btn-outline-primary w-50 me-2 status-button">Close</a>
+                                    <form action="{{ route('owner.buildings.submit') }}" method="POST" class="w-50">
+                                        @csrf
+                                        <input type="hidden" name="building_id" value="{{ $building->id }}">
+                                        <button type="submit" class="btn w-100 status-button" id="approved-btn">Reminder</button>
+                                    </form>
+                                </div>
                             @else
                                 <hr>
                                 <div class="d-flex justify-content-between mt-3">
@@ -490,20 +500,26 @@
                 return;
             }
 
-            $.ajax({
-                url: `{{ route('units.details', ':id') }}`.replace(':id', numericUnitId),
-                type: 'GET',
-                success: function(data) {
+            // Unit Details Fetch
+            fetch(`{{ route('units.details', ':id') }}`.replace(':id', numericUnitId), {
+                method: "GET",
+                headers: {
+                    "X-Requested-With": "XMLHttpRequest",
+                    "Accept": "application/json"
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
                     if (data.error) {
                         console.error("Error:", data.error);
                         return;
                     }
                     populateUnitModal(data);
-                },
-                error: function() {
+                })
+                .catch(() => {
                     console.error("An error occurred while retrieving the data.");
-                }
-            });
+                });
+
         }
 
         function populateUnitModal(unitData) {

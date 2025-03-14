@@ -313,99 +313,102 @@
 
     <!-- Data Table script -->
     <script>
-        $(document).ready(function () {
-
-            var table = $('#usersTable').DataTable({
+        document.addEventListener("DOMContentLoaded", function () {
+            var table = new DataTable("#usersTable", {
                 searching: false,
                 paging: false,
                 info: false,
-                dom: 'Bfrtip',
+                dom: "Bfrtip",
                 buttons: [
-                        {
-                            extend: 'csv',
-                            text: 'CSV',
-                            className: 'btn btn-secondary d-none'
-                        },
-                        {
-                            extend: 'excel',
-                            text: 'Excel',
-                            className: 'btn btn-secondary d-none'
-                        },
-                        {
-                            extend: 'pdf',
-                            text: 'PDF',
-                            className: 'btn btn-secondary d-none'
-                        },
-                        {
-                            extend: 'print',
-                            text: 'Print',
-                            className: 'btn btn-secondary d-none'
-                        }
+                    {
+                        extend: "csv",
+                        text: "CSV",
+                        className: "btn btn-secondary d-none"
+                    },
+                    {
+                        extend: "excel",
+                        text: "Excel",
+                        className: "btn btn-secondary d-none"
+                    },
+                    {
+                        extend: "pdf",
+                        text: "PDF",
+                        className: "btn btn-secondary d-none"
+                    },
+                    {
+                        extend: "print",
+                        text: "Print",
+                        className: "btn btn-secondary d-none"
+                    }
                 ]
             });
 
-            // CSV Button Click
-            $('#csvButton').on('click', function () {
-                console.log('CSV Button clicked');
-                table.button('.buttons-csv').trigger();
+            function triggerButton(buttonClass, logMessage) {
+                console.log(logMessage);
+                table.buttons(buttonClass).trigger();
+            }
+
+            document.getElementById("csvButton")?.addEventListener("click", function () {
+                triggerButton(".buttons-csv", "CSV Button clicked");
             });
 
-            // Excel Button Click
-            $('#excelButton').on('click', function () {
-                console.log('Excel Button clicked');
-                table.button('.buttons-excel').trigger();
+            document.getElementById("excelButton")?.addEventListener("click", function () {
+                triggerButton(".buttons-excel", "Excel Button clicked");
             });
 
-            // PDF Button Click
-            $('#pdfButton').on('click', function () {
-                console.log('PDF Button clicked');
-                table.button('.buttons-pdf').trigger();
+            document.getElementById("pdfButton")?.addEventListener("click", function () {
+                triggerButton(".buttons-pdf", "PDF Button clicked");
             });
 
-            // Print Button Click
-            $('#printButton').on('click', function () {
-                console.log('Print Button clicked');
-                table.button('.buttons-print').trigger();
+            document.getElementById("printButton")?.addEventListener("click", function () {
+                triggerButton(".buttons-print", "Print Button clicked");
             });
 
-            // Column Visibility Button Click
-            $('#colvisButton').on('click', function () {
-                console.log('Column Visibility Button clicked');
-                table.button('.buttons-colvis').trigger();
+            document.getElementById("colvisButton")?.addEventListener("click", function () {
+                triggerButton(".buttons-colvis", "Column Visibility Button clicked");
             });
         });
-
     </script>
 
     <!-- User Detail Model script -->
     <script>
-        $(document).ready(function () {
-            // Show user details modal
-            $(document).on('click', '.view-user', function () {
-                var userId = $(this).data('id');
-                $.ajax({
-                    url: `{{ route('users.show', ':id') }}`.replace(':id', userId),
-                    method: 'GET',
-                    success: function (response) {
-                        var data = response.user;
-                        $('#userModal #userPicture').attr('src', data.picture ? data.picture : 'https://via.placeholder.com/150');
-                        $('#userModal #userName').text(data.name);
-                        $('#userModal #userEmail').text(data.email);
-                        $('#userModal #userPhone').text(data.phone_no);
-                        $('#userModal #userCnic').text(data.cnic);
-                        $('#userModal #userGender').text(data.gender);
-                        $('#userModal #userRole').text(data.role.name);
-                        $('#userModal #userStatus') .removeClass('bg-success bg-danger') .addClass(data.status ? 'bg-success' : 'bg-danger');
-                        // $('#userModal #userStatus') .text(data.status ? 'Active' : 'Inactive') .removeClass('bg-success bg-danger text-light text-dark').addClass(data.status ? 'bg-success text-dark' : 'bg-danger text-light');
-                        $('#userModal').modal('show');
-                    },
-                    error: function (xhr, status, error) {
-                        console.error(xhr.responseText);
-                    }
+        document.addEventListener("DOMContentLoaded", function () {
+            document.querySelectorAll(".view-user").forEach(button => {
+                button.addEventListener("click", function () {
+                    let userId = this.dataset.id;
+
+                    fetch(`{{ route('users.show', ':id') }}`.replace(':id', userId), {
+                        method: "GET",
+                        headers: {
+                            "Accept": "application/json"
+                        }
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            let user = data.user;
+
+                            document.getElementById("userPicture").src = user.picture ? user.picture : "https://via.placeholder.com/150";
+                            document.getElementById("userName").textContent = user.name;
+                            document.getElementById("userEmail").textContent = user.email;
+                            document.getElementById("userPhone").textContent = user.phone_no;
+                            document.getElementById("userCnic").textContent = user.cnic;
+                            document.getElementById("userGender").textContent = user.gender;
+                            document.getElementById("userRole").textContent = user.role.name;
+
+                            let userStatus = document.getElementById("userStatus");
+                            userStatus.classList.remove("bg-success", "bg-danger");
+                            userStatus.classList.add(user.status ? "bg-success" : "bg-danger");
+
+                            let userModal = new bootstrap.Modal(document.getElementById("userModal"));
+                            userModal.show();
+                        })
+                        .catch(error => {
+                            console.error("Error:", error);
+                        });
                 });
             });
         });
-
     </script>
 
-@endpush
+
+    @endpush

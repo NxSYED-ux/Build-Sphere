@@ -245,19 +245,20 @@
     <!-- Image avatar script -->
     <script>
         function previewImage(event) {
-            var reader = new FileReader();
-            reader.onload = function(){
-                var output = document.getElementById('avatar');
+            const reader = new FileReader();
+            reader.onload = function() {
+                const output = document.getElementById('avatar');
                 output.src = reader.result;
-            }
+            };
             reader.readAsDataURL(event.target.files[0]);
         }
+
     </script>
 
     <!-- Cnic script -->
     <script>
         document.getElementById('cnic').addEventListener('input', function (e) {
-            var x = e.target.value.replace(/\D/g, '').match(/(\d{0,5})(\d{0,7})(\d{0,1})/);
+            const x = e.target.value.replace(/\D/g, '').match(/(\d{0,5})(\d{0,7})(\d{0,1})/);
             e.target.value = !x[2] ? x[1] : x[1] + '-' + x[2] + (x[3] ? '-' + x[3] : '');
         });
     </script>

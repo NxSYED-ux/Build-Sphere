@@ -374,61 +374,81 @@
     </script>
 
     <script>
-        $(document).ready(function() {
-            // Fetch buildings based on selected organization
-            $('#organization_id').change(function() {
-                var organizationId = $(this).val();
+        document.addEventListener("DOMContentLoaded", function () {
+            const organizationSelect = document.getElementById("organization_id");
+            const buildingSelect = document.getElementById("building_id");
+            const levelSelect = document.getElementById("level_id");
+
+            organizationSelect.addEventListener("change", function () {
+                const organizationId = this.value;
 
                 if (organizationId) {
-                    $.ajax({
-                        url: '{{ route('organizations.buildings', ':id') }}'.replace(':id', organizationId),
-                        type: 'GET',
-                        dataType: 'json',
-                        success: function(data) {
-                            var buildingSelect = $('#building_id');
-                            buildingSelect.empty();
-                            buildingSelect.append('<option value="" disabled selected>Select Building</option>');
-
-                            $.each(data.buildings, function(key, value) {
-                                buildingSelect.append('<option value="' + key + '">' + value + '</option>');
-                            });
-
-                            $('#level_id').empty().append('<option value="" disabled selected>Select Level</option>');
-                        },
-                        error: function(xhr) {
-                            console.error('Error fetching buildings:', xhr.responseText);
+                    fetch(`{{ route('organizations.buildings', ':id') }}`.replace(':id', organizationId), {
+                        method: "GET",
+                        headers: {
+                            "X-Requested-With": "XMLHttpRequest",
+                            "Accept": "application/json"
                         }
-                    });
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            // Clear previous options
+                            buildingSelect.innerHTML = `<option value="" disabled selected>Select Building</option>`;
+
+                            // Populate new options
+                            for (const [key, value] of Object.entries(data.buildings)) {
+                                const option = document.createElement("option");
+                                option.value = key;
+                                option.textContent = value;
+                                buildingSelect.appendChild(option);
+                            }
+
+                            // Reset level dropdown
+                            levelSelect.innerHTML = `<option value="" disabled selected>Select Level</option>`;
+                        })
+                        .catch(error => {
+                            console.error("Error fetching buildings:", error);
+                        });
                 } else {
-                    $('#building_id').empty().append('<option value="" disabled selected>Select Building</option>');
-                    $('#level_id').empty().append('<option value="" disabled selected>Select Level</option>');
+                    // Reset both dropdowns if no organization is selected
+                    buildingSelect.innerHTML = `<option value="" disabled selected>Select Building</option>`;
+                    levelSelect.innerHTML = `<option value="" disabled selected>Select Level</option>`;
                 }
             });
 
-            // Fetch levels based on selected building
-            $('#building_id').change(function() {
-                var buildingId = $(this).val();
+
+        // Fetch levels based on selected building
+
+            buildingSelect.addEventListener("change", function () {
+                const buildingId = this.value;
 
                 if (buildingId) {
-                    $.ajax({
-                        url: '{{ route('buildings.levels', ':id') }}'.replace(':id', buildingId),
-                        type: 'GET',
-                        dataType: 'json',
-                        success: function(data) {
-                            var levelSelect = $('#level_id');
-                            levelSelect.empty();
-                            levelSelect.append('<option value="" disabled selected>Select Level</option>');
-
-                            $.each(data.levels, function(key, value) {
-                                levelSelect.append('<option value="' + key + '">' + value + '</option>');
-                            });
-                        },
-                        error: function(xhr) {
-                            console.error('Error fetching levels:', xhr.responseText);
+                    fetch(`{{ route('buildings.levels', ':id') }}`.replace(':id', buildingId), {
+                        method: "GET",
+                        headers: {
+                            "X-Requested-With": "XMLHttpRequest",
+                            "Accept": "application/json"
                         }
-                    });
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            // Clear previous options
+                            levelSelect.innerHTML = `<option value="" disabled selected>Select Level</option>`;
+
+                            // Populate new options
+                            for (const [key, value] of Object.entries(data.levels)) {
+                                const option = document.createElement("option");
+                                option.value = key;
+                                option.textContent = value;
+                                levelSelect.appendChild(option);
+                            }
+                        })
+                        .catch(error => {
+                            console.error("Error fetching levels:", error);
+                        });
                 } else {
-                    $('#level_id').empty().append('<option value="" disabled selected>Select Level</option>');
+                    // Reset level dropdown if no building is selected
+                    levelSelect.innerHTML = `<option value="" disabled selected>Select Level</option>`;
                 }
             });
         });

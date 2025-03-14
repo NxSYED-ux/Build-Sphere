@@ -242,19 +242,19 @@
                             <div class="col-md-6 mb-3">
                                 <label for="name" class="form-label">Role Name</label>
                                 <span class="required__field">*</span><br>
-                                <input type="text" class="form-control" id="name" name="name" maxlength="20" placeholder="Role Name" required>
+                                <input type="text" class="form-control" id="edit_name" name="name" maxlength="20" placeholder="Role Name" required>
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label for="status" class="form-label">Status</label>
                                 <span class="required__field">*</span><br>
-                                <select class="form-select" id="status" name="status" required>
+                                <select class="form-select" id="edit_status" name="status" required>
                                     <option value="1" >Active</option>
                                     <option value="0" >Inactive</option>
                                 </select>
                             </div>
                             <div class="col-md-12 mb-3">
                                 <label for="description" class="form-label">Description</label>
-                                <textarea class="form-control" id="description" name="description" maxlength="250" placeholder="Description"></textarea>
+                                <textarea class="form-control" id="edit_description" name="description" maxlength="250" placeholder="Description"></textarea>
                             </div>
                         </div>
 
@@ -293,107 +293,135 @@
 
     <!-- Data Tables Script -->
     <script>
-        $(document).ready(function () {
-            $('#rolesTable').DataTable({
-                "pageLength": 10,
-                "lengthMenu": [10, 20, 50, 100],
-                "language": {
-                    "paginate": {
-                        "first": "First",
-                        "last": "Last",
-                        "next": "Next",
-                        "previous": "Previous"
+        document.addEventListener("DOMContentLoaded", function () {
+            new DataTable("#rolesTable", {
+                pageLength: 10,
+                lengthMenu: [10, 20, 50, 100],
+                language: {
+                    paginate: {
+                        first: "First",
+                        last: "Last",
+                        next: "Next",
+                        previous: "Previous"
                     },
-                    "searchPlaceholder": "Search users..."
+                    searchPlaceholder: "Search users..."
                 }
             });
         });
     </script>
 
+
     <!-- Roles Scripts -->
     <script>
-        $(document).ready(function () {
-
-            $(document).on('click', '.edit-role-button', function (e) {
-                e.preventDefault();
-                const id = $(this).data('id');
-                $.ajax({
-                    url: `{{ route('roles.edit', ':id') }}`.replace(':id', id),
-                    type: 'GET',
-                    success: function (data) {
-                        if (data.message) {
-                            alert(data.message);
-                        } else if (data.role) {
-                            var role = data.role;
-                            $('#editRoleModal #name').val(role.name);
-                            $('#editRoleModal #description').val(role.description);
-                            $('#editRoleModal #status').val(role.status);
-                            $('#editRoleModal #edit_role_id').val(role.id);
-                            $('#editRoleModal #edit_updated_at').val(role.updated_at);
-
-                            // Clear old permissions
-                            $('#permissionsContainer').empty();
-
-                            if (data.permissions.length > 0) {
-                                data.permissions.forEach(permission => {
-                                    const isChecked = data.activePermissionsId.includes(permission.id) ? 'checked' : '';
-                                    $('#permissionsContainer').append(`
-                                <div class="col-md-4">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" name="permissions[]" value="${permission.id}" id="permission_${permission.id}" ${isChecked}>
-                                        <label class="form-check-label" for="permission_${permission.id}">${permission.name}</label>
-                                    </div>
-                                </div>
-                            `);
-                                });
-                            } else {
-                                $('#permissionsContainer').html('<p class="text-danger">No permissions available.</p>');
-                            }
-
-                            // Set the form action URL
-                            $('#editForm').attr('action', `{{ route('roles.update', ':id') }}`.replace(':id', id));
-                            $('#editForm').append('<input type="hidden" name="_method" value="PUT">');
-
-                            // Show the modal
-                            var editRoleModal = new bootstrap.Modal(document.getElementById('editRoleModal'));
-                            editRoleModal.show();
-                        }else{
-                            console.error('One or more input fields are missing in the DOM.');
-                        }
-                    },
-                    error: function () {
-                        alert('An error occurred while retrieving the data.');
-                    }
-                });
-            });
-
-            $('#editForm').submit(function (e) {
-                if ($('input[name="permissions[]"]:checked').length === 0) {
+        document.addEventListener("DOMContentLoaded", function () {
+            //  Edit Role Model
+            document.addEventListener("click", function (e) {
+                if (e.target.closest(".edit-role-button")) {
                     e.preventDefault();
-                    $('#permissionsError').removeClass('d-none');
+                    const button = e.target.closest(".edit-role-button");
+                    const id = button.getAttribute("data-id");
+
+                    fetch(`{{ route('roles.edit', ':id') }}`.replace(":id", id), {
+                        method: "GET",
+                        headers: {
+                            "X-Requested-With": "XMLHttpRequest"
+                        }
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.message) {
+                                alert(data.message);
+                            } else if (data.role) {
+                                let role = data.role;
+                                document.getElementById("edit_name").value = role.name;
+                                document.getElementById("edit_description").value = role.description;
+                                document.getElementById("edit_status").value = role.status;
+                                document.getElementById("edit_role_id").value = role.id;
+                                document.getElementById("edit_updated_at").value = role.updated_at;
+
+                                // Clear old permissions
+                                const permissionsContainer = document.getElementById("permissionsContainer");
+                                permissionsContainer.innerHTML = "";
+
+                                if (data.permissions.length > 0) {
+                                    data.permissions.forEach(permission => {
+                                        const isChecked = data.activePermissionsId.includes(permission.id) ? "checked" : "";
+                                        permissionsContainer.innerHTML += `
+                                    <div class="col-md-4">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="permissions[]" value="${permission.id}" id="permission_${permission.id}" ${isChecked}>
+                                            <label class="form-check-label" for="permission_${permission.id}">${permission.name}</label>
+                                        </div>
+                                    </div>
+                                `;
+                                    });
+                                } else {
+                                    permissionsContainer.innerHTML = '<p class="text-danger">No permissions available.</p>';
+                                }
+
+                                // Set the form action URL
+                                document.getElementById("editForm").setAttribute("action", `{{ route('roles.update', ':id') }}`.replace(":id", id));
+
+                                // Append hidden _method input for PUT request
+                                if (!document.querySelector("#editForm input[name='_method']")) {
+                                    let hiddenMethodInput = document.createElement("input");
+                                    hiddenMethodInput.type = "hidden";
+                                    hiddenMethodInput.name = "_method";
+                                    hiddenMethodInput.value = "PUT";
+                                    document.getElementById("editForm").appendChild(hiddenMethodInput);
+                                }
+
+                                // Show the modal
+                                let editRoleModal = new bootstrap.Modal(document.getElementById("editRoleModal"));
+                                editRoleModal.show();
+                            } else {
+                                console.error("One or more input fields are missing in the DOM.");
+                            }
+                        })
+                        .catch(error => {
+                            console.error("Error:", error);
+                            alert("An error occurred while retrieving the data.");
+                        });
                 }
             });
 
-        });
-
-        $(document).ready(function() {
-            $('#add_button').on('click', function (e) {
-                e.preventDefault();
-                $('#createRoleModal').modal('show');
-
-                // Fetch permissions only when the modal opens
-                fetchPermissions();
+                // Validate form before submission
+                document.getElementById("editForm").addEventListener("submit", function (e) {
+                if (document.querySelectorAll('input[name="permissions[]"]:checked').length === 0) {
+                    e.preventDefault();
+                    document.getElementById("permissionsError").classList.remove("d-none");
+                }
             });
 
+            //  Add Role Model
+            const addButton = document.getElementById("add_button");
+            const createRoleModal = document.getElementById("createRoleModal");
+            const permissionsContainer = document.getElementById("permissions-container");
+            const permissionsError = document.getElementById("permissions-error");
+
+            if (addButton) {
+                addButton.addEventListener("click", function (e) {
+                    e.preventDefault();
+                    let modalInstance = new bootstrap.Modal(createRoleModal);
+                    modalInstance.show();
+
+                    // Fetch permissions when the modal opens
+                    fetchPermissions();
+                });
+            }
+
             function fetchPermissions() {
-                $.ajax({
-                    url: "{{ route('roles.create') }}", // Ensure this route exists
-                    type: "GET",
-                    dataType: "json",
-                    success: function(response) {
-                        if (response.permissions) {
+                fetch("{{ route('roles.create') }}", {
+                    method: "GET",
+                    headers: {
+                        "X-Requested-With": "XMLHttpRequest"
+                    }
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.permissions) {
                             let permissionsHtml = "";
-                            response.permissions.forEach(permission => {
+                            data.permissions.forEach(permission => {
                                 permissionsHtml += `
                             <div class="col-md-4">
                                 <div class="form-check">
@@ -409,19 +437,17 @@
                         `;
                             });
 
-                            $("#permissions-container").html(permissionsHtml);
+                            permissionsContainer.innerHTML = permissionsHtml;
                         } else {
-                            $("#permissions-container").html('<p class="text-danger">No permissions found.</p>');
+                            permissionsContainer.innerHTML = '<p class="text-danger">No permissions found.</p>';
                         }
-                    },
-                    error: function(xhr) {
-                        console.log(xhr.responseText);
-                        $("#permissions-error").text("Failed to load permissions. Please try again.");
-                    }
-                });
+                    })
+                    .catch(error => {
+                        console.error("Error:", error);
+                        permissionsError.textContent = "Failed to load permissions. Please try again.";
+                    });
             }
         });
-
 
 
     </script>

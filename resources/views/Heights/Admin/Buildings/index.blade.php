@@ -162,68 +162,61 @@
 
     <!-- Data Table script -->
     <script>
-        $(document).ready(function () {
-
-            var table = $('#buildingsTable').DataTable({
+        document.addEventListener("DOMContentLoaded", function () {
+            var table = new DataTable("#buildingsTable", {
                 searching: false,
-                paging: true,
+                paging: false,
                 info: false,
-                dom: 'Bfrtip',
+                dom: "Bfrtip",
                 buttons: [
-                        {
-                            extend: 'csv',
-                            text: 'CSV',
-                            className: 'btn btn-secondary d-none'
-                        },
-                        {
-                            extend: 'excel',
-                            text: 'Excel',
-                            className: 'btn btn-secondary d-none'
-                        },
-                        {
-                            extend: 'pdf',
-                            text: 'PDF',
-                            className: 'btn btn-secondary d-none'
-                        },
-                        {
-                            extend: 'print',
-                            text: 'Print',
-                            className: 'btn btn-secondary d-none'
-                        }
+                    {
+                        extend: "csv",
+                        text: "CSV",
+                        className: "btn btn-secondary d-none"
+                    },
+                    {
+                        extend: "excel",
+                        text: "Excel",
+                        className: "btn btn-secondary d-none"
+                    },
+                    {
+                        extend: "pdf",
+                        text: "PDF",
+                        className: "btn btn-secondary d-none"
+                    },
+                    {
+                        extend: "print",
+                        text: "Print",
+                        className: "btn btn-secondary d-none"
+                    }
                 ]
             });
 
-            // CSV Button Click
-            $('#csvButton').on('click', function () {
-                console.log('CSV Button clicked');
-                table.button('.buttons-csv').trigger();
+            function triggerButton(buttonClass, logMessage) {
+                console.log(logMessage);
+                table.buttons(buttonClass).trigger();
+            }
+
+            document.getElementById("csvButton")?.addEventListener("click", function () {
+                triggerButton(".buttons-csv", "CSV Button clicked");
             });
 
-            // Excel Button Click
-            $('#excelButton').on('click', function () {
-                console.log('Excel Button clicked');
-                table.button('.buttons-excel').trigger();
+            document.getElementById("excelButton")?.addEventListener("click", function () {
+                triggerButton(".buttons-excel", "Excel Button clicked");
             });
 
-            // PDF Button Click
-            $('#pdfButton').on('click', function () {
-                console.log('PDF Button clicked');
-                table.button('.buttons-pdf').trigger();
+            document.getElementById("pdfButton")?.addEventListener("click", function () {
+                triggerButton(".buttons-pdf", "PDF Button clicked");
             });
 
-            // Print Button Click
-            $('#printButton').on('click', function () {
-                console.log('Print Button clicked');
-                table.button('.buttons-print').trigger();
+            document.getElementById("printButton")?.addEventListener("click", function () {
+                triggerButton(".buttons-print", "Print Button clicked");
             });
 
-            // Column Visibility Button Click
-            $('#colvisButton').on('click', function () {
-                console.log('Column Visibility Button clicked');
-                table.button('.buttons-colvis').trigger();
+            document.getElementById("colvisButton")?.addEventListener("click", function () {
+                triggerButton(".buttons-colvis", "Column Visibility Button clicked");
             });
         });
-
     </script>
 
 @endpush

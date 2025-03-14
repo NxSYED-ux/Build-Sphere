@@ -26,9 +26,6 @@
         .border_left_blue{
             border-left: 4px solid #184E83;
         }
-        .border_left_grey{
-            border-left: 4px solid #adadad;
-        }
 
         .border_grey{
             border-left: 1px solid #adadad;
@@ -62,14 +59,15 @@
             font-size: 11px;
             font-weight: bold;
         }
-        .dashboard-card2 .currentMonth{
+        .dashboard-card2 {
             color: #5f6769;
             font-size: 11px;
             font-weight: bold;
         }
         .dashboard-card2 .getPdfButton{
             background-color: #f39c12;
-            border: 0px; color: white;
+            border: 0;
+            color: white;
             font-size: 12px;
             font-weight: bold !important;
             height: 20px;
@@ -101,8 +99,7 @@
 @section('content')
 
     <!--  -->
-    <x-Admin.top-navbar :searchVisible="false"
-    />
+    <x-Admin.top-navbar :searchVisible="false"/>
     <!--  -->
     <x-Admin.side-navbar :openSections="['Dashboard']"/>
 
@@ -578,7 +575,7 @@
 
         fetch("{{ asset('js/data.json') }}")
             .then(function(response) {
-                if (response.status == 200) {
+                if (response.status === 200) {
                     return response.json();
                 }
             })
@@ -661,36 +658,44 @@
     </script>
 
     <script>
-        $(document).ready(function() {
+        document.addEventListener('DOMContentLoaded', function() {
 
             function fetchTripData() {
-                $.ajax({
-                    url: "{{ route('admin_dashboard.data') }}",  // Correct placement of URL
-                    method: 'GET',
-                    success: function(response) {
+                const xhr = new XMLHttpRequest();
+                xhr.open('GET', '{{ route('admin_dashboard.data') }}', true);
+
+                xhr.onload = function() {
+                    if (xhr.status === 200) {
+                        const response = JSON.parse(xhr.responseText);
                         console.log('Response Data:', response);
 
-                        var totalBuildings = $('#totalBuildings');
-                        var totalOrganizations = $('#totalOrganizations');
-                        var totalOwners = $('#totalOwners');
-                        var totalBuildingsForApproval = $('#totalBuildingsForApproval');
+                        let totalBuildings = document.getElementById('totalBuildings');
+                        let totalOrganizations = document.getElementById('totalOrganizations');
+                        let totalOwners = document.getElementById('totalOwners');
+                        let totalBuildingsForApproval = document.getElementById('totalBuildingsForApproval');
 
-                        totalBuildings.text(response.counts.buildings);
-                        totalOrganizations.text(response.counts.organizations);
-                        totalOwners.text(response.counts.owners);
-                        totalBuildingsForApproval.text(response.counts.buildingsForApproval);
-
-                    },
-                    error: function(xhr, status, error) {
-                        console.error('AJAX Error:', xhr.responseText);
+                        totalBuildings.textContent = response.counts.buildings;
+                        totalOrganizations.textContent = response.counts.organizations;
+                        totalOwners.textContent = response.counts.owners;
+                        totalBuildingsForApproval.textContent = response.counts.buildingsForApproval;
+                    } else {
+                        console.error('AJAX Error:', xhr.statusText);
                     }
-                });
+                };
+
+                xhr.onerror = function() {
+                    console.error('AJAX Error:', xhr.statusText);
+                };
+
+                xhr.send();
             }
+
             fetchTripData();
 
-            var intervalId = setInterval(function() {
+            setInterval(function() {
                 fetchTripData();
             }, 3000);
+
         });
     </script>
 

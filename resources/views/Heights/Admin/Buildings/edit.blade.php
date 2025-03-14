@@ -537,15 +537,6 @@
                 showImage();
             }
 
-            function removeSelectedImage() {
-                if (selectedImages.length > 0) {
-                    selectedImages.splice(currentIndex, 1);
-                    currentIndex = Math.min(currentIndex, selectedImages.length - 1);
-                    renderThumbnails();
-                    showImage();
-                }
-            }
-
             function updateImageInput() {
                 const dt = new DataTransfer();
                 selectedImages.forEach(file => {
@@ -555,7 +546,7 @@
             }
 
             document.querySelector('form').addEventListener('submit', function(event) {
-                updateImageInput(); // Ensure the imageInput is updated with the selected images before form submission
+                updateImageInput();
             });
         });
     </script>
@@ -727,51 +718,64 @@
 
     <!-- Update file script -->
     <script>
-        $(document).ready(function () {
-            console.log("Document is ready");
+        document.addEventListener("DOMContentLoaded", function () {
 
-            // Attach the click event to the update file button
-            $(document).on('click', '.update-file-button', function (e) {
-                e.preventDefault();
-                console.log("Update file button clicked");
+            const updateFileButtons = document.getElementsByClassName("update-file-button");
 
-                const id = $(this).data('id');
-                console.log("File ID:", id);
+            Array.from(updateFileButtons).forEach(button => {
+                button.addEventListener("click", function (e) {
+                    e.preventDefault();
+                    console.log("Update file button clicked");
 
-                // Perform an AJAX request to retrieve the document details
-                $.ajax({
-                    url: `{{ route('building_document.edit', ':id') }}`.replace(':id', id),
-                    type: 'GET',
-                    success: function (data) {
-                        console.log("AJAX request successful");
+                    const id = this.getAttribute("data-id");
+                    console.log("File ID:", id);
 
-                        if (data.success) {
-                            console.log("Data retrieved:", data.document);
-
-                            var document = data.document;
-
-                            // Populate the form fields with the retrieved document data
-                            $('#editFileModal #edit_document_type').val(document.document_type);
-                            $('#editFileModal #edit_issue_date').val(document.issue_date  ? new Date(document.issue_date).toISOString().slice(0, 16) : '');
-                            $('#editFileModal #edit_expiry_date').val(document.expiry_date  ? new Date(document.expiry_date).toISOString().slice(0, 16) : '');
-                            $('#editFileModal #edit_file').val(''); // Clear previous file input
-
-                            // Set the form action URL
-                            $('#editFileForm').attr('action', `{{ route('building_document.update', ':id') }}`.replace(':id', id));
-
-                            // Show the modal using jQuery selector
-                            var editFileModal = new bootstrap.Modal($('#editFileModal')[0]);
-                            editFileModal.show();
-                        } else {
-                            console.log('Error: Could not retrieve document data.');
+                    fetch(`{{ route('building_document.edit', ':id') }}`.replace(':id', id), {
+                        method: "GET",
+                        headers: {
+                            "X-Requested-With": "XMLHttpRequest",
+                            "Accept": "application/json"
                         }
-                    },
-                    error: function () {
-                        console.log('An error occurred while retrieving the data.');
-                    }
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            console.log("AJAX request successful");
+
+                            if (data.success) {
+                                console.log("Data retrieved:", data.document);
+
+                                var documentData = data.document;
+
+                                // Populate the form fields with the retrieved document data
+                                document.getElementById("edit_document_type").value = documentData.document_type;
+                                document.getElementById("edit_issue_date").value = documentData.issue_date
+                                    ? new Date(documentData.issue_date).toISOString().slice(0, 16)
+                                    : '';
+                                document.getElementById("edit_expiry_date").value = documentData.expiry_date
+                                    ? new Date(documentData.expiry_date).toISOString().slice(0, 16)
+                                    : '';
+                                document.getElementById("edit_file").value = ''; // Clear previous file input
+
+                                // Set the form action URL
+                                document.getElementById("editFileForm").setAttribute("action",
+                                    `{{ route('building_document.update', ':id') }}`.replace(':id', id)
+                                );
+
+                                // Show the modal using Bootstrap
+                                const editFileModal = new bootstrap.Modal(document.getElementById("editFileModal"));
+                                editFileModal.show();
+                            } else {
+                                console.log('Error: Could not retrieve document data.');
+                            }
+                        })
+                        .catch(() => {
+                            console.log('An error occurred while retrieving the data.');
+                        });
                 });
             });
         });
     </script>
+
+
 
 @endpush

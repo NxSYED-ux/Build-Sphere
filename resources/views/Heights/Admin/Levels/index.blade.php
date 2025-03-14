@@ -228,7 +228,7 @@
                                 <div class="form-group mb-3">
                                     <label for="level_name">Level Name</label>
                                     <span class="required__field">*</span><br>
-                                    <input type="text" name="level_name" id="level_name" class="form-control @error('level_name') is-invalid @enderror" value="{{ old('level_name') }}" maxlength="50" placeholder="Level Name" required>
+                                    <input type="text" name="level_name" id="edit_level_name" class="form-control @error('level_name') is-invalid @enderror" value="{{ old('level_name') }}" maxlength="50" placeholder="Level Name" required>
                                     @error('level_name')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
@@ -242,7 +242,7 @@
                                 <div class="form-group mb-3">
                                     <label for="level_number">Level Number</label>
                                     <span class="required__field">*</span><br>
-                                    <input type="number" name="level_number" id="level_number" class="form-control @error('level_number') is-invalid @enderror" value="{{ old('level_number' ) }}" placeholder="Enter Level/Floor no" required>
+                                    <input type="number" name="level_number" id="edit_level_number" class="form-control @error('level_number') is-invalid @enderror" value="{{ old('level_number' ) }}" placeholder="Enter Level/Floor no" required>
                                     @error('level_number')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
@@ -254,7 +254,7 @@
                             <div class="col-12">
                                 <div class="form-group mb-3">
                                     <label for="description">Description</label>
-                                    <input type="text" name="description" id="description" class="form-control @error('description') is-invalid @enderror" value="{{ old('description') }}" maxlength="50" placeholder="Description">
+                                    <input type="text" name="description" id="edit_description" class="form-control @error('description') is-invalid @enderror" value="{{ old('description') }}" maxlength="50" placeholder="Description">
                                     @error('description')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
@@ -268,7 +268,7 @@
                                 <div class="form-group mb-3">
                                     <label for="building_id">Building</label>
                                     <span class="required__field">*</span><br>
-                                    <select class="form-select" id="building_id" name="building_id" required>
+                                    <select class="form-select" id="edit_building_id" name="building_id" required>
                                         <option value="" disabled {{ old('building_id') === null ? 'selected' : '' }}>Select Building</option>
                                         @foreach($buildings as $building)
                                             <option value="{{ $building->id }}" {{ old('building_id') == $building->id ? 'selected' : '' }}>
@@ -288,7 +288,7 @@
                                 <div class="form-group">
                                     <label for="status">Status</label>
                                     <span class="required__field">*</span><br>
-                                    <select name="status" id="status" class="form-select" required>
+                                    <select name="status" id="edit_status" class="form-select" required>
                                         <option value="Approved" {{ old('status') == 'Approved' ? 'selected' : '' }}>Approved</option>
                                         <option value="Rejected" {{ old('status') == 'Rejected' ? 'selected' : '' }}>Rejected</option>
                                     </select>
@@ -331,66 +331,84 @@
 
     <!-- Data Tables Script -->
     <script>
-        $(document).ready(function () {
-            $('#LevelsTable').DataTable({
-                "pageLength": 10,
-                "lengthMenu": [10, 20, 50, 100],
-                "language": {
-                    "paginate": {
-                        "first": "First",
-                        "last": "Last",
-                        "next": "Next",
-                        "previous": "Previous"
-                    }
+        document.addEventListener("DOMContentLoaded", function () {
+            new DataTable("#LevelsTable", {
+                pageLength: 10,
+                lengthMenu: [10, 20, 50, 100],
+                language: {
+                    paginate: {
+                        first: "First",
+                        last: "Last",
+                        next: "Next",
+                        previous: "Previous"
+                    },
+                    searchPlaceholder: "Search users..."
                 }
             });
         });
     </script>
 
-    <!-- Toogle script -->
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-                return new bootstrap.Tooltip(tooltipTriggerEl);
-            });
-        });
-    </script>
 
     <!-- Value Type Scripts -->
     <script>
-        $(document).ready(function () {
-            $('#add_button').on('click', function (e) {
+        document.addEventListener("DOMContentLoaded", function () {
+            // Show the 'Create Level' modal
+            document.getElementById("add_button").addEventListener("click", function (e) {
                 e.preventDefault();
-                $('#createLevelModal').modal('show');
+                let createModal = new bootstrap.Modal(document.getElementById("createLevelModal"));
+                createModal.show();
             });
 
-            $(document).on('click', '.edit_level_button', function (e) {
-                e.preventDefault();
-                const id = $(this).data('id');
-                $.ajax({
-                    url: `{{ route('levels.edit', ':id') }}`.replace(':id', id),
-                    type: 'GET',
-                    success: function (data) {
-                        if (data.message) {
-                            alert(data.message);
-                        } else {
-                            $('#editLevelModal #level_name').val(data.level_name);
-                            $('#editLevelModal #description').val(data.description);
-                            $('#editLevelModal #level_number').val(data.level_number);
-                            $('#editLevelModal #status').val(data.status);
-                            $('#editLevelModal #building_id').val(data.building_id);
-                            $('#editLevelForm').attr('action', `{{ route('levels.update', ':id') }}`.replace(':id', id));
-                            $('#editLevelForm').append('<input type="hidden" name="_method" value="PUT">'); // Adding the PUT method input
-                            $('#editLevelModal').modal('show');
+            const editButtons = document.querySelectorAll(".edit_level_button");
+
+            editButtons.forEach(button => {
+                button.addEventListener("click", function (e) {
+                    e.preventDefault();
+                    const id = this.getAttribute("data-id"); // 'this' refers to the clicked button
+
+                    fetch(`{{ route('levels.edit', ':id') }}`.replace(':id', id), {
+                        method: "GET",
+                        headers: {
+                            "X-Requested-With": "XMLHttpRequest",
+                            "Accept": "application/json"
                         }
-                    },
-                    error: function () {
-                        alert('An error occurred while retrieving the data.');
-                    }
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.message) {
+                                alert(data.message);
+                            } else {
+                                document.getElementById("edit_level_name").value = data.level_name;
+                                document.getElementById("edit_description").value = data.description;
+                                document.getElementById("edit_level_number").value = data.level_number;
+                                document.getElementById("edit_status").value = data.status;
+                                document.getElementById("edit_building_id").value = data.building_id;
+
+                                // Set form action dynamically
+                                const editForm = document.getElementById("editLevelForm");
+                                editForm.setAttribute("action", `{{ route('levels.update', ':id') }}`.replace(':id', id));
+
+                                // Add hidden input for PUT method if not already present
+                                if (!editForm.querySelector('input[name="_method"]')) {
+                                    const methodInput = document.createElement("input");
+                                    methodInput.type = "hidden";
+                                    methodInput.name = "_method";
+                                    methodInput.value = "PUT";
+                                    editForm.appendChild(methodInput);
+                                }
+
+                                // Show the modal
+                                let editModal = new bootstrap.Modal(document.getElementById("editLevelModal"));
+                                editModal.show();
+                            }
+                        })
+                        .catch(() => {
+                            alert("An error occurred while retrieving the data.");
+                        });
                 });
             });
         });
+
     </script>
 
 @endpush

@@ -322,18 +322,18 @@
                         <div class="mb-3">
                             <label for="type_name" class="form-label">Type Name</label>
                             <span class="required__field">*</span><br>
-                            <input type="text" class="form-control" id="type_name" name="type_name" maxlength="30" placeholder="Type Name" required>
+                            <input type="text" class="form-control" id="edit_type_name" name="type_name" maxlength="30" placeholder="Type Name" required>
                         </div>
 
                         <div class="mb-3">
                             <label for="description" class="form-label">Description</label>
-                            <textarea class="form-control" id="description" name="description" maxlength="250" placeholder="Description"></textarea>
+                            <textarea class="form-control" id="edit_description" name="description" maxlength="250" placeholder="Description"></textarea>
                         </div>
 
                         <div class="mb-3">
                             <label for="parent_type" class="form-label">Parnet Type</label>
-                            <select class="form-select" id="parent_type_id" name="parent_type_id">
-                                <option value="" {{ old('parent_type_id') == '' ? 'selected' : '' }}>Select Parnet Type</option>
+                            <select class="form-select" id="edit_parent_type_id" name="parent_type_id">
+                                <option value="" {{ old('parent_type_id', '') == '' ? 'selected' : '' }}>Select Parnet Type</option>
                                 @foreach($types as $type)
                                     <option value="{{ $type->id }}" {{ old('parnet_type_id') == $type->id ? 'selected' : '' }}>{{ $type->type_name }}</option>
                                 @endforeach
@@ -346,7 +346,7 @@
                         <div class="mb-3">
                             <label for="status" class="form-label">Status</label>
                             <span class="required__field">*</span><br>
-                            <select class="form-select" id="status" name="status" required>
+                            <select class="form-select" id="edit_status" name="status" required>
                                 <option value="1">Active</option>
                                 <option value="0">Inactive</option>
                             </select>
@@ -450,7 +450,7 @@
 
                                 <div class="col-12 mb-3">
                                     <label for="edit_description" class="form-label">Description</label>
-                                    <input class="form-control" id="edit_description" name="description" value="{{ old('description' ) }}" maxlength="250" placeholder="Description">
+                                    <input class="form-control" id="edit_value_description" name="description" value="{{ old('description' ) }}" maxlength="250" placeholder="Description">
                                     @error('description')
                                     <div class="invalid-feedback">
                                         {{ $message }}
@@ -492,9 +492,9 @@
                                 <div class="col-12 mb-3">
                                     <label for="edit_status" class="form-label">Status</label>
                                     <span class="required__field">*</span><br>
-                                    <select class="form-select" id="edit_status" name="status" required>
-                                        <option value="1" {{ old('status') == 1 ? 'selected' : '' }}>Active</option>
-                                        <option value="0" {{ old('status') == 0 ? 'selected' : '' }}>Inactive</option>
+                                    <select class="form-select" id="edit_value_status" name="status" required>
+                                        <option value="1">Active</option>
+                                        <option value="0">Inactive</option>
                                     </select>
                                     @error('status')
                                     <div class="invalid-feedback">
@@ -533,104 +533,107 @@
 
     <!-- DataTables script -->
     <script>
-        $(document).ready(function() {
-            $('#valuesTable').DataTable({
-                "pageLength": 10,
-                "lengthMenu": [10, 20, 50, 100],
-                "language": {
-                    "paginate": {
-                        "first": "First",
-                        "last": "Last",
-                        "next": "Next",
-                        "previous": "Previous"
+        document.addEventListener("DOMContentLoaded", function () {
+            new DataTable("#valuesTable", {
+                pageLength: 10,
+                lengthMenu: [10, 20, 50, 100],
+                language: {
+                    paginate: {
+                        first: "First",
+                        last: "Last",
+                        next: "Next",
+                        previous: "Previous"
                     },
-                    "searchPlaceholder": "Search users..."
+                    searchPlaceholder: "Search users..."
                 }
             });
         });
-        $(document).ready(function() {
-            $('#typesTable').DataTable({
-                "pageLength": 10,
-                "lengthMenu": [10, 20, 50, 100],
-                "language": {
-                    "paginate": {
-                        "first": "First",
-                        "last": "Last",
-                        "next": "Next",
-                        "previous": "Previous"
+        document.addEventListener("DOMContentLoaded", function () {
+            new DataTable("#typesTable", {
+                pageLength: 10,
+                lengthMenu: [10, 20, 50, 100],
+                language: {
+                    paginate: {
+                        first: "First",
+                        last: "Last",
+                        next: "Next",
+                        previous: "Previous"
                     },
-                    "searchPlaceholder": "Search users..."
+                    searchPlaceholder: "Search users..."
                 }
             });
-
         });
     </script>
 
     <!-- Value Type Scripts -->
     <script>
-        $(document).ready(function () {
-            $('#add_dropdwon_type_button').on('click', function (e) {
-                e.preventDefault();
-                $('#createDropdownTypeModal').modal('show');
-            });
+        document.addEventListener("DOMContentLoaded", function () {
+            const dropdownTypeButton = document.getElementById("add_dropdwon_type_button");
+            const dropdownValueButton = document.getElementById("add_dropdwon_value_button");
+            const editTypeButtons = document.getElementsByClassName("edit_dropdwon_type_button");
+            // const editValueButtons = document.getElementsByClassName("edit_dropdwon_value_button");
+            const dropdownTypeModal = new bootstrap.Modal(document.getElementById("createDropdownTypeModal"));
+            const dropdownValueModal = new bootstrap.Modal(document.getElementById("createDropdownValueModal"));
 
-            $('#add_dropdwon_value_button').on('click', function (e) {
-                e.preventDefault();
-                $('#createDropdownValueModal').modal('show');
-            });
+            if (dropdownTypeButton) {
+                dropdownTypeButton.addEventListener("click", function (e) {
+                    e.preventDefault();
+                    dropdownTypeModal.show();
+                });
+            }
 
-            $(document).on('click', '.edit_dropdwon_type_button', function (e) {
-                e.preventDefault();
-                const id = $(this).data('id');
-                $.ajax({
-                    url: `{{ route('types.edit', ':id') }}`.replace(':id', id),
-                    type: 'GET',
-                    success: function (data) {
-                        if (data.message) {
-                            alert(data.message);
-                        } else {
-                            $('#editDropdownTypeModal #type_name').val(data.type_name);
-                            $('#editDropdownTypeModal #description').val(data.description);
-                            $('#editDropdownTypeModal #parent_type_id').val(data.parent_type_id);
-                            $('#editDropdownTypeModal #status').val(data.status);
-                            $('#editForm').attr('action', `{{ route('types.update', ':id') }}`.replace(':id', id));
-                            $('#editForm').append('<input type="hidden" name="_method" value="PUT">'); // Adding the PUT method input
-                            $('#editDropdownTypeModal').modal('show');
+            if (dropdownValueButton) {
+                dropdownValueButton.addEventListener("click", function (e) {
+                    e.preventDefault();
+                    dropdownValueModal.show();
+                });
+            }
+
+            // Edit Dropdown Type
+            Array.from(editTypeButtons).forEach(button => {
+                button.addEventListener("click", function (e) {
+                    e.preventDefault();
+                    const id = this.getAttribute("data-id");
+
+                    fetch(`{{ route('types.edit', ':id') }}`.replace(':id', id), {
+                        method: "GET",
+                        headers: {
+                            "X-Requested-With": "XMLHttpRequest",
+                            "Accept": "application/json"
                         }
-                    },
-                    error: function () {
-                        alert('An error occurred while retrieving the data.');
-                    }
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.message) {
+                                alert(data.message);
+                            } else {
+                                document.getElementById("edit_type_name").value = data.type_name;
+                                document.getElementById("edit_description").value = data.description;
+                                document.getElementById("edit_parent_type_id").value = data.parent_type_id ?? "";
+                                document.getElementById("edit_status").value = data.status;
+
+                                const editForm = document.getElementById("editForm");
+                                editForm.setAttribute("action", `{{ route('types.update', ':id') }}`.replace(':id', id));
+
+                                // Add PUT method input if not already present
+                                if (!editForm.querySelector('input[name="_method"]')) {
+                                    const methodInput = document.createElement("input");
+                                    methodInput.type = "hidden";
+                                    methodInput.name = "_method";
+                                    methodInput.value = "PUT";
+                                    editForm.appendChild(methodInput);
+                                }
+
+                                const editDropdownTypeModal = new bootstrap.Modal(document.getElementById("editDropdownTypeModal"));
+                                editDropdownTypeModal.show();
+                            }
+                        })
+                        .catch(() => {
+                            alert("An error occurred while retrieving the data.");
+                        });
                 });
             });
 
-            $(document).on('click', '.edit_dropdwon_value_button', function (e) {
-                e.preventDefault();
-                const id = $(this).data('id');
-                $.ajax({
-                    url: `{{ route('values.edit', ':id') }}`.replace(':id', id),
-                    type: 'GET',
-                    success: function (data) {
-                        if (data.message) {
-                            alert(data.message);
-                        } else {
-                            $('#editDropdownValueModal #edit_value_name').val(data.value_name);
-                            $('#editDropdownValueModal #edit_description').val(data.description);
-                            $('#editDropdownValueModal #edit_dropdown_type_id').val(data.dropdown_type_id).change();
-                            $('#editDropdownValueModal #edit_parent_value_id').val(data.parent_value_id).change();
-                            $('#editDropdownValueModal #edit_status').val(data.status);
-                            // updateEditParentValues(data.dropdown_type_id, data.parent_value_id || '');
-                            $('#editValueForm').attr('action', `{{ route('values.update', ':id') }}`.replace(':id', id));
-                            $('#editValueForm').append('<input type="hidden" name="_method" value="PUT">'); // Adding the PUT method input
-
-                            $('#editDropdownValueModal').modal('show');
-                        }
-                    },
-                    error: function () {
-                        alert('An error occurred while retrieving the data.');
-                    }
-                });
-            });
         });
     </script>
 
@@ -697,10 +700,11 @@
         });
     </script>
 
+
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const types = @json($types); // Pass types and their values to JavaScript
-            const oldEditParentValueId = '{{ old("edit_parent_value_id") }}'; // Use the old value or database value
+            let oldEditParentValueId = '{{ old("edit_parent_value_id") }}'; // Previous value from the session
 
             const editDropdownTypeId = document.getElementById('edit_dropdown_type_id');
             const editParentValueId = document.getElementById('edit_parent_value_id');
@@ -712,30 +716,29 @@
                 return type ? type.values : [];
             }
 
-            // Function to update parent values and required field state
+            // Function to update parent values based on the selected dropdown type
             function updateEditParentValues(selectedTypeId = null, selectedParentValueId = null) {
-                selectedTypeId = selectedTypeId || editDropdownTypeId.value; // Use parameter or fallback to dropdown value
-                selectedParentValueId = selectedParentValueId || oldEditParentValueId; // Use parameter or fallback to old value
+                selectedTypeId = selectedTypeId || editDropdownTypeId.value; // Use function argument or fallback to current dropdown value
+                selectedParentValueId = selectedParentValueId || oldEditParentValueId; // Use function argument or fallback to old session value
 
                 const selectedTypeOption = editDropdownTypeId.options[editDropdownTypeId.selectedIndex];
                 const parentTypeId = selectedTypeOption ? selectedTypeOption.getAttribute('data-parent-type-id') : null;
 
-                // Clear existing options
+                // Clear previous options
                 editParentValueId.innerHTML = '<option value="">Select Parent Value</option>';
-                editParentValueId.required = false; // Default to not required
-                editParentValueLabel.querySelector('.required__field')?.remove(); // Remove the required indicator
+                editParentValueId.required = false; // Reset required field
+                editParentValueLabel.querySelector('.required__field')?.remove(); // Remove previous required indicator
 
                 if (parentTypeId) {
-                    const parentValues = getEditValuesForType(parentTypeId); // Get values for parent type ID
+                    const parentValues = getEditValuesForType(parentTypeId);
 
                     if (parentValues.length > 0) {
-                        // Add options for parent values
                         parentValues.forEach(value => {
                             const option = document.createElement('option');
                             option.value = value.id;
                             option.textContent = value.value_name;
 
-                            // Select the passed or old value
+                            // Select the correct parent value
                             if (value.id == selectedParentValueId) {
                                 option.selected = true;
                             }
@@ -743,7 +746,7 @@
                             editParentValueId.appendChild(option);
                         });
 
-                        // Mark the field as required
+                        // Mark as required if there are available parent values
                         editParentValueId.required = true;
                         const requiredIndicator = document.createElement('span');
                         requiredIndicator.classList.add('required__field');
@@ -758,9 +761,129 @@
 
             // Initialize parent values on page load
             updateEditParentValues();
+
+
+            document.addEventListener("click", function (e) {
+                if (e.target.closest(".edit_dropdwon_value_button")) {
+                    e.preventDefault();
+                    const button = e.target.closest(".edit_dropdwon_value_button");
+                    const id = button.getAttribute("data-id");
+
+                    fetch(`{{ route('values.edit', ':id') }}`.replace(':id', id), {
+                        method: "GET",
+                        headers: {
+                            "X-Requested-With": "XMLHttpRequest",
+                            "Accept": "application/json"
+                        }
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.message) {
+                                alert(data.message);
+                            } else {
+                                // Populate form fields
+                                document.getElementById("edit_value_name").value = data.value_name;
+                                document.getElementById("edit_value_description").value = data.description;
+                                document.getElementById("edit_dropdown_type_id").value = data.dropdown_type_id;
+                                oldEditParentValueId = data.parent_value_id || ""; // Store fetched parent value
+                                document.getElementById("edit_value_status").value = data.status;
+
+                                // Update action attribute for the form
+                                const editValueForm = document.getElementById("editValueForm");
+                                editValueForm.setAttribute("action", `{{ route('values.update', ':id') }}`.replace(':id', id));
+
+                                // Add PUT method input if not already present
+                                if (!editValueForm.querySelector('input[name="_method"]')) {
+                                    const methodInput = document.createElement("input");
+                                    methodInput.type = "hidden";
+                                    methodInput.name = "_method";
+                                    methodInput.value = "PUT";
+                                    editValueForm.appendChild(methodInput);
+                                }
+
+                                // Update parent values dropdown after setting type
+                                updateEditParentValues(data.dropdown_type_id, data.parent_value_id);
+
+                                // Show modal
+                                const editDropdownValueModal = new bootstrap.Modal(document.getElementById("editDropdownValueModal"));
+                                editDropdownValueModal.show();
+                            }
+                        })
+                        .catch(() => {
+                            alert("An error occurred while retrieving the data.");
+                        });
+                }
+            });
+
+
         });
 
     </script>
+
+{{--    <script>--}}
+{{--        document.addEventListener('DOMContentLoaded', function () {--}}
+{{--            const types = @json($types); // Pass types and their values to JavaScript--}}
+{{--            const oldEditParentValueId = '{{ old("edit_parent_value_id") }}'; // Use the old value or database value--}}
+
+{{--            const editDropdownTypeId = document.getElementById('edit_dropdown_type_id');--}}
+{{--            const editParentValueId = document.getElementById('edit_parent_value_id');--}}
+{{--            const editParentValueLabel = document.querySelector('label[for="edit_parent_value_id"]');--}}
+
+{{--            // Function to get values for a specific type ID--}}
+{{--            function getEditValuesForType(typeId) {--}}
+{{--                const type = types.find(t => t.id == typeId);--}}
+{{--                return type ? type.values : [];--}}
+{{--            }--}}
+
+{{--            // Function to update parent values and required field state--}}
+{{--            function updateEditParentValues(selectedTypeId = null, selectedParentValueId = null) {--}}
+{{--                selectedTypeId = selectedTypeId || editDropdownTypeId.value; // Use parameter or fallback to dropdown value--}}
+{{--                selectedParentValueId = selectedParentValueId || oldEditParentValueId; // Use parameter or fallback to old value--}}
+
+{{--                const selectedTypeOption = editDropdownTypeId.options[editDropdownTypeId.selectedIndex];--}}
+{{--                const parentTypeId = selectedTypeOption ? selectedTypeOption.getAttribute('data-parent-type-id') : null;--}}
+
+{{--                // Clear existing options--}}
+{{--                editParentValueId.innerHTML = '<option value="">Select Parent Value</option>';--}}
+{{--                editParentValueId.required = false; // Default to not required--}}
+{{--                editParentValueLabel.querySelector('.required__field')?.remove(); // Remove the required indicator--}}
+
+{{--                if (parentTypeId) {--}}
+{{--                    const parentValues = getEditValuesForType(parentTypeId); // Get values for parent type ID--}}
+
+{{--                    if (parentValues.length > 0) {--}}
+{{--                        // Add options for parent values--}}
+{{--                        parentValues.forEach(value => {--}}
+{{--                            const option = document.createElement('option');--}}
+{{--                            option.value = value.id;--}}
+{{--                            option.textContent = value.value_name;--}}
+
+{{--                            // Select the passed or old value--}}
+{{--                            if (value.id == selectedParentValueId) {--}}
+{{--                                option.selected = true;--}}
+{{--                            }--}}
+
+{{--                            editParentValueId.appendChild(option);--}}
+{{--                        });--}}
+
+{{--                        // Mark the field as required--}}
+{{--                        editParentValueId.required = true;--}}
+{{--                        const requiredIndicator = document.createElement('span');--}}
+{{--                        requiredIndicator.classList.add('required__field');--}}
+{{--                        requiredIndicator.textContent = '*';--}}
+{{--                        editParentValueLabel.appendChild(requiredIndicator);--}}
+{{--                    }--}}
+{{--                }--}}
+{{--            }--}}
+
+{{--            // Update parent values when the dropdown type changes--}}
+{{--            editDropdownTypeId.addEventListener('change', () => updateEditParentValues());--}}
+
+{{--            // Initialize parent values on page load--}}
+{{--            updateEditParentValues();--}}
+{{--        });--}}
+
+{{--    </script>--}}
 
     <!-- Control logic for link type and value ids -->
 

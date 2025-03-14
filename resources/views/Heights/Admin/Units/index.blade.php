@@ -179,127 +179,61 @@
 
     <!-- Data Table script -->
     <script>
-        $(document).ready(function () {
-
-            var table = $('#unitsTable').DataTable({
+        document.addEventListener("DOMContentLoaded", function () {
+            var table = new DataTable("#unitsTable", {
                 searching: false,
                 paging: false,
                 info: false,
-                dom: 'Bfrtip',
+                dom: "Bfrtip",
                 buttons: [
-                        {
-                            extend: 'csv',
-                            text: 'CSV',
-                            className: 'btn btn-secondary d-none'
-                        },
-                        {
-                            extend: 'excel',
-                            text: 'Excel',
-                            className: 'btn btn-secondary d-none'
-                        },
-                        {
-                            extend: 'pdf',
-                            text: 'PDF',
-                            className: 'btn btn-secondary d-none'
-                        },
-                        {
-                            extend: 'print',
-                            text: 'Print',
-                            className: 'btn btn-secondary d-none'
-                        }
+                    {
+                        extend: "csv",
+                        text: "CSV",
+                        className: "btn btn-secondary d-none"
+                    },
+                    {
+                        extend: "excel",
+                        text: "Excel",
+                        className: "btn btn-secondary d-none"
+                    },
+                    {
+                        extend: "pdf",
+                        text: "PDF",
+                        className: "btn btn-secondary d-none"
+                    },
+                    {
+                        extend: "print",
+                        text: "Print",
+                        className: "btn btn-secondary d-none"
+                    }
                 ]
             });
 
-            // CSV Button Click
-            $('#csvButton').on('click', function () {
-                console.log('CSV Button clicked');
-                table.button('.buttons-csv').trigger();
+            function triggerButton(buttonClass, logMessage) {
+                console.log(logMessage);
+                table.buttons(buttonClass).trigger();
+            }
+
+            document.getElementById("csvButton")?.addEventListener("click", function () {
+                triggerButton(".buttons-csv", "CSV Button clicked");
             });
 
-            // Excel Button Click
-            $('#excelButton').on('click', function () {
-                console.log('Excel Button clicked');
-                table.button('.buttons-excel').trigger();
+            document.getElementById("excelButton")?.addEventListener("click", function () {
+                triggerButton(".buttons-excel", "Excel Button clicked");
             });
 
-            // PDF Button Click
-            $('#pdfButton').on('click', function () {
-                console.log('PDF Button clicked');
-                table.button('.buttons-pdf').trigger();
+            document.getElementById("pdfButton")?.addEventListener("click", function () {
+                triggerButton(".buttons-pdf", "PDF Button clicked");
             });
 
-            // Print Button Click
-            $('#printButton').on('click', function () {
-                console.log('Print Button clicked');
-                table.button('.buttons-print').trigger();
+            document.getElementById("printButton")?.addEventListener("click", function () {
+                triggerButton(".buttons-print", "Print Button clicked");
             });
 
-            // Column Visibility Button Click
-            $('#colvisButton').on('click', function () {
-                console.log('Column Visibility Button clicked');
-                table.button('.buttons-colvis').trigger();
+            document.getElementById("colvisButton")?.addEventListener("click", function () {
+                triggerButton(".buttons-colvis", "Column Visibility Button clicked");
             });
         });
-
     </script>
 
-<!-- <script>
-  $(document).ready(function () {
-    var table = $('#unitsTable').DataTable({
-        // Disable search and pagination
-        searching: false,
-        paging: false,
-        info: false,
-
-        // Export buttons configuration (excluding Copy, CSV, Excel, PDF, and Print)
-        dom: 'Bfrtip',
-        buttons: [
-            'colvis', // Column visibility button remains in the DataTable toolbar
-            // Add other buttons here like 'copy', 'csv', 'excel', etc.
-        ],
-
-        // Ensure buttons are displayed in the container
-        initComplete: function () {
-            // Make sure the buttons are initialized before interacting with them
-            var tableButtons = table.buttons();
-            if (tableButtons.length > 0) {
-                tableButtons.container().appendTo('#datatable-buttons');
-            } else {
-                console.log('DataTables buttons were not initialized.');
-            }
-        }
-    });
-
-    // Initialize the Bootstrap dropdown behavior
-    var dropdown = new bootstrap.Dropdown(document.getElementById('menu-icon'));
-
-    // Toggle the dropdown list visibility when clicking the menu icon
-    $('#menu-icon').on('click', function () {
-        $('#button-list').toggle(); // Show/hide the dropdown menu
-    });
-
-    // Trigger DataTable button actions when clicking on the menu items
-    $('#csvButton').on('click', function () {
-        console.log('CSV Button clicked');
-        table.button('.buttons-csv').trigger();
-    });
-    $('#excelButton').on('click', function () {
-        console.log('Excel Button clicked');
-        table.button('.buttons-excel').trigger();
-    });
-    $('#pdfButton').on('click', function () {
-        console.log('PDF Button clicked');
-        table.button('.buttons-pdf').trigger();
-    });
-    $('#printButton').on('click', function () {
-        console.log('Print Button clicked');
-        table.button('.buttons-print').trigger();
-    });
-    $('#colvisButton').on('click', function () {
-        console.log('ColVis Button clicked');
-        table.button('.buttons-colvis').trigger();
-    });
-});
-
-</script> -->
 @endpush

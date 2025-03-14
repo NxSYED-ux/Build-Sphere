@@ -568,20 +568,26 @@
                 return;
             }
 
-            $.ajax({
-                url: `{{ route('units.details', ':id') }}`.replace(':id', numericUnitId),
-                type: 'GET',
-                success: function(data) {
+            // Unit Details Fetch
+            fetch(`{{ route('units.details', ':id') }}`.replace(':id', numericUnitId), {
+                method: "GET",
+                headers: {
+                    "X-Requested-With": "XMLHttpRequest",
+                    "Accept": "application/json"
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
                     if (data.error) {
                         console.error("Error:", data.error);
                         return;
                     }
                     populateUnitModal(data);
-                },
-                error: function() {
+                })
+                .catch(() => {
                     console.error("An error occurred while retrieving the data.");
-                }
-            });
+                });
+
         }
 
         function populateUnitModal(unitData) {
@@ -636,18 +642,19 @@
 
 
     <script>
-        $(document).ready(function () {
-            $('#reject-btn').on('click', function (e) {
+        document.addEventListener("DOMContentLoaded", function () {
+            document.getElementById("reject-btn").addEventListener("click", function (e) {
                 e.preventDefault();
-                $('#RejectBuildingModal').modal('show');
+                let rejectModal = new bootstrap.Modal(document.getElementById("RejectBuildingModal"));
+                rejectModal.show();
+            });
+
+            document.getElementById("approved-btn").addEventListener("click", function (e) {
+                e.preventDefault();
+                let approvedModal = new bootstrap.Modal(document.getElementById("ApprovedBuildingModal"));
+                approvedModal.show();
             });
         });
 
-        $(document).ready(function () {
-            $('#approved-btn').on('click', function (e) {
-                e.preventDefault();
-                $('#ApprovedBuildingModal').modal('show');
-            });
-        });
     </script>
 @endpush

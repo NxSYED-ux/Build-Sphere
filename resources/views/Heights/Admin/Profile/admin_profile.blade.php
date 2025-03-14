@@ -391,13 +391,20 @@
 @push('scripts')
 
     <script>
-        $(document).ready(function () {
-            $('.change_password_button').on('click', function (e) {
-                e.preventDefault();
-                $('#changePasswordModal').modal('show');
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll('.change_password_button').forEach(function (button) {
+                button.addEventListener('click', function (event) {
+                    event.preventDefault();
+                    let modal = document.getElementById('changePasswordModal');
+                    if (modal) {
+                        let modalInstance = new bootstrap.Modal(modal);
+                        modalInstance.show();
+                    }
+                });
             });
         });
     </script>
+
 
     <!-- Remove Profile -->
     <script>
@@ -437,61 +444,53 @@
 
     <!-- Update Profile -->
     <script>
-        $(document).ready(function () {
-            $('#image-upload').on('change', function (event) {
-                let file = event.target.files[0];
+        document.addEventListener("DOMContentLoaded", function () {
+            const imageUpload = document.getElementById("image-upload");
 
-                if (file) {
-                    let formData = new FormData();
-                    formData.append('picture', file);
-                    formData.append('_method', 'PUT'); // Required for Laravel PUT request
+            if (imageUpload) {
+                imageUpload.addEventListener("change", function (event) {
+                    let file = event.target.files[0];
 
-                    $.ajax({
-                        url: "{{ route('admin.profile.picture.update') }}",
-                        type: "POST",
-                        data: formData,
-                        contentType: false,
-                        processData: false,
-                        headers: {
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                            'Accept': 'application/json'
-                        },
-                        beforeSend: function () {
-                            $('#image-upload').prop('disabled', true);
-                        },
-                        success: function (response) {
-                            if (response.success) {
-                                let reader = new FileReader();
-                                reader.onload = function (e) {
-                                    $('#profile-image').attr('src', e.target.result);
-                                    // document.getElementById("remove_picture_button").style.display = "block";
-                                    document.querySelectorAll(".remove_picture_button").forEach(button => {
-                                        button.style.display = "block";
-                                    });
+                    if (file) {
+                        let formData = new FormData();
+                        formData.append("picture", file);
+                        formData.append("_method", "PUT"); // Required for Laravel PUT request
 
-                                };
-                                reader.readAsDataURL(file);
-                            } else if (response.error) {
-                                alert(response.error);
+                        fetch("{{ route('admin.profile.picture.update') }}", {
+                            method: "POST",
+                            body: formData,
+                            headers: {
+                                "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                                "Accept": "application/json"
                             }
-                        },
-                        error: function (xhr) {
-                            let errorMessage = "Error updating profile picture. Please try again.";
+                        })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    let reader = new FileReader();
+                                    reader.onload = function (e) {
+                                        document.getElementById("profile-image").src = e.target.result;
+                                        document.querySelectorAll(".remove_picture_button").forEach(button => {
+                                            button.style.display = "block";
+                                        });
+                                    };
+                                    reader.readAsDataURL(file);
+                                } else if (data.error) {
+                                    alert(data.error);
+                                }
+                            })
+                            .catch(error => {
+                                console.error("Error:", error);
+                                alert("Error updating profile picture. Please try again.");
+                            })
+                            .finally(() => {
+                                imageUpload.disabled = false; // Re-enable input after upload
+                            });
 
-                            if (xhr.responseJSON && xhr.responseJSON.error) {
-                                errorMessage = xhr.responseJSON.error;
-                            } else if (xhr.responseText) {
-                                errorMessage = xhr.responseText;
-                            }
-
-                            alert(errorMessage);
-                        },
-                        complete: function () {
-                            $('#image-upload').prop('disabled', false); // Re-enable input after upload
-                        }
-                    });
-                }
-            });
+                        imageUpload.disabled = true; // Disable input during upload
+                    }
+                });
+            }
         });
     </script>
 

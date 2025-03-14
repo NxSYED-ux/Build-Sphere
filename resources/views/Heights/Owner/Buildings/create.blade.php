@@ -392,95 +392,6 @@
         });
     </script>
 
-    <!-- Organizations images show and remove script -->
-    <!-- <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            let selectedImages = [];
-            let currentIndex = 0;
-
-            const imageInput = document.getElementById('imageInput');
-
-            imageInput.addEventListener('change', handleImageSelection);
-
-            function handleImageSelection(event) {
-                const files = Array.from(event.target.files);
-                selectedImages = [...selectedImages, ...files]; // Append new files to existing ones
-                currentIndex = selectedImages.length - files.length; // Set the index to the start of the new images
-                renderThumbnails();
-                showImage();
-                updateImageInput();
-            }
-
-            function renderThumbnails() {
-                const container = document.getElementById('imageThumbnails');
-                container.innerHTML = '';
-
-                selectedImages.forEach((file, index) => {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        const div = document.createElement('div');
-                        div.classList.add('image-thumbnail');
-
-                        const img = document.createElement('img');
-                        img.src = e.target.result;
-                        img.classList.add('thumbnail-image');
-                        img.style.width = '100px';
-                        img.style.height = '100px';
-                        img.style.objectFit = 'cover';
-
-                        const removeButton = document.createElement('button');
-                        removeButton.innerHTML = '&#10006;';
-                        removeButton.classList.add('thumbnail-remove');
-                        removeButton.onclick = function() {
-                            removeImage(index);
-                        };
-
-                        div.appendChild(img);
-                        div.appendChild(removeButton);
-                        container.appendChild(div);
-                    };
-                    reader.readAsDataURL(file);
-                });
-            }
-
-            function showImage() {
-                const img = document.getElementById('currentImage');
-                if (selectedImages.length > 0) {
-                    const file = selectedImages[currentIndex];
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        img.src = e.target.result;
-                        img.classList.add('active');
-                        document.getElementById('imageCounter').textContent = `${currentIndex + 1} / ${selectedImages.length}`;
-                    };
-                    reader.readAsDataURL(file);
-                } else {
-                    img.classList.remove('active');
-                }
-            }
-
-            function removeImage(index) {
-                selectedImages.splice(index, 1);
-                currentIndex = Math.min(currentIndex, selectedImages.length - 1);
-                renderThumbnails();
-                showImage();
-                updateImageInput();
-            }
-
-            function updateImageInput() {
-                const dt = new DataTransfer();
-                selectedImages.forEach(file => {
-                    dt.items.add(file);
-                });
-                imageInput.files = dt.files;
-            }
-
-            document.querySelector('form').addEventListener('submit', function(event) {
-                updateImageInput();
-            });
-        });
-    </script> -->
-
     <!-- Image script -->
     <script>
         const imageInput = document.getElementById('image-input');
@@ -555,11 +466,6 @@
 
         // Ensure DocumentsTypes is available globally or set it from Blade template
         const DocumentsTypes = @json($documentTypes);
-        // const DocumentsTypes = {
-        //     1: "Building Permit",
-        //     2: "Occupancy Certificate",
-        //     3: "Completion Certificate"
-        // };
 
         // Create options for the document type select element
         const createDocumentOptions = () => {
