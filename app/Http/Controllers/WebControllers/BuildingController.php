@@ -24,6 +24,7 @@ class BuildingController extends Controller
             $search = $request->input('search');
 
             $buildings = Building::with(['pictures', 'address', 'organization'])
+                ->where('status', '!=','Under Processing')
                 ->where('name', 'like', '%' . $search . '%')
                 ->orWhere('remarks', 'like', '%' . $search . '%')
                 ->orWhereHas('organization', function ($query) use ($search) {
