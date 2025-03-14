@@ -62,7 +62,7 @@
                                                         <span class="required__field">*</span><br>
                                                         <input type="text" name="name" id="name" class="form-control @error('name') is-invalid @enderror" value="{{ old('name', $user->name) }}" maxlength="50" placeholder="User Name" required>
                                                         @error('name')
-                                                            <span class="invalid-feedback" role="alert">
+                                                            <span class="invalid-feedback text-danger" role="alert">
                                                                 <strong>{{ $message }}</strong>
                                                             </span>
                                                         @enderror
@@ -74,8 +74,8 @@
                                                         <span class="required__field">*</span><br>
                                                         <input type="email" name="email" id="email" class="form-control @error('email') is-invalid @enderror" value="{{ old('email', $user->email) }}" maxlength="50" placeholder="Email" required>
                                                         @error('email')
-                                                            <span class="invalid-feedback" role="alert">
-                                                                <strong>{{ $message }}</strong>
+                                                            <span class="invalid-feedback text-danger" role="alert">
+                                                                <strong class="text-danger">{{ $message }}</strong>
                                                             </span>
                                                         @enderror
                                                     </div>

@@ -211,7 +211,7 @@
                                                     <input type="text" name="email" id="email"
                                                            class="form-control custom-input pe-5 @error('email') is-invalid @enderror"
                                                            value="{{ old('email', $user->email) }}" maxlength="50"
-                                                           placeholder="Email" required>
+                                                           placeholder="Email" required readonly>
                                                     <i class='bx bxs-envelope input-icon position-absolute top-50 end-0 translate-middle-y me-3'></i>
                                                 </div>
                                                 @error('email')

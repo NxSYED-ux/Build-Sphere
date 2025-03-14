@@ -58,10 +58,19 @@
         }
 
         #userModal h5{
-            font-size: 16px;
-            font-weight: bold;
+            font-size: 15px;
+            font-weight: 600;
             color: var(--modal-text);
             font-family: 'Montserrat', sans-serif;
+        }
+
+        #userEmail {
+            display: inline-block;
+            width: 170px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            vertical-align: middle;
         }
 
         #userModal span{
@@ -71,26 +80,26 @@
         }
 
         .user-modal-header {
-            background: var(--modal-bg);
+            background: var(--modal-bg) !important;
             /*background: var(--modal-header-bg);*/
-            color: var(--modal-text);
-            font-family: 'Montserrat', sans-serif;
+            color: var(--modal-text) !important;
+            font-family: 'Montserrat', sans-serif !important;
         }
 
         #userModalLabel{
             font-size: 18px !important;
-            font-weight: bold;
+            font-weight: bold !important;
         }
 
         .user-modal-body {
-            background: var(--modal-bg);
-            color: var(--modal-text);
-            font-family: 'Montserrat', sans-serif;
+            background: var(--modal-bg) !important;
+            color: var(--modal-text) !important;
+            font-family: 'Montserrat', sans-serif !important;
         }
 
         .user-modal-footer {
-            background: var(--modal-bg);
-            border-top: 1px solid var(--modal-border);
+            background: var(--modal-bg) !important;
+            border-top: 1px solid var(--modal-border) !important;
         }
 
         .user-modal-close-btn {
@@ -115,7 +124,11 @@
         }
 
 
-
+        @media (max-width: 576px) { /* Small screens */
+            #userEmail {
+                width: 155px;
+            }
+        }
 
 
     </style>
@@ -243,19 +256,19 @@
                             <img id="userPicture" src="" alt="User Picture" class="img-fluid rounded-circle shadow-sm border user-img-border"
                                  style="width: 140px; height: 140px; object-fit: cover;">
                             <div class="ms-3" style="padding-left: 10px !important;">
-                                <h5 id="userName" class="fw-semibold mb-1"></h5>
+                                <h5 id="userName" class="mb-1"></h5>
                                 <p class="mb-0"><span id="userRole"></span> <span id="userStatus" class="rounded-circle d-inline-block mt-2 mx-2" style="width: 10px; height: 10px;"></span></p>
 
                             </div>
                         </div>
                     </div>
 
+
                     <div class="container">
                         <div class="row px-3">
                             <div class="col-7 mb-2">
                                 <h5>Email</h5>
                                 <span id="userEmail"></span>
-{{--                                <p><strong>Email</strong> <br> <span id="userEmail"></span></p>--}}
                             </div>
                             <div class="col-5 mb-2">
                                 <h5>Gender</h5>

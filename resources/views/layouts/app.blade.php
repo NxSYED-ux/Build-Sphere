@@ -103,6 +103,48 @@
         }
 
 
+        label{
+            font-size: 14px;
+            /*font-weight: bold;*/
+            color: var(--label-color);
+        }
+
+        input:not(.form-check-input):not(.is-invalid),
+        select:not(.is-invalid),
+        textarea:not(.is-invalid) {
+            background-color: var(--input-bg-color) !important;
+            color: var(--input-text-color) !important;
+            border: 1px solid var(--input-border-color) !important;
+        }
+
+        .is-invalid {
+            border-color: #dc3545 !important;
+            color: var(--input-text-color) !important;
+            background-color: var(--input-bg-color) !important;
+        }
+
+        .form i{
+            color: var(--input-icon-color) !important;
+        }
+
+        input[type="date"]::-webkit-calendar-picker-indicator {
+            filter: invert(var(--invert, 0));
+        }
+
+        input:focus, select:focus, textarea:focus {
+            border: 1px solid #ccc !important;
+            box-shadow: none !important;
+        }
+
+        input::placeholder, textarea::placeholder {
+            color: var(--label-color) !important;
+        }
+
+        input:focus::placeholder, textarea:focus::placeholder {
+            color: lightgray;
+        }
+
+
 
     </style>
     @stack('styles')
