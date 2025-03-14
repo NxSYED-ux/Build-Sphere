@@ -347,10 +347,11 @@ class BuildingController extends Controller
         return $this->update($request, $building, 'owner', $organization_id);
     }
 
-    private function update(Request $request, Building $building, String $portal, $organization_id)
+    private function update(Request $request, String $portal, $organization_id)
     {
         $request->validate([
-            'name' => 'required|string|max:255|unique:buildings,name,'. $building->id . 'id',
+            'id' => 'required|exists:buildings,id',
+            'name' => 'required|string|max:255|unique:buildings,name,'. $request->id . 'id',
             'building_type' => 'required|string|max:50',
             'area' => 'nullable|numeric',
             'status' => 'required|string',
@@ -361,6 +362,7 @@ class BuildingController extends Controller
             'city' => 'nullable|string|max:50',
             'postal_code' => 'nullable|string|max:50',
             'building_pictures.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'updated_at' => 'required',
 
             'documents.*.type' => 'nullable|string|distinct',
             'documents.*.issue_date' => 'nullable|date',
@@ -372,6 +374,16 @@ class BuildingController extends Controller
         DB::beginTransaction();
 
         try {
+            $building = Building::where([
+                ['id', '=', $request->id],
+                ['updated_at', '=', $request->updated_at]
+            ])->sharedLock()->first();
+
+            if (!$building) {
+                DB::rollBack();
+                return $this->handleResponse($request,404,'error','Please refresh the page and try again.');
+            }
+
             $address = Address::findOrFail($building->address_id);
 
             $address->update([
