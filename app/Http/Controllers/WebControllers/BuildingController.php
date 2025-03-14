@@ -145,7 +145,7 @@ class BuildingController extends Controller
     private function store(Request $request, String $portal, $organization_id, $status, $remarks)
     {
         $request->validate([
-            'name' => 'required|string|max:255',
+            'name' => 'required|string|max:255|unique:buildings,name',
             'building_type' => 'required|string|max:50',
             'area' => 'nullable|numeric',
             'construction_year' => 'nullable|integer|min:1800|max:' . date('Y'),
