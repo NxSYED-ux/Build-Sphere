@@ -4,7 +4,6 @@
     <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
     <script>
 
-        // Enable pusher logging - don't include this in production
         Pusher.logToConsole = true;
 
         var pusher = new Pusher('9d0fb6df9f1d15dbc9bd', {
@@ -12,7 +11,7 @@
         });
 
         var channel = pusher.subscribe('private-App.Models.User.1');
-        channel.bind('my', function(data) {
+        channel.bind('', function(data) {
             alert(JSON.stringify(data));
         });
     </script>

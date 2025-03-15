@@ -24,6 +24,9 @@ use Illuminate\Support\Facades\Broadcast;
 use Illuminate\Support\Facades\Route;
 use Pusher\Pusher;
 
+
+Broadcast::routes(['middleware' => ['auth.jwt:cookie']]);
+
 Route::post('/my-custom-auth', function (Request $request) {
     $token = $request->bearerToken();
 
@@ -90,29 +93,40 @@ Route::fallback(function () {
     return back();
 });
 
+//Route::get('/test-notification', function () {
+//    $user = User::find(11);
+//    $user->notify(new GeneralNotification(
+//        'Your Account Credentials',
+//        url('/'),
+//    ));
+//    return 'Notification Sent!';
+//});
+
 Broadcast::channel('App.Models.User.{id}', function ($user, $id) {
     return (int) $user->id === (int) $id;
 });
 
 Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
 
+Route::get('/send-notification', function () {
+    $user = User::find(1);
+    if ($user) {
+        $user->notify(new UserNotification(
+            'https://via.placeholder.com/50',
+            'New Feature Update! 🚀',
+            'Check out the latest feature added to our platform!',
+            'https://example.com'
+        ));
+        return response()->json(['message' => 'Notification sent!']);
+    }
+
+    return response()->json(['message' => 'No user found!'], 404);
+});
+
 Route::middleware(['auth.jwt:cookie'])->group(function () {
 
 //    Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
-    Route::get('/send-notification', function () {
-        $user = request()->user();
-        if ($user) {
-            $user->notify(new UserNotification(
-                'https://via.placeholder.com/50',
-                'New Feature Update! 🚀',
-                'Check out the latest feature added to our platform!',
-                'https://example.com'
-            ));
-            return response()->json(['message' => 'Notification sent!']);
-        }
 
-        return response()->json(['message' => 'No user found!'], 404);
-    });
 
 
     // Admin & Owner

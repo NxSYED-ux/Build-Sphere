@@ -14,7 +14,7 @@ window.Echo = new Echo({
     cluster: process.env.MIX_PUSHER_APP_CLUSTER,
     encrypted: true,
     forceTLS: true,
-    authEndpoint: "/my-custom-auth",
+    authEndpoint: "/broadcasting/auth",
     auth: {
         headers: {
             "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]')?.getAttribute("content"),
