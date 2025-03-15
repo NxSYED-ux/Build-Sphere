@@ -97,13 +97,22 @@
                                             </tr>
                                             </thead>
                                             <tbody>
-                                            @if(!empty($buildings) && $buildings->count())
-                                                @foreach($buildings as $building)
+                                                @forelse($buildings ?? [] as $building)
                                                 <tr>
                                                     <td>{{ $building->id }}</td>
                                                     <td>
-                                                        <img src="{{ $building->pictures->isNotEmpty() ? asset($building->pictures->first()->file_path) : asset('https://via.placeholder.com/150') }}" alt="Building Picture" style="border-radius: 5px;" width="100" height="50">
-                                                    </td>
+                                                        <div id="unitCarousel{{ $building->id }}" class="carousel slide" data-bs-ride="carousel">
+                                                            <div class="carousel-inner">
+                                                                @forelse($building->pictures ?? [] as $key => $picture)
+                                                                    <div class="carousel-item {{ $key == 0 ? 'active' : '' }}">
+                                                                        <img src="{{ asset($picture->file_path) }}" class="d-block" alt="Building Picture" style="border-radius: 5px; width:100px; height:50px;">
+                                                                    </div>
+                                                                @empty
+                                                                    <img src="{{ asset('img/placeholder-img.jfif') }}" class="d-block" alt="Building Picture" style="border-radius: 5px; width:100px; height:50px;">
+                                                                @endforelse
+                                                            </div>
+                                                        </div>
+                                                     </td>
                                                     <td>{{ $building->name }}</td>
                                                     <td>{{ $building->remarks ?? 'N/A' }}</td>
                                                     <td>{{ $building->area ?? 'N/A' }}</td>
@@ -117,18 +126,17 @@
                                                         @else
                                                         <a href="{{ route('owner.buildings.show', ['building' => $building->id]) }}" class="text-info" title="View"><i class="fa fa-eye mx-2" style="font-size: 20px;margin-right:5px;;"></i></a>
                                                         @endif
-                                                        <a href="{{ route('levels.index', ['building_id' => $building->id]) }}" class="text-info" title="View Levels"><i class="bx bxs-city icons" style="font-size: 20px;margin-right:5px;;"></i></a>
-                                                        <a href="{{ route('owner.buildings.edit', $building->id) }}" class="text-warning" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit">
+                                                        <a href="{{ route('levels.index', ['building_id' => $building->id]) }}" class="text-" title="View Levels"><i class="bx bxs-city icons" style="font-size: 20px;margin-right:5px; color: grey;"></i></a>
+                                                        <a href="{{ route('owner.buildings.edit', $building->id) }}" class="text-warning"  title="Edit">
                                                             <i class="fa fa-pencil mx-2" style="font-size: 20px;"></i>
                                                         </a>
                                                     </td>
                                                 </tr>
-                                            @endforeach
-                                            @else
-                                                <tr>
-                                                    <td colspan="9" class="text-center">No buildings found.</td>
-                                                </tr>
-                                            @endif
+                                                @empty
+                                                    <tr>
+                                                        <td colspan="8" class="text-center">No buildings found.</td>
+                                                    </tr>
+                                                @endforelse
                                             </tbody>
                                         </table>
 

@@ -175,7 +175,7 @@
                                                             </tr>
                                                         </thead>
                                                         <tbody>
-                                                            @foreach ($types as $type)
+                                                            @forelse ($types ?? [] as $type)
                                                                 <tr>
                                                                     <td>{{ $type->id }}</td>
                                                                     <td>{{ $type->type_name }}</td>
@@ -188,7 +188,11 @@
                                                                         </a>
                                                                     </td>
                                                                 </tr>
-                                                            @endforeach
+                                                            @empty
+                                                                <tr>
+                                                                    <td colspan="6" class="text-center">No types found.</td>
+                                                                </tr>
+                                                            @endforelse
                                                         </tbody>
                                                     </table>
                                                 </div>
@@ -206,7 +210,7 @@
                                                     <table id="valuesTable" class="table shadow-sm table-hover table-striped">
                                                         <thead class="shadow">
                                                             <tr>
-                                                                <th>#</th>
+                                                                <th>ID</th>
                                                                 <th>Name</th>
                                                                 <th>Description</th>
                                                                 <th>Type</th>
@@ -216,7 +220,7 @@
                                                             </tr>
                                                         </thead>
                                                         <tbody>
-                                                            @foreach ($values as $value)
+                                                            @forelse ($values ?? [] as $value)
                                                             <tr>
                                                                 <td>{{ $value->id }}</td>
                                                                 <td>{{ $value->value_name }}</td>
@@ -231,7 +235,11 @@
 {{--                                                                    <a href="{{ route('values.edit', $value->id) }}" class="text-warning" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit"><i class="fa fa-pencil" style="font-size: 20px;"></i></a>--}}
                                                                 </td>
                                                             </tr>
-                                                            @endforeach
+                                                            @empty
+                                                                <tr>
+                                                                    <td colspan="7" class="text-center">No values found.</td>
+                                                                </tr>
+                                                            @endforelse
                                                         </tbody>
                                                     </table>
                                                 </div>
