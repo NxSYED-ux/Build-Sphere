@@ -131,12 +131,13 @@ class BuildingController extends Controller
         ]);
         return $this->store($request, 'admin',$request->organization_id,'Approved',"This building is added by admin {$request->user()->name}");
     }
+
     public function ownerStore(Request $request)
     {
         $token = $request->attributes->get('token');
 
         if (!$token || !isset($token['organization_id'])) {
-            return redirect()->back()->withInput()->with('error', 'Admins cannot perform this action because they are not linked to any organization. Please switch to an organization account to proceed.');
+            return redirect()->back()->withInput()->with('error', 'You cannot perform this action because they are not linked to any organization. Please switch to an organization account to proceed.');
         }
 
         $organization_id = $token['organization_id'];

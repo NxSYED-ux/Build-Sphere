@@ -1,11 +1,9 @@
 <?php
 
 return [
-
-    'default' => env('BROADCAST_DRIVER', 'log'),
+    'default' => env('BROADCAST_DRIVER', 'pusher'),
 
     'connections' => [
-
         'pusher' => [
             'driver' => 'pusher',
             'key' => env('PUSHER_APP_KEY'),
@@ -15,6 +13,7 @@ return [
                 'cluster' => env('PUSHER_APP_CLUSTER', 'mt1'),
                 'useTLS' => true,
             ],
+            'auth_endpoint' => '/my-custom-auth',
         ],
 
         'log' => [
