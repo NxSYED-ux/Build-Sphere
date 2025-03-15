@@ -30,6 +30,89 @@
             width: 100%;
             overflow-x: auto;
         }
+
+
+
+        /*  Unit Model */
+        .modal-dialog {
+            max-width: 400px;
+            border-radius: 20px !important;
+            overflow: hidden;
+        }
+
+        .modal-content {
+            max-width: 400px;
+            border-radius: 20px !important;
+            overflow: hidden; /* Ensures the content respects the border radius */
+            box-shadow: none !important; /* Remove Bootstrap shadow */
+            border: 2px solid var(--modal-border); /* Ensures corners have a visible border */
+        }
+
+        .unit-modal-content {
+            border-radius: 20px !important;
+            overflow: hidden; /* Important for applying radius properly */
+        }
+
+        .unit-modal-dialog {
+            border-radius: 20px !important;
+        }
+
+        #unitModal h5{
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--modal-text);
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        #unitModal span{
+            font-size: 15px;
+            color: var(--modal-text);
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .unit-modal-header {
+            background: var(--modal-bg) !important;
+            /*background: var(--modal-header-bg);*/
+            color: var(--modal-text) !important;
+            font-family: 'Montserrat', sans-serif !important;
+        }
+
+        #unitModalLabel{
+            font-size: 18px !important;
+            font-weight: bold !important;
+        }
+
+        .unit-modal-body {
+            background: var(--modal-bg) !important;
+            color: var(--modal-text) !important;
+            font-family: 'Montserrat', sans-serif !important;
+        }
+
+        .unit-modal-footer {
+            background: var(--modal-bg) !important;
+            border-top: 1px solid var(--modal-border) !important;
+        }
+
+        .unit-modal-close-btn {
+            background: white;
+            color: var(--modal-btn-text);
+            border: 2px solid var(--modal-btn-bg);
+            border-radius: 10px;
+        }
+
+        .unit-modal-close-btn:hover {
+            background: var(--modal-btn-bg);
+            color: var(--modal-btn-text-hover);
+            opacity: 0.8;
+        }
+
+        .unit-close-btn {
+            filter: invert(var(--invert, 0));
+        }
+
+        .unit-img-border {
+            border: 2px solid var(--modal-border);
+        }
     </style>
 @endpush
 
@@ -132,7 +215,7 @@
                                                         <td>{{ $unit->level->level_name ?? 'N/A' }}</td>
                                                         <td>{{ $unit->organization->name ?? 'N/A' }}</td>
                                                         <td class="text-center">
-                                                            <a href="javascript:void(0);" class="text-info view-user" data-id="{{ $unit->id }}" data-bs-toggle="tooltip" data-bs-placement="top" title="View"><i class="fa fa-eye mx-2" style="font-size: 20px;"></i></a>
+                                                            <a href="javascript:void(0);" class="text-info view-unit" data-id="{{ $unit->id }}" data-bs-toggle="tooltip" data-bs-placement="top" title="View"><i class="fa fa-eye mx-2" style="font-size: 20px;"></i></a>
                                                             <a href="{{ route('units.edit', $unit->id) }}" class="text-warning" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit">
                                                                 <i class="fa fa-pencil mx-2" style="font-size: 20px;"></i>
                                                             </a>
@@ -159,6 +242,62 @@
             </div>
         </section>
     </div>
+
+
+    <!-- User Details Modal -->
+    <div class="modal fade" id="unitModal" tabindex="-1" aria-labelledby="unitModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-md modal-dialog-centered">
+            <div class="modal-content shadow-lg unit-modal-content">
+                <!-- Header -->
+                <div class="modal-header unit-modal-header position-relative">
+                    <h5 class="modal-title fw-bold w-100 text-center" id="unitModalLabel">Unit Details</h5>
+                </div>
+
+                <!-- Body -->
+                <div class="modal-body unit-modal-body">
+                    <div class="d-flex flex-column align-items-center justify-content-center mb-3">
+                        <div class="d-flex align-items-center">
+                            <img id="unitPicture" src="" alt="Unit Picture" class="img-fluid rounded-circle shadow-sm border unit-img-border"
+                                 style="width: 140px; height: 140px; object-fit: cover;">
+                            <div class="ms-3" style="padding-left: 10px !important;">
+                                <h5 id="unitName" class="mb-1"></h5>
+                                <p class="mb-0"><strong>PKR </strong><span id="unitPrice"></span></p>
+
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="container">
+                        <div class="row px-3">
+                            <div class="col-7 mb-2">
+                                <h5>Building</h5>
+                                <span id="unitBuilding"></span>
+                            </div>
+                            <div class="col-5 mb-2">
+                                <h5>Level</h5>
+                                <span id="unitLevel"></span>
+                            </div>
+                            <div class="col-7 mb-2">
+                                <h5>Organization</h5>
+                                <span id="unitOrganization"></span>
+                            </div>
+                            <div class="col-5 mb-2">
+                                <h5>Type</h5>
+                                <span id="unitType"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer -->
+                <div class="modal-footer unit-modal-footer">
+                    <button type="button" class="btn unit-modal-close-btn w-100" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 
 @endsection
 
@@ -233,6 +372,43 @@
 
             document.getElementById("colvisButton")?.addEventListener("click", function () {
                 triggerButton(".buttons-colvis", "Column Visibility Button clicked");
+            });
+        });
+    </script>
+
+
+    <!-- Unit Detail Model script -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            document.querySelectorAll(".view-unit").forEach(button => {
+                button.addEventListener("click", function () {
+                    let userId = this.dataset.id;
+
+                    fetch(`{{ route('units.details', ':id') }}`.replace(':id', userId), {
+                        method: "GET",
+                        headers: {
+                            "Accept": "application/json"
+                        }
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            let unit = data.Unit;
+
+                            document.getElementById("userPicture").src = unit.picture ? unit.picture : "https://via.placeholder.com/150";
+                            document.getElementById("unitName").textContent = unit.unit_name;
+                            document.getElementById("unitBuilding").textContent = unit.building.name;
+                            document.getElementById("unitLevel").textContent = unit.level.level_name;
+                            document.getElementById("unitOrganization").textContent = unit.organization.name;
+                            document.getElementById("unitType").textContent = unit.unit_type;
+                            document.getElementById("unitPrice").textContent = unit.price;
+
+                            let unitModal = new bootstrap.Modal(document.getElementById("unitModal"));
+                            unitModal.show();
+                        })
+                        .catch(error => {
+                            console.error("Error:", error);
+                        });
+                });
             });
         });
     </script>
