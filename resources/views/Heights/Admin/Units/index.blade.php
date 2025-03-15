@@ -132,6 +132,7 @@
                                                         <td>{{ $unit->level->level_name ?? 'N/A' }}</td>
                                                         <td>{{ $unit->organization->name ?? 'N/A' }}</td>
                                                         <td class="text-center">
+                                                            <a href="javascript:void(0);" class="text-info view-user" data-id="{{ $unit->id }}" data-bs-toggle="tooltip" data-bs-placement="top" title="View"><i class="fa fa-eye mx-2" style="font-size: 20px;"></i></a>
                                                             <a href="{{ route('units.edit', $unit->id) }}" class="text-warning" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit">
                                                                 <i class="fa fa-pencil mx-2" style="font-size: 20px;"></i>
                                                             </a>
