@@ -15,11 +15,95 @@
             background-color: var(--main-background-color);
             color: var(--main-text-color);
         }
+
         #main .card-img-top {
             height: 40vh;
             object-fit: cover;
         }
 
+
+        .card-detail {
+            border-radius: 25px;
+            max-width: 400px;
+            min-width: 300px;
+            height: auto;
+            max-height: 90vh;
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+            border: 1px solid #dee2e6;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-detail h4 {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .card-detail .image-container {
+            position: relative;
+            width: 100%;
+            height: 170px;
+            overflow: hidden;
+        }
+
+        .card-detail .image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        .card-detail .card-body {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-detail .card-title {
+            color: #28a745;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .card-detail .text-center p {
+            margin-bottom: 0;
+        }
+
+        .card-detail .status-button {
+            border-radius: 8px;
+            font-weight: bold;
+            padding: 0.5rem;
+        }
+
+        .card-detail hr {
+            margin-top: auto;
+            margin-bottom: auto;
+        }
+
+        .card-detail .building-details {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+        }
+
+        .card-detail .building-details p {
+            margin-block: 1vh;
+            font-size: 16px;
+            color: var(--sidenavbar-text-color)
+        }
+
+        @media (max-width: 560px) {
+            .card-detail .building-details p {
+                margin-block: 1vh;
+                font-size: 13px;
+                color: var(--sidenavbar-text-color)
+            }
+        }
+
+
+        /* Tree Card*/
         .tree-card{
             background-color: var(--main-background-color);
             color: var(--main-text-color);
@@ -157,6 +241,18 @@
             background-color: #EC5252;
         }
 
+        #reject-btn #reject-svg{
+            fill: #EC5252;
+        }
+
+        #reject-btn:hover #reject-svg{
+            fill: #ffff;
+        }
+
+        #rejectIcon {
+            filter: invert(36%) sepia(86%) saturate(345%) hue-rotate(358deg) brightness(93%) contrast(88%);
+        }
+
         #approved-btn{
             border-radius: 5px;
             border: 1px solid #008CFF;
@@ -168,6 +264,14 @@
             border: 1px solid #008CFF !important;
             color: #008CFF !important;
             background-color: #fff !important;
+        }
+
+        #approved-btn #approve-svg{
+            fill: #ffff;
+        }
+
+        #approved-btn:hover #approve-svg{
+            fill: #008CFF;
         }
 
         .model-btn-close{
@@ -221,31 +325,44 @@
         <section class="content my-3 mx-2">
             <div class="container-fluid">
                 <div class="d-flex flex-wrap flex-lg-nowrap gap-3">
-                    <div class="card shadow-sm border p-3 h-100 d-flex flex-column"
-                         style="border-radius: 25px; max-width: 400px; min-width: 300px;">
-                        <h4 style="font-size: 18px; font-weight: bold">Building Detail</h4>
+
+                    <div class="card-detail">
+                        <h4>Building Detail</h4>
 
                         <!-- Image Container -->
-                        <div class="position-relative" style="width: 100%; height: 200px; overflow: hidden;">
-                            <img src="{{ asset( $building->pictures->first() ?  $building->pictures->first()->file_path : '') }}"
-                                 class="img-fluid rounded w-100 h-100 object-fit-cover"
-                                 alt="Building Image">
+                        <div class="image-container">
+                            <img src="{{ asset( $building->pictures->first() ?  $building->pictures->first()->file_path : '') }}" alt="Building Image">
                         </div>
 
-                        <div class="card-body d-flex flex-column">
-                            <h5 class="card-title text-success fw-bold text-center">{{ $building->name }}</h5>
-                            <p class="text-center mb-0 pb-0">
-{{--                                <svg width="15" height="15" viewBox="0 0 17 20" fill="none"--}}
-{{--                                     xmlns="http://www.w3.org/2000/svg">--}}
-{{--                                    <path d="M14.173 14.8819L13.053 16.0558C12.2275 16.9144 11.1564 18.0184 9.83928 19.3679C9.0163 20.2113 7.71058 20.2112 6.88769 19.3677L3.59355 15.9718C3.17955 15.541 2.83301 15.1777 2.55386 14.8819C-0.654672 11.4815 -0.654672 5.9683 2.55386 2.56789C5.76239 -0.832524 10.9645 -0.832524 14.173 2.56789C17.3815 5.9683 17.3815 11.4815 14.173 14.8819ZM10.7226 8.9996C10.7226 7.61875 9.66633 6.49936 8.36344 6.49936C7.06056 6.49936 6.0043 7.61875 6.0043 8.9996C6.0043 10.3804 7.06056 11.4998 8.36344 11.4998C9.66633 11.4998 10.7226 10.3804 10.7226 8.9996Z" fill="red"/>--}}
-{{--                                </svg>--}}
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><mask id="lineMdMapMarkerAltFilledLoop0"><g fill="none" fill-opacity="0" stroke="#fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path fill="#fff" d="M12 20.5C12 20.5 11 19 11 18C11 17.5 11.5 17 12 17C12.5 17 13 17.5 13 18C13 19 12 20.5 12 20.5z"><animate fill="freeze" attributeName="d" dur="0.4s" keyTimes="0;0.7;1" values="M12 20.5C12 20.5 11 19 11 18C11 17.5 11.5 17 12 17C12.5 17 13 17.5 13 18C13 19 12 20.5 12 20.5z;M12 20.5C12 20.5 5 13 5 8C5 4.5 8 1 12 1C16 1 19 4.5 19 8C19 13 12 20.5 12 20.5z;M12 20.5C12 20.5 6 13.5 6 9C6 5.68629 8.68629 3 12 3C15.3137 3 18 5.68629 18 9C18 13.5 12 20.5 12 20.5z"/><animate fill="freeze" attributeName="fill-opacity" begin="0.5s" dur="0.5s" values="0;1"/><animateTransform attributeName="transform" dur="3s" keyTimes="0;0.3;0.4;0.54;0.6;0.68;0.7;1" repeatCount="indefinite" type="rotate" values="0 12 20.5;0 12 20.5;-8 12 20.5;0 12 20.5;5 12 20.5;-2 12 20.5;0 12 20.5;0 12 20.5"/></path><circle cx="12" cy="9" r="2.5" fill="#000" stroke="none"><animate fill="freeze" attributeName="fill-opacity" begin="1s" dur="0.5s" values="0;1"/></circle></g></mask><rect width="24" height="24" fill="#f41313" mask="url(#lineMdMapMarkerAltFilledLoop0)"/></svg>
+                        <div class="card-body">
+                            <h5 class="card-title mt-2">{{ $building->name }}</h5>
+                            <p class="text-center mt-1">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                                    <mask id="lineMdMapMarkerAltFilledLoop0">
+                                        <g fill="none" fill-opacity="0" stroke="#fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+                                            <path fill="#fff" d="M12 20.5C12 20.5 11 19 11 18C11 17.5 11.5 17 12 17C12.5 17 13 17.5 13 18C13 19 12 20.5 12 20.5z">
+                                                <animate fill="freeze" attributeName="d" dur="0.4s" keyTimes="0;0.7;1"
+                                                         values="M12 20.5C12 20.5 11 19 11 18C11 17.5 11.5 17 12 17C12.5 17 13 17.5 13 18C13 19 12 20.5 12 20.5z;
+                                             M12 20.5C12 20.5 5 13 5 8C5 4.5 8 1 12 1C16 1 19 4.5 19 8C19 13 12 20.5 12 20.5z;
+                                             M12 20.5C12 20.5 6 13.5 6 9C6 5.68629 8.68629 3 12 3C15.3137 3 18 5.68629 18 9C18 13.5 12 20.5 12 20.5z"/>
+                                                <animate fill="freeze" attributeName="fill-opacity" begin="0.5s" dur="0.5s" values="0;1"/>
+                                                <animateTransform attributeName="transform" dur="3s" keyTimes="0;0.3;0.4;0.54;0.6;0.68;0.7;1" repeatCount="indefinite" type="rotate"
+                                                                  values="0 12 20.5;0 12 20.5;-8 12 20.5;0 12 20.5;5 12 20.5;-2 12 20.5;0 12 20.5;0 12 20.5"/>
+                                            </path>
+                                            <circle cx="12" cy="9" r="2.5" fill="#000" stroke="none">
+                                                <animate fill="freeze" attributeName="fill-opacity" begin="1s" dur="0.5s" values="0;1"/>
+                                            </circle>
+                                        </g>
+                                    </mask>
+                                    <rect width="24" height="24" fill="#f41313" mask="url(#lineMdMapMarkerAltFilledLoop0)"/>
+                                </svg>
                                 {{ $building->address->location }}, {{ $building->address->city }}, {{ $building->address->province }}, {{ $building->address->country }}
                             </p>
 
-                            <hr class="mt-3">
+                            <hr>
 
-                            <div class="text-center flex-grow-1">
+
+                            <div class="text-center flex-grow-1 building-details mb-2">
                                 <p><strong>Organization:</strong> {{ $building->organization->name }}</p>
                                 <p><strong>Type:</strong> {{ $building->building_type }}</p>
                                 <div class="row">
@@ -264,14 +381,21 @@
                                 </div>
                             </div>
 
-                            @if($building->status === "Under Review")
-                                <hr class="mb-0">
+
+                        @if($building->status === "Under Review")
+                                <hr>
                                 <div class="d-flex justify-content-between mt-3">
-                                    <button class="btn w-50 me-2 status-button" id="reject-btn">Reject</button>
+                                    <button class="btn w-50 me-2 status-button" id="reject-btn">
+                                        <img id="rejectIcon" src="{{ asset('icons/reject-icon.svg') }}" alt="">
+                                        Reject
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path id="reject-svg"  d="M17.5 12a5.5 5.5 0 1 1 0 11a5.5 5.5 0 0 1 0-11m-2.476 3.024a.5.5 0 0 0 0 .707l1.769 1.77l-1.767 1.766a.5.5 0 1 0 .707.708l1.767-1.767l1.77 1.769a.5.5 0 1 0 .707-.707l-1.769-1.77l1.771-1.77a.5.5 0 0 0-.707-.707l-1.771 1.77l-1.77-1.77a.5.5 0 0 0-.707 0M11.019 17H3l-.117.007A1 1 0 0 0 3 19h8.174a6.5 6.5 0 0 1-.155-2m.48-2H3a1 1 0 0 1-.117-1.993L3 13h9.81a6.5 6.5 0 0 0-1.312 2M3 11a1 1 0 0 1-.117-1.993L3 9h18a1 1 0 0 1 .117 1.993L21 11zm18-6H3l-.117.007A1 1 0 0 0 3 7h18l.117-.007A1 1 0 0 0 21 5"/></svg>
+                                    </button>
                                     <form action="{{ route('owner.buildings.submit') }}" method="POST" class="w-50 mx-1">
                                         @csrf
                                         <input type="hidden" name="building_id" value="{{ $building->id }}">
-                                        <button type="submit" class="btn w-100 status-button" id="approved-btn">Approve</button>
+                                        <button type="submit" class="btn w-100 status-button" id="approved-btn">Approve
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 20 20"><path id="approve-svg" d="M5.5 2A1.5 1.5 0 0 0 4 3.5v14a.5.5 0 0 0 .5.5H7v-3.5a.5.5 0 0 1 .5-.5h1.522c.05-.555.183-1.087.386-1.582a.75.75 0 1 1 .752-1.296A5.49 5.49 0 0 1 14.5 9c.509 0 1.002.07 1.47.199A1.5 1.5 0 0 0 14.5 8H13V3.5A1.5 1.5 0 0 0 11.5 2zm2 3.75a.75.75 0 1 1-1.5 0a.75.75 0 0 1 1.5 0M6.75 8a.75.75 0 1 1 0 1.5a.75.75 0 0 1 0-1.5m.75 3.75a.75.75 0 1 1-1.5 0a.75.75 0 0 1 1.5 0M9.75 5a.75.75 0 1 1 0 1.5a.75.75 0 0 1 0-1.5m.75 3.75a.75.75 0 1 1-1.5 0a.75.75 0 0 1 1.5 0M9.022 15a5.5 5.5 0 0 0 1.235 3H8v-3zM19 14.5a4.5 4.5 0 1 1-9 0a4.5 4.5 0 0 1 9 0m-2.146-1.854a.5.5 0 0 0-.708 0L13.5 15.293l-.646-.647a.5.5 0 0 0-.708.708l1 1a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0 0-.708"/></svg>
+                                        </button>
                                     </form>
                                 </div>
                             @else
