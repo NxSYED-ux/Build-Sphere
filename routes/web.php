@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\GeneralControllers\AuthController;
 use App\Http\Controllers\GeneralControllers\ForgotPasswordController;
+use App\Http\Controllers\GeneralControllers\NotificationController;
 use App\Http\Controllers\GeneralControllers\ProfileController;
 use App\Http\Controllers\WebControllers\AdminDashboardController;
 use App\Http\Controllers\WebControllers\BuildingController;
@@ -21,6 +22,17 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('auth.login');
 });
+
+
+Route::middleware('auth.jwt:cookies')->group(function () {
+    Route::get('/notifications/unread-count', [NotificationController::class, 'getUnreadNotificationsCount']);
+    Route::get('/notifications', [NotificationController::class, 'getNotifications']);
+    Route::post('/notifications/mark-as-read', [NotificationController::class, 'markAsRead']);
+    Route::post('/notifications/mark-as-read-single', [NotificationController::class, 'markAsReadSingle']);
+});
+
+
+
 
 // Authentication routes
 Route::get('login', [AuthController::class, 'index'])->name('login');

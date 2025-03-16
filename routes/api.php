@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\GeneralControllers\AuthController;
+use App\Http\Controllers\GeneralControllers\NotificationController;
 use App\Models\User;
 use App\Notifications\UserNotification;
 use Illuminate\Support\Facades\Route;
@@ -35,8 +36,18 @@ Route::get('/send-notification/{id}', function ($id) {
 });
 
 
-Route::get('/user/values-by-type/{type}', [DropdownController::class, 'getDropdownValuesByType']);
-Route::get('/user/values-by-value/{value}', [DropdownController::class, 'getDropdownValuesByValue']);
+Route::middleware('auth.jwt')->group(function () {
+    Route::get('/api/notifications/unread-count', [NotificationController::class, 'getUnreadNotificationsCount']);
+    Route::get('/api/notifications', [NotificationController::class, 'getNotifications']);
+    Route::post('/api/notifications/mark-as-read', [NotificationController::class, 'markAsRead']);
+    Route::post('/api/notifications/mark-as-read-single', [NotificationController::class, 'markAsReadSingle']);
+});
+
+
+
+
+Route::get('/values-by-type/{type}', [DropdownController::class, 'getDropdownValuesByType']);
+Route::get('/values-by-value/{value}', [DropdownController::class, 'getDropdownValuesByValue']);
 
 Route::prefix('user')->middleware(['auth.jwt'])->group(function () {
 
