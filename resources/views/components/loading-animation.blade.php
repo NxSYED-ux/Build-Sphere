@@ -1,3 +1,4 @@
+
 <style>
     .loading-animation {
         position: fixed;
@@ -33,12 +34,12 @@
     }
 </style>
 
+
 <div class="loading-animation" id="loadingAnimation">
     <img src="{{ asset('img/loading.gif') }}" alt="Loading..." class="loading-gif">
 {{--    <div class="loading-spinner"></div>--}}
 </div>
 
-<!-- Add JavaScript to show/hide loading animation -->
 <script>
     document.addEventListener("DOMContentLoaded", function() {
         document.getElementById("loadingAnimation").style.display = "none";

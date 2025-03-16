@@ -195,7 +195,7 @@
         color: var(--breadcrumb-text2-color) !important;
     }
 
-    /* Notifications */
+    /* ************ Notifications ************ */
     #alertsDropdown::after {
         display: none !important;
     }
@@ -319,8 +319,9 @@
         font-size: 12px;
     }
 
+    /* ************************** */
 
-    /*  Theam togler  */
+    /* *********** Theam togler ************** */
     .switch {
         position: relative;
         display: inline-block;
@@ -367,7 +368,7 @@
     }
 
 
-    /*  User-menu   */
+    /* ************ User-menu **************  */
     .user-menu {
         background-color: var(--notification-bg-color) !important;
         color: var(--notification-text-color) !important;
@@ -389,19 +390,16 @@
         /*border-radius: 6px;*/
     }
 
-    /* Hover effect for dropdown items */
     .user-menu .dropdown-item:hover {
         background-color: var(--notification-dropdown-hover-bg);
         transform: translateX(2px);
     }
 
-    /* Icons inside dropdown */
     .user-menu .dropdown-item i {
         font-size: 1.2rem;
         color: var(--notification-icon-color);
     }
 
-    /* Logout icon specific style */
     .user-menu .dropdown-item .fa-power-off {
         color: var(--notification-badge-color);
     }

@@ -170,7 +170,10 @@
                             <div class="col-md-6 mb-3">
                                 <label for="name" class="form-label">Role Name</label>
                                 <span class="required__field">*</span><br>
-                                <input type="text" class="form-control" id="name" name="name" value="{{ old('name') }}" maxlength="20" placeholder="Role Name" required>
+                                <div class="position-relative">
+                                    <input type="text" class="form-control" id="name" name="name" value="{{ old('name') }}" maxlength="20" placeholder="Role Name" required>
+                                    <i class='bx bx-street-view input-icon position-absolute top-50 end-0 translate-middle-y me-3'></i>
+                                </div>
                                 @error('name')
                                 <div class="invalid-feedback">
                                     {{ $message }}
@@ -242,7 +245,10 @@
                             <div class="col-md-6 mb-3">
                                 <label for="name" class="form-label">Role Name</label>
                                 <span class="required__field">*</span><br>
-                                <input type="text" class="form-control" id="edit_name" name="name" maxlength="20" placeholder="Role Name" required>
+                                <div class="position-relative">
+                                    <input type="text" class="form-control" id="edit_name" name="name" maxlength="20" placeholder="Role Name" required>
+                                    <i class='bx bx-street-view input-icon position-absolute top-50 end-0 translate-middle-y me-3'></i>
+                                </div>
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label for="status" class="form-label">Status</label>

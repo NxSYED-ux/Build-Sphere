@@ -76,7 +76,7 @@
                 <!-- Buildings Tree -->
                 <li class="mb-1">
                     <div id="link-a">
-                        <a href="{{ route('building.tree', ['id' => 1]) }}?fit=yes" class="link-dark collapsed {{ in_array('Buildings-Tree', $openSections) ? 'Link-background-color' : '' }} px-1" id="BuildingsTreebtn" >
+                        <a href="{{ route('owner.buildings.tree', ['id' => 1]) }}?fit=yes" class="link-dark collapsed {{ in_array('Buildings-Tree', $openSections) ? 'Link-background-color' : '' }} px-1" id="BuildingsTreebtn" >
                         <i class="bx bx-network-chart icons"></i> Buildings Tree </a>
                     </div>
                 </li>

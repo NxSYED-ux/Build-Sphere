@@ -1,5 +1,7 @@
 
 @if (session('success') || session('error') || $errors->any())
+
+    @push('styles')
     <style>
         .theme-swal-popup {
             border: 1px solid var(--swal-border-color);
@@ -21,6 +23,10 @@
             background-color: var(--swal-timer-progress-bar-color) !important;
         }
     </style>
+
+    @endpush
+
+    @push('scripts')
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             let title = '';
@@ -69,4 +75,5 @@
             });
         });
     </script>
+    @endpush
 @endif

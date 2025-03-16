@@ -1,4 +1,9 @@
 
+
+@props([
+    'breadcrumbLinks' => []
+])
+
 <nav class="navbar navbar-expand fixed-top" id="navbar_top">
     <div class="container-fluid d-flex align-items-center justify-content-between">
 
@@ -8,7 +13,7 @@
         </span>
 
         <div id="top-nav-logo">
-            <a href="{{url('owner_manager_dashboard')}}" class="application-box">
+            <a href="{{ route('owner_manager_dashboard') }}" class="application-box">
                 <svg width="50" height="50" class="application-logo"  viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <g clip-path="url(#clip0_260_1679)">
                         <path d="M0.0961914 37.4784C0.226804 37.3115 0.39438 37.2044 0.482573 37.0515C2.24984 33.9872 4.00564 30.9164 5.76858 27.8496C7.58833 24.6841 9.40968 21.5194 11.237 18.3583C12.6019 15.9972 13.9813 13.6444 15.3466 11.2836C16.0138 10.1299 16.6629 8.96567 17.3228 7.80768C17.382 7.70379 17.4603 7.61076 17.5663 7.46094C23.4032 17.5883 29.2087 27.6614 35.064 37.8208C34.652 37.8208 34.3109 37.8208 33.8929 37.7934C32.0929 37.7585 30.3698 37.7506 28.6466 37.7461C28.6035 37.746 28.5604 37.784 28.5173 37.8043C28.1134 37.8996 27.8632 37.7745 27.6466 37.3848C26.7833 35.8316 25.8768 34.3023 24.9886 32.7628C23.3408 29.9069 21.6937 27.0506 20.048 24.1934C19.272 22.846 18.5002 21.4961 17.7255 20.148C17.6791 20.0672 17.6232 19.9919 17.5407 19.8671C16.9981 20.7974 16.4742 21.69 15.9558 22.5858C14.4135 25.251 12.8702 27.9157 11.3334 30.5842C10.0508 32.8112 8.7777 35.0437 7.49769 37.2722C7.39572 37.4497 7.27272 37.6151 7.09454 37.7737C5.16246 37.7529 3.29535 37.744 1.42822 37.7395C1.37001 37.7394 1.3117 37.7844 1.25344 37.8084C0.897236 37.813 0.541036 37.8177 0.140513 37.8232C0.0961914 37.7216 0.0961914 37.6192 0.0961914 37.4784Z" id="fill2"/>
@@ -39,159 +44,50 @@
         <!-- For Large Screen -->
         <ul class="navbar-nav navbar-lg text-center justify-content-between d-none d-md-flex ms-auto align-items-center">
 
-            <label class="switch">
+            <label class="switch" style="margin-right: 1rem;">
                 <input type="checkbox" id="theme-toggle">
                 <span class="slider round"></span>
             </label>
 
-            <!-- Profile Dropdown -->
-            <li class="nav-item dropdown  d-flex align-items-center" style="padding-left: 1rem;">
-                <a class="nav-link d-flex align-items-center" href="#" id="userMenu" data-bs-toggle="dropdown" aria-expanded="false">
-                    <!-- Profile Image -->
-                    <img src="{{ Auth::user() && Auth::user()->picture ? asset(Auth::user()->picture) : asset('img/avatar.png') }}"
-                         class="rounded-circle me-2"
-                         alt="User Image"
-                         style="width: 2.5rem; height: 2.5rem;">
+            <!-- Profile Menu -->
+            <x-top-nav-profile-menu
+                :profileRoute="route('owner.profile')"
+                :settingsRoute="'#'"
+                :logoutRoute="route('logout')"
+            />
 
-                    <!-- User Info -->
-                    <div class="d-flex flex-column text-start user-info">
-                        <span class="fw-bold">{{ Auth::user()->name }}</span>
-                        <small class="">{{ Auth::user()->email }}</small>
-                    </div>
-                </a>
-                <ul class="dropdown-menu dropdown-menu-end user-menu" aria-labelledby="userMenu">
-                    <li>
-                        <a class="dropdown-item d-flex align-items-center" href="{{ route('owner.profile') }}">
-                            <i class="bx bxs-user me-2"></i> Profile
-                        </a>
-                    </li>
-                    <li>
-                        <a class="dropdown-item d-flex align-items-center" href="#">
-                            <i class="bx bxs-cog me-2"></i> Settings
-                        </a>
-                    </li>
-                    <li>
-                        <a class="dropdown-item d-flex align-items-center" href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                            <i class="fa fa-power-off me-2"></i> Logout
-                        </a>
-                        <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
-                            @csrf
-                        </form>
-                    </li>
-                </ul>
-            </li>
-            <!-- Alerts Dropdown -->
-            <li class="nav-item dropdown no-arrow mx-2 px-2">
-                <a class="nav-link dropdown-toggle dropdown-toggle-no-arrow position-relative" href="#" id="alertsDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <!-- Notification Menu -->
+            <x-top-nav-notification-menu />
 
-                    <svg width="20" height="25" viewBox="0 0 14 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M6.4 17.2222C5.51684 17.2178 4.80073 16.5053 4.792 15.6222H7.992C7.99369 15.8361 7.9529 16.0482 7.872 16.2462C7.66212 16.7278 7.23345 17.079 6.72 17.1902H6.716H6.704H6.6896H6.6824C6.58945 17.2095 6.49492 17.2202 6.4 17.2222ZM12.8 14.8222H0V13.2222L1.6 12.4222V8.02217C1.55785 6.89346 1.81275 5.77347 2.3392 4.77417C2.86323 3.84738 3.75896 3.18927 4.8 2.96617V1.22217H8V2.96617C10.0632 3.45737 11.2 5.25257 11.2 8.02217V12.4222L12.8 13.2222V14.8222Z" fill="#B0C3CC"/>
-                        <circle cx="11" cy="3" r="3" fill="#EC5252"/>
-                    </svg>
-
-                </a>
-                <div class="dropdown-menu mt-3 dropdown-menu-end shadow animated--grow-in notification-menu" aria-labelledby="alertsDropdown">
-                    <div class="notification-header d-flex align-items-center justify-content-between">
-                        <h5 class="mb-0 px-2 py-2 fw-bold">
-                            <svg width="20" height="25" class="mx-2" viewBox="0 0 14 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M6.4 17.2222C5.51684 17.2178 4.80073 16.5053 4.792 15.6222H7.992C7.99369 15.8361 7.9529 16.0482 7.872 16.2462C7.66212 16.7278 7.23345 17.079 6.72 17.1902H6.716H6.704H6.6896H6.6824C6.58945 17.2095 6.49492 17.2202 6.4 17.2222ZM12.8 14.8222H0V13.2222L1.6 12.4222V8.02217C1.55785 6.89346 1.81275 5.77347 2.3392 4.77417C2.86323 3.84738 3.75896 3.18927 4.8 2.96617V1.22217H8V2.96617C10.0632 3.45737 11.2 5.25257 11.2 8.02217V12.4222L12.8 13.2222V14.8222Z" fill="#B0C3CC"/>
-                                <circle cx="11" cy="3" r="3" fill="#EC5252"/>
-                            </svg>
-                            Notifications</h5>
-                        <button class="btn-close px-3" aria-label="Close"></button>
-                    </div>
-                    <div class="notification-list px-1" >
-                        <a class="dropdown-item  d-flex align-items-center" href="#">
-                            <img src="{{ asset('img/buildings/building6.jpg') }}" style="width: 40px; height: 40px;" alt="Notification Image" class="rounded-circle me-3">
-                            <div>
-                                <h7>Notification 1</h7>
-                                <p class="mb-0 text-muted text-wrap small" style="font-size: 12px;">Building status successfully changed to Approved.</p>
-                            </div>
-                            <span class="text-muted small ms-auto" style="font-size: 12px;">2m ago</span>
-                        </a>
-                        <a class="dropdown-item d-flex align-items-center" href="#">
-                            <img src="{{ asset('img/buildings/building6.jpg') }}" style="width: 40px; height: 40px;" alt="Notification Image" class="rounded-circle me-3">
-                            <div>
-                                <h7>Notification 2</h7>
-                                <p class="mb-0 text-muted text-wrap small" style="font-size: 12px;">Building status successfully changed to Approved.</p>
-                            </div>
-                            <span class="text-muted small ms-auto" style="font-size: 12px;">10m ago</span>
-                        </a>
-                        <a class="dropdown-item d-flex align-items-center" href="#">
-                            <img src="{{ asset('img/buildings/building6.jpg') }}" style="width: 40px; height: 40px;" alt="Notification Image" class="rounded-circle me-3">
-                            <div>
-                                <h7>Notification 3</h7>
-                                <p class="mb-0 text-muted text-wrap small" style="font-size: 12px;">Building is available for Approval.</p>
-                            </div>
-                            <span class="text-muted small ms-auto" style="font-size: 12px;">1h ago</span>
-                        </a>
-                        <a class="dropdown-item d-flex align-items-center" href="#">
-                            <img src="{{ asset('img/buildings/building6.jpg') }}" style="width: 40px; height: 40px;" alt="Notification Image" class="rounded-circle me-3">
-                            <div>
-                                <h7>Notification 4</h7>
-                                <p class="mb-0 text-muted text-wrap small" style="font-size: 12px;">New building added to your portfolio.</p>
-                            </div>
-                            <span class="text-muted small ms-auto" style="font-size: 12px;">3h ago</span>
-                        </a>
-                    </div>
-
-                    <div class="notification-footer d-flex justify-content-between py-3 px-3">
-                        <button class="btn btn-primary btn rounded-3">Mark All as Read</button>
-                        <button class="btn btn-outline-secondary btn  rounded-3">Close</button>
-                    </div>
-                </div>
-            </li>
         </ul>
 
 
         <!-- For small Screen -->
         <ul class="navbar-nav navbar-sm text-center d-md-none ms-auto">
-            <li class="nav-item dropdown">
-                <a class="nav-link d-flex align-items-center" href="#" id="userMenu" data-bs-toggle="dropdown" aria-expanded="false">
-                    <!-- Profile Image -->
-                    <img src="{{ Auth::user() && Auth::user()->picture ? asset(Auth::user()->picture) : asset('img/avatar.png') }}"
-                         class="rounded-circle me-2"
-                         alt="User Image"
-                         style="width: 2.5rem; height: 2.5rem;">
-
-                    <!-- User Info -->
-                    <div class="d-flex flex-column text-start user-info">
-                        <span class="fw-bold">{{ Auth::user()->name }}</span>
-                        <small class="">{{ Auth::user()->email }}</small>
-                    </div>
-                </a>
-                <ul class="dropdown-menu dropdown-menu-end user-menu" aria-labelledby="userMenu">
-                    <li>
-                        <a class="dropdown-item d-flex align-items-center" href="{{ route('owner.profile') }}">
-                            <i class="bx bxs-user me-2"></i> Profile
-                        </a>
-                    </li>
-                    <li>
-                        <a class="dropdown-item d-flex align-items-center" href="#">
-                            <i class="bx bxs-cog me-2"></i> Settings
-                        </a>
-                    </li>
-                    <li>
-                        <a class="dropdown-item d-flex align-items-center" href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                            <i class="fa fa-power-off me-2"></i> Logout
-                        </a>
-                        <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
-                            @csrf
-                        </form>
-                    </li>
-                </ul>
-            </li>
+            <!-- Profile Menu -->
+            <x-top-nav-profile-menu
+                :profileRoute="route('owner.profile')"
+                :settingsRoute="'#'"
+                :logoutRoute="route('logout')"
+            />
         </ul>
     </div>
 </nav>
 
-<script>
-    document.querySelector('#sidenav_toggler').addEventListener('mouseover', function () {
-        this.querySelector('i').classList.replace('bx-menu-alt-left', 'bx-menu');
-    });
+@push('scripts')
+    <script>
+        document.querySelector('#sidenav_toggler').addEventListener('mouseover', function () {
+            this.querySelector('i').classList.replace('bx-menu-alt-left', 'bx-menu');
+        });
+        document.querySelector('#sidenav_toggler').addEventListener('mouseout', function () {
+            this.querySelector('i').classList.replace('bx-menu', 'bx-menu-alt-left');
+        });
+    </script>
 
-    document.querySelector('#sidenav_toggler').addEventListener('mouseout', function () {
-        this.querySelector('i').classList.replace('bx-menu', 'bx-menu-alt-left');
-    });
+@endpush
 
-</script>
+
+
+
+
+
