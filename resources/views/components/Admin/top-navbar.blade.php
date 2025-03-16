@@ -200,7 +200,7 @@
                             const timeAgo = timeSince(new Date(notification.data.created_at));
 
                             notificationList.innerHTML += `
-                           <a class="d-flex align-items-center text-decoration-none p-2 border-bottom" href="${notification.data.link}">
+                           <a class="d-flex align-items-center text-decoration-none p-2 border-bottom" href="${window.location.origin}/${notification.data.link}">
                                 <img src="${notification.data.image ? '{{ asset('/') }}' + notification.data.image : '{{ asset('img/placeholder-img.jfif') }}'}" class="rounded-circle me-2 notification-item-img" style="width: 45px; height: 45px;" alt="Notification Image">
                                 <div class="d-flex flex-column notification-item-div">
                                     <span class="${notification.read_at ? '' : 'fw-bold'}  text small notification-item-heading">${notification.data.heading}</span>
