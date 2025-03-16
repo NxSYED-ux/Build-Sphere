@@ -313,7 +313,7 @@
     }
     .notification-item-heading {
         font-size: 13px;
-        color: var(--main-text-color);
+        color: var(--main-text-color) !important;
     }
     .notification-item-message {
         font-size: 12px;

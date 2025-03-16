@@ -179,7 +179,7 @@
                                 <i class="bx bx-street-view permission-header-icon me-2 fs-5"></i>
                                 <form method="GET" action="{{ route('role.permissions') }}">
                                     <select name="role_id" id="role" class="form-select form-select-sm" onchange="this.form.submit()">
-                                        @foreach ($roles as $role)
+                                        @foreach ($roles ?? [] as $role)
                                             <option value="{{ $role->id }}" {{ $roleId == $role->id ? 'selected' : '' }}>
                                                 {{ $role->name }}
                                             </option>
@@ -193,12 +193,12 @@
                             @if ($permissions->isEmpty())
                                 <p class="text-muted">No permissions assigned to this role.</p>
                             @else
-                                @foreach ($permissions as $header => $perms)
+                                @foreach ($permissions ?? [] as $header => $perms)
                                     <div class="mb-4">
                                         <h5 class="text mb-3 font-weight-bold permission-Heading">{{ $header }}</h5>
                                         <div class="permission-list rounded-lg shadow-sm p-3">
                                             <div class="row">
-                                                @foreach ($perms as $perm)
+                                                @foreach ($perms ?? [] as $perm)
                                                     <div class="col-md-6 col-lg-4 mb-3">
                                                         <div class="permission-item d-flex justify-content-between align-items-center p-1 px-2 border rounded shadow-sm">
                                                             <span class="permission-name font-weight-medium ">{{ $perm['name'] }}</span>

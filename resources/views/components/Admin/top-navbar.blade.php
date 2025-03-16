@@ -8,7 +8,7 @@
         </span>
 
         <div id="top-nav-logo">
-            <a href="{{url('admin_dashboard')}}" class="application-box">
+            <a href="{{ route('admin_dashboard') }}" class="application-box">
                 <svg width="50" height="50" class="application-logo"  viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <g clip-path="url(#clip0_260_1679)">
                         <path d="M0.0961914 37.4784C0.226804 37.3115 0.39438 37.2044 0.482573 37.0515C2.24984 33.9872 4.00564 30.9164 5.76858 27.8496C7.58833 24.6841 9.40968 21.5194 11.237 18.3583C12.6019 15.9972 13.9813 13.6444 15.3466 11.2836C16.0138 10.1299 16.6629 8.96567 17.3228 7.80768C17.382 7.70379 17.4603 7.61076 17.5663 7.46094C23.4032 17.5883 29.2087 27.6614 35.064 37.8208C34.652 37.8208 34.3109 37.8208 33.8929 37.7934C32.0929 37.7585 30.3698 37.7506 28.6466 37.7461C28.6035 37.746 28.5604 37.784 28.5173 37.8043C28.1134 37.8996 27.8632 37.7745 27.6466 37.3848C26.7833 35.8316 25.8768 34.3023 24.9886 32.7628C23.3408 29.9069 21.6937 27.0506 20.048 24.1934C19.272 22.846 18.5002 21.4961 17.7255 20.148C17.6791 20.0672 17.6232 19.9919 17.5407 19.8671C16.9981 20.7974 16.4742 21.69 15.9558 22.5858C14.4135 25.251 12.8702 27.9157 11.3334 30.5842C10.0508 32.8112 8.7777 35.0437 7.49769 37.2722C7.39572 37.4497 7.27272 37.6151 7.09454 37.7737C5.16246 37.7529 3.29535 37.744 1.42822 37.7395C1.37001 37.7394 1.3117 37.7844 1.25344 37.8084C0.897236 37.813 0.541036 37.8177 0.140513 37.8232C0.0961914 37.7216 0.0961914 37.6192 0.0961914 37.4784Z" id="fill2"/>
@@ -203,7 +203,7 @@
                            <a class="d-flex align-items-center text-decoration-none p-2 border-bottom" href="${notification.data.link}">
                                 <img src="${notification.data.image ? '{{ asset('/') }}' + notification.data.image : '{{ asset('img/placeholder-img.jfif') }}'}" class="rounded-circle me-2 notification-item-img" style="width: 45px; height: 45px;" alt="Notification Image">
                                 <div class="d-flex flex-column notification-item-div">
-                                    <span class="${notification.read_at ? '' : 'fw-bold'}  text-dark small notification-item-heading">${notification.data.heading}</span>
+                                    <span class="${notification.read_at ? '' : 'fw-bold'}  text small notification-item-heading">${notification.data.heading}</span>
                                     <span class="text-muted small text-wrap notification-item-message" style="font-size: 12px;">${notification.data.message}</span>
                                     <span class="text-muted small notification-item-time" style="font-size: 10px;">${timeAgo}</span>
                                 </div>
