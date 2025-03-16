@@ -11,14 +11,14 @@ class UserNotification extends Notification implements ShouldQueue
 {
     use Queueable;
 
-    protected $picture;
+    protected $image;
     protected $heading;
     protected $message;
     protected $link;
 
-    public function __construct($picture, $heading, $message, $link)
+    public function __construct($image, $heading, $message, $link)
     {
-        $this->picture = $picture;
+        $this->image = $image;
         $this->heading = $heading;
         $this->message = $message;
         $this->link = $link;
@@ -32,7 +32,7 @@ class UserNotification extends Notification implements ShouldQueue
     public function toDatabase($notifiable)
     {
         return [
-            'picture' => $this->picture,
+            'image' => $this->image,
             'heading' => $this->heading,
             'message' => $this->message,
             'link' => $this->link,

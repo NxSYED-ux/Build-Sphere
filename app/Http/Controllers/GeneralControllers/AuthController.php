@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Tymon\JWTAuth\Facades\JWTAuth;
+use Pusher\Pusher;
 
 
 class AuthController extends Controller
@@ -94,5 +95,23 @@ class AuthController extends Controller
             return redirect()->route($redirectTo)->with($heading, $data)->cookie($cookie);
         }
         return redirect()->back()->withErrors([$heading => $data])->withInput();
+    }
+
+    public function authenticatePusher(Request $request)
+    {
+        $pusher = new Pusher(
+            env('PUSHER_APP_KEY'),
+            env('PUSHER_APP_SECRET'),
+            env('PUSHER_APP_ID'),
+            [
+                'cluster' => env('PUSHER_APP_CLUSTER'),
+                'useTLS' => true,
+            ]
+        );
+
+        return response($pusher->authorizeChannel(
+            $request->channel_name,
+            $request->socket_id
+        ));
     }
 }

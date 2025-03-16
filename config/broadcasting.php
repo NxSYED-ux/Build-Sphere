@@ -13,7 +13,6 @@ return [
                 'cluster' => env('PUSHER_APP_CLUSTER', 'mt1'),
                 'useTLS' => true,
             ],
-            'auth_endpoint' => '/broadcasting/auth',
         ],
 
         'log' => [

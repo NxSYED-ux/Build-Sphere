@@ -2,7 +2,6 @@
 
 use App\Http\Controllers\GeneralControllers\AuthController;
 use App\Http\Controllers\GeneralControllers\ForgotPasswordController;
-use App\Http\Controllers\GeneralControllers\NotificationController;
 use App\Http\Controllers\GeneralControllers\ProfileController;
 use App\Http\Controllers\WebControllers\AdminDashboardController;
 use App\Http\Controllers\WebControllers\BuildingController;
@@ -17,64 +16,10 @@ use App\Http\Controllers\WebControllers\OwnerDashboardController;
 use App\Http\Controllers\WebControllers\RolePermissionController;
 use App\Http\Controllers\WebControllers\RoleController;
 use App\Http\Controllers\WebControllers\UsersController;
-use App\Models\User;
-use App\Notifications\UserNotification;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Broadcast;
 use Illuminate\Support\Facades\Route;
-use Pusher\Pusher;
-
-
-Broadcast::routes(['middleware' => ['auth.jwt:cookie']]);
-
-Route::post('/my-custom-auth', function (Request $request) {
-    $token = $request->bearerToken();
-
-    if (!$token) {
-        $token = $request->cookie('jwt_token');
-    }
-
-    if (!$token) {
-        return response()->json(['message' => 'Unauthorized'], 401);
-    }
-
-    try {
-        $user = auth('jwt')->setToken($token)->user();
-    } catch (\Exception $e) {
-        return response()->json(['message' => 'Invalid Token'], 401);
-    }
-
-    if (!$user) {
-        return response()->json(['message' => 'Unauthorized'], 401);
-    }
-
-    $pusher = new Pusher(
-        env('PUSHER_APP_KEY'),
-        env('PUSHER_APP_SECRET'),
-        env('PUSHER_APP_ID'),
-        [
-            'cluster' => env('PUSHER_APP_CLUSTER'),
-            'useTLS' => true
-        ]
-    );
-
-    $channelName = $request->channel_name;
-    $socketId = $request->socket_id;
-
-    if (!$channelName || !$socketId) {
-        return response()->json(['message' => 'Invalid request'], 400);
-    }
-
-    $auth = $pusher->authorizeChannel($channelName, $socketId);
-    return response()->json($auth);
-});
 
 Route::get('/', function () {
     return view('auth.login');
-});
-
-Route::get('/index', function () {
-    return view('layouts.index');
 });
 
 // Authentication routes
@@ -93,41 +38,13 @@ Route::fallback(function () {
     return back();
 });
 
-//Route::get('/test-notification', function () {
-//    $user = User::find(11);
-//    $user->notify(new GeneralNotification(
-//        'Your Account Credentials',
-//        url('/'),
-//    ));
-//    return 'Notification Sent!';
-//});
-
-Broadcast::channel('App.Models.User.{id}', function ($user, $id) {
-    return (int) $user->id === (int) $id;
-});
-
-Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
-
-Route::get('/send-notification', function () {
-    $user = User::find(1);
-    if ($user) {
-        $user->notify(new UserNotification(
-            'https://via.placeholder.com/50',
-            'New Feature Update! 🚀',
-            'Check out the latest feature added to our platform!',
-            'https://example.com'
-        ));
-        return response()->json(['message' => 'Notification sent!']);
-    }
-
-    return response()->json(['message' => 'No user found!'], 404);
-});
-
 Route::middleware(['auth.jwt:cookie'])->group(function () {
 
-//    Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+    Route::get('/index', function () {
+        return view('layouts.index');
+    });
 
-
+    Route::post('/pusher/auth', [AuthController::class, 'authenticatePusher'])->name('pusher.auth');
 
     // Admin & Owner
     Route::post('logout', [AuthController::class, 'logOut'])->name('logout');

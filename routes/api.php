@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\GeneralControllers\AuthController;
+use App\Models\User;
+use App\Notifications\UserNotification;
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\GeneralControllers\ProfileController;
@@ -14,6 +16,24 @@ use App\Http\Controllers\AppControllers\QueryController;
 use App\Http\Controllers\AppControllers\DropdownController;
 
 Route::post('auth/user-login', [AuthController::class, 'login']);
+
+Route::get('/send-notification/{id}', function ($id) {
+    $user = User::find($id);
+
+    if ($user) {
+        $picture = "http://localhost:8000/uploads/units/images/Apartment_{$id}.jpeg";
+        $user->notify(new UserNotification(
+            $picture,
+            'Apna kam kr 🤭',
+            'Lagta ha tera sara kam ho gaya ha jo mera kam check kr raha ha',
+            'http://localhost:8000/dashboard'
+        ));
+        return response()->json(['message' => 'Notification sent to user ID: ' . $id]);
+    }
+
+    return response()->json(['message' => 'No user found with ID: ' . $id], 404);
+});
+
 
 Route::get('/user/values-by-type/{type}', [DropdownController::class, 'getDropdownValuesByType']);
 Route::get('/user/values-by-value/{value}', [DropdownController::class, 'getDropdownValuesByValue']);

@@ -39,7 +39,7 @@
               <option name="id" value="0513c82f-78cc-4f4a-b470-848d7c04a95e" />
               <option name="method" value="GET" />
               <option name="name" value="Draft (1)" />
-              <option name="url" value="http://localhost:8000/send-notification" />
+              <option name="url" value="http://localhost:8000/send-notification/3" />
             </requestState>
           </list>
         </option>
