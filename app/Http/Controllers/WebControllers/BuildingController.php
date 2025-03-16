@@ -10,6 +10,7 @@ use App\Models\BuildingLevel;
 use App\Models\BuildingPicture;
 use App\Models\DropdownType;
 use App\Models\Organization;
+use App\Notifications\UserNotification;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -147,6 +148,8 @@ class BuildingController extends Controller
 
     private function store(Request $request, String $portal, $organization_id, $status, $remarks)
     {
+        $user = $request->user() ?? abort(404, 'Page not found');
+
         $request->validate([
             'name' => 'required|string|max:255|unique:buildings,name',
             'building_type' => 'required|string|max:50',
@@ -190,6 +193,8 @@ class BuildingController extends Controller
                 'organization_id' => $organization_id,
             ]);
 
+            $notificationImage = null;
+
             if ($request->hasFile('building_pictures')) {
                 foreach ($request->file('building_pictures') as $image) {
                     $imageName = time() . '_' . $image->getClientOriginalName();
@@ -201,6 +206,8 @@ class BuildingController extends Controller
                         'file_path' => $imagePath,
                         'file_name' => $imageName,
                     ]);
+
+                    $notificationImage = $imagePath;
                 }
             }
 
@@ -223,6 +230,16 @@ class BuildingController extends Controller
             }
 
             DB::commit();
+
+            $link = "{$portal}/buildings/{$building->id}";
+            $message = "{$building->name} has been added successfully.";
+
+            $user->notify(new UserNotification(
+                $notificationImage,
+                'Building Added',
+                $message,
+                $link,
+            ));
 
             if ($portal == 'admin') {
                 return redirect()->route('buildings.index')->with('success', 'Building created successfully.');
@@ -350,6 +367,8 @@ class BuildingController extends Controller
 
     private function update(Request $request, String $portal, $organization_id)
     {
+        $user = $request->user();
+
         $request->validate([
             'id' => 'required|exists:buildings,id',
             'name' => 'required|string|max:255|unique:buildings,name,'. $request->id . 'id',
@@ -409,6 +428,7 @@ class BuildingController extends Controller
                     $imageName = time() . '_' . $image->getClientOriginalName();
                     $imagePath = 'uploads/buildings/images/' . $imageName;
                     $image->move(public_path('uploads/buildings/images'), $imageName);
+
                     BuildingPicture::create([
                         'building_id' => $building->id,
                         'file_path' => $imagePath,
@@ -436,6 +456,19 @@ class BuildingController extends Controller
             }
 
             DB::commit();
+
+            $link = "{$portal}/buildings/{$building->id}";
+            $message = "{$building->name} has been updated successfully.";
+            $Image = $building->load(['pictures']);
+            $notificationImage = $Image->pictures->first();
+
+
+            $user->notify(new UserNotification(
+                $notificationImage->file_path,
+                'Building Added',
+                $message,
+                $link,
+            ));
 
             if ($portal == 'admin') {
                 return redirect()->route('buildings.index')->with('success', 'Building updated successfully.');

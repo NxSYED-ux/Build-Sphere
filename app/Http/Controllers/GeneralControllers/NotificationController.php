@@ -75,4 +75,31 @@ class NotificationController extends Controller
             return response()->json(['error' => 'Failed to mark notification as read', 'details' => $e->getMessage()], 500);
         }
     }
+
+    public function markAsUnRead(Request $request)
+    {
+        try {
+
+            $request->user()->notifications()
+                ->whereNotNull('read_at')
+                ->update(['read_at' => null]);
+
+            return response()->json(['message' => 'All notifications marked as unread']);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Failed to mark notifications as unread', 'details' => $e->getMessage()], 500);
+        }
+    }
+
+    public function removeAll(Request $request)
+    {
+        try {
+
+            $request->user()->notifications()->delete();
+
+            return response()->json(['message' => 'All notifications are removed successfully']);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Failed to remove notifications.', 'details' => $e->getMessage()], 500);
+        }
+    }
+
 }
