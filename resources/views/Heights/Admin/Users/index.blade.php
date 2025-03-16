@@ -393,7 +393,7 @@
                         .then(data => {
                             let user = data.user;
 
-                            document.getElementById("userPicture").src = user.picture ? user.picture : "https://via.placeholder.com/150";
+                            document.getElementById("userPicture").src = user.picture ? "{{ asset('/') }}" + user.picture : "{{ asset('assets/placeholder-profile.png') }}";
                             document.getElementById("userName").textContent = user.name;
                             document.getElementById("userEmail").textContent = user.email;
                             document.getElementById("userPhone").textContent = user.phone_no;

@@ -201,7 +201,7 @@
 
                             notificationList.innerHTML += `
                            <a class="d-flex align-items-center text-decoration-none p-2 border-bottom" href="${notification.data.link}">
-                                <img src="${notification.data.image}" class="rounded-circle me-2 notification-item-img" style="width: 45px; height: 45px;" alt="Notification Image">
+                                <img src="${notification.data.image ? '{{ asset('/') }}' + notification.data.image : '{{ asset('img/placeholder-img.jfif') }}'}" class="rounded-circle me-2 notification-item-img" style="width: 45px; height: 45px;" alt="Notification Image">
                                 <div class="d-flex flex-column notification-item-div">
                                     <span class="${notification.read_at ? '' : 'fw-bold'}  text-dark small notification-item-heading">${notification.data.heading}</span>
                                     <span class="text-muted small text-wrap notification-item-message" style="font-size: 12px;">${notification.data.message}</span>
@@ -257,7 +257,6 @@
                  return response.json();
              })
              .then(() => {
-                 console.log("Notifications marked as read. Updating UI...");
 
                  setTimeout(() => {
                      let notifications = document.querySelectorAll(".notification-item-div");
