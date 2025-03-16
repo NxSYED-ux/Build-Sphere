@@ -195,7 +195,7 @@
 
                 <!-- Toast Body -->
                 <div class="toast-body">
-                    <a href="${data.link}" target="_blank" class="text-decoration-none text-dark">
+                    <a href="${window.location.origin + '/' + data.link}"  class="text-decoration-none text-dark">
                         <div class="d-flex align-items-center">
                             <img src="${data.image}" alt="Notification" class="rounded me-3" width="50" height="50">
                             <div>

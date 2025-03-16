@@ -174,11 +174,9 @@
     document.querySelector('#sidenav_toggler').addEventListener('mouseover', function () {
         this.querySelector('i').classList.replace('bx-menu-alt-left', 'bx-menu');
     });
-
     document.querySelector('#sidenav_toggler').addEventListener('mouseout', function () {
         this.querySelector('i').classList.replace('bx-menu', 'bx-menu-alt-left');
     });
-
 </script>
 
 <script>
@@ -200,14 +198,21 @@
                             const timeAgo = timeSince(new Date(notification.data.created_at));
 
                             notificationList.innerHTML += `
-                           <a class="d-flex align-items-center text-decoration-none p-2 border-bottom" href="${window.location.origin}/${notification.data.link}">
-                                <img src="${notification.data.image ? '{{ asset('/') }}' + notification.data.image : '{{ asset('img/placeholder-img.jfif') }}'}" class="rounded-circle me-2 notification-item-img" style="width: 45px; height: 45px;" alt="Notification Image">
+                           <a class="d-flex align-items-center text-decoration-none p-2 border-bottom notification-link"
+                               href="${notification.read_at ? window.location.origin + '/' + notification.data.link : 'javascript:void(0);'}"
+                               onclick="${notification.read_at ? '' : `markNotificationAsRead('${notification.id}', '${window.location.origin}/${notification.data.link}')`}">
+
+                                <img src="${notification.data.image ? '{{ asset('/') }}' + notification.data.image : '{{ asset('img/placeholder-img.jfif') }}'}"
+                                     class="rounded-circle me-2 notification-item-img"
+                                     style="width: 45px; height: 45px;"
+                                     alt="Notification Image">
                                 <div class="d-flex flex-column notification-item-div">
-                                    <span class="${notification.read_at ? '' : 'fw-bold'}  text small notification-item-heading">${notification.data.heading}</span>
+                                    <span class="${notification.read_at ? '' : 'fw-bold'} text small notification-item-heading">${notification.data.heading}</span>
                                     <span class="text-muted small text-wrap notification-item-message" style="font-size: 12px;">${notification.data.message}</span>
                                     <span class="text-muted small notification-item-time" style="font-size: 10px;">${timeAgo}</span>
                                 </div>
                             </a>
+
 
                         `;
                         });
@@ -275,5 +280,48 @@
              .catch(error => console.error("Error:", error));
      });
  </script>
+
+<script>
+    function markNotificationAsRead(notificationId, redirectUrl) {
+        if (!notificationId || !redirectUrl) {
+            return;
+        }
+
+        fetch("{{ route('notifications.mark-single-as-read') }}", {
+            method: "POST",
+            headers: {
+                "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ notification_id: notificationId })
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("Failed to mark notification as read");
+                }
+                return response.json();
+            })
+            .then(() => {
+                let notificationElement = document.querySelector(`[data-id="${notificationId}"]`);
+                if (notificationElement) {
+                    let heading = notificationElement.querySelector(".notification-item-heading");
+                    if (heading) {
+                        heading.classList.remove("fw-bold");
+                    }
+                }
+
+                setTimeout(() => {
+                    console.log("Redirecting to:", redirectUrl);
+                    window.location.href = redirectUrl;
+                }, 300);
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                alert("Error marking notification as read. Please try again.");
+            });
+    }
+</script>
+
+
 
 
