@@ -17,9 +17,6 @@ class FavouritesController extends Controller
                 return response()->json(['error' => 'User not authenticated.'], 401);
             }
 
-            $limit = (int) $request->query('limit', 10);
-            $offset = (int) $request->query('offset', 0);
-
             $favorites = Favorite::where('user_id', $user->id)
                 ->whereHas('unit', function ($query) {
                     $query->where([
@@ -53,8 +50,6 @@ class FavouritesController extends Controller
                     }
                 ])
                 ->select('unit_id')
-                ->limit($limit)
-                ->offset($offset)
                 ->orderBy('created_at', 'DESC')
                 ->get();
 

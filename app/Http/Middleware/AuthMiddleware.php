@@ -14,27 +14,13 @@ use App\Models\User;
 
 class AuthMiddleware
 {
-    public function handle(Request $request, Closure $next, $tokenSource = 'header')
+    public function handle(Request $request, Closure $next)
     {
         try {
-            $token = null;
-
-            if ($tokenSource === 'header') {
-                $authorizationHeader = $request->header('Authorization');
-                if ($authorizationHeader) {
-                    $parts = explode(' ', $authorizationHeader);
-                    if (count($parts) === 2 && $parts[0] === 'Bearer') {
-                        $token = $parts[1];
-                    } else {
-                        return $this->handleResponse($tokenSource, 'Authorization format is invalid. Use Bearer <token>', 400);
-                    }
-                }
-            } elseif ($tokenSource === 'cookie') {
-                $token = $request->cookie('jwt_token');
-            }
+            $token = $request->cookie('jwt_token') ?? $this->getTokenFromHeader($request);
 
             if (!$token) {
-                return $this->handleResponse($tokenSource, 'Authorization required', 401);
+                return $this->handleResponse('Authorization required', 401);
             }
 
             $user = JWTAuth::setToken($token)->authenticate();
@@ -42,15 +28,15 @@ class AuthMiddleware
             $tokenData = $payload['user'] ?? null;
 
             if (!$user || $user->status === 0) {
-                return $this->handleResponse($tokenSource, 'User account is deactivated or deleted by administrator', 403);
+                return $this->handleResponse('User account is deactivated or deleted by administrator', 403);
             }
 
             if (!$tokenData) {
-                return $this->handleResponse($tokenSource, 'Invalid session ID', 400);
+                return $this->handleResponse('Invalid session ID', 400);
             }
 
             if ($tokenData['role_id'] !== $user->role_id) {
-                return $this->handleResponse($tokenSource, 'Your role has been changed by administrator', 403);
+                return $this->handleResponse('Your role has been changed by administrator', 403);
             }
 
             $request->merge(['user' => $user]);
@@ -58,20 +44,31 @@ class AuthMiddleware
             return $next($request);
 
         } catch (TokenExpiredException $e) {
-            return $this->handleResponse($tokenSource, 'Session has expired', 401);
+            return $this->handleResponse('Session has expired', 401);
         } catch (TokenInvalidException $e) {
-            return $this->handleResponse($tokenSource, 'Invalid session ID', 400);
+            return $this->handleResponse('Invalid session ID', 400);
         } catch (JWTException $e) {
-            return $this->handleResponse($tokenSource, 'Could not parse token', 400);
+            return $this->handleResponse('Could not parse token', 400);
         } catch (Exception $e) {
-            return $this->handleResponse($tokenSource, 'Invalid or expired session ID', 400);
+            return $this->handleResponse('Invalid or expired session ID', 400);
         }
     }
 
-    private function handleResponse($tokenSource, $message, $statusCode)
+    private function getTokenFromHeader(Request $request)
     {
-        return $tokenSource === 'header'
-            ? response()->json(['error' => $message], $statusCode)
-            : redirect('/login')->with('error', $message);
+        $authorizationHeader = $request->header('Authorization');
+        if ($authorizationHeader) {
+            $parts = explode(' ', $authorizationHeader);
+            if (count($parts) === 2 && $parts[0] === 'Bearer') {
+                return $parts[1];
+            }
+        }
+        return null;
     }
+
+    private function handleResponse($message, $statusCode)
+    {
+        return response()->json(['error' => $message], $statusCode);
+    }
+
 }

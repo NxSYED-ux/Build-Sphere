@@ -36,8 +36,6 @@ class HomePageController extends Controller
             $unitType = $request->query('unitType');
             $saleOrRent = $request->query('saleOrRent');
             $city = $request->query('city');
-            $limit = (int) $request->query('limit', 20);
-            $offset = (int) $request->query('offset', 0);
             $excludeUnit = $request->query('exclude_unit');
 
             $query = BuildingUnit::query();
@@ -106,8 +104,6 @@ class HomePageController extends Controller
                     $query->select('unit_id', 'file_path');
                 }
             ])->select('id', 'unit_name', 'unit_type', 'price', 'sale_or_rent', 'availability_status', 'level_id')
-                ->limit($limit)
-                ->offset($offset)
                 ->orderBy('updated_at', 'DESC')
                 ->get();
 

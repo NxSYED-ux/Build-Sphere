@@ -23,16 +23,9 @@ Route::get('/', function () {
     return view('auth.login');
 });
 
-
-Route::middleware('auth.jwt:cookie')->group(function () {
-    Route::get('/notifications/unread-count', [NotificationController::class, 'getUnreadNotificationsCount']);
-    Route::get('/notifications', [NotificationController::class, 'getNotifications'])->name('notifications');
-    Route::post('/notifications/mark-as-read', [NotificationController::class, 'markAsRead']);
-    Route::post('/notifications/mark-as-read-single', [NotificationController::class, 'markAsReadSingle']);
+Route::get('/index', function () {
+    return view('layouts.index');
 });
-
-
-
 
 // Authentication routes
 Route::get('login', [AuthController::class, 'index'])->name('login');
@@ -50,12 +43,9 @@ Route::fallback(function () {
     return back();
 });
 
-Route::middleware(['auth.jwt:cookie'])->group(function () {
+Route::middleware(['auth.jwt'])->group(function () {
 
-    Route::get('/index', function () {
-        return view('layouts.index');
-    });
-
+    // Notification
     Route::post('/pusher/auth', [AuthController::class, 'authenticatePusher'])->name('pusher.auth');
 
     // Admin & Owner

@@ -22,12 +22,12 @@ Route::get('/send-notification/{id}', function ($id) {
     $user = User::find($id);
 
     if ($user) {
-        $picture = "http://localhost:8000/uploads/units/images/Apartment_{$id}.jpeg";
+        $picture = "uploads/units/images/Apartment_{$id}.jpeg";
         $user->notify(new UserNotification(
             $picture,
             'Apna kam kr 🤭',
             'Lagta ha tera sara kam ho gaya ha jo mera kam check kr raha ha',
-            'http://localhost:8000/dashboard'
+            'admin_dashboard'
         ));
         return response()->json(['message' => 'Notification sent to user ID: ' . $id]);
     }
@@ -36,11 +36,14 @@ Route::get('/send-notification/{id}', function ($id) {
 });
 
 
+
 Route::middleware('auth.jwt')->group(function () {
-    Route::get('/api/notifications/unread-count', [NotificationController::class, 'getUnreadNotificationsCount']);
-    Route::get('/api/notifications', [NotificationController::class, 'getNotifications']);
-    Route::post('/api/notifications/mark-as-read', [NotificationController::class, 'markAsRead']);
-    Route::post('/api/notifications/mark-as-read-single', [NotificationController::class, 'markAsReadSingle']);
+    Route::get('/api/pusher-config', [NotificationController::class, 'pusherCredentials']);
+
+    Route::get('/api/notifications/unread-count', [NotificationController::class, 'getUnreadNotificationsCount'])->name('notifications.unread.count');
+    Route::get('/api/notifications', [NotificationController::class, 'getNotifications'])->name('notifications');
+    Route::post('/api/notifications/mark-as-read', [NotificationController::class, 'markAsRead'])->name('notifications.mark-all-as-read');
+    Route::post('/api/notifications/mark-as-read-single', [NotificationController::class, 'markAsReadSingle'])->name('notifications.mark-as-read-single');
 });
 
 
