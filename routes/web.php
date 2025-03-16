@@ -24,9 +24,9 @@ Route::get('/', function () {
 });
 
 
-Route::middleware('auth.jwt:cookies')->group(function () {
+Route::middleware('auth.jwt:cookie')->group(function () {
     Route::get('/notifications/unread-count', [NotificationController::class, 'getUnreadNotificationsCount']);
-    Route::get('/notifications', [NotificationController::class, 'getNotifications']);
+    Route::get('/notifications', [NotificationController::class, 'getNotifications'])->name('notifications');
     Route::post('/notifications/mark-as-read', [NotificationController::class, 'markAsRead']);
     Route::post('/notifications/mark-as-read-single', [NotificationController::class, 'markAsReadSingle']);
 });

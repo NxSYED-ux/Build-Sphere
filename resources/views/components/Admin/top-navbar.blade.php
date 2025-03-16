@@ -97,12 +97,10 @@
             <!-- Alerts Dropdown -->
             <li class="nav-item dropdown no-arrow mx-2 px-2">
                 <a class="nav-link dropdown-toggle dropdown-toggle-no-arrow position-relative" href="#" id="alertsDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-
                     <svg width="20" height="25" viewBox="0 0 14 18" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M6.4 17.2222C5.51684 17.2178 4.80073 16.5053 4.792 15.6222H7.992C7.99369 15.8361 7.9529 16.0482 7.872 16.2462C7.66212 16.7278 7.23345 17.079 6.72 17.1902H6.716H6.704H6.6896H6.6824C6.58945 17.2095 6.49492 17.2202 6.4 17.2222ZM12.8 14.8222H0V13.2222L1.6 12.4222V8.02217C1.55785 6.89346 1.81275 5.77347 2.3392 4.77417C2.86323 3.84738 3.75896 3.18927 4.8 2.96617V1.22217H8V2.96617C10.0632 3.45737 11.2 5.25257 11.2 8.02217V12.4222L12.8 13.2222V14.8222Z" fill="#B0C3CC"/>
                         <circle cx="11" cy="3" r="3" fill="#EC5252"/>
                     </svg>
-
                 </a>
                 <div class="dropdown-menu mt-3 dropdown-menu-end shadow animated--grow-in notification-menu" aria-labelledby="alertsDropdown">
                     <div class="notification-header d-flex align-items-center justify-content-between">
@@ -111,50 +109,82 @@
                                 <path d="M6.4 17.2222C5.51684 17.2178 4.80073 16.5053 4.792 15.6222H7.992C7.99369 15.8361 7.9529 16.0482 7.872 16.2462C7.66212 16.7278 7.23345 17.079 6.72 17.1902H6.716H6.704H6.6896H6.6824C6.58945 17.2095 6.49492 17.2202 6.4 17.2222ZM12.8 14.8222H0V13.2222L1.6 12.4222V8.02217C1.55785 6.89346 1.81275 5.77347 2.3392 4.77417C2.86323 3.84738 3.75896 3.18927 4.8 2.96617V1.22217H8V2.96617C10.0632 3.45737 11.2 5.25257 11.2 8.02217V12.4222L12.8 13.2222V14.8222Z" fill="#B0C3CC"/>
                                 <circle cx="11" cy="3" r="3" fill="#EC5252"/>
                             </svg>
-                            Notifications</h5>
+                            Notifications
+                        </h5>
                         <button class="btn-close px-3" aria-label="Close"></button>
                     </div>
-                    <div class="notification-list px-1" >
-                        <a class="dropdown-item  d-flex align-items-center" href="#">
-                            <img src="{{ asset('img/buildings/building6.jpg') }}" style="width: 40px; height: 40px;" alt="Notification Image" class="rounded-circle me-3">
-                            <div>
-                                <h7>Notification 1</h7>
-                                <p class="mb-0 text-muted text-wrap small" style="font-size: 12px;">Building status successfully changed to Approved.</p>
-                            </div>
-                            <span class="text-muted small ms-auto" style="font-size: 12px;">2m ago</span>
-                        </a>
-                        <a class="dropdown-item d-flex align-items-center" href="#">
-                            <img src="{{ asset('img/buildings/building6.jpg') }}" style="width: 40px; height: 40px;" alt="Notification Image" class="rounded-circle me-3">
-                            <div>
-                                <h7>Notification 2</h7>
-                                <p class="mb-0 text-muted text-wrap small" style="font-size: 12px;">Building status successfully changed to Approved.</p>
-                            </div>
-                            <span class="text-muted small ms-auto" style="font-size: 12px;">10m ago</span>
-                        </a>
-                        <a class="dropdown-item d-flex align-items-center" href="#">
-                            <img src="{{ asset('img/buildings/building6.jpg') }}" style="width: 40px; height: 40px;" alt="Notification Image" class="rounded-circle me-3">
-                            <div>
-                                <h7>Notification 3</h7>
-                                <p class="mb-0 text-muted text-wrap small" style="font-size: 12px;">Building is available for Approval.</p>
-                            </div>
-                            <span class="text-muted small ms-auto" style="font-size: 12px;">1h ago</span>
-                        </a>
-                        <a class="dropdown-item d-flex align-items-center" href="#">
-                            <img src="{{ asset('img/buildings/building6.jpg') }}" style="width: 40px; height: 40px;" alt="Notification Image" class="rounded-circle me-3">
-                            <div>
-                                <h7>Notification 4</h7>
-                                <p class="mb-0 text-muted text-wrap small" style="font-size: 12px;">New building added to your portfolio.</p>
-                            </div>
-                            <span class="text-muted small ms-auto" style="font-size: 12px;">3h ago</span>
-                        </a>
+
+                    <div class="notification-list px-1" id="notificationList">
+                        <p class="text-muted text-center small">No new notifications</p>
                     </div>
 
                     <div class="notification-footer d-flex justify-content-between py-3 px-3">
-                        <button class="btn btn-primary btn rounded-3">Mark All as Read</button>
-                        <button class="btn btn-outline-secondary btn  rounded-3">Close</button>
+                        <button id="markAllAsRead" class="btn btn-primary btn rounded-3">Mark All as Read</button>
+                        <button class="btn btn-outline-secondary btn rounded-3">Close</button>
                     </div>
                 </div>
             </li>
+
+            {{--            <li class="nav-item dropdown no-arrow mx-2 px-2">--}}
+{{--                <a class="nav-link dropdown-toggle dropdown-toggle-no-arrow position-relative" href="#" id="alertsDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">--}}
+
+{{--                    <svg width="20" height="25" viewBox="0 0 14 18" fill="none" xmlns="http://www.w3.org/2000/svg">--}}
+{{--                        <path d="M6.4 17.2222C5.51684 17.2178 4.80073 16.5053 4.792 15.6222H7.992C7.99369 15.8361 7.9529 16.0482 7.872 16.2462C7.66212 16.7278 7.23345 17.079 6.72 17.1902H6.716H6.704H6.6896H6.6824C6.58945 17.2095 6.49492 17.2202 6.4 17.2222ZM12.8 14.8222H0V13.2222L1.6 12.4222V8.02217C1.55785 6.89346 1.81275 5.77347 2.3392 4.77417C2.86323 3.84738 3.75896 3.18927 4.8 2.96617V1.22217H8V2.96617C10.0632 3.45737 11.2 5.25257 11.2 8.02217V12.4222L12.8 13.2222V14.8222Z" fill="#B0C3CC"/>--}}
+{{--                        <circle cx="11" cy="3" r="3" fill="#EC5252"/>--}}
+{{--                    </svg>--}}
+
+{{--                </a>--}}
+{{--                <div class="dropdown-menu mt-3 dropdown-menu-end shadow animated--grow-in notification-menu" aria-labelledby="alertsDropdown">--}}
+{{--                    <div class="notification-header d-flex align-items-center justify-content-between">--}}
+{{--                        <h5 class="mb-0 px-2 py-2 fw-bold">--}}
+{{--                            <svg width="20" height="25" class="mx-2" viewBox="0 0 14 18" fill="none" xmlns="http://www.w3.org/2000/svg">--}}
+{{--                                <path d="M6.4 17.2222C5.51684 17.2178 4.80073 16.5053 4.792 15.6222H7.992C7.99369 15.8361 7.9529 16.0482 7.872 16.2462C7.66212 16.7278 7.23345 17.079 6.72 17.1902H6.716H6.704H6.6896H6.6824C6.58945 17.2095 6.49492 17.2202 6.4 17.2222ZM12.8 14.8222H0V13.2222L1.6 12.4222V8.02217C1.55785 6.89346 1.81275 5.77347 2.3392 4.77417C2.86323 3.84738 3.75896 3.18927 4.8 2.96617V1.22217H8V2.96617C10.0632 3.45737 11.2 5.25257 11.2 8.02217V12.4222L12.8 13.2222V14.8222Z" fill="#B0C3CC"/>--}}
+{{--                                <circle cx="11" cy="3" r="3" fill="#EC5252"/>--}}
+{{--                            </svg>--}}
+{{--                            Notifications</h5>--}}
+{{--                        <button class="btn-close px-3" aria-label="Close"></button>--}}
+{{--                    </div>--}}
+{{--                    <div class="notification-list px-1" >--}}
+{{--                        <a class="dropdown-item  d-flex align-items-center" href="#">--}}
+{{--                            <img src="{{ asset('img/buildings/building6.jpg') }}" style="width: 40px; height: 40px;" alt="Notification Image" class="rounded-circle me-3">--}}
+{{--                            <div>--}}
+{{--                                <h7>Notification 1</h7>--}}
+{{--                                <p class="mb-0 text-muted text-wrap small" style="font-size: 12px;">Building status successfully changed to Approved.</p>--}}
+{{--                            </div>--}}
+{{--                            <span class="text-muted small ms-auto" style="font-size: 12px;">2m ago</span>--}}
+{{--                        </a>--}}
+{{--                        <a class="dropdown-item d-flex align-items-center" href="#">--}}
+{{--                            <img src="{{ asset('img/buildings/building6.jpg') }}" style="width: 40px; height: 40px;" alt="Notification Image" class="rounded-circle me-3">--}}
+{{--                            <div>--}}
+{{--                                <h7>Notification 2</h7>--}}
+{{--                                <p class="mb-0 text-muted text-wrap small" style="font-size: 12px;">Building status successfully changed to Approved.</p>--}}
+{{--                            </div>--}}
+{{--                            <span class="text-muted small ms-auto" style="font-size: 12px;">10m ago</span>--}}
+{{--                        </a>--}}
+{{--                        <a class="dropdown-item d-flex align-items-center" href="#">--}}
+{{--                            <img src="{{ asset('img/buildings/building6.jpg') }}" style="width: 40px; height: 40px;" alt="Notification Image" class="rounded-circle me-3">--}}
+{{--                            <div>--}}
+{{--                                <h7>Notification 3</h7>--}}
+{{--                                <p class="mb-0 text-muted text-wrap small" style="font-size: 12px;">Building is available for Approval.</p>--}}
+{{--                            </div>--}}
+{{--                            <span class="text-muted small ms-auto" style="font-size: 12px;">1h ago</span>--}}
+{{--                        </a>--}}
+{{--                        <a class="dropdown-item d-flex align-items-center" href="#">--}}
+{{--                            <img src="{{ asset('img/buildings/building6.jpg') }}" style="width: 40px; height: 40px;" alt="Notification Image" class="rounded-circle me-3">--}}
+{{--                            <div>--}}
+{{--                                <h7>Notification 4</h7>--}}
+{{--                                <p class="mb-0 text-muted text-wrap small" style="font-size: 12px;">New building added to your portfolio.</p>--}}
+{{--                            </div>--}}
+{{--                            <span class="text-muted small ms-auto" style="font-size: 12px;">3h ago</span>--}}
+{{--                        </a>--}}
+{{--                    </div>--}}
+
+{{--                    <div class="notification-footer d-flex justify-content-between py-3 px-3">--}}
+{{--                        <button class="btn btn-primary btn rounded-3">Mark All as Read</button>--}}
+{{--                        <button class="btn btn-outline-secondary btn  rounded-3">Close</button>--}}
+{{--                    </div>--}}
+{{--                </div>--}}
+{{--            </li>--}}
         </ul>
 
 
@@ -209,3 +239,77 @@
     });
 
 </script>
+
+
+{{--<script>$(document).ready(function() {--}}
+{{--        fetch("{{ route('notifications') }}")--}}
+{{--            .then(response => response.json())--}}
+{{--            .then(data => {--}}
+{{--                console.log(response); // Check data in console--}}
+{{--                },--}}
+{{--                error: function(xhr) {--}}
+{{--                console.error("Error fetching notifications:", xhr.responseText);--}}
+{{--                }--}}
+{{--                });--}}
+{{--    });--}}
+{{--</script>--}}
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        function fetchNotifications() {
+            console.log("Notification Function is calling");
+
+            fetch("{{ route('notifications') }}", {
+                method: "GET"
+            })
+                .then(response => response.json())
+                .then(data => {
+                    console.log("Notifications API is calling");
+                    console.log("Notifications API Data:", data);
+
+                    const notificationList = document.getElementById("notificationList");
+                    notificationList.innerHTML = "";
+
+                    if (data.notifications.length > 0) {
+                        data.notifications.forEach(notification => {
+                            const timeAgo = timeSince(new Date(notification.data.created_at)); // ✅ Fixed
+
+                            notificationList.innerHTML += `
+                            <a class="dropdown-item d-flex align-items-center" href="${notification.data.link}">
+                                <img src="${notification.data.image}" style="width: 40px; height: 40px;" alt="Notification Image" class="rounded-circle me-3">
+                                <div>
+                                    <h7>${notification.data.heading}</h7>
+                                    <p class="mb-0 text-muted text-wrap small" style="font-size: 12px;">${notification.data.message}</p>
+                                </div>
+                                <span class="text-muted small ms-auto" style="font-size: 12px;">${timeAgo}</span>
+                            </a>
+                        `;
+                        });
+                    } else {
+                        notificationList.innerHTML = '<p class="text-muted text-center small">No new notifications</p>';
+                    }
+                })
+                .catch(error => console.error("Error fetching notifications:", error));
+        }
+
+        function timeSince(date) {
+            const seconds = Math.floor((new Date() - date) / 1000);
+            const intervals = {
+                year: 31536000, month: 2592000, day: 86400,
+                hour: 3600, minute: 60, second: 1
+            };
+            for (let [key, value] of Object.entries(intervals)) {
+                let count = Math.floor(seconds / value);
+                if (count > 0) {
+                    return count + " " + key + (count > 1 ? "s" : "") + " ago";
+                }
+            }
+            return "Just now";
+        }
+
+        // Fetch notifications on dropdown click
+        document.getElementById("alertsDropdown").addEventListener("click", fetchNotifications);
+    });
+</script>
+
+

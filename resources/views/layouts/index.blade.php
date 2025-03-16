@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Live Notifications</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
     <script>
         let pusher = new Pusher(@json(env('PUSHER_APP_KEY')), {
@@ -18,31 +19,46 @@
         channel.bind('Illuminate\\Notifications\\Events\\BroadcastNotificationCreated', function(data) {
             let notifications = document.getElementById('notifications');
 
-            let newNotification = document.createElement('a');
-            newNotification.href = data.link;
-            newNotification.target = "_blank";
-            newNotification.className = "block bg-white border border-gray-300 rounded-lg p-4 shadow-md hover:shadow-lg transition-all duration-300 flex items-start space-x-4";
+            let newNotification = document.createElement('div');
+            newNotification.className = "toast show align-items-center text-bg-light border-0 shadow-sm";
+            newNotification.setAttribute("role", "alert");
+            newNotification.setAttribute("aria-live", "assertive");
+            newNotification.setAttribute("aria-atomic", "true");
 
             newNotification.innerHTML = `
-                <img src="${data.image}" alt="Notification" class="w-16 h-16 rounded-md shadow">
-                <div>
-                    <h2 class="text-lg font-bold text-gray-900">${data.heading}</h2>
-                    <p class="text-gray-600 text-sm">${data.message}</p>
-                    <p class="text-xs text-gray-400 mt-1">${new Date().toLocaleString()}</p>
+                <div class="d-flex">
+                    <div class="toast-body">
+                        <a href="${data.link}" target="_blank" class="text-decoration-none text-dark">
+                            <div class="d-flex align-items-center">
+                                <img src="${data.image}" alt="Notification" class="rounded me-3" width="50" height="50">
+                                <div>
+                                    <strong>${data.heading}</strong>
+                                    <p class="mb-0">${data.message}</p>
+                                    <small class="text-muted">${new Date().toLocaleString()}</small>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
                 </div>
             `;
 
             notifications.prepend(newNotification);
+
+            // Auto-hide the notification after 5 seconds
+            setTimeout(() => {
+                newNotification.classList.remove("show");
+                setTimeout(() => newNotification.remove(), 500);
+            }, 5000);
         });
 
         Pusher.logToConsole = false;
     </script>
 </head>
-<body class="bg-gray-100 flex items-center justify-center min-h-screen">
-<div class="bg-white shadow-lg rounded-lg p-6 w-full max-w-lg">
-    <h1 class="text-xl font-bold text-center text-gray-800">Live Notifications</h1>
-    <p class="text-gray-600 text-center">New notifications will appear here.</p>
-    <div id="notifications" class="mt-4 space-y-3"></div>
-</div>
+<body class="bg-light">
+
+    <!-- Notifications Container (Fixed to Top Right) -->
+    <div id="notifications" class="position-fixed top-0 end-0 p-3" style="z-index: 1050;"></div>
+
 </body>
 </html>
