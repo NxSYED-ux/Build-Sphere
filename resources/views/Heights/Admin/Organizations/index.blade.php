@@ -193,7 +193,7 @@
                                                             </tr>
                                                         </thead>
                                                         <tbody>
-                                                            @foreach ($organizations as $organization)
+                                                            @forelse ($organizations ?? [] as $organization)
                                                                 <tr>
                                                                     <td>{{ $organization->id }}</td>
                                                                     <td>
@@ -210,7 +210,11 @@
 
                                                                     </td>
                                                                 </tr>
-                                                            @endforeach
+                                                                @empty
+                                                                    <tr>
+                                                                        <td colspan="9" class="text-center">No organizations found.</td>
+                                                                    </tr>
+                                                                @endforelse
                                                         </tbody>
                                                     </table>
                                                 </div>
@@ -229,7 +233,7 @@
                                                             <div class="col-lg-8 col-md-8 col-sm-12 col-12">
 
                                                                 <div class="row my-0 py-0">
-                                                                    <div class="col-sm-12 col-md-6 col-lg-4">
+                                                                    <div class="col-sm-12 col-md-6 col-lg-6">
                                                                         <div class="form-group mb-3">
                                                                             <label for="name">Name</label>
                                                                             <span class="required__field">*</span><br>
@@ -243,7 +247,7 @@
                                                                     </div>
 
                                                                     <!-- Organization -->
-                                                                    <div class="col-sm-12 col-md-6 col-lg-4">
+                                                                    <div class="col-sm-12 col-md-6 col-lg-6">
                                                                         <div class="form-group mb-3">
                                                                             <label for="owner_id">Owner</label>
                                                                             <span class="required__field">*</span><br>
@@ -264,26 +268,30 @@
                                                                     </div>
 
 
-                                                                    <div class="col-lg-4 col-md-6 col-sm-12 mb-3">
-                                                                        <label for="membership_start_date" >Membership Start Date</label>
-                                                                        <span class="required__field">*</span><br>
-                                                                        <input type="date" class="form-control" id="membership_start_date" name="membership_start_date" value="{{ old('membership_start_date', date('Y-m-d')) }}" required>
-                                                                        @error('membership_start_date')
-                                                                            <div class="text-danger">{{ $message }}</div>
-                                                                        @enderror
+                                                                    <div class="col-sm-12 col-md-6 col-lg-6">
+                                                                        <div class="form-group mb-3">
+                                                                            <label for="membership_start_date" >Membership Start Date</label>
+                                                                            <span class="required__field">*</span><br>
+                                                                            <input type="date" class="form-control" id="membership_start_date" name="membership_start_date" value="{{ old('membership_start_date', date('Y-m-d')) }}" required>
+                                                                            @error('membership_start_date')
+                                                                                <div class="text-danger">{{ $message }}</div>
+                                                                            @enderror
+                                                                        </div>
                                                                     </div>
 
-                                                                    <div class="col-lg-4 col-md-6 col-sm-12 mb-3">
-                                                                        <label for="membership_end_date" >Membership End Date</label>
-                                                                        <span class="required__field">*</span><br>
-                                                                        <input type="date" class="form-control" id="membership_end_date" name="membership_end_date" value="{{ old('membership_end_date') }}" required>
-                                                                        @error('membership_end_date')
-                                                                            <div class="text-danger">{{ $message }}</div>
-                                                                        @enderror
+                                                                    <div class="col-sm-12 col-md-6 col-lg-6">
+                                                                        <div class="form-group mb-3">
+                                                                            <label for="membership_end_date" >Membership End Date</label>
+                                                                            <span class="required__field">*</span><br>
+                                                                            <input type="date" class="form-control" id="membership_end_date" name="membership_end_date" value="{{ old('membership_end_date') }}" required>
+                                                                            @error('membership_end_date')
+                                                                                <div class="text-danger">{{ $message }}</div>
+                                                                            @enderror
+                                                                        </div>
                                                                     </div>
 
                                                                     <!--  -->
-                                                                    <div class="col-lg-4 col-md-6 col-sm-12">
+                                                                    <div class="col-sm-12 col-md-6 col-lg-6">
                                                                         <div class="form-group mb-3">
                                                                             <label for="country" >Country</label>
                                                                             <select class="form-select" id="country" name="country">
@@ -295,7 +303,7 @@
                                                                         </div>
                                                                     </div>
                                                                     <!--  -->
-                                                                    <div class="col-lg-4 col-md-6 col-sm-12">
+                                                                    <div class="col-sm-12 col-md-6 col-lg-6">
                                                                         <div class="form-group mb-3">
                                                                             <label for="province" >Province</label>
                                                                             <select class="form-select" id="province" name="province">
@@ -308,7 +316,7 @@
                                                                     </div>
 
                                                                     <!--  -->
-                                                                    <div class="col-lg-4 col-md-6 col-sm-12">
+                                                                    <div class="col-sm-12 col-md-6 col-lg-6">
                                                                         <div class="form-group mb-3">
                                                                             <label for="city" >City</label>
                                                                             <select class="form-select" id="city" name="city">
@@ -321,7 +329,7 @@
                                                                     </div>
 
                                                                     <!--  -->
-                                                                    <div class="col-sm-12 col-md-6 col-lg-4">
+                                                                    <div class="col-sm-12 col-md-6 col-lg-6">
                                                                         <div class="form-group mb-3">
                                                                             <label for="location">Location</label>
                                                                             <input type="text" name="location" id="location" class="form-control @error('location') is-invalid @enderror" value="{{ old('location') }}" maxlength="100" placeholder="Enter Location">
@@ -334,7 +342,7 @@
                                                                     </div>
 
                                                                     <!--  -->
-                                                                    <div class="col-sm-12 col-md-6 col-lg-4">
+                                                                    <div class="col-sm-12 col-md-6 col-lg-6">
                                                                         <div class="form-group mb-3">
                                                                             <label for="postal_code">Postal Code</label>
                                                                             <input type="text" name="postal_code" id="postal_code" class="form-control @error('postal_code') is-invalid @enderror" value="{{ old('postal_code') }}" maxlength="100" placeholder="Enter Postal Code">

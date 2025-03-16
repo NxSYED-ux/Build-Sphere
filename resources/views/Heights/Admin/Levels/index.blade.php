@@ -71,7 +71,7 @@
 
     <div id="main">
 
-        <section class="content my-3 mx-2">
+        <section class="content mt-1 mb-3 mx-2">
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-md-12">
@@ -96,7 +96,7 @@
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                @foreach($levels as $level)
+                                                @forelse($levels ?? [] as $level)
                                                 <tr>
                                                     <td>{{ $level->id }}</td>
                                                     <td>{{ $level->level_name }}</td>
@@ -113,7 +113,11 @@
                                                         </a>
                                                     </td>
                                                 </tr>
-                                                @endforeach
+                                                @empty
+                                                    <tr>
+                                                        <td colspan="7" class="text-center">No levels found.</td>
+                                                    </tr>
+                                                @endforelse
                                             </tbody>
                                         </table>
                                     </div>

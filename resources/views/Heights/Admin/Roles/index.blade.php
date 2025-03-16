@@ -104,7 +104,7 @@
 
     <div id="main">
 
-        <section class="content my-3 mx-2">
+        <section class="content mt-1 mb-3 mx-2">
             <div class="container-fluid ">
                 <div class="row">
                     <div class="col-md-12">
@@ -127,14 +127,14 @@
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                @forelse($roles as $role)
+                                                @forelse($roles ?? [] as $role)
                                                     <tr>
                                                         <td>{{ $role->id }}</td>
                                                         <td>{{ $role->name }}</td>
                                                         <td>{{ $role->description }}</td>
                                                         <td>{{ $role->status ? 'Active' : 'Inactive' }}</td>
                                                         <td class="text-center" style="width: 100px;">
-                                                            <a href="#" class="text-warning edit-role-button" id="edit-role-button" data-id="{{ $role->id }}" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit"> <i class="fa fa-pencil" style="font-size: 20px;"></i>
+                                                            <a href="#" class="text-warning edit-role-button" id="edit-role-button" data-id="{{ $role->id }}" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit"><i class="fa fa-pencil" style="font-size: 20px;"></i></a>
                                                         </td>
                                                     </tr>
                                                 @empty

@@ -149,7 +149,7 @@
 
     <div id="main">
 
-        <section class="content my-3 mx-2">
+        <section class="content mt-1 mb-3 mx-2">
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-md-12">
@@ -204,7 +204,7 @@
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                @foreach($users as $user)
+                                                @forelse($users ?? [] as $user)
                                                 <tr>
                                                     <td>{{ $user->id }}</td>
                                                     <td>
@@ -222,13 +222,19 @@
                                                         <a href="{{ route('users.edit', $user->id) }}" class="text-warning @if($user->role_id === 6) disabled-link @endif" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit"> <i class="fa fa-pencil mx-2" style="font-size: 20px;"></i> </a>
                                                     </td>
                                                 </tr>
-                                                @endforeach
+                                                @empty
+                                                    <tr>
+                                                        <td colspan="10" class="text-center">No user found.</td>
+                                                    </tr>
+                                                @endforelse
                                             </tbody>
                                         </table>
 
-                                        <div class="mt-3">
-                                            {{ $users->links('pagination::bootstrap-5') }}
-                                        </div>
+                                        @if($users)
+                                            <div class="mt-3">
+                                                {{ $users->links('pagination::bootstrap-5') }}
+                                            </div>
+                                        @endif
                                     </div>
                                 </div>
                             </div>

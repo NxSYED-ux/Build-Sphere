@@ -133,7 +133,7 @@
 
     <div id="main">
 
-        <section class="content  my-3 mx-2">
+        <section class="content  mt-1 mb-3 mx-2">
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-md-12">
@@ -193,15 +193,21 @@
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                @forelse ($units as $unit)
+                                                @forelse ($units ?? [] as $unit)
                                                     <tr>
                                                         <td>{{ $unit->id }}</td>
                                                         <td>
-                                                            @if ($unit->pictures && $unit->pictures->count() > 0)
-                                                                <img src="{{ asset($unit->pictures->first()->file_path) }}" alt="Unit Picture" style="border-radius: 5px;" width="100" height="50">
-                                                            @else
-                                                                <img src="https://via.placeholder.com/150" alt="Placeholder Image" style="border-radius: 5px;" width="100" height="50">
-                                                            @endif
+                                                            <div id="unitCarousel{{ $unit->id }}" class="carousel slide" data-bs-ride="carousel">
+                                                                <div class="carousel-inner">
+                                                                    @forelse($unit->pictures ?? [] as $key => $picture)
+                                                                        <div class="carousel-item {{ $key == 0 ? 'active' : '' }}">
+                                                                            <img src="{{ asset($picture->file_path) }}" class="d-block" alt="Unit Picture" style="border-radius: 5px; width:100px; height:50px;">
+                                                                        </div>
+                                                                    @empty
+                                                                        <img src="{{ asset('img/placeholder-img.jfif') }}" class="d-block" alt="Unit Picture" style="border-radius: 5px; width:100px; height:50px;">
+                                                                    @endforelse
+                                                                </div>
+                                                            </div>
                                                         </td>
                                                         <td>{{ $unit->unit_name }}</td>
                                                         <td>
@@ -229,9 +235,11 @@
                                             </tbody>
                                         </table>
 
-                                        <div class="mt-3">
-                                            {{ $units->links('pagination::bootstrap-5') }}
-                                        </div>
+                                        @if ($units)
+                                            <div class="mt-3">
+                                                {{ $units->links('pagination::bootstrap-5') }}
+                                            </div>
+                                        @endif
 
                                     </div>
                                 </div>
