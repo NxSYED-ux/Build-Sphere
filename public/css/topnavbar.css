@@ -217,7 +217,8 @@
         filter: invert(var(--invert, 0));
     }
     .notification-list {
-        max-height: 200px;
+        max-height: 241px;
+        min-height: 241px !important;
         overflow-y: auto;
     }
     /* Scrollbar styles for Chrome, Edge, and Safari */
@@ -297,6 +298,25 @@
 
     .notification-footer .btn-outline-secondary:hover {
         background-color: var(--notification-button-outline-hover-bg);
+    }
+
+    /**/
+    .notification-item-img {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        margin-right: 8px;
+    }
+    .notification-item-div {
+        flex-grow: 1;
+        margin-left: 5px;
+    }
+    .notification-item-heading {
+        font-size: 13px;
+        color: var(--main-text-color);
+    }
+    .notification-item-message {
+        font-size: 12px;
     }
 
 
