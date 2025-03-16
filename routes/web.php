@@ -178,7 +178,7 @@ Route::prefix('admin')->middleware(['auth.jwt'])->group(function () {
 
     });
 
-    Route::prefix('/roles/Permissions')->group(function () {
+    Route::prefix('/role-Permissions')->group(function () {
 
         Route::get('/', [RolePermissionController::class, 'showRolePermissions'])->name('role.permissions');
         Route::post('/toggle', [RolePermissionController::class, 'toggleRolePermission'])->name('toggle.role.permission');
