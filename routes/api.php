@@ -55,11 +55,13 @@ Route::prefix('api')->middleware(['auth.jwt'])->group(function () {
     Route::prefix('notifications')->group(function () {
 
         Route::get('/', [NotificationController::class, 'getNotifications'])->name('notifications');
+        Route::get('/unread', [NotificationController::class, 'getUnReadNotifications'])->name('notifications');
         Route::get('/unread-count', [NotificationController::class, 'getUnreadNotificationsCount'])->name('notifications.unread.count');
         Route::post('/mark-all-as-read', [NotificationController::class, 'markAsRead'])->name('notifications.mark-all-as-read');
         Route::post('/mark-single-as-read', [NotificationController::class, 'markAsReadSingle'])->name('notifications.mark-single-as-read');
         Route::post('/mark-all-as-unread', [NotificationController::class, 'markAsUnRead'])->name('notifications.mark-all-as-unread');
         Route::post('/remove-all', [NotificationController::class, 'removeAll'])->name('notifications.remove-all');
+        Route::post('/remove-single', [NotificationController::class, 'removeSingle'])->name('notifications.remove-single');
 
         Route::get('/pusher-config', [NotificationController::class, 'pusherCredentials']);
 

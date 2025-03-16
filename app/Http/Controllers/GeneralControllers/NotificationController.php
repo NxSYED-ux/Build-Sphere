@@ -37,6 +37,17 @@ class NotificationController extends Controller
         }
     }
 
+    public function getUnReadNotifications(Request $request)
+    {
+        try {
+            return response()->json([
+                'notifications' => $request->user()->unreadNotifications()->orderBy('created_at', 'desc')->get(),
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Failed to fetch unread notifications', 'details' => $e->getMessage()], 500);
+        }
+    }
+
     public function markAsRead(Request $request)
     {
         try {
@@ -53,11 +64,11 @@ class NotificationController extends Controller
 
     public function markAsReadSingle(Request $request)
     {
-        try {
-            $request->validate([
-                'notification_id' => 'required|uuid',
-            ]);
+        $request->validate([
+            'notification_id' => 'required|uuid',
+        ]);
 
+        try {
             $notification = $request->user()->notifications()->find($request->notification_id);
 
             if (!$notification) {
@@ -95,6 +106,21 @@ class NotificationController extends Controller
         try {
 
             $request->user()->notifications()->delete();
+
+            return response()->json(['message' => 'All notifications are removed successfully']);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Failed to remove notifications.', 'details' => $e->getMessage()], 500);
+        }
+    }
+
+    public function removeSingle(Request $request){
+        $request->validate([
+            'notification_id' => 'required|uuid',
+        ]);
+
+        try {
+
+            $request->user()->notifications()->where('id', $request->notification_id)->delete();
 
             return response()->json(['message' => 'All notifications are removed successfully']);
         } catch (\Exception $e) {
