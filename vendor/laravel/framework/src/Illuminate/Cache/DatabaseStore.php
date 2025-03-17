@@ -8,8 +8,10 @@ use Illuminate\Contracts\Cache\Store;
 use Illuminate\Database\ConnectionInterface;
 use Illuminate\Database\PostgresConnection;
 use Illuminate\Database\QueryException;
+use Illuminate\Database\SQLiteConnection;
 use Illuminate\Database\SqlServerConnection;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Collection;
 use Illuminate\Support\InteractsWithTime;
 use Illuminate\Support\Str;
 
@@ -76,13 +78,14 @@ class DatabaseStore implements LockProvider, Store
      * @param  array  $lockLottery
      * @return void
      */
-    public function __construct(ConnectionInterface $connection,
-                                                    $table,
-                                                    $prefix = '',
-                                                    $lockTable = 'cache_locks',
-                                                    $lockLottery = [2, 100],
-                                                    $defaultLockTimeoutInSeconds = 86400)
-    {
+    public function __construct(
+        ConnectionInterface $connection,
+        $table,
+        $prefix = '',
+        $lockTable = 'cache_locks',
+        $lockLottery = [2, 100],
+        $defaultLockTimeoutInSeconds = 86400,
+    ) {
         $this->table = $table;
         $this->prefix = $prefix;
         $this->connection = $connection;
@@ -260,7 +263,7 @@ class DatabaseStore implements LockProvider, Store
             $prefixed = $this->prefix.$key;
 
             $cache = $this->table()->where('key', $prefixed)
-                        ->lockForUpdate()->first();
+                ->lockForUpdate()->first();
 
             // If there is no value in the cache, we will return false here. Otherwise the
             // value will be decrypted and we will proceed with this function to either
@@ -378,9 +381,10 @@ class DatabaseStore implements LockProvider, Store
      */
     protected function forgetMany(array $keys)
     {
-        $this->table()->whereIn('key', array_map(function ($key) {
-            return $this->prefix.$key;
-        }, $keys))->delete();
+        $this->table()->whereIn('key', (new Collection($keys))->flatMap(fn ($key) => [
+            $this->prefix.$key,
+            "{$this->prefix}illuminate:cache:flexible:created:{$key}",
+        ])->all())->delete();
 
         return true;
     }
@@ -395,9 +399,13 @@ class DatabaseStore implements LockProvider, Store
     protected function forgetManyIfExpired(array $keys, bool $prefixed = false)
     {
         $this->table()
-            ->whereIn('key', $prefixed ? $keys : array_map(function ($key) {
-                return $this->prefix.$key;
-            }, $keys))
+            ->whereIn('key', (new Collection($keys))->flatMap(fn ($key) => $prefixed ? [
+                $key,
+                $this->prefix.'illuminate:cache:flexible:created:'.Str::chopStart($key, $this->prefix),
+            ] : [
+                "{$this->prefix}{$key}",
+                "{$this->prefix}illuminate:cache:flexible:created:{$key}",
+            ])->all())
             ->where('expiration', '<=', $this->getTime())
             ->delete();
 
@@ -480,7 +488,9 @@ class DatabaseStore implements LockProvider, Store
     {
         $result = serialize($value);
 
-        if ($this->connection instanceof PostgresConnection && str_contains($result, "\0")) {
+        if (($this->connection instanceof PostgresConnection ||
+             $this->connection instanceof SQLiteConnection) &&
+            str_contains($result, "\0")) {
             $result = base64_encode($result);
         }
 
@@ -495,7 +505,9 @@ class DatabaseStore implements LockProvider, Store
      */
     protected function unserialize($value)
     {
-        if ($this->connection instanceof PostgresConnection && ! Str::contains($value, [':', ';'])) {
+        if (($this->connection instanceof PostgresConnection ||
+             $this->connection instanceof SQLiteConnection) &&
+            ! Str::contains($value, [':', ';'])) {
             $value = base64_decode($value);
         }
 

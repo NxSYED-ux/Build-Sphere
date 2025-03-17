@@ -6,6 +6,7 @@ use Closure;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Query\JoinClause;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Collection;
 use InvalidArgumentException;
 
 trait CanBeOneOfMany
@@ -150,7 +151,7 @@ trait CanBeOneOfMany
      */
     public function latestOfMany($column = 'id', $relation = null)
     {
-        return $this->ofMany(collect(Arr::wrap($column))->mapWithKeys(function ($column) {
+        return $this->ofMany(Collection::wrap($column)->mapWithKeys(function ($column) {
             return [$column => 'MAX'];
         })->all(), 'MAX', $relation);
     }
@@ -164,7 +165,7 @@ trait CanBeOneOfMany
      */
     public function oldestOfMany($column = 'id', $relation = null)
     {
-        return $this->ofMany(collect(Arr::wrap($column))->mapWithKeys(function ($column) {
+        return $this->ofMany(Collection::wrap($column)->mapWithKeys(function ($column) {
             return [$column => 'MIN'];
         })->all(), 'MIN', $relation);
     }
@@ -214,7 +215,7 @@ trait CanBeOneOfMany
             }
         }
 
-        $this->addOneOfManySubQueryConstraints($subQuery, $groupBy, $columns, $aggregate);
+        $this->addOneOfManySubQueryConstraints($subQuery, column: null, aggregate: $aggregate);
 
         return $subQuery;
     }
@@ -237,7 +238,7 @@ trait CanBeOneOfMany
                     $join->on($this->qualifySubSelectColumn($onColumn.'_aggregate'), '=', $this->qualifyRelatedColumn($onColumn));
                 }
 
-                $this->addOneOfManyJoinSubQueryConstraints($join, $on);
+                $this->addOneOfManyJoinSubQueryConstraints($join);
             });
         });
     }
@@ -296,7 +297,7 @@ trait CanBeOneOfMany
      */
     protected function qualifyRelatedColumn($column)
     {
-        return str_contains($column, '.') ? $column : $this->query->getModel()->getTable().'.'.$column;
+        return $this->query->getModel()->qualifyColumn($column);
     }
 
     /**

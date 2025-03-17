@@ -2,7 +2,7 @@
 
 namespace Illuminate\Database\Eloquent\Relations;
 
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 
 /**
  * @template TRelatedModel of \Illuminate\Database\Eloquent\Model
@@ -19,12 +19,19 @@ class MorphMany extends MorphOneOrMany
      */
     public function one()
     {
-        return MorphOne::noConstraints(fn () => new MorphOne(
-            $this->getQuery(),
-            $this->getParent(),
-            $this->morphType,
-            $this->foreignKey,
-            $this->localKey
+        return MorphOne::noConstraints(fn () => tap(
+            new MorphOne(
+                $this->getQuery(),
+                $this->getParent(),
+                $this->morphType,
+                $this->foreignKey,
+                $this->localKey
+            ),
+            function ($morphOne) {
+                if ($inverse = $this->getInverseRelationship()) {
+                    $morphOne->inverse($inverse);
+                }
+            }
         ));
     }
 
@@ -47,7 +54,7 @@ class MorphMany extends MorphOneOrMany
     }
 
     /** @inheritDoc */
-    public function match(array $models, Collection $results, $relation)
+    public function match(array $models, EloquentCollection $results, $relation)
     {
         return $this->matchMany($models, $results, $relation);
     }

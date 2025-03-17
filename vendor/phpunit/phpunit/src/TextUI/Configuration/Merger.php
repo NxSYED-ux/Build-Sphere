@@ -10,6 +10,7 @@
 namespace PHPUnit\TextUI\Configuration;
 
 use const DIRECTORY_SEPARATOR;
+use const PATH_SEPARATOR;
 use function array_diff;
 use function assert;
 use function dirname;
@@ -31,6 +32,8 @@ use SebastianBergmann\Environment\Console;
 use SebastianBergmann\Invoker\Invoker;
 
 /**
+ * @no-named-arguments Parameter names are not covered by the backward compatibility promise for PHPUnit
+ *
  * @internal This class is not covered by the backward compatibility promise for PHPUnit
  */
 final readonly class Merger
@@ -104,6 +107,12 @@ final readonly class Merger
             $failOnDeprecation = $xmlConfiguration->phpunit()->failOnDeprecation();
         }
 
+        if ($cliConfiguration->hasFailOnPhpunitDeprecation()) {
+            $failOnPhpunitDeprecation = $cliConfiguration->failOnPhpunitDeprecation();
+        } else {
+            $failOnPhpunitDeprecation = $xmlConfiguration->phpunit()->failOnPhpunitDeprecation();
+        }
+
         if ($cliConfiguration->hasFailOnEmptyTestSuite()) {
             $failOnEmptyTestSuite = $cliConfiguration->failOnEmptyTestSuite();
         } else {
@@ -150,6 +159,12 @@ final readonly class Merger
             $stopOnDeprecation = $cliConfiguration->stopOnDeprecation();
         } else {
             $stopOnDeprecation = $xmlConfiguration->phpunit()->stopOnDeprecation();
+        }
+
+        $specificDeprecationToStopOn = null;
+
+        if ($cliConfiguration->hasSpecificDeprecationToStopOn()) {
+            $specificDeprecationToStopOn = $cliConfiguration->specificDeprecationToStopOn();
         }
 
         if ($cliConfiguration->hasStopOnError()) {
@@ -213,7 +228,7 @@ final readonly class Merger
         if ($columns < 16) {
             $columns = 16;
 
-            EventFacade::emitter()->testRunnerTriggeredWarning(
+            EventFacade::emitter()->testRunnerTriggeredPhpunitWarning(
                 'Less than 16 columns requested, number of columns set to 16',
             );
         }
@@ -233,6 +248,15 @@ final readonly class Merger
         }
 
         $extensionBootstrappers = [];
+
+        if ($cliConfiguration->hasExtensions()) {
+            foreach ($cliConfiguration->extensions() as $extension) {
+                $extensionBootstrappers[] = [
+                    'className'  => $extension,
+                    'parameters' => [],
+                ];
+            }
+        }
 
         foreach ($xmlConfiguration->extensions() as $extension) {
             $extensionBootstrappers[] = [
@@ -384,7 +408,7 @@ final readonly class Merger
         }
 
         if ($enforceTimeLimit && !(new Invoker)->canInvokeWithTimeout()) {
-            EventFacade::emitter()->testRunnerTriggeredWarning(
+            EventFacade::emitter()->testRunnerTriggeredPhpunitWarning(
                 'The pcntl extension is required for enforcing time limits',
             );
         }
@@ -433,6 +457,12 @@ final readonly class Merger
             $displayDetailsOnTestsThatTriggerDeprecations = $cliConfiguration->displayDetailsOnTestsThatTriggerDeprecations();
         } else {
             $displayDetailsOnTestsThatTriggerDeprecations = $xmlConfiguration->phpunit()->displayDetailsOnTestsThatTriggerDeprecations();
+        }
+
+        if ($cliConfiguration->hasDisplayDetailsOnPhpunitDeprecations()) {
+            $displayDetailsOnPhpunitDeprecations = $cliConfiguration->displayDetailsOnPhpunitDeprecations();
+        } else {
+            $displayDetailsOnPhpunitDeprecations = $xmlConfiguration->phpunit()->displayDetailsOnPhpunitDeprecations();
         }
 
         if ($cliConfiguration->hasDisplayDetailsOnTestsThatTriggerErrors()) {
@@ -554,6 +584,12 @@ final readonly class Merger
             $testDoxOutput = $xmlConfiguration->phpunit()->testdoxPrinter();
         }
 
+        if ($cliConfiguration->hasTestDoxPrinterSummary() && $cliConfiguration->testdoxPrinterSummary()) {
+            $testDoxOutputSummary = true;
+        } else {
+            $testDoxOutputSummary = $xmlConfiguration->phpunit()->testdoxPrinterSummary();
+        }
+
         $noProgress = false;
 
         if ($cliConfiguration->hasNoProgress() && $cliConfiguration->noProgress()) {
@@ -582,6 +618,12 @@ final readonly class Merger
 
         if ($cliConfiguration->hasTestsUsing()) {
             $testsUsing = $cliConfiguration->testsUsing();
+        }
+
+        $testsRequiringPhpExtension = null;
+
+        if ($cliConfiguration->hasTestsRequiringPhpExtension()) {
+            $testsRequiringPhpExtension = $cliConfiguration->testsRequiringPhpExtension();
         }
 
         $filter = null;
@@ -618,11 +660,11 @@ final readonly class Merger
 
         if ($xmlConfiguration->wasLoadedFromFile() && $xmlConfiguration->hasValidationErrors()) {
             if ((new SchemaDetector)->detect($xmlConfiguration->filename())->detected()) {
-                EventFacade::emitter()->testRunnerTriggeredDeprecation(
+                EventFacade::emitter()->testRunnerTriggeredPhpunitDeprecation(
                     'Your XML configuration validates against a deprecated schema. Migrate your XML configuration using "--migrate-configuration"!',
                 );
             } else {
-                EventFacade::emitter()->testRunnerTriggeredWarning(
+                EventFacade::emitter()->testRunnerTriggeredPhpunitWarning(
                     "Test results may not be as expected because the XML configuration file did not pass validation:\n" .
                     $xmlConfiguration->validationErrors(),
                 );
@@ -707,6 +749,30 @@ final readonly class Merger
         assert($useBaseline !== '');
         assert($generateBaseline !== '');
 
+        if ($failOnDeprecation) {
+            $displayDetailsOnTestsThatTriggerDeprecations = true;
+        }
+
+        if ($failOnPhpunitDeprecation) {
+            $displayDetailsOnPhpunitDeprecations = true;
+        }
+
+        if ($failOnNotice) {
+            $displayDetailsOnTestsThatTriggerNotices = true;
+        }
+
+        if ($failOnWarning) {
+            $displayDetailsOnTestsThatTriggerWarnings = true;
+        }
+
+        if ($failOnIncomplete) {
+            $displayDetailsOnIncompleteTests = true;
+        }
+
+        if ($failOnSkipped) {
+            $displayDetailsOnSkippedTests = true;
+        }
+
         return new Configuration(
             $cliConfiguration->arguments(),
             $configurationFile,
@@ -759,6 +825,7 @@ final readonly class Merger
             $xmlConfiguration->codeCoverage()->ignoreDeprecatedCodeUnits(),
             $disableCodeCoverageIgnore,
             $failOnDeprecation,
+            $failOnPhpunitDeprecation,
             $failOnEmptyTestSuite,
             $failOnIncomplete,
             $failOnNotice,
@@ -767,6 +834,7 @@ final readonly class Merger
             $failOnWarning,
             $stopOnDefect,
             $stopOnDeprecation,
+            $specificDeprecationToStopOn,
             $stopOnError,
             $stopOnFailure,
             $stopOnIncomplete,
@@ -795,6 +863,7 @@ final readonly class Merger
             $displayDetailsOnIncompleteTests,
             $displayDetailsOnSkippedTests,
             $displayDetailsOnTestsThatTriggerDeprecations,
+            $displayDetailsOnPhpunitDeprecations,
             $displayDetailsOnTestsThatTriggerErrors,
             $displayDetailsOnTestsThatTriggerNotices,
             $displayDetailsOnTestsThatTriggerWarnings,
@@ -814,8 +883,10 @@ final readonly class Merger
             $logEventsVerboseText,
             $teamCityOutput,
             $testDoxOutput,
+            $testDoxOutputSummary,
             $testsCovering,
             $testsUsing,
+            $testsRequiringPhpExtension,
             $filter,
             $excludeFilter,
             $groups,
@@ -844,6 +915,7 @@ final readonly class Merger
             $xmlConfiguration->phpunit()->numberOfTestsBeforeGarbageCollection(),
             $generateBaseline,
             $cliConfiguration->debug(),
+            $xmlConfiguration->phpunit()->shortenArraysForExportThreshold(),
         );
     }
 }

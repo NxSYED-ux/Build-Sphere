@@ -21,8 +21,11 @@ use Illuminate\Contracts\Cache\Repository as CacheContract;
 use Illuminate\Contracts\Cache\Store;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Collection;
 use Illuminate\Support\InteractsWithTime;
 use Illuminate\Support\Traits\Macroable;
+
+use function Illuminate\Support\defer;
 
 /**
  * @mixin \Illuminate\Contracts\Cache\Store
@@ -99,11 +102,9 @@ class Repository implements ArrayAccess, CacheContract
     /**
      * Retrieve an item from the cache by key.
      *
-     * @template TCacheValue
-     *
      * @param  array|string  $key
-     * @param  TCacheValue|(\Closure(): TCacheValue)  $default
-     * @return (TCacheValue is null ? mixed : TCacheValue)
+     * @param  mixed  $default
+     * @return mixed
      */
     public function get($key, $default = null): mixed
     {
@@ -141,13 +142,13 @@ class Repository implements ArrayAccess, CacheContract
     {
         $this->event(new RetrievingManyKeys($this->getName(), $keys));
 
-        $values = $this->store->many(collect($keys)->map(function ($value, $key) {
+        $values = $this->store->many((new Collection($keys))->map(function ($value, $key) {
             return is_string($key) ? $key : $value;
         })->values()->all());
 
-        return collect($values)->map(function ($value, $key) use ($keys) {
-            return $this->handleManyResult($keys, $key, $value);
-        })->all();
+        return (new Collection($values))
+            ->map(fn ($value, $key) => $this->handleManyResult($keys, $key, $value))
+            ->all();
     }
 
     /**
@@ -196,11 +197,9 @@ class Repository implements ArrayAccess, CacheContract
     /**
      * Retrieve an item from the cache and delete it.
      *
-     * @template TCacheValue
-     *
      * @param  array|string  $key
-     * @param  TCacheValue|(\Closure(): TCacheValue)  $default
-     * @return (TCacheValue is null ? mixed : TCacheValue)
+     * @param  mixed  $default
+     * @return mixed
      */
     public function pull($key, $default = null)
     {
@@ -472,6 +471,57 @@ class Repository implements ArrayAccess, CacheContract
     }
 
     /**
+     * Retrieve an item from the cache by key, refreshing it in the background if it is stale.
+     *
+     * @template TCacheValue
+     *
+     * @param  string  $key
+     * @param  array{ 0: \DateTimeInterface|\DateInterval|int, 1: \DateTimeInterface|\DateInterval|int }  $ttl
+     * @param  (callable(): TCacheValue)  $callback
+     * @param  array{ seconds?: int, owner?: string }|null  $lock
+     * @return TCacheValue
+     */
+    public function flexible($key, $ttl, $callback, $lock = null)
+    {
+        [
+            $key => $value,
+            "illuminate:cache:flexible:created:{$key}" => $created,
+        ] = $this->many([$key, "illuminate:cache:flexible:created:{$key}"]);
+
+        if (in_array(null, [$value, $created], true)) {
+            return tap(value($callback), fn ($value) => $this->putMany([
+                $key => $value,
+                "illuminate:cache:flexible:created:{$key}" => Carbon::now()->getTimestamp(),
+            ], $ttl[1]));
+        }
+
+        if (($created + $this->getSeconds($ttl[0])) > Carbon::now()->getTimestamp()) {
+            return $value;
+        }
+
+        $refresh = function () use ($key, $ttl, $callback, $lock, $created) {
+            $this->store->lock(
+                "illuminate:cache:flexible:lock:{$key}",
+                $lock['seconds'] ?? 0,
+                $lock['owner'] ?? null,
+            )->get(function () use ($key, $callback, $created, $ttl) {
+                if ($created !== $this->get("illuminate:cache:flexible:created:{$key}")) {
+                    return;
+                }
+
+                $this->putMany([
+                    $key => value($callback),
+                    "illuminate:cache:flexible:created:{$key}" => Carbon::now()->getTimestamp(),
+                ], $ttl[1]);
+            });
+        };
+
+        defer($refresh, "illuminate:cache:flexible:{$key}");
+
+        return $value;
+    }
+
+    /**
      * Remove an item from the cache.
      *
      * @param  string  $key
@@ -575,7 +625,9 @@ class Repository implements ArrayAccess, CacheContract
         $duration = $this->parseDateInterval($ttl);
 
         if ($duration instanceof DateTimeInterface) {
-            $duration = Carbon::now()->diffInSeconds($duration, false);
+            $duration = (int) ceil(
+                Carbon::now()->diffInMilliseconds($duration, false) / 1000
+            );
         }
 
         return (int) ($duration > 0 ? $duration : 0);
@@ -586,7 +638,7 @@ class Repository implements ArrayAccess, CacheContract
      *
      * @return string|null
      */
-    protected function getName()
+    public function getName()
     {
         return $this->config['store'] ?? null;
     }

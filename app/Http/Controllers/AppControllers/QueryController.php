@@ -184,7 +184,7 @@ class QueryController extends Controller
         }
     }
 
-    public function getQueryDetails(Request $request, $id)
+    public function getQueryDetails($id)
     {
         try {
             if (!is_numeric($id)) {
@@ -251,6 +251,116 @@ class QueryController extends Controller
         } catch (\Exception $e) {
             Log::error("Error in acceptOrRejectQuery: " . $e->getMessage());
             return response()->json(['error' => 'Failed to update query status'], 500);
+        }
+    }
+
+    public function getYearlyQueryStats(Request $request)
+    {
+        try {
+            if (!$request->user()?->id) {
+                return response()->json(['error' => 'User ID is required'], 400);
+            }
+
+            $staffData = StaffMember::where('user_id', $request->user()->id)->first();
+            if (!$staffData) {
+                return response()->json(['data' => (object) []]);
+            }
+
+            $staffMemberId = $staffData->id;
+            $year = $request->query('year');
+            $month = $request->query('month');
+
+            $statuses = DB::table('queries')->distinct()->pluck('status')->toArray();
+
+            $statusCases = collect($statuses)->map(function ($status) {
+                return "SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) AS `$status`";
+            })->implode(', ');
+
+            $query = DB::table('queries')
+                ->selectRaw("COUNT(*) AS total_queries, $statusCases", $statuses)
+                ->where('staff_member_id', $staffMemberId);
+
+            if ($year) {
+                $query->whereYear('created_at', $year);
+            }
+
+            if ($month) {
+                $query->whereMonth('created_at', $month);
+            }
+
+            $results = $query->first();
+
+            return response()->json(['data' => $results]);
+
+        } catch (\Exception $e) {
+            Log::error('Error in getYearlyQueryStats: ' . $e->getMessage());
+            return response()->json(['message' => 'Internal Server Error'], 500);
+        }
+    }
+
+    public function getMonthlyQueryStats(Request $request)
+    {
+        try {
+            if (!$request->user()?->id) {
+                return response()->json(['error' => 'User ID is required'], 400);
+            }
+
+            $staffData = StaffMember::where('user_id', $request->user()->id)->first();
+            if (!$staffData) {
+                return response()->json(['monthly' => (object) []]);
+            }
+
+            $staffMemberId = $staffData->id;
+            $year = $request->query('year');
+            $month = $request->query('month');
+
+            if (!$year) {
+                return response()->json(['error' => 'Year is required for monthly stats'], 400);
+            }
+
+            $statuses = DB::table('queries')->distinct()->pluck('status')->toArray();
+
+            $statusCases = collect($statuses)->map(function ($status) {
+                return "SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) AS `$status`";
+            })->implode(', ');
+
+            $query = DB::table('queries')
+                ->selectRaw("DATE_FORMAT(created_at, '%Y-%m') AS query_month, COUNT(*) AS total_queries, $statusCases", $statuses)
+                ->where('staff_member_id', $staffMemberId)
+                ->whereYear('created_at', $year);
+
+            if ($month) {
+                $query->whereMonth('created_at', $month);
+            }
+
+            $query->groupBy('query_month')->orderBy('query_month');
+
+            $monthlyResults = $query->get();
+
+            $monthNames = [
+                "01" => "January", "02" => "February", "03" => "March", "04" => "April",
+                "05" => "May", "06" => "June", "07" => "July", "08" => "August",
+                "09" => "September", "10" => "October", "11" => "November", "12" => "December"
+            ];
+
+            $formattedData = ['monthly' =>  []];
+
+            foreach ($monthlyResults as $row) {
+                $monthKey = $monthNames[substr($row->query_month, -2)];
+                $formattedData['monthly'][$monthKey] = ['total_queries' => $row->total_queries];
+
+                foreach ($statuses as $status) {
+                    $formattedData['monthly'][$monthKey][$status] = $row->$status ?? "0";
+                }
+            }
+
+            $formattedData = ['monthly' =>  (object) $formattedData['monthly']];
+
+            return response()->json($formattedData);
+
+        } catch (\Exception $e) {
+            Log::error('Error in getMonthlyQueryStats: ' . $e->getMessage());
+            return response()->json(['success' => false, 'message' => 'Internal Server Error'], 500);
         }
     }
 

@@ -5,6 +5,7 @@ namespace Illuminate\Database\Console;
 use Illuminate\Database\ConnectionResolverInterface;
 use Illuminate\Database\Schema\Builder;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Number;
 use Symfony\Component\Console\Attribute\AsCommand;
 
@@ -39,14 +40,16 @@ class TableCommand extends DatabaseInspectionCommand
     {
         $connection = $connections->connection($this->input->getOption('database'));
         $schema = $connection->getSchemaBuilder();
-        $tables = $schema->getTables();
+        $tables = (new Collection($schema->getTables()))
+            ->keyBy(fn ($table) => $table['schema'] ? $table['schema'].'.'.$table['name'] : $table['name'])
+            ->all();
 
         $tableName = $this->argument('table') ?: select(
             'Which table would you like to inspect?',
-            array_column($tables, 'name')
+            array_keys($tables)
         );
 
-        $table = Arr::first($tables, fn ($table) => $table['name'] === $tableName);
+        $table = $tables[$tableName] ?? Arr::first($tables, fn ($table) => $table['name'] === $tableName);
 
         if (! $table) {
             $this->components->warn("Table [{$tableName}] doesn't exist.");
@@ -54,7 +57,7 @@ class TableCommand extends DatabaseInspectionCommand
             return 1;
         }
 
-        $tableName = $this->withoutTablePrefix($connection, $table['name']);
+        $tableName = ($table['schema'] ? $table['schema'].'.' : '').$this->withoutTablePrefix($connection, $table['name']);
 
         $columns = $this->columns($schema, $tableName);
         $indexes = $this->indexes($schema, $tableName);
@@ -62,9 +65,13 @@ class TableCommand extends DatabaseInspectionCommand
 
         $data = [
             'table' => [
+                'schema' => $table['schema'],
                 'name' => $table['name'],
                 'columns' => count($columns),
                 'size' => $table['size'],
+                'comment' => $table['comment'],
+                'collation' => $table['collation'],
+                'engine' => $table['engine'],
             ],
             'columns' => $columns,
             'indexes' => $indexes,
@@ -85,7 +92,7 @@ class TableCommand extends DatabaseInspectionCommand
      */
     protected function columns(Builder $schema, string $table)
     {
-        return collect($schema->getColumns($table))->map(fn ($column) => [
+        return (new Collection($schema->getColumns($table)))->map(fn ($column) => [
             'column' => $column['name'],
             'attributes' => $this->getAttributesForColumn($column),
             'default' => $column['default'],
@@ -101,12 +108,13 @@ class TableCommand extends DatabaseInspectionCommand
      */
     protected function getAttributesForColumn($column)
     {
-        return collect([
+        return (new Collection([
             $column['type_name'],
+            $column['generation'] ? $column['generation']['type'] : null,
             $column['auto_increment'] ? 'autoincrement' : null,
             $column['nullable'] ? 'nullable' : null,
             $column['collation'],
-        ])->filter();
+        ]))->filter();
     }
 
     /**
@@ -118,9 +126,9 @@ class TableCommand extends DatabaseInspectionCommand
      */
     protected function indexes(Builder $schema, string $table)
     {
-        return collect($schema->getIndexes($table))->map(fn ($index) => [
+        return (new Collection($schema->getIndexes($table)))->map(fn ($index) => [
             'name' => $index['name'],
-            'columns' => collect($index['columns']),
+            'columns' => new Collection($index['columns']),
             'attributes' => $this->getAttributesForIndex($index),
         ]);
     }
@@ -133,12 +141,12 @@ class TableCommand extends DatabaseInspectionCommand
      */
     protected function getAttributesForIndex($index)
     {
-        return collect([
+        return (new Collection([
             $index['type'],
             count($index['columns']) > 1 ? 'compound' : null,
             $index['unique'] && ! $index['primary'] ? 'unique' : null,
             $index['primary'] ? 'primary' : null,
-        ])->filter();
+        ]))->filter();
     }
 
     /**
@@ -150,12 +158,12 @@ class TableCommand extends DatabaseInspectionCommand
      */
     protected function foreignKeys(Builder $schema, string $table)
     {
-        return collect($schema->getForeignKeys($table))->map(fn ($foreignKey) => [
+        return (new Collection($schema->getForeignKeys($table)))->map(fn ($foreignKey) => [
             'name' => $foreignKey['name'],
-            'columns' => collect($foreignKey['columns']),
+            'columns' => new Collection($foreignKey['columns']),
             'foreign_schema' => $foreignKey['foreign_schema'],
             'foreign_table' => $foreignKey['foreign_table'],
-            'foreign_columns' => collect($foreignKey['foreign_columns']),
+            'foreign_columns' => new Collection($foreignKey['foreign_columns']),
             'on_update' => $foreignKey['on_update'],
             'on_delete' => $foreignKey['on_delete'],
         ]);
@@ -197,11 +205,19 @@ class TableCommand extends DatabaseInspectionCommand
 
         $this->newLine();
 
-        $this->components->twoColumnDetail('<fg=green;options=bold>'.$table['name'].'</>');
+        $this->components->twoColumnDetail('<fg=green;options=bold>'.($table['schema'] ? $table['schema'].'.'.$table['name'] : $table['name']).'</>', $table['comment'] ? '<fg=gray>'.$table['comment'].'</>' : null);
         $this->components->twoColumnDetail('Columns', $table['columns']);
 
-        if ($size = $table['size']) {
-            $this->components->twoColumnDetail('Size', Number::fileSize($size, 2));
+        if (! is_null($table['size'])) {
+            $this->components->twoColumnDetail('Size', Number::fileSize($table['size'], 2));
+        }
+
+        if ($table['engine']) {
+            $this->components->twoColumnDetail('Engine', $table['engine']);
+        }
+
+        if ($table['collation']) {
+            $this->components->twoColumnDetail('Collation', $table['collation']);
         }
 
         $this->newLine();

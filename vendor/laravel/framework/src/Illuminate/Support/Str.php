@@ -119,7 +119,7 @@ class Str
      */
     public static function ascii($value, $language = 'en')
     {
-        return ASCII::to_ascii((string) $value, $language);
+        return ASCII::to_ascii((string) $value, $language, replace_single_chars_only: false);
     }
 
     /**
@@ -329,6 +329,19 @@ class Str
     }
 
     /**
+     * Determine if a given string doesn't contain a given substring.
+     *
+     * @param  string  $haystack
+     * @param  string|iterable<string>  $needles
+     * @param  bool  $ignoreCase
+     * @return bool
+     */
+    public static function doesntContain($haystack, $needles, $ignoreCase = false)
+    {
+        return ! static::contains($haystack, $needles, $ignoreCase);
+    }
+
+    /**
      * Convert the case of a string.
      *
      * @param  string  $string
@@ -342,6 +355,18 @@ class Str
     }
 
     /**
+     * Replace consecutive instances of a given character with a single character in the given string.
+     *
+     * @param  string  $string
+     * @param  string  $character
+     * @return string
+     */
+    public static function deduplicate(string $string, string $character = ' ')
+    {
+        return preg_replace('/'.preg_quote($character, '/').'+/u', $character, $string);
+    }
+
+    /**
      * Determine if a given string ends with a given substring.
      *
      * @param  string  $haystack
@@ -352,6 +377,10 @@ class Str
     {
         if (! is_iterable($needles)) {
             $needles = (array) $needles;
+        }
+
+        if (is_null($haystack)) {
+            return false;
         }
 
         foreach ($needles as $needle) {
@@ -384,14 +413,14 @@ class Str
 
         $start = ltrim($matches[1]);
 
-        $start = str(mb_substr($start, max(mb_strlen($start, 'UTF-8') - $radius, 0), $radius, 'UTF-8'))->ltrim()->unless(
+        $start = Str::of(mb_substr($start, max(mb_strlen($start, 'UTF-8') - $radius, 0), $radius, 'UTF-8'))->ltrim()->unless(
             fn ($startWithRadius) => $startWithRadius->exactly($start),
             fn ($startWithRadius) => $startWithRadius->prepend($omission),
         );
 
         $end = rtrim($matches[3]);
 
-        $end = str(mb_substr($end, 0, $radius, 'UTF-8'))->rtrim()->unless(
+        $end = Str::of(mb_substr($end, 0, $radius, 'UTF-8'))->rtrim()->unless(
             fn ($endWithRadius) => $endWithRadius->exactly($end),
             fn ($endWithRadius) => $endWithRadius->append($omission),
         );
@@ -452,9 +481,10 @@ class Str
      *
      * @param  string|iterable<string>  $pattern
      * @param  string  $value
+     * @param  bool  $ignoreCase
      * @return bool
      */
-    public static function is($pattern, $value)
+    public static function is($pattern, $value, $ignoreCase = false)
     {
         $value = (string) $value;
 
@@ -472,6 +502,10 @@ class Str
                 return true;
             }
 
+            if ($ignoreCase && mb_strtolower($pattern) === mb_strtolower($value)) {
+                return true;
+            }
+
             $pattern = preg_quote($pattern, '#');
 
             // Asterisks are translated into zero-or-more regular expression wildcards
@@ -479,7 +513,7 @@ class Str
             // pattern such as "library/*", making any string check convenient.
             $pattern = str_replace('\*', '.*', $pattern);
 
-            if (preg_match('#^'.$pattern.'\z#u', $value) === 1) {
+            if (preg_match('#^'.$pattern.'\z#'.($ignoreCase ? 'iu' : 'u'), $value) === 1) {
                 return true;
             }
         }
@@ -625,15 +659,28 @@ class Str
      * @param  string  $value
      * @param  int  $limit
      * @param  string  $end
+     * @param  bool  $preserveWords
      * @return string
      */
-    public static function limit($value, $limit = 100, $end = '...')
+    public static function limit($value, $limit = 100, $end = '...', $preserveWords = false)
     {
         if (mb_strwidth($value, 'UTF-8') <= $limit) {
             return $value;
         }
 
-        return rtrim(mb_strimwidth($value, 0, $limit, '', 'UTF-8')).$end;
+        if (! $preserveWords) {
+            return rtrim(mb_strimwidth($value, 0, $limit, '', 'UTF-8')).$end;
+        }
+
+        $value = trim(preg_replace('/[\n\r]+/', ' ', strip_tags($value)));
+
+        $trimmed = rtrim(mb_strimwidth($value, 0, $limit, '', 'UTF-8'));
+
+        if (mb_substr($value, $limit, 1, 'UTF-8') === ' ') {
+            return $trimmed.$end;
+        }
+
+        return preg_replace("/(.*)\s.*/", '$1', $trimmed).$end;
     }
 
     /**
@@ -692,14 +739,19 @@ class Str
      *
      * @param  string  $string
      * @param  array  $options
+     * @param  array  $extensions
      * @return string
      */
-    public static function inlineMarkdown($string, array $options = [])
+    public static function inlineMarkdown($string, array $options = [], array $extensions = [])
     {
         $environment = new Environment($options);
 
         $environment->addExtension(new GithubFlavoredMarkdownExtension());
         $environment->addExtension(new InlinesOnlyExtension());
+
+        foreach ($extensions as $extension) {
+            $environment->addExtension($extension);
+        }
 
         $converter = new MarkdownConverter($environment);
 
@@ -798,10 +850,10 @@ class Str
         preg_match_all($pattern, $subject, $matches);
 
         if (empty($matches[0])) {
-            return collect();
+            return new Collection;
         }
 
-        return collect($matches[1] ?? $matches[0]);
+        return new Collection($matches[1] ?? $matches[0]);
     }
 
     /**
@@ -925,6 +977,18 @@ class Str
         $lastWord = array_pop($parts);
 
         return implode('', $parts).self::plural($lastWord, $count);
+    }
+
+    /**
+     * Pluralize the last word of an English, Pascal caps case string.
+     *
+     * @param  string  $value
+     * @param  int|array|\Countable  $count
+     * @return string
+     */
+    public static function pluralPascal($value, $count = 2)
+    {
+        return static::pluralStudly($value, $count);
     }
 
     /**
@@ -1085,7 +1149,7 @@ class Str
     public static function replaceArray($search, $replace, $subject)
     {
         if ($replace instanceof Traversable) {
-            $replace = collect($replace)->all();
+            $replace = (new Collection($replace))->all();
         }
 
         $segments = explode($search, $subject);
@@ -1127,15 +1191,15 @@ class Str
     public static function replace($search, $replace, $subject, $caseSensitive = true)
     {
         if ($search instanceof Traversable) {
-            $search = collect($search)->all();
+            $search = (new Collection($search))->all();
         }
 
         if ($replace instanceof Traversable) {
-            $replace = collect($replace)->all();
+            $replace = (new Collection($replace))->all();
         }
 
         if ($subject instanceof Traversable) {
-            $subject = collect($subject)->all();
+            $subject = (new Collection($subject))->all();
         }
 
         return $caseSensitive
@@ -1268,7 +1332,7 @@ class Str
     public static function remove($search, $subject, $caseSensitive = true)
     {
         if ($search instanceof Traversable) {
-            $search = collect($search)->all();
+            $search = (new Collection($search))->all();
         }
 
         return $caseSensitive
@@ -1472,7 +1536,9 @@ class Str
     public static function trim($value, $charlist = null)
     {
         if ($charlist === null) {
-            return preg_replace('~^[\s\x{FEFF}\x{200B}\x{200E}]+|[\s\x{FEFF}\x{200B}\x{200E}]+$~u', '', $value) ?? trim($value);
+            $trimDefaultCharacters = " \n\r\t\v\0";
+
+            return preg_replace('~^[\s\x{FEFF}\x{200B}\x{200E}'.$trimDefaultCharacters.']+|[\s\x{FEFF}\x{200B}\x{200E}'.$trimDefaultCharacters.']+$~u', '', $value) ?? trim($value);
         }
 
         return trim($value, $charlist);
@@ -1488,7 +1554,9 @@ class Str
     public static function ltrim($value, $charlist = null)
     {
         if ($charlist === null) {
-            return preg_replace('~^[\s\x{FEFF}\x{200B}\x{200E}]+~u', '', $value) ?? ltrim($value);
+            $ltrimDefaultCharacters = " \n\r\t\v\0";
+
+            return preg_replace('~^[\s\x{FEFF}\x{200B}\x{200E}'.$ltrimDefaultCharacters.']+~u', '', $value) ?? ltrim($value);
         }
 
         return ltrim($value, $charlist);
@@ -1504,7 +1572,9 @@ class Str
     public static function rtrim($value, $charlist = null)
     {
         if ($charlist === null) {
-            return preg_replace('~[\s\x{FEFF}\x{200B}\x{200E}]+$~u', '', $value) ?? rtrim($value);
+            $rtrimDefaultCharacters = " \n\r\t\v\0";
+
+            return preg_replace('~[\s\x{FEFF}\x{200B}\x{200E}'.$rtrimDefaultCharacters.']+$~u', '', $value) ?? rtrim($value);
         }
 
         return rtrim($value, $charlist);
@@ -1532,6 +1602,10 @@ class Str
     {
         if (! is_iterable($needles)) {
             $needles = [$needles];
+        }
+
+        if (is_null($haystack)) {
+            return false;
         }
 
         foreach ($needles as $needle) {
@@ -1562,6 +1636,17 @@ class Str
         $studlyWords = array_map(fn ($word) => static::ucfirst($word), $words);
 
         return static::$studlyCache[$key] = implode($studlyWords);
+    }
+
+    /**
+     * Convert a value to Pascal case.
+     *
+     * @param  string  $value
+     * @return string
+     */
+    public static function pascal($value)
+    {
+        return static::studly($value);
     }
 
     /**

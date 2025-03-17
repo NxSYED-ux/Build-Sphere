@@ -4,7 +4,7 @@ namespace Illuminate\Database\Eloquent\Relations;
 
 use Illuminate\Contracts\Database\Eloquent\SupportsPartialRelations;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Concerns\CanBeOneOfMany;
 use Illuminate\Database\Eloquent\Relations\Concerns\ComparesRelatedModels;
@@ -42,7 +42,7 @@ class MorphOne extends MorphOneOrMany implements SupportsPartialRelations
     }
 
     /** @inheritDoc */
-    public function match(array $models, Collection $results, $relation)
+    public function match(array $models, EloquentCollection $results, $relation)
     {
         return $this->matchOne($models, $results, $relation);
     }
@@ -101,9 +101,12 @@ class MorphOne extends MorphOneOrMany implements SupportsPartialRelations
      */
     public function newRelatedInstanceFor(Model $parent)
     {
-        return $this->related->newInstance()
-                    ->setAttribute($this->getForeignKeyName(), $parent->{$this->localKey})
-                    ->setAttribute($this->getMorphType(), $this->morphClass);
+        return tap($this->related->newInstance(), function ($instance) use ($parent) {
+            $instance->setAttribute($this->getForeignKeyName(), $parent->{$this->localKey})
+                ->setAttribute($this->getMorphType(), $this->morphClass);
+
+            $this->applyInverseRelationToModel($instance, $parent);
+        });
     }
 
     /**

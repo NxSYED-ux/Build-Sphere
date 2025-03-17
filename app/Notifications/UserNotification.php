@@ -6,6 +6,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\BroadcastMessage;
 use Illuminate\Notifications\Notification;
+use Illuminate\Support\Facades\Http;
 
 class UserNotification extends Notification implements ShouldQueue
 {
@@ -26,7 +27,7 @@ class UserNotification extends Notification implements ShouldQueue
 
     public function via($notifiable)
     {
-        return ['database', 'broadcast'];
+        return ['database', 'broadcast', 'fcm'];
     }
 
     public function toDatabase($notifiable)
@@ -43,6 +44,34 @@ class UserNotification extends Notification implements ShouldQueue
     public function toBroadcast($notifiable)
     {
         return new BroadcastMessage($this->toDatabase($notifiable));
+    }
+
+    public function toFcm($notifiable)
+    {
+        if (!$notifiable->fcm_token) {
+            return;
+        }
+
+        $serverKey = config('services.fcm.server_key');
+        $payload = [
+            'to' => $notifiable->fcm_token,
+            'notification' => [
+                'title' => $this->heading,
+                'body' => $this->message,
+                'click_action' => $this->link,
+                'image' => $this->image,
+            ],
+            'data' => [
+                'extra_info' => 'Any custom data here',
+            ],
+        ];
+
+        $response = Http::withHeaders([
+            'Authorization' => "key=$serverKey",
+            'Content-Type' => 'application/json',
+        ])->post('https://fcm.googleapis.com/fcm/send', $payload);
+
+        return $response->json();
     }
 
     public function toArray($notifiable)

@@ -16,6 +16,7 @@ use function array_merge;
 use function assert;
 use function fclose;
 use function file_put_contents;
+use function function_exists;
 use function fwrite;
 use function ini_get_all;
 use function is_array;
@@ -27,12 +28,17 @@ use function sys_get_temp_dir;
 use function tempnam;
 use function trim;
 use function unlink;
+use function xdebug_is_debugger_active;
+use PHPUnit\Event\Facade;
+use PHPUnit\Runner\CodeCoverage;
 use SebastianBergmann\Environment\Runtime;
 
 /**
+ * @no-named-arguments Parameter names are not covered by the backward compatibility promise for PHPUnit
+ *
  * @internal This class is not covered by the backward compatibility promise for PHPUnit
  */
-final readonly class DefaultJobRunner implements JobRunner
+final readonly class DefaultJobRunner extends JobRunner
 {
     /**
      * @throws PhpProcessException
@@ -69,7 +75,7 @@ final readonly class DefaultJobRunner implements JobRunner
     }
 
     /**
-     * @psalm-param ?non-empty-string $temporaryFile
+     * @param ?non-empty-string $temporaryFile
      *
      * @throws PhpProcessException
      */
@@ -78,6 +84,7 @@ final readonly class DefaultJobRunner implements JobRunner
         $environmentVariables = null;
 
         if ($job->hasEnvironmentVariables()) {
+            /** @phpstan-ignore nullCoalesce.variable */
             $environmentVariables = $_SERVER ?? [];
 
             unset($environmentVariables['argv'], $environmentVariables['argc']);
@@ -91,7 +98,6 @@ final readonly class DefaultJobRunner implements JobRunner
             }
 
             unset($key, $value);
-
         }
 
         $pipeSpec = [
@@ -120,6 +126,8 @@ final readonly class DefaultJobRunner implements JobRunner
             // @codeCoverageIgnoreEnd
         }
 
+        Facade::emitter()->testRunnerStartedChildProcess();
+
         fwrite($pipes[0], $job->code());
         fclose($pipes[0]);
 
@@ -144,11 +152,14 @@ final readonly class DefaultJobRunner implements JobRunner
             unlink($temporaryFile);
         }
 
+        assert($stdout !== false);
+        assert($stderr !== false);
+
         return new Result($stdout, $stderr);
     }
 
     /**
-     * @psalm-return non-empty-list<string>
+     * @return non-empty-list<string>
      */
     private function buildCommand(Job $job, ?string $file): array
     {
@@ -157,19 +168,34 @@ final readonly class DefaultJobRunner implements JobRunner
         $phpSettings = $job->phpSettings();
 
         if ($runtime->hasPCOV()) {
+            $pcovSettings = ini_get_all('pcov');
+
+            assert($pcovSettings !== false);
+
             $phpSettings = array_merge(
                 $phpSettings,
                 $runtime->getCurrentSettings(
-                    array_keys(ini_get_all('pcov')),
+                    array_keys($pcovSettings),
                 ),
             );
         } elseif ($runtime->hasXdebug()) {
+            assert(function_exists('xdebug_is_debugger_active'));
+
+            $xdebugSettings = ini_get_all('xdebug');
+
+            assert($xdebugSettings !== false);
+
             $phpSettings = array_merge(
                 $phpSettings,
                 $runtime->getCurrentSettings(
-                    array_keys(ini_get_all('xdebug')),
+                    array_keys($xdebugSettings),
                 ),
             );
+
+            if (!CodeCoverage::instance()->isActive() &&
+                xdebug_is_debugger_active() === false) {
+                $phpSettings['xdebug.mode'] = 'xdebug.mode=off';
+            }
         }
 
         $command = array_merge($command, $this->settingsToParameters($phpSettings));
@@ -201,6 +227,8 @@ final readonly class DefaultJobRunner implements JobRunner
     }
 
     /**
+     * @param list<string> $settings
+     *
      * @return list<string>
      */
     private function settingsToParameters(array $settings): array

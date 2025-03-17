@@ -1,9 +1,8 @@
 <?php
 
 use App\Http\Controllers\GeneralControllers\AuthController;
+use App\Http\Controllers\GeneralControllers\ForgotPasswordController;
 use App\Http\Controllers\GeneralControllers\NotificationController;
-use App\Models\User;
-use App\Notifications\UserNotification;
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\GeneralControllers\ProfileController;
@@ -16,23 +15,7 @@ use App\Http\Controllers\AppControllers\MyPropertiesController;
 use App\Http\Controllers\AppControllers\QueryController;
 use App\Http\Controllers\AppControllers\DropdownController;
 
-// Testing Route
-Route::get('/send-notification/{id}', function ($id) {
-    $user = User::find($id);
 
-    if ($user) {
-        $picture = "uploads/units/images/Apartment_{$id}.jpeg";
-        $user->notify(new UserNotification(
-            $picture,
-            'Apna kam kr 🤭',
-            'Lagta ha tera sara kam ho gaya ha jo mera kam check kr raha ha',
-            'admin_dashboard'
-        ));
-        return response()->json(['message' => 'Notification sent to user ID: ' . $id]);
-    }
-
-    return response()->json(['message' => 'No user found with ID: ' . $id], 404);
-});
 
 // Route for Pusher Authentication
 Route::post('/pusher/auth', [AuthController::class, 'authenticatePusher'])->name('pusher.auth');
@@ -44,7 +27,12 @@ Route::prefix('api')->group(function () {
     Route::get('/values-by-value/{value}', [DropdownController::class, 'getDropdownValuesByValue']);
 
     Route::prefix('auth')->group(function () {
+
         Route::post('/user-login', [AuthController::class, 'login']);
+        Route::post('/user-staff', [AuthController::class, 'login']);
+        Route::post('/forget-password', [ForgotPasswordController::class, 'sendResetLink']);
+        Route::post('/logout', [AuthController::class, 'logout']);
+
     });
 
 });
@@ -125,7 +113,18 @@ Route::prefix('api')->middleware(['auth.jwt'])->group(function () {
 
     Route::prefix('staff')->group(function () {
 
+        Route::get('/profile', [ProfileController::class, 'getProfile']);
+        Route::put('/profile', [ProfileController::class, 'updateProfileData']);
+        Route::post('/update-profile-pic', [ProfileController::class, 'uploadProfilePic']);
+        Route::put('/remove-profile-pic', [ProfileController::class, 'deleteProfilePic']);
+        Route::put('/change-password', [ProfileController::class, 'changePassword']);
 
+        Route::get('/get-queries', [QueryController::class, 'getStaffQueries']);
+        Route::get('/query/{id}', [QueryController::class, 'getQueryDetails']);
+        Route::put('/reject-query', [QueryController::class, 'rejectQuery']);
+        Route::put('/accept-query', [QueryController::class, 'acceptQuery']);
+        Route::get('/query-count', [QueryController::class, 'getYearlyQueryStats']);
+        Route::get('/query-chart', [QueryController::class, 'getMonthlyQueryStats']);
 
     });
 

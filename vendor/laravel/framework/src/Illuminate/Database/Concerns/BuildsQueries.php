@@ -6,6 +6,7 @@ use Illuminate\Container\Container;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\MultipleRecordsFoundException;
 use Illuminate\Database\Query\Expression;
+use Illuminate\Database\RecordNotFoundException;
 use Illuminate\Database\RecordsNotFoundException;
 use Illuminate\Pagination\Cursor;
 use Illuminate\Pagination\CursorPaginator;
@@ -21,7 +22,6 @@ use RuntimeException;
 /**
  * @template TValue
  *
- * @mixin \Illuminate\Database\Eloquent\Builder
  * @mixin \Illuminate\Database\Query\Builder
  */
 trait BuildsQueries
@@ -79,7 +79,7 @@ trait BuildsQueries
      */
     public function chunkMap(callable $callback, $count = 1000)
     {
-        $collection = Collection::make();
+        $collection = new Collection;
 
         $this->chunk($count, function ($items) use ($collection, $callback) {
             $items->each(function ($item) use ($collection, $callback) {
@@ -223,7 +223,7 @@ trait BuildsQueries
      * Query lazily, by chunks of the given size.
      *
      * @param  int  $chunkSize
-     * @return \Illuminate\Support\LazyCollection
+     * @return \Illuminate\Support\LazyCollection<int, TValue>
      *
      * @throws \InvalidArgumentException
      */
@@ -235,7 +235,7 @@ trait BuildsQueries
 
         $this->enforceOrderBy();
 
-        return LazyCollection::make(function () use ($chunkSize) {
+        return new LazyCollection(function () use ($chunkSize) {
             $page = 1;
 
             while (true) {
@@ -258,7 +258,7 @@ trait BuildsQueries
      * @param  int  $chunkSize
      * @param  string|null  $column
      * @param  string|null  $alias
-     * @return \Illuminate\Support\LazyCollection
+     * @return \Illuminate\Support\LazyCollection<int, TValue>
      *
      * @throws \InvalidArgumentException
      */
@@ -273,7 +273,7 @@ trait BuildsQueries
      * @param  int  $chunkSize
      * @param  string|null  $column
      * @param  string|null  $alias
-     * @return \Illuminate\Support\LazyCollection
+     * @return \Illuminate\Support\LazyCollection<int, TValue>
      *
      * @throws \InvalidArgumentException
      */
@@ -303,7 +303,7 @@ trait BuildsQueries
 
         $alias ??= $column;
 
-        return LazyCollection::make(function () use ($chunkSize, $column, $alias, $descending) {
+        return new LazyCollection(function () use ($chunkSize, $column, $alias, $descending) {
             $lastId = null;
 
             while (true) {
@@ -341,6 +341,24 @@ trait BuildsQueries
     public function first($columns = ['*'])
     {
         return $this->take(1)->get($columns)->first();
+    }
+
+    /**
+     * Execute the query and get the first result or throw an exception.
+     *
+     * @param  array|string  $columns
+     * @param  string|null  $message
+     * @return TValue
+     *
+     * @throws \Illuminate\Database\RecordNotFoundException
+     */
+    public function firstOrFail($columns = ['*'], $message = null)
+    {
+        if (! is_null($result = $this->first($columns))) {
+            return $result;
+        }
+
+        throw new RecordNotFoundException($message ?: 'No record found for the given query.');
     }
 
     /**

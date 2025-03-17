@@ -7,6 +7,7 @@ use DateTimeInterface;
 use Illuminate\Contracts\Debug\ExceptionHandler;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Http\Kernel as KernelContract;
+use Illuminate\Foundation\Events\Terminating;
 use Illuminate\Foundation\Http\Events\RequestHandled;
 use Illuminate\Routing\Pipeline;
 use Illuminate\Routing\Router;
@@ -100,17 +101,17 @@ class Kernel implements KernelContract
      * @var string[]
      */
     protected $middlewarePriority = [
-        // \Illuminate\Foundation\Http\Middleware\HandlePrecognitiveRequests::class,
-        // \Illuminate\Cookie\Middleware\EncryptCookies::class,
-        // \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
-        // \Illuminate\Session\Middleware\StartSession::class,
-        // \Illuminate\View\Middleware\ShareErrorsFromSession::class,
-        // \Illuminate\Contracts\Auth\Middleware\AuthenticatesRequests::class,
-        // \Illuminate\Routing\Middleware\ThrottleRequests::class,
-        // \Illuminate\Routing\Middleware\ThrottleRequestsWithRedis::class,
-        // \Illuminate\Contracts\Session\Middleware\AuthenticatesSessions::class,
-        // \Illuminate\Routing\Middleware\SubstituteBindings::class,
-        // \Illuminate\Auth\Middleware\Authorize::class,
+        \Illuminate\Foundation\Http\Middleware\HandlePrecognitiveRequests::class,
+        \Illuminate\Cookie\Middleware\EncryptCookies::class,
+        \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
+        \Illuminate\Session\Middleware\StartSession::class,
+        \Illuminate\View\Middleware\ShareErrorsFromSession::class,
+        \Illuminate\Contracts\Auth\Middleware\AuthenticatesRequests::class,
+        \Illuminate\Routing\Middleware\ThrottleRequests::class,
+        \Illuminate\Routing\Middleware\ThrottleRequestsWithRedis::class,
+        \Illuminate\Contracts\Session\Middleware\AuthenticatesSessions::class,
+        \Illuminate\Routing\Middleware\SubstituteBindings::class,
+        \Illuminate\Auth\Middleware\Authorize::class,
     ];
 
     /**
@@ -170,9 +171,9 @@ class Kernel implements KernelContract
         $this->bootstrap();
 
         return (new Pipeline($this->app))
-                    ->send($request)
-                    ->through($this->app->shouldSkipMiddleware() ? [] : $this->middleware)
-                    ->then($this->dispatchToRouter());
+            ->send($request)
+            ->through($this->app->shouldSkipMiddleware() ? [] : $this->middleware)
+            ->then($this->dispatchToRouter());
     }
 
     /**
@@ -210,6 +211,8 @@ class Kernel implements KernelContract
      */
     public function terminate($request, $response)
     {
+        $this->app['events']->dispatch(new Terminating);
+
         $this->terminateMiddleware($request, $response);
 
         $this->app->terminate();
@@ -441,6 +444,69 @@ class Kernel implements KernelContract
     {
         if (! in_array($middleware, $this->middlewarePriority)) {
             $this->middlewarePriority[] = $middleware;
+        }
+
+        $this->syncMiddlewareToRouter();
+
+        return $this;
+    }
+
+    /**
+     * Add the given middleware to the middleware priority list before other middleware.
+     *
+     * @param  array|string  $before
+     * @param  string  $middleware
+     * @return $this
+     */
+    public function addToMiddlewarePriorityBefore($before, $middleware)
+    {
+        return $this->addToMiddlewarePriorityRelative($before, $middleware, after: false);
+    }
+
+    /**
+     * Add the given middleware to the middleware priority list after other middleware.
+     *
+     * @param  array|string  $after
+     * @param  string  $middleware
+     * @return $this
+     */
+    public function addToMiddlewarePriorityAfter($after, $middleware)
+    {
+        return $this->addToMiddlewarePriorityRelative($after, $middleware);
+    }
+
+    /**
+     * Add the given middleware to the middleware priority list relative to other middleware.
+     *
+     * @param  string|array  $existing
+     * @param  string  $middleware
+     * @param  bool  $after
+     * @return $this
+     */
+    protected function addToMiddlewarePriorityRelative($existing, $middleware, $after = true)
+    {
+        if (! in_array($middleware, $this->middlewarePriority)) {
+            $index = $after ? 0 : count($this->middlewarePriority);
+
+            foreach ((array) $existing as $existingMiddleware) {
+                if (in_array($existingMiddleware, $this->middlewarePriority)) {
+                    $middlewareIndex = array_search($existingMiddleware, $this->middlewarePriority);
+
+                    if ($after && $middlewareIndex > $index) {
+                        $index = $middlewareIndex + 1;
+                    } elseif ($after === false && $middlewareIndex < $index) {
+                        $index = $middlewareIndex;
+                    }
+                }
+            }
+
+            if ($index === 0 && $after === false) {
+                array_unshift($this->middlewarePriority, $middleware);
+            } elseif (($after && $index === 0) || $index === count($this->middlewarePriority)) {
+                $this->middlewarePriority[] = $middleware;
+            } else {
+                array_splice($this->middlewarePriority, $index, 0, $middleware);
+            }
         }
 
         $this->syncMiddlewareToRouter();

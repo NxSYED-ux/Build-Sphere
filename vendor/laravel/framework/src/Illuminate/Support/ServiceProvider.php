@@ -10,6 +10,10 @@ use Illuminate\Contracts\Support\DeferrableProvider;
 use Illuminate\Database\Eloquent\Factory as ModelFactory;
 use Illuminate\View\Compilers\BladeCompiler;
 
+/**
+ * @property array<string, string> $bindings All of the container bindings that should be registered.
+ * @property array<array-key, string> $singletons All of the singletons that should be registered.
+ */
 abstract class ServiceProvider
 {
     /**
@@ -53,6 +57,20 @@ abstract class ServiceProvider
      * @var array
      */
     protected static $publishableMigrationPaths = [];
+
+    /**
+     * Commands that should be run during the "optimize" command.
+     *
+     * @var array<string, string>
+     */
+    public static array $optimizeCommands = [];
+
+    /**
+     * Commands that should be run during the "optimize:clear" command.
+     *
+     * @var array<string, string>
+     */
+    public static array $optimizeClearCommands = [];
 
     /**
      * Create a new service provider instance.
@@ -218,17 +236,17 @@ abstract class ServiceProvider
     }
 
     /**
-     * Register a translation file namespace.
+     * Register a translation file namespace or path.
      *
      * @param  string  $path
-     * @param  string  $namespace
+     * @param  string|null  $namespace
      * @return void
      */
-    protected function loadTranslationsFrom($path, $namespace)
+    protected function loadTranslationsFrom($path, $namespace = null)
     {
-        $this->callAfterResolving('translator', function ($translator) use ($path, $namespace) {
-            $translator->addNamespace($namespace, $path);
-        });
+        $this->callAfterResolving('translator', fn ($translator) => is_null($namespace)
+            ? $translator->addPath($path)
+            : $translator->addNamespace($namespace, $path));
     }
 
     /**
@@ -370,7 +388,7 @@ abstract class ServiceProvider
             return $paths;
         }
 
-        return collect(static::$publishes)->reduce(function ($paths, $p) {
+        return (new Collection(static::$publishes))->reduce(function ($paths, $p) {
             return array_merge($paths, $p);
         }, []);
     }
@@ -457,6 +475,36 @@ abstract class ServiceProvider
     }
 
     /**
+     * Register commands that should run on "optimize" or "optimize:clear".
+     *
+     * @param  string|null  $optimize
+     * @param  string|null  $clear
+     * @param  string|null  $key
+     * @return void
+     */
+    protected function optimizes(?string $optimize = null, ?string $clear = null, ?string $key = null)
+    {
+        $key ??= (string) Str::of(get_class($this))
+            ->classBasename()
+            ->before('ServiceProvider')
+            ->kebab()
+            ->lower()
+            ->trim();
+
+        if (empty($key)) {
+            $key = class_basename(get_class($this));
+        }
+
+        if ($optimize) {
+            static::$optimizeCommands[$key] = $optimize;
+        }
+
+        if ($clear) {
+            static::$optimizeClearCommands[$key] = $clear;
+        }
+    }
+
+    /**
      * Get the services provided by the provider.
      *
      * @return array
@@ -515,7 +563,7 @@ abstract class ServiceProvider
             opcache_invalidate($path, true);
         }
 
-        $providers = collect(require $path)
+        $providers = (new Collection(require $path))
             ->merge([$provider])
             ->unique()
             ->sort()

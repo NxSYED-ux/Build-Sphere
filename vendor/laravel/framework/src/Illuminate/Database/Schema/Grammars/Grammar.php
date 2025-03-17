@@ -235,6 +235,30 @@ abstract class Grammar extends BaseGrammar
     }
 
     /**
+     * Create the column definition for a vector type.
+     *
+     * @param  \Illuminate\Support\Fluent  $column
+     * @return string
+     *
+     * @throws \RuntimeException
+     */
+    protected function typeVector(Fluent $column)
+    {
+        throw new RuntimeException('This database driver does not support the vector type.');
+    }
+
+    /**
+     * Create the column definition for a raw column type.
+     *
+     * @param  \Illuminate\Support\Fluent  $column
+     * @return string
+     */
+    protected function typeRaw(Fluent $column)
+    {
+        return $column->offsetGet('definition');
+    }
+
+    /**
      * Add the column modifiers to the definition.
      *
      * @param  string  $sql
@@ -332,13 +356,12 @@ abstract class Grammar extends BaseGrammar
      * Wrap a value in keyword identifiers.
      *
      * @param  \Illuminate\Support\Fluent|\Illuminate\Contracts\Database\Query\Expression|string  $value
-     * @param  bool  $prefixAlias
      * @return string
      */
-    public function wrap($value, $prefixAlias = false)
+    public function wrap($value)
     {
         return parent::wrap(
-            $value instanceof Fluent ? $value->name : $value, $prefixAlias
+            $value instanceof Fluent ? $value->name : $value,
         );
     }
 

@@ -2,7 +2,6 @@
 
 use App\Http\Controllers\GeneralControllers\AuthController;
 use App\Http\Controllers\GeneralControllers\ForgotPasswordController;
-use App\Http\Controllers\GeneralControllers\NotificationController;
 use App\Http\Controllers\GeneralControllers\ProfileController;
 use App\Http\Controllers\WebControllers\AdminDashboardController;
 use App\Http\Controllers\WebControllers\BuildingController;
@@ -12,7 +11,6 @@ use App\Http\Controllers\WebControllers\BuildingUnitController;
 use App\Http\Controllers\WebControllers\DropdownTypeController;
 use App\Http\Controllers\WebControllers\DropdownValueController;
 use App\Http\Controllers\WebControllers\OrganizationController;
-use App\Http\Controllers\WebControllers\OwnerBuildingController;
 use App\Http\Controllers\WebControllers\OwnerDashboardController;
 use App\Http\Controllers\WebControllers\RolePermissionController;
 use App\Http\Controllers\WebControllers\RoleController;
@@ -33,11 +31,19 @@ Route::post('login', [AuthController::class, 'adminLogin'])->name('login');
 //Route::post('admin-login', [AuthController::class, 'adminLogin'])->name('admin-login');
 //Route::post('owner-login', [AuthController::class, 'ownerLogin'])->name('owner-login');
 
-Route::get('forget-password', [ForgotPasswordController::class, 'showForgetForm'])->name('password.request');
-Route::post('forget-password', [ForgotPasswordController::class, 'sendResetLink'])->name('password.email');
 
-Route::get('reset-password/{token}', [ForgotPasswordController::class, 'showResetForm'])->name('password.reset');
-Route::post('reset-password', [ForgotPasswordController::class, 'resetPassword'])->name('password.update');
+Route::prefix('auth')->group(function () {
+
+    Route::post('/admin-login', [AuthController::class, 'adminLogin'])->name('admin-login');
+    Route::post('/owner-login', [AuthController::class, 'ownerLogin'])->name('owner-login');
+    Route::get('/forget-password', [ForgotPasswordController::class, 'showForgetForm'])->name('password.request');
+    Route::post('/forget-password', [ForgotPasswordController::class, 'sendResetLink'])->name('password.email');
+    Route::get('/reset-password/{token}', [ForgotPasswordController::class, 'showResetForm'])->name('password.reset');
+    Route::post('/reset-password', [ForgotPasswordController::class, 'resetPassword'])->name('password.update');
+
+});
+
+
 
 Route::fallback(function () {
     return back();
@@ -220,4 +226,3 @@ Route::prefix('owner')->middleware(['auth.jwt'])->group(function () {
 });
 
 require __DIR__.'/auth.php';
-require __DIR__.'/api.php';
