@@ -102,6 +102,7 @@
                                     <div class="card-body">
                                         <form action="{{ route('buildings.update') }}" method="POST" enctype="multipart/form-data">
                                             @method('PUT')
+                                            @csrf
 
                                             <input type="hidden" name="id" value="{{ $building->id }}">
                                             <input type="hidden" name="updated_at" value="{{ $building->updated_at }}">

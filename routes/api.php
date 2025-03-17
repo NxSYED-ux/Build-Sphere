@@ -17,11 +17,10 @@ use App\Http\Controllers\AppControllers\DropdownController;
 
 
 
-// Route for Pusher Authentication
-Route::post('/pusher/auth', [AuthController::class, 'authenticatePusher'])->name('pusher.auth');
+
 
 // Without Authentication
-Route::prefix('api')->group(function () {
+//Route::prefix('api')->group(function () {
 
     Route::get('/values-by-type/{type}', [DropdownController::class, 'getDropdownValuesByType']);
     Route::get('/values-by-value/{value}', [DropdownController::class, 'getDropdownValuesByValue']);
@@ -35,10 +34,10 @@ Route::prefix('api')->group(function () {
 
     });
 
-});
+//});
 
 // With Authentication
-Route::prefix('api')->middleware(['auth.jwt'])->group(function () {
+Route::middleware(['auth.jwt'])->group(function () {
 
     Route::prefix('notifications')->group(function () {
 
