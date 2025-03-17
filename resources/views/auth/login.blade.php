@@ -24,6 +24,10 @@
         <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
         <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging.js"></script>
 
+        <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging-compat.js"></script>
+
+
         <style>
         * {
             padding: 0;
@@ -333,7 +337,7 @@
                 <div class="login-content">
                     <form method="POST" action="{{ route('login') }}" class="m-2">
                         @csrf
-                        <input type="hidden" id="fcm_token" name="fcm_token">
+                        <input type="hidden" id="fcm_token" name="newFcmToken">
                         <svg width="100" height="100" viewBox="0 0 48 48" fill="none"
                             xmlns="http://www.w3.org/2000/svg">
                             <g clip-path="url(#clip0_27_397)">
@@ -397,8 +401,7 @@
 
 
         <script>
-            document.addEventListener("DOMContentLoaded", async function () {
-
+            document.addEventListener("DOMContentLoaded", function () {
                 if (!firebase.apps.length) {
                     firebase.initializeApp({
                         apiKey: document.querySelector('meta[name="firebase-api-key"]').content,
@@ -410,21 +413,35 @@
                 }
 
                 const messaging = firebase.messaging();
-
                 const vapidKey = document.querySelector('meta[name="vapid-key"]').content;
 
-                try {
+                // Ask for notification permission
+                Notification.requestPermission().then((permission) => {
+                    if (permission === "granted") {
+                        alert('Notification permission granted.' );
+                        console.log("Notification permission granted.");
 
-                    const token = await messaging.getToken({ vapidKey });
-                    alert('FCM Token:' + token);
-                    console.log("FCM Token:", token);
+                        messaging.getToken({ vapidKey })
+                            .then((token) => {
+                                if (token) {
+                                    alert('FCM Token: ' + token);
+                                    console.log("FCM Token:", token);
+                                    document.getElementById("fcm_token").value = token;
+                                } else {
+                                    alert('Notification permission granted.' );
+                                    console.warn("No FCM token received.");
+                                }
+                            })
+                            .catch((error) => {
+                                alert('Error retrieving FCM token:' + error);
+                                console.error("Error retrieving FCM token:", error);
+                            });
 
-                    // Set token in the hidden input field
-                    document.getElementById("fcm_token").value = token;
-
-                } catch (error) {
-                    console.error("Error retrieving FCM token:", error);
-                }
+                    } else if (permission === "denied") {
+                        console.warn("Notification permission denied.");
+                        alert("You have denied notifications. Please allow them in browser settings.");
+                    }
+                });
             });
 
         </script>
