@@ -38,10 +38,6 @@
 
                 fetch("{{ route('notifications') }}", {
                     method: "GET",
-                    headers: {
-                        "X-CSRF-TOKEN": "{{ csrf_token() }}",
-                        "Content-Type": "application/json"
-                    }
                 })
                     .then(response => response.json())
                     .then(data => {
