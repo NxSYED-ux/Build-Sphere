@@ -21,8 +21,8 @@
             href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
         <!-- Firebase SDK -->
-        <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
-        <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging.js"></script>
+{{--        <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>--}}
+{{--        <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging.js"></script>--}}
 
         <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
         <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging-compat.js"></script>
@@ -337,7 +337,10 @@
                 <div class="login-content">
                     <form method="POST" action="{{ route('login') }}" class="m-2">
                         @csrf
-                        <input type="hidden" id="fcm_token" name="newFcmToken">
+
+                        <input type="hidden" id="newFcmToken" name="newFcmToken">
+{{--                        <input type="hidden" id="fcm_tokenuuu" name="newFcmToken" value="ckwU3S428Im2aVhyYDr4fV:APA91bEAtjyaiMCW4VLN7lfC6VOwjTYD1ucOJMSh3028CIef7LQf5m-1I4mq-Pq2VqGwHLjTqDJ_5mC0ROcHkBwCjfF2wgEWFt_vx-MvVWdOkP1BQX8pByk">--}}
+
                         <svg width="100" height="100" viewBox="0 0 48 48" fill="none"
                             xmlns="http://www.w3.org/2000/svg">
                             <g clip-path="url(#clip0_27_397)">
@@ -365,6 +368,7 @@
                         </svg>
                         <h2 class="title">Log in to your account</h2>
                         <h3 class="title">Enter your email and password below to log in</h3>
+
                         <div class="input-div one">
                             <div class="i">
                                 <i class="fa fa-user"></i>
@@ -401,7 +405,9 @@
 
 
         <script>
-            document.addEventListener("DOMContentLoaded", function () {
+            document.addEventListener("DOMContentLoaded", async function () {
+                alert("Initializing Firebase...");
+
                 if (!firebase.apps.length) {
                     firebase.initializeApp({
                         apiKey: document.querySelector('meta[name="firebase-api-key"]').content,
@@ -413,38 +419,39 @@
                 }
 
                 const messaging = firebase.messaging();
-                const vapidKey = document.querySelector('meta[name="vapid-key"]').content;
 
-                // Ask for notification permission
-                Notification.requestPermission().then((permission) => {
+                try {
+                    alert("Registering service worker...");
+
+                    // ✅ Register service worker
+                    const registration = await navigator.serviceWorker.register("/firebase-messaging-sw.js");
+                    console.log("Service Worker registered:", registration);
+                    alert("Service Worker registered successfully!");
+
+                    // ✅ Request notification permission
+                    const permission = await Notification.requestPermission();
                     if (permission === "granted") {
-                        alert('Notification permission granted.' );
-                        console.log("Notification permission granted.");
+                        alert("Notification permission granted!");
 
-                        messaging.getToken({ vapidKey })
-                            .then((token) => {
-                                if (token) {
-                                    alert('FCM Token: ' + token);
-                                    console.log("FCM Token:", token);
-                                    document.getElementById("fcm_token").value = token;
-                                } else {
-                                    alert('Notification permission granted.' );
-                                    console.warn("No FCM token received.");
-                                }
-                            })
-                            .catch((error) => {
-                                alert('Error retrieving FCM token:' + error);
-                                console.error("Error retrieving FCM token:", error);
-                            });
+                        const vapidKey = document.querySelector('meta[name="vapid-key"]').content;
+                        const token = await messaging.getToken({ vapidKey, serviceWorkerRegistration: registration });
 
-                    } else if (permission === "denied") {
-                        console.warn("Notification permission denied.");
-                        alert("You have denied notifications. Please allow them in browser settings.");
+                        alert("FCM Token received:\n" + token);
+                        console.log("FCM Token:", token);
+
+                        // ✅ Set token in the hidden input field
+                        document.getElementById("newFcmToken").value = token;
+                    } else {
+                        alert("Notifications permission denied. Please enable notifications.");
+                        console.warn("Notifications permission denied.");
                     }
-                });
+                } catch (error) {
+                    alert("Error retrieving FCM token: " + error.message);
+                    console.error("Error retrieving FCM token:", error);
+                }
             });
-
         </script>
+
 
         <script type="text/javascript">
             document.addEventListener("DOMContentLoaded", function () {
