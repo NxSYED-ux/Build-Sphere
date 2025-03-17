@@ -30,6 +30,47 @@
         }
 
     </style>
+
+    <style>
+        /* Apply Styles to Elements Inside .document-container */
+        .document-container {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        .document-container .bg-light {
+            background-color: var(--bg-color) !important;
+        }
+
+        .document-container .form-control,
+        .document-container .form-select {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+        }
+
+        .document-container .form-control::placeholder {
+            color: var(--border-color);
+        }
+
+        .document-container .btn {
+            background-color: var(--btn-bg);
+            color: var(--btn-text);
+        }
+
+        .document-container .btn:hover {
+            opacity: 0.9;
+        }
+
+        .document-container .btn-danger {
+            background-color: var(--btn-bg);
+            color: var(--btn-text);
+            border-color: var(--btn-bg);
+        }
+
+    </style>
 @endpush
 
 @section('content')
@@ -279,10 +320,10 @@
                                             <!-- Documents Section -->
                                             <h4>
                                                 <button class="btn w-100 text-start" style="background-color: #D3D3D3;" type="button" data-bs-toggle="collapse" data-bs-target="#documents" aria-expanded="false" aria-controls="documents">
-                                                    Documents <i class="fa fa-chevron-down"></i>
+                                                    Documents <i class="fa fa-chevron-right"></i>
                                                 </button>
                                             </h4>
-                                            <div id="documents" class="collapse show bg-light p-2 collapsible-section">
+                                            <div id="documents" class="collapse p-2 collapsible-section document-container">
                                                 @foreach ($documentTypes as $type)
                                                     <div class="mb-3 border p-2" data-type="{{ $type }}" data-file-count="{{ $building->documents->where('document_type', $type)->count() }}" data-max-files="5">
                                                         <div class="row">
@@ -338,7 +379,7 @@
                                                 @endforeach
                                             </div>
 
-                                            <div class="col-lg-4 col-md-4 col-12">
+                                            <div class="col-lg-4 col-md-4 col-12 mt-3">
                                                 <button type="submit" class="btn btn-primary w-100">Update</button>
                                             </div>
                                         </form>

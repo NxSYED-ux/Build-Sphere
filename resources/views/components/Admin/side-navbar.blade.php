@@ -91,22 +91,6 @@
 
                 </li>
 
-                <!-- Buildings Tree -->
-                <!-- <li class="mb-1">
-                    <div id="link-a">
-                        <a href="#" class="link-dark collapsed {{ in_array('Buildings-Tree', $openSections) ? 'Link-background-color' : '' }} px-1" id="BuildingsTreebtn" >
-                        <i class="bx bx-network-chart icons"></i> Buildings Tree </a>
-                    </div>
-                </li>  -->
-
-                <!-- Owners -->
-                <!-- <li class="mb-1">
-                    <div id="link-a">
-                        <a href="#" class="link-dark collapsed {{ in_array('Owners', $openSections) ? 'Link-background-color' : '' }} px-1" id="Ownerbtn" >
-                        <i class="bx bx-user icons"></i> Owners </a>
-                    </div>
-                </li>  -->
-
                 <!-- Organizations -->
                 <li class="mb-1">
                     <div id="link-a">
@@ -140,6 +124,7 @@
         </div>
     </div>
 
+@push('scripts')
     <script>
         document.querySelector('.closebtn').addEventListener('mouseover', function () {
             this.querySelector('i').classList.replace('bx-menu-alt-right', 'bx-menu');
@@ -148,13 +133,11 @@
         document.querySelector('.closebtn').addEventListener('mouseout', function () {
             this.querySelector('i').classList.replace('bx-menu', 'bx-menu-alt-right');
         });
-
-
     </script>
 
     <script>
         window.addEventListener("load", function () {
-            if (window.innerWidth >= 768) { // Check if the screen width is equal to or greater than 768px (considered "md" or greater)
+            if (window.innerWidth >= 768) {
                 document.getElementById("mySidenav").style.width = "250px";
                 document.getElementById("main").style.marginLeft = "250px";
                 document.getElementById("navbar_top").style.marginLeft = "250px";
@@ -167,7 +150,6 @@
 
 
         function openNav() {
-            // Check if the screen width is greater than a certain threshold (e.g., 768px)
             if (window.innerWidth > 768) {
                 document.getElementById("mySidenav").style.width = "250px";
                 document.getElementById("main").style.marginLeft = "250px";
@@ -185,7 +167,7 @@
 
                 document.body.classList.remove("sidebar-closed");
             } else {
-                // For smaller screens, only open the sidebar without changing main's margin
+                // For smaller screens
                 document.getElementById("mySidenav").style.width = "250px";
                 document.getElementById("main").style.marginLeft = "0";
                 document.getElementById("navbar_top").style.marginLeft = "250px";
@@ -222,7 +204,6 @@
                 }
                 topNavLogo.style.display = 'block';
 
-                // Add class to body when sidebar is closed
                 document.body.classList.add("sidebar-closed");
             } else {
                 document.getElementById("mySidenav").style.width = "0";
@@ -279,5 +260,6 @@
             });
         });
 
-
     </script>
+
+@endpush

@@ -51,7 +51,10 @@
                                                     <div class="form-group mb-3">
                                                         <label for="name">Name</label>
                                                         <span class="required__field">*</span><br>
+                                                        <div class="position-relative">
                                                         <input type="text" name="name" id="name" class="form-control @error('name') is-invalid @enderror" value="{{ old('name') }}" maxlength="50" placeholder="User Name" required>
+                                                            <i class='bx bxs-user input-icon position-absolute top-50 end-0 translate-middle-y me-3'></i>
+                                                        </div>
                                                         @error('name')
                                                             <span class="invalid-feedback" role="alert">
                                                                 <strong>{{ $message }}</strong>
@@ -64,7 +67,10 @@
                                                     <div class="form-group mb-3">
                                                         <label for="email">Email</label>
                                                         <span class="required__field">*</span><br>
-                                                        <input type="email" name="email" id="email" class="form-control @error('email') is-invalid @enderror" value="{{ old('email') }}" placeholder="Email"  maxlength="50" required>
+                                                        <div class="position-relative">
+                                                            <input type="email" name="email" id="email" class="form-control @error('email') is-invalid @enderror" value="{{ old('email') }}" placeholder="Email"  maxlength="50" required>
+                                                            <i class='bx bxs-envelope input-icon position-absolute top-50 end-0 translate-middle-y me-3'></i>
+                                                        </div>
                                                         @error('email')
                                                             <span class="invalid-feedback" role="alert">
                                                                 <strong>{{ $message }}</strong>
@@ -94,8 +100,11 @@
                                                 <div class="col-sm-12 col-md-6 col-lg-4">
                                                     <div class="form-group mb-3">
                                                         <label for="contact">Phone no:</label><br>
-                                                        <input type="text" name="phone_no" id="contact" value="{{ old('phone_no') }}"
-                                                            class="form-control contact" placeholder="0312-3456789" maxlength="14">
+                                                        <div class="position-relative">
+                                                            <input type="text" name="phone_no" id="contact" value="{{ old('phone_no') }}"
+                                                                class="form-control contact" placeholder="0312-3456789" maxlength="14">
+                                                            <i class='bx bxs-mobile input-icon position-absolute top-50 end-0 translate-middle-y me-3'></i>
+                                                        </div>
                                                         @error('phone_no')
                                                             <span class="invalid-feedback" role="alert">
                                                                 <strong>{{ $message }}</strong>
@@ -108,8 +117,11 @@
                                                     <div class="form-group mb-3">
                                                         <label for="cnic">CNIC</label>
                                                         <span id="cnic_status"></span><br>
-                                                        <input type="text" name="cnic" id="cnic" class="form-control @error('cnic') is-invalid @enderror"
-                                                            value="{{ old('cnic') }}" maxlength="15" placeholder="12345-1234567-1">
+                                                        <div class="position-relative">
+                                                            <input type="text" name="cnic" id="cnic" class="form-control @error('cnic') is-invalid @enderror"
+                                                                value="{{ old('cnic') }}" maxlength="15" placeholder="12345-1234567-1">
+                                                            <i class='bx bxs-id-card input-icon position-absolute top-50 end-0 translate-middle-y me-3'></i>
+                                                        </div>
                                                         @error('cnic')
                                                             <span class="invalid-feedback" role="alert">
                                                                 <strong>{{ $message }}</strong>
@@ -191,7 +203,10 @@
                                                 <div class="col-sm-12 col-md-6 col-lg-4">
                                                     <div class="form-group mb-3">
                                                         <label for="location">Location</label>
-                                                        <input type="text" name="location" id="location" class="form-control @error('location') is-invalid @enderror" value="{{ old('location') }}" maxlength="100" placeholder="Enter Location">
+                                                        <div class="position-relative">
+                                                            <input type="text" name="location" id="location" class="form-control @error('location') is-invalid @enderror" value="{{ old('location') }}" maxlength="100" placeholder="Enter Location">
+                                                            <i class='bx bxs-edit-location input-icon position-absolute top-50 end-0 translate-middle-y me-3'></i>
+                                                        </div>
                                                         @error('location')
                                                             <span class="invalid-feedback" role="alert">
                                                                 <strong>{{ $message }}</strong>
@@ -203,7 +218,10 @@
                                                 <div class="col-sm-12 col-md-6 col-lg-4">
                                                     <div class="form-group mb-3">
                                                         <label for="postal_code">Postal Code</label>
-                                                        <input type="text" name="postal_code" id="postal_code" class="form-control @error('postal_code') is-invalid @enderror" value="{{ old('postal_code') }}" maxlength="100" placeholder="Enter Postal Code">
+                                                        <div class="position-relative">
+                                                            <input type="text" name="postal_code" id="postal_code" class="form-control @error('postal_code') is-invalid @enderror" value="{{ old('postal_code') }}" maxlength="100" placeholder="Enter Postal Code">
+                                                            <i class='bx bx-current-location input-icon position-absolute top-50 end-0 translate-middle-y me-3'></i>
+                                                        </div>
                                                         @error('postal_code')
                                                             <span class="invalid-feedback" role="alert">
                                                                 <strong>{{ $message }}</strong>

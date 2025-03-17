@@ -118,6 +118,50 @@
         }
 
 
+
+    </style>
+
+    <style>
+
+
+        /* Apply Styles to Elements Inside .document-container */
+        .document-container {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        .document-container .bg-light {
+            background-color: var(--bg-color) !important;
+        }
+
+        .document-container .form-control,
+        .document-container .form-select {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+        }
+
+        .document-container .form-control::placeholder {
+            color: var(--border-color);
+        }
+
+        .document-container .btn {
+            background-color: var(--btn-bg);
+            color: var(--btn-text);
+        }
+
+        .document-container .btn:hover {
+            opacity: 0.9;
+        }
+
+        .document-container .btn-danger {
+            background-color: var(--btn-bg);
+            color: var(--btn-text);
+            border-color: var(--btn-bg);
+        }
+
     </style>
 @endpush
 
@@ -318,12 +362,12 @@
 
                                             <h4>
                                                 <button class="btn w-100 text-start" style="background-color: #D3D3D3;" type="button" data-bs-toggle="collapse" data-bs-target="#documents" aria-expanded="false" aria-controls="documents">
-                                                    Documents <i class="fa fa-chevron-down"></i>
+                                                    Documents <i class="fa fa-chevron-right"></i>
                                                 </button>
                                             </h4>
-                                            <div id="documents" class="collapse show collapsible-section">
+                                            <div id="documents" class="collapse collapsible-section">
                                                 <button type="button" id="add-document" class="btn btn-light mt-21 mb-2">Add Document</button>
-                                                <div id="documents-container" class="container">
+                                                <div id="documents-container" class="container document-container">
                                                     <!-- Document fields will be appended here -->
                                                 </div>
                                             </div>
@@ -341,6 +385,8 @@
             </div>
         </section>
     </div>
+
+
 
 @endsection
 
