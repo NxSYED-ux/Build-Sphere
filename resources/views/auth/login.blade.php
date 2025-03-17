@@ -422,8 +422,6 @@
                     // Set token in the hidden input field
                     document.getElementById("fcm_token").value = token;
 
-                    // Send token to the server
-                    sendTokenToServer(token);
                 } catch (error) {
                     console.error("Error retrieving FCM token:", error);
                 }
