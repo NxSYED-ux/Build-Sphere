@@ -17,6 +17,11 @@ use App\Http\Controllers\WebControllers\RoleController;
 use App\Http\Controllers\WebControllers\UsersController;
 use Illuminate\Support\Facades\Route;
 
+
+// Route for Pusher Authentication
+Route::post('/pusher/auth', [AuthController::class, 'authenticatePusher'])->name('pusher.auth');
+
+
 Route::get('/', function () {
     return view('auth.login');
 });
