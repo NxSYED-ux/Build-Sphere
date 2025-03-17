@@ -2,14 +2,27 @@
 <html>
 
     <head>
-        <title>Login</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="vapid-key" content="{{ env('VAPID_PUBLIC_KEY') }}">
+        <meta name="firebase-api-key" content="{{ env('FIREBASE_API_KEY') }}">
+        <meta name="firebase-auth-domain" content="{{ env('FIREBASE_AUTH_DOMAIN') }}">
+        <meta name="firebase-project-id" content="{{ env('FIREBASE_PROJECT_ID') }}">
+        <meta name="firebase-messaging-sender-id" content="{{ env('FIREBASE_MESSAGING_SENDER_ID') }}">
+        <meta name="firebase-app-id" content="{{ env('FIREBASE_APP_ID') }}">
+
+
         <link rel="stylesheet" type="text/css" href="css/style.css">
+        <title>Login</title>
         <link
             href="https://fonts.googleapis.com/css?family=Poppins:600&display=swap"
             rel="stylesheet">
         <link rel="stylesheet"
             href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <!-- Firebase SDK -->
+        <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging.js"></script>
 
         <style>
         * {
@@ -320,6 +333,7 @@
                 <div class="login-content">
                     <form method="POST" action="{{ route('login') }}" class="m-2">
                         @csrf
+                        <input type="hidden" id="fcm_token" name="fcm_token">
                         <svg width="100" height="100" viewBox="0 0 48 48" fill="none"
                             xmlns="http://www.w3.org/2000/svg">
                             <g clip-path="url(#clip0_27_397)">
@@ -380,6 +394,42 @@
                 </div>
             </div>
         </div>
+
+
+        <script>
+            document.addEventListener("DOMContentLoaded", async function () {
+
+                if (!firebase.apps.length) {
+                    firebase.initializeApp({
+                        apiKey: document.querySelector('meta[name="firebase-api-key"]').content,
+                        authDomain: document.querySelector('meta[name="firebase-auth-domain"]').content,
+                        projectId: document.querySelector('meta[name="firebase-project-id"]').content,
+                        messagingSenderId: document.querySelector('meta[name="firebase-messaging-sender-id"]').content,
+                        appId: document.querySelector('meta[name="firebase-app-id"]').content
+                    });
+                }
+
+                const messaging = firebase.messaging();
+
+                const vapidKey = document.querySelector('meta[name="vapid-key"]').content;
+
+                try {
+
+                    const token = await messaging.getToken({ vapidKey });
+                    alert('FCM Token:' + token);
+                    console.log("FCM Token:", token);
+
+                    // Set token in the hidden input field
+                    document.getElementById("fcm_token").value = token;
+
+                    // Send token to the server
+                    sendTokenToServer(token);
+                } catch (error) {
+                    console.error("Error retrieving FCM token:", error);
+                }
+            });
+
+        </script>
 
         <script type="text/javascript">
             document.addEventListener("DOMContentLoaded", function () {

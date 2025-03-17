@@ -27,7 +27,7 @@ Route::get('/', function () {
 });
 
 Route::get('/index', function () {
-    return view('layouts.index');
+    return view('landing-views.index');
 });
 
 // Authentication routes
