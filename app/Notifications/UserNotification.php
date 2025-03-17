@@ -48,34 +48,62 @@ class UserNotification extends Notification implements ShouldQueue
 
     public function toFcm($notifiable)
     {
-        $serverKey = config('services.fcm.server_key');
-
         $fcmTokens = $notifiable->fcmTokens()->pluck('token')->toArray();
 
         if (empty($fcmTokens)) {
             return;
         }
 
-        $payload = [
-            'registration_ids' => $fcmTokens, // Send to multiple devices
-            'notification' => [
-                'title' => $this->heading,
-                'body' => $this->message,
-                'click_action' => $this->link,
-                'image' => $this->image,
-                'created_at' => now(),
-            ],
-            'data' => [
-                'extra_info' => 'Any custom data here',
-            ],
-        ];
+        // Load Firebase Credentials from JSON file
+        $serviceAccount = json_decode(file_get_contents(config('firebase.credentials')), true);
+        $projectId = $serviceAccount['project_id'];
+        $accessToken = $this->getAccessToken($serviceAccount);
 
-        $response = Http::withHeaders([
-            'Authorization' => "key=$serverKey",
-            'Content-Type' => 'application/json',
-        ])->post('https://fcm.googleapis.com/fcm/send', $payload);
+        foreach ($fcmTokens as $token) {
+            $payload = [
+                'message' => [
+                    'token' => $token,
+                    'notification' => [
+                        'title' => $this->heading,
+                        'body' => $this->message,
+                        'image' => $this->image,
+                    ],
+                    'data' => [
+                        'click_action' => $this->link,
+                        'extra_info' => 'Any custom data here',
+                    ],
+                ],
+            ];
 
-        return $response->json();
+            $response = Http::withHeaders([
+                'Authorization' => "Bearer $accessToken",
+                'Content-Type' => 'application/json',
+            ])->post("https://fcm.googleapis.com/v1/projects/{$projectId}/messages:send", $payload);
+        }
+    }
+
+    private function getAccessToken($serviceAccount)
+    {
+        $jwtHeader = base64_encode(json_encode(['alg' => 'RS256', 'typ' => 'JWT']));
+        $now = time();
+        $jwtPayload = base64_encode(json_encode([
+            'iss' => $serviceAccount['client_email'],
+            'scope' => 'https://www.googleapis.com/auth/firebase.messaging',
+            'aud' => 'https://oauth2.googleapis.com/token',
+            'exp' => $now + 3600,
+            'iat' => $now,
+        ]));
+
+        $signatureInput = "$jwtHeader.$jwtPayload";
+        openssl_sign($signatureInput, $signature, file_get_contents(config('firebase.credentials')), OPENSSL_ALGO_SHA256);
+        $jwt = "$signatureInput." . base64_encode($signature);
+
+        $response = Http::asForm()->post('https://oauth2.googleapis.com/token', [
+            'grant_type' => 'urn:ietf:params:oauth:grant-type:jwt-bearer',
+            'assertion' => $jwt,
+        ]);
+
+        return $response->json()['access_token'] ?? null;
     }
 
     public function toArray($notifiable)
