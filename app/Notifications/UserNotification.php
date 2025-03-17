@@ -48,18 +48,22 @@ class UserNotification extends Notification implements ShouldQueue
 
     public function toFcm($notifiable)
     {
-        if (!$notifiable->fcm_token) {
+        $serverKey = config('services.fcm.server_key');
+
+        $fcmTokens = $notifiable->fcmTokens()->pluck('token')->toArray();
+
+        if (empty($fcmTokens)) {
             return;
         }
 
-        $serverKey = config('services.fcm.server_key');
         $payload = [
-            'to' => $notifiable->fcm_token,
+            'registration_ids' => $fcmTokens, // Send to multiple devices
             'notification' => [
                 'title' => $this->heading,
                 'body' => $this->message,
                 'click_action' => $this->link,
                 'image' => $this->image,
+                'created_at' => now(),
             ],
             'data' => [
                 'extra_info' => 'Any custom data here',

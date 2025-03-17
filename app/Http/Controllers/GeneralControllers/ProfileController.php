@@ -15,6 +15,21 @@ use Illuminate\View\View;
 
 class ProfileController extends Controller
 {
+
+    // For App Home Screen
+    public function userData(Request $request){
+        if(!$request->user()) return response()->json(['error' => 'User not authenticated.'], 401);
+
+        $user = [
+            'name' => $request->user()->name,
+            'picture' => $request->user()->picture
+        ];
+
+        return response()->json([
+            'user' => $user,
+        ]);
+    }
+
     // View Profile:
     public function getProfile(Request $request, string $role = 'staff-user')
     {

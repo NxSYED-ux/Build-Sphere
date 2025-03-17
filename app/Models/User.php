@@ -161,6 +161,12 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasMany(Query::class, 'user_id', 'id');
     }
 
+    // FCM Relations
+    public function fcmTokens()
+    {
+        return $this->hasMany(UserFcmToken::class, 'user_id', 'id');
+    }
+
     // JWT Related
     public function getJWTIdentifier()
     {

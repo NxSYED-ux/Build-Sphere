@@ -56,6 +56,7 @@ Route::middleware(['auth.jwt'])->group(function () {
 
     Route::prefix('user')->group(function () {
 
+        Route::get('/', [ProfileController::class, 'userData']);
         Route::middleware('check.permission:View User Profile')->group(function () {
             Route::get('/profile', [ProfileController::class, 'getProfile']);
         });

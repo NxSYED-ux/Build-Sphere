@@ -36,6 +36,7 @@ class AuthController extends Controller
         $validated = $request->validate([
             'email' => 'required|string|email|max:50',
             'password' => 'required|string|max:20|min:8',
+            'newFcmToken' => 'required|string'
         ]);
 
         try {
@@ -48,6 +49,12 @@ class AuthController extends Controller
             if ($user->status === 0) {
                 return $this->handleResponse($request, 500, 'error', 'Your account is inactive. Please contact support.');
             }
+
+            $user->fcmTokens()->updateOrCreate(
+                ['token' => $request->newFcmToken],
+                ['user_id' => $user->id]
+            );
+
 
             $token = JWTAuth::fromUser($user);
 

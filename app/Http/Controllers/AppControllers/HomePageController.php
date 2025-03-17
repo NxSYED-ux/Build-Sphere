@@ -9,27 +9,9 @@ use Illuminate\Support\Facades\Log;
 
 class HomePageController extends Controller
 {
-    public function index(Request $request){
-        if(!$request->user()) return response()->json(['error' => 'User not authenticated.'], 401);
-
-        $user = [
-            'name' => $request->user()->name,
-            'picture' => $request->user()->picture
-        ];
-
-        return response()->json([
-            'user' => $user,
-        ]);
-    }
-
     public function homePage(Request $request)
     {
         try {
-            $user = [
-                'name' => $request->user()->name,
-                'picture' => $request->user()->picture
-            ];
-
             $search = $request->query('search');
             $minPrice = $request->query('minPrice');
             $maxPrice = $request->query('maxPrice');
@@ -108,7 +90,6 @@ class HomePageController extends Controller
                 ->get();
 
             return response()->json([
-                'user' => $user,
                 'units' => $availableUnits,
             ]);
 
