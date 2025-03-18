@@ -5,6 +5,7 @@ namespace App\Http\Controllers\GeneralControllers;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\LoginRequest;
 use App\Models\User;
+use App\Models\UserFcmToken;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -33,10 +34,10 @@ class AuthController extends Controller
     }
     public function login(LoginRequest $request, string $portal = 'staff-user')
     {
-        $validated = $request->validate([
+        $request->validate([
             'email' => 'required|string|email|max:50',
             'password' => 'required|string|max:20|min:8',
-            'newFcmToken' => 'required|string'
+            'newFcmToken' => 'nullable|string'
         ]);
 
         try {
@@ -50,11 +51,18 @@ class AuthController extends Controller
                 return $this->handleResponse($request, 500, 'error', 'Your account is inactive. Please contact support.');
             }
 
-            $user->fcmTokens()->updateOrCreate(
-                ['token' => $request->newFcmToken],
-                ['user_id' => $user->id]
-            );
+            if($request->newFcmToken){
+                $existingToken = UserFcmToken::where('token', $request->newFcmToken)->first();
 
+                if ($existingToken) {
+                    $existingToken->update(['user_id' => $user->id]);
+                } else {
+                    UserFcmToken::create([
+                        'token' => $request->newFcmToken,
+                        'user_id' => $user->id,
+                    ]);
+                }
+            }
 
             $token = JWTAuth::fromUser($user);
 
@@ -78,6 +86,11 @@ class AuthController extends Controller
     {
         try {
             $token = $request->header('Authorization') ?? $request->cookie('jwt_token');
+
+            if ($request->fcmToken) {
+                UserFcmToken::where('token', $request->fcmToken)->delete();
+            }
+
             if ($token) {
                 JWTAuth::setToken($token)->invalidate(true);
                 return $this->handleResponse($request, 200, 'success', 'Logout successful', 'login');
@@ -87,6 +100,7 @@ class AuthController extends Controller
             return $this->handleResponse($request, 500, 'error', $e->getMessage(), 'login');
         }
     }
+
 
     protected function handleResponse(Request $request, $statusCode, $heading, $data, $redirectTo = null, $token = null)
     {

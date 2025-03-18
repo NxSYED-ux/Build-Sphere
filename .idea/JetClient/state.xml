@@ -58,12 +58,12 @@
               </option>
               <option name="id" value="3872cca6-e0b1-4a79-9e5f-705d016efd1f" />
               <option name="method" value="GET" />
-              <option name="name" value="Get Notifications (1)" />
+              <option name="name" value="NotificationTesting" />
               <option name="pathVariables">
                 <list>
                   <pathVariableState>
                     <option name="key" value="id" />
-                    <option name="value" value="9" />
+                    <option name="value" value="2" />
                   </pathVariableState>
                 </list>
               </option>

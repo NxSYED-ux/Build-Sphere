@@ -4,10 +4,9 @@ namespace App\Notifications;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Notifications\Messages\BroadcastMessage;
 use Illuminate\Notifications\Notification;
 
-class UserNotification extends Notification implements ShouldQueue
+class DatabaseOnlyNotification extends Notification implements ShouldQueue
 {
     use Queueable;
 
@@ -26,7 +25,7 @@ class UserNotification extends Notification implements ShouldQueue
 
     public function via($notifiable)
     {
-        return ['database', 'fcm'];
+        return ['database'];
     }
 
     public function toDatabase($notifiable)
@@ -40,25 +39,9 @@ class UserNotification extends Notification implements ShouldQueue
         ];
     }
 
-    public function toBroadcast($notifiable)
-    {
-        return new BroadcastMessage($this->toDatabase($notifiable));
-    }
-
     public function toArray($notifiable)
     {
         return $this->toDatabase($notifiable);
-    }
-
-    public function toFCM($notifiable)
-    {
-        return [
-            'tokens' => $notifiable->fcmTokens()->pluck('token')->toArray(),
-            'heading' => $this->heading,
-            'message' => $this->message,
-            'link' => $this->link,
-            'image' => $this->image,
-        ];
     }
 
 }
