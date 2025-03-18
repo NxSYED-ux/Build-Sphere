@@ -14,11 +14,11 @@
 
         <link rel="stylesheet" type="text/css" href="css/style.css">
         <title>Login</title>
-        <link
-            href="https://fonts.googleapis.com/css?family=Poppins:600&display=swap"
-            rel="stylesheet">
-        <link rel="stylesheet"
-            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+        <link href="https://fonts.googleapis.com/css?family=Poppins:600&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+        <!-- Add Font Awesome 4.7 CSS link -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
         <!-- Firebase SDK -->
 {{--        <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>--}}
@@ -26,7 +26,6 @@
 
         <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
         <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging-compat.js"></script>
-
 
         <style>
         * {
@@ -339,7 +338,9 @@
                         @csrf
 
                         <input type="hidden" id="newFcmToken" name="newFcmToken">
-{{--                        <input type="hidden" id="fcm_tokenuuu" name="newFcmToken" value="ckwU3S428Im2aVhyYDr4fV:APA91bEAtjyaiMCW4VLN7lfC6VOwjTYD1ucOJMSh3028CIef7LQf5m-1I4mq-Pq2VqGwHLjTqDJ_5mC0ROcHkBwCjfF2wgEWFt_vx-MvVWdOkP1BQX8pByk">--}}
+                        @error('newFcmToken')
+                        <div class="text-danger"></div>
+                        @enderror
 
                         <svg width="100" height="100" viewBox="0 0 48 48" fill="none"
                             xmlns="http://www.w3.org/2000/svg">
@@ -403,10 +404,89 @@
             </div>
         </div>
 
+        <!-- Include SweetAlert2 JS from CDN -->
+        <script src="{{ asset('js/sweetalert.js') }}"></script>
+
+
+        @if (session('success') || session('error') || $errors->any())
+
+                <style>
+                    .theme-swal-popup {
+                        border: 1px solid var(--swal-border-color);
+                        box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+                    }
+                    .theme-swal-button {
+                        background-color: var(--swal-button-bg) !important;
+                        color: var(--swal-button-text) !important;
+                        border: 1px solid var(--swal-button-border) !important;
+                    }
+                    .theme-swal-button:hover {
+                        opacity: 0.9;
+                    }
+                    .swal2-confirm {
+                        box-shadow: none !important;
+                        outline: none !important;
+                    }
+                    .swal2-timer-progress-bar {
+                        background-color: var(--swal-timer-progress-bar-color) !important;
+                    }
+                </style>
+
+
+                <script>
+                    document.addEventListener('DOMContentLoaded', function () {
+                        let title = '';
+                        let text = '';
+                        let icon = '';
+
+                        // Set the title and message based on session data
+                        @if (session('success'))
+                            title = 'Success!';
+                        text = '{{ session('success') }}';
+                        icon = 'success';
+                        iconColor = getComputedStyle(document.documentElement).getPropertyValue('--swal-icon-success-color').trim();
+                        @elseif (session('error'))
+                            title = 'Error!';
+                        text = '{{ session('error') }}';
+                        icon = 'error';
+                        iconColor = getComputedStyle(document.documentElement).getPropertyValue('--swal-icon-error-color').trim();
+                        @endif
+
+                            @if ($errors->any())
+                            title = 'Error!';
+                        text = '<ul class="mb-0">';
+                        @foreach ($errors->all() as $error)
+                            text += '<li>{{ $error }}</li>';
+                        @endforeach
+                            text += '</ul>';
+                        icon = 'error';
+                        iconColor = getComputedStyle(document.documentElement).getPropertyValue('--swal-icon-error-color').trim();
+                        @endif
+
+                        // Show SweetAlert
+                        Swal.fire({
+                            title: title,
+                            html: text,
+                            icon: icon,
+                            confirmButtonText: 'OK',
+                            timer: 3000,
+                            timerProgressBar: true,
+                            background: getComputedStyle(document.documentElement).getPropertyValue('--swal-bg-color').trim(),
+                            color: getComputedStyle(document.documentElement).getPropertyValue('--swal-text-color').trim(),
+                            iconColor: iconColor,
+                            customClass: {
+                                popup: 'theme-swal-popup',
+                                confirmButton: 'theme-swal-button'
+                            }
+                        });
+                    });
+                </script>
+        @endif
+
 
         <script>
             document.addEventListener("DOMContentLoaded", async function () {
-                alert("Initializing Firebase...");
+                // alert("Initializing Firebase...");
 
                 if (!firebase.apps.length) {
                     firebase.initializeApp({
@@ -421,33 +501,33 @@
                 const messaging = firebase.messaging();
 
                 try {
-                    alert("Registering service worker...");
+                    // alert("Registering service worker...");
 
                     // ✅ Register service worker
                     const registration = await navigator.serviceWorker.register("/firebase-messaging-sw.js");
-                    console.log("Service Worker registered:", registration);
-                    alert("Service Worker registered successfully!");
+                    // console.log("Service Worker registered:", registration);
+                    // alert("Service Worker registered successfully!");
 
                     // ✅ Request notification permission
                     const permission = await Notification.requestPermission();
                     if (permission === "granted") {
-                        alert("Notification permission granted!");
+                        // alert("Notification permission granted!");
 
                         const vapidKey = document.querySelector('meta[name="vapid-key"]').content;
                         const token = await messaging.getToken({ vapidKey, serviceWorkerRegistration: registration });
 
-                        alert("FCM Token received:\n" + token);
-                        console.log("FCM Token:", token);
+                        // alert("FCM Token received:\n" + token);
+                        // console.log("FCM Token:", token);
 
                         // ✅ Set token in the hidden input field
                         document.getElementById("newFcmToken").value = token;
                     } else {
-                        alert("Notifications permission denied. Please enable notifications.");
-                        console.warn("Notifications permission denied.");
+                        // alert("Notifications permission denied. Please enable notifications.");
+                        // console.warn("Notifications permission denied.");
                     }
                 } catch (error) {
-                    alert("Error retrieving FCM token: " + error.message);
-                    console.error("Error retrieving FCM token:", error);
+                    // alert("Error retrieving FCM token: " + error.message);
+                    // console.error("Error retrieving FCM token:", error);
                 }
             });
         </script>

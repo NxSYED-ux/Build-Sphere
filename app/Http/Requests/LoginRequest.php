@@ -16,6 +16,7 @@ class LoginRequest extends FormRequest
         return [
             'email' => 'required|email|exists:users,email',
             'password' => 'required|min:6',
+            'newFcmToken' => 'required|string',
         ];
     }
 
@@ -27,6 +28,7 @@ class LoginRequest extends FormRequest
             'email.exists' => 'The provided email address is not registered.',
             'password.required' => 'The password is required.',
             'password.min' => 'The password must be at least 6 characters.',
+            'newFcmToken.required' => 'The new fcm token is required.',
         ];
     }
 }
