@@ -1404,170 +1404,6 @@
           <option name="workspaceId" value="drafts" />
         </requestHistoryState>
         <requestHistoryState>
-          <option name="dateTime" value="1742234560432" />
-          <option name="id" value="973151eb-f385-426e-8295-43164fbcf8de" />
-          <option name="request">
-            <requestState>
-              <option name="auth">
-                <authState>
-                  <option name="bearer">
-                    <pw>
-                      <option name="token" value="eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvbG9naW4iLCJpYXQiOjE3NDA5MjE3ODIsImV4cCI6MTc3MjAyNTc4MiwibmJmIjoxNzQwOTIxNzgyLCJqdGkiOiJsTXhweGRMWHBvdUdnUWVaIiwic3ViIjoiMSIsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjciLCJ1c2VyIjp7ImlkIjoxLCJyb2xlX2lkIjoxLCJyb2xlX25hbWUiOiJBZG1pbiIsIm9yZ2FuaXphdGlvbl9pZCI6bnVsbH19.a2kjPrjeex6ab63X8NTCRHsVyVYDJ6ird76Tl25Nz-o" />
-                    </pw>
-                  </option>
-                  <option name="type" value="BEARER" />
-                </authState>
-              </option>
-              <option name="id" value="3872cca6-e0b1-4a79-9e5f-705d016efd1f" />
-              <option name="method" value="GET" />
-              <option name="name" value="Get Notifications (1)" />
-              <option name="pathVariables">
-                <list>
-                  <pathVariableState>
-                    <option name="key" value="id" />
-                    <option name="value" value="9" />
-                  </pathVariableState>
-                </list>
-              </option>
-              <option name="url" value="http://localhost:8000/send-notification/{id}" />
-            </requestState>
-          </option>
-          <option name="response">
-            <responseState>
-              <option name="bodyBytesBase64" value="eyJtZXNzYWdlIjoiTm90aWZpY2F0aW9uIHNlbnQgdG8gdXNlciBJRDogOSJ9" />
-              <option name="bodyString" value="{&#10;  &quot;message&quot;: &quot;Notification sent to user ID: 9&quot;&#10;}" />
-              <option name="code" value="200" />
-              <option name="connectionEstablishingTime" value="13" />
-              <option name="contentType" value="application/json" />
-              <option name="headers">
-                <list>
-                  <headerState>
-                    <option name="key" value="Host" />
-                    <option name="value" value="localhost:8000" />
-                  </headerState>
-                  <headerState>
-                    <option name="key" value="Connection" />
-                    <option name="value" value="close" />
-                  </headerState>
-                  <headerState>
-                    <option name="key" value="X-Powered-By" />
-                    <option name="value" value="PHP/8.2.12" />
-                  </headerState>
-                  <headerState>
-                    <option name="key" value="Cache-Control" />
-                    <option name="value" value="no-cache, private" />
-                  </headerState>
-                  <headerState>
-                    <option name="key" value="Date" />
-                    <option name="value" value="Mon, 17 Mar 2025 18:02:40 GMT" />
-                  </headerState>
-                  <headerState>
-                    <option name="key" value="Content-Type" />
-                    <option name="value" value="application/json" />
-                  </headerState>
-                  <headerState>
-                    <option name="key" value="Set-Cookie" />
-                    <option name="value" value="XSRF-TOKEN=eyJpdiI6ImErQnVQa0VkS1cyUUttWlY4WHN6ZGc9PSIsInZhbHVlIjoidU02bUZYRTlCTnRBL3YyRVpXSEdpTm5ZbmRudi9MT2piaWJHM3BmcnRjMUNINVkxY282UHVNQ1ZTN28xZkV1VTlCODFJQ0d1SGNhSXJyNmkvMHhsOWlKSlByYTVwYlNEd3NpNE1TVlJIcnJCTnVBL3hsaHlzcUY0bnhtcW56dVgiLCJtYWMiOiJkZDdjNDVlODRkZDAwMjU5YmE4OWJiYjYxNGUzMzRkOGNmNTg2ZWVhODRhZTMyMmVhNzRmMmFkYmFmMjA5ZjE4IiwidGFnIjoiIn0%3D; expires=Mon, 17 Mar 2025 20:02:40 GMT; Max-Age=7200; path=/; samesite=lax" />
-                  </headerState>
-                  <headerState>
-                    <option name="key" value="Set-Cookie" />
-                    <option name="value" value="heights_session=eyJpdiI6IlZiLzU0VDh0dEdCRzBFZzlnTTgvaEE9PSIsInZhbHVlIjoiYkdJbE5LRkdFWThIazRxSCtrVEMvMlZPK1hXeDZ2YWxlckZDelNqTkhBQVlYUytxdjUwV0tkcGZkZ3hRWTFWdnlzK2I5aW1nSUxIQVNrdGdkZkJEZHhIOHpxS2p2M29wMnZQb0prb0VBb1B4Qm92eC9BV1VZZ0lrZ2oyOHFlS2giLCJtYWMiOiI1Y2VmZWMzYTljOGE5OGU5NzBhYjQ5ZTJhYTY4ODgxYzJkM2M5YTg3NzA4Njc3NTBiODFkNWIzNjIzMzQ5OTA1IiwidGFnIjoiIn0%3D; expires=Mon, 17 Mar 2025 20:02:40 GMT; Max-Age=7200; path=/; httponly; samesite=lax" />
-                  </headerState>
-                </list>
-              </option>
-              <option name="id" value="973151eb-f385-426e-8295-43164fbcf8de" />
-              <option name="message" value="OK" />
-              <option name="prettyResponseType" value="JSON" />
-              <option name="rawBodyString" value="{&quot;message&quot;:&quot;Notification sent to user ID: 9&quot;}" />
-              <option name="size" value="45" />
-              <option name="time" value="442" />
-            </responseState>
-          </option>
-          <option name="workspaceId" value="drafts" />
-        </requestHistoryState>
-        <requestHistoryState>
-          <option name="dateTime" value="1742234617249" />
-          <option name="id" value="856ec4b7-d356-4421-a887-b74d038a2305" />
-          <option name="request">
-            <requestState>
-              <option name="auth">
-                <authState>
-                  <option name="bearer">
-                    <pw>
-                      <option name="token" value="eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvbG9naW4iLCJpYXQiOjE3NDA5MjE3ODIsImV4cCI6MTc3MjAyNTc4MiwibmJmIjoxNzQwOTIxNzgyLCJqdGkiOiJsTXhweGRMWHBvdUdnUWVaIiwic3ViIjoiMSIsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjciLCJ1c2VyIjp7ImlkIjoxLCJyb2xlX2lkIjoxLCJyb2xlX25hbWUiOiJBZG1pbiIsIm9yZ2FuaXphdGlvbl9pZCI6bnVsbH19.a2kjPrjeex6ab63X8NTCRHsVyVYDJ6ird76Tl25Nz-o" />
-                    </pw>
-                  </option>
-                  <option name="type" value="BEARER" />
-                </authState>
-              </option>
-              <option name="id" value="3872cca6-e0b1-4a79-9e5f-705d016efd1f" />
-              <option name="method" value="GET" />
-              <option name="name" value="Get Notifications (1)" />
-              <option name="pathVariables">
-                <list>
-                  <pathVariableState>
-                    <option name="key" value="id" />
-                    <option name="value" value="9" />
-                  </pathVariableState>
-                </list>
-              </option>
-              <option name="url" value="http://localhost:8000/send-notification/{id}" />
-            </requestState>
-          </option>
-          <option name="response">
-            <responseState>
-              <option name="bodyBytesBase64" value="eyJtZXNzYWdlIjoiTm90aWZpY2F0aW9uIHNlbnQgdG8gdXNlciBJRDogOSJ9" />
-              <option name="bodyString" value="{&#10;  &quot;message&quot;: &quot;Notification sent to user ID: 9&quot;&#10;}" />
-              <option name="code" value="200" />
-              <option name="connectionEstablishingTime" value="12" />
-              <option name="contentType" value="application/json" />
-              <option name="headers">
-                <list>
-                  <headerState>
-                    <option name="key" value="Host" />
-                    <option name="value" value="localhost:8000" />
-                  </headerState>
-                  <headerState>
-                    <option name="key" value="Connection" />
-                    <option name="value" value="close" />
-                  </headerState>
-                  <headerState>
-                    <option name="key" value="X-Powered-By" />
-                    <option name="value" value="PHP/8.2.12" />
-                  </headerState>
-                  <headerState>
-                    <option name="key" value="Cache-Control" />
-                    <option name="value" value="no-cache, private" />
-                  </headerState>
-                  <headerState>
-                    <option name="key" value="Date" />
-                    <option name="value" value="Mon, 17 Mar 2025 18:03:37 GMT" />
-                  </headerState>
-                  <headerState>
-                    <option name="key" value="Content-Type" />
-                    <option name="value" value="application/json" />
-                  </headerState>
-                  <headerState>
-                    <option name="key" value="Set-Cookie" />
-                    <option name="value" value="XSRF-TOKEN=eyJpdiI6ImRyMHkvRmRoNS82RDV3a3lFYUg4b1E9PSIsInZhbHVlIjoibWRPYXV5d0NpeUw3U1RqZTBOaU5HbE96a1l0Zm5nYzFSQjdlMjlNR3RFdC9kVzB5QWFBb3ZIL2NLTzNJVGRjM2xtTUZCazc4NHZOT00xSkptM2V0dWRhdFZrNGhVcWZaR2J4YkVxTTBJaU5BM2RaM1Z5bnMrNG9LZWxod0g0cDAiLCJtYWMiOiI0MWQyMmU3ZDAyYTBiM2QzNjQ4Yzc5MjhkZjhjN2E2M2JlMjZiZWZiMjYwNmMyOGQwZGMwY2UzZDk0OGRkYWIxIiwidGFnIjoiIn0%3D; expires=Mon, 17 Mar 2025 20:03:37 GMT; Max-Age=7200; path=/; samesite=lax" />
-                  </headerState>
-                  <headerState>
-                    <option name="key" value="Set-Cookie" />
-                    <option name="value" value="heights_session=eyJpdiI6Inp5YkcydzZQdVVjMDBialpPbU9HY0E9PSIsInZhbHVlIjoicmhhTWU2Y0ljQUQ5bktrMlpjVEJRSmFCQm5OaTRDOE5aVUJhQ0MwcWp2c29PeEFhVUpIeXI0L29TMllhZm5TMHpOQ28xdkFQclBPd1ZIMzR0UEZYNW1iRGF2cmlGaHlHbU5IOUFkSGlSeG85c1V2ZEtqNm13RXAxbzRQUlB5TW0iLCJtYWMiOiI3N2U3ZTQ0MmUyYzRjMzAwYzVlNjM0YWFhMzdhNmNlYjUzODhkM2IxMWU4NjkwMGVmZTYyYmZiNDFlZGY5Zjg2IiwidGFnIjoiIn0%3D; expires=Mon, 17 Mar 2025 20:03:37 GMT; Max-Age=7200; path=/; httponly; samesite=lax" />
-                  </headerState>
-                </list>
-              </option>
-              <option name="id" value="856ec4b7-d356-4421-a887-b74d038a2305" />
-              <option name="message" value="OK" />
-              <option name="prettyResponseType" value="JSON" />
-              <option name="rawBodyString" value="{&quot;message&quot;:&quot;Notification sent to user ID: 9&quot;}" />
-              <option name="size" value="45" />
-              <option name="time" value="235" />
-            </responseState>
-          </option>
-          <option name="workspaceId" value="drafts" />
-        </requestHistoryState>
-        <requestHistoryState>
           <option name="dateTime" value="1742234745006" />
           <option name="id" value="93286243-fa05-4eae-9c89-f6e7a590dc07" />
           <option name="request">
@@ -2189,6 +2025,162 @@
               <option name="rawBodyString" value="{&quot;message&quot;:&quot;Notification sent to user ID: 9&quot;}" />
               <option name="size" value="45" />
               <option name="time" value="2235" />
+            </responseState>
+          </option>
+          <option name="workspaceId" value="drafts" />
+        </requestHistoryState>
+        <requestHistoryState>
+          <option name="dateTime" value="1742300091100" />
+          <option name="id" value="709f9212-c204-4d3f-9f70-e1a9dbb6edff" />
+          <option name="request">
+            <requestState>
+              <option name="auth">
+                <authState>
+                  <option name="bearer">
+                    <pw>
+                      <option name="token" value="eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvbG9naW4iLCJpYXQiOjE3NDA5MjE3ODIsImV4cCI6MTc3MjAyNTc4MiwibmJmIjoxNzQwOTIxNzgyLCJqdGkiOiJsTXhweGRMWHBvdUdnUWVaIiwic3ViIjoiMSIsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjciLCJ1c2VyIjp7ImlkIjoxLCJyb2xlX2lkIjoxLCJyb2xlX25hbWUiOiJBZG1pbiIsIm9yZ2FuaXphdGlvbl9pZCI6bnVsbH19.a2kjPrjeex6ab63X8NTCRHsVyVYDJ6ird76Tl25Nz-o" />
+                    </pw>
+                  </option>
+                  <option name="type" value="BEARER" />
+                </authState>
+              </option>
+              <option name="id" value="3872cca6-e0b1-4a79-9e5f-705d016efd1f" />
+              <option name="method" value="GET" />
+              <option name="name" value="Get Notifications (1)" />
+              <option name="pathVariables">
+                <list>
+                  <pathVariableState>
+                    <option name="key" value="id" />
+                    <option name="value" value="9" />
+                  </pathVariableState>
+                </list>
+              </option>
+              <option name="url" value="http://localhost:8000/api/send-notification/{id}" />
+            </requestState>
+          </option>
+          <option name="response">
+            <responseState>
+              <option name="bodyBytesBase64" value="eyJtZXNzYWdlIjoiTm90aWZpY2F0aW9uIHNlbnQgdG8gdXNlciBJRDogOSJ9" />
+              <option name="bodyString" value="{&#10;  &quot;message&quot;: &quot;Notification sent to user ID: 9&quot;&#10;}" />
+              <option name="code" value="200" />
+              <option name="connectionEstablishingTime" value="7" />
+              <option name="contentType" value="application/json" />
+              <option name="headers">
+                <list>
+                  <headerState>
+                    <option name="key" value="Host" />
+                    <option name="value" value="localhost:8000" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Connection" />
+                    <option name="value" value="close" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="X-Powered-By" />
+                    <option name="value" value="PHP/8.2.12" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Cache-Control" />
+                    <option name="value" value="no-cache, private" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Date" />
+                    <option name="value" value="Tue, 18 Mar 2025 12:14:51 GMT" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Content-Type" />
+                    <option name="value" value="application/json" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Access-Control-Allow-Origin" />
+                    <option name="value" value="*" />
+                  </headerState>
+                </list>
+              </option>
+              <option name="id" value="709f9212-c204-4d3f-9f70-e1a9dbb6edff" />
+              <option name="message" value="OK" />
+              <option name="prettyResponseType" value="JSON" />
+              <option name="rawBodyString" value="{&quot;message&quot;:&quot;Notification sent to user ID: 9&quot;}" />
+              <option name="size" value="45" />
+              <option name="time" value="3348" />
+            </responseState>
+          </option>
+          <option name="workspaceId" value="drafts" />
+        </requestHistoryState>
+        <requestHistoryState>
+          <option name="dateTime" value="1742300118410" />
+          <option name="id" value="96faaaa6-c60e-492d-b117-40cdbc9e0a60" />
+          <option name="request">
+            <requestState>
+              <option name="auth">
+                <authState>
+                  <option name="bearer">
+                    <pw>
+                      <option name="token" value="eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvbG9naW4iLCJpYXQiOjE3NDA5MjE3ODIsImV4cCI6MTc3MjAyNTc4MiwibmJmIjoxNzQwOTIxNzgyLCJqdGkiOiJsTXhweGRMWHBvdUdnUWVaIiwic3ViIjoiMSIsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjciLCJ1c2VyIjp7ImlkIjoxLCJyb2xlX2lkIjoxLCJyb2xlX25hbWUiOiJBZG1pbiIsIm9yZ2FuaXphdGlvbl9pZCI6bnVsbH19.a2kjPrjeex6ab63X8NTCRHsVyVYDJ6ird76Tl25Nz-o" />
+                    </pw>
+                  </option>
+                  <option name="type" value="BEARER" />
+                </authState>
+              </option>
+              <option name="id" value="3872cca6-e0b1-4a79-9e5f-705d016efd1f" />
+              <option name="method" value="GET" />
+              <option name="name" value="Get Notifications (1)" />
+              <option name="pathVariables">
+                <list>
+                  <pathVariableState>
+                    <option name="key" value="id" />
+                    <option name="value" value="9" />
+                  </pathVariableState>
+                </list>
+              </option>
+              <option name="url" value="http://localhost:8000/api/send-notification/{id}" />
+            </requestState>
+          </option>
+          <option name="response">
+            <responseState>
+              <option name="bodyBytesBase64" value="eyJtZXNzYWdlIjoiTm90aWZpY2F0aW9uIHNlbnQgdG8gdXNlciBJRDogOSJ9" />
+              <option name="bodyString" value="{&#10;  &quot;message&quot;: &quot;Notification sent to user ID: 9&quot;&#10;}" />
+              <option name="code" value="200" />
+              <option name="connectionEstablishingTime" value="2" />
+              <option name="contentType" value="application/json" />
+              <option name="headers">
+                <list>
+                  <headerState>
+                    <option name="key" value="Host" />
+                    <option name="value" value="localhost:8000" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Connection" />
+                    <option name="value" value="close" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="X-Powered-By" />
+                    <option name="value" value="PHP/8.2.12" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Cache-Control" />
+                    <option name="value" value="no-cache, private" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Date" />
+                    <option name="value" value="Tue, 18 Mar 2025 12:15:18 GMT" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Content-Type" />
+                    <option name="value" value="application/json" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Access-Control-Allow-Origin" />
+                    <option name="value" value="*" />
+                  </headerState>
+                </list>
+              </option>
+              <option name="id" value="96faaaa6-c60e-492d-b117-40cdbc9e0a60" />
+              <option name="message" value="OK" />
+              <option name="prettyResponseType" value="JSON" />
+              <option name="rawBodyString" value="{&quot;message&quot;:&quot;Notification sent to user ID: 9&quot;}" />
+              <option name="size" value="45" />
+              <option name="time" value="1831" />
             </responseState>
           </option>
           <option name="workspaceId" value="drafts" />

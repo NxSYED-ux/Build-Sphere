@@ -80,6 +80,15 @@ class UserNotification extends Notification implements ShouldQueue
                     ]);
 
                 $messaging->send($message);
+
+                Log::info("FCM Notification Sent Successfully", [
+                    'token' => $token,
+                    'title' => $this->heading,
+                    'message' => $this->message,
+                    'link' => $this->link,
+                    'image' => $this->image
+                ]);
+
             } catch (\Exception $e) {
                 Log::error("FCM Notification Failed: " . $e->getMessage());
             }
