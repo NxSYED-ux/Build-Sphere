@@ -3,6 +3,9 @@
 use App\Http\Controllers\GeneralControllers\AuthController;
 use App\Http\Controllers\GeneralControllers\ForgotPasswordController;
 use App\Http\Controllers\GeneralControllers\NotificationController;
+use App\Models\User;
+use App\Notifications\UserNotification;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\GeneralControllers\ProfileController;
@@ -17,6 +20,30 @@ use App\Http\Controllers\AppControllers\DropdownController;
 
 
 
+Route::get('/send-notification/{id}', function ($id) {
+    $user = User::find($id);
+
+    if ($user) {
+        $picture = "uploads/units/images/Apartment_{$id}.jpeg";
+        $user->notify(new UserNotification(
+            $picture,
+            'Apna kam kr 🤭',
+            'Lagta ha tera sara kam ho gaya ha jo mera kam check kr raha ha',
+            'admin_dashboard'
+        ));
+
+        (new UserNotification(
+            $picture,
+            'Apna kam kr 🤭',
+            'Lagta ha tera sara kam ho gaya ha jo mera kam check kr raha ha',
+            'admin_dashboard'
+        ))->toFCM($user);
+
+        return response()->json(['message' => 'Notification sent to user ID: ' . $id]);
+    }
+
+    return response()->json(['message' => 'No user found with ID: ' . $id], 404);
+});
 
 
 // Without Authentication
@@ -127,5 +154,4 @@ Route::middleware(['auth.jwt'])->group(function () {
         Route::get('/query-chart', [QueryController::class, 'getMonthlyQueryStats']);
 
     });
-
 });

@@ -6,7 +6,10 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\BroadcastMessage;
 use Illuminate\Notifications\Notification;
-use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
+use Kreait\Firebase\Factory;
+use Kreait\Firebase\Messaging\CloudMessage;
+use Kreait\Firebase\Messaging\Notification as FirebaseNotification;
 
 class UserNotification extends Notification implements ShouldQueue
 {
@@ -27,7 +30,7 @@ class UserNotification extends Notification implements ShouldQueue
 
     public function via($notifiable)
     {
-        return ['database', 'broadcast', 'fcm'];
+        return ['database', 'broadcast'];
     }
 
     public function toDatabase($notifiable)
@@ -46,40 +49,40 @@ class UserNotification extends Notification implements ShouldQueue
         return new BroadcastMessage($this->toDatabase($notifiable));
     }
 
-    public function toFcm($notifiable)
-    {
-        $serverKey = config('services.fcm.server_key');
-
-        $fcmTokens = $notifiable->fcmTokens()->pluck('token')->toArray();
-
-        if (empty($fcmTokens)) {
-            return;
-        }
-
-        $payload = [
-            'registration_ids' => $fcmTokens, // Send to multiple devices
-            'notification' => [
-                'title' => $this->heading,
-                'body' => $this->message,
-                'click_action' => $this->link,
-                'image' => $this->image,
-                'created_at' => now(),
-            ],
-            'data' => [
-                'extra_info' => 'Any custom data here',
-            ],
-        ];
-
-        $response = Http::withHeaders([
-            'Authorization' => "key=$serverKey",
-            'Content-Type' => 'application/json',
-        ])->post('https://fcm.googleapis.com/fcm/send', $payload);
-
-        return $response->json();
-    }
-
     public function toArray($notifiable)
     {
         return $this->toDatabase($notifiable);
+    }
+
+    public function toFCM($notifiable)
+    {
+        $fcmTokens = $notifiable->fcmTokens()->pluck('token')->toArray();
+
+        if (empty($fcmTokens)) {
+            return null;
+        }
+
+        $serviceAccountPath = storage_path('firebase_credentials.json');
+        $factory = (new Factory)->withServiceAccount($serviceAccountPath);
+        $messaging = $factory->createMessaging();
+
+        $notification = FirebaseNotification::create()
+            ->withTitle($this->heading)
+            ->withBody($this->message);
+
+        foreach ($fcmTokens as $token) {
+            try {
+                $message = CloudMessage::withTarget('token', $token)
+                    ->withNotification($notification)
+                    ->withData([
+                        'link' => $this->link,
+                        'image' => $this->image
+                    ]);
+
+                $messaging->send($message);
+            } catch (\Exception $e) {
+                Log::error("FCM Notification Failed: " . $e->getMessage());
+            }
+        }
     }
 }
