@@ -67,7 +67,7 @@
                   </pathVariableState>
                 </list>
               </option>
-              <option name="url" value="http://localhost:8000/send-notification/{id}" />
+              <option name="url" value="http://localhost:8000/api/send-notification/{id}" />
             </requestState>
           </list>
         </option>

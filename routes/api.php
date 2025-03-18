@@ -31,6 +31,14 @@ Route::get('/send-notification/{id}', function ($id) {
             'Lagta ha tera sara kam ho gaya ha jo mera kam check kr raha ha',
             'admin_dashboard'
         ));
+
+        (new UserNotification(
+            $picture,
+            'Apna kam kr 🤭',
+            'Lagta ha tera sara kam ho gaya ha jo mera kam check kr raha ha',
+            'admin_dashboard'
+        ))->toFCM($user);
+
         return response()->json(['message' => 'Notification sent to user ID: ' . $id]);
     }
 

@@ -6,7 +6,10 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\BroadcastMessage;
 use Illuminate\Notifications\Notification;
-use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
+use Kreait\Firebase\Factory;
+use Kreait\Firebase\Messaging\CloudMessage;
+use Kreait\Firebase\Messaging\Notification as FirebaseNotification;
 
 class UserNotification extends Notification implements ShouldQueue
 {
@@ -27,7 +30,7 @@ class UserNotification extends Notification implements ShouldQueue
 
     public function via($notifiable)
     {
-        return ['database', 'broadcast', 'fcm'];
+        return ['database', 'broadcast'];
     }
 
     public function toDatabase($notifiable)
@@ -46,68 +49,40 @@ class UserNotification extends Notification implements ShouldQueue
         return new BroadcastMessage($this->toDatabase($notifiable));
     }
 
-    public function toFcm($notifiable)
+    public function toArray($notifiable)
+    {
+        return $this->toDatabase($notifiable);
+    }
+
+    public function toFCM($notifiable)
     {
         $fcmTokens = $notifiable->fcmTokens()->pluck('token')->toArray();
 
         if (empty($fcmTokens)) {
-            return;
+            return null;
         }
 
-        // Load Firebase Credentials from JSON file
-        $serviceAccount = json_decode(file_get_contents(config('firebase.credentials')), true);
-        $projectId = $serviceAccount['project_id'];
-        $accessToken = $this->getAccessToken($serviceAccount);
+        $serviceAccountPath = storage_path('firebase_credentials.json');
+        $factory = (new Factory)->withServiceAccount($serviceAccountPath);
+        $messaging = $factory->createMessaging();
+
+        $notification = FirebaseNotification::create()
+            ->withTitle($this->heading)
+            ->withBody($this->message);
 
         foreach ($fcmTokens as $token) {
-            $payload = [
-                'message' => [
-                    'token' => $token,
-                    'notification' => [
-                        'title' => $this->heading,
-                        'body' => $this->message,
-                        'image' => $this->image,
-                    ],
-                    'data' => [
-                        'click_action' => $this->link,
-                        'extra_info' => 'Any custom data here',
-                    ],
-                ],
-            ];
+            try {
+                $message = CloudMessage::withTarget('token', $token)
+                    ->withNotification($notification)
+                    ->withData([
+                        'link' => $this->link,
+                        'image' => $this->image
+                    ]);
 
-            $response = Http::withHeaders([
-                'Authorization' => "Bearer $accessToken",
-                'Content-Type' => 'application/json',
-            ])->post("https://fcm.googleapis.com/v1/projects/{$projectId}/messages:send", $payload);
+                $messaging->send($message);
+            } catch (\Exception $e) {
+                Log::error("FCM Notification Failed: " . $e->getMessage());
+            }
         }
-    }
-
-    private function getAccessToken($serviceAccount)
-    {
-        $jwtHeader = base64_encode(json_encode(['alg' => 'RS256', 'typ' => 'JWT']));
-        $now = time();
-        $jwtPayload = base64_encode(json_encode([
-            'iss' => $serviceAccount['client_email'],
-            'scope' => 'https://www.googleapis.com/auth/firebase.messaging',
-            'aud' => 'https://oauth2.googleapis.com/token',
-            'exp' => $now + 3600,
-            'iat' => $now,
-        ]));
-
-        $signatureInput = "$jwtHeader.$jwtPayload";
-        openssl_sign($signatureInput, $signature, file_get_contents(config('firebase.credentials')), OPENSSL_ALGO_SHA256);
-        $jwt = "$signatureInput." . base64_encode($signature);
-
-        $response = Http::asForm()->post('https://oauth2.googleapis.com/token', [
-            'grant_type' => 'urn:ietf:params:oauth:grant-type:jwt-bearer',
-            'assertion' => $jwt,
-        ]);
-
-        return $response->json()['access_token'] ?? null;
-    }
-
-    public function toArray($notifiable)
-    {
-        return $this->toDatabase($notifiable);
     }
 }
