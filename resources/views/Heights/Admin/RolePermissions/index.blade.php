@@ -173,17 +173,19 @@
                 @if ($roleId)
                     <div class="card mt-4 shadow-lg border-0">
                         <div class="card-header d-flex justify-content-between align-items-center permission-header">
-                            <h4 class="mb-0 permission-header-text">Permissions for Role: {{ optional($roles->where('id', $roleId)->first())->name }}</h4>
+                            <h4 class="mb-0 permission-header-text">Permissions for Role: {{ $roles ? optional($roles->where('id', $roleId)->first())->name : 'Name'}}</h4>
 
                             <div class="d-flex align-items-center">
                                 <i class="bx bx-street-view permission-header-icon me-2 fs-5"></i>
                                 <form method="GET" action="{{ route('role.permissions') }}">
                                     <select name="role_id" id="role" class="form-select form-select-sm" onchange="this.form.submit()">
-                                        @foreach ($roles ?? [] as $role)
+                                        @forelse ($roles ?? [] as $role)
                                             <option value="{{ $role->id }}" {{ $roleId == $role->id ? 'selected' : '' }}>
                                                 {{ $role->name }}
                                             </option>
-                                        @endforeach
+                                        @empty
+                                            <option value="">Select Role</option>
+                                        @endforelse
                                     </select>
                                 </form>
                             </div>
