@@ -4,12 +4,6 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta name="vapid-key" content="{{ env('VAPID_PUBLIC_KEY') }}">
-        <meta name="firebase-api-key" content="{{ env('FIREBASE_API_KEY') }}">
-        <meta name="firebase-auth-domain" content="{{ env('FIREBASE_AUTH_DOMAIN') }}">
-        <meta name="firebase-project-id" content="{{ env('FIREBASE_PROJECT_ID') }}">
-        <meta name="firebase-messaging-sender-id" content="{{ env('FIREBASE_MESSAGING_SENDER_ID') }}">
-        <meta name="firebase-app-id" content="{{ env('FIREBASE_APP_ID') }}">
 
 
         <link rel="stylesheet" type="text/css" href="css/style.css">
@@ -26,6 +20,8 @@
 
         <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
         <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging-compat.js"></script>
+
+
 
         <style>
         * {
@@ -486,51 +482,41 @@
 
         <script>
             document.addEventListener("DOMContentLoaded", async function () {
-                // alert("Initializing Firebase...");
 
                 if (!firebase.apps.length) {
                     firebase.initializeApp({
-                        apiKey: document.querySelector('meta[name="firebase-api-key"]').content,
-                        authDomain: document.querySelector('meta[name="firebase-auth-domain"]').content,
-                        projectId: document.querySelector('meta[name="firebase-project-id"]').content,
-                        messagingSenderId: document.querySelector('meta[name="firebase-messaging-sender-id"]').content,
-                        appId: document.querySelector('meta[name="firebase-app-id"]').content
+                        apiKey: "{{ config('firebase.api_key') }}",
+                        authDomain: "{{ config('firebase.auth_domain') }}",
+                        projectId: "{{ config('firebase.project_id') }}",
+                        messagingSenderId: "{{ config('firebase.messaging_sender_id') }}",
+                        appId: "{{ config('firebase.app_id') }}",
                     });
                 }
 
                 const messaging = firebase.messaging();
 
                 try {
-                    // alert("Registering service worker...");
-
-                    // ✅ Register service worker
                     const registration = await navigator.serviceWorker.register("/firebase-messaging-sw.js");
-                    // console.log("Service Worker registered:", registration);
-                    // alert("Service Worker registered successfully!");
 
                     // ✅ Request notification permission
                     const permission = await Notification.requestPermission();
                     if (permission === "granted") {
-                        // alert("Notification permission granted!");
 
-                        const vapidKey = document.querySelector('meta[name="vapid-key"]').content;
-                        const token = await messaging.getToken({ vapidKey, serviceWorkerRegistration: registration });
-
-                        // alert("FCM Token received:\n" + token);
-                        // console.log("FCM Token:", token);
+                        const vapidKey = "{{ config('firebase.vapid_key') }}"; // Ensure proper formatting
+                        const token = await messaging.getToken({
+                            vapidKey: vapidKey.trim(), // Ensure no extra spaces
+                            serviceWorkerRegistration: registration
+                        });
 
                         // ✅ Set token in the hidden input field
                         document.getElementById("newFcmToken").value = token;
-                    } else {
-                        // alert("Notifications permission denied. Please enable notifications.");
-                        // console.warn("Notifications permission denied.");
                     }
                 } catch (error) {
-                    // alert("Error retrieving FCM token: " + error.message);
-                    // console.error("Error retrieving FCM token:", error);
+                    console.error("Error retrieving FCM token:", error);
                 }
             });
         </script>
+
 
 
         <script type="text/javascript">

@@ -3,11 +3,11 @@ importScripts("https://www.gstatic.com/firebasejs/9.6.10/firebase-messaging-comp
 
 // Initialize Firebase in the service worker
 firebase.initializeApp({
-    apiKey: "AIzaSyCLom-K30l4D54NjSbjgl_P9320RBkdbNk",
-    authDomain: "final-da3c1.firebaseapp.com",
-    projectId: "final-da3c1",
-    messagingSenderId: "145267213050",
-    appId: "1:145267213050:web:53aaf1acc58668f563ff43"
+    apiKey: "{{ config('firebase.api_key') }}",
+    authDomain: "{{ config('firebase.auth_domain') }}",
+    projectId: "{{ config('firebase.project_id') }}",
+    messagingSenderId: "{{ config('firebase.messaging_sender_id') }}",
+    appId: "{{ config('firebase.app_id') }}",
 });
 
 // Initialize messaging
@@ -20,7 +20,7 @@ messaging.onBackgroundMessage((payload) => {
     const notificationTitle = payload.notification.title;
     const notificationOptions = {
         body: payload.notification.body,
-        icon: payload.notification.image || "/default-icon.png"
+        icon: payload.notification.image || "/img/placeholder-img.jfif"
     };
 
     self.registration.showNotification(notificationTitle, notificationOptions);

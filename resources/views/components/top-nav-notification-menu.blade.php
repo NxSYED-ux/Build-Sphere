@@ -125,6 +125,11 @@
                             let heading = notification.querySelector(".notification-item-heading");
                             if (heading) {
                                 heading.classList.remove("fw-bold");
+
+                                const notificationBadge = document.getElementById('notification-badge');
+                                const notificationBadge2 = document.getElementById('notification-badge2');
+                                notificationBadge.style.display = 'none';
+                                notificationBadge2.style.display = 'none';
                             }
                         });
                     }, 0);

@@ -48,6 +48,8 @@
 
 
 
+
+
     <style>
         body {
             font-family: 'Poppins', CircularXX, sans-serif;
@@ -171,10 +173,13 @@
         }
 
     </style>
+
     @stack('styles')
 
 </head>
 <body>
+{{--<div id="notificationContainer"></div>--}}
+
 
 
     <x-real-time-notifications />
@@ -231,6 +236,10 @@
             }
         });
     </script>
+
+
+
+
 
 
     @stack('scripts')
