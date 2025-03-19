@@ -561,11 +561,6 @@ class BuildingController extends Controller
                'New Building for approval',
                "{$building->name} is available for approval",
                 "admin/buildings/{$building->id}",
-
-                $user->id,
-                "Building Submitted",
-                $message,
-                "owner/buildings/{$building->id}",
             ));
 
             dispatch(new OrganizationOwnerNotifications(
@@ -576,6 +571,9 @@ class BuildingController extends Controller
                 "owner/buildings/{$building->id}",
 
                 $user->id,
+                "Building Submitted",
+                $message,
+                "owner/buildings/{$building->id}",
             ));
 
             return redirect()->route('owner.buildings.index')->with('success', 'Building Submitted successfully.');
