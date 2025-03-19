@@ -190,6 +190,7 @@ class User extends Authenticatable implements JWTSubject
         }
 
         switch ($this->role->name) {
+            case 'Manager':
             case 'Staff':
                 return optional($this->staffMember)->organization_id;
             case 'Owner':

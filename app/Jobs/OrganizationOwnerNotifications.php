@@ -48,7 +48,7 @@ class OrganizationOwnerNotifications implements ShouldQueue
         if ($organization && $organization->owner_id) {
             $owner = User::find($organization->owner_id);
 
-            if ($owner && $owner->id != $this->initiatorId) {
+            if ($owner && $owner->id !== $this->initiatorId) {
                 Notification::send($owner, new UserNotification(
                     $this->image,
                     $this->heading,

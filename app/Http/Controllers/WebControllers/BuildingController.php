@@ -11,6 +11,7 @@ use App\Models\BuildingDocument;
 use App\Models\BuildingLevel;
 use App\Models\BuildingPicture;
 use App\Models\DropdownType;
+use App\Models\ManagerBuilding;
 use App\Models\Organization;
 use App\Notifications\DatabaseOnlyNotification;
 use App\Notifications\UserNotification;
@@ -52,27 +53,39 @@ class BuildingController extends Controller
 
     public function ownerIndex(Request $request)
     {
+        $user = $request->user() ?? abort(404, 'Page not found');
+
         try {
             $buildings = null;
             $token = $request->attributes->get('token');
 
-            if (!$token || !isset($token['organization_id'])) {
+            if (empty($token['organization_id']) || empty($token['role_name'])) {
                 return view('Heights.Owner.Buildings.index', compact('buildings'));
             }
 
             $organization_id = $token['organization_id'];
+            $role_name = $token['role_name'];
             $search = $request->input('search');
 
-            $buildings = Building::with(['pictures', 'address'])
-                ->where('organization_id', $organization_id)
-                ->where(function ($query) use ($search) {
-                    $query->where('name', 'like', '%' . $search . '%')
-                        ->orWhere('remarks', 'like', '%' . $search . '%')
-                        ->orWhereHas('address', function ($q) use ($search) {
-                            $q->where('city', 'like', '%' . $search . '%');
+            $query = Building::with(['pictures', 'address'])
+                ->where('organization_id', $organization_id);
+
+            if (!empty($search)) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('name', 'like', "%{$search}%")
+                        ->orWhere('remarks', 'like', "%{$search}%")
+                        ->orWhereHas('address', function ($subQuery) use ($search) {
+                            $subQuery->where('city', 'like', "%{$search}%");
                         });
-                })
-                ->paginate(10);
+                });
+            }
+
+            if ($role_name === 'Manager') {
+                $managerBuildingIds = ManagerBuilding::where('user_id', $user->id)->pluck('building_id');
+                $query->whereIn('id', $managerBuildingIds);
+            }
+
+            $buildings = $query->paginate(10);
 
             return view('Heights.Owner.Buildings.index', compact('buildings'));
 
@@ -287,9 +300,30 @@ class BuildingController extends Controller
         return $this->show('admin', $building);
     }
 
-    public function ownerShow(Building $building)
+    public function ownerShow(Building $building, Request $request)
     {
-        return $this->show('owner',$building);
+        $user = $request->user() ?? abort('404', 'Page not found');
+
+        $token = $request->attributes->get('token');
+
+        if (empty($token['organization_id']) || empty($token['role_name'])) {
+            abort(404, 'Page not found');
+        }
+
+        $organization_id = $token['organization_id'];
+        $role_name = $token['role_name'];
+
+        if ($organization_id !== $building->organization_id) {
+            abort(404, 'Page not found');
+        }
+
+        if ($role_name === 'Manager' && !ManagerBuilding::where('building_id', $building->id)
+                ->where('user_id', $user->id)
+                ->exists()) {
+            abort(404, 'Page not found');
+        }
+
+        return $this->show('owner', $building);
     }
 
     private function show(string $portal, Building $building)
@@ -326,12 +360,33 @@ class BuildingController extends Controller
         return $this->edit('admin', $building);
     }
 
-    public function ownerEdit(Building $building)
+    public function ownerEdit(Building $building, Request $request)
     {
+        $user = $request->user() ?? abort('404', 'Page not found');
+
+        $token = $request->attributes->get('token');
+
+        if (empty($token['organization_id']) || empty($token['role_name'])) {
+            abort(404, 'Page not found');
+        }
+
+        $organization_id = $token['organization_id'];
+        $role_name = $token['role_name'];
+
+        if ($organization_id !== $building->organization_id) {
+            abort(404, 'Page not found');
+        }
+
+        if ($role_name === 'Manager' && !ManagerBuilding::where('building_id', $building->id)
+                ->where('user_id', $user->id)
+                ->exists()) {
+            abort(404, 'Page not found');
+        }
+
         return $this->edit('owner',$building);
     }
 
-    private function edit(string $portal,Building $building)
+    private function edit(string $portal, Building $building)
     {
         try {
             $building->load(['address', 'organization','pictures', 'documents']);
@@ -367,7 +422,6 @@ class BuildingController extends Controller
         }
     }
 
-
     // Update Functions
     public function adminUpdate(Request $request)
     {
@@ -381,7 +435,7 @@ class BuildingController extends Controller
         $token = $request->attributes->get('token');
 
         if (!$token || !isset($token['organization_id'])) {
-            return redirect()->back()->withInput()->with('error', 'You cannot perform this action because they are not linked to any organization. Please switch to an organization account to proceed.');
+            abort(404, 'Page not found');
         }
 
         $organization_id = $token['organization_id'];
@@ -608,17 +662,17 @@ class BuildingController extends Controller
                 'Approval Reminder',
                 "You have been reminded to review and approve the pending request of {$building->name}",
                 "admin/buildings/{$building->id}",
-
-                $user->id,
-                "Reminder Sent",
-                "Admin has been reminded successfully for {$building->name}",
-                "owner/buildings/{$building->id}",
             ));
 
             dispatch(new OrganizationOwnerNotifications(
                 $organization_id,
                 $notificationImage->file_path,
                 "Reminder Sent by {$user->name}",
+                "Admin has been reminded successfully for {$building->name}",
+                "owner/buildings/{$building->id}",
+
+                $user->id,
+                "Reminder Sent",
                 "Admin has been reminded successfully for {$building->name}",
                 "owner/buildings/{$building->id}",
             ));

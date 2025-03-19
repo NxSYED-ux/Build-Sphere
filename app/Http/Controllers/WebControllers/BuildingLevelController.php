@@ -12,19 +12,34 @@ class BuildingLevelController extends Controller
     public function index(Request $request)
     {
         $buildingId = $request->input('building_id');
-        $buildings = Building::all();
-        $levelsQuery = BuildingLevel::with('building', 'creator', 'updater');
-        if ($buildingId) {
-            $levelsQuery->where('building_id', $buildingId);
-        }
-        $levels = $levelsQuery->get();
+
+
+        $buildings = Building::select('id', 'name')
+            ->whereNotIn('status', ['Under Processing', 'Under Review', 'Rejected'])
+            ->get();
+
+        $levels = BuildingLevel::with(['building'])
+            ->where('status', 'Approved')
+            ->when($buildingId, function ($query) use ($buildingId) {
+                $query->where('building_id', $buildingId);
+            })
+            ->get();
+
         return view('Heights.Admin.Levels.index', compact('levels', 'buildings'));
     }
 
-    public function create()
+    public function adminCreate()
+    {
+        $buildings = Building::select('id', 'name')
+            ->whereNotIn('status', ['Under Processing', 'Under Review', 'Rejected'])
+            ->get();
+        return view('Heights.Admin.Levels.create', compact('buildings'));
+    }
+
+    public function ownerCreate()
     {
         $buildings = Building::all();
-        return view('Heights.Admin.Levels.create', compact('buildings'));
+        return view('Heights.Owner.Levels.create', compact('buildings'));
     }
 
     public function store(Request $request)
