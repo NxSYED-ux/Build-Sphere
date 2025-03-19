@@ -21,11 +21,12 @@ class BuildingTreeController extends Controller
         $levels = null;
         $units = null;
         $owner = null;
+        $buildingsDropDown = null;
 
         $token = $request->attributes->get('token');
 
         if (empty($token['organization_id']) || empty($token['role_name'])) {
-            return view('Heights.Owner.Buildings.tree', compact('building', 'levels', 'units', 'owner'));
+            return view('Heights.Owner.Buildings.tree', compact('building', 'levels', 'units', 'owner', 'buildingsDropDown'));
         }
 
         $query = Building::where('organization_id', $token['organization_id']);
@@ -56,7 +57,7 @@ class BuildingTreeController extends Controller
             }
         }
 
-        return view('Heights.Owner.Buildings.tree', compact('building', 'levels', 'units', 'owner', 'buildingsDropDown', 'buildingId'));
+        return view('Heights.Owner.Buildings.tree', compact('building', 'levels', 'units', 'owner', 'buildingsDropDown'));
     }
 
 }

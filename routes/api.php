@@ -48,7 +48,7 @@ Route::get('/send-notification/{id}', function ($id) {
     Route::prefix('auth')->group(function () {
 
         Route::post('/user-login', [AuthController::class, 'login']);
-        Route::post('/user-staff', [AuthController::class, 'login']);
+        Route::post('/staff-login', [AuthController::class, 'login']);
         Route::post('/forget-password', [ForgotPasswordController::class, 'sendResetLink']);
         Route::post('/logout', [AuthController::class, 'logout']);
 

@@ -123,7 +123,7 @@
 
 @section('content')
     <x-Owner.top-navbar :searchVisible="false" :breadcrumbLinks="[
-                ['url' => url('owner_manager_dashboard'), 'label' => 'Dashboard'],
+                ['url' => route('owner_manager_dashboard'), 'label' => 'Dashboard'],
                 ['url' => route('owner.buildings.index'), 'label' => 'Buildings'],
                 ['url' => '', 'label' => 'Create Building']
             ]"

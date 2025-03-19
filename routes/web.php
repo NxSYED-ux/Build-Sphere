@@ -201,7 +201,7 @@ Route::prefix('admin')->middleware(['auth.jwt'])->group(function () {
 
 Route::prefix('owner')->middleware(['auth.jwt'])->group(function () {
 
-    Route::prefix('dashboard')->middleware(['auth.jwt'])->group(function () {
+    Route::prefix('dashboard')->group(function () {
         Route::get('/', [OwnerDashboardController::class, 'index'])->name('owner_manager_dashboard');
     });
 
@@ -224,6 +224,7 @@ Route::prefix('owner')->middleware(['auth.jwt'])->group(function () {
         Route::get('/{building}/edit', [BuildingController::class, 'ownerEdit'])->name('owner.buildings.edit');
         Route::put('/', [BuildingController::class, 'ownerUpdate'])->name('owner.buildings.update');
         Route::post('/submit', [BuildingController::class, 'submitBuilding'])->name('owner.buildings.submit');
+        Route::post('/reminder', [BuildingController::class, 'approvalReminder'])->name('owner.buildings.reminder');
         Route::get('/{id}/tree', [BuildingTreeController::class, 'tree'])->name('owner.buildings.tree');
 
     });

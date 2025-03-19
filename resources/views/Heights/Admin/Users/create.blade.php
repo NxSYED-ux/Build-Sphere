@@ -21,7 +21,7 @@
 
 @section('content')
     <x-Admin.top-navbar :searchVisible="false" :breadcrumbLinks="[
-            ['url' => url('admin_dashboard'), 'label' => 'Dashboard'],
+            ['url' => route('admin_dashboard'), 'label' => 'Dashboard'],
             ['url' => route('users.index'), 'label' => 'Users'],
             ['url' => '', 'label' => 'Create user']
         ]"

@@ -130,7 +130,7 @@
             background-color: var(--input-bg-color) !important;
         }
 
-        form i{
+        form input i{
             color: var(--input-icon-color) !important;
         }
 

@@ -36,7 +36,11 @@
 @section('content')
 
     <!-- Top Navbar -->
-    <x-Owner.top-navbar :searchVisible="false"/>
+    <x-Owner.top-navbar :searchVisible="false" :breadcrumbLinks="[
+            ['url' => route('owner_manager_dashboard'), 'label' => 'Dashboard'],
+            ['url' => '', 'label' => 'Buildings']
+        ]"
+    />
     <!--  -->
     <x-Owner.side-navbar :openSections="['Buildings', 'Building']"/>
     <x-error-success-model />

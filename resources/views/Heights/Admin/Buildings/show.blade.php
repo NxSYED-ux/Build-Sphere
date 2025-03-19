@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Tree')
+@section('title', 'View Building')
 
 @push('styles')
     <style>
@@ -311,7 +311,7 @@
 
     <!-- Top Navbar -->
     <x-Admin.top-navbar :searchVisible="false" :breadcrumbLinks="[
-            ['url' => url('admin_dashboard'), 'label' => 'Dashboard'],
+            ['url' => route('admin_dashboard'), 'label' => 'Dashboard'],
             ['url' => route('buildings.index'), 'label' => 'Buildings'],
             ['url' => '', 'label' => 'View Building']
         ]"
@@ -326,43 +326,30 @@
             <div class="container-fluid">
                 <div class="d-flex flex-wrap flex-lg-nowrap gap-3">
 
-                    <div class="card-detail">
-                        <h4>Building Detail</h4>
+                    <div class="card shadow-sm border p-3 h-100 d-flex flex-column"
+                         style="border-radius: 25px; max-width: 400px; min-width: 300px;">
+                        <h4 style="font-size: 18px; font-weight: bold">Building Detail</h4>
 
                         <!-- Image Container -->
-                        <div class="image-container">
-                            <img src="{{ asset( $building->pictures->first() ?  $building->pictures->first()->file_path : '') }}" alt="Building Image">
+                        <div class="position-relative" style="width: 100%; height: 200px; overflow: hidden;">
+                            <img src="{{ asset( $building->pictures->first() ?  $building->pictures->first()->file_path : '') }}"
+                                 class="img-fluid rounded w-100 h-100 object-fit-cover"
+                                 alt="Building Image">
                         </div>
 
-                        <div class="card-body">
-                            <h5 class="card-title mt-2">{{ $building->name }}</h5>
-                            <p class="text-center mt-1">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-                                    <mask id="lineMdMapMarkerAltFilledLoop0">
-                                        <g fill="none" fill-opacity="0" stroke="#fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
-                                            <path fill="#fff" d="M12 20.5C12 20.5 11 19 11 18C11 17.5 11.5 17 12 17C12.5 17 13 17.5 13 18C13 19 12 20.5 12 20.5z">
-                                                <animate fill="freeze" attributeName="d" dur="0.4s" keyTimes="0;0.7;1"
-                                                         values="M12 20.5C12 20.5 11 19 11 18C11 17.5 11.5 17 12 17C12.5 17 13 17.5 13 18C13 19 12 20.5 12 20.5z;
-                                             M12 20.5C12 20.5 5 13 5 8C5 4.5 8 1 12 1C16 1 19 4.5 19 8C19 13 12 20.5 12 20.5z;
-                                             M12 20.5C12 20.5 6 13.5 6 9C6 5.68629 8.68629 3 12 3C15.3137 3 18 5.68629 18 9C18 13.5 12 20.5 12 20.5z"/>
-                                                <animate fill="freeze" attributeName="fill-opacity" begin="0.5s" dur="0.5s" values="0;1"/>
-                                                <animateTransform attributeName="transform" dur="3s" keyTimes="0;0.3;0.4;0.54;0.6;0.68;0.7;1" repeatCount="indefinite" type="rotate"
-                                                                  values="0 12 20.5;0 12 20.5;-8 12 20.5;0 12 20.5;5 12 20.5;-2 12 20.5;0 12 20.5;0 12 20.5"/>
-                                            </path>
-                                            <circle cx="12" cy="9" r="2.5" fill="#000" stroke="none">
-                                                <animate fill="freeze" attributeName="fill-opacity" begin="1s" dur="0.5s" values="0;1"/>
-                                            </circle>
-                                        </g>
-                                    </mask>
-                                    <rect width="24" height="24" fill="#f41313" mask="url(#lineMdMapMarkerAltFilledLoop0)"/>
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title text-success fw-bold text-center">{{ $building->name }}</h5>
+                            <p class="text-center mb-0 pb-0">
+                                <svg width="15" height="15" viewBox="0 0 17 20" fill="none"
+                                     xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M14.173 14.8819L13.053 16.0558C12.2275 16.9144 11.1564 18.0184 9.83928 19.3679C9.0163 20.2113 7.71058 20.2112 6.88769 19.3677L3.59355 15.9718C3.17955 15.541 2.83301 15.1777 2.55386 14.8819C-0.654672 11.4815 -0.654672 5.9683 2.55386 2.56789C5.76239 -0.832524 10.9645 -0.832524 14.173 2.56789C17.3815 5.9683 17.3815 11.4815 14.173 14.8819ZM10.7226 8.9996C10.7226 7.61875 9.66633 6.49936 8.36344 6.49936C7.06056 6.49936 6.0043 7.61875 6.0043 8.9996C6.0043 10.3804 7.06056 11.4998 8.36344 11.4998C9.66633 11.4998 10.7226 10.3804 10.7226 8.9996Z" fill="red"/>
                                 </svg>
                                 {{ $building->address->location }}, {{ $building->address->city }}, {{ $building->address->province }}, {{ $building->address->country }}
                             </p>
 
-                            <hr>
+                            <hr class="mt-3">
 
-
-                            <div class="text-center flex-grow-1 building-details mb-2">
+                            <div class="text-center flex-grow-1">
                                 <p><strong>Organization:</strong> {{ $building->organization->name }}</p>
                                 <p><strong>Type:</strong> {{ $building->building_type }}</p>
                                 <div class="row">
@@ -381,8 +368,7 @@
                                 </div>
                             </div>
 
-
-                        @if($building->status === "Under Review")
+                            @if($building->status === "Under Review")
                                 <hr>
                                 <div class="d-flex justify-content-between mt-3">
                                     <button class="btn w-50 me-2 status-button" id="reject-btn">
@@ -404,6 +390,8 @@
                                     <a href="{{ route('buildings.index') }}" class="btn btn-outline-primary w-100 me-2 status-button">Close</a>
                                 </div>
                             @endif
+
+
                         </div>
                     </div>
 
@@ -416,6 +404,8 @@
             </div>
         </section>
     </div>
+
+
 
     <!-- Building Modal -->
     <div class="modal fade" id="BuildingModal" tabindex="-1" aria-labelledby="buildingModalLabel" aria-hidden="true">

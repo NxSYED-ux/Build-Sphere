@@ -1,7 +1,6 @@
 importScripts("https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js");
 importScripts("https://www.gstatic.com/firebasejs/9.6.10/firebase-messaging-compat.js");
 
-// Initialize Firebase in the service worker
 firebase.initializeApp({
     apiKey: "{{ config('firebase.api_key') }}",
     authDomain: "{{ config('firebase.auth_domain') }}",
@@ -10,18 +9,25 @@ firebase.initializeApp({
     appId: "{{ config('firebase.app_id') }}",
 });
 
-// Initialize messaging
 const messaging = firebase.messaging();
 
-// Handle background messages
+// Handle only background messages
 messaging.onBackgroundMessage((payload) => {
     console.log("Received background message:", payload);
+    console.log("Image URL:", payload.data?.image); // Check if image URL is present
 
-    const notificationTitle = payload.notification.title;
+    const imageUrl = payload.data?.image
+        ? `${self.location.origin}/${payload.data.image}`
+        : "/img/placeholder-img.jfif";
+
+    console.log("Final Image URL:", imageUrl); // Verify the final URL in the console
+
     const notificationOptions = {
         body: payload.notification.body,
-        icon: payload.notification.image || "/img/placeholder-img.jfif"
+        icon: imageUrl,
+        image: imageUrl
     };
 
-    self.registration.showNotification(notificationTitle, notificationOptions);
+    self.registration.showNotification(payload.notification.title, notificationOptions);
 });
+

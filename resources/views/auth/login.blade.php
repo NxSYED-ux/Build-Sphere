@@ -482,7 +482,6 @@
 
         <script>
             document.addEventListener("DOMContentLoaded", async function () {
-
                 if (!firebase.apps.length) {
                     firebase.initializeApp({
                         apiKey: "{{ config('firebase.api_key') }}",
@@ -500,10 +499,9 @@
 
                     const permission = await Notification.requestPermission();
                     if (permission === "granted") {
-
                         const vapidKey = "BFduxRbXkAJc4aLnR6vuUS0yzbX41SVkxRvdrFjtvm_-6BNfM0VxJHIWy5IFq8DwrdcN5BIP2A4Au36Lc91sXhM";
                         const token = await messaging.getToken({
-                            vapidKey: vapidKey.trim(), // Ensure no extra spaces
+                            vapidKey: vapidKey.trim(),
                             serviceWorkerRegistration: registration
                         });
 
@@ -512,7 +510,27 @@
                 } catch (error) {
                     console.error("Error retrieving FCM token:", error);
                 }
+
+                // Handle foreground messages
+                messaging.onMessage((payload) => {
+                    console.log("Foreground message received:", payload);
+
+                    if (Notification.permission === "granted") {
+                        // Manually show notification
+                        const notificationTitle = payload.notification.title;
+                        const notificationOptions = {
+                            body: payload.notification.body,
+                            // icon: payload.notification.image || "/img/placeholder-img.jfif"
+                            icon: payload.data?.image
+                                ? `${self.location.origin}/storage/${payload.data.image}`
+                                : "/img/placeholder-img.jfif"
+                        };
+
+                        new Notification(notificationTitle, notificationOptions);
+                    }
+                });
             });
+
         </script>
 
 

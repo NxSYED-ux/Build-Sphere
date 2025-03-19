@@ -19,6 +19,10 @@
             color: var(--main-text-color);
         }
 
+        #tree{
+            height: 80lvh;
+        }
+
         .model-btn-close {
             background-color: transparent;
             color: black !important;
@@ -121,6 +125,43 @@
             fill: orange;
         }
 
+        .card {
+            border: none;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-top: 10px;
+            margin-left: 10px;
+            margin-right: 10px;
+        }
+
+        /*#header{*/
+        /*    background-color: var(--sidenavbar-body-color);*/
+        /*}*/
+
+        /* Permission Header */
+        #header {
+            background-color: var(--permission-header-bg) !important;
+            padding: 15px !important;
+            border-radius: 8px;
+        }
+
+        #header-text {
+            font-weight: bold;
+            color: var(--permission-header-color);
+            font-size: 1.2rem;
+        }
+
+        .form-select-sm {
+            min-width: 150px;
+        }
+
+        #header-icon {
+            color: #008CFF;
+        }
+
+
+
+
     </style>
 
 @endpush
@@ -128,11 +169,35 @@
 @section('content')
 
     <!--  -->
-    <x-Admin.top-navbar :searchVisible="false"/>
+    <x-Admin.top-navbar :searchVisible="false" :breadcrumbLinks="[
+            ['url' => route('owner_manager_dashboard'), 'label' => 'Dashboard'],
+            ['url' => route('owner.buildings.index'), 'label' => 'Buildings'],
+            ['url' => '', 'label' => 'Building Tree']
+        ]"
+    />
     <!--  -->
     <x-Owner.side-navbar :openSections="['Buildings-Tree']"/>
 
     <div id="main">
+        <div class="card border-0">
+            <div class="card-header d-flex flex-column flex-sm-row justify-content-center justify-content-sm-between align-items-center" id="header">
+                <h4 class="mb-2 mb-sm-0 text-center text-sm-start text-nowrap" id="header-text">Islamabad SKY Apartments</h4>
+
+                <div class="d-flex align-items-center justify-content-center justify-content-sm-end w-100 w-sm-auto">
+                    <i class="bx bx-buildings me-2 fs-4" id="header-icon"></i>
+                    <form method="GET" action="">
+                        <select name="building_id" id="building_id" class="form-select form-select-sm" onchange="this.form.submit()">
+                            <option value="">Choose...</option>
+                            <option value="building1">Islamabad SKY Apartments</option>
+                            <option value="building2">Building 2</option>
+                            <option value="building3">Building 3</option>
+                        </select>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+
         <div id="tree">
         </div>
     </div>
@@ -217,7 +282,6 @@
             </div>
         </div>
     </div>
-
 
     <!-- Unit Modal -->
     <div class="modal fade" id="UnitModal" tabindex="-1" aria-hidden="true">

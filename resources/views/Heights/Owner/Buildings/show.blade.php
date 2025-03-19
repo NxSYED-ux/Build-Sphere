@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Tree')
+@section('title', 'View Building')
 
 @push('styles')
     <style>
@@ -15,11 +15,95 @@
             background-color: var(--main-background-color);
             color: var(--main-text-color);
         }
+
         #main .card-img-top {
             height: 40vh;
             object-fit: cover;
         }
 
+
+        .card-detail {
+            border-radius: 25px;
+            max-width: 400px;
+            min-width: 300px;
+            height: auto;
+            max-height: 90vh;
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+            border: 1px solid #dee2e6;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-detail h4 {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .card-detail .image-container {
+            position: relative;
+            width: 100%;
+            height: 170px;
+            overflow: hidden;
+        }
+
+        .card-detail .image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        .card-detail .card-body {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-detail .card-title {
+            color: #28a745;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .card-detail .text-center p {
+            margin-bottom: 0;
+        }
+
+        .card-detail .status-button {
+            border-radius: 8px;
+            font-weight: bold;
+            padding: 0.5rem;
+        }
+
+        .card-detail hr {
+            margin-top: auto;
+            margin-bottom: auto;
+        }
+
+        .card-detail .building-details {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+        }
+
+        .card-detail .building-details p {
+            margin-block: 1vh;
+            font-size: 16px;
+            color: var(--sidenavbar-text-color)
+        }
+
+        @media (max-width: 560px) {
+            .card-detail .building-details p {
+                margin-block: 1vh;
+                font-size: 13px;
+                color: var(--sidenavbar-text-color)
+            }
+        }
+
+
+        /* Tree Card*/
         .tree-card{
             background-color: var(--main-background-color);
             color: var(--main-text-color);
@@ -157,6 +241,18 @@
             background-color: #EC5252;
         }
 
+        #reject-btn #reject-svg{
+            fill: #EC5252;
+        }
+
+        #reject-btn:hover #reject-svg{
+            fill: #ffff;
+        }
+
+        #rejectIcon {
+            filter: invert(36%) sepia(86%) saturate(345%) hue-rotate(358deg) brightness(93%) contrast(88%);
+        }
+
         #approved-btn{
             border-radius: 5px;
             border: 1px solid #008CFF;
@@ -165,9 +261,40 @@
         }
 
         #approved-btn:hover{
-            border: 1px solid #008CFF;
-            color: #008CFF;
-            background-color: #fff;
+            border: 1px solid #008CFF !important;
+            color: #008CFF !important;
+            background-color: #fff !important;
+        }
+
+        #approved-btn #approve-svg{
+            fill: #ffff;
+        }
+
+        #approved-btn:hover #approve-svg{
+            fill: #008CFF;
+        }
+
+        .model-btn-close{
+            color: #008CFF !important;
+            background-color: #ffff !important;
+            border: 1px solid #008CFF !important;
+        }
+        .model-btn-close:hover{
+            color: #008CFF !important;
+            background-color: #ffff !important;
+            border: 1px solid #008CFF !important;
+        }
+
+        .model-btn-submit{
+            color: #ffff !important;
+            background-color: #008CFF !important;
+            border: 1px solid #008CFF !important;
+        }
+
+        .model-btn-submit:hover{
+            color: #ffff !important;
+            background-color: #008CFF !important;
+            border: 1px solid #008CFF !important;
         }
 
         @media (max-width: 992px) {
@@ -184,7 +311,7 @@
 
     <!-- Top Navbar -->
     <x-Owner.top-navbar :searchVisible="false" :breadcrumbLinks="[
-            ['url' => url('owner_manager_dashboard'), 'label' => 'Dashboard'],
+            ['url' => route('owner_manager_dashboard'), 'label' => 'Dashboard'],
             ['url' => route('owner.buildings.index'), 'label' => 'Buildings'],
             ['url' => '', 'label' => 'View Building']
         ]"
@@ -254,7 +381,7 @@
                                 <hr class="mb-0">
                                 <div class="d-flex justify-content-between align-items-stretch mt-3">
                                     <a href="{{ route('owner.buildings.index') }}" class="btn btn-outline-primary w-50 me-2 status-button">Close</a>
-                                    <form action="{{ route('owner.buildings.submit') }}" method="POST" class="w-50">
+                                    <form action="{{ route('owner.buildings.reminder') }}" method="POST" class="w-50">
                                         @csrf
                                         <input type="hidden" name="building_id" value="{{ $building->id }}">
                                         <button type="submit" class="btn w-100 status-button" id="approved-btn">Reminder</button>

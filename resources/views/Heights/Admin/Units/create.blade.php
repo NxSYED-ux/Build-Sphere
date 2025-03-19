@@ -100,7 +100,7 @@
 
 @section('content')
     <x-Admin.top-navbar :searchVisible="false" :breadcrumbLinks="[
-            ['url' => url('admin_dashboard'), 'label' => 'Dashboard'],
+            ['url' => route('admin_dashboard'), 'label' => 'Dashboard'],
             ['url' => route('units.index'), 'label' => 'Units'],
             ['url' => '', 'label' => 'Create Unit']
         ]"
