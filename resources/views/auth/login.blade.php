@@ -498,17 +498,15 @@
                 try {
                     const registration = await navigator.serviceWorker.register("/firebase-messaging-sw.js");
 
-                    // ✅ Request notification permission
                     const permission = await Notification.requestPermission();
                     if (permission === "granted") {
 
-                        const vapidKey = "{{ config('firebase.vapid_key') }}"; // Ensure proper formatting
+                        const vapidKey = "BFduxRbXkAJc4aLnR6vuUS0yzbX41SVkxRvdrFjtvm_-6BNfM0VxJHIWy5IFq8DwrdcN5BIP2A4Au36Lc91sXhM";
                         const token = await messaging.getToken({
                             vapidKey: vapidKey.trim(), // Ensure no extra spaces
                             serviceWorkerRegistration: registration
                         });
 
-                        // ✅ Set token in the hidden input field
                         document.getElementById("newFcmToken").value = token;
                     }
                 } catch (error) {

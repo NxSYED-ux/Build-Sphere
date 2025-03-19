@@ -485,7 +485,7 @@
                         <div class="mb-3">
                             <label for="remarks" class="form-label mx-2 " style="font-weight: bold;">Write Remarks</label>
                             <span class="required__field text-danger">*</span><br>
-                            <textarea class="form-control @error('remarks') is-invalid @enderror" id="remarks" name="remarks" value="{{ old('remarks') }}" maxlength="100" placeholder="Write your remarks here....." required></textarea>
+                            <textarea class="form-control @error('remarks') is-invalid @enderror" id="remarks" name="remarks" maxlength="100" placeholder="Write your remarks here....." required>{{ old('remarks') }}</textarea>
                             @error('remarks')
                             <div class="text-danger">{{ $message }}</div>
                             @enderror
@@ -511,7 +511,7 @@
                     <div class="modal-body" style="border-radius: 25px;">
                         <div class="mb-3">
                             <label for="remarks" class="form-label mx-2 " style="font-weight: bold;">Write Remarks</label>
-                            <textarea class="form-control @error('remarks') is-invalid @enderror" id="remarks" name="remarks" value="{{ old('remarks') }}" maxlength="100" placeholder="Write your remarks here....."></textarea>
+                            <textarea class="form-control @error('remarks') is-invalid @enderror" id="remarks" name="remarks"   maxlength="100" placeholder="Write your remarks here.....">{{ old('remarks') }}</textarea>
                             @error('remarks')
                             <div class="text-danger">{{ $message }}</div>
                             @enderror
