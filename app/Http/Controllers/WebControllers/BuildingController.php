@@ -506,7 +506,7 @@ class BuildingController extends Controller
 
                 dispatch(new OrganizationOwnerNotifications(
                     $organization_id,
-                    $notificationImage,
+                    $notificationImage->file_path,
                     "Building updated by {$request->user()->name}",
                     $message,
                     $link,
@@ -574,6 +574,8 @@ class BuildingController extends Controller
                 "Building Submitted by {$user->name}",
                 $message,
                 "owner/buildings/{$building->id}",
+
+                $user->id,
             ));
 
             return redirect()->route('owner.buildings.index')->with('success', 'Building Submitted successfully.');
