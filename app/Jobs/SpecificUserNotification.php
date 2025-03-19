@@ -37,7 +37,7 @@ class SpecificUserNotification implements ShouldQueue
 
         $this->initiatorHeading = $initiatorHeading ?? 'User Notified';
         $this->initiatorMessage = $initiatorMessage ?? 'The specified user has been successfully notified.';
-        $this->initiatorLink = $initiatorLink ?? '#';
+        $this->initiatorLink = $initiatorLink ?? '';
     }
 
     public function handle()

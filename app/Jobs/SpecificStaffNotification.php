@@ -40,7 +40,7 @@ class SpecificStaffNotification implements ShouldQueue
 
         $this->initiatorHeading = $initiatorHeading ?? 'Staff Member Notified';
         $this->initiatorMessage = $initiatorMessage ?? 'The specified staff member has been successfully notified.';
-        $this->initiatorLink = $initiatorLink ?? '#';
+        $this->initiatorLink = $initiatorLink ?? '';
     }
 
     public function handle()

@@ -38,7 +38,7 @@ class OrganizationOwnerNotifications implements ShouldQueue
 
         $this->initiatorHeading = $initiatorHeading ?? 'Organization Owner Notified';
         $this->initiatorMessage = $initiatorMessage ?? 'The owner of the organization has been successfully notified.';
-        $this->initiatorLink = $initiatorLink ?? '#';
+        $this->initiatorLink = $initiatorLink ?? '';
     }
 
     public function handle()
@@ -48,7 +48,7 @@ class OrganizationOwnerNotifications implements ShouldQueue
         if ($organization && $organization->owner_id) {
             $owner = User::find($organization->owner_id);
 
-            if ($owner) {
+            if ($owner && $owner->id != $this->initiatorId) {
                 Notification::send($owner, new UserNotification(
                     $this->image,
                     $this->heading,

@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\WebControllers;
 
 use App\Http\Controllers\Controller;
+use App\Jobs\OrganizationOwnerNotifications;
+use App\Jobs\SendRoleNotification;
 use App\Models\Address;
 use App\Models\Building;
 use App\Models\BuildingDocument;
@@ -10,6 +12,7 @@ use App\Models\BuildingLevel;
 use App\Models\BuildingPicture;
 use App\Models\DropdownType;
 use App\Models\Organization;
+use App\Notifications\DatabaseOnlyNotification;
 use App\Notifications\UserNotification;
 use Exception;
 use Illuminate\Http\Request;
@@ -234,17 +237,38 @@ class BuildingController extends Controller
             $link = "{$portal}/buildings/{$building->id}";
             $message = "{$building->name} has been added successfully.";
 
-            $user->notify(new UserNotification(
-                $notificationImage,
-                'Building Added',
-                $message,
-                $link,
-            ));
-
             if ($portal == 'admin') {
+
+                dispatch(new OrganizationOwnerNotifications(
+                    $organization_id,
+                    $notificationImage,
+                    'Building Added by Admin',
+                    $message,
+                    "owner/buildings/{$building->id}",
+
+                    $user->id,
+                    'Building Added',
+                    $message,
+                    $link,
+                ));
                 return redirect()->route('buildings.index')->with('success', 'Building created successfully.');
+
             } elseif ($portal == 'owner') {
+
+                dispatch(new OrganizationOwnerNotifications(
+                    $organization_id,
+                    $notificationImage,
+                    "Building Added by {$request->user()->name}",
+                    $message,
+                    $link,
+
+                    $user->id,
+                    "Building Added",
+                    $message,
+                    $link,
+                ));
                 return redirect()->route('owner.buildings.index')->with('success', 'Building created successfully.');
+
             } else {
                 abort(404, 'Page not found');
             }
@@ -462,18 +486,38 @@ class BuildingController extends Controller
             $Image = $building->load(['pictures']);
             $notificationImage = $Image->pictures->first();
 
-
-            $user->notify(new UserNotification(
-                $notificationImage->file_path,
-                'Building Added',
-                $message,
-                $link,
-            ));
-
             if ($portal == 'admin') {
+
+                dispatch(new OrganizationOwnerNotifications(
+                    $organization_id,
+                    $notificationImage->file_path,
+                    'Building updated by Admin',
+                    $message,
+                    "owner/buildings/{$building->id}",
+
+                    $user->id,
+                    'Building updated',
+                    $message,
+                    $link,
+                ));
                 return redirect()->route('buildings.index')->with('success', 'Building updated successfully.');
+
             } elseif ($portal == 'owner') {
+
+                dispatch(new OrganizationOwnerNotifications(
+                    $organization_id,
+                    $notificationImage,
+                    "Building updated by {$request->user()->name}",
+                    $message,
+                    $link,
+
+                    $user->id,
+                    "Building updated",
+                    $message,
+                    $link,
+                ));
                 return redirect()->route('owner.buildings.index')->with('success', 'Building updated successfully.');
+
             } else {
                 abort(404, 'Page not found');
             }
@@ -488,17 +532,97 @@ class BuildingController extends Controller
 
     // Approve/Reject/Submit for Approval Functions
     public function submitBuilding(Request $request){
+
+        $user = $request->user() ?? abort(404, 'Page not found');
+        $token = $request->attributes->get('token');
+        $organization_id = $token['organization_id'] ?? null;
+
         $request->validate([
             'building_id' => 'required|integer|exists:buildings,id',
         ]);
 
         try {
             $building = Building::find($request->building_id);
+
             if(!$building)  abort(404, 'Page not found');
 
             $building->update([
                 'status' => 'Under Review',
             ]);
+
+            $message = "{$building->name} has been submitted successfully for approval to Admin";
+            $Image = $building->load(['pictures']);
+            $notificationImage = $Image->pictures->first();
+
+
+            dispatch(new SendRoleNotification(
+               1,
+                $notificationImage->file_path,
+               'New Building for approval',
+               "{$building->name} is available for approval",
+                "admin/buildings/{$building->id}",
+
+                $user->id,
+                "Building Submitted",
+                $message,
+                "owner/buildings/{$building->id}",
+            ));
+
+            dispatch(new OrganizationOwnerNotifications(
+                $organization_id,
+                $notificationImage->file_path,
+                "Building Submitted by {$user->name}",
+                $message,
+                "owner/buildings/{$building->id}",
+            ));
+
+            return redirect()->route('owner.buildings.index')->with('success', 'Building Submitted successfully.');
+        }catch (\Exception $e) {
+            Log::error('Error in submit building: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'An error occurred while updating the building.');
+        }
+    }
+
+    public function approvalReminder(Request $request){
+
+        $user = $request->user() ?? abort(404, 'Page not found');
+        $token = $request->attributes->get('token');
+        $organization_id = $token['organization_id'] ?? null;
+
+        $request->validate([
+            'building_id' => 'required|integer|exists:buildings,id',
+        ]);
+
+        try {
+            $building = Building::find($request->building_id);
+
+            if(!$building)  abort(404, 'Page not found');
+
+            $Image = $building->load(['pictures']);
+            $notificationImage = $Image->pictures->first();
+
+
+            dispatch(new SendRoleNotification(
+                1,
+                $notificationImage->file_path,
+                'Approval Reminder',
+                "You have been reminded to review and approve the pending request of {$building->name}",
+                "admin/buildings/{$building->id}",
+
+                $user->id,
+                "Reminder Sent",
+                "Admin has been reminded successfully for {$building->name}",
+                "owner/buildings/{$building->id}",
+            ));
+
+            dispatch(new OrganizationOwnerNotifications(
+                $organization_id,
+                $notificationImage->file_path,
+                "Reminder Sent by {$user->name}",
+                "Admin has been reminded successfully for {$building->name}",
+                "owner/buildings/{$building->id}",
+            ));
+
             return redirect()->route('owner.buildings.index')->with('success', 'Building Submitted successfully.');
         }catch (\Exception $e) {
             Log::error('Error in submit building: ' . $e->getMessage());
@@ -507,6 +631,9 @@ class BuildingController extends Controller
     }
 
     public function rejectBuilding(Request $request){
+
+        $user = $request->user() ?? abort(404, 'Page not found');
+
         $request->validate([
             'building_id' => 'required|integer|exists:buildings,id',
             'remarks' => 'required|string',
@@ -520,6 +647,22 @@ class BuildingController extends Controller
                 'status' => 'Rejected',
                 'remarks' => $request->remarks,
             ]);
+
+            $Image = $building->load(['pictures']);
+            $notificationImage = $Image->pictures->first();
+
+            dispatch(new OrganizationOwnerNotifications(
+                $building->organization_id,
+                $notificationImage->file_path,
+                "Building rejected",
+                "{$building->name} has been rejected by admin with remarks {$request->remarks}",
+                "owner/buildings/{$building->id}",
+
+                $user->id,
+                "Building rejected",
+                "{$building->name} has been rejected successfully",
+            ));
+
             return redirect()->route('buildings.index')->with('success', 'Building rejected successfully.');
         }catch (\Exception $e) {
             Log::error('Error in submit building: ' . $e->getMessage());
@@ -528,9 +671,12 @@ class BuildingController extends Controller
     }
 
     public function approveBuilding(Request $request){
+
+        $user = $request->user() ?? abort(404, 'Page not found');
+
         $request->validate([
             'building_id' => 'required|integer|exists:buildings,id',
-            'remarks' => 'string',
+            'remarks' => 'nullable|string',
         ]);
 
         try {
@@ -548,6 +694,23 @@ class BuildingController extends Controller
             $building->units()->update(['status' => 'Approved']);
 
             DB::commit();
+
+            $message = "{$building->name} has been approved successfully";
+            $Image = $building->load(['pictures']);
+            $notificationImage = $Image->pictures->first();
+
+            dispatch(new OrganizationOwnerNotifications(
+                $building->organization_id,
+                $notificationImage->file_path,
+                "Building approved",
+                $message,
+                "owner/buildings/{$building->id}",
+
+                $user->id,
+                "Building approved",
+                $message,
+                "admin/buildings/{$building->id}",
+            ));
 
             return redirect()->route('buildings.index')->with('success', 'Building, levels, and units approved successfully.');
         } catch (\Exception $e) {

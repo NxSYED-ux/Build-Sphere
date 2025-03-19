@@ -37,7 +37,7 @@ class SendRoleNotification implements ShouldQueue
 
         $this->initiatorHeading = $initiatorHeading ?? 'Role-based Notification Sent';
         $this->initiatorMessage = $initiatorMessage ?? 'All users with the specified role have been successfully notified.';
-        $this->initiatorLink = $initiatorLink ?? '#';
+        $this->initiatorLink = $initiatorLink ?? '';
     }
 
     public function handle()

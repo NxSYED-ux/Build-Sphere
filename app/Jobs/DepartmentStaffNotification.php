@@ -56,7 +56,7 @@ class DepartmentStaffNotification implements ShouldQueue
                     $this->image,
                     'Department Notification Sent',
                     'Your request to notify department staff has been successfully processed. All relevant members have been informed.',
-                    '#'
+                    ''
                 ));
             }
         }

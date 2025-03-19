@@ -38,7 +38,7 @@ class OrganizationStaffNotifications implements ShouldQueue
 
         $this->initiatorHeading = $initiatorHeading ?? 'Staff Notified';
         $this->initiatorMessage = $initiatorMessage ?? 'All staff members of the organization have been successfully notified.';
-        $this->initiatorLink = $initiatorLink ?? '#';
+        $this->initiatorLink = $initiatorLink ?? '';
     }
 
     public function handle()
