@@ -169,7 +169,7 @@
 @section('content')
 
     <!--  -->
-    <x-Admin.top-navbar :searchVisible="false" :breadcrumbLinks="[
+    <x-Owner.top-navbar :searchVisible="false" :breadcrumbLinks="[
             ['url' => route('owner_manager_dashboard'), 'label' => 'Dashboard'],
             ['url' => route('owner.buildings.index'), 'label' => 'Buildings'],
             ['url' => '', 'label' => 'Building Tree']
@@ -181,16 +181,19 @@
     <div id="main">
         <div class="card border-0">
             <div class="card-header d-flex flex-column flex-sm-row justify-content-center justify-content-sm-between align-items-center" id="header">
-                <h4 class="mb-2 mb-sm-0 text-center text-sm-start text-nowrap" id="header-text">Islamabad SKY Apartments</h4>
+                <h4 class="mb-2 mb-sm-0 text-center text-sm-start text-nowrap" id="header-text">{{ $building->name ?? 'Building Name' }}</h4>
 
                 <div class="d-flex align-items-center justify-content-center justify-content-sm-end w-100 w-sm-auto">
                     <i class="bx bx-buildings me-2 fs-4" id="header-icon"></i>
                     <form method="GET" action="">
                         <select name="building_id" id="building_id" class="form-select form-select-sm" onchange="this.form.submit()">
-                            <option value="">Choose...</option>
-                            <option value="building1">Islamabad SKY Apartments</option>
-                            <option value="building2">Building 2</option>
-                            <option value="building3">Building 3</option>
+
+                            @foreach ($buildingsDropDown ?? [] as $id => $name)
+                                <option value="{{ $id }}" {{ isset($building) && $building->id == $id ? 'selected' : '' }}>
+                                    {{ $name }}
+                                </option>
+                            @endforeach
+
                         </select>
                     </form>
                 </div>
@@ -198,8 +201,16 @@
 
         </div>
 
+        @if($building)
         <div id="tree">
         </div>
+        @else
+            <div class="d-flex justify-content-center align-items-center vh-100">
+                <div class="text-center">
+                    <h1>No Building Tree</h1>
+                </div>
+            </div>
+        @endif
     </div>
 
     <!-- Building Modal -->
@@ -240,49 +251,6 @@
         </div>
     </div>
 
-    <!-- Level Modal -->
-    <div class="modal fade" id="LevelModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Level Details</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <div id="nodeDetailsLevel"></div>
-
-                    <div class="card shadow-sm border-primary p-3">
-                        <div class="d-flex align-items-center">
-                            <!-- Image Section -->
-                            <div class="flex-shrink-0">
-                                <img src="{{ asset('img/buildings/shop_1.jpeg') }}" class="rounded img-fluid" width="150" alt="Unit Image">
-                            </div>
-
-                            <!-- Details Section -->
-                            <div class="ms-3">
-                                <h5 class="text-primary mb-2">RENT - Shop 01</h5>
-                                <p class="mb-1"><strong>Type:</strong> Shop</p>
-                                <p class="mb-1"><strong>Price:</strong> 10,200 PKR/month</p>
-                            </div>
-                        </div>
-
-                        <!-- Rented By Section -->
-                        <div class="alert alert-primary mt-3">
-                            <div class="d-flex align-items-center">
-                                <img src="{{ asset('img/buildings/user_1.jpg') }}" class="rounded-circle border" width="50" height="50" alt="Tenant">
-                                <div class="ms-2">
-                                    <p class="mb-1"><strong>Rented By:</strong> Usman Iqbal</p>
-                                    <p class="mb-0"><strong>Rent Period:</strong> 1 Jan 2025 - 30 March 2025</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-        </div>
-    </div>
-
     <!-- Unit Modal -->
     <div class="modal fade" id="UnitModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
@@ -293,31 +261,6 @@
                 </div>
                 <div class="modal-body">
                     <div id="nodeDetailsUnit"></div>
-
-                    <!-- <div class="card shadow-sm border-success p-3">
-                        <div class="d-flex align-items-center">
-                            <div class="flex-shrink-0">
-                                <img src="{{ asset('img/buildings/Apartment_1.jpeg') }}" class="rounded img-fluid border" width="150" alt="Unit Image">
-                            </div>
-
-                            <div class="ms-3">
-                                <h5 class="text-success mb-2">SALE - Apartment A1</h5>
-                                <p class="mb-1"><strong>Type:</strong> Apartment</p>
-                                <p class="mb-1"><strong>Price:</strong> 12,500,000 PKR (For Sale)</p>
-                            </div>
-                        </div>
-
-                        <div class="alert alert-success mt-3">
-                            <div class="d-flex align-items-center">
-                                <img src="{{ asset('img/buildings/user_2.jpg') }}" class="rounded-circle border" width="50" height="50" alt="Buyer">
-                                <div class="ms-2">
-                                    <p class="mb-1"><strong>Purchased By:</strong> Ahmed Raza</p>
-                                    <p class="mb-0"><strong>Purchase Date:</strong> 15 Feb 2024</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div> -->
-
                 </div>
             </div>
         </div>
@@ -328,7 +271,6 @@
 @endsection
 
 @push('scripts')
-<!-- <script src="https://balkan.app/js/OrgChart.js"></script> -->
     <script src="{{ asset('js/orgchart.js') }}"></script>
     <script>
         //JavaScript
@@ -428,50 +370,60 @@
             },
         });
 
-        chart.load([
-            { id: "buildings", tags: ["buildings"] },
-            { id: "Building {{ $building->id }}", stpid: "buildings", name: "{{ $building->name }}", title: "Building", img: "{{ asset( $building->pictures->first() ?  $building->pictures->first()->file_path : '') }}", tags: ["top"] },
-            { id: "Owner {{ $owner->id }}", pid: "buildings", name: "{{ $owner->name }}", title: "Owner", img: "{{ asset( $owner->picture ?? 'img/buildings/User_2.jpg') }}", tags: ["assistant"] },
+        @if($building)
+            chart.load([
+                {id: "buildings", tags: ["buildings"]},
+                {
+                    id: "Building {{ $building->id }}",
+                    stpid: "buildings",
+                    name: "{{ $building->name }}",
+                    title: "Building",
+                    img: "{{ asset( $building->pictures->first() ?  $building->pictures->first()->file_path : '') }}",
+                    tags: ["top"]
+                },
+                {
+                    id: "Owner {{ $owner->id }}",
+                    pid: "buildings",
+                    name: "{{ $owner->name }}",
+                    title: "Owner",
+                    img: "{{ asset( $owner->picture ?? 'img/buildings/User_2.jpg') }}",
+                    tags: ["assistant"]
+                },
 
-            @foreach( $levels as $level )
-            { id: "levels {{ $level->id }}", pid: "buildings", tags: ["levels", "department"], name: "{{ $level->level_name }}" },
-            @endforeach
+                    @foreach( $levels as $level )
+                {
+                    id: "levels {{ $level->id }}",
+                    pid: "buildings",
+                    tags: ["levels", "department"],
+                    name: "{{ $level->level_name }}"
+                },
+                    @endforeach
 
-            @foreach( $levels as $level )
-                { id: "Level {{ $level->id }}", stpid: "levels {{ $level->id }}", name: "{{ $level->level_name }}", title: "Level {{ $level->level_number }}" },
-            @endforeach
+                    @foreach( $levels as $level )
+                {
+                    id: "Level {{ $level->id }}",
+                    stpid: "levels {{ $level->id }}",
+                    name: "{{ $level->level_name }}",
+                    title: "Level {{ $level->level_number }}"
+                },
+                    @endforeach
 
-            @foreach( $units as $unit )
-                { id: "Unit {{ $unit->id }}", pid: "Level {{ $unit->level_id }}", name: "{{ $unit->unit_name }}", title: "{{ $unit->availability_status }}", img: "{{ asset( $unit->pictures->first() ? $unit->pictures->first()->file_path : 'img/buildings/Shop_1.jpeg') }}", tags: ["{{ $unit->unit_type }}"] },
-            @endforeach
-        ]);
+                    @foreach( $units as $unit )
+                {
+                    id: "Unit {{ $unit->id }}",
+                    pid: "Level {{ $unit->level_id }}",
+                    name: "{{ $unit->unit_name }}",
+                    title: "{{ $unit->availability_status }}",
+                    img: "{{ asset( $unit->pictures->first() ? $unit->pictures->first()->file_path : 'img/buildings/Shop_1.jpeg') }}",
+                    tags: ["{{ $unit->unit_type }}"]
+                },
+                @endforeach
+            ]);
+        @endif
 
-        // chart.load([
-        //     { id: "buildings", tags: ["buildings"] },
-        //     { id: "levels", pid: "buildings", tags: ["levels", "department"], name: "Level 1" },
-        //     { id: "levels2", pid: "buildings", tags: ["levels", "department"], name: "Level 2" },
-        //     { id: "levels3", pid: "buildings", tags: ["levels", "department"], name: "Level 3" },
-        //     { id: 1, stpid: "buildings", name: "Bahria Prime", title: "Building", img: "{{ asset('img/buildings/building1.jpeg') }}", tags: ["top"] },
-        //     { id: 4, stpid: "levels", name: "First Floor", title: "Level 1" },
-        //     { id: 5, pid: 4, name: "Shop 1", title: "Available", img: "{{ asset('img/buildings/Shop_1.jpeg') }}", tags: ["shops"] },
-        //     { id: 6, pid: 4, name: "Shop 2", title: "Sold", img: "{{ asset('img/buildings/Shop_2.jpeg') }}", tags: ["shops"]  },
-        //     { id: 16, pid: 4, name: "Gym 1", title: "Rented", img: "{{ asset('img/buildings/Shop_2.jpeg') }}", tags: ["gym"]  },
-        //     { id: 7, stpid: "levels2", name: "Second Floor", title: "Level 2" },
-        //     { id: 8, pid: 7, name: "Room 1", title: "Sold", img: "{{ asset('img/buildings/Room_1.jpeg') }}", tags: ["rooms"] },
-        //     { id: 9, pid: 7, name: "Restaurant 1", title: "Available", img: "{{ asset('img/buildings/Room_2.jpeg') }}", tags: ["restaurant"] },
-        //     { id: 10, pid: 7, name: "Room 3", title: "Not Available", img: "{{ asset('img/buildings/Room_3.jpeg') }}", tags: ["rooms"] },
-        //     { id: 11, stpid: "levels3", name: "Ground Floor", title: "Level 3" },
-        //     { id: 12, pid: 11, name: "Appartment 1", title: "Availble", img: "{{ asset('img/buildings/Apartment_1.jpeg') }}", tags: ["apartments"] },
-        //     { id: 13, pid: 11, name: "Appartment 2", title: "Sold", img: "{{ asset('img/buildings/Apartment_2.jpeg') }}", tags: ["apartments"] },
-        //     { id: 14, pid: 11, name: "Appartment 3", title: "Rented", img: "{{ asset('img/buildings/Apartment_3.jpeg') }}", tags: ["apartments"] },
-        //     { id: 15, pid: "buildings", name: "Usman Iqbal", title: "Owner", img: "{{ asset('img/buildings/User_2.jpg') }}", tags: ["assistant"] }
-        // ]);
-
-        // Add event listener to each node in the OrgChart
         chart.on('click', function(event, node) {
             let nodeId = node.node.id || "N/A";
 
-            // Extract first and second parts
             let [firstPart, secondPart] = nodeId.split(" ");
 
             console.log("First Part:", firstPart);
