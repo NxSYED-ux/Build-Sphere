@@ -21,20 +21,15 @@ use Illuminate\Support\Facades\Route;
 // Route for Pusher Authentication
 Route::post('/pusher/auth', [AuthController::class, 'authenticatePusher'])->name('pusher.auth');
 
-
-Route::get('/', function () {
-    return view('auth.login');
-});
-
-Route::get('/index', function () {
-    return view('landing-views.index');
-});
+Route::get('/', function () { return view('landing-views.index'); })->name('index');
+Route::get('/index', function () { return view('landing-views.index'); });
 
 // Authentication routes
+Route::get('/admin-login', [AuthController::class, 'adminLoginIndex'])->name('admin-login-index');
+Route::get('/owner-login', [AuthController::class, 'ownerLoginIndex'])->name('owner-login-index');
+
 Route::get('login', [AuthController::class, 'index'])->name('login');
 Route::post('login', [AuthController::class, 'adminLogin'])->name('login');
-//Route::post('admin-login', [AuthController::class, 'adminLogin'])->name('admin-login');
-//Route::post('owner-login', [AuthController::class, 'ownerLogin'])->name('owner-login');
 
 
 Route::prefix('auth')->group(function () {

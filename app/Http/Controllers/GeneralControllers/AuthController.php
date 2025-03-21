@@ -23,6 +23,16 @@ class AuthController extends Controller
         return view('auth.login');
     }
 
+    public function adminLoginIndex(): View
+    {
+        return view('auth.admin-login');
+    }
+
+    public function ownerLoginIndex(): View
+    {
+        return view('auth.owner-login');
+    }
+
     // Login
     public function adminLogin(LoginRequest $request): RedirectResponse
     {
