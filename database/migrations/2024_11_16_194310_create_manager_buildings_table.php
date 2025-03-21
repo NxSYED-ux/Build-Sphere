@@ -11,7 +11,7 @@ return new class extends Migration
         Schema::create('managerbuildings', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id');
-            $table->unsignedBigInteger('staff_id')->nullable();
+            $table->unsignedBigInteger('staff_id');
             $table->unsignedBigInteger('building_id');
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();

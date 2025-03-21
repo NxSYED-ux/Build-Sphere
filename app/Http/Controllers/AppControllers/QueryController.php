@@ -276,8 +276,13 @@ class QueryController extends Controller
                 return "SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) AS `$status`";
             })->implode(', ');
 
+            $selectFields = "COUNT(*) AS total_queries";
+            if (!empty($statusCases)) {
+                $selectFields .= ", " . $statusCases;
+            }
+
             $query = DB::table('queries')
-                ->selectRaw("COUNT(*) AS total_queries, $statusCases", $statuses)
+                ->selectRaw($selectFields, $statuses)
                 ->where('staff_member_id', $staffMemberId);
 
             if ($year) {
@@ -324,8 +329,13 @@ class QueryController extends Controller
                 return "SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) AS `$status`";
             })->implode(', ');
 
+            $selectFields = "DATE_FORMAT(created_at, '%Y-%m') AS query_month, COUNT(*) AS total_queries";
+            if (!empty($statusCases)) {
+                $selectFields .= ", " . $statusCases;
+            }
+
             $query = DB::table('queries')
-                ->selectRaw("DATE_FORMAT(created_at, '%Y-%m') AS query_month, COUNT(*) AS total_queries, $statusCases", $statuses)
+                ->selectRaw($selectFields, $statuses)
                 ->where('staff_member_id', $staffMemberId)
                 ->whereYear('created_at', $year);
 
