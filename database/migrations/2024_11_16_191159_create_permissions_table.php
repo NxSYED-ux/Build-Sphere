@@ -14,8 +14,11 @@ return new class extends Migration
             $table->string('header',255);
             $table->text('description')->nullable();
             $table->tinyInteger('status')->default(1);
+            $table->unsignedBigInteger('parent_id')->nullable();
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
+
+            $table->foreign('parent_id')->references('id')->on('permissions')->onDelete('set null');
         });
     }
 

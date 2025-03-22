@@ -29,7 +29,7 @@ class OrganizationDetailsController extends Controller
             }
 
             $buildings = Building::where('organization_id', $id)
-                ->whereIn('status', ['Approved', 'For Reapproval'])
+                ->whereIn('status', ['Approved', 'For Re-Approval'])
                 ->select('id', 'name', 'address_id')
                 ->with([
                     'address:id,location,city,province,country',

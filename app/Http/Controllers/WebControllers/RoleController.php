@@ -28,7 +28,7 @@ class RoleController extends Controller
     public function create()
     {
         try {
-            $permissions = Permission::all(['id', 'name']);
+            $permissions = Permission::with('children')->whereNull('parent_id')->get();
             return response()->json([
                 'permissions' => $permissions
             ]);
@@ -108,7 +108,9 @@ class RoleController extends Controller
         try {
             $role = Role::select('id', 'name', 'description', 'status', 'updated_at')->findOrFail($id);
             $rolePermissionIds = RolePermission::where('role_id', '=', $role->id)->pluck('permission_id');
-            $permissions = Permission::select('id', 'name')->get();
+            $permissions = Permission::with('children')
+                ->whereNull('parent_id')
+                ->get();
 
             return response()->json([
                 'role' => $role,

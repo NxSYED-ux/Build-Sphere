@@ -235,31 +235,31 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <!-- The edit form will be loaded here via AJAX -->
-                <form id="editForm" action="" method="POST">
+                <form id="editForm" action="" method="POST" novalidate>
+                    @csrf
                     @method('PUT')
+
                     <div class="modal-body" style="max-height: 400px; overflow-y: auto;">
                         <input type="hidden" name="role_id" id="edit_role_id">
                         <input type="hidden" name="updated_at" id="edit_updated_at">
 
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label for="name" class="form-label">Role Name</label>
-                                <span class="required__field">*</span><br>
+                                <label for="edit_name" class="form-label">Role Name <span class="text-danger">*</span></label>
                                 <div class="position-relative">
                                     <input type="text" class="form-control" id="edit_name" name="name" maxlength="20" placeholder="Role Name" required>
                                     <i class='bx bx-street-view input-icon position-absolute top-50 end-0 translate-middle-y me-3'></i>
                                 </div>
                             </div>
                             <div class="col-md-6 mb-3">
-                                <label for="status" class="form-label">Status</label>
-                                <span class="required__field">*</span><br>
+                                <label for="edit_status" class="form-label">Status <span class="text-danger">*</span></label>
                                 <select class="form-select" id="edit_status" name="status" required>
-                                    <option value="1" >Active</option>
-                                    <option value="0" >Inactive</option>
+                                    <option value="1">Active</option>
+                                    <option value="0">Inactive</option>
                                 </select>
                             </div>
                             <div class="col-md-12 mb-3">
-                                <label for="description" class="form-label">Description</label>
+                                <label for="edit_description" class="form-label">Description</label>
                                 <textarea class="form-control" id="edit_description" name="description" maxlength="250" placeholder="Description"></textarea>
                             </div>
                         </div>
@@ -271,6 +271,7 @@
                             <small class="text-danger d-none" id="permissionsError">At least one permission must be selected.</small>
                         </div>
                     </div>
+
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                         <button type="submit" class="btn btn-primary">Update</button>
@@ -320,7 +321,7 @@
     <!-- Roles Scripts -->
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            //  Edit Role Model
+
             document.addEventListener("click", function (e) {
                 if (e.target.closest(".edit-role-button")) {
                     e.preventDefault();
@@ -329,53 +330,95 @@
 
                     fetch(`{{ route('roles.edit', ':id') }}`.replace(":id", id), {
                         method: "GET",
-                        headers: {
-                            "X-Requested-With": "XMLHttpRequest"
-                        }
+                        headers: { "X-Requested-With": "XMLHttpRequest" }
                     })
                         .then(response => response.json())
                         .then(data => {
                             if (data.message) {
                                 alert(data.message);
                             } else if (data.role) {
-                                let role = data.role;
-                                document.getElementById("edit_name").value = role.name;
-                                document.getElementById("edit_description").value = role.description;
-                                document.getElementById("edit_status").value = role.status;
-                                document.getElementById("edit_role_id").value = role.id;
-                                document.getElementById("edit_updated_at").value = role.updated_at;
+                                // Populate role details
+                                document.getElementById("edit_name").value = data.role.name;
+                                document.getElementById("edit_description").value = data.role.description;
+                                document.getElementById("edit_status").value = data.role.status;
+                                document.getElementById("edit_role_id").value = data.role.id;
+                                document.getElementById("edit_updated_at").value = data.role.updated_at;
 
                                 // Clear old permissions
                                 const permissionsContainer = document.getElementById("permissionsContainer");
                                 permissionsContainer.innerHTML = "";
 
                                 if (data.permissions.length > 0) {
-                                    data.permissions.forEach(permission => {
-                                        const isChecked = data.activePermissionsId.includes(permission.id) ? "checked" : "";
-                                        permissionsContainer.innerHTML += `
-                                    <div class="col-md-4">
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" name="permissions[]" value="${permission.id}" id="permission_${permission.id}" ${isChecked}>
-                                            <label class="form-check-label" for="permission_${permission.id}">${permission.name}</label>
-                                        </div>
+                                    let permissionsHtml = "";
+                                    data.permissions.forEach(parentPermission => {
+                                        const isChecked = data.activePermissionsId.includes(parentPermission.id) ? "checked" : "";
+
+                                        permissionsHtml += `
+                                <div class="col-md-12">
+                                    <div class="form-check">
+                                        <input class="form-check-input parent-permission"
+                                               type="checkbox"
+                                               name="permissions[]"
+                                               value="${parentPermission.id}"
+                                               id="permission_${parentPermission.id}" ${isChecked}>
+                                        <label class="form-check-label fw-bold" for="permission_${parentPermission.id}">
+                                            ${parentPermission.name}
+                                        </label>
                                     </div>
-                                `;
+                                </div>
+                            `;
+
+                                        // If this parent has children, list them
+                                        if (parentPermission.children && parentPermission.children.length > 0) {
+                                            parentPermission.children.forEach(child => {
+                                                const isChildChecked = data.activePermissionsId.includes(child.id) ? "checked" : "";
+                                                permissionsHtml += `
+                                        <div class="col-md-4 ms-4">
+                                            <div class="form-check">
+                                                <input class="form-check-input child-permission"
+                                                       type="checkbox"
+                                                       name="permissions[]"
+                                                       value="${child.id}"
+                                                       id="permission_${child.id}" ${isChildChecked}
+                                                       data-parent-id="${parentPermission.id}">
+                                                <label class="form-check-label" for="permission_${child.id}">
+                                                    ${child.name}
+                                                </label>
+                                            </div>
+                                        </div>
+                                    `;
+                                            });
+                                        }
                                     });
+
+                                    permissionsContainer.innerHTML = permissionsHtml;
+
+                                    // Handle parent-child selection logic
+                                    document.querySelectorAll(".parent-permission").forEach(parent => {
+                                        parent.addEventListener("change", function () {
+                                            let parentId = this.value;
+                                            document.querySelectorAll(`.child-permission[data-parent-id="${parentId}"]`).forEach(child => {
+                                                child.checked = parent.checked;
+                                            });
+                                        });
+                                    });
+
+                                    document.querySelectorAll(".child-permission").forEach(child => {
+                                        child.addEventListener("change", function () {
+                                            let parentId = this.getAttribute("data-parent-id");
+                                            let parent = document.getElementById(`permission_${parentId}`);
+                                            if (!this.checked) {
+                                                parent.checked = false; // If a child is unchecked, the parent should also be unchecked
+                                            }
+                                        });
+                                    });
+
                                 } else {
                                     permissionsContainer.innerHTML = '<p class="text-danger">No permissions available.</p>';
                                 }
 
-                                // Set the form action URL
+                                // Set form action URL
                                 document.getElementById("editForm").setAttribute("action", `{{ route('roles.update', ':id') }}`.replace(":id", id));
-
-                                // Append hidden _method input for PUT request
-                                if (!document.querySelector("#editForm input[name='_method']")) {
-                                    let hiddenMethodInput = document.createElement("input");
-                                    hiddenMethodInput.type = "hidden";
-                                    hiddenMethodInput.name = "_method";
-                                    hiddenMethodInput.value = "PUT";
-                                    document.getElementById("editForm").appendChild(hiddenMethodInput);
-                                }
 
                                 // Show the modal
                                 let editRoleModal = new bootstrap.Modal(document.getElementById("editRoleModal"));
@@ -391,13 +434,18 @@
                 }
             });
 
-                // Validate form before submission
-                document.getElementById("editForm").addEventListener("submit", function (e) {
-                if (document.querySelectorAll('input[name="permissions[]"]:checked').length === 0) {
+            document.getElementById("editForm").addEventListener("submit", function (e) {
+                let permissionCheckboxes = document.querySelectorAll('input[name="permissions[]"]:checked');
+                let permissionsError = document.getElementById("permissionsError");
+
+                if (permissionCheckboxes.length === 0) {
                     e.preventDefault();
-                    document.getElementById("permissionsError").classList.remove("d-none");
+                    permissionsError.classList.remove("d-none");
+                } else {
+                    permissionsError.classList.add("d-none");
                 }
             });
+
 
             //  Add Role Model
             const addButton = document.getElementById("add_button");
@@ -408,10 +456,15 @@
             if (addButton) {
                 addButton.addEventListener("click", function (e) {
                     e.preventDefault();
+
+                    // Clear permissions before fetching new ones
+                    permissionsContainer.innerHTML = '<p class="text-muted">Loading permissions...</p>';
+
+                    // Show modal
                     let modalInstance = new bootstrap.Modal(createRoleModal);
                     modalInstance.show();
 
-                    // Fetch permissions when the modal opens
+                    // Fetch permissions
                     fetchPermissions();
                 });
             }
@@ -419,31 +472,52 @@
             function fetchPermissions() {
                 fetch("{{ route('roles.create') }}", {
                     method: "GET",
-                    headers: {
-                        "X-Requested-With": "XMLHttpRequest"
-                    }
+                    headers: { "X-Requested-With": "XMLHttpRequest" }
                 })
                     .then(response => response.json())
                     .then(data => {
-                        if (data.permissions) {
+                        permissionsContainer.innerHTML = ""; // Clear previous permissions
+
+                        if (data.permissions && data.permissions.length > 0) {
                             let permissionsHtml = "";
+
                             data.permissions.forEach(permission => {
                                 permissionsHtml += `
-                            <div class="col-md-4">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox"
-                                           name="permissions[]"
-                                           value="${permission.id}"
-                                           id="permission_${permission.id}">
-                                    <label class="form-check-label" for="permission_${permission.id}">
-                                        ${permission.name}
-                                    </label>
-                                </div>
+                        <div class="col-md-12">
+                            <div class="form-check">
+                                <input class="form-check-input parent-permission" type="checkbox"
+                                       name="permissions[]"
+                                       value="${permission.id}"
+                                       id="permission_${permission.id}">
+                                <label class="form-check-label fw-bold" for="permission_${permission.id}">
+                                    ${permission.name}
+                                </label>
                             </div>
-                        `;
+                        </div>
+                    `;
+
+                                if (permission.children.length > 0) {
+                                    permission.children.forEach(child => {
+                                        permissionsHtml += `
+                                <div class="col-md-12 ms-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input child-permission" type="checkbox"
+                                               name="permissions[]"
+                                               value="${child.id}"
+                                               id="permission_${child.id}"
+                                               data-parent-id="${permission.id}">
+                                        <label class="form-check-label" for="permission_${child.id}">
+                                            ${child.name}
+                                        </label>
+                                    </div>
+                                </div>
+                            `;
+                                    });
+                                }
                             });
 
                             permissionsContainer.innerHTML = permissionsHtml;
+                            attachCheckboxLogic();
                         } else {
                             permissionsContainer.innerHTML = '<p class="text-danger">No permissions found.</p>';
                         }
@@ -453,8 +527,34 @@
                         permissionsError.textContent = "Failed to load permissions. Please try again.";
                     });
             }
-        });
 
+            function attachCheckboxLogic() {
+                let parentCheckboxes = document.querySelectorAll(".parent-permission");
+                let childCheckboxes = document.querySelectorAll(".child-permission");
+
+                parentCheckboxes.forEach(parent => {
+                    parent.addEventListener("change", function () {
+                        let parentId = this.value;
+                        let relatedChildren = document.querySelectorAll(`.child-permission[data-parent-id="${parentId}"]`);
+
+                        relatedChildren.forEach(child => {
+                            child.checked = this.checked;
+                        });
+                    });
+                });
+
+                childCheckboxes.forEach(child => {
+                    child.addEventListener("change", function () {
+                        let parentId = this.dataset.parentId;
+                        let parentCheckbox = document.getElementById(`permission_${parentId}`);
+
+                        if (this.checked) {
+                            parentCheckbox.checked = true;
+                        }
+                    });
+                });
+            }
+        });
 
     </script>
 

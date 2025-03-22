@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\AppControllers;
 
 use App\Http\Controllers\Controller;
+use App\Jobs\SpecificStaffNotification;
 use App\Models\BuildingUnit;
 use App\Models\Department;
 use App\Models\Query;
@@ -118,6 +119,21 @@ class QueryController extends Controller
             }
 
             DB::commit();
+
+            dispatch(new SpecificStaffNotification(
+                $staffMember->organization_id,
+                $staffMember->id,
+               'uploads/query/Notification/Query_notification_image.png',
+               'New Query Arrived',
+                "A new query has arrived: '{$query->description}'.",
+                '',
+
+                $userId,
+                'Query Logged Successfully',
+                "Your query has been logged with the description: '{$query->description}'.",
+                ''
+            ));
+
             return response()->json(['message' => 'Query logged successfully', 'query' => $query], 201);
         } catch (\Exception $e) {
             DB::rollBack();

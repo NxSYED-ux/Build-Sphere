@@ -13,7 +13,7 @@ return new class extends Migration
             $table->unsignedBigInteger('organization_id');
             $table->string('name','100')->unique();
             $table->string('building_type', 50)->comment('Residential, Commercial, Industrial, Mixed-Use');
-            $table->string('status',50)->comment('Approved, Under Review, Rejected, Under Processing, Reapproved');
+            $table->string('status',50)->comment('Approved, Under Review, Rejected, Under Processing, For Re-Approval');
             $table->text('remarks')->nullable();
             $table->decimal('area', 10, 2);
             $table->year('construction_year')->nullable();

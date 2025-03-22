@@ -22,6 +22,12 @@ class Permission extends Model
 
     public $timestamps = true;
 
+    // Belongs to Relations
+    public function parent()
+    {
+        return $this->belongsTo(Permission::class, 'parent_id', 'id');
+    }
+
     // Has Many Relations
     public function rolePermissions()
     {
@@ -30,5 +36,9 @@ class Permission extends Model
     public function userPermissions()
     {
         return $this->hasMany(UserPermission::class, 'permission_id', 'id');
+    }
+    public function children()
+    {
+        return $this->hasMany(Permission::class, 'parent_id', 'id');
     }
 }
