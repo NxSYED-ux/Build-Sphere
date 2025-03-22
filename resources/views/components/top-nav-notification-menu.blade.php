@@ -51,7 +51,7 @@
 
                                 notificationList.innerHTML += `
                            <a class="d-flex align-items-center text-decoration-none p-2 border-bottom notification-link"
-                               href="${notification.read_at ? window.location.origin + '/' + notification.data.link : 'javascript:void(0);'}"
+                               ${notification.data.link ? `href="${notification.read_at ? window.location.origin + '/' + notification.data.link : 'javascript:void(0);'}"` : ''}
                                onclick="${notification.read_at ? '' : `markNotificationAsRead('${notification.id}', '${window.location.origin}/${notification.data.link}')`}">
 
                                 <img src="${notification.data.image ? '{{ asset('/') }}' + notification.data.image : '{{ asset('img/placeholder-img.jfif') }}'}"

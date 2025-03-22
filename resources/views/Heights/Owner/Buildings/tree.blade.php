@@ -21,6 +21,7 @@
 
         #tree{
             height: 80lvh;
+            background-color: var(--main-background-color);
         }
 
         .model-btn-close {
