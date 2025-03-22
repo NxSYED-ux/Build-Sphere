@@ -12,7 +12,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('user_id')->unique();
             $table->unsignedBigInteger('department_id');
-            $table->unsignedBigInteger('building_id');
+            $table->unsignedBigInteger('building_id')->nullable();
             $table->unsignedBigInteger('organization_id');
             $table->decimal('salary',8,1)->default(0);
             $table->unsignedInteger('active_load')->default(0);
