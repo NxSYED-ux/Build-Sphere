@@ -207,7 +207,7 @@
                         <!-- Permissions -->
                         <div class="mb-3">
                             <label class="form-label">Permissions <span class="text-danger">*</span></label>
-                            <div class="row" id="permissions-container">
+                            <div class="" id="permissions-container">
                                 {{-- Permissions checkboxes will be loaded here via AJAX --}}
                             </div>
                             <div id="permissions-error" class="text-danger mt-2"></div>
@@ -349,70 +349,64 @@
                                 permissionsContainer.innerHTML = "";
 
                                 if (data.permissions.length > 0) {
-                                    let permissionsHtml = "";
-                                    data.permissions.forEach(parentPermission => {
+                                    let permissionsHtml = `<div class="row">`; // 3 parents per row
+
+                                    data.permissions.forEach((parentPermission, index) => {
+                                        // Start a new row every 3 parents
+                                        if (index % 3 === 0 && index !== 0) {
+                                            permissionsHtml += `</div><div class="row">`;
+                                        }
+
                                         const isChecked = data.activePermissionsId.includes(parentPermission.id) ? "checked" : "";
 
                                         permissionsHtml += `
-                                <div class="col-md-12">
-                                    <div class="form-check">
-                                        <input class="form-check-input parent-permission"
-                                               type="checkbox"
-                                               name="permissions[]"
-                                               value="${parentPermission.id}"
-                                               id="permission_${parentPermission.id}" ${isChecked}>
-                                        <label class="form-check-label fw-bold" for="permission_${parentPermission.id}">
-                                            ${parentPermission.name}
-                                        </label>
-                                    </div>
-                                </div>
+                                <div class="col-12 mb-1">
+                                    <div class="card p-2">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <label class="fw-bold mb-0" for="permission_${parentPermission.id}">
+                                                ${parentPermission.name}
+                                            </label>
+                                            <input class="form-check-input parent-permission"
+                                                   type="checkbox"
+                                                   name="permissions[]"
+                                                   value="${parentPermission.id}"
+                                                   id="permission_${parentPermission.id}" ${isChecked}>
+                                        </div>
                             `;
 
-                                        // If this parent has children, list them
-                                        if (parentPermission.children && parentPermission.children.length > 0) {
+                                        // Only add child permissions section if there are children
+                                        if (parentPermission.children.length > 0) {
+                                            permissionsHtml += `
+                                    <div class="child-permissions mt-2 row mx-2 pt-2 pb-0 mb-0 border-top" id="child-container-${parentPermission.id}">
+                                `;
+
                                             parentPermission.children.forEach(child => {
                                                 const isChildChecked = data.activePermissionsId.includes(child.id) ? "checked" : "";
                                                 permissionsHtml += `
-                                        <div class="col-md-4 ms-4">
-                                            <div class="form-check">
-                                                <input class="form-check-input child-permission"
+                                        <div class="form-check col-md-6 col-12">
+                                            <label class="form-check-label d-flex justify-content-between w-100" for="permission_${child.id}">
+                                                ${child.name}
+                                                <input class="form-check-input child-permission ms-2"
                                                        type="checkbox"
                                                        name="permissions[]"
                                                        value="${child.id}"
                                                        id="permission_${child.id}" ${isChildChecked}
                                                        data-parent-id="${parentPermission.id}">
-                                                <label class="form-check-label" for="permission_${child.id}">
-                                                    ${child.name}
-                                                </label>
-                                            </div>
+                                            </label>
                                         </div>
                                     `;
                                             });
+
+                                            permissionsHtml += `</div>`; // Close child container
                                         }
+
+                                        permissionsHtml += `</div></div>`; // Close parent card & column
                                     });
 
+                                    permissionsHtml += `</div>`; // Close last row
                                     permissionsContainer.innerHTML = permissionsHtml;
 
-                                    // Handle parent-child selection logic
-                                    document.querySelectorAll(".parent-permission").forEach(parent => {
-                                        parent.addEventListener("change", function () {
-                                            let parentId = this.value;
-                                            document.querySelectorAll(`.child-permission[data-parent-id="${parentId}"]`).forEach(child => {
-                                                child.checked = parent.checked;
-                                            });
-                                        });
-                                    });
-
-                                    document.querySelectorAll(".child-permission").forEach(child => {
-                                        child.addEventListener("change", function () {
-                                            let parentId = this.getAttribute("data-parent-id");
-                                            let parent = document.getElementById(`permission_${parentId}`);
-                                            if (!this.checked) {
-                                                parent.checked = false; // If a child is unchecked, the parent should also be unchecked
-                                            }
-                                        });
-                                    });
-
+                                    attachEditCheckboxLogic();
                                 } else {
                                     permissionsContainer.innerHTML = '<p class="text-danger">No permissions available.</p>';
                                 }
@@ -433,6 +427,40 @@
                         });
                 }
             });
+
+// Parent-child checkbox logic with toggle effect
+            function attachEditCheckboxLogic() {
+                document.querySelectorAll(".parent-permission").forEach(parentCheckbox => {
+                    parentCheckbox.addEventListener("change", function () {
+                        const parentId = this.value;
+                        const childContainer = document.getElementById(`child-container-${parentId}`);
+
+                        if (childContainer) {
+                            document.querySelectorAll(`.child-permission[data-parent-id="${parentId}"]`)
+                                .forEach(childCheckbox => {
+                                    childCheckbox.checked = this.checked;
+                                });
+                        }
+                    });
+                });
+
+                document.querySelectorAll(".child-permission").forEach(childCheckbox => {
+                    childCheckbox.addEventListener("change", function () {
+                        const parentId = this.getAttribute("data-parent-id");
+                        const parentCheckbox = document.querySelector(`#permission_${parentId}`);
+
+                        if (this.checked) {
+                            parentCheckbox.checked = true;
+                        } else {
+                            const anyChecked = document.querySelectorAll(`.child-permission[data-parent-id="${parentId}"]:checked`).length > 0;
+                            if (!anyChecked) {
+                                parentCheckbox.checked = false;
+                            }
+                        }
+                    });
+                });
+            }
+
 
             document.getElementById("editForm").addEventListener("submit", function (e) {
                 let permissionCheckboxes = document.querySelectorAll('input[name="permissions[]"]:checked');
@@ -479,49 +507,53 @@
                         permissionsContainer.innerHTML = ""; // Clear previous permissions
 
                         if (data.permissions && data.permissions.length > 0) {
-                            let permissionsHtml = `<div class="row row-cols-3 g-4">`; // 3 parents per row
+                            let permissionsHtml = `<div class="row">`; // 3 parents per row
 
                             data.permissions.forEach((permission, index) => {
                                 // Start a new row every 3 parents
                                 if (index % 3 === 0 && index !== 0) {
-                                    permissionsHtml += `</div><div class="row  ">`;
+                                    permissionsHtml += `</div><div class="row">`;
                                 }
 
                                 permissionsHtml += `
-                    <div class="col">
-                        <div class="card p-3">
-                            <div class="form-check">
-                                <input class="form-check-input parent-permission" type="checkbox"
-                                       name="permissions[]"
-                                       value="${permission.id}"
-                                       id="permission_${permission.id}">
-                                <label class="form-check-label fw-bold" for="permission_${permission.id}">
-                                    ${permission.name}
-                                </label>
-                            </div>
-                            <div class="child-permissions mt-2 d-none" id="child-container-${permission.id}">
-                `;
+                        <div class="col-12 mb-1">
+                            <div class="card p-2">
+                                <div class="d-flex justify-content-between align-items-center mx-2">
+                                    <label class="fw-bold mb-0" for="permission_${permission.id}">
+                                        ${permission.name}
+                                    </label>
+                                    <input class="form-check-input parent-permission" type="checkbox"
+                                           name="permissions[]"
+                                           value="${permission.id}"
+                                           id="permission_${permission.id}">
+                                </div>
+                    `;
 
+                                // Only add child permissions section if there are children
                                 if (permission.children.length > 0) {
+                                    permissionsHtml += `
+                            <div class="child-permissions mt-2 row mx-2 pt-2 pb-0 mb-0 border-top d-none" id="child-container-${permission.id}">
+                        `;
+
                                     permission.children.forEach(child => {
                                         permissionsHtml += `
-                            <div class="form-check ms-3 border-start ps-2">
-                                <input class="form-check-input child-permission" type="checkbox"
-                                       name="permissions[]"
-                                       value="${child.id}"
-                                       id="permission_${child.id}"
-                                       data-parent-id="${permission.id}">
-                                <label class="form-check-label" for="permission_${child.id}">
-                                    ${child.name}
-                                </label>
-                            </div>
-                        `;
+                                <div class="form-check col-md-6 col-12">
+                                    <label class="form-check-label d-flex justify-content-between w-100" for="permission_${child.id}">
+                                        ${child.name}
+                                        <input class="form-check-input child-permission ms-2" type="checkbox"
+                                               name="permissions[]"
+                                               value="${child.id}"
+                                               id="permission_${child.id}"
+                                               data-parent-id="${permission.id}">
+                                    </label>
+                                </div>
+                            `;
                                     });
-                                } else {
-                                    permissionsHtml += `<p class="text-muted ms-3">No sub-permissions</p>`;
+
+                                    permissionsHtml += `</div>`; // Close child container
                                 }
 
-                                permissionsHtml += `</div></div></div>`; // Close parent card & column
+                                permissionsHtml += `</div></div>`; // Close parent card & column
                             });
 
                             permissionsHtml += `</div>`; // Close last row
@@ -537,25 +569,27 @@
                     });
             }
 
-// Parent-child checkbox logic with toggle effect
+            // Parent-child checkbox logic with toggle effect
             function attachCheckboxLogic() {
                 document.querySelectorAll(".parent-permission").forEach(parentCheckbox => {
                     parentCheckbox.addEventListener("change", function () {
                         const parentId = this.value;
                         const childContainer = document.getElementById(`child-container-${parentId}`);
 
-                        if (this.checked) {
-                            childContainer.classList.remove("d-none"); // Show children
-                            document.querySelectorAll(`.child-permission[data-parent-id="${parentId}"]`)
-                                .forEach(childCheckbox => {
-                                    childCheckbox.checked = true;
-                                });
-                        } else {
-                            childContainer.classList.add("d-none"); // Hide children
-                            document.querySelectorAll(`.child-permission[data-parent-id="${parentId}"]`)
-                                .forEach(childCheckbox => {
-                                    childCheckbox.checked = false;
-                                });
+                        if (childContainer) {
+                            if (this.checked) {
+                                childContainer.classList.remove("d-none"); // Show children
+                                document.querySelectorAll(`.child-permission[data-parent-id="${parentId}"]`)
+                                    .forEach(childCheckbox => {
+                                        childCheckbox.checked = true;
+                                    });
+                            } else {
+                                childContainer.classList.add("d-none"); // Hide children
+                                document.querySelectorAll(`.child-permission[data-parent-id="${parentId}"]`)
+                                    .forEach(childCheckbox => {
+                                        childCheckbox.checked = false;
+                                    });
+                            }
                         }
                     });
                 });
@@ -576,6 +610,8 @@
                     });
                 });
             }
+
+
 
         });
 
