@@ -3,9 +3,11 @@
 namespace App\Http\Controllers\WebControllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\Permission;
 use App\Models\Role;
 use App\Models\RolePermission;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class RolePermissionController extends Controller
@@ -24,14 +26,37 @@ class RolePermissionController extends Controller
 
             if ($roleId) {
                 $permissions = RolePermission::where('role_id', $roleId)
-                    ->with('permission:id,name,header')
-                    ->get()
-                    ->map(fn ($rolePermission) => [
-                        'id' => $rolePermission->permission->id,
-                        'name' => $rolePermission->permission->name,
-                        'status' => $rolePermission->status,
-                        'header' => $rolePermission->permission->header,
+                    ->whereHas('permission', function ($query) {
+                        $query->whereNull('parent_id');
+                    })
+                    ->with([
+                        'permission' => function ($query) use ($roleId) {
+                            $query->select('id', 'name', 'header', 'parent_id')
+                                ->with(['children' => function ($childQuery) use ($roleId) {
+                                    $childQuery->select('id', 'name', 'parent_id')
+                                        ->with(['rolePermissions' => function ($rolePermQuery) use ($roleId) {
+                                            $rolePermQuery->where('role_id', $roleId)->select('permission_id', 'status');
+                                        }]);
+                                }]);
+                        }
                     ])
+                    ->get()
+                    ->map(function ($rolePermission) {
+                        return [
+                            'id' => $rolePermission->permission->id ?? null,
+                            'name' => $rolePermission->permission->name ?? 'N/A',
+                            'status' => $rolePermission->status,
+                            'header' => $rolePermission->permission->header ?? 'No Header',
+                            'children' => $rolePermission->permission->children->map(function ($child) {
+                                return [
+                                    'id' => $child->id,
+                                    'name' => $child->name,
+                                    'parent_id' => $child->parent_id,
+                                    'status' => optional($child->rolePermissions->first())->status ?? 0,
+                                ];
+                            })
+                        ];
+                    })
                     ->groupBy('header');
             }
 
@@ -53,7 +78,9 @@ class RolePermissionController extends Controller
         ]);
 
         try {
-            $updated = RolePermission::where([
+            DB::beginTransaction();
+
+            RolePermission::where([
                 ['role_id', '=', $request->role_id],
                 ['permission_id', '=', $request->permission_id],
             ])->update([
@@ -62,13 +89,32 @@ class RolePermissionController extends Controller
                 'updated_at' => now()
             ]);
 
-            if ($updated) {
-                return response()->json(['success' => true, 'message' => 'Permission updated successfully']);
-            } else {
-                return response()->json(['success' => false, 'message' => 'Permission not found or unchanged']);
+            if ($request->status == 0) {
+                $this->disableChildPermissions($request->role_id, $request->permission_id);
             }
+
+            DB::commit();
+
+            return response()->json(['success' => true, 'message' => 'Permission updated successfully']);
+
         } catch (\Exception $e) {
+            DB::rollBack();
             return response()->json(['success' => false, 'message' => 'Error updating permission'], 500);
         }
     }
+
+    private function disableChildPermissions($roleId, $parentId)
+    {
+        $childPermissions = Permission::where('parent_id', $parentId)->pluck('id');
+
+        if ($childPermissions->isNotEmpty()) {
+            RolePermission::whereIn('permission_id', $childPermissions)
+                ->where('role_id', $roleId)
+                ->update([
+                    'status' => 0,
+                    'updated_at' => now(),
+                ]);
+        }
+    }
+
 }

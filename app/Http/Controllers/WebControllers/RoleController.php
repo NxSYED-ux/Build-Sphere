@@ -88,7 +88,11 @@ class RoleController extends Controller
         try {
             $role = Role::select('name', 'description', 'status')->findOrFail($id);
             $rolePermissionIds = RolePermission::where('role_id', $id)->pluck('permission_id');
-            $permissions = Permission::whereIn('id', $rolePermissionIds)->get(['id', 'name', 'status']);
+
+            $permissions = Permission::with('children')
+                ->whereIn('id', $rolePermissionIds)
+                ->orWhereIn('parent_id', $rolePermissionIds)
+                ->get(['id', 'name', 'status', 'parent_id']);
 
             return response()->json([
                 'role' => $role,

@@ -203,7 +203,7 @@
                                                 @foreach ($perms ?? [] as $perm)
                                                     <div class="col-md-6 col-lg-4 mb-3">
                                                         <div class="permission-item d-flex justify-content-between align-items-center p-1 px-2 border rounded shadow-sm">
-                                                            <span class="permission-name font-weight-medium ">{{ $perm['name'] }}</span>
+                                                            <span class="permission-name font-weight-medium">{{ $perm['name'] }}</span>
                                                             <button class="toggle-btn {{ $perm['status'] == 0 ? '' : 'active' }}"
                                                                     data-permission-id="{{ $perm['id'] }}"
                                                                     data-role-id="{{ $roleId }}"
@@ -213,14 +213,33 @@
                                                             </button>
                                                         </div>
                                                     </div>
+
+                                                    <!-- Handle Children Permissions -->
+                                                    @if (!empty($perm['children']))
+                                                        @foreach ($perm['children'] as $child)
+                                                            <div class="col-md-6 col-lg-4 mb-3 ps-4">
+                                                                <div class="permission-item d-flex justify-content-between align-items-center p-1 px-2 border rounded shadow-sm bg-light">
+                                                                    <span class="permission-name font-weight-medium">L {{ $child['name'] }}</span>
+                                                                    <button class="toggle-btn {{ $child['status'] == 0 ? '' : 'active' }}"
+                                                                            data-permission-id="{{ $child['id'] }}"
+                                                                            data-role-id="{{ $roleId }}"
+                                                                            data-status="{{ $child['status'] }}"
+                                                                            onclick="togglePermission(this)">
+                                                                        <div class="toggle-switch"></div>
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                        @endforeach
+                                                    @endif
+
                                                 @endforeach
                                             </div>
                                         </div>
-
                                     </div>
                                 @endforeach
                             @endif
                         </div>
+
                     </div>
                 @endif
             </div>
