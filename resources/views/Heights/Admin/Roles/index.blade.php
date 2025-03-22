@@ -267,7 +267,7 @@
                         <!-- Permissions -->
                         <div class="mb-3">
                             <label class="form-label">Permissions <span class="text-danger">*</span></label>
-                            <div class="row" id="permissionsContainer"></div>
+                            <div class="" id="permissionsContainer"></div>
                             <small class="text-danger d-none" id="permissionsError">At least one permission must be selected.</small>
                         </div>
                     </div>
@@ -362,7 +362,7 @@
                                         permissionsHtml += `
                                 <div class="col-12 mb-1">
                                     <div class="card p-2">
-                                        <div class="d-flex justify-content-between align-items-center">
+                                        <div class="d-flex justify-content-between align-items-center mx-2">
                                             <label class="fw-bold mb-0" for="permission_${parentPermission.id}">
                                                 ${parentPermission.name}
                                             </label>
@@ -428,7 +428,7 @@
                 }
             });
 
-// Parent-child checkbox logic with toggle effect
+            // Parent-child checkbox logic with toggle effect
             function attachEditCheckboxLogic() {
                 document.querySelectorAll(".parent-permission").forEach(parentCheckbox => {
                     parentCheckbox.addEventListener("change", function () {

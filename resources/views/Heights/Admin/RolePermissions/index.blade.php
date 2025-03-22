@@ -90,8 +90,7 @@
             justify-content: space-between;
             align-items: center;
             padding: 0.75rem 1.5rem;
-            border-bottom: 1px solid #e3e6f0;
-            transition: background-color 0.2s ease;
+
         }
 
         .permission-item:hover {
@@ -198,11 +197,11 @@
                                 @foreach ($permissions ?? [] as $header => $perms)
                                     <div class="mb-4">
                                         <h5 class="text mb-3 font-weight-bold permission-Heading">{{ $header }}</h5>
-                                        <div class="permission-list rounded-lg shadow-sm p-3">
+                                        <div class=" ">
                                             <div class="row">
                                                 @foreach ($perms ?? [] as $perm)
-                                                    <div class="col-md-6 col-lg-4 mb-3">
-                                                        <div class="permission-item d-flex justify-content-between align-items-center p-1 px-2 border rounded shadow-sm">
+                                                    <div class="col-md-12 mb-2  border rounded-4 shadow-sm">
+                                                        <div class="permission-item d-flex justify-content-between align-items-center  px-2 ">
                                                             <span class="permission-name font-weight-medium">{{ $perm['name'] }}</span>
                                                             <button class="toggle-btn {{ $perm['status'] == 0 ? '' : 'active' }}"
                                                                     data-permission-id="{{ $perm['id'] }}"
@@ -212,25 +211,31 @@
                                                                 <div class="toggle-switch"></div>
                                                             </button>
                                                         </div>
+
+                                                        @if ($perm['children']->isNotEmpty())
+                                                            <div class="row mt-1 px-1 py-2" style="border-top: 1px solid #e3e6f0; transition: background-color 0.2s ease;">
+                                                            @foreach ($perm['children'] as $child)
+                                                                <div class="col-12 mb-1">
+                                                                    <div class="  d-flex justify-content-between align-items-center   ">
+                                                                        <span class="permission-name font-weight-medium d-inline-flex align-items-center">
+                                                                            <i class='bx bx-radio-circle' style="margin-right: 10px;"></i>
+                                                                            {{ $child['name'] }}
+                                                                        </span>
+                                                                        <button class="toggle-btn {{ $child['status'] == 0 ? '' : 'active' }}"
+                                                                                data-permission-id="{{ $child['id'] }}"
+                                                                                data-role-id="{{ $roleId }}"
+                                                                                data-status="{{ $child['status'] }}"
+                                                                                onclick="togglePermission(this)">
+                                                                            <div class="toggle-switch"></div>
+                                                                        </button>
+                                                                    </div>
+                                                                </div>
+                                                            @endforeach
+                                                            </div>
+                                                        @endif
                                                     </div>
 
-                                                    <!-- Handle Children Permissions -->
-                                                    @if (!empty($perm['children']))
-                                                        @foreach ($perm['children'] as $child)
-                                                            <div class="col-md-6 col-lg-4 mb-3 ps-4">
-                                                                <div class="permission-item d-flex justify-content-between align-items-center p-1 px-2 border rounded shadow-sm bg-light">
-                                                                    <span class="permission-name font-weight-medium">L {{ $child['name'] }}</span>
-                                                                    <button class="toggle-btn {{ $child['status'] == 0 ? '' : 'active' }}"
-                                                                            data-permission-id="{{ $child['id'] }}"
-                                                                            data-role-id="{{ $roleId }}"
-                                                                            data-status="{{ $child['status'] }}"
-                                                                            onclick="togglePermission(this)">
-                                                                        <div class="toggle-switch"></div>
-                                                                    </button>
-                                                                </div>
-                                                            </div>
-                                                        @endforeach
-                                                    @endif
+
 
                                                 @endforeach
                                             </div>

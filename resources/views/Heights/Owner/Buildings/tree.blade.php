@@ -161,8 +161,83 @@
         }
 
 
+        /* Shimmer Animation */
+        @keyframes shimmerAnimation {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
 
+        /* Shimmer Card */
+        .shimmer-card {
+            width: 220px;
+            height: 120px;
+            background: #f8f8f8;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            margin: 10px auto;
+        }
 
+        /* Image Placeholder */
+        .shimmer-image {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(90deg, #f4f4f4 25%, #e0e0e0 50%, #f4f4f4 75%);
+            background-size: 200% 100%;
+            animation: shimmerAnimation 1.5s infinite linear;
+        }
+
+        /* Text Placeholder */
+        .shimmer-text {
+            height: 15px;
+            background: linear-gradient(90deg, #f4f4f4 25%, #e0e0e0 50%, #f4f4f4 75%);
+            background-size: 200% 100%;
+            animation: shimmerAnimation 1.5s infinite linear;
+            border-radius: 5px;
+            margin-top: 8px;
+        }
+
+        /* Title and Subtitle Styling */
+        .shimmer-title {
+            width: 120px;
+            height: 18px;
+        }
+
+        .shimmer-subtitle {
+            width: 80px;
+        }
+
+        /* Connector Circle */
+        .shimmer-connector {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #f8f8f8;
+            border: 2px solid #ddd;
+            position: absolute;
+            bottom: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        /* Branch Layout */
+        .shimmer-branch {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .shimmer-multi {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+        }
     </style>
 
 @endpush
@@ -205,6 +280,28 @@
         </div>
 
         @if($building)
+            <!-- Shimmer Placeholder -->
+            <div id="shimmer-container">
+                <!-- Top Level (Building) -->
+                <div class="shimmer-card shimmer-root">
+                    <div class="shimmer-image"></div>
+                    <div class="shimmer-text shimmer-title"></div>
+                    <div class="shimmer-text shimmer-subtitle"></div>
+                    <div class="shimmer-connector"></div>
+                </div>
+
+                <!-- Fourth Level (Units) -->
+                <div class="shimmer-branch shimmer-multi">
+                    @foreach($units as $unit)
+                        <div class="shimmer-card">
+                            <div class="shimmer-image"></div>
+                            <div class="shimmer-text shimmer-title"></div>
+                            <div class="shimmer-text shimmer-subtitle"></div>
+                            <div class="shimmer-connector"></div>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
         <div id="tree">
         </div>
         @else
@@ -276,288 +373,302 @@
 @push('scripts')
     <script src="{{ asset('js/orgchart.js') }}"></script>
     <script>
-        //JavaScript
-        OrgChart.templates.ana.plus =
-            `<circle cx="15" cy="15" r="15" fill="#ffffff" stroke="#aeaeae" stroke-width="1"></circle>
-            <text text-anchor="middle" style="font-size: 18px;cursor:pointer;" fill="#757575" x="15" y="22">{collapsed-children-count}</text>`;
+
+        window.onload = function () {
+            let shimmerContainer = document.getElementById("shimmer-container");
+            let chartContainer = document.getElementById("tree");
+
+            if (shimmerContainer) {
+                shimmerContainer.style.display = "none";
+            }
+
+            if (chartContainer) {
+                chartContainer.style.display = "block";
+            }
+
+            //JavaScript
+            OrgChart.templates.ana.plus =
+                `<circle cx="15" cy="15" r="15" fill="#ffffff" stroke="#aeaeae" stroke-width="1"></circle>
+                <text text-anchor="middle" style="font-size: 18px;cursor:pointer;" fill="#757575" x="15" y="22">{collapsed-children-count}</text>`;
 
 
 
-        OrgChart.templates.itTemplate = Object.assign({}, OrgChart.templates.ana);
-        OrgChart.templates.itTemplate.nodeMenuButton = "";
-        OrgChart.templates.itTemplate.nodeCircleMenuButton = {
-            radius: 18,
-            x: 250,
-            y: 60,
-            color: '#fff',
-            stroke: '#aeaeae',
-            show: false
+            OrgChart.templates.itTemplate = Object.assign({}, OrgChart.templates.ana);
+            OrgChart.templates.itTemplate.nodeMenuButton = "";
+            OrgChart.templates.itTemplate.nodeCircleMenuButton = {
+                radius: 18,
+                x: 250,
+                y: 60,
+                color: '#fff',
+                stroke: '#aeaeae',
+                show: false
+            };
+
+           // Get the options and merge with toolbar settings
+            let options = Object.assign(getOptions(), {
+                toolbar: {
+                    fullScreen: true,
+                    zoom: true,
+                    fit: true,
+                    expandAll: true
+                }
+            });
+
+            function getOptions() {
+                let enableSearch = false;
+                let scaleInitial = OrgChart.match.boundary; // This makes the chart fit
+
+                return { enableSearch, scaleInitial };
+            }
+
+
+            let chart = new OrgChart(document.getElementById("tree"), {
+                mouseScrool: OrgChart.action.scroll,
+                nodeMouseClick: OrgChart.action.none,
+                scaleInitial: options.scaleInitial,
+                enableSearch: false,
+                template: "ana",
+                enableDragDrop: false,
+                align: OrgChart.ORIENTATION,
+                toolbar: {
+                    fullScreen: true,
+                    zoom: true,
+                    fit: true,
+                    expandAll: true
+                },
+                nodeBinding: {
+                    field_0: "name",
+                    field_1: "title",
+                    img_0: "img"
+                },
+                tags: {
+                    "buildings": {
+                        template: "invisibleGroup",
+                        subTreeConfig: {
+                            orientation: OrgChart.orientation.bottom,
+                            template: "base",
+                            collapse: {
+                                level: 1
+                            }
+                        }
+                    },
+                    "top": {
+                        template: "ula"
+                    },
+                    "assistant": {
+                        template: "polina"
+                    },
+                    "levels": {
+                        subTreeConfig: {
+                            layout: OrgChart.treeRightOffset,
+                            orientation: OrgChart.orientation.top,
+                            template: "base",
+                            collapse: {
+                                level: 1
+                            }
+                        },
+                    },
+                    "units": {
+                        subTreeConfig: {
+                            layout: OrgChart.treeRightOffset,
+                            collapse: {
+                                level: 1
+                            }
+                        },
+                    },
+                    "department": {
+                        template: "group",
+                        nodeMenu:  null
+                    },
+                },
+            });
+
+            @if($building)
+                chart.load([
+                    {id: "buildings", tags: ["buildings"]},
+                    {
+                        id: "Building {{ $building->id }}",
+                        stpid: "buildings",
+                        name: "{{ $building->name }}",
+                        title: "Building",
+                        img: "{{ asset( $building->pictures->first() ?  $building->pictures->first()->file_path : 'img/placeholder-img.jfif') }}",
+                        tags: ["top"]
+                    },
+                    {
+                        id: "Owner {{ $owner->id }}",
+                        pid: "buildings",
+                        name: "{{ $owner->name }}",
+                        title: "Owner",
+                        img: "{{ asset( $owner->picture ?? 'img/placeholder-profile.png') }}",
+                        tags: ["assistant"]
+                    },
+
+                        @foreach( $levels as $level )
+                    {
+                        id: "levels {{ $level->id }}",
+                        pid: "buildings",
+                        tags: ["levels", "department"],
+                        name: "{{ $level->level_name }}"
+                    },
+                        @endforeach
+
+                        @foreach( $levels as $level )
+                    {
+                        id: "Level {{ $level->id }}",
+                        stpid: "levels {{ $level->id }}",
+                        name: "{{ $level->level_name }}",
+                        title: "Level {{ $level->level_number }}"
+                    },
+                        @endforeach
+
+                        @foreach( $units as $unit )
+                    {
+                        id: "Unit {{ $unit->id }}",
+                        pid: "Level {{ $unit->level_id }}",
+                        name: "{{ $unit->unit_name }}",
+                        title: "{{ $unit->availability_status }}",
+                        img: "{{ asset( $unit->pictures->first() ? $unit->pictures->first()->file_path : 'img/placeholder-unit.png') }}",
+                        tags: ["{{ $unit->unit_type }}"]
+                    },
+                    @endforeach
+                ]);
+            @endif
+
+            chart.on('click', function(event, node) {
+                let nodeId = node.node.id || "N/A";
+
+                let [firstPart, secondPart] = nodeId.split(" ");
+
+                console.log("First Part:", firstPart);
+                console.log("Second Part:", secondPart);
+
+                let modalId = "";
+
+                if (firstPart === "Building") {
+                    modalId = "BuildingModal";
+                } else if (firstPart === "Owner") {
+                    modalId = "OwnerModal";
+                } else if (firstPart === "Level") {
+                    modalId = "LevelModal";
+                } else if (firstPart === "Unit") {
+                    fetchUnitDetails(secondPart);
+                    modalId = "UnitModal";
+                } else {
+                    return;
+                }
+
+                if (modalId) {
+                    let modal = new bootstrap.Modal(document.getElementById(modalId), {
+                        keyboard: false
+                    });
+
+                    modal.show();
+                }
+            });
+
+            function fetchUnitDetails(unitId) {
+                let numericUnitId = parseInt(unitId);
+                if (isNaN(numericUnitId) || numericUnitId <= 0) {
+                    console.error("Invalid Unit ID:", unitId);
+                    return;
+                }
+
+                // Unit Details Fetch
+                fetch(`{{ route('units.details', ':id') }}`.replace(':id', numericUnitId), {
+                    method: "GET",
+                    headers: {
+                        "X-Requested-With": "XMLHttpRequest",
+                        "Accept": "application/json"
+                    }
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.error) {
+                            console.error("Error:", data.error);
+                            return;
+                        }
+                        populateUnitModal(data);
+                    })
+                    .catch(() => {
+                        console.error("An error occurred while retrieving the data.");
+                    });
+
+            }
+
+            function populateUnitModal(unitData) {
+                let unit = unitData.Unit;
+                let userUnit = unit.user_units.length > 0 ? unit.user_units[0] : null;
+                let user = userUnit ? userUnit.user : null;
+                let saleOrRent = unit.sale_or_rent ? unit.sale_or_rent : null;
+
+                let unitImage = unit.pictures.length > 0 ? '/' + unit.pictures[0].file_path : 'default-image.jpg';
+                let userImage = user ? '/' + user.picture : '/img/placeholder-profile.png';
+                let userName = user ? user.name : 'N/A';
+
+                let saleTemplate = `
+                    <div class="card shadow-sm p-3" style="border: 1px solid #008CFF;">
+                        <div class="d-flex align-items-center">
+                            <!-- Unit Image -->
+                            <div class="flex-shrink-0">
+                                <img src="${unitImage}" class="rounded img-fluid border" width="150" alt="Unit Image">
+                            </div>
+
+                            <!-- Unit Details -->
+                            <div class="ms-3">
+                                <h5 class="mb-2" style="color: #008CFF;">SALE - ${unit.unit_name}</h5>
+                                <p class="mb-1"><strong>Type:</strong> ${unit.unit_type}</p>
+                                <p class="mb-1"><strong>Price:</strong> ${unit.price} PKR (For Sale)</p>
+                            </div>
+                        </div>
+
+                        <!-- Buyer Info -->
+                        <div class="alert mt-3" style="background-color: #B9CCDD;">
+                            <div class="d-flex align-items-center">
+                                <img src="${userImage}" class="rounded-circle border" width="50" height="50" alt="Buyer">
+                                <div class="ms-2">
+                                    <p class="mb-1"><strong>Purchased By:</strong> ${userName}</p>
+                                    <p class="mb-0"><strong>Purchase Date:</strong> ${userUnit ? new Date(userUnit.purchase_date).toLocaleDateString() : 'N/A'}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>`;
+
+                let rentTemplate = `
+                    <div class="card shadow-sm p-3" style="border: 1px solid #008CFF;">
+                        <div class="d-flex align-items-center">
+                            <!-- Unit Image -->
+                            <div class="flex-shrink-0">
+                                <img src="${unitImage}" class="rounded img-fluid border" width="150" alt="Unit Image">
+                            </div>
+
+                            <!-- Unit Details -->
+                            <div class="ms-3">
+                                <h5 class="mb-2" style="color: #008CFF;">${saleOrRent} - ${unit.unit_name}</h5>
+                                <p class="mb-1"><strong>Type:</strong> ${unit.unit_type}</p>
+                                <p class="mb-1"><strong>Price:</strong> ${unit.price} PKR/month</p>
+                            </div>
+                        </div>
+
+                        <!-- Tenant Info -->
+                        <div class="alert mt-3" style="background-color: #B9CCDD;">
+                            <div class="d-flex align-items-center">
+                                <img src="${userImage}" class="rounded-circle border" width="50" height="50" alt="Tenant">
+                                <div class="ms-2">
+                                    <p class="mb-1"><strong>Rented By:</strong> ${userName}</p>
+                                    <p class="mb-0"><strong>Rent Period:</strong>
+                                        ${userUnit ? new Date(userUnit.rent_start_date).toLocaleDateString() : 'N/A'}
+                                        to
+                                        ${userUnit ? new Date(userUnit.rent_end_date).toLocaleDateString() : 'N/A'}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>`;
+
+                document.getElementById('nodeDetailsUnit').innerHTML = unit.sale_or_rent === "Sale" ? saleTemplate : rentTemplate;
+            }
         };
 
-       // Get the options and merge with toolbar settings
-        let options = Object.assign(getOptions(), {
-            toolbar: {
-                fullScreen: true,
-                zoom: true,
-                fit: true,
-                expandAll: true
-            }
-        });
 
-        function getOptions() {
-            let enableSearch = false;
-            let scaleInitial = OrgChart.match.boundary; // This makes the chart fit
-
-            return { enableSearch, scaleInitial };
-        }
-
-
-        let chart = new OrgChart(document.getElementById("tree"), {
-            mouseScrool: OrgChart.action.scroll,
-            nodeMouseClick: OrgChart.action.none,
-            scaleInitial: options.scaleInitial,
-            enableSearch: false,
-            template: "ana",
-            enableDragDrop: false,
-            align: OrgChart.ORIENTATION,
-            toolbar: {
-                fullScreen: true,
-                zoom: true,
-                fit: true,
-                expandAll: true
-            },
-            nodeBinding: {
-                field_0: "name",
-                field_1: "title",
-                img_0: "img"
-            },
-            tags: {
-                "buildings": {
-                    template: "invisibleGroup",
-                    subTreeConfig: {
-                        orientation: OrgChart.orientation.bottom,
-                        template: "base",
-                        collapse: {
-                            level: 1
-                        }
-                    }
-                },
-                "top": {
-                    template: "ula"
-                },
-                "assistant": {
-                    template: "polina"
-                },
-                "levels": {
-                    subTreeConfig: {
-                        layout: OrgChart.treeRightOffset,
-                        orientation: OrgChart.orientation.top,
-                        template: "base",
-                        collapse: {
-                            level: 1
-                        }
-                    },
-                },
-                "units": {
-                    subTreeConfig: {
-                        layout: OrgChart.treeRightOffset,
-                        collapse: {
-                            level: 1
-                        }
-                    },
-                },
-                "department": {
-                    template: "group",
-                    nodeMenu:  null
-                },
-            },
-        });
-
-        @if($building)
-            chart.load([
-                {id: "buildings", tags: ["buildings"]},
-                {
-                    id: "Building {{ $building->id }}",
-                    stpid: "buildings",
-                    name: "{{ $building->name }}",
-                    title: "Building",
-                    img: "{{ asset( $building->pictures->first() ?  $building->pictures->first()->file_path : '') }}",
-                    tags: ["top"]
-                },
-                {
-                    id: "Owner {{ $owner->id }}",
-                    pid: "buildings",
-                    name: "{{ $owner->name }}",
-                    title: "Owner",
-                    img: "{{ asset( $owner->picture ?? 'img/buildings/User_2.jpg') }}",
-                    tags: ["assistant"]
-                },
-
-                    @foreach( $levels as $level )
-                {
-                    id: "levels {{ $level->id }}",
-                    pid: "buildings",
-                    tags: ["levels", "department"],
-                    name: "{{ $level->level_name }}"
-                },
-                    @endforeach
-
-                    @foreach( $levels as $level )
-                {
-                    id: "Level {{ $level->id }}",
-                    stpid: "levels {{ $level->id }}",
-                    name: "{{ $level->level_name }}",
-                    title: "Level {{ $level->level_number }}"
-                },
-                    @endforeach
-
-                    @foreach( $units as $unit )
-                {
-                    id: "Unit {{ $unit->id }}",
-                    pid: "Level {{ $unit->level_id }}",
-                    name: "{{ $unit->unit_name }}",
-                    title: "{{ $unit->availability_status }}",
-                    img: "{{ asset( $unit->pictures->first() ? $unit->pictures->first()->file_path : 'img/buildings/Shop_1.jpeg') }}",
-                    tags: ["{{ $unit->unit_type }}"]
-                },
-                @endforeach
-            ]);
-        @endif
-
-        chart.on('click', function(event, node) {
-            let nodeId = node.node.id || "N/A";
-
-            let [firstPart, secondPart] = nodeId.split(" ");
-
-            console.log("First Part:", firstPart);
-            console.log("Second Part:", secondPart);
-
-            let modalId = "";
-
-            if (firstPart === "Building") {
-                modalId = "BuildingModal";
-            } else if (firstPart === "Owner") {
-                modalId = "OwnerModal";
-            } else if (firstPart === "Level") {
-                modalId = "LevelModal";
-            } else if (firstPart === "Unit") {
-                fetchUnitDetails(secondPart);
-                modalId = "UnitModal";
-            } else {
-                return;
-            }
-
-            if (modalId) {
-                let modal = new bootstrap.Modal(document.getElementById(modalId), {
-                    keyboard: false
-                });
-
-                modal.show();
-            }
-        });
-
-        function fetchUnitDetails(unitId) {
-            let numericUnitId = parseInt(unitId);
-            if (isNaN(numericUnitId) || numericUnitId <= 0) {
-                console.error("Invalid Unit ID:", unitId);
-                return;
-            }
-
-            // Unit Details Fetch
-            fetch(`{{ route('units.details', ':id') }}`.replace(':id', numericUnitId), {
-                method: "GET",
-                headers: {
-                    "X-Requested-With": "XMLHttpRequest",
-                    "Accept": "application/json"
-                }
-            })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.error) {
-                        console.error("Error:", data.error);
-                        return;
-                    }
-                    populateUnitModal(data);
-                })
-                .catch(() => {
-                    console.error("An error occurred while retrieving the data.");
-                });
-
-        }
-
-        function populateUnitModal(unitData) {
-            let unit = unitData.Unit;
-            let userUnit = unit.user_units.length > 0 ? unit.user_units[0] : null;
-            let user = userUnit ? userUnit.user : null;
-            let saleOrRent = unit.sale_or_rent ? unit.sale_or_rent : null;
-
-            let unitImage = unit.pictures.length > 0 ? '/' + unit.pictures[0].file_path : 'default-image.jpg';
-            let userImage = user ? '/' + user.picture : '/img/placeholder-profile.png';
-            let userName = user ? user.name : 'N/A';
-
-            let saleTemplate = `
-                <div class="card shadow-sm p-3" style="border: 1px solid #008CFF;">
-                    <div class="d-flex align-items-center">
-                        <!-- Unit Image -->
-                        <div class="flex-shrink-0">
-                            <img src="${unitImage}" class="rounded img-fluid border" width="150" alt="Unit Image">
-                        </div>
-
-                        <!-- Unit Details -->
-                        <div class="ms-3">
-                            <h5 class="mb-2" style="color: #008CFF;">SALE - ${unit.unit_name}</h5>
-                            <p class="mb-1"><strong>Type:</strong> ${unit.unit_type}</p>
-                            <p class="mb-1"><strong>Price:</strong> ${unit.price} PKR (For Sale)</p>
-                        </div>
-                    </div>
-
-                    <!-- Buyer Info -->
-                    <div class="alert mt-3" style="background-color: #B9CCDD;">
-                        <div class="d-flex align-items-center">
-                            <img src="${userImage}" class="rounded-circle border" width="50" height="50" alt="Buyer">
-                            <div class="ms-2">
-                                <p class="mb-1"><strong>Purchased By:</strong> ${userName}</p>
-                                <p class="mb-0"><strong>Purchase Date:</strong> ${userUnit ? new Date(userUnit.purchase_date).toLocaleDateString() : 'N/A'}</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>`;
-
-            let rentTemplate = `
-                <div class="card shadow-sm p-3" style="border: 1px solid #008CFF;">
-                    <div class="d-flex align-items-center">
-                        <!-- Unit Image -->
-                        <div class="flex-shrink-0">
-                            <img src="${unitImage}" class="rounded img-fluid border" width="150" alt="Unit Image">
-                        </div>
-
-                        <!-- Unit Details -->
-                        <div class="ms-3">
-                            <h5 class="mb-2" style="color: #008CFF;">${saleOrRent} - ${unit.unit_name}</h5>
-                            <p class="mb-1"><strong>Type:</strong> ${unit.unit_type}</p>
-                            <p class="mb-1"><strong>Price:</strong> ${unit.price} PKR/month</p>
-                        </div>
-                    </div>
-
-                    <!-- Tenant Info -->
-                    <div class="alert mt-3" style="background-color: #B9CCDD;">
-                        <div class="d-flex align-items-center">
-                            <img src="${userImage}" class="rounded-circle border" width="50" height="50" alt="Tenant">
-                            <div class="ms-2">
-                                <p class="mb-1"><strong>Rented By:</strong> ${userName}</p>
-                                <p class="mb-0"><strong>Rent Period:</strong>
-                                    ${userUnit ? new Date(userUnit.rent_start_date).toLocaleDateString() : 'N/A'}
-                                    to
-                                    ${userUnit ? new Date(userUnit.rent_end_date).toLocaleDateString() : 'N/A'}
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </div>`;
-
-            document.getElementById('nodeDetailsUnit').innerHTML = unit.sale_or_rent === "Sale" ? saleTemplate : rentTemplate;
-        }
-
-
-    </script>
+        </script>
 @endpush
