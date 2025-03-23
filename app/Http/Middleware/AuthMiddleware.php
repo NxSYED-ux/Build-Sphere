@@ -20,7 +20,7 @@ class AuthMiddleware
             $token = $request->cookie('jwt_token') ?? $this->getTokenFromHeader($request);
 
             if (!$token) {
-                return $this->handleResponse('Authorization required', 401);
+                return $this->handleResponse($request,'Authorization required', 401);
             }
 
             $user = JWTAuth::setToken($token)->authenticate();
@@ -28,15 +28,15 @@ class AuthMiddleware
             $tokenData = $payload['user'] ?? null;
 
             if (!$user || $user->status === 0) {
-                return $this->handleResponse('User account is deactivated or deleted by administrator', 403);
+                return $this->handleResponse($request,'User account is deactivated or deleted by administrator', 403);
             }
 
             if (!$tokenData) {
-                return $this->handleResponse('Invalid session ID', 400);
+                return $this->handleResponse($request,'Invalid session ID', 400);
             }
 
             if ($tokenData['role_id'] !== $user->role_id) {
-                return $this->handleResponse('Your role has been changed by administrator', 403);
+                return $this->handleResponse($request,'Your role has been changed by administrator', 403);
             }
 
             $request->merge(['user' => $user]);
@@ -44,13 +44,13 @@ class AuthMiddleware
             return $next($request);
 
         } catch (TokenExpiredException $e) {
-            return $this->handleResponse('Session has expired', 401);
+            return $this->handleResponse($request,'Session has expired', 401);
         } catch (TokenInvalidException $e) {
-            return $this->handleResponse('Invalid session ID', 400);
+            return $this->handleResponse($request,'Invalid session ID', 400);
         } catch (JWTException $e) {
-            return $this->handleResponse('Could not parse token', 400);
+            return $this->handleResponse($request,'Could not parse token', 400);
         } catch (Exception $e) {
-            return $this->handleResponse('Invalid or expired session ID', 400);
+            return $this->handleResponse($request,'Invalid or expired session ID', 400);
         }
     }
 
@@ -66,9 +66,13 @@ class AuthMiddleware
         return null;
     }
 
-    private function handleResponse($message, $statusCode)
+    private function handleResponse(Request $request ,$message, $statusCode)
     {
-        return response()->json(['error' => $message], $statusCode);
+        if ($request->wantsJson()) {
+            return response()->json(['error' => $message], $statusCode);
+        }
+
+        return redirect()->back()->with('error', $message);
     }
 
 }
