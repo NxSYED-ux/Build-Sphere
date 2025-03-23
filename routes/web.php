@@ -51,19 +51,18 @@ Route::fallback(function () {
 
 Route::middleware(['auth.jwt'])->group(function () {
 
-    Route::post('logout', [AuthController::class, 'logOut'])->name('logout');
-
+    Route::post('/logout', [AuthController::class, 'logOut'])->name('logout');
     Route::delete('/buildings/{id}/remove-picture', [BuildingController::class, 'destroyImage'])->name('buildings.remove_picture');
     Route::delete('/building_documents/{id}', [BuildingController::class, 'removeDocument'])->name('building_documents.removeDocument');
-    Route::put('building_document/{id}', [BuildingController::class, 'updateDocument'])->name('building_document.update');
-    Route::get('building_document/{id}', [BuildingController::class, 'getDocument'])->name('building_document.edit');
+    Route::put('/building_document/{id}', [BuildingController::class, 'updateDocument'])->name('building_document.update');
+    Route::get('/building_document/{id}', [BuildingController::class, 'getDocument'])->name('building_document.edit');
 
-    Route::get('buildings/{id}/levels', [BuildingController::class, 'getLevels'])->name('buildings.levels');
+    Route::get('/buildings/{id}/levels', [BuildingController::class, 'getLevels'])->name('buildings.levels');
 
-    Route::delete('units/{id}/remove-picture', [BuildingUnitController::class, 'destroyImage'])->name('units.remove_picture');
+    Route::delete('/units/{id}/remove-picture', [BuildingUnitController::class, 'destroyImage'])->name('units.remove_picture');
 
-    Route::delete('organizations/{id}/remove-picture', [OrganizationController::class, 'destroyImage'])->name('organizations.remove_picture');
-    Route::get('organizations/{id}/buildings', [OrganizationController::class, 'getBuildings'])->name('organizations.buildings');
+    Route::delete('/organizations/{id}/remove-picture', [OrganizationController::class, 'destroyImage'])->name('organizations.remove_picture');
+    Route::get('/organizations/{id}/buildings', [OrganizationController::class, 'getBuildings'])->name('organizations.buildings');
 
 });
 
@@ -138,7 +137,7 @@ Route::prefix('admin')->middleware(['auth.jwt'])->group(function () {
         Route::get('/', [BuildingController::class, 'adminIndex'])->name('buildings.index');
         Route::get('/create', [BuildingController::class, 'adminCreate'])->name('buildings.create');
         Route::post('/', [BuildingController::class, 'adminStore'])->name('buildings.store');
-        Route::get('/{building}', [BuildingController::class, 'adminShow'])->name('buildings.show');
+        Route::get('/{building}/show', [BuildingController::class, 'adminShow'])->name('buildings.show');
         Route::get('/{building}/edit', [BuildingController::class, 'adminEdit'])->name('buildings.edit');
         Route::put('/', [BuildingController::class, 'adminUpdate'])->name('buildings.update');
         Route::delete('/{building}', [BuildingController::class, 'destroy'])->name('buildings.destroy');
@@ -149,13 +148,12 @@ Route::prefix('admin')->middleware(['auth.jwt'])->group(function () {
 
     Route::prefix('levels')->group(function () {
 
-        Route::get('/', [BuildingLevelController::class, 'index'])->name('levels.index');
-        Route::get('/create', [BuildingLevelController::class, 'create'])->name('levels.create');
-        Route::post('/', [BuildingLevelController::class, 'store'])->name('levels.store');
-        Route::get('/{level}', [BuildingLevelController::class, 'show'])->name('levels.show');
-        Route::get('/{level}/edit', [BuildingLevelController::class, 'edit'])->name('levels.edit');
-        Route::put('/{level}', [BuildingLevelController::class, 'update'])->name('levels.update');
-        Route::delete('/{level}', [BuildingLevelController::class, 'destroy'])->name('levels.destroy');
+        Route::get('/', [BuildingLevelController::class, 'adminIndex'])->name('levels.index');
+        Route::get('/create', [BuildingLevelController::class, 'adminCreate'])->name('levels.create');
+        Route::post('/', [BuildingLevelController::class, 'adminStore'])->name('levels.store');
+        Route::get('/{level}', [BuildingLevelController::class, 'adminShow'])->name('levels.show');
+        Route::get('/{level}/edit', [BuildingLevelController::class, 'adminEdit'])->name('levels.edit');
+        Route::put('/{level}', [BuildingLevelController::class, 'adminUpdate'])->name('levels.update');
 
     });
 
@@ -180,7 +178,6 @@ Route::prefix('admin')->middleware(['auth.jwt'])->group(function () {
         Route::get('/{organization}', [OrganizationController::class, 'show'])->name('organizations.show');
         Route::get('/{organization}/edit', [OrganizationController::class, 'edit'])->name('organizations.edit');
         Route::put('/{organization}', [OrganizationController::class, 'update'])->name('organizations.update');
-        Route::delete('/{organization}', [OrganizationController::class, 'destroy'])->name('organizations.destroy');
 
     });
 
@@ -216,11 +213,22 @@ Route::prefix('owner')->middleware(['auth.jwt'])->group(function () {
         Route::get('/create', [BuildingController::class, 'ownerCreate'])->name('owner.buildings.create');
         Route::post('/', [BuildingController::class, 'ownerStore'])->name('owner.buildings.store');
         Route::get('/tree', [BuildingTreeController::class, 'tree'])->name('owner.buildings.tree');
-        Route::get('/{building}', [BuildingController::class, 'ownerShow'])->name('owner.buildings.show');
+        Route::get('/{building}/show', [BuildingController::class, 'ownerShow'])->name('owner.buildings.show');
         Route::get('/{building}/edit', [BuildingController::class, 'ownerEdit'])->name('owner.buildings.edit');
         Route::put('/', [BuildingController::class, 'ownerUpdate'])->name('owner.buildings.update');
         Route::post('/submit', [BuildingController::class, 'submitBuilding'])->name('owner.buildings.submit');
         Route::post('/reminder', [BuildingController::class, 'approvalReminder'])->name('owner.buildings.reminder');
+
+    });
+
+    Route::prefix('levels')->group(function () {
+
+        Route::get('/', [BuildingLevelController::class, 'ownerIndex'])->name('owner.levels.index');
+        Route::get('/create', [BuildingLevelController::class, 'ownerCreate'])->name('owner.levels.create');
+        Route::post('/', [BuildingLevelController::class, 'ownerStore'])->name('owner.levels.store');
+        Route::get('/{level}', [BuildingLevelController::class, 'ownerShow'])->name('owner.levels.show');
+        Route::get('/{level}/edit', [BuildingLevelController::class, 'ownerEdit'])->name('owner.levels.edit');
+        Route::put('/{level}', [BuildingLevelController::class, 'ownerUpdate'])->name('owner.levels.update');
 
     });
 

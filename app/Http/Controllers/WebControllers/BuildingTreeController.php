@@ -40,7 +40,11 @@ class BuildingTreeController extends Controller
 
             $buildingId = $request->input('building_id') ?? $buildingsDropDown->keys()->first();
 
-            if ($buildingId && isset($buildingsDropDown[$buildingId])) {
+            if(!isset($buildingsDropDown[$buildingId])){
+                abort(404, 'Building Not Found');
+            }
+
+            if ($buildingId) {
                 $building = Building::with([
                     'address',
                     'pictures',
@@ -58,7 +62,7 @@ class BuildingTreeController extends Controller
             return view('Heights.Owner.Buildings.tree', compact('building', 'levels', 'units', 'owner', 'buildingsDropDown'));
         } catch (\Exception $e) {
             Log::error('Error in Building Tree : ' . $e->getMessage());
-            return back()->with('error', 'An error occurred, while loading the page.' . $e->getMessage());
+            return back()->with('error', 'An error occurred, while loading the page.');
         }
     }
 

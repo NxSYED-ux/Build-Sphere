@@ -297,7 +297,13 @@ class BuildingController extends Controller
     // Show Functions
     public function adminShow(Building $building)
     {
-        return $this->show('admin', $building);
+        $allowedStatuses = ['Approved', 'For Re-approval', 'Under Review'];
+
+        if (in_array($building->status, $allowedStatuses)) {
+            return $this->show('admin', $building);
+        }
+
+        abort(404, 'Page not found');
     }
 
     public function ownerShow(Building $building, Request $request)
@@ -357,12 +363,18 @@ class BuildingController extends Controller
     // Edit Functions
     public function adminEdit(Building $building)
     {
-        return $this->edit('admin', $building);
+        $allowedStatuses = ['Approved', 'For Re-approval', 'Under Review'];
+
+        if (in_array($building->status, $allowedStatuses)) {
+            return $this->edit('admin', $building);
+        }
+
+        abort(404, 'Page not found');
     }
 
     public function ownerEdit(Building $building, Request $request)
     {
-        $user = $request->user() ?? abort('404', 'Page not found');
+        $user = $request->user() ?? abort('404', 'Unauthorized.');
 
         $token = $request->attributes->get('token');
 
