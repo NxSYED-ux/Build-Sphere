@@ -153,7 +153,7 @@ Route::prefix('admin')->middleware(['auth.jwt'])->group(function () {
         Route::post('/', [BuildingLevelController::class, 'adminStore'])->name('levels.store');
         Route::get('/{level}', [BuildingLevelController::class, 'adminShow'])->name('levels.show');
         Route::get('/{level}/edit', [BuildingLevelController::class, 'adminEdit'])->name('levels.edit');
-        Route::put('/{level}', [BuildingLevelController::class, 'adminUpdate'])->name('levels.update');
+        Route::put('/update', [BuildingLevelController::class, 'adminUpdate'])->name('levels.update');
 
     });
 

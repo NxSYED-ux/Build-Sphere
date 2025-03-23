@@ -223,6 +223,7 @@
                     @method('PUT')
 
                     <input type="hidden" name="updated_at" id="edit_updated_at">
+                    <input type="hidden" name="level_id" id="edit_level_id">
                     <div class="modal-body">
                         <div class="row mb-4">
                             <div class="col-12">
@@ -346,7 +347,6 @@
     </script>
 
 
-    <!-- Value Type Scripts -->
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             // Show the 'Create Level' modal
@@ -411,6 +411,7 @@
                             if (data.message) {
                                 alert(data.message);
                             } else {
+                                document.getElementById("edit_level_id").value = data.level?.id || "";
                                 document.getElementById("edit_level_name").value = data.level?.level_name || "";
                                 document.getElementById("edit_description").value = data.level?.description || "";
                                 document.getElementById("edit_level_number").value = data.level?.level_number || "";

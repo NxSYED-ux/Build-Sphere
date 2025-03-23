@@ -151,17 +151,19 @@ class BuildingLevelController extends Controller
         return response()->json(['message' => 'Not found'], 404);
     }
 
-    public function update(Request $request, string $id)
+    public function adminUpdate(Request $request)
     {
         $validated = $request->validate([
+            'level_id' => 'required|integer|exists:buildinglevels,id',
             'level_name' => 'required|string|max:255',
             'description' => 'nullable|string',
             'level_number' => 'required|integer',
             'status' => 'required|string|in:Approved,Rejected',
             'building_id' => 'required|exists:buildings,id',
+            'updated_at' => 'required'
         ]);
 
-        $buildingLevel = BuildingLevel::findorfail($id);
+        $buildingLevel = BuildingLevel::findorfail($request->level_id);
 
         $buildingLevel->update([
             'level_name' => $request->level_name,

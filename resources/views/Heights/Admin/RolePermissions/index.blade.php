@@ -306,7 +306,7 @@
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    "X-CSRF-TOKEN": "{{ csrf_token() }}" // Ensure CSRF token is included
+                    "X-CSRF-TOKEN": "{{ csrf_token() }}"
                 },
                 body: JSON.stringify({ permission_id: permissionId, role_id: roleId, status: newStatus })
             })
