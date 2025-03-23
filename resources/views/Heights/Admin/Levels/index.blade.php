@@ -85,18 +85,18 @@
                                     <div class="card-body " style="overflow-x: auto;">
                                         <table id="LevelsTable" class="table shadow-sm table-hover table-striped">
                                             <thead class="shadow">
-                                                <tr>
-                                                    <th>ID</th>
-                                                    <th>Name</th>
-                                                    <th>Description</th>
-                                                    <th>Level Number</th>
-                                                    <th>Status</th>
-                                                    <th>Building</th>
-                                                    <th class="w-170 text-center">Actions</th>
-                                                </tr>
+                                            <tr>
+                                                <th>ID</th>
+                                                <th>Name</th>
+                                                <th>Description</th>
+                                                <th>Level Number</th>
+                                                <th>Status</th>
+                                                <th>Building</th>
+                                                <th class="w-170 text-center">Actions</th>
+                                            </tr>
                                             </thead>
                                             <tbody>
-                                                @forelse($levels ?? [] as $level)
+                                            @forelse($levels ?? [] as $level)
                                                 <tr>
                                                     <td>{{ $level->id }}</td>
                                                     <td>{{ $level->level_name }}</td>
@@ -113,11 +113,11 @@
                                                         </a>
                                                     </td>
                                                 </tr>
-                                                @empty
-                                                    <tr>
-                                                        <td colspan="7" class="text-center">No levels found.</td>
-                                                    </tr>
-                                                @endforelse
+                                            @empty
+                                                <tr>
+                                                    <td colspan="7" class="text-center">No levels found.</td>
+                                                </tr>
+                                            @endforelse
                                             </tbody>
                                         </table>
                                     </div>
@@ -222,7 +222,7 @@
                 <form id="editLevelForm" action="" method="POST">
                     @method('PUT')
 
-                    <input type="hidden" name="edit_updated_at" id="updated_at">
+                    <input type="hidden" name="updated_at" id="edit_updated_at">
                     <div class="modal-body">
                         <div class="row mb-4">
                             <div class="col-12">
@@ -360,24 +360,36 @@
             });
 
             function fetchBuildings() {
-                // AJAX request to get buildings
                 fetch("{{ route('levels.create') }}")
                     .then(response => response.json())
                     .then(data => {
                         const buildingSelect = document.getElementById('building_id');
-                        // Clear current options
                         buildingSelect.innerHTML = '<option value="" disabled selected>Select Building</option>';
 
-                        // Populate dropdown with new options from the response
-                        data.forEach(building => {
+                        if (!data || data.length === 0) {
                             const option = document.createElement('option');
-                            option.value = building.id;
-                            option.textContent = building.name;
+                            option.value = "";
+                            option.textContent = "No buildings available";
+                            option.disabled = true;
                             buildingSelect.appendChild(option);
+                            return;
+                        }
+
+                        data.forEach(building => {
+                            if (building && building.id && building.name) {
+                                const option = document.createElement('option');
+                                option.value = building.id;
+                                option.textContent = building.name;
+                                buildingSelect.appendChild(option);
+                            }
                         });
                     })
-                    .catch(error => console.error('Error fetching buildings:', error));
+                    .catch(error => {
+                        console.error('Error fetching buildings:', error);
+                        alert("Failed to fetch buildings. Please try again.");
+                    });
             }
+
 
 
             const editButtons = document.querySelectorAll(".edit_level_button");
@@ -399,19 +411,25 @@
                             if (data.message) {
                                 alert(data.message);
                             } else {
-                                document.getElementById("edit_level_name").value = data.level.level_name;
-                                document.getElementById("edit_description").value = data.level.description;
-                                document.getElementById("edit_level_number").value = data.level.level_number;
-                                document.getElementById("edit_status").value = data.level.status;
-                                document.getElementById("edit_updated_at").value = data.level.updated_at;
+                                document.getElementById("edit_level_name").value = data.level?.level_name || "";
+                                document.getElementById("edit_description").value = data.level?.description || "";
+                                document.getElementById("edit_level_number").value = data.level?.level_number || "";
+                                document.getElementById("edit_status").value = data.level?.status || "";
+                                document.getElementById("edit_updated_at").value = data.level?.updated_at || "";
 
                                 const buildingSelect = document.getElementById("edit_building_id");
                                 buildingSelect.innerHTML = `<option value="" disabled>Select Building</option>`;
 
-                                data.buildings.forEach(building => {
-                                    const isSelected = building.id === data.level.building_id ? 'selected' : '';
-                                    buildingSelect.innerHTML += `<option value="${building.id}" ${isSelected}>${building.name}</option>`;
-                                });
+                                if (Array.isArray(data.buildings) && data.buildings.length > 0) {
+                                    data.buildings.forEach(building => {
+                                        if (building && building.id && building.name) {
+                                            const isSelected = building.id === data.level?.building_id ? 'selected' : '';
+                                            buildingSelect.innerHTML += `<option value="${building.id}" ${isSelected}>${building.name}</option>`;
+                                        }
+                                    });
+                                } else {
+                                    buildingSelect.innerHTML += `<option value="" disabled>No buildings available</option>`;
+                                }
 
 
                                 // Set form action dynamically

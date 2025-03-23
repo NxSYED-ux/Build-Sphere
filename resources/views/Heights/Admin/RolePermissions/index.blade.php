@@ -233,20 +233,6 @@
                                                             </button>
                                                         </div>
 
-{{--                                                        <div class="d-flex justify-content-between align-items-center">--}}
-{{--                                                                            <span class="permission-name font-weight-medium d-inline-flex align-items-center">--}}
-{{--                                                                                <i class='bx bx-radio-circle' style="margin-right: 10px;"></i>--}}
-{{--                                                                                {{ $child['name'] }}--}}
-{{--                                                                            </span>--}}
-{{--                                                            <button class="toggle-btn {{ $child['status'] == 0 ? '' : 'active' }}"--}}
-{{--                                                                    data-permission-id="{{ $child['id'] }}"--}}
-{{--                                                                    data-role-id="{{ $roleId }}"--}}
-{{--                                                                    data-status="{{ $child['status'] }}"--}}
-{{--                                                                    onclick="togglePermission(this)">--}}
-{{--                                                                <div class="toggle-switch"></div>--}}
-{{--                                                            </button>--}}
-{{--                                                        </div>--}}
-
                                                         @if ($perm['children']->isNotEmpty())
                                                             <div class="row mt-1 px-1 py-2" style="border-top: 1px solid #e3e6f0;">
                                                                 @foreach ($perm['children'] as $child)
@@ -292,10 +278,35 @@
             let currentStatus = parseInt(button.getAttribute("data-status"), 10);
             let newStatus = currentStatus === 1 ? 0 : 1;
 
+            let parentContainer = button.closest('.border.rounded-4'); // Parent wrapper
+            let isChildPermission = button.closest('.row.mt-1'); // Check if it's a child
+            let parentButton = parentContainer ? parentContainer.querySelector('.toggle-btn') : null; // Find the parent button
+
+            // **Restrict activating child if parent is inactive**
+            if (isChildPermission && parentButton && parseInt(parentButton.getAttribute("data-status"), 10) === 0) {
+                Swal.fire({
+                    title: "Action Denied",
+                    text: "You cannot activate a child permission while the parent is inactive.",
+                    icon: "warning",
+                    confirmButtonText: 'OK',
+                    timer: 3000,
+                    timerProgressBar: true,
+                    background: getComputedStyle(document.documentElement).getPropertyValue('--swal-bg-color').trim(),
+                    color: getComputedStyle(document.documentElement).getPropertyValue('--swal-text-color').trim(),
+                    iconColor: getComputedStyle(document.documentElement).getPropertyValue('--swal-icon-warning-color').trim(),
+                    customClass: {
+                        popup: 'theme-swal-popup',
+                        confirmButton: 'theme-swal-button'
+                    }
+                });
+                return;
+            }
+
             fetch("{{ route('toggle.role.permission') }}", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
+                    "X-CSRF-TOKEN": "{{ csrf_token() }}" // Ensure CSRF token is included
                 },
                 body: JSON.stringify({ permission_id: permissionId, role_id: roleId, status: newStatus })
             })
@@ -305,30 +316,25 @@
                         button.setAttribute("data-status", newStatus);
                         button.classList.toggle("active", newStatus === 1);
 
-                        // If a parent is deactivated, also deactivate all child permissions
-                        if (newStatus === 0) {
-                            let childButtons = button.closest('.border.rounded-4').querySelectorAll('.toggle-btn');
+                        // **Parent Logic: If deactivated, deactivate all children**
+                        if (!isChildPermission && newStatus === 0) {
+                            let childButtons = parentContainer.querySelectorAll('.row.mt-1 .toggle-btn');
                             childButtons.forEach(childBtn => {
                                 childBtn.setAttribute("data-status", 0);
                                 childBtn.classList.remove("active");
                             });
                         }
 
-                        let title = "Success!";
-                        let text = newStatus === 1 ? "Permission assigned successfully" : "Permission removed successfully";
-                        let icon = "success";
-                        let iconColor = getComputedStyle(document.documentElement).getPropertyValue('--swal-icon-success-color').trim();
-
                         Swal.fire({
-                            title: title,
-                            text: text,
-                            icon: icon,
+                            title: "Success!",
+                            text: newStatus === 1 ? "Permission assigned successfully" : "Permission removed successfully",
+                            icon: "success",
                             confirmButtonText: 'OK',
                             timer: 3000,
                             timerProgressBar: true,
                             background: getComputedStyle(document.documentElement).getPropertyValue('--swal-bg-color').trim(),
                             color: getComputedStyle(document.documentElement).getPropertyValue('--swal-text-color').trim(),
-                            iconColor: iconColor,
+                            iconColor: getComputedStyle(document.documentElement).getPropertyValue('--swal-icon-success-color').trim(),
                             customClass: {
                                 popup: 'theme-swal-popup',
                                 confirmButton: 'theme-swal-button'
@@ -357,6 +363,8 @@
                     alert("An error occurred while updating the permission status.");
                 });
         }
+
+
 
         document.addEventListener("DOMContentLoaded", function () {
             document.querySelectorAll(".collapse").forEach((collapseElement) => {
