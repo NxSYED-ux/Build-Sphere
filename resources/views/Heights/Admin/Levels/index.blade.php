@@ -189,11 +189,6 @@
                                     <span class="required__field">*</span><br>
                                     <select class="form-select" id="building_id" name="building_id" value="{{ old('building_id') }}" required>
                                         <option value="" disabled {{ old('building_id') === null ? 'selected' : '' }}>Select Building</option>
-                                        @foreach($buildings as $building)
-                                            <option value="{{ $building->id }}" {{ old('building_id') == $building->id ? 'selected' : '' }}>
-                                                {{ $building->name }}
-                                            </option>
-                                        @endforeach
                                     </select>
                                     @error('building_id')
                                     <span class="invalid-feedback" role="alert">
@@ -226,6 +221,8 @@
                 </div><!-- The edit form will be loaded here via AJAX -->
                 <form id="editLevelForm" action="" method="POST">
                     @method('PUT')
+
+                    <input type="hidden" name="edit_updated_at" id="updated_at">
                     <div class="modal-body">
                         <div class="row mb-4">
                             <div class="col-12">
@@ -274,11 +271,7 @@
                                     <span class="required__field">*</span><br>
                                     <select class="form-select" id="edit_building_id" name="building_id" required>
                                         <option value="" disabled {{ old('building_id') === null ? 'selected' : '' }}>Select Building</option>
-                                        @foreach($buildings as $building)
-                                            <option value="{{ $building->id }}" {{ old('building_id') == $building->id ? 'selected' : '' }}>
-                                                {{ $building->name }}
-                                            </option>
-                                        @endforeach
+
                                     </select>
                                     @error('building_id')
                                     <span class="invalid-feedback" role="alert">
@@ -361,7 +354,31 @@
                 e.preventDefault();
                 let createModal = new bootstrap.Modal(document.getElementById("createLevelModal"));
                 createModal.show();
+
+                // Perform AJAX request to get buildings
+                fetchBuildings();
             });
+
+            function fetchBuildings() {
+                // AJAX request to get buildings
+                fetch("{{ route('levels.create') }}")
+                    .then(response => response.json())
+                    .then(data => {
+                        const buildingSelect = document.getElementById('building_id');
+                        // Clear current options
+                        buildingSelect.innerHTML = '<option value="" disabled selected>Select Building</option>';
+
+                        // Populate dropdown with new options from the response
+                        data.forEach(building => {
+                            const option = document.createElement('option');
+                            option.value = building.id;
+                            option.textContent = building.name;
+                            buildingSelect.appendChild(option);
+                        });
+                    })
+                    .catch(error => console.error('Error fetching buildings:', error));
+            }
+
 
             const editButtons = document.querySelectorAll(".edit_level_button");
 
@@ -382,11 +399,20 @@
                             if (data.message) {
                                 alert(data.message);
                             } else {
-                                document.getElementById("edit_level_name").value = data.level_name;
-                                document.getElementById("edit_description").value = data.description;
-                                document.getElementById("edit_level_number").value = data.level_number;
-                                document.getElementById("edit_status").value = data.status;
-                                document.getElementById("edit_building_id").value = data.building_id;
+                                document.getElementById("edit_level_name").value = data.level.level_name;
+                                document.getElementById("edit_description").value = data.level.description;
+                                document.getElementById("edit_level_number").value = data.level.level_number;
+                                document.getElementById("edit_status").value = data.level.status;
+                                document.getElementById("edit_updated_at").value = data.level.updated_at;
+
+                                const buildingSelect = document.getElementById("edit_building_id");
+                                buildingSelect.innerHTML = `<option value="" disabled>Select Building</option>`;
+
+                                data.buildings.forEach(building => {
+                                    const isSelected = building.id === data.level.building_id ? 'selected' : '';
+                                    buildingSelect.innerHTML += `<option value="${building.id}" ${isSelected}>${building.name}</option>`;
+                                });
+
 
                                 // Set form action dynamically
                                 const editForm = document.getElementById("editLevelForm");

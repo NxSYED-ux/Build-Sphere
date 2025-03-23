@@ -133,11 +133,20 @@ class BuildingLevelController extends Controller
         return view('Heights.Admin.Levels.show', compact('buildingLevel'));
     }
 
-    public function edit(BuildingLevel $level)
+    public function adminEdit(BuildingLevel $level)
     {
         $level->load(['building']);
+
         if ($level) {
-            return response()->json($level);
+            $buildings = Building::select('id', 'name')
+                ->whereNotIn('status', ['Under Processing', 'Under Review', 'Rejected'])
+                ->get();
+
+            return response()->json([
+                'level' => $level,
+                'buildings' => $buildings
+            ]);
+
         }
         return response()->json(['message' => 'Not found'], 404);
     }
