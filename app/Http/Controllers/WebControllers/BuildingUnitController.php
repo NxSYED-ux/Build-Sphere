@@ -395,10 +395,8 @@ class BuildingUnitController extends Controller
             }
 
             $userHasActiveContract = UserBuildingUnit::where('unit_id', $unit->id)
-                ->where('user_id', $user->id)
                 ->where('contract_status', 1)
                 ->exists();
-                Log::info("Current Status: {$unit->availability_status}, New Status: {$request->availability_status}");
 
             if ($userHasActiveContract && ($unit->availability_status !== $request->availability_status)) {
                 Log::error("Availability status error: ");
