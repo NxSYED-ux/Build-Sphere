@@ -187,7 +187,7 @@
                                 <div class="form-group mb-3">
                                     <label for="building_id">Building</label>
                                     <span class="required__field">*</span><br>
-                                    <select class="form-select" id="building_id" name="building_id" value="{{ old('building_id') }}" required>
+                                    <select class="form-select" id="building_id" name="building_id"  required>
                                         <option value="" disabled {{ old('building_id') === null ? 'selected' : '' }}>Select Building</option>
                                     </select>
                                     @error('building_id')
@@ -244,7 +244,7 @@
                                 <div class="form-group mb-3">
                                     <label for="level_number">Level Number</label>
                                     <span class="required__field">*</span><br>
-                                    <input type="number" name="level_number" id="edit_level_number" class="form-control @error('level_number') is-invalid @enderror" value="{{ old('level_number' ) }}" placeholder="Enter Level/Floor no" required>
+                                    <input type="number" name="level_number" id="edit_level_number" class="form-control @error('level_number') is-invalid @enderror" value="{{ old('level_number' ) }}" min="0" placeholder="Enter Level/Floor no" required>
                                     @error('level_number')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
@@ -414,7 +414,7 @@
                                 document.getElementById("edit_level_id").value = data.level?.id || "";
                                 document.getElementById("edit_level_name").value = data.level?.level_name || "";
                                 document.getElementById("edit_description").value = data.level?.description || "";
-                                document.getElementById("edit_level_number").value = data.level?.level_number || "";
+                                document.getElementById("edit_level_number").value = data.level.level_number !== undefined ? data.level.level_number : "";
                                 document.getElementById("edit_status").value = data.level?.status || "";
                                 document.getElementById("edit_updated_at").value = data.level?.updated_at || "";
 

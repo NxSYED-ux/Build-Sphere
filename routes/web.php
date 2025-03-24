@@ -17,7 +17,6 @@ use App\Http\Controllers\WebControllers\RoleController;
 use App\Http\Controllers\WebControllers\UsersController;
 use Illuminate\Support\Facades\Route;
 
-
 // Route for Pusher Authentication
 Route::post('/pusher/auth', [AuthController::class, 'authenticatePusher'])->name('pusher.auth');
 
@@ -51,6 +50,7 @@ Route::fallback(function () {
 
 Route::middleware(['auth.jwt'])->group(function () {
 
+    Route::get('/my-unit', function () { return view('Heights.Owner.Units.show'); });
     Route::post('/logout', [AuthController::class, 'logOut'])->name('logout');
     Route::delete('/buildings/{id}/remove-picture', [BuildingController::class, 'destroyImage'])->name('buildings.remove_picture');
     Route::delete('/building_documents/{id}', [BuildingController::class, 'removeDocument'])->name('building_documents.removeDocument');
@@ -190,7 +190,6 @@ Route::prefix('admin')->middleware(['auth.jwt'])->group(function () {
 
 });
 
-
 Route::prefix('owner')->middleware(['auth.jwt'])->group(function () {
 
     Route::prefix('dashboard')->group(function () {
@@ -229,6 +228,19 @@ Route::prefix('owner')->middleware(['auth.jwt'])->group(function () {
         Route::get('/{level}/show', [BuildingLevelController::class, 'show'])->name('owner.levels.show');
         Route::get('/{level}/edit', [BuildingLevelController::class, 'ownerEdit'])->name('owner.levels.edit');
         Route::put('/{level}', [BuildingLevelController::class, 'update'])->name('owner.levels.update');
+
+    });
+
+    Route::prefix('units')->group(function () {
+
+        Route::get('/', [BuildingUnitController::class, 'index'])->name('owner.units.index');
+        Route::get('/create', [BuildingUnitController::class, 'create'])->name('owner.units.create');
+        Route::post('/', [BuildingUnitController::class, 'store'])->name('owner.units.store');
+        Route::get('/{unit}', [BuildingUnitController::class, 'show'])->name('owner.units.show');
+        Route::get('/{unit}/edit', [BuildingUnitController::class, 'edit'])->name('owner.units.edit');
+        Route::put('/{unit}', [BuildingUnitController::class, 'update'])->name('owner.units.update');
+        Route::delete('/{unit}', [BuildingUnitController::class, 'destroy'])->name('owner.units.destroy');
+        Route::get('/details/{id}', [BuildingUnitController::class, 'getUnitData'])->name('owner.units.details');
 
     });
 

@@ -217,7 +217,7 @@ class BuildingLevelController extends Controller
 
         try {
             $buildingLevel = BuildingLevel::where([
-                ['id', '=', $request->building_id],
+                ['id', '=', $request->level_id],
                 ['updated_at', '=', $request->updated_at]
             ])->sharedLock()->first();
 

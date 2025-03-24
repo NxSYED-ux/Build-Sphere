@@ -9,6 +9,14 @@
         align-items: center;
     }
 
+    #navbar .container {
+        max-width: 1200px;
+        margin-left: auto;
+        margin-right: auto;
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+
     #navbar .application-logo {
         width: 62px;
         height: auto;

@@ -58,8 +58,8 @@
                     <div class="collapse {{ in_array('Buildings', $openSections) ? 'show' : '' }}" id="Buildings" style="">
                         <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
                             <li><a href="{{ route('owner.buildings.index') }}" class="link-dark {{ in_array('Building', $openSections) ? 'Link-background-color' : '' }}" data-bs-target="#Buildings "><i class="bx bx-buildings icons"></i> Buildings</a></li>
-                            <li><a href="" class="link-dark {{ in_array('Levels', $openSections) ? 'Link-background-color' : '' }}" data-bs-target="#AdminControl" ><i class="bx bxs-city icons"></i> Levels</a></li>
-                            <li><a href="" class="link-dark {{ in_array('Units', $openSections) ? 'Link-background-color' : '' }}" data-bs-target="#AdminControl" ><i class="bx bxs-home icons"></i> Units</a></li>
+                            <li><a href="{{ route('owner.levels.index') }}" class="link-dark {{ in_array('Levels', $openSections) ? 'Link-background-color' : '' }}" data-bs-target="#AdminControl" ><i class="bx bxs-city icons"></i> Levels</a></li>
+                            <li><a href="#" class="link-dark {{ in_array('Units', $openSections) ? 'Link-background-color' : '' }}" data-bs-target="#AdminControl" ><i class="bx bxs-home icons"></i> Units</a></li>
                         </ul>
                     </div>
 

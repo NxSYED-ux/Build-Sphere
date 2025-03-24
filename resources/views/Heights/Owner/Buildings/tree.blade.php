@@ -448,7 +448,7 @@
                             orientation: OrgChart.orientation.bottom,
                             template: "base",
                             collapse: {
-                                level: 1
+                                level: 2
                             }
                         }
                     },
@@ -464,7 +464,7 @@
                             orientation: OrgChart.orientation.top,
                             template: "base",
                             collapse: {
-                                level: 1
+                                level: 2
                             }
                         },
                     },
@@ -472,7 +472,7 @@
                         subTreeConfig: {
                             layout: OrgChart.treeRightOffset,
                             collapse: {
-                                level: 1
+                                level: 2
                             }
                         },
                     },

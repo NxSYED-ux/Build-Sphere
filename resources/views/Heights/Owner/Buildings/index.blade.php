@@ -130,7 +130,7 @@
                                                         @else
                                                         <a href="{{ route('owner.buildings.show', ['building' => $building->id]) }}" class="text-info" title="View"><i class="fa fa-eye mx-2" style="font-size: 20px;margin-right:5px;;"></i></a>
                                                         @endif
-                                                        <a href="{{ route('levels.index', ['building_id' => $building->id]) }}" class="text-" title="View Levels"><i class="bx bxs-city icons" style="font-size: 20px;margin-right:5px; color: grey;"></i></a>
+                                                        <a href="{{ route('owner.levels.index', ['building_id' => $building->id]) }}" class="text-" title="View Levels"><i class="bx bxs-city icons" style="font-size: 20px;margin-right:5px; color: grey;"></i></a>
                                                         <a href="{{ route('owner.buildings.edit', $building->id) }}" class="text-warning"  title="Edit">
                                                             <i class="fa fa-pencil mx-2" style="font-size: 20px;"></i>
                                                         </a>
