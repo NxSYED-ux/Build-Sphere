@@ -365,7 +365,7 @@ class BuildingUnitController extends Controller
                 'max:255',
                 Rule::unique('buildingunits')->where(function ($query) use ($request) {
                     return $query->where('building_id', $request->building_id);
-                }),
+                })->ignore($unit->id),
             ],
             'unit_type' => 'required|string',
             'price' => 'required|numeric',
@@ -375,6 +375,7 @@ class BuildingUnitController extends Controller
             'availability_status' => 'required|string',
             'level_id' => 'required|integer',
             'building_id' => 'required|integer',
+            'updated_at' => 'required',
             'unit_pictures.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ],[
             'unit_name.unique' => 'This unit name is already in use for the selected building.',
@@ -383,6 +384,16 @@ class BuildingUnitController extends Controller
         DB::beginTransaction();
 
         try {
+            $unitCheck = Building::where([
+                ['id', '=', $unit->id],
+                ['updated_at', '=', $request->updated_at]
+            ])->sharedLock()->first();
+
+            if (!$unitCheck) {
+                DB::rollBack();
+                return redirect()->back()->with('error', 'Please refresh the page and try again.');
+            }
+
             $userHasActiveContract = UserBuildingUnit::where('unit_id', $unit->id)
                 ->where('user_id', $user->id)
                 ->where('contract_status', 1)

@@ -492,7 +492,6 @@ class BuildingController extends Controller
             if (!$building) {
                 DB::rollBack();
                 return redirect()->back()->with('error', 'Please refresh the page and try again.');
-//                return $this->handleResponse($request,404,'error','Please refresh the page and try again.');
             }
 
             $address = Address::findOrFail($building->address_id);
