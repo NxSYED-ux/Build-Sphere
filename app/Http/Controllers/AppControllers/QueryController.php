@@ -84,7 +84,7 @@ class QueryController extends Controller
                 'status' => 1,
                 'accept_queries' => 1
             ])
-                ->select('id', 'active_load')
+                ->select('id', 'active_load', 'organization_id')
                 ->orderBy('active_load', 'asc')
                 ->lockForUpdate()
 //                ->skipLocked()  // Skip Locked is not in the Laravel
@@ -119,10 +119,6 @@ class QueryController extends Controller
             }
 
             DB::commit();
-
-            Log::info('Organization Id: ' . $staffMember->organization_id);
-            $orgId = $staffMember->organization_id;
-            Log::info('Org Id: ' . $orgId);
 
             dispatch(new SpecificStaffNotification(
                 $orgId,
