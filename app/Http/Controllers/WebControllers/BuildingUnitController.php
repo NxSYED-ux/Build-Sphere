@@ -212,7 +212,6 @@ class BuildingUnitController extends Controller
             'description' => 'nullable|string',
             'sale_or_rent' => 'required|string',
             'area' => 'nullable|numeric',
-            'availability_status' => 'required|string',
             'level_id' => 'required|integer',
             'building_id' => 'required|integer',
             'unit_pictures.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
@@ -231,7 +230,6 @@ class BuildingUnitController extends Controller
                 'description' => $request->description,
                 'sale_or_rent' => $request->sale_or_rent,
                 'area' => $request->area,
-                'availability_status' => $request->availability_status,
                 'level_id' => $request->level_id,
                 'building_id' => $request->building_id,
                 'organization_id' => $organization_id,
@@ -321,15 +319,15 @@ class BuildingUnitController extends Controller
     }
 
 
-    public function adminUpdate(Request $request, BuildingUnit $unit)
+    public function adminUpdate(Request $request)
     {
         $request->validate([
             'organization_id' => 'required|exists:organizations,id',
         ]);
-        return $this->update($request, $unit, 'admin',$request->organization_id,'Approved');
+        return $this->update($request, 'admin',$request->organization_id,'Approved');
     }
 
-    public function ownerUpdate(Request $request, BuildingUnit $unit)
+    public function ownerUpdate(Request $request)
     {
         $user = $request->user() ?? abort(403, 'Unauthorized');
         $token = $request->attributes->get('token');
@@ -341,36 +339,32 @@ class BuildingUnitController extends Controller
         $organization_id = $token['organization_id'];
         $role_name = $token['role_name'];
 
-        if ($organization_id !== $unit->organization_id) {
-            abort(404, 'Page not found');
-        }
-
         if ($role_name === 'Manager' && !ManagerBuilding::where('building_id', $request->building_id)
                 ->where('user_id', $user->id)
                 ->exists()) {
-            return redirect()->back()->withInput()->with('error', 'You do not have access to add units of the selected building.');
+            return redirect()->back()->withInput()->with('error', 'You do not have access to update units of the selected building.');
         }
 
-        return $this->update($request, $unit, 'owner', $organization_id,'Rejected');
+        return $this->update($request, 'owner', $organization_id,'Rejected');
     }
 
-    private function update(Request $request, BuildingUnit $unit, String $portal, $organization_id, $status)
+    private function update(Request $request, String $portal, $organization_id, $status)
     {
         $request->validate([
+            'unit_id' => 'required|exists:units,id',
             'unit_name' => [
                 'required',
                 'string',
                 'max:255',
                 Rule::unique('buildingunits')->where(function ($query) use ($request) {
                     return $query->where('building_id', $request->building_id);
-                })->ignore($unit->id),
+                })->ignore($request->unit_id),
             ],
             'unit_type' => 'required|string',
             'price' => 'required|numeric',
             'description' => 'nullable|string',
             'sale_or_rent' => 'required|string',
             'area' => 'nullable|numeric',
-            'availability_status' => 'required|string',
             'level_id' => 'required|integer',
             'building_id' => 'required|integer',
             'updated_at' => 'required',
@@ -382,23 +376,14 @@ class BuildingUnitController extends Controller
         DB::beginTransaction();
 
         try {
-            $unitCheck = BuildingUnit::where([
-                ['id', '=', $unit->id],
+            $unit = BuildingUnit::where([
+                ['id', '=', $request->unit_id],
                 ['updated_at', '=', $request->updated_at]
             ])->sharedLock()->first();
 
-            if (!$unitCheck) {
+            if (!$unit) {
                 DB::rollBack();
                 return redirect()->back()->with('error', 'Please refresh the page and try again.');
-            }
-
-            $userHasActiveContract = UserBuildingUnit::where('unit_id', $unit->id)
-                ->where('contract_status', 1)
-                ->exists();
-
-            if ($userHasActiveContract && ($unit->availability_status !== $request->availability_status)) {
-                DB::rollBack();
-                return redirect()->back()->with('error', 'You cannot change the availability status of this unit because this unit is currently in a contract.');
             }
 
             $unit->update([
@@ -408,7 +393,6 @@ class BuildingUnitController extends Controller
                 'description' => $request->description,
                 'sale_or_rent' => $request->sale_or_rent,
                 'area' => $request->area,
-                'availability_status' => $request->availability_status,
                 'level_id' => $request->level_id,
                 'building_id' => $request->building_id,
                 'organization_id' => $organization_id,
@@ -458,6 +442,7 @@ class BuildingUnitController extends Controller
 
         return response()->json(['success' => true]);
     }
+
 
     public function getUnitData(string $id)
     {
