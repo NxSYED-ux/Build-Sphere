@@ -11,12 +11,12 @@
         }
 
         /* Permission Header */
-         .permission-header {
-             background-color: var(--permission-header-bg) !important;
-             padding: 15px;
-             border-radius: 8px;
-             border-bottom: 2px solid #ddd;
-         }
+        .permission-header {
+            background-color: var(--permission-header-bg) !important;
+            padding: 15px;
+            border-radius: 8px;
+            border-bottom: 2px solid #ddd;
+        }
 
         .permission-header-text {
             font-weight: bold;
@@ -130,10 +130,6 @@
 
         .card-body {
             padding: 1.5rem 1.5rem 0 1.5rem;
-            /*padding-top: 1.5rem;*/
-            /*padding-left: 1.5rem;*/
-            /*padding-right: 1.5rem;*/
-            /*padding-bottom: 0.5rem;*/
             background-color: var(--permission-card-bg-color);
         }
 
@@ -225,7 +221,7 @@
                                         <div class="collapse show" id="collapse-{{ Str::slug($header) }}">
                                             <div class="row">
                                                 @foreach ($perms ?? [] as $perm)
-                                                    <div class="col-md-12 mb-2 border rounded-4 shadow-sm" style="">
+                                                    <div class="col-md-12 mb-2 border rounded-4 shadow-sm parent">
                                                         <div class="permission-item d-flex justify-content-between align-items-center px-2">
                                                             <span class="permission-name font-weight-medium  d-inline-flex align-items-center">{{ $perm['name'] }}</span>
                                                             <button class="toggle-btn {{ $perm['status'] == 0 ? '' : 'active' }}"
@@ -238,7 +234,7 @@
                                                         </div>
 
                                                         @if ($perm['children']->isNotEmpty())
-                                                            <div class="row px-1 pt-2 pb-1" style="border-top: 1px solid #e3e6f0;">
+                                                            <div class="row  px-1 pt-2 pb-1 child" style="border-top: 1px solid #e3e6f0;">
                                                                 @foreach ($perm['children'] as $child)
                                                                     <div class="col-12 pb-2">
                                                                         <div class="d-flex justify-content-between align-items-center">
@@ -246,7 +242,7 @@
                                                                                 <i class='bx bx-radio-circle' style="margin-right: 10px;"></i>
                                                                                 {{ $child['name'] }}
                                                                             </span>
-                                                                            <button class="toggle-btn my-1 {{ $child['status'] == 0 ? '' : 'active' }}"
+                                                                            <button class="toggle-btn my-1 {{ $child['status'] == 0 ? '' : 'active' }}" style="margin-right: 5px;"
                                                                                     data-permission-id="{{ $child['id'] }}"
                                                                                     data-role-id="{{ $roleId }}"
                                                                                     data-status="{{ $child['status'] }}"
@@ -282,8 +278,8 @@
             let currentStatus = parseInt(button.getAttribute("data-status"), 10);
             let newStatus = currentStatus === 1 ? 0 : 1;
 
-            let parentContainer = button.closest('.border.rounded-4'); // Parent wrapper
-            let isChildPermission = button.closest('.row.mt-1'); // Check if it's a child
+            let parentContainer = button.closest('.parent'); // Parent wrapper
+            let isChildPermission = button.closest('.child'); // Check if it's a child
             let parentButton = parentContainer ? parentContainer.querySelector('.toggle-btn') : null; // Find the parent button
 
             // **Restrict activating child if parent is inactive**
@@ -322,7 +318,7 @@
 
                         // **Parent Logic: If deactivated, deactivate all children**
                         if (!isChildPermission && newStatus === 0) {
-                            let childButtons = parentContainer.querySelectorAll('.row.mt-1 .toggle-btn');
+                            let childButtons = parentContainer.querySelectorAll('.child .toggle-btn');
                             childButtons.forEach(childBtn => {
                                 childBtn.setAttribute("data-status", 0);
                                 childBtn.classList.remove("active");

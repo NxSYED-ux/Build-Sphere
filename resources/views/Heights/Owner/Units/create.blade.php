@@ -29,6 +29,7 @@
         font-weight: bold;
         margin-bottom: 10px;
         transition: background-color 0.3s ease;
+        position: relative;
     }
 
     .image-input-container .custom-file-label:hover {
@@ -42,15 +43,31 @@
         gap: 10px;
         justify-content: center;
         align-items: center;
-        border: 2px dashed #6c63ff;
+        border: 2px dashed var(--sidenavbar-text-color);
         border-radius: 10px;
         padding: 15px;
         height: 275px;
-        background-color: #fff;
+        background-color: var(--main-background-color);
         margin-top: 10px;
         overflow-y: auto;
         text-align: center;
     }
+
+    .image-input-container .image-preview::-webkit-scrollbar {
+        width: 5px;
+        position: absolute;
+        right: -2px;
+    }
+
+    .image-input-container .image-preview::-webkit-scrollbar-thumb {
+        background-color: var(--sidenavbar-text-color);
+        border-radius: 10px;
+    }
+
+    .image-input-container .image-preview::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
 
 
     /* No images selected message */
