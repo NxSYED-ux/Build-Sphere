@@ -105,7 +105,35 @@ class BuildingLevelController extends Controller
         return response()->json($buildings);
     }
 
-    public function store(Request $request)
+
+    public function adminStore(Request $request)
+    {
+        $request->validate([
+            'organization_id' => 'required|exists:organizations,id',
+        ]);
+        return $this->store($request, 'admin','Approved');
+    }
+
+    public function ownerStore(Request $request)
+    {
+        $user = $request->user() ?? abort(403, 'Unauthorized');
+        $token = $request->attributes->get('token');
+
+        if (!$token || !isset($token['organization_id']) || !isset($token['role_name'])) {
+            return redirect()->back()->withInput()->with('error', 'You cannot perform this action because they are not linked to any organization. Please switch to an organization account to proceed.');
+        }
+
+        $role_name = $token['role_name'];
+
+        if ($role_name === 'Manager' && !ManagerBuilding::where('building_id', $request->building_id)
+                ->where('user_id', $user->id)
+                ->exists()) {
+            return redirect()->back()->withInput()->with('error', 'You do not have access to add units of the selected building.');
+        }
+
+        return $this->store($request, 'owner','Rejected');
+    }
+    private function store(Request $request, String $portal, $status)
     {
         $validated = $request->validate([
             'level_name' => [
@@ -118,7 +146,6 @@ class BuildingLevelController extends Controller
             ],
             'description' => 'nullable|string',
             'level_number' => 'required|integer',
-            'status' => 'required|string|in:Approved,Rejected',
             'building_id' => 'required|exists:buildings,id',
         ], [
             'level_name.unique' => 'This level name is already in use for the selected building.',
@@ -196,7 +223,36 @@ class BuildingLevelController extends Controller
         }
     }
 
-    public function update(Request $request)
+
+    public function adminUpdate(Request $request)
+    {
+        $request->validate([
+            'status' => 'required|string|in:Approved,Rejected',
+        ]);
+        return $this->update($request, 'admin');
+    }
+
+    public function ownerUpdate(Request $request)
+    {
+        $user = $request->user() ?? abort(403, 'Unauthorized');
+        $token = $request->attributes->get('token');
+
+        if (!$token || !isset($token['organization_id']) || !isset($token['role_name'])) {
+            return redirect()->back()->withInput()->with('error', 'You cannot perform this action because they are not linked to any organization. Please switch to an organization account to proceed.');
+        }
+
+        $role_name = $token['role_name'];
+
+        if ($role_name === 'Manager' && !ManagerBuilding::where('building_id', $request->building_id)
+                ->where('user_id', $user->id)
+                ->exists()) {
+            return redirect()->back()->withInput()->with('error', 'You do not have access to add units of the selected building.');
+        }
+
+        return $this->update($request, 'owner');
+    }
+
+    private function update(Request $request, String $portal)
     {
         $request->validate([
             'level_id' => 'required|integer|exists:buildinglevels,id',
@@ -211,7 +267,6 @@ class BuildingLevelController extends Controller
             ],
             'description' => 'nullable|string',
             'level_number' => 'required|integer',
-            'status' => 'required|string|in:Approved,Rejected',
             'updated_at' => 'required'
         ]);
 
@@ -229,7 +284,7 @@ class BuildingLevelController extends Controller
                 'level_name' => $request->level_name,
                 'description' => $request->description,
                 'level_number' => $request->level_number,
-                'status' => $request->status,
+                'status' => $request->status ?? $buildingLevel->status,
                 'building_id' => $request->building_id,
             ]);
 
