@@ -50,6 +50,8 @@ class SpecificStaffNotification implements ShouldQueue
             ->where('id', $this->staffId)
             ->first();
 
+        Log::info('Staff : ' . $staffMember->name);
+
         if ($staffMember) {
             $user = User::find($staffMember->user_id);
             if ($user) {
