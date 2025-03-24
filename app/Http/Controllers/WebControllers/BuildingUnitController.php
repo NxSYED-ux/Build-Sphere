@@ -373,7 +373,7 @@ class BuildingUnitController extends Controller
     private function update(Request $request, String $portal, $organization_id, $status)
     {
         $request->validate([
-            'unit_id' => 'required|exists:units,id',
+            'unit_id' => 'required|exists:buildingunits,id',
             'unit_name' => [
                 'required',
                 'string',
