@@ -57,12 +57,13 @@
                                 <div class="card shadow p-3 mb-5 bg-body rounded" style="border: none;">
                                     <div class="card-body " >
 
-                                        <form action="{{ route('units.update', $unit->id) }}" method="POST" enctype="multipart/form-data">
+                                        <form action="{{ route('units.update') }}" method="POST" enctype="multipart/form-data">
                                         @method('PUT')
+                                            <input type="hidden" name="unit_id" value="{{ $unit->id }}">
                                             <input type="hidden" name="updated_at" value="{{ $unit->updated_at }}">
                                             <div class="row my-0 py-0">
                                                 <div class="col-sm-12 col-md-6 col-lg-4">
-                                                    <div class="form-group mb-3">
+                                                    <div class="form-group mb-2">
                                                         <label for="unit_name">Unit Name</label>
                                                         <span class="required__field">*</span><br>
                                                         <input type="text" name="unit_name" id="unit_name" class="form-control @error('unit_name') is-invalid @enderror" value="{{ old('unit_name', $unit->unit_name) }}" maxlength="50" placeholder="User Name" required>
@@ -76,7 +77,7 @@
 
                                                 <!--  -->
                                                 <div class="col-lg-4 col-md-6 col-sm-12">
-                                                    <div class="form-group">
+                                                    <div class="form-group mb-2">
                                                         <label for="unit_type">Unit Type</label>
                                                         <span class="required__field">*</span><br>
                                                         <select name="unit_type" id="unit_type" class="form-select" required>
@@ -96,7 +97,7 @@
 
                                                 <!--  -->
                                                 <div class="col-lg-4 col-md-6 col-sm-12">
-                                                    <div class="form-group">
+                                                    <div class="form-group mb-2">
                                                         <label for="sale_or_rent">Sale or Rent</label>
                                                         <span class="required__field">*</span><br>
                                                         <select name="sale_or_rent" id="sale_or_rent" class="form-select" required>
@@ -113,27 +114,27 @@
                                                 </div>
 
                                                 <!--  -->
-                                                <div class="col-lg-4 col-md-6 col-sm-12">
-                                                    <div class="form-group">
-                                                        <label for="availability_status">Availability Status</label>
-                                                        <span class="required__field">*</span><br>
-                                                        <select name="availability_status" id="availability_status" class="form-select" required>
-                                                            <option value="Available" {{ old('availability_status', $unit->availability_status) == 'Available' ? 'selected' : '' }}>Available</option>
-                                                            <option value="Rented" {{ old('availability_status', $unit->availability_status) == 'Rented' ? 'selected' : '' }}>Rented</option>
-                                                            <option value="Sold" {{ old('availability_status', $unit->availability_status) == 'Sold' ? 'selected' : '' }}>Sold</option>
-                                                            <option value="Not Available" {{ old('availability_status', $unit->availability_status) == 'Not Available' ? 'selected' : '' }}>Not Available</option>
-                                                        </select>
-                                                        @error('availability_status')
-                                                        <span class="invalid-feedback" role="alert">
-                                                                <strong>{{ $message }}</strong>
-                                                            </span>
-                                                        @enderror
-                                                    </div>
-                                                </div>
+{{--                                                <div class="col-lg-4 col-md-6 col-sm-12">--}}
+{{--                                                    <div class="form-group mb-2">--}}
+{{--                                                        <label for="availability_status">Availability Status</label>--}}
+{{--                                                        <span class="required__field">*</span><br>--}}
+{{--                                                        <select name="availability_status" id="availability_status" class="form-select" required>--}}
+{{--                                                            <option value="Available" {{ old('availability_status', $unit->availability_status) == 'Available' ? 'selected' : '' }}>Available</option>--}}
+{{--                                                            <option value="Rented" {{ old('availability_status', $unit->availability_status) == 'Rented' ? 'selected' : '' }}>Rented</option>--}}
+{{--                                                            <option value="Sold" {{ old('availability_status', $unit->availability_status) == 'Sold' ? 'selected' : '' }}>Sold</option>--}}
+{{--                                                            <option value="Not Available" {{ old('availability_status', $unit->availability_status) == 'Not Available' ? 'selected' : '' }}>Not Available</option>--}}
+{{--                                                        </select>--}}
+{{--                                                        @error('availability_status')--}}
+{{--                                                        <span class="invalid-feedback" role="alert">--}}
+{{--                                                                <strong>{{ $message }}</strong>--}}
+{{--                                                            </span>--}}
+{{--                                                        @enderror--}}
+{{--                                                    </div>--}}
+{{--                                                </div>--}}
 
                                                 <!--  -->
                                                 <div class="col-sm-12 col-md-6 col-lg-4">
-                                                    <div class="form-group mb-3">
+                                                    <div class="form-group mb-2">
                                                         <label for="price">Price</label>
                                                         <span class="required__field">*</span><br>
                                                         <input type="number" name="price" id="price" class="form-control @error('price') is-invalid @enderror" value="{{ old('price', $unit->price) }}" placeholder="Enter unit price" required>
@@ -147,7 +148,7 @@
 
                                                  <!--  -->
                                                  <div class="col-sm-12 col-md-6 col-lg-4">
-                                                    <div class="form-group mb-3">
+                                                    <div class="form-group mb-2">
                                                         <label for="area">Area</label>
                                                         <span class="required__field">*</span><br>
                                                         <input type="number" name="area" id="area" class="form-control @error('area') is-invalid @enderror" value="{{ old('area', $unit->area) }}" placeholder="1234" required>
@@ -161,7 +162,7 @@
 
                                                 <!--  -->
                                                 <div class="col-sm-12 col-md-6 col-lg-4">
-                                                    <div class="form-group mb-3">
+                                                    <div class="form-group mb-2">
                                                         <label for="description">Description</label>
                                                         <input type="text" name="description" id="description" class="form-control @error('description') is-invalid @enderror" value="{{ old('description', $unit->description) }}" maxlength="50" placeholder="Description">
                                                         @error('description')
@@ -174,7 +175,7 @@
 
                                                 <!-- Organization Dropdown -->
                                                 <div class="col-sm-12 col-md-6 col-lg-4">
-                                                    <div class="form-group mb-3">
+                                                    <div class="form-group mb-2">
                                                         <label for="organization_id">Organization</label>
                                                         <span class="required__field">*</span><br>
                                                         <select class="form-select" id="organization_id" name="organization_id" required>
@@ -195,7 +196,7 @@
 
                                                 <!-- Building Dropdown -->
                                                 <div class="col-sm-12 col-md-6 col-lg-4">
-                                                    <div class="form-group mb-3">
+                                                    <div class="form-group mb-2">
                                                         <label for="building_id">Building</label>
                                                         <span class="required__field">*</span><br>
                                                         <select class="form-select" id="building_id" name="building_id" required>
@@ -211,7 +212,7 @@
 
                                                 <!-- Level Dropdown -->
                                                 <div class="col-sm-12 col-md-6 col-lg-4">
-                                                    <div class="form-group mb-3">
+                                                    <div class="form-group mb-2">
                                                         <label for="level_id">Level</label>
                                                         <span class="required__field">*</span><br>
                                                         <select class="form-select" id="level_id" name="level_id" required>
@@ -227,7 +228,7 @@
 
 
                                                 <div class="col-lg-4 col-md-6 col-sm-12">
-                                                    <div class="form-group">
+                                                    <div class="form-group mb-2">
                                                         <label for="status">Status</label>
                                                         <span class="required__field">*</span><br>
                                                         <select name="status" id="status" class="form-select" required>

@@ -183,24 +183,24 @@
                                                     </div>
 
                                                     <!--  -->
-                                                    <div class="col-lg-6 col-md-6 col-sm-12">
-                                                        <div class="form-group mb-3">
-                                                            <label for="availability_status">Availability Status</label>
-                                                            <span class="required__field">*</span><br>
-                                                            <select name="availability_status" id="availability_status" class="form-select" required>
-                                                                <option value="" selected>Select Availability Status</option>
-                                                                <option value="available" {{ old('availability_status') == 'available' ? 'selected' : '' }}>Available</option>
-                                                                <option value="rented" {{ old('availability_status') == 'rented' ? 'selected' : '' }}>Rented</option>
-                                                                <option value="sold" {{ old('availability_status') == 'sold' ? 'selected' : '' }}>Sold</option>
-                                                                <option value="not available" {{ old('availability_status') == 'not available' ? 'selected' : '' }}>Not Available</option>
-                                                            </select>
-                                                            @error('availability_status')
-                                                            <span class="invalid-feedback" role="alert">
-                                                                        <strong>{{ $message }}</strong>
-                                                                    </span>
-                                                            @enderror
-                                                        </div>
-                                                    </div>
+{{--                                                    <div class="col-lg-6 col-md-6 col-sm-12">--}}
+{{--                                                        <div class="form-group mb-3">--}}
+{{--                                                            <label for="availability_status">Availability Status</label>--}}
+{{--                                                            <span class="required__field">*</span><br>--}}
+{{--                                                            <select name="availability_status" id="availability_status" class="form-select" required>--}}
+{{--                                                                <option value="" selected>Select Availability Status</option>--}}
+{{--                                                                <option value="available" {{ old('availability_status') == 'available' ? 'selected' : '' }}>Available</option>--}}
+{{--                                                                <option value="rented" {{ old('availability_status') == 'rented' ? 'selected' : '' }}>Rented</option>--}}
+{{--                                                                <option value="sold" {{ old('availability_status') == 'sold' ? 'selected' : '' }}>Sold</option>--}}
+{{--                                                                <option value="not available" {{ old('availability_status') == 'not available' ? 'selected' : '' }}>Not Available</option>--}}
+{{--                                                            </select>--}}
+{{--                                                            @error('availability_status')--}}
+{{--                                                            <span class="invalid-feedback" role="alert">--}}
+{{--                                                                        <strong>{{ $message }}</strong>--}}
+{{--                                                                    </span>--}}
+{{--                                                            @enderror--}}
+{{--                                                        </div>--}}
+{{--                                                    </div>--}}
 
                                                     <!--  -->
                                                     <div class="col-sm-12 col-md-6 col-lg-6">
@@ -294,9 +294,8 @@
                                                 </div>
                                             </div>
                                         </div>
-
                                         <input type="hidden" name="status" value="Approved">
-                                        <button type="submit" class="btn btn-primary">Save</button>
+                                        <button type="submit" class="btn btn-primary w-100">Save</button>
                                     </form>
                                 </div>
                             </div>
@@ -319,6 +318,13 @@
 
     imageInput.addEventListener('change', () => {
         const files = imageInput.files;
+
+        if (files.length > 4) {
+            alert('You can only select up to 4 images.');
+            imageInput.value = ''; // Clear input
+            return;
+        }
+
         imagePreview.innerHTML = ''; // Clear any previous content
 
         if (files.length > 0) {

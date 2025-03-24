@@ -163,7 +163,7 @@ Route::prefix('admin')->middleware(['auth.jwt'])->group(function () {
         Route::post('/', [BuildingUnitController::class, 'adminStore'])->name('units.store');
         Route::get('/{unit}/show', [BuildingUnitController::class, 'adminShow'])->name('units.show');
         Route::get('/{unit}/edit', [BuildingUnitController::class, 'adminEdit'])->name('units.edit');
-        Route::put('/{unit}', [BuildingUnitController::class, 'adminUpdate'])->name('units.update');
+        Route::put('/', [BuildingUnitController::class, 'adminUpdate'])->name('units.update');
         Route::get('/details/{id}', [BuildingUnitController::class, 'getUnitData'])->name('units.details');
 
     });
@@ -237,7 +237,7 @@ Route::prefix('owner')->middleware(['auth.jwt'])->group(function () {
         Route::post('/', [BuildingUnitController::class, 'ownerStore'])->name('owner.units.store');
         Route::get('/{unit}/show', [BuildingUnitController::class, 'ownerShow'])->name('owner.units.show');
         Route::get('/{unit}/edit', [BuildingUnitController::class, 'ownerEdit'])->name('owner.units.edit');
-        Route::put('/{unit}', [BuildingUnitController::class, 'ownerUpdate'])->name('owner.units.update');
+        Route::put('/', [BuildingUnitController::class, 'ownerUpdate'])->name('owner.units.update');
         Route::get('/details/{id}', [BuildingUnitController::class, 'getUnitData'])->name('owner.units.details');
 
     });

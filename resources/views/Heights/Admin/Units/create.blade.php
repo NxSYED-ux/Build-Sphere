@@ -182,24 +182,24 @@
                                                         </div>
 
                                                         <!--  -->
-                                                        <div class="col-lg-6 col-md-6 col-sm-12">
-                                                            <div class="form-group mb-3">
-                                                                <label for="availability_status">Availability Status</label>
-                                                                <span class="required__field">*</span><br>
-                                                                <select name="availability_status" id="availability_status" class="form-select" required>
-                                                                    <option value="" selected>Select Availability Status</option>
-                                                                    <option value="available" {{ old('availability_status') == 'available' ? 'selected' : '' }}>Available</option>
-                                                                    <option value="rented" {{ old('availability_status') == 'rented' ? 'selected' : '' }}>Rented</option>
-                                                                    <option value="sold" {{ old('availability_status') == 'sold' ? 'selected' : '' }}>Sold</option>
-                                                                    <option value="not available" {{ old('availability_status') == 'not available' ? 'selected' : '' }}>Not Available</option>
-                                                                </select>
-                                                                @error('availability_status')
-                                                                    <span class="invalid-feedback" role="alert">
-                                                                        <strong>{{ $message }}</strong>
-                                                                    </span>
-                                                                @enderror
-                                                            </div>
-                                                        </div>
+{{--                                                        <div class="col-lg-6 col-md-6 col-sm-12">--}}
+{{--                                                            <div class="form-group mb-3">--}}
+{{--                                                                <label for="availability_status">Availability Status</label>--}}
+{{--                                                                <span class="required__field">*</span><br>--}}
+{{--                                                                <select name="availability_status" id="availability_status" class="form-select" required>--}}
+{{--                                                                    <option value="" selected>Select Availability Status</option>--}}
+{{--                                                                    <option value="Available" {{ old('availability_status') == 'Available' ? 'selected' : '' }}>Available</option>--}}
+{{--                                                                    <option value="rented" {{ old('availability_status') == 'rented' ? 'selected' : '' }}>Rented</option>--}}
+{{--                                                                    <option value="sold" {{ old('availability_status') == 'sold' ? 'selected' : '' }}>Sold</option>--}}
+{{--                                                                    <option value="Not Available" {{ old('availability_status') == 'Not Available' ? 'selected' : '' }}>Not Available</option>--}}
+{{--                                                                </select>--}}
+{{--                                                                @error('availability_status')--}}
+{{--                                                                    <span class="invalid-feedback" role="alert">--}}
+{{--                                                                        <strong>{{ $message }}</strong>--}}
+{{--                                                                    </span>--}}
+{{--                                                                @enderror--}}
+{{--                                                            </div>--}}
+{{--                                                        </div>--}}
 
                                                         <!--  -->
                                                         <div class="col-sm-12 col-md-6 col-lg-6">
