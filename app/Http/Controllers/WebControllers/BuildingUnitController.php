@@ -356,8 +356,6 @@ class BuildingUnitController extends Controller
 
     private function update(Request $request, BuildingUnit $unit, String $portal, $organization_id, $status)
     {
-        $user = $request->user() ?? abort(403, 'Unauthorized');
-
         $request->validate([
             'unit_name' => [
                 'required',
@@ -399,7 +397,7 @@ class BuildingUnitController extends Controller
                 ->exists();
 
             if ($userHasActiveContract && ($unit->availability_status !== $request->availability_status)) {
-                Log::error("Availability status error: ");
+                DB::rollBack();
                 return redirect()->back()->with('error', 'You cannot change the availability status of this unit because this unit is currently in a contract.');
             }
 
