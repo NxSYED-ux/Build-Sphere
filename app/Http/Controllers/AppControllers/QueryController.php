@@ -120,8 +120,12 @@ class QueryController extends Controller
 
             DB::commit();
 
+            Log::info('Organization Id: ' . $staffMember->organization_id);
+            $orgId = $staffMember->organization_id;
+            Log::info('Org Id: ' . $orgId);
+
             dispatch(new SpecificStaffNotification(
-                $staffMember->organization_id,
+                $orgId,
                 $staffMember->id,
                'uploads/query/Notification/Query_notification_image.png',
                'New Query Arrived',
