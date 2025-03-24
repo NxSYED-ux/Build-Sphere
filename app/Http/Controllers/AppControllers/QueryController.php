@@ -126,12 +126,12 @@ class QueryController extends Controller
                'uploads/query/Notification/Query_notification_image.png',
                'New Query Arrived',
                 "A new query has arrived: '{$query->description}'.",
-                '',
+                'NewQueriesScreen()',
 
                 $userId,
                 'Query Logged Successfully',
                 "Your query has been logged with the description: '{$query->description}'.",
-                ''
+                [ 'query_id' => $query->id, 'mainTab' => 3, 'subTab' => 1 ]
             ));
 
             return response()->json(['message' => 'Query logged successfully', 'query' => $query], 201);
