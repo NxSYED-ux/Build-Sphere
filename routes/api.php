@@ -18,27 +18,6 @@ use App\Http\Controllers\AppControllers\MyPropertiesController;
 use App\Http\Controllers\AppControllers\QueryController;
 use App\Http\Controllers\AppControllers\DropdownController;
 
-
-
-Route::get('/send-notification/{id}', function ($id) {
-    $user = User::find($id);
-
-    if ($user) {
-        $picture = "uploads/units/images/Apartment_{$id}.jpeg";
-        $user->notify(new UserNotification(
-            $picture,
-            'Apna kam kr 🤭',
-            'Lagta ha tera sara kam ho gaya ha jo mera kam check kr raha ha',
-            'admin_dashboard'
-        ));
-
-        return response()->json(['message' => 'Notification sent to user ID: ' . $id]);
-    }
-
-    return response()->json(['message' => 'No user found with ID: ' . $id], 404);
-});
-
-
 // Without Authentication
 
     Route::get('/values-by-type/{type}', [DropdownController::class, 'getDropdownValuesByType']);

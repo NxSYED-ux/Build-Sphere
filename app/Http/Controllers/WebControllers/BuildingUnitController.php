@@ -264,7 +264,7 @@ class BuildingUnitController extends Controller
     }
 
 
-
+    //Show
     public function show(BuildingUnit $buildingUnit)
     {
 

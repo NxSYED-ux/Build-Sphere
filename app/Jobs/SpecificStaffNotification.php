@@ -11,6 +11,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification;
 
 class SpecificStaffNotification implements ShouldQueue
@@ -18,7 +19,7 @@ class SpecificStaffNotification implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     protected $organizationId;
-    protected $staffUserId;
+    protected $staffId;
     protected $image;
     protected $heading;
     protected $message;
@@ -28,10 +29,10 @@ class SpecificStaffNotification implements ShouldQueue
     protected $initiatorMessage;
     protected $initiatorLink;
 
-    public function __construct($organizationId, $staffUserId, $image, $heading, $message, $link, $initiatorId = null, $initiatorHeading = null, $initiatorMessage = null, $initiatorLink = null)
+    public function __construct($organizationId, $staffId, $image, $heading, $message, $link, $initiatorId = null, $initiatorHeading = null, $initiatorMessage = null, $initiatorLink = null)
     {
         $this->organizationId = $organizationId;
-        $this->staffUserId = $staffUserId;
+        $this->staffId = $staffId;
         $this->image = $image;
         $this->heading = $heading;
         $this->message = $message;
@@ -46,11 +47,11 @@ class SpecificStaffNotification implements ShouldQueue
     public function handle()
     {
         $staffMember = StaffMember::where('organization_id', $this->organizationId)
-            ->where('id', $this->staffUserId)
+            ->where('id', $this->staffId)
             ->first();
 
         if ($staffMember) {
-            $user = User::find($this->staffUserId);
+            $user = User::find($staffMember->user_id);
             if ($user) {
                 Notification::send($user, new UserNotification(
                     $this->image,
