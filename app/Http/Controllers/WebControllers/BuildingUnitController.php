@@ -15,6 +15,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\Rule;
 
 class BuildingUnitController extends Controller
 {
@@ -198,7 +199,14 @@ class BuildingUnitController extends Controller
     private function store(Request $request, String $portal, $organization_id, $status)
     {
          $request->validate([
-            'unit_name' => 'required|string|max:255',
+             'unit_name' => [
+                 'required',
+                 'string',
+                 'max:255',
+                 Rule::unique('buildingunits')->where(function ($query) use ($request) {
+                     return $query->where('building_id', $request->building_id);
+                 }),
+             ],
             'unit_type' => 'required|string',
             'price' => 'required|numeric',
             'description' => 'nullable|string',
@@ -208,6 +216,8 @@ class BuildingUnitController extends Controller
             'level_id' => 'required|integer',
             'building_id' => 'required|integer',
             'unit_pictures.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+         ],[
+             'unit_name.unique' => 'This level name is already in use for the selected building.',
          ]);
 
         DB::beginTransaction();
@@ -349,7 +359,14 @@ class BuildingUnitController extends Controller
         $user = $request->user() ?? abort(403, 'Unauthorized');
 
         $request->validate([
-            'unit_name' => 'required|string|max:255',
+            'unit_name' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('buildingunits')->where(function ($query) use ($request) {
+                    return $query->where('building_id', $request->building_id);
+                }),
+            ],
             'unit_type' => 'required|string',
             'price' => 'required|numeric',
             'description' => 'nullable|string',
@@ -359,6 +376,8 @@ class BuildingUnitController extends Controller
             'level_id' => 'required|integer',
             'building_id' => 'required|integer',
             'unit_pictures.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ],[
+            'unit_name.unique' => 'This unit name is already in use for the selected building.',
         ]);
 
         DB::beginTransaction();
