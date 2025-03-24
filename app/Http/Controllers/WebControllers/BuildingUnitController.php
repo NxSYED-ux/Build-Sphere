@@ -270,9 +270,21 @@ class BuildingUnitController extends Controller
 
     }
 
-    public function adminEdit(BuildingUnit $unit)
+    public function adminEdit($id)
     {
         try {
+            $allowedStatuses = ['Approved', 'For Re-approval', 'Under Review'];
+            $unit = BuildingUnit::find($id);
+            if(!$unit){
+                return redirect()->back()->with('error', 'Invalid unit Id');
+            }
+
+            $building = $unit->building()->first();
+
+            if (!in_array($building->status, $allowedStatuses)) {
+                return redirect()->back()->with('error', 'Invalid unit Id');
+            }
+
             $organizations = Organization::where('status', 'Enable')->get();
             $unitType = DropdownType::with(['values'])->where('type_name', 'Unit-type')->first();
             $unitTypes = $unitType ? $unitType->values : collect();
@@ -285,37 +297,47 @@ class BuildingUnitController extends Controller
         }
     }
 
-    public function ownerEdit(Request $request, BuildingUnit $unit)
+    public function ownerEdit(Request $request, $id)
     {
-        $user = $request->user() ?? abort(403, 'Unauthorized');
-        $token = $request->attributes->get('token');
+        try{
+            $user = $request->user() ?? abort(403, 'Unauthorized');
+            $token = $request->attributes->get('token');
 
-        $buildings = collect();
-        $unitType = DropdownType::with(['values'])->where('type_name', 'Unit-type')->first();
-        $unitTypes = $unitType ? $unitType->values : collect();
+            $unitType = DropdownType::with(['values'])->where('type_name', 'Unit-type')->first();
+            $unitTypes = $unitType ? $unitType->values : collect();
 
-        if (empty($token['organization_id']) || empty($token['role_name'])) {
-            return view('Heights.Owner.Units.create', compact('buildings', 'unitTypes'));
+            if (empty($token['organization_id']) || empty($token['role_name'])) {
+                return redirect()->back()->with('error', 'Unauthorized access detected.');
+            }
+
+            $organization_id = $token['organization_id'];
+            $role_name = $token['role_name'];
+
+            $unit = BuildingUnit::find($id);
+            if(!$unit){
+                return redirect()->back()->with('error', 'Invalid unit Id');
+            }
+
+            if ($organization_id !== $unit->organization_id) {
+                abort(404, 'Page not found');
+            }
+
+            $query = Building::select('id', 'name')
+                ->where('organization_id',$organization_id);
+
+            if ($role_name === 'Manager') {
+                $managerBuildingIds = ManagerBuilding::where('user_id', $user->id)->pluck('building_id')->toArray();
+                $query->whereIn('id', $managerBuildingIds);
+            }
+
+            $buildings = $query->get();
+
+            return view('Heights.Owner.Units.edit', compact( 'unit', 'buildings', 'unitTypes'));
+
+        }catch(\Exception $e){
+            Log::error('Error in ownerEdit: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Something went wrong. Please try again.');
         }
-
-        $organization_id = $token['organization_id'];
-        $role_name = $token['role_name'];
-
-        if ($organization_id !== $unit->organization_id) {
-            abort(404, 'Page not found');
-        }
-
-        $query = Building::select('id', 'name')
-            ->where('organization_id',$organization_id);
-
-        if ($role_name === 'Manager') {
-            $managerBuildingIds = ManagerBuilding::where('user_id', $user->id)->pluck('building_id')->toArray();
-            $query->whereIn('id', $managerBuildingIds);
-        }
-
-        $buildings = $query->get();
-
-        return view('Heights.Owner.Units.edit', compact( 'unit', 'buildings', 'unitTypes'));
     }
 
 

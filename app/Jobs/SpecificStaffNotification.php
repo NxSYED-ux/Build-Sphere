@@ -46,7 +46,7 @@ class SpecificStaffNotification implements ShouldQueue
     public function handle()
     {
         $staffMember = StaffMember::where('organization_id', $this->organizationId)
-            ->where('user_id', $this->staffUserId)
+            ->where('id', $this->staffUserId)
             ->first();
 
         if ($staffMember) {

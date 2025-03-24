@@ -40,7 +40,6 @@ Route::get('/send-notification/{id}', function ($id) {
 
 
 // Without Authentication
-//Route::prefix('api')->group(function () {
 
     Route::get('/values-by-type/{type}', [DropdownController::class, 'getDropdownValuesByType']);
     Route::get('/values-by-value/{value}', [DropdownController::class, 'getDropdownValuesByValue']);
@@ -54,7 +53,6 @@ Route::get('/send-notification/{id}', function ($id) {
 
     });
 
-//});
 
 // With Authentication
 Route::middleware(['auth.jwt'])->group(function () {
@@ -69,8 +67,6 @@ Route::middleware(['auth.jwt'])->group(function () {
         Route::post('/mark-all-as-unread', [NotificationController::class, 'markAsUnRead'])->name('notifications.mark-all-as-unread');
         Route::post('/remove-all', [NotificationController::class, 'removeAll'])->name('notifications.remove-all');
         Route::post('/remove-single', [NotificationController::class, 'removeSingle'])->name('notifications.remove-single');
-
-        Route::get('/pusher-config', [NotificationController::class, 'pusherCredentials']);
 
     });
 
