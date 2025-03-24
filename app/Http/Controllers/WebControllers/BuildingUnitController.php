@@ -306,8 +306,9 @@ class BuildingUnitController extends Controller
 
         $buildings = $query->get();
 
-        return view('Heights.Admin.Units.edit', compact( 'unit', 'buildings', 'unitTypes'));
+        return view('Heights.Owner.Units.edit', compact( 'unit', 'buildings', 'unitTypes'));
     }
+
 
     public function adminUpdate(Request $request, BuildingUnit $unit)
     {
@@ -361,6 +362,8 @@ class BuildingUnitController extends Controller
 
         try {
 
+            $unit->load('userbuildingunits');
+
             $unit->update([
                 'unit_name' => $request->unit_name,
                 'unit_type' => $request->unit_type,
@@ -402,6 +405,8 @@ class BuildingUnitController extends Controller
         }
     }
 
+
+
     public function destroyImage(string $id)
     {
         $image = UnitPicture::findOrFail($id);
@@ -417,6 +422,7 @@ class BuildingUnitController extends Controller
 
         return response()->json(['success' => true]);
     }
+
     public function getUnitData(string $id)
     {
         try {
