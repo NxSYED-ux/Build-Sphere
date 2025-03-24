@@ -10,6 +10,7 @@ use App\Models\DropdownType;
 use App\Models\ManagerBuilding;
 use App\Models\Organization;
 use App\Models\UnitPicture;
+use App\Models\UserBuildingUnit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
@@ -345,6 +346,8 @@ class BuildingUnitController extends Controller
 
     private function update(Request $request, BuildingUnit $unit, String $portal, $organization_id, $status)
     {
+        $user = $request->user() ?? abort(403, 'Unauthorized');
+
         $request->validate([
             'unit_name' => 'required|string|max:255',
             'unit_type' => 'required|string',
@@ -361,8 +364,14 @@ class BuildingUnitController extends Controller
         DB::beginTransaction();
 
         try {
+            $userHasActiveContract = UserBuildingUnit::where('unit_id', $request->unit_id)
+                ->where('user_id', $user->id)
+                ->where('contract_status', 1)
+                ->exists();
 
-            $unit->load('userbuildingunits');
+            if (!$userHasActiveContract && $unit->availability_status !== $request->availability_status) {
+                return redirect()->back()->with('error', 'You cannot change the availability status of this unit because this unit is currently in a contract.');
+            }
 
             $unit->update([
                 'unit_name' => $request->unit_name,
@@ -404,7 +413,6 @@ class BuildingUnitController extends Controller
             return redirect()->back()->withInput()->with('error', 'An error occurred while updating the building unit.');
         }
     }
-
 
 
     public function destroyImage(string $id)
