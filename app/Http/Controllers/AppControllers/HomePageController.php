@@ -85,7 +85,7 @@ class HomePageController extends Controller
                 'pictures' => function ($query) {
                     $query->select('unit_id', 'file_path');
                 }
-            ])->select('id', 'unit_name', 'unit_type', 'price', 'sale_or_rent', 'availability_status', 'level_id')
+            ])->select('id', 'unit_name', 'unit_type', 'price', 'area', 'sale_or_rent', 'availability_status', 'level_id')
                 ->orderBy('updated_at', 'DESC')
                 ->get();
 

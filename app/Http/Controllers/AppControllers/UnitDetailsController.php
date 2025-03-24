@@ -19,7 +19,7 @@ class UnitDetailsController extends Controller
             $unitDetails = BuildingUnit::where('id', $id)
                 ->where('availability_status', 'Available')
                 ->where('status', 'Approved')
-                ->select('id', 'unit_name', 'unit_type', 'price', 'sale_or_rent', 'description', 'level_id', 'organization_id')
+                ->select('id', 'unit_name', 'unit_type', 'price', 'area', 'sale_or_rent', 'description', 'level_id', 'organization_id')
                 ->with([
                     'level:id,building_id,level_name',
                     'level.building:id,name,address_id',

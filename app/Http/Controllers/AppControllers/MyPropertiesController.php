@@ -21,7 +21,7 @@ class MyPropertiesController extends Controller
                 ->where('contract_status', 1)
                 ->select('id', 'unit_id', 'type', 'price', 'rent_start_date', 'rent_end_date', 'purchase_date')
                 ->with([
-                    'unit:id,level_id,unit_name',
+                    'unit:id,level_id,unit_name,area',
                     'unit.level:id,building_id,level_name',
                     'unit.level.building:id,name,address_id',
                     'unit.level.building.address:id,location,city,province,country',

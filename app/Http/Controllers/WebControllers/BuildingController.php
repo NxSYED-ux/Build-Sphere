@@ -247,7 +247,7 @@ class BuildingController extends Controller
 
             DB::commit();
 
-            $link = "{$portal}/buildings/{$building->id}";
+            $link = "{$portal}/buildings/{$building->id}/show";
             $message = "{$building->name} has been added successfully.";
 
             if ($portal == 'admin') {
@@ -257,7 +257,7 @@ class BuildingController extends Controller
                     $notificationImage,
                     'Building Added by Admin',
                     $message,
-                    "owner/buildings/{$building->id}",
+                    "owner/buildings/{$building->id}/show",
 
                     $user->id,
                     'Building Added',
@@ -547,7 +547,7 @@ class BuildingController extends Controller
 
             DB::commit();
 
-            $link = "{$portal}/buildings/{$building->id}";
+            $link = "{$portal}/buildings/{$building->id}/show";
             $message = "{$building->name} has been updated successfully.";
             $Image = $building->load(['pictures']);
             $notificationImage = $Image->pictures->first();
@@ -559,7 +559,7 @@ class BuildingController extends Controller
                     $notificationImage->file_path,
                     'Building updated by Admin',
                     $message,
-                    "owner/buildings/{$building->id}",
+                    "owner/buildings/{$building->id}/show",
 
                     $user->id,
                     'Building updated',
@@ -626,7 +626,7 @@ class BuildingController extends Controller
                 $notificationImage->file_path,
                'New Building for approval',
                "{$building->name} is available for approval",
-                "admin/buildings/{$building->id}",
+                "admin/buildings/{$building->id}/show",
             ));
 
             dispatch(new OrganizationOwnerNotifications(
@@ -634,12 +634,12 @@ class BuildingController extends Controller
                 $notificationImage->file_path,
                 "Building Submitted by {$user->name}",
                 $message,
-                "owner/buildings/{$building->id}",
+                "owner/buildings/{$building->id}/show",
 
                 $user->id,
                 "Building Submitted",
                 $message,
-                "owner/buildings/{$building->id}",
+                "owner/buildings/{$building->id}/show",
             ));
 
             return redirect()->route('owner.buildings.index')->with('success', 'Building Submitted successfully.');
@@ -673,7 +673,7 @@ class BuildingController extends Controller
                 $notificationImage->file_path,
                 'Approval Reminder',
                 "You have been reminded to review and approve the pending request of {$building->name}",
-                "admin/buildings/{$building->id}",
+                "admin/buildings/{$building->id}/show",
             ));
 
             dispatch(new OrganizationOwnerNotifications(
@@ -681,12 +681,12 @@ class BuildingController extends Controller
                 $notificationImage->file_path,
                 "Reminder Sent by {$user->name}",
                 "Admin has been reminded successfully for {$building->name}",
-                "owner/buildings/{$building->id}",
+                "owner/buildings/{$building->id}/show",
 
                 $user->id,
                 "Reminder Sent",
                 "Admin has been reminded successfully for {$building->name}",
-                "owner/buildings/{$building->id}",
+                "owner/buildings/{$building->id}/show",
             ));
 
             return redirect()->route('owner.buildings.index')->with('success', 'Building Submitted successfully.');
@@ -722,7 +722,7 @@ class BuildingController extends Controller
                 $notificationImage->file_path,
                 "Building rejected",
                 "{$building->name} has been rejected by admin with remarks {$request->remarks}",
-                "owner/buildings/{$building->id}",
+                "owner/buildings/{$building->id}/show",
 
                 $user->id,
                 "Building rejected",
@@ -770,12 +770,12 @@ class BuildingController extends Controller
                 $notificationImage->file_path,
                 "Building approved",
                 $message,
-                "owner/buildings/{$building->id}",
+                "owner/buildings/{$building->id}/show",
 
                 $user->id,
                 "Building approved",
                 $message,
-                "admin/buildings/{$building->id}",
+                "admin/buildings/{$building->id}/show",
             ));
 
             return redirect()->route('buildings.index')->with('success', 'Building, levels, and units approved successfully.');

@@ -18,14 +18,14 @@ return new class extends Migration
             $table->enum('availability_status', ['Available', 'Rented', 'Sold', 'Not Available']);
             $table->enum('sale_or_rent', ['Sale', 'Rent', 'Not Available']);
             $table->decimal('price', 10, 2)->default(0);
-            $table->decimal('area', 10, 2);
+            $table->decimal('area', 10, 2)->default(0);
             $table->text('description')->nullable();
             $table->enum('status', ['Approved', 'Rejected']);
             $table->unsignedBigInteger('created_by');
             $table->unsignedBigInteger('updated_by');
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
-            
+
             $table->foreign('organization_id')->references('id')->on('organizations');
             $table->foreign('building_id')->references('id')->on('buildings');
             $table->foreign('level_id')->references('id')->on('buildinglevels');

@@ -170,11 +170,21 @@ class OrganizationController extends Controller
         }
     }
 
-    public function getBuildings($id)
+    public function getBuildingsAdmin($id)
     {
-        $buildings = Building::where('organization_id', $id)->pluck('name', 'id'); // Fetch buildings for the organization
-        return response()->json(['buildings' => $buildings]);
+        try {
+            $buildings = Building::where('organization_id', $id)
+                ->whereNotIn('status', ['Under Processing', 'Under Review', 'Rejected'])
+                ->pluck('name', 'id');
+
+            return response()->json(['buildings' => $buildings]);
+
+        } catch (\Exception $e) {
+            Log::error('Error fetching buildings: ' . $e->getMessage());
+            return response()->json(['error' => 'Something went wrong. Please try again.'], 500);
+        }
     }
+
 
     public function destroyImage(string $id)
     {

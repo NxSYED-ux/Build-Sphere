@@ -25,7 +25,7 @@ class BuildingUnitsController extends Controller
                         $query->where('sale_or_rent', '!=', 'Not Available')
                             ->where('availability_status', 'Available')
                             ->where('status', 'Approved')
-                            ->select('id', 'level_id', 'unit_name', 'unit_type', 'price', 'sale_or_rent', 'availability_status')
+                            ->select('id', 'level_id', 'unit_name', 'unit_type', 'price', 'area', 'sale_or_rent', 'availability_status')
                             ->with('pictures:unit_id,file_path');
                     }
                 ])
