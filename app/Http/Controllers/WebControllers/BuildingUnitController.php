@@ -187,11 +187,6 @@ class BuildingUnitController extends Controller
 
         return response()->json(['success' => true]);
     }
-
-
-
-
-
     public function getUnitData(string $id)
     {
         try {
