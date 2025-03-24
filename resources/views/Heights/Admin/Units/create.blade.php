@@ -306,6 +306,7 @@
                                                         <div class="image-preview" id="image-preview">
                                                             <p>No images selected</p>
                                                         </div>
+                                                        <p id="error-message" style="color: red; font-size: 14px; margin-top: 5px;"></p>
                                                     </div>
                                                 </div>
                                             </div>
@@ -331,9 +332,19 @@
     <script>
         const imageInput = document.getElementById('image-input');
         const imagePreview = document.getElementById('image-preview');
+        const errorMessage = document.getElementById('error-message');
 
         imageInput.addEventListener('change', () => {
             const files = imageInput.files;
+
+            if (files.length > 4) {
+                errorMessage.textContent = 'You can only select up to 4 images.';
+                imageInput.value = '';
+                return;
+            } else {
+                errorMessage.textContent = '';
+            }
+
             imagePreview.innerHTML = ''; // Clear any previous content
 
             if (files.length > 0) {

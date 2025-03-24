@@ -21,7 +21,7 @@
     .image-input-container .custom-file-label {
         display: inline-block;
         background-color: #6c63ff;
-        color: #fff;
+        color: #fff !important;
         padding: 10px 20px;
         border-radius: 5px;
         cursor: pointer;
@@ -41,12 +41,17 @@
         flex-wrap: wrap;
         gap: 10px;
         justify-content: center;
+        align-items: center;
         border: 2px dashed #6c63ff;
         border-radius: 10px;
         padding: 15px;
+        height: 275px;
         background-color: #fff;
         margin-top: 10px;
+        overflow-y: auto;
+        text-align: center;
     }
+
 
     /* No images selected message */
     .image-input-container .image-preview p {
@@ -71,6 +76,13 @@
         width: 100%;
         height: 100%;
         object-fit: cover; /* Change to contain if the image isn't showing as expected */
+    }
+
+    @media (max-width: 575.98px) {
+        .image-input-container .image-item {
+            width: 100px;
+            height: 100px;
+        }
     }
 
     /* Remove button for each image */
@@ -133,7 +145,7 @@
                                                         <div class="form-group mb-3">
                                                             <label for="unit_name">Unit Name</label>
                                                             <span class="required__field">*</span><br>
-                                                            <input type="text" name="unit_name" id="unit_name" class="form-control @error('unit_name') is-invalid @enderror" value="{{ old('unit_name') }}" maxlength="50" placeholder="User Name" required>
+                                                            <input type="text" name="unit_name" id="unit_name" class="form-control @error('unit_name') is-invalid @enderror" value="{{ old('unit_name') }}" maxlength="50" placeholder="Unit Name" required>
                                                             @error('unit_name')
                                                             <span class="invalid-feedback" role="alert">
                                                                         <strong>{{ $message }}</strong>
@@ -182,27 +194,6 @@
                                                         </div>
                                                     </div>
 
-                                                    <!--  -->
-{{--                                                    <div class="col-lg-6 col-md-6 col-sm-12">--}}
-{{--                                                        <div class="form-group mb-3">--}}
-{{--                                                            <label for="availability_status">Availability Status</label>--}}
-{{--                                                            <span class="required__field">*</span><br>--}}
-{{--                                                            <select name="availability_status" id="availability_status" class="form-select" required>--}}
-{{--                                                                <option value="" selected>Select Availability Status</option>--}}
-{{--                                                                <option value="available" {{ old('availability_status') == 'available' ? 'selected' : '' }}>Available</option>--}}
-{{--                                                                <option value="rented" {{ old('availability_status') == 'rented' ? 'selected' : '' }}>Rented</option>--}}
-{{--                                                                <option value="sold" {{ old('availability_status') == 'sold' ? 'selected' : '' }}>Sold</option>--}}
-{{--                                                                <option value="not available" {{ old('availability_status') == 'not available' ? 'selected' : '' }}>Not Available</option>--}}
-{{--                                                            </select>--}}
-{{--                                                            @error('availability_status')--}}
-{{--                                                            <span class="invalid-feedback" role="alert">--}}
-{{--                                                                        <strong>{{ $message }}</strong>--}}
-{{--                                                                    </span>--}}
-{{--                                                            @enderror--}}
-{{--                                                        </div>--}}
-{{--                                                    </div>--}}
-
-                                                    <!--  -->
                                                     <div class="col-sm-12 col-md-6 col-lg-6">
                                                         <div class="form-group mb-3">
                                                             <label for="price">Price</label>
@@ -281,21 +272,34 @@
                                                     </div>
 
                                                 </div>
-                                            </div>
-                                            <div class="col-lg-4 col-md-4 col-sm-12 col-12">
-                                                <div class="image-input-container mt-4">
-                                                    <label for="image-input" class="custom-file-label">
-                                                        <span>Choose Images</span>
-                                                    </label>
-                                                    <input type="file" id="image-input" name="unit_pictures[]" accept="image/png, image/jpeg, image/jpg, image/gif" multiple hidden>
-                                                    <div class="image-preview" id="image-preview">
-                                                        <p>No images selected</p>
+                                                <div class="row  d-none d-md-block">
+                                                    <div class="col-12">
+                                                        <button type="submit" class="btn btn-primary w-100">Save</button>
                                                     </div>
                                                 </div>
                                             </div>
+                                            <div class="col-lg-4 col-md-4 col-sm-12 col-12">
+                                                <div class="image-input-container mt-1">
+                                                    <label for="image-input" class="-sm-block d-md-none btn btn-primary d-flex align-items-center justify-content-center w-100" style="margin-top: 13px !important; color: #ffff !important;">
+                                                        <i class='bx bx-upload fs-5 px-1'></i> Choose Images
+                                                    </label>
+                                                    <input type="file" id="image-input" name="unit_pictures[]" accept="image/png, image/jpeg, image/jpg, image/gif" multiple hidden>
+                                                    <div class="image-preview" id="image-preview">
+                                                        <p id="image-message">No images selected</p>
+{{--                                                        <p id="error-message" class="text-danger mt-2"></p>--}}
+                                                    </div>
+                                                    <label for="image-input" class="d-none d-md-block btn btn-primary d-flex align-items-center justify-content-center w-100" style="margin-top: 13px !important; color: #ffff !important;">
+                                                        <i class='bx bx-upload fs-5 px-1'></i> Choose Images
+                                                    </label>
+
+                                                </div>
+                                            </div>
+
                                         </div>
                                         <input type="hidden" name="status" value="Approved">
-                                        <button type="submit" class="btn btn-primary w-100">Save</button>
+                                        <div class="col-12 d-sm-block d-md-none mt-3">
+                                            <button type="submit" class="btn btn-primary w-100">Save</button>
+                                        </div>
                                     </form>
                                 </div>
                             </div>
@@ -315,17 +319,20 @@
 <script>
     const imageInput = document.getElementById('image-input');
     const imagePreview = document.getElementById('image-preview');
+    const imageMessage = document.getElementById('image-message');
 
     imageInput.addEventListener('change', () => {
         const files = imageInput.files;
 
         if (files.length > 4) {
-            alert('You can only select up to 4 images.');
-            imageInput.value = ''; // Clear input
+            imageMessage.textContent = 'You can only select up to 4 images.';
+            imageMessage.style.color = 'red';
+            imageInput.value = '';
             return;
+        } else {
         }
 
-        imagePreview.innerHTML = ''; // Clear any previous content
+        imagePreview.innerHTML = '';
 
         if (files.length > 0) {
             Array.from(files).forEach((file, index) => {

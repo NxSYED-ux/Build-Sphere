@@ -129,7 +129,11 @@
         }
 
         .card-body {
-            padding: 1.5rem;
+            padding: 1.5rem 1.5rem 0 1.5rem;
+            /*padding-top: 1.5rem;*/
+            /*padding-left: 1.5rem;*/
+            /*padding-right: 1.5rem;*/
+            /*padding-bottom: 0.5rem;*/
             background-color: var(--permission-card-bg-color);
         }
 
@@ -205,7 +209,7 @@
 
                         <div class="card-body">
                             @if ($permissions->isEmpty())
-                                <p class="text-muted">No permissions assigned to this role.</p>
+                                <p class="text-muted mb-4">No permissions assigned to this role.</p>
                             @else
                                 @foreach ($permissions ?? [] as $header => $perms)
                                     <div class="mb-4">
@@ -221,7 +225,7 @@
                                         <div class="collapse show" id="collapse-{{ Str::slug($header) }}">
                                             <div class="row">
                                                 @foreach ($perms ?? [] as $perm)
-                                                    <div class="col-md-12 mb-2 border rounded-4 shadow-sm">
+                                                    <div class="col-md-12 mb-2 border rounded-4 shadow-sm" style="">
                                                         <div class="permission-item d-flex justify-content-between align-items-center px-2">
                                                             <span class="permission-name font-weight-medium  d-inline-flex align-items-center">{{ $perm['name'] }}</span>
                                                             <button class="toggle-btn {{ $perm['status'] == 0 ? '' : 'active' }}"
