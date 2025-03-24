@@ -10,6 +10,7 @@ return new class extends Migration
     {
         Schema::create('buildinglevels', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('organization_id');
             $table->unsignedBigInteger('building_id');
             $table->string('level_name',50);
             $table->text('description')->nullable();

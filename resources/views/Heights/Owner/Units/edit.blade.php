@@ -243,6 +243,7 @@
                                                             <!-- Image thumbnails will be inserted here -->
                                                         </div>
                                                     </div>
+
                                                 </div>
                                             </div>
 
@@ -284,63 +285,28 @@
         });
     </script>
 
-    <!-- Remove or delete organization pictures script -->
-    <script>
-        function removeExistingImage(imageId) {
-            Swal.fire({
-                title: 'Are you sure?',
-                text: 'Are you sure you want to remove this image?',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'Yes, Remove',
-                cancelButtonText: 'Cancel',
-                reverseButtons: true
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    fetch(`{{ route('units.remove_picture', ':id') }}`.replace(':id', imageId), {
-                        method: 'DELETE',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                    })
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.success) {
-                                // Remove the image from the DOM
-                                document.querySelector(`button[data-image-id="${imageId}"]`).parentElement.remove();
-                                Swal.fire({
-                                    title: 'Success!',
-                                    text: 'Deleted successfully',
-                                    icon: 'success',
-                                    confirmButtonText: 'OK'
-                                });
-                            } else {
-                                Swal.fire({
-                                    title: 'Error!',
-                                    text: 'Failed to remove image.',
-                                    icon: 'error',
-                                    confirmButtonText: 'OK'
-                                });
-                            }
-                        })
-                        .catch(error => console.error('Error:', error));
-                }
-            });
-        }
-    </script>
-
     <!-- Unit Pictures script -->
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        // document.addEventListener('DOMContentLoaded', function() {
             let selectedImages = [];
             let currentIndex = 0;
+            let uploadedImageCount = document.querySelectorAll('#imagePreview .image-thumbnail').length;
 
             const imageInput = document.getElementById('imageInput');
+            const maxImages = 4;
+            let alreadyUploadedCount = document.querySelectorAll('#imagePreview .image-thumbnail').length;
 
             imageInput.addEventListener('change', handleImageSelection);
 
             function handleImageSelection(event) {
                 const files = Array.from(event.target.files);
+
+                if ((alreadyUploadedCount + selectedImages.length + files.length) > maxImages) {
+                    alert(`You can upload a maximum of ${maxImages} images. You have already uploaded ${alreadyUploadedCount}.`);
+                    imageInput.value = ''; // Clear the input
+                    return;
+                }
+
                 selectedImages = [...selectedImages, ...files];
                 currentIndex = selectedImages.length - files.length;
                 renderThumbnails();
@@ -404,15 +370,6 @@
                 showImage();
             }
 
-            function removeSelectedImage() {
-                if (selectedImages.length > 0) {
-                    selectedImages.splice(currentIndex, 1);
-                    currentIndex = Math.min(currentIndex, selectedImages.length - 1);
-                    renderThumbnails();
-                    showImage();
-                }
-            }
-
             function updateImageInput() {
                 const dt = new DataTransfer();
                 selectedImages.forEach(file => {
@@ -421,10 +378,53 @@
                 imageInput.files = dt.files;
             }
 
+            function removeExistingImage(imageId) {
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: 'Are you sure you want to remove this image?',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Yes, Remove',
+                    cancelButtonText: 'Cancel',
+                    reverseButtons: true
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        fetch(`{{ route('units.remove_picture', ':id') }}`.replace(':id', imageId), {
+                            method: 'DELETE',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                        })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    // Remove the image from the DOM
+                                    document.querySelector(`button[data-image-id="${imageId}"]`).parentElement.remove();
+                                    alreadyUploadedCount--; // Update the uploaded image count
+                                    Swal.fire({
+                                        title: 'Success!',
+                                        text: 'Deleted successfully',
+                                        icon: 'success',
+                                        confirmButtonText: 'OK'
+                                    });
+                                } else {
+                                    Swal.fire({
+                                        title: 'Error!',
+                                        text: 'Failed to remove image.',
+                                        icon: 'error',
+                                        confirmButtonText: 'OK'
+                                    });
+                                }
+                            })
+                            .catch(error => console.error('Error:', error));
+                    }
+                });
+            }
+
             document.querySelector('form').addEventListener('submit', function(event) {
-                updateImageInput(); // Ensure the imageInput is updated with the selected images before form submission
+                updateImageInput(); // Ensure imageInput is updated before form submission
             });
-        });
+        // });
     </script>
 
     <script>

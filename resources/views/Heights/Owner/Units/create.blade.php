@@ -17,7 +17,6 @@
         margin: 0 auto;
     }
 
-    /* Style the label button */
     .image-input-container .custom-file-label {
         display: inline-block;
         background-color: #6c63ff;
@@ -36,7 +35,6 @@
         background-color: #5752d3;
     }
 
-    /* Image preview area */
     .image-input-container .image-preview {
         display: flex;
         flex-wrap: wrap;
@@ -54,7 +52,7 @@
     }
 
     .image-input-container .image-preview::-webkit-scrollbar {
-        width: 5px;
+        width: 8px;
         position: absolute;
         right: -2px;
     }
@@ -68,9 +66,6 @@
         background: transparent;
     }
 
-
-
-    /* No images selected message */
     .image-input-container .image-preview p {
         flex-basis: 100%;
         text-align: center;
@@ -78,7 +73,6 @@
         color: #666;
     }
 
-    /* Style each image item */
     .image-input-container .image-item {
         position: relative;
         width: 120px;
@@ -92,7 +86,7 @@
     .image-input-container .image-item img {
         width: 100%;
         height: 100%;
-        object-fit: cover; /* Change to contain if the image isn't showing as expected */
+        object-fit: cover;
     }
 
     @media (max-width: 575.98px) {
@@ -102,7 +96,6 @@
         }
     }
 
-    /* Remove button for each image */
     .image-input-container .remove-btn {
         position: absolute;
         top: 5px;
@@ -124,6 +117,7 @@
     .image-input-container .remove-btn:hover {
         background-color: red;
     }
+
 </style>
 @endpush
 
