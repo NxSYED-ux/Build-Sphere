@@ -261,30 +261,98 @@ class BuildingUnitController extends Controller
 
     }
 
-    public function edit(BuildingUnit $unit)
+    public function adminEdit(BuildingUnit $unit)
     {
-        $unit->load(['level', 'organization']);
-        $buildings = Building::all();
-        $levels = BuildingLevel::all();
-        $organizations = Organization::all();
-        $unitType = DropdownType::with(['values'])->where('type_name', 'Unit-type')->first();
-        $unitTypes = $unitType ? $unitType->values : collect();
-        return view('Heights.Admin.Units.edit', compact('buildings', 'unit', 'levels', 'organizations', 'unitTypes'));
+        try {
+            $organizations = Organization::where('status', 'Enable')->get();
+            $unitType = DropdownType::with(['values'])->where('type_name', 'Unit-type')->first();
+            $unitTypes = $unitType ? $unitType->values : collect();
+
+            return view('Heights.Admin.Units.edit', compact( 'unit', 'organizations', 'unitTypes'));
+
+        } catch (\Exception $e) {
+            Log::error('Error in adminCreate: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Something went wrong. Please try again.');
+        }
     }
 
-    public function update(Request $request, BuildingUnit $unit)
+    public function ownerEdit(Request $request, BuildingUnit $unit)
     {
-        $validated = $request->validate([
+        $user = $request->user() ?? abort(403, 'Unauthorized');
+        $token = $request->attributes->get('token');
+
+        $buildings = collect();
+        $unitType = DropdownType::with(['values'])->where('type_name', 'Unit-type')->first();
+        $unitTypes = $unitType ? $unitType->values : collect();
+
+        if (empty($token['organization_id']) || empty($token['role_name'])) {
+            return view('Heights.Owner.Units.create', compact('buildings', 'unitTypes'));
+        }
+
+        $organization_id = $token['organization_id'];
+        $role_name = $token['role_name'];
+
+        if ($organization_id !== $unit->organization_id) {
+            abort(404, 'Page not found');
+        }
+
+        $query = Building::select('id', 'name')
+            ->where('organization_id',$organization_id);
+
+        if ($role_name === 'Manager') {
+            $managerBuildingIds = ManagerBuilding::where('user_id', $user->id)->pluck('building_id')->toArray();
+            $query->whereIn('id', $managerBuildingIds);
+        }
+
+        $buildings = $query->get();
+
+        return view('Heights.Admin.Units.edit', compact( 'unit', 'buildings', 'unitTypes'));
+    }
+
+    public function adminUpdate(Request $request, BuildingUnit $unit)
+    {
+        $request->validate([
+            'organization_id' => 'required|exists:organizations,id',
+        ]);
+        return $this->update($request, $unit, 'admin',$request->organization_id,'Approved');
+    }
+
+    public function ownerUpdate(Request $request, BuildingUnit $unit)
+    {
+        $user = $request->user() ?? abort(403, 'Unauthorized');
+        $token = $request->attributes->get('token');
+
+        if (!$token || !isset($token['organization_id']) || !isset($token['role_name'])) {
+            return redirect()->back()->withInput()->with('error', 'You cannot perform this action because they are not linked to any organization. Please switch to an organization account to proceed.');
+        }
+
+        $organization_id = $token['organization_id'];
+        $role_name = $token['role_name'];
+
+        if ($organization_id !== $unit->organization_id) {
+            abort(404, 'Page not found');
+        }
+
+        if ($role_name === 'Manager' && !ManagerBuilding::where('building_id', $request->building_id)
+                ->where('user_id', $user->id)
+                ->exists()) {
+            return redirect()->back()->withInput()->with('error', 'You do not have access to add units of the selected building.');
+        }
+
+        return $this->update($request, $unit, 'owner', $organization_id,'Rejected');
+    }
+
+    private function update(Request $request, BuildingUnit $unit, String $portal, $organization_id, $status)
+    {
+        $request->validate([
             'unit_name' => 'required|string|max:255',
             'unit_type' => 'required|string',
             'price' => 'required|numeric',
             'description' => 'nullable|string',
             'sale_or_rent' => 'required|string',
-            'status' => 'nullable|string',
             'area' => 'nullable|numeric',
             'availability_status' => 'required|string',
             'level_id' => 'required|integer',
-            'organization_id' => 'required|integer',
             'building_id' => 'required|integer',
             'unit_pictures.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
@@ -293,13 +361,26 @@ class BuildingUnitController extends Controller
 
         try {
 
-            $unit->update($validated);
+            $unit->update([
+                'unit_name' => $request->unit_name,
+                'unit_type' => $request->unit_type,
+                'price' => $request->price,
+                'description' => $request->description,
+                'sale_or_rent' => $request->sale_or_rent,
+                'area' => $request->area,
+                'availability_status' => $request->availability_status,
+                'level_id' => $request->level_id,
+                'building_id' => $request->building_id,
+                'organization_id' => $organization_id,
+                'status' => $status,
+            ]);
 
             if ($request->hasFile('unit_pictures')) {
                 foreach ($request->file('unit_pictures') as $image) {
                     $imageName = time() . '_' . $image->getClientOriginalName();
                     $imagePath = 'uploads/units/images/' . $imageName;
                     $image->move(public_path('uploads/units/images'), $imageName);
+
                     UnitPicture::create([
                         'unit_id' => $unit->id,
                         'file_path' => $imagePath,
@@ -310,7 +391,9 @@ class BuildingUnitController extends Controller
 
             DB::commit();
 
-            return redirect()->route('units.index')->with('success', 'Building unit updated successfully.');
+            $route = $portal === 'admin' ? 'units.index' : 'owner.units.index';
+
+            return redirect()->route($route)->with('success', 'Unit created successfully.');
 
         } catch (\Exception $e) {
             DB::rollBack();
@@ -324,12 +407,11 @@ class BuildingUnitController extends Controller
         $image = UnitPicture::findOrFail($id);
 
         if ($image) {
-            $oldImagePath = public_path($image->file_path); // Corrected variable name
+            $oldImagePath = public_path($image->file_path);
             if (File::exists($oldImagePath)) {
                 File::delete($oldImagePath);
             }
 
-            // Delete the image record from the database
             $image->delete();
         }
 
