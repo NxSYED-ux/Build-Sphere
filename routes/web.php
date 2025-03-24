@@ -161,10 +161,9 @@ Route::prefix('admin')->middleware(['auth.jwt'])->group(function () {
         Route::get('/', [BuildingUnitController::class, 'adminIndex'])->name('units.index');
         Route::get('/create', [BuildingUnitController::class, 'adminCreate'])->name('units.create');
         Route::post('/', [BuildingUnitController::class, 'adminStore'])->name('units.store');
-        Route::get('/{unit}/show', [BuildingUnitController::class, 'show'])->name('units.show');
-        Route::get('/{unit}/edit', [BuildingUnitController::class, 'edit'])->name('units.edit');
-        Route::put('/{unit}', [BuildingUnitController::class, 'update'])->name('units.update');
-        Route::delete('/{unit}', [BuildingUnitController::class, 'destroy'])->name('units.destroy');
+        Route::get('/{unit}/show', [BuildingUnitController::class, 'adminShow'])->name('units.show');
+        Route::get('/{unit}/edit', [BuildingUnitController::class, 'adminEdit'])->name('units.edit');
+        Route::put('/{unit}', [BuildingUnitController::class, 'adminUpdate'])->name('units.update');
         Route::get('/details/{id}', [BuildingUnitController::class, 'getUnitData'])->name('units.details');
 
     });
@@ -233,26 +232,12 @@ Route::prefix('owner')->middleware(['auth.jwt'])->group(function () {
 
     Route::prefix('units')->group(function () {
 
-        Route::get('/', [BuildingUnitController::class, 'index'])->name('owner.units.index');
-        Route::get('/create', [BuildingUnitController::class, 'create'])->name('owner.units.create');
-        Route::post('/', [BuildingUnitController::class, 'store'])->name('owner.units.store');
-        Route::get('/{unit}', [BuildingUnitController::class, 'show'])->name('owner.units.show');
-        Route::get('/{unit}/edit', [BuildingUnitController::class, 'edit'])->name('owner.units.edit');
-        Route::put('/{unit}', [BuildingUnitController::class, 'update'])->name('owner.units.update');
-        Route::delete('/{unit}', [BuildingUnitController::class, 'destroy'])->name('owner.units.destroy');
-        Route::get('/details/{id}', [BuildingUnitController::class, 'getUnitData'])->name('owner.units.details');
-
-    });
-
-    Route::prefix('units')->group(function () {
-
         Route::get('/', [BuildingUnitController::class, 'ownerIndex'])->name('owner.units.index');
         Route::get('/create', [BuildingUnitController::class, 'ownerCreate'])->name('owner.units.create');
         Route::post('/', [BuildingUnitController::class, 'ownerStore'])->name('owner.units.store');
-        Route::get('/{unit}/show', [BuildingUnitController::class, 'show'])->name('owner.units.show');
-        Route::get('/{unit}/edit', [BuildingUnitController::class, 'edit'])->name('owner.units.edit');
-        Route::put('/{unit}', [BuildingUnitController::class, 'update'])->name('owner.units.update');
-        Route::delete('/{unit}', [BuildingUnitController::class, 'destroy'])->name('owner.units.destroy');
+        Route::get('/{unit}/show', [BuildingUnitController::class, 'ownerShow'])->name('owner.units.show');
+        Route::get('/{unit}/edit', [BuildingUnitController::class, 'ownerEdit'])->name('owner.units.edit');
+        Route::put('/{unit}', [BuildingUnitController::class, 'ownerUpdate'])->name('owner.units.update');
         Route::get('/details/{id}', [BuildingUnitController::class, 'getUnitData'])->name('owner.units.details');
 
     });

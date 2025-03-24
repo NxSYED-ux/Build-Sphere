@@ -364,12 +364,13 @@ class BuildingUnitController extends Controller
         DB::beginTransaction();
 
         try {
-            $userHasActiveContract = UserBuildingUnit::where('unit_id', $request->unit_id)
+            $userHasActiveContract = UserBuildingUnit::where('unit_id', $unit->id)
                 ->where('user_id', $user->id)
                 ->where('contract_status', 1)
                 ->exists();
 
             if (!$userHasActiveContract && $unit->availability_status !== $request->availability_status) {
+                Log::error("Availability status error: ");
                 return redirect()->back()->with('error', 'You cannot change the availability status of this unit because this unit is currently in a contract.');
             }
 

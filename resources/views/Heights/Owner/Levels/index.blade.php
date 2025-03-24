@@ -221,7 +221,6 @@
                     @method('PUT')
 
                     <input type="hidden" name="updated_at" id="edit_updated_at">
-                    <input type="hidden" name="status" id="edit_status">
                     <input type="hidden" name="level_id" id="edit_level_id">
                     <div class="modal-body">
                         <div class="row mb-4">
@@ -397,7 +396,6 @@
                                 document.getElementById("edit_level_name").value = data.level?.level_name || "";
                                 document.getElementById("edit_description").value = data.level?.description || "";
                                 document.getElementById("edit_level_number").value = data.level.level_number !== undefined ? data.level.level_number : "";
-                                document.getElementById("edit_status").value = data.level?.status || "";
                                 document.getElementById("edit_updated_at").value = data.level?.updated_at || "";
 
                                 const buildingSelect = document.getElementById("edit_building_id");

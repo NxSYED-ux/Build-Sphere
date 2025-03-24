@@ -53,7 +53,7 @@
         ]"
     />
     <!--  -->
-    <x-Owner.side-navbar :openSections="['Buildings', 'Building']"/>
+    <x-Owner.side-navbar :openSections="['Buildings', 'Units']"/>
     <x-error-success-model />
 
     <div id="main">
@@ -91,10 +91,9 @@
 
 
                             <p class="d-flex justify-content-between align-items-center">
-                                <strong>Status:</strong> Approved
-                                <span style="margin-left: 20px;"><strong>Availability:</strong> Rented</span>
+                                <span class="mx-2"><strong>Status:</strong> Approved</span>
+                                <span class="mx-2"><strong>Availability:</strong> Rented</span>
                             </p>
-
 
                             <div class="d-flex gap-2">
                                 <button class="btn btn-outline-primary w-100"><i class='bx bxs-purchase-tag'></i> Rs 35,000 PKR</button>
