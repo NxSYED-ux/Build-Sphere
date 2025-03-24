@@ -384,7 +384,7 @@ class BuildingUnitController extends Controller
         DB::beginTransaction();
 
         try {
-            $unitCheck = Building::where([
+            $unitCheck = BuildingUnit::where([
                 ['id', '=', $unit->id],
                 ['updated_at', '=', $request->updated_at]
             ])->sharedLock()->first();
@@ -399,7 +399,7 @@ class BuildingUnitController extends Controller
                 ->where('contract_status', 1)
                 ->exists();
 
-            if (!$userHasActiveContract && $unit->availability_status !== $request->availability_status) {
+            if ($userHasActiveContract && ($unit->availability_status !== $request->availability_status)) {
                 Log::error("Availability status error: ");
                 return redirect()->back()->with('error', 'You cannot change the availability status of this unit because this unit is currently in a contract.');
             }

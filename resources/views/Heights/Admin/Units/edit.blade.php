@@ -59,6 +59,7 @@
 
                                         <form action="{{ route('units.update', $unit->id) }}" method="POST" enctype="multipart/form-data">
                                         @method('PUT')
+                                            <input type="hidden" name="updated_at" value="{{ $unit->updated_at }}">
                                             <div class="row my-0 py-0">
                                                 <div class="col-sm-12 col-md-6 col-lg-4">
                                                     <div class="form-group mb-3">
@@ -99,12 +100,12 @@
                                                         <label for="sale_or_rent">Sale or Rent</label>
                                                         <span class="required__field">*</span><br>
                                                         <select name="sale_or_rent" id="sale_or_rent" class="form-select" required>
-                                                            <option value="sale" {{ old('sale_or_rent', $unit->sale_or_rent) == 'sale' ? 'selected' : '' }}>Sale</option>
-                                                            <option value="rent" {{ old('sale_or_rent', $unit->sale_or_rent) == 'rent' ? 'selected' : '' }}>Rent</option>
-                                                            <option value="not available" {{ old('sale_or_rent', $unit->sale_or_rent) == 'not available' ? 'selected' : '' }}>Not Available</option>
+                                                            <option value="Sale" {{ old('sale_or_rent', $unit->sale_or_rent) == 'Sale' ? 'selected' : '' }}>Sale</option>
+                                                            <option value="Rent" {{ old('sale_or_rent', $unit->sale_or_rent) == 'Rent' ? 'selected' : '' }}>Rent</option>
+                                                            <option value="Not Available" {{ old('sale_or_rent', $unit->sale_or_rent) == 'Not Available' ? 'selected' : '' }}>Not Available</option>
                                                         </select>
                                                         @error('sale_or_rent')
-                                                            <span class="invalid-feedback" role="alert">
+                                                        <span class="invalid-feedback" role="alert">
                                                                 <strong>{{ $message }}</strong>
                                                             </span>
                                                         @enderror
@@ -117,13 +118,13 @@
                                                         <label for="availability_status">Availability Status</label>
                                                         <span class="required__field">*</span><br>
                                                         <select name="availability_status" id="availability_status" class="form-select" required>
-                                                            <option value="available" {{ old('availability_status', $unit->availability_status) == 'available' ? 'selected' : '' }}>Available</option>
-                                                            <option value="rented" {{ old('availability_status', $unit->availability_status) == 'rented' ? 'selected' : '' }}>Rented</option>
-                                                            <option value="sold" {{ old('availability_status', $unit->availability_status) == 'sold' ? 'selected' : '' }}>Sold</option>
-                                                            <option value="not available" {{ old('availability_status', $unit->availability_status) == 'not available' ? 'selected' : '' }}>Not Available</option>
+                                                            <option value="Available" {{ old('availability_status', $unit->availability_status) == 'Available' ? 'selected' : '' }}>Available</option>
+                                                            <option value="Rented" {{ old('availability_status', $unit->availability_status) == 'Rented' ? 'selected' : '' }}>Rented</option>
+                                                            <option value="Sold" {{ old('availability_status', $unit->availability_status) == 'Sold' ? 'selected' : '' }}>Sold</option>
+                                                            <option value="Not Available" {{ old('availability_status', $unit->availability_status) == 'Not Available' ? 'selected' : '' }}>Not Available</option>
                                                         </select>
                                                         @error('availability_status')
-                                                            <span class="invalid-feedback" role="alert">
+                                                        <span class="invalid-feedback" role="alert">
                                                                 <strong>{{ $message }}</strong>
                                                             </span>
                                                         @enderror
