@@ -66,7 +66,7 @@ class OrganizationOwnerWithMangerNotifications implements ShouldQueue
         if ($managers) {
             foreach ($managers as $manager) {
                 if($manager->user_id) {
-                    $managerData = User::find($organization->owner_id);
+                    $managerData = User::find($manager->user_id);
 
                     if ($managerData && $managerData->id !== $this->initiatorId) {
                         Notification::send($managerData, new UserNotification(

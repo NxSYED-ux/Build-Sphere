@@ -77,8 +77,8 @@ class AuthController extends Controller
             Log::info($token);
 
             $route = match ($portal) {
-                'admin' => 'admin_dashboard',
-                'owner' => 'owner_manager_dashboard',
+                'admin' => '/admin/dashboard',
+                'owner' => '/owner/dashboard',
                 'staff-user' => null,
                 default => abort(404, 'Page not found'),
             };
@@ -122,6 +122,7 @@ class AuthController extends Controller
             }
 
             $payload = JWTAuth::setToken($token)->getPayload();
+            Log::info($payload->get('iss'));
             return $payload->get('iss') ?? null;
         } catch (\Exception $e) {
             return null;
