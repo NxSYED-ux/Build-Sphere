@@ -26,11 +26,15 @@ class ValidatePermission
 
             $exists = DB::selectOne("
                 SELECT
-                    EXISTS (SELECT 1 FROM userpermissions WHERE user_id = ? AND permission_id = ? AND status = 1) AS user_exists,
-                    EXISTS (SELECT 1 FROM rolepermissions WHERE role_id = ? AND permission_id = ? AND status = 1) AS role_exists
+                    (SELECT status FROM userpermissions WHERE user_id = ? AND permission_id = ? LIMIT 1) AS user_permission,
+                    (SELECT status FROM rolepermissions WHERE role_id = ? AND permission_id = ? LIMIT 1) AS role_permission
             ", [$user->id, $permissionId, $user->role_id, $permissionId]);
 
-            if ((!$ignoreUserPermission && $exists->user_exists) || $exists->role_exists) {
+            if ($exists->user_permission !== null) {
+                if ($exists->user_permission == 1) {
+                    return $next($request);
+                }
+            } elseif ($exists->role_permission == 1) {
                 return $next($request);
             }
 

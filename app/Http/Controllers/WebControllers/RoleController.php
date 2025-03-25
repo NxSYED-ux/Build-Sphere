@@ -17,6 +17,7 @@ class RoleController extends Controller
     public function index()
     {
         try {
+            app('userPermissions');
             $roles = Role::all();
             return view('Heights.Admin.Roles.index', compact('roles'));
         } catch (\Exception $exception) {

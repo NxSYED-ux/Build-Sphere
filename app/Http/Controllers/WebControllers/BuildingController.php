@@ -4,6 +4,7 @@ namespace App\Http\Controllers\WebControllers;
 
 use App\Http\Controllers\Controller;
 use App\Jobs\OrganizationOwnerNotifications;
+use App\Jobs\OrganizationOwnerWithMangerNotifications;
 use App\Jobs\SendRoleNotification;
 use App\Models\Address;
 use App\Models\Building;
@@ -554,8 +555,9 @@ class BuildingController extends Controller
 
             if ($portal == 'admin') {
 
-                dispatch(new OrganizationOwnerNotifications(
+                dispatch(new OrganizationOwnerWithMangerNotifications(
                     $organization_id,
+                    $building->id,
                     $notificationImage->file_path,
                     'Building updated by Admin',
                     $message,
@@ -570,8 +572,9 @@ class BuildingController extends Controller
 
             } elseif ($portal == 'owner') {
 
-                dispatch(new OrganizationOwnerNotifications(
+                dispatch(new OrganizationOwnerWithMangerNotifications(
                     $organization_id,
+                    $building->id,
                     $notificationImage->file_path,
                     "Building updated by {$request->user()->name}",
                     $message,
@@ -629,8 +632,9 @@ class BuildingController extends Controller
                 "admin/buildings/{$building->id}/show",
             ));
 
-            dispatch(new OrganizationOwnerNotifications(
+            dispatch(new OrganizationOwnerWithMangerNotifications(
                 $organization_id,
+                $building->id,
                 $notificationImage->file_path,
                 "Building Submitted by {$user->name}",
                 $message,
@@ -676,8 +680,9 @@ class BuildingController extends Controller
                 "admin/buildings/{$building->id}/show",
             ));
 
-            dispatch(new OrganizationOwnerNotifications(
+            dispatch(new OrganizationOwnerWithMangerNotifications(
                 $organization_id,
+                $building->id,
                 $notificationImage->file_path,
                 "Reminder Sent by {$user->name}",
                 "Admin has been reminded successfully for {$building->name}",
@@ -717,8 +722,9 @@ class BuildingController extends Controller
             $Image = $building->load(['pictures']);
             $notificationImage = $Image->pictures->first();
 
-            dispatch(new OrganizationOwnerNotifications(
+            dispatch(new OrganizationOwnerWithMangerNotifications(
                 $building->organization_id,
+                $building->id,
                 $notificationImage->file_path,
                 "Building rejected",
                 "{$building->name} has been rejected by admin with remarks {$request->remarks}",
@@ -765,8 +771,9 @@ class BuildingController extends Controller
             $Image = $building->load(['pictures']);
             $notificationImage = $Image->pictures->first();
 
-            dispatch(new OrganizationOwnerNotifications(
+            dispatch(new OrganizationOwnerWithMangerNotifications(
                 $building->organization_id,
+                $building->id,
                 $notificationImage->file_path,
                 "Building approved",
                 $message,

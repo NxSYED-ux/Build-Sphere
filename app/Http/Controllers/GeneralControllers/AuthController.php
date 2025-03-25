@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\GeneralControllers;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\LoginRequest;
 use App\Models\User;
 use App\Models\UserFcmToken;
 use Illuminate\Http\RedirectResponse;
@@ -34,15 +33,15 @@ class AuthController extends Controller
     }
 
     // Login
-    public function adminLogin(LoginRequest $request): RedirectResponse
+    public function adminLogin(Request $request): RedirectResponse
     {
         return $this->login($request,'admin');
     }
-    public function ownerLogin(LoginRequest $request): RedirectResponse
+    public function ownerLogin(Request $request): RedirectResponse
     {
         return $this->login($request,'owner');
     }
-    public function login(LoginRequest $request, string $portal = 'staff-user')
+    public function login(Request $request, string $portal = 'staff-user')
     {
         $request->validate([
             'email' => 'required|string|email|max:50',
@@ -75,6 +74,7 @@ class AuthController extends Controller
             }
 
             $token = JWTAuth::fromUser($user);
+            Log::info($token);
 
             $route = match ($portal) {
                 'admin' => 'admin_dashboard',
@@ -97,17 +97,34 @@ class AuthController extends Controller
         try {
             $token = $request->header('Authorization') ?? $request->cookie('jwt_token');
 
+            $issuer = $this->getIssuerFromToken($token);
+
             if ($request->fcmToken) {
                 UserFcmToken::where('token', $request->fcmToken)->delete();
             }
 
             if ($token) {
                 JWTAuth::setToken($token)->invalidate(true);
-                return $this->handleResponse($request, 200, 'success', 'Logout successful', 'login');
             }
-            return $this->handleResponse($request, 200, 'success', 'Logout successful', 'login');
+
+            return $this->handleResponse($request, 200, 'success', 'Logout successful', $issuer ?? '/');
         } catch (JWTException $e) {
-            return $this->handleResponse($request, 500, 'error', $e->getMessage(), 'login');
+            Log::error("Logout error: " . $e->getMessage());
+            return $this->handleResponse($request, 500, 'error', '', '/');
+        }
+    }
+
+    private function getIssuerFromToken($token)
+    {
+        try {
+            if (!$token) {
+                return null;
+            }
+
+            $payload = JWTAuth::setToken($token)->getPayload();
+            return $payload->get('iss') ?? null;
+        } catch (\Exception $e) {
+            return null;
         }
     }
 
@@ -123,7 +140,7 @@ class AuthController extends Controller
 
         if ($redirectTo) {
             $cookie = $token ? cookie('jwt_token', $token) : cookie()->forget('jwt_token');
-            return redirect()->route($redirectTo)->with($heading, $data)->cookie($cookie);
+            return redirect()->to($redirectTo)->with($heading, $data)->cookie($cookie);
         }
         return redirect()->back()->withErrors([$heading => $data])->withInput();
     }

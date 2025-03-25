@@ -39,8 +39,9 @@ class AuthMiddleware
                 return $this->handleResponse($request,'Your role has been changed by administrator', 403);
             }
 
-            $request->merge(['user' => $user]);
             $request->attributes->set('token', $tokenData);
+            $request->merge(['user' => $user]);
+
             return $next($request);
 
         } catch (TokenExpiredException $e) {
@@ -72,7 +73,7 @@ class AuthMiddleware
             return response()->json(['error' => $message], $statusCode);
         }
 
-        return redirect()->back()->with('error', $message);
+        abort(403, $message);
     }
 
 }
