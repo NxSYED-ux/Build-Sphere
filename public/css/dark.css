@@ -12,7 +12,7 @@
         --sidenavbar-text-color: #F1F1F1;
         --sidenavbar-text-hover-color: #43AAFF;
         --sidenavbar-hover-background-color: #252525;
-        --sidenavbar-border-color: #ffff;
+        --sidenavbar-border-color: #43AAFF;
         --sidenavbar-seperator-color: #fff;
 
         /* Application Logo */
@@ -127,4 +127,5 @@
             --border-color: #495057;
             --btn-bg: #ff6b6b;
             --btn-text: #ffff;
+
 }

@@ -3,36 +3,36 @@
 @section('title', 'Owner Dashboard')
 
 @push('styles')
-    <style> 
-    
-    #main{ 
+    <style>
+
+    #main{
         }
         .padding-y {
             padding-top: .5rem !important;
             padding-bottom: .5rem !important;
-            transition: padding .1s; 
+            transition: padding .1s;
         }
 
         .dashboard_Header {
             font-size: 22px;
-            display: inline; 
-        } 
+            display: inline;
+        }
 
         .padding-y:hover {
             padding-top: .3rem !important;
             padding-bottom: .7rem !important;
-        }   
+        }
 
         .border_left_blue{
             border-left: 4px solid #184E83;
         }
         .border_left_grey{
             border-left: 4px solid #adadad;
-        } 
+        }
 
         .border_grey{
             border-left: 1px solid #adadad;
-        }  
+        }
 
         .dashborad-card1 h3{
             font-size: 30px;
@@ -43,10 +43,10 @@
             font-size: 14px;
             font-weight: 500;
             color: white;
-            white-space: nowrap; 
-            overflow: hidden; 
-            text-overflow: ellipsis; 
-        } 
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
 
         .dashboard-card2 .card-body{
             background-color: #ffff;
@@ -58,118 +58,118 @@
             text-decoration: none;
         }
         .dashboard-card2 .currentDate{
-            color: #5f6769; 
-            font-size: 11px; 
+            color: #5f6769;
+            font-size: 11px;
             font-weight: bold;
         }
         .dashboard-card2 .currentMonth{
-            color: #5f6769; 
-            font-size: 11px; 
+            color: #5f6769;
+            font-size: 11px;
             font-weight: bold;
         }
         .dashboard-card2 .getPdfButton{
             background-color: #f39c12;
-            border: 0px; color: white; 
-            font-size: 12px; 
-            font-weight: bold !important; 
-            height: 20px; 
-            width: 70px; 
+            border: 0px; color: white;
+            font-size: 12px;
+            font-weight: bold !important;
+            height: 20px;
+            width: 70px;
             border-radius: 3px;
         }
         .dashboard-card2 .h2{
             color: black;
-            font-size: 26px; 
+            font-size: 26px;
             font-weight: bold;
         }
         .dashboard-card2 .h3{
             color: black;
             font-size: 15px;
-        }  
+        }
 
         .canvas-container {
-            height: 400px; 
+            height: 400px;
             margin-bottom: 30px;
         }
         canvas {
-            width: 100%; 
-            height: 400px; 
+            width: 100%;
+            height: 400px;
         }
 
         .zoom-in:hover {
             transform: scale(1.05);
         }
-        
-    </style> 
-@endpush 
 
-@section('content') 
+    </style>
+@endpush
 
-    <!--  --> 
+@section('content')
+
+    <!--  -->
     <x-Owner.top-navbar :searchVisible="true"/>
     <!--  -->
-    <x-Owner.side-navbar :openSections="['Dashboard']"/>   
- 
-    <div id="main" style="margin-top: 60px;"> 
-    
+    <x-Owner.side-navbar :openSections="['Dashboard']"/>
+
+    <div id="main" style="margin-top: 60px;">
+
         <!-- Your main content goes here -->
         <div class="container-fluid">
-        
+
             <div class="row">
                 <div class="col-12">
-                    <div class="content-wrapper" style="min-height: 751px;"> 
-                        <section class="content-header mt-1">  
-                            <h3 class="inline-span dashboard_Header">Dashboard</h3> 
-                             
+                    <div class="content-wrapper" style="min-height: 751px;">
+                        <section class="content-header mt-1">
+                            <h3 class="inline-span dashboard_Header">Dashboard</h3>
+
                         </section>
-                        <section class="content">                           
-                        
+                        <section class="content">
+
                             <div class="row my-2">
                                 <!--  -->
                                 <div class="col-lg-6 col-md-12">
                                     <div class="row">
-                                            <x-owner-dashboard-card 
-                                                :value="'0'" 
-                                                :title="'Total Buildings'" 
-                                                :valueId="'totalBuildings'" 
-                                                :bgColor="'#fc7b54'" 
-                                                :icon="'bx bx-buildings'" 
-                                                :iconSize="'60px'" 
+                                            <x-owner-dashboard-card
+                                                :value="'0'"
+                                                :title="'Total Buildings'"
+                                                :valueId="'totalBuildings'"
+                                                :bgColor="'#fc7b54'"
+                                                :icon="'bx bx-buildings'"
+                                                :iconSize="'60px'"
                                             />
                                             <x-owner-dashboard-card
-                                                :value="'0'" 
-                                                :title="'Total Levels'" 
-                                                :valueId="'totalLevels'" 
-                                                :bgColor="'#bdbebe'" 
-                                                :icon="'bx bxs-business'" 
-                                                :iconSize="'60px'" 
+                                                :value="'0'"
+                                                :title="'Total Levels'"
+                                                :valueId="'totalLevels'"
+                                                :bgColor="'#bdbebe'"
+                                                :icon="'bx bxs-business'"
+                                                :iconSize="'60px'"
                                             />
                                             <x-owner-dashboard-card
-                                                :value="'0'" 
-                                                :title="'Total Units'" 
-                                                :valueId="'totalUnits'" 
-                                                :bgColor="'#31bacd'" 
-                                                :icon="'bx bxs-home'" 
-                                                :iconSize="'60px'" 
+                                                :value="'0'"
+                                                :title="'Total Units'"
+                                                :valueId="'totalUnits'"
+                                                :bgColor="'#31bacd'"
+                                                :icon="'bx bxs-home'"
+                                                :iconSize="'60px'"
                                             />
                                             <x-owner-dashboard-card
-                                                :value="'0'" 
-                                                :title="'Total Staff'" 
-                                                :valueId="'totalStaff'" 
-                                                :bgColor="'#f361fb'" 
-                                                :image="'icons/house-icon-2.png'" 
-                                                :icon="''" 
-                                            /> 
+                                                :value="'0'"
+                                                :title="'Total Staff'"
+                                                :valueId="'totalStaff'"
+                                                :bgColor="'#f361fb'"
+                                                :image="'icons/house-icon-2.png'"
+                                                :icon="''"
+                                            />
                                     </div>
                                 </div>
                                 <!-- Image Column -->
                                 <div class="col-lg-6 col-md-12 d-flex align-items-center justify-content-center">
                                     <div class="image-frame shadow rounded-4" style="width: 100%; height: 290px; padding: 0px; background-color: #f8f9fa; overflow: hidden; object-fit: cover;">
-                                        <img src="{{ asset('img/buildings/building6.jpg') }}" id="buildingImage" class="img-fluid h-100 w-100 rounded-4 zoom-in" alt="Image Description" style="object-fit: cover; transition: transform 0.5s ease;">
+                                        <img src="{{ asset('img/buildings/building_1.jpg') }}" id="buildingImage" class="img-fluid h-100 w-100 rounded-4 zoom-in" alt="Image Description" style="object-fit: cover; transition: transform 0.5s ease;">
                                     </div>
-                                </div>  
-                            </div>    
-                            
-                            <!-- Charts --> 
+                                </div>
+                            </div>
+
+                            <!-- Charts -->
                             <!-- <div class="row">
                                 <div class="col-md-6 col-lg-6">
                                     <div id="chartContainer" style="height: 400px; width: 600px;"></div>
@@ -185,19 +185,19 @@
                                     <div class="box mx-1">
                                         <div class="container mt-4">
                                             <div class="d-flex justify-content-between align-items-center mb-0">
-                                                <h2 class="">Buildings</h2> 
-                                            </div>  
+                                                <h2 class="">Buildings</h2>
+                                            </div>
                                             <div class="card shadow p-3 mb-5 bg-body rounded" style="border: none;">
                                                 <div class="card-body " style="overflow-x: auto;">
                                                     <table id="usersTable" class="table shadow-sm table-hover table-striped">  <!-- table-bordered -->
-                                                    <thead class="shadow"> 
+                                                    <thead class="shadow">
                                                         <tr>
                                                             <th>ID</th>
                                                             <th>Name</th>
                                                             <th>Address</th>
                                                             <th>Floors</th>
                                                             <th>Year Built</th>
-                                                            <th>Type</th> 
+                                                            <th>Type</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody>
@@ -207,7 +207,7 @@
                                                             <td>123 Main St</td>
                                                             <td>50</td>
                                                             <td>2018</td>
-                                                            <td>Commercial</td> 
+                                                            <td>Commercial</td>
                                                         </tr>
                                                         <tr>
                                                             <td>2</td>
@@ -215,7 +215,7 @@
                                                             <td>456 Oak Ave</td>
                                                             <td>20</td>
                                                             <td>2019</td>
-                                                            <td>Residential</td> 
+                                                            <td>Residential</td>
                                                         </tr>
                                                         <tr>
                                                             <td>3</td>
@@ -223,7 +223,7 @@
                                                             <td>789 Pine Blvd</td>
                                                             <td>15</td>
                                                             <td>2017</td>
-                                                            <td>Mixed-Use</td> 
+                                                            <td>Mixed-Use</td>
                                                         </tr>
                                                         <tr>
                                                             <td>4</td>
@@ -231,7 +231,7 @@
                                                             <td>321 Birch Ln</td>
                                                             <td>12</td>
                                                             <td>2020</td>
-                                                            <td>Commercial</td> 
+                                                            <td>Commercial</td>
                                                         </tr>
                                                         <tr>
                                                             <td>5</td>
@@ -239,7 +239,7 @@
                                                             <td>654 Cedar Dr</td>
                                                             <td>25</td>
                                                             <td>2018</td>
-                                                            <td>Residential</td> 
+                                                            <td>Residential</td>
                                                         </tr>
                                                         <tr>
                                                             <td>6</td>
@@ -247,7 +247,7 @@
                                                             <td>987 Elm St</td>
                                                             <td>30</td>
                                                             <td>2019</td>
-                                                            <td>Commercial</td> 
+                                                            <td>Commercial</td>
                                                         </tr>
                                                         <tr>
                                                             <td>7</td>
@@ -255,7 +255,7 @@
                                                             <td>159 Maple Rd</td>
                                                             <td>22</td>
                                                             <td>2020</td>
-                                                            <td>Residential</td> 
+                                                            <td>Residential</td>
                                                         </tr>
                                                         <tr>
                                                             <td>8</td>
@@ -263,7 +263,7 @@
                                                             <td>753 Ash St</td>
                                                             <td>18</td>
                                                             <td>2017</td>
-                                                            <td>Mixed-Use</td> 
+                                                            <td>Mixed-Use</td>
                                                         </tr>
                                                         <tr>
                                                             <td>9</td>
@@ -271,7 +271,7 @@
                                                             <td>852 Walnut Ave</td>
                                                             <td>40</td>
                                                             <td>2018</td>
-                                                            <td>Commercial</td> 
+                                                            <td>Commercial</td>
                                                         </tr>
                                                         <tr>
                                                             <td>10</td>
@@ -279,7 +279,7 @@
                                                             <td>951 Willow Ln</td>
                                                             <td>28</td>
                                                             <td>2019</td>
-                                                            <td>Residential</td> 
+                                                            <td>Residential</td>
                                                         </tr>
                                                         <tr>
                                                             <td>11</td>
@@ -287,7 +287,7 @@
                                                             <td>147 Spruce St</td>
                                                             <td>35</td>
                                                             <td>2020</td>
-                                                            <td>Residential</td> 
+                                                            <td>Residential</td>
                                                         </tr>
                                                         <tr>
                                                             <td>12</td>
@@ -295,7 +295,7 @@
                                                             <td>258 Aspen Blvd</td>
                                                             <td>16</td>
                                                             <td>2019</td>
-                                                            <td>Commercial</td> 
+                                                            <td>Commercial</td>
                                                         </tr>
                                                         <tr>
                                                             <td>13</td>
@@ -303,7 +303,7 @@
                                                             <td>369 Sycamore Dr</td>
                                                             <td>10</td>
                                                             <td>2018</td>
-                                                            <td>Residential</td> 
+                                                            <td>Residential</td>
                                                         </tr>
                                                         <tr>
                                                             <td>14</td>
@@ -311,7 +311,7 @@
                                                             <td>741 Birch Ln</td>
                                                             <td>8</td>
                                                             <td>2017</td>
-                                                            <td>Residential</td> 
+                                                            <td>Residential</td>
                                                         </tr>
                                                         <tr>
                                                             <td>15</td>
@@ -319,7 +319,7 @@
                                                             <td>852 Oak Ave</td>
                                                             <td>25</td>
                                                             <td>2020</td>
-                                                            <td>Mixed-Use</td> 
+                                                            <td>Mixed-Use</td>
                                                         </tr>
                                                         <tr>
                                                             <td>16</td>
@@ -327,7 +327,7 @@
                                                             <td>963 Pine Blvd</td>
                                                             <td>33</td>
                                                             <td>2019</td>
-                                                            <td>Commercial</td> 
+                                                            <td>Commercial</td>
                                                         </tr>
                                                         <tr>
                                                             <td>17</td>
@@ -335,7 +335,7 @@
                                                             <td>174 Maple Rd</td>
                                                             <td>20</td>
                                                             <td>2018</td>
-                                                            <td>Residential</td> 
+                                                            <td>Residential</td>
                                                         </tr>
                                                         <tr>
                                                             <td>18</td>
@@ -343,7 +343,7 @@
                                                             <td>285 Cedar Dr</td>
                                                             <td>12</td>
                                                             <td>2017</td>
-                                                            <td>Commercial</td> 
+                                                            <td>Commercial</td>
                                                         </tr>
                                                         <tr>
                                                             <td>19</td>
@@ -351,7 +351,7 @@
                                                             <td>396 Birch Ln</td>
                                                             <td>15</td>
                                                             <td>2019</td>
-                                                            <td>Residential</td> 
+                                                            <td>Residential</td>
                                                         </tr>
                                                         <tr>
                                                             <td>20</td>
@@ -359,14 +359,14 @@
                                                             <td>507 Spruce St</td>
                                                             <td>40</td>
                                                             <td>2020</td>
-                                                            <td>Commercial</td> 
+                                                            <td>Commercial</td>
                                                         </tr>
                                                     </tbody>
 
                                                     </table>
                                                 </div>
                                             </div>
-                                        </div> 
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -378,7 +378,7 @@
             </div>
         </div>
 
-    </div> 
+    </div>
 
     @endsection
 
@@ -415,7 +415,7 @@
                 },
                 "columnDefs": [
                     {
-                        "targets": [0, 1, 2, 3, 4, 5], 
+                        "targets": [0, 1, 2, 3, 4, 5],
                         "visible": true
                     },
                     {
@@ -466,8 +466,8 @@
                     table.buttons().container().appendTo('#datatable-buttons');
                 }
             });
-        }); 
-    </script> 
+        });
+    </script>
 
     <script src="https://cdn.canvasjs.com/canvasjs.min.js"></script>
 
@@ -560,8 +560,8 @@
         integrity="sha512-bjgnUKX4azu3dLTVtie9u6TKqgx29RBwfj3QXYt5EKfWM/9hPSAI/4qcV5NACjwAo8UtTeWefx6Zq5PHcMm7Tg=="
         data-cf-beacon='{"rayId":"807fd0b9dd75d1dc","token":"68c5ca450bae485a842ff76066d69420","version":"2023.8.0","si":100}'
         crossorigin="anonymous">
-    </script> 
-    
+    </script>
+
      <!-- current date and time -->
     <script>
         // Create an array of month names
@@ -593,6 +593,6 @@
 
         // Display current month with class "currentMonth"
         displayDateOrMonth("month", "currentMonth");
-    </script> 
+    </script>
 
 @endpush

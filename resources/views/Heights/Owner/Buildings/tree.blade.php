@@ -161,83 +161,7 @@
         }
 
 
-        /* Shimmer Animation */
-        @keyframes shimmerAnimation {
-            0% { background-position: -200% 0; }
-            100% { background-position: 200% 0; }
-        }
 
-        /* Shimmer Card */
-        .shimmer-card {
-            width: 220px;
-            height: 120px;
-            background: #f8f8f8;
-            border-radius: 10px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            margin: 10px auto;
-        }
-
-        /* Image Placeholder */
-        .shimmer-image {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            background: linear-gradient(90deg, #f4f4f4 25%, #e0e0e0 50%, #f4f4f4 75%);
-            background-size: 200% 100%;
-            animation: shimmerAnimation 1.5s infinite linear;
-        }
-
-        /* Text Placeholder */
-        .shimmer-text {
-            height: 15px;
-            background: linear-gradient(90deg, #f4f4f4 25%, #e0e0e0 50%, #f4f4f4 75%);
-            background-size: 200% 100%;
-            animation: shimmerAnimation 1.5s infinite linear;
-            border-radius: 5px;
-            margin-top: 8px;
-        }
-
-        /* Title and Subtitle Styling */
-        .shimmer-title {
-            width: 120px;
-            height: 18px;
-        }
-
-        .shimmer-subtitle {
-            width: 80px;
-        }
-
-        /* Connector Circle */
-        .shimmer-connector {
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background: #f8f8f8;
-            border: 2px solid #ddd;
-            position: absolute;
-            bottom: -12px;
-            left: 50%;
-            transform: translateX(-50%);
-        }
-
-        /* Branch Layout */
-        .shimmer-branch {
-            display: flex;
-            justify-content: center;
-            margin-top: 20px;
-        }
-
-        .shimmer-multi {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-            justify-content: center;
-        }
     </style>
 
 @endpush
@@ -280,30 +204,8 @@
         </div>
 
         @if($building)
-            <!-- Shimmer Placeholder -->
-            <div id="shimmer-container">
-                <!-- Top Level (Building) -->
-                <div class="shimmer-card shimmer-root">
-                    <div class="shimmer-image"></div>
-                    <div class="shimmer-text shimmer-title"></div>
-                    <div class="shimmer-text shimmer-subtitle"></div>
-                    <div class="shimmer-connector"></div>
-                </div>
-
-                <!-- Fourth Level (Units) -->
-                <div class="shimmer-branch shimmer-multi">
-                    @foreach($units as $unit)
-                        <div class="shimmer-card">
-                            <div class="shimmer-image"></div>
-                            <div class="shimmer-text shimmer-title"></div>
-                            <div class="shimmer-text shimmer-subtitle"></div>
-                            <div class="shimmer-connector"></div>
-                        </div>
-                    @endforeach
-                </div>
+            <div id="tree">
             </div>
-        <div id="tree">
-        </div>
         @else
             <div class="d-flex justify-content-center align-items-center vh-100">
                 <div class="text-center">
@@ -311,44 +213,6 @@
                 </div>
             </div>
         @endif
-    </div>
-
-    <!-- Building Modal -->
-    <div class="modal fade" id="BuildingModal" tabindex="-1" aria-labelledby="buildingModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="buildingModalLabel">Building Details</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                        <div id="nodeDetailsBuilding">
-                        </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Owner Modal -->
-    <div class="modal fade" id="OwnerModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Owner Details</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body" >
-                    <div id="nodeDetailsOwner">
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                </div>
-            </div>
-        </div>
     </div>
 
     <!-- Unit Modal -->
@@ -375,16 +239,6 @@
     <script>
 
         window.onload = function () {
-            let shimmerContainer = document.getElementById("shimmer-container");
-            let chartContainer = document.getElementById("tree");
-
-            if (shimmerContainer) {
-                shimmerContainer.style.display = "none";
-            }
-
-            if (chartContainer) {
-                chartContainer.style.display = "block";
-            }
 
             //JavaScript
             OrgChart.templates.ana.plus =

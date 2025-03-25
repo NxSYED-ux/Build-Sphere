@@ -28,12 +28,29 @@
             </a>
         </li>
         <li>
-            <a class="dropdown-item d-flex align-items-center" href="{{ $logoutRoute }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+            <a class="dropdown-item d-flex align-items-center" href="{{ $logoutRoute }}"
+               onclick="event.preventDefault(); handleLogout();">
                 <i class="fa fa-power-off me-2"></i> Logout
             </a>
             <form id="logout-form" action="{{ $logoutRoute }}" method="POST" class="d-none">
                 @csrf
+                <input type="hidden" name="fcmToken" id="fcm_token">
             </form>
         </li>
+
+        <script>
+            function handleLogout() {
+                const fcmToken = localStorage.getItem('newFcmToken');
+
+                if (fcmToken) {
+                    document.getElementById('fcm_token').value = fcmToken;
+
+                    localStorage.removeItem('newFcmToken');
+                }
+
+                document.getElementById('logout-form').submit();
+            }
+        </script>
+
     </ul>
 </li>

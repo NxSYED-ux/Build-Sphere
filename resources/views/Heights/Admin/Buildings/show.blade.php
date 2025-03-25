@@ -405,65 +405,27 @@
         </section>
     </div>
 
-
-
-    <!-- Building Modal -->
-    <div class="modal fade" id="BuildingModal" tabindex="-1" aria-labelledby="buildingModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="buildingModalLabel">Building Details</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                        <div id="nodeDetailsBuilding">
-                        </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Owner Modal -->
-    <div class="modal fade" id="OwnerModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Owner Details</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body" >
-                    <div id="nodeDetailsOwner">
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-
     <!-- Unit Modal -->
     <div class="modal fade" id="UnitModal" data-bs-backdrop="static" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Unit Details</h5>
-                    <button type="button" class="btn-close model-btn-close" data-bs-dismiss="modal"></button>
+        <div class="modal-dialog modal-dialog-centered"  style="max-width: 400px;">
+            <div class="modal-content rounded-3 overflow-hidden">
+                <div class="position-relative">
+                    <!-- Close Button -->
+                    <button type="button" class="btn-close position-absolute top-0 end-0 m-2 p-2 bg-white rounded-circle shadow-sm" data-bs-dismiss="modal"></button>
+
+                    <!-- Unit Image -->
+                    <img id="unitImage" src="default-image.jpg" class="w-100" style="height: 200px;" alt="Unit Image">
                 </div>
-                <div class="modal-body">
-                    <div id="nodeDetailsUnit"></div>
-                </div>
-                <div class="modal-footer">
+
+                <!-- Unit Details -->
+                <div class="p-3">
+                    <h5 id="unitTitle" class="text-primary"></h5>
+                    <p><strong>Type:</strong> <span id="unitType"></span></p>
+                    <p><strong>Price:</strong> <span id="unitPrice"></span></p>
                 </div>
             </div>
         </div>
     </div>
-
-
 
     <!-- Reject Building Modal -->
     <div class="modal fade" id="RejectBuildingModal" tabindex="-1" aria-labelledby="RejectBuildingModalLabel" aria-hidden="true">
@@ -707,49 +669,13 @@
 
         function populateUnitModal(unitData) {
             let unit = unitData.Unit;
-            let userUnit = unit.user_units.length > 0 ? unit.user_units[0] : null;
-            let user = userUnit ? userUnit.user : null;
-            let saleOrRent = unit.sale_or_rent ? unit.sale_or_rent : null;
-
+            let saleOrRent = unit.sale_or_rent ? unit.sale_or_rent : 'N/A';
             let unitImage = unit.pictures.length > 0 ? '/' + unit.pictures[0].file_path : 'default-image.jpg';
-            let userImage = user ? '/' + user.picture : '/img/placeholder-profile.png';
-            let userName = user ? user.name : 'N/A';
 
-            let saleTemplate = `
-                <div class="card shadow-sm p-3" style="border: 1px solid #008CFF;">
-                    <div class="d-flex align-items-center">
-                        <!-- Unit Image -->
-                        <div class="flex-shrink-0">
-                            <img src="${unitImage}" class="rounded img-fluid border" width="150" alt="Unit Image">
-                        </div>
-
-                        <!-- Unit Details -->
-                        <div class="ms-3">
-                            <h5 class="mb-2" style="color: #008CFF;">SALE - ${unit.unit_name}</h5>
-                            <p class="mb-1"><strong>Type:</strong> ${unit.unit_type}</p>
-                            <p class="mb-1"><strong>Price:</strong> ${unit.price} PKR (For Sale)</p>
-                        </div>
-                    </div>
-                </div>`;
-
-            let rentTemplate = `
-                <div class="card shadow-sm p-3" style="border: 1px solid #008CFF;">
-                    <div class="d-flex align-items-center">
-                        <!-- Unit Image -->
-                        <div class="flex-shrink-0">
-                            <img src="${unitImage}" class="rounded img-fluid border" width="150" alt="Unit Image">
-                        </div>
-
-                        <!-- Unit Details -->
-                        <div class="ms-3">
-                            <h5 class="mb-2" style="color: #008CFF;">${saleOrRent} - ${unit.unit_name}</h5>
-                            <p class="mb-1"><strong>Type:</strong> ${unit.unit_type}</p>
-                            <p class="mb-1"><strong>Price:</strong> ${unit.price} PKR/month</p>
-                        </div>
-                    </div>
-                </div>`;
-
-            document.getElementById('nodeDetailsUnit').innerHTML = unit.sale_or_rent === "Sale" ? saleTemplate : rentTemplate;
+            document.getElementById('unitImage').src = unitImage;
+            document.getElementById('unitTitle').innerHTML = `${saleOrRent} - ${unit.unit_name}`;
+            document.getElementById('unitType').innerText = unit.unit_type;
+            document.getElementById('unitPrice').innerText = `${unit.price} PKR ${saleOrRent === 'Sale' ? '(For Sale)' : '/month'}`;
         }
 
 

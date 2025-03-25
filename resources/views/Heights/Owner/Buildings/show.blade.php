@@ -303,6 +303,12 @@
             }
         }
 
+
+    /*    */
+        .unit-user-details{
+            background-color: var(--sidenavbar-body-color);
+        }
+
     </style>
 
 @endpush
@@ -409,17 +415,31 @@
     </div>
 
     <!-- Unit Modal -->
-    <div class="modal fade" id="UnitModal" data-bs-backdrop="static" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Unit Details</h5>
-                    <button type="button" class="btn-close model-btn-close" data-bs-dismiss="modal"></button>
+    <div class="modal fade" id="UnitModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" style="max-width: 380px;">
+            <div class="modal-content rounded-3 shadow">
+                <div class="position-relative">
+                    <!-- Close Button -->
+                    <button type="button" class="btn-close position-absolute top-0 end-0 m-2 p-2 bg-white rounded-circle shadow-sm" data-bs-dismiss="modal"></button>
+
+                    <!-- Unit Image -->
+                    <img id="unitImage" src="default-image.jpg" class="w-100 rounded-top" style="height: 200px; object-fit: cover;" alt="Unit Image">
                 </div>
-                <div class="modal-body">
-                    <div id="nodeDetailsUnit"></div>
-                </div>
-                <div class="modal-footer">
+
+                <!-- Unit Details -->
+                <div class="p-3">
+                    <h5 id="unitTitle" class="text-primary fw-bold mb-1"></h5>
+                    <p class="mb-1"><strong>Type:</strong> <span id="unitType"></span></p>
+                    <p class="mb-2"><strong>Price:</strong> <span id="unitPrice"></span></p>
+
+                    <!-- Owner/Tenant Info -->
+                    <div class="border rounded p-2 d-flex align-items-center shadow-sm unit-user-details">
+                        <img id="userImage" src="/img/placeholder-profile.png" class="rounded-circle border me-2" width="50" height="50" alt="User">
+                        <div>
+                            <p class="mb-1 fw-bold" id="userName"></p>
+                            <p class="mb-0" id="userDetail"></p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -614,47 +634,25 @@
             let unit = unitData.Unit;
             let userUnit = unit.user_units.length > 0 ? unit.user_units[0] : null;
             let user = userUnit ? userUnit.user : null;
-            let saleOrRent = unit.sale_or_rent ? unit.sale_or_rent : null;
+            let saleOrRent = unit.sale_or_rent || 'N/A';
 
             let unitImage = unit.pictures.length > 0 ? '/' + unit.pictures[0].file_path : 'default-image.jpg';
             let userImage = user ? '/' + user.picture : '/img/placeholder-profile.png';
             let userName = user ? user.name : 'N/A';
 
-            let saleTemplate = `
-                <div class="card shadow-sm p-3" style="border: 1px solid #008CFF;">
-                    <div class="d-flex align-items-center">
-                        <!-- Unit Image -->
-                        <div class="flex-shrink-0">
-                            <img src="${unitImage}" class="rounded img-fluid border" width="150" alt="Unit Image">
-                        </div>
+            document.getElementById('unitImage').src = unitImage;
+            document.getElementById('unitTitle').innerHTML = `${saleOrRent} - ${unit.unit_name}`;
+            document.getElementById('unitType').innerText = unit.unit_type;
+            document.getElementById('unitPrice').innerText = `${unit.price} PKR ${saleOrRent === 'Sale' ? '(For Sale)' : '/month'}`;
 
-                        <!-- Unit Details -->
-                        <div class="ms-3">
-                            <h5 class="mb-2" style="color: #008CFF;">SALE - ${unit.unit_name}</h5>
-                            <p class="mb-1"><strong>Type:</strong> ${unit.unit_type}</p>
-                            <p class="mb-1"><strong>Price:</strong> ${unit.price} PKR (For Sale)</p>
-                        </div>
-                    </div>
-                </div>`;
+            document.getElementById('userImage').src = userImage;
+            document.getElementById('userName').innerHTML = user ? `<strong>${userName}</strong>` : 'No Buyer/Renter';
 
-            let rentTemplate = `
-                <div class="card shadow-sm p-3" style="border: 1px solid #008CFF;">
-                    <div class="d-flex align-items-center">
-                        <!-- Unit Image -->
-                        <div class="flex-shrink-0">
-                            <img src="${unitImage}" class="rounded img-fluid border" width="150" alt="Unit Image">
-                        </div>
+            let userDetail = saleOrRent === "Sale"
+                ? `Purchased on: ${userUnit ? new Date(userUnit.purchase_date).toLocaleDateString() : 'N/A'}`
+                : `Rent: ${userUnit ? new Date(userUnit.rent_start_date).toLocaleDateString() : 'N/A'} - ${userUnit ? new Date(userUnit.rent_end_date).toLocaleDateString() : 'N/A'}`;
 
-                        <!-- Unit Details -->
-                        <div class="ms-3">
-                            <h5 class="mb-2" style="color: #008CFF;">${saleOrRent} - ${unit.unit_name}</h5>
-                            <p class="mb-1"><strong>Type:</strong> ${unit.unit_type}</p>
-                            <p class="mb-1"><strong>Price:</strong> ${unit.price} PKR/month</p>
-                        </div>
-                    </div>
-                </div>`;
-
-            document.getElementById('nodeDetailsUnit').innerHTML = unit.sale_or_rent === "Sale" ? saleTemplate : rentTemplate;
+            document.getElementById('userDetail').innerText = userDetail;
         }
 
 

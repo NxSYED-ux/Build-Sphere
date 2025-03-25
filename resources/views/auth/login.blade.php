@@ -497,8 +497,8 @@
                             vapidKey: vapidKey.trim(),
                             serviceWorkerRegistration: registration
                         });
-
                         document.getElementById("newFcmToken").value = token;
+                        localStorage.setItem('newFcmToken', token);
                     }
                 } catch (error) {
                     console.error("Error retrieving FCM token:", error);

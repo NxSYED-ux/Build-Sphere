@@ -29,6 +29,92 @@
             cursor: pointer;
         }
 
+        /*   */
+        .collapse-btn{
+            background-color: #D3D3D3;
+            color: black;
+
+        }
+
+        .collapse-btn {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            text-align: left;
+            margin-top: 1rem;
+            padding: 10px 15px;
+            font-size: 16px;
+            font-weight: 400;
+            border: 1px solid #ced4da;
+            border-radius: 5px;
+            background-color: #f8f9fa;
+            color: #212529;
+            cursor: pointer;
+            transition: background-color 0.3s ease-in-out, border-color 0.3s ease-in-out;
+        }
+
+        .collapse-btn:hover {
+            background-color: #e9ecef;
+            border-color: #adb5bd;
+        }
+
+        .collapse-btn:focus,
+        .collapse-btn:active {
+            box-shadow: none !important;
+            outline: none !important;
+            background-color: #f8f9fa !important;
+        }
+
+        .collapse-btn i {
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .collapse-btn[aria-expanded="true"] i {
+            transform: rotate(90deg);
+        }
+
+
+        /* Apply Styles to Elements Inside .document-container */
+        .document-container {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        .document-container .bg-light {
+            background-color: var(--bg-color) !important;
+        }
+
+        .document-container .form-control,
+        .document-container .form-select {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+        }
+
+        .document-container .form-control::placeholder {
+            color: var(--border-color);
+        }
+
+        .document-container .btn {
+            background-color: var(--btn-bg);
+            color: var(--btn-text);
+        }
+
+        .document-container .btn:hover {
+            opacity: 0.9;
+        }
+
+        .document-container .btn-danger {
+            background-color: var(--btn-bg);
+            color: var(--btn-text);
+            border-color: var(--btn-bg);
+        }
+
+
+
     </style>
 @endpush
 
@@ -184,6 +270,19 @@
                                                 <!--  -->
                                                 <div class="col-sm-12 col-md-6 col-lg-4">
                                                     <div class="form-group mb-3">
+                                                        <label for="postal_code">Postal Code</label>
+                                                        <input type="text" name="postal_code" id="postal_code" class="form-control @error('postal_code') is-invalid @enderror" value="{{ old('postal_code', $building->address->postal_code ) }}" maxlength="100" placeholder="Enter Postal Code">
+                                                        @error('postal_code')
+                                                        <span class="invalid-feedback" role="alert">
+                                                                <strong>{{ $message }}</strong>
+                                                            </span>
+                                                        @enderror
+                                                    </div>
+                                                </div>
+
+                                                <!--  -->
+                                                <div class="col-sm-12 col-md-6 col-lg-12">
+                                                    <div class="form-group mb-3">
                                                         <label for="location">Location</label>
                                                         <input type="text" name="location" id="location" class="form-control @error('location') is-invalid @enderror" value="{{ old('location', $building->address->location ) }}" maxlength="100" placeholder="Enter Location">
                                                         @error('location')
@@ -194,29 +293,18 @@
                                                     </div>
                                                 </div>
 
-                                                <!--  -->
-                                                <div class="col-sm-12 col-md-6 col-lg-4">
-                                                    <div class="form-group mb-3">
-                                                        <label for="postal_code">Postal Code</label>
-                                                        <input type="text" name="postal_code" id="postal_code" class="form-control @error('postal_code') is-invalid @enderror" value="{{ old('postal_code', $building->address->postal_code ) }}" maxlength="100" placeholder="Enter Postal Code">
-                                                        @error('postal_code')
-                                                        <span class="invalid-feedback" role="alert">
-                                                                <strong>{{ $message }}</strong>
-                                                            </span>
-                                                        @enderror
-                                                    </div>
-                                                </div>
+
                                             </div>
 
                                             <h4>
-                                                <button class="btn w-100 text-start" style="background-color: #D3D3D3;" type="button" data-bs-toggle="collapse" data-bs-target="#pictures" aria-expanded="false" aria-controls="pictures">
-                                                    Pictures <i class="fa fa-chevron-down"></i>
+                                                <button class="collapse-btn w-100 text-start mt-3 d-flex justify-content-between align-items-center" type="button" data-bs-toggle="collapse" data-bs-target="#pictures" aria-expanded="false" aria-controls="pictures">
+                                                    Pictures <i class="fa fa-chevron-left"></i>
                                                 </button>
                                             </h4>
                                             <div id="pictures" class="collapse show collapsible-section mb-3">
                                                 <div class="row">
                                                     <!-- Organization Images -->
-                                                    <div class="ccol-lg-4 col-md-4 col-sm-12">
+                                                    <div class="col-lg-4 col-md-4 col-sm-12">
                                                         <label for="imageInput" class="form-label">Building Pictures</label>
                                                         <input type="file" id="imageInput" name="building_pictures[]" class="form-control" multiple>
                                                         @error('building_pictures.*')
@@ -245,11 +333,11 @@
 
                                             <!-- Documents Section -->
                                             <h4>
-                                                <button class="btn w-100 text-start" style="background-color: #D3D3D3;" type="button" data-bs-toggle="collapse" data-bs-target="#documents" aria-expanded="false" aria-controls="documents">
-                                                    Documents <i class="fa fa-chevron-down"></i>
+                                                <button class="collapse-btn w-100 text-start mt-3 d-flex justify-content-between align-items-center" type="button" data-bs-toggle="collapse" data-bs-target="#documents" aria-expanded="false" aria-controls="documents">
+                                                    Documents <i class="fa fa-chevron-right"></i>
                                                 </button>
                                             </h4>
-                                            <div id="documents" class="collapse show bg-light p-2 collapsible-section">
+                                            <div id="documents" class="collapse p-2 collapsible-section document-container">
                                                 @foreach ($documentTypes as $type)
                                                     <div class="mb-3 border p-2" data-type="{{ $type }}" data-file-count="{{ $building->documents->where('document_type', $type)->count() }}" data-max-files="5">
                                                         <div class="row">
@@ -305,7 +393,8 @@
                                                 @endforeach
                                             </div>
 
-                                            <div class="col-lg-4 col-md-4 col-12">
+
+                                            <div class="col-12 mt-3">
                                                 <button type="submit" class="btn btn-primary w-100">Update</button>
                                             </div>
                                         </form>

@@ -46,10 +46,6 @@
     <title>@yield('title', 'My App')</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 
-
-
-
-
     <style>
         body {
             font-family: 'Poppins', CircularXX, sans-serif;
@@ -178,9 +174,6 @@
 
 </head>
 <body>
-{{--<div id="notificationContainer"></div>--}}
-
-
 
     <x-real-time-notifications />
     <x-loading-animation />
@@ -236,11 +229,6 @@
             }
         });
     </script>
-
-
-
-
-
 
     @stack('scripts')
 

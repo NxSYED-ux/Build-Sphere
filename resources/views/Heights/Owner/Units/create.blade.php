@@ -307,7 +307,7 @@
                                             </div>
 
                                         </div>
-                                        <input type="hidden" name="status" value="Approved">
+                                        <input type="hidden" name="status" value="Rejected">
                                         <div class="col-12 d-sm-block d-md-none mt-3">
                                             <button type="submit" class="btn btn-primary w-100">Save</button>
                                         </div>
@@ -326,6 +326,7 @@
 @endsection
 
 @push('scripts')
+
 <!-- Image script -->
 <script>
     const imageInput = document.getElementById('image-input');

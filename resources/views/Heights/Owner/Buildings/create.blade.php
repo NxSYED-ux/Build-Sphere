@@ -9,27 +9,6 @@
         #main {
             margin-top: 45px;
         }
-        .padding-y {
-            padding-top: .5rem !important;
-            padding-bottom: .5rem !important;
-            transition: padding .1s;
-        }
-        .padding-y:hover {
-            padding-top: .3rem !important;
-            padding-bottom: .7rem !important;
-        }
-        #add_button {
-            width: 45px;
-            height: 45px;
-            margin-right: 10px;
-            background-color: #adadad;
-            color: black;
-            border: 1px solid grey;
-            font-size: 25px;
-            font-weight: bold;
-            align-items: center;
-            justify-content: center;
-        }
 
         /* Center the input and preview */
         .image-input-container {
@@ -38,11 +17,10 @@
             margin: 0 auto;
         }
 
-        /* Style the label button */
         .image-input-container .custom-file-label {
             display: inline-block;
             background-color: #6c63ff;
-            color: #fff;
+            color: #fff !important;
             padding: 10px 20px;
             border-radius: 5px;
             cursor: pointer;
@@ -50,26 +28,44 @@
             font-weight: bold;
             margin-bottom: 10px;
             transition: background-color 0.3s ease;
+            position: relative;
         }
 
         .image-input-container .custom-file-label:hover {
             background-color: #5752d3;
         }
 
-        /* Image preview area */
         .image-input-container .image-preview {
             display: flex;
             flex-wrap: wrap;
             gap: 10px;
             justify-content: center;
-            border: 2px dashed #6c63ff;
+            align-items: center;
+            border: 2px dashed var(--sidenavbar-text-color);
             border-radius: 10px;
             padding: 15px;
-            background-color: #fff;
+            height: 295px;
+            background-color: var(--main-background-color);
             margin-top: 10px;
+            overflow-y: auto;
+            text-align: center;
         }
 
-        /* No images selected message */
+        .image-input-container .image-preview::-webkit-scrollbar {
+            width: 8px;
+            position: absolute;
+            right: -2px;
+        }
+
+        .image-input-container .image-preview::-webkit-scrollbar-thumb {
+            background-color: var(--sidenavbar-text-color);
+            border-radius: 10px;
+        }
+
+        .image-input-container .image-preview::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
         .image-input-container .image-preview p {
             flex-basis: 100%;
             text-align: center;
@@ -77,7 +73,6 @@
             color: #666;
         }
 
-        /* Style each image item */
         .image-input-container .image-item {
             position: relative;
             width: 120px;
@@ -91,10 +86,16 @@
         .image-input-container .image-item img {
             width: 100%;
             height: 100%;
-            object-fit: cover; /* Change to contain if the image isn't showing as expected */
+            object-fit: cover;
         }
 
-        /* Remove button for each image */
+        @media (max-width: 575.98px) {
+            .image-input-container .image-item {
+                width: 100px;
+                height: 100px;
+            }
+        }
+
         .image-input-container .remove-btn {
             position: absolute;
             top: 5px;
@@ -116,7 +117,6 @@
         .image-input-container .remove-btn:hover {
             background-color: red;
         }
-
 
     </style>
 @endpush
@@ -255,6 +255,19 @@
                                                         <!--  -->
                                                         <div class="col-sm-12 col-md-6 col-lg-6">
                                                             <div class="form-group mb-3">
+                                                                <label for="postal_code">Postal Code</label>
+                                                                <input type="text" name="postal_code" id="postal_code" class="form-control @error('postal_code') is-invalid @enderror" value="{{ old('postal_code') }}" maxlength="100" placeholder="Enter Postal Code">
+                                                                @error('postal_code')
+                                                                <span class="invalid-feedback" role="alert">
+                                                                        <strong>{{ $message }}</strong>
+                                                                    </span>
+                                                                @enderror
+                                                            </div>
+                                                        </div>
+
+                                                        <!--  -->
+                                                        <div class="col-sm-12 col-md-12 col-lg-12">
+                                                            <div class="form-group mb-3">
                                                                 <label for="location">Location</label>
                                                                 <input type="text" name="location" id="location" class="form-control @error('location') is-invalid @enderror" value="{{ old('location') }}" maxlength="100" placeholder="Enter Location">
                                                                 @error('location')
@@ -265,49 +278,40 @@
                                                             </div>
                                                         </div>
 
-                                                        <!--  -->
-                                                        <div class="col-sm-12 col-md-6 col-lg-6">
-                                                            <div class="form-group mb-3">
-                                                                <label for="postal_code">Postal Code</label>
-                                                                <input type="text" name="postal_code" id="postal_code" class="form-control @error('postal_code') is-invalid @enderror" value="{{ old('postal_code') }}" maxlength="100" placeholder="Enter Postal Code">
-                                                                @error('postal_code')
-                                                                <span class="invalid-feedback" role="alert">
-                                                                        <strong>{{ $message }}</strong>
-                                                                    </span>
-                                                                @enderror
-                                                            </div>
-                                                        </div>
                                                     </div>
 
-                                                    <!--  -->
-
                                                 </div>
-                                                <div class="col-lg-4 col-md-4 col-sm-12 col-12 mb-3">
-                                                    <div class="image-input-container mt-4">
-                                                        <label for="image-input" class="custom-file-label">
-                                                            <span>Choose Images</span>
+                                                <div class="col-lg-4 col-md-4 col-sm-12 col-12">
+                                                    <div class="image-input-container mt-1">
+                                                        <label for="image-input" class="-sm-block d-md-none btn btn-primary d-flex align-items-center justify-content-center w-100" style="margin-top: 13px !important; color: #ffff !important;">
+                                                            <i class='bx bx-upload fs-5 px-1'></i> Choose Images
                                                         </label>
                                                         <input type="file" id="image-input" name="building_pictures[]" accept="image/png, image/jpeg, image/jpg, image/gif" multiple hidden>
                                                         <div class="image-preview" id="image-preview">
-                                                            <p>No images selected</p>
+                                                            <p id="image-message">No images selected</p>
+                                                            {{--                                                        <p id="error-message" class="text-danger mt-2"></p>--}}
                                                         </div>
+                                                        <label for="image-input" class="d-none d-md-block btn btn-primary d-flex align-items-center justify-content-center w-100" style="margin-top: 13px !important; color: #ffff !important;">
+                                                            <i class='bx bx-upload fs-5 px-1'></i> Choose Images
+                                                        </label>
+
                                                     </div>
                                                 </div>
                                             </div>
 
                                             <h4>
-                                                <button class="btn w-100 text-start" style="background-color: #D3D3D3;" type="button" data-bs-toggle="collapse" data-bs-target="#documents" aria-expanded="false" aria-controls="documents">
-                                                    Documents <i class="fa fa-chevron-down"></i>
+                                                <button class="btn w-100 text-start  mt-2" style="background-color: #D3D3D3;" type="button" data-bs-toggle="collapse" data-bs-target="#documents" aria-expanded="false" aria-controls="documents">
+                                                    Documents <i class="fa fa-chevron-right"></i>
                                                 </button>
                                             </h4>
-                                            <div id="documents" class="collapse show collapsible-section">
+                                            <div id="documents" class="collapse collapsible-section">
                                                 <button type="button" id="add-document" class="btn btn-light mt-21 mb-2">Add Document</button>
                                                 <div id="documents-container" class="container">
                                                     <!-- Document fields will be appended here -->
                                                 </div>
                                             </div>
 
-                                            <div class="col-4">
+                                            <div class="col-12">
                                                 <button type="submit" class="btn btn-primary mt-2 w-100">Save</button>
                                             </div>
                                         </form>
@@ -396,10 +400,20 @@
     <script>
         const imageInput = document.getElementById('image-input');
         const imagePreview = document.getElementById('image-preview');
+        const imageMessage = document.getElementById('image-message');
 
         imageInput.addEventListener('change', () => {
             const files = imageInput.files;
-            imagePreview.innerHTML = ''; // Clear any previous content
+
+            if (files.length > 4) {
+                imageMessage.textContent = 'You can only select up to 4 images.';
+                imageMessage.style.color = 'red';
+                imageInput.value = '';
+                return;
+            } else {
+            }
+
+            imagePreview.innerHTML = '';
 
             if (files.length > 0) {
                 Array.from(files).forEach((file, index) => {

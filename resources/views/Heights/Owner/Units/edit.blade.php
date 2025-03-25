@@ -10,6 +10,39 @@
             margin-top: 45px;
         }
 
+
+        #imagePreview {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            align-items: center;
+            border: 2px dashed var(--sidenavbar-text-color);
+            border-radius: 10px;
+            padding: 15px;
+            height: 275px;
+            background-color: var(--main-background-color);
+            margin-top: 2px;
+            overflow-y: auto;
+            text-align: center;
+        }
+
+        #uploadImagePreview {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            align-items: center;
+            border: 2px dashed var(--sidenavbar-text-color);
+            border-radius: 10px;
+            padding: 15px;
+            height: 275px;
+            background-color: var(--main-background-color);
+            margin-top: 2px;
+            overflow-y: auto;
+            text-align: center;
+        }
+
         .image-thumbnail {
             display: inline-block;
             margin: 5px;
@@ -219,7 +252,7 @@
                                             <div id="pictures" class="collapse show collapsible-section">
                                                 <div class="row">
                                                     <!-- Unit Images -->
-                                                    <div class="ccol-lg-4 col-md-4 col-sm-12">
+                                                    <div class="col-lg-4 col-md-4 col-sm-12">
                                                         <label for="imageInput" class="form-label">Unit Pictures</label>
                                                         <input type="file" id="imageInput" name="unit_pictures[]" class="form-control" multiple>
                                                         @error('unit_pictures.*')
@@ -229,18 +262,23 @@
                                                     <div class="col-lg-4 col-md-8 col-sm-12">
                                                         <label class="form-label">Already Uploaded</label>
                                                         <div id="imagePreview" class="">
-                                                            @foreach ($unit->pictures as $image)
+                                                            @forelse ($unit->pictures as $image)
                                                                 <div class="image-thumbnail">
                                                                     <img src="{{ asset($image->file_path) }}" class="thumbnail-image" alt="Uploaded Image">
                                                                     <button type="button" class="thumbnail-remove" data-image-id="{{ $image->id }}" onclick="removeExistingImage('{{ $image->id }}')">&times;</button>
                                                                 </div>
-                                                            @endforeach
+                                                            @empty
+                                                                    <p >No images selected</p>
+                                                            @endforelse
                                                         </div>
                                                     </div>
                                                     <div class="col-lg-4 col-md-12 col-sm-12">
                                                         <label class="form-label">New Uploads</label>
-                                                        <div id="imageThumbnails" class="">
-                                                            <!-- Image thumbnails will be inserted here -->
+                                                        <div id="uploadImagePreview">
+                                                            <p id="image-message">No images selected</p>
+                                                            <div id="imageThumbnails" class="">
+                                                                <!-- Image thumbnails will be inserted here -->
+                                                            </div>
                                                         </div>
                                                     </div>
 
@@ -290,30 +328,42 @@
         // document.addEventListener('DOMContentLoaded', function() {
             let selectedImages = [];
             let currentIndex = 0;
-            let uploadedImageCount = document.querySelectorAll('#imagePreview .image-thumbnail').length;
+            const maxImages = 4;
+            const imageMessage = document.getElementById('image-message');
+            let alreadyUploadedCount = document.querySelectorAll('#imagePreview .image-thumbnail').length;
 
             const imageInput = document.getElementById('imageInput');
-            const maxImages = 4;
-            let alreadyUploadedCount = document.querySelectorAll('#imagePreview .image-thumbnail').length;
 
             imageInput.addEventListener('change', handleImageSelection);
 
-            function handleImageSelection(event) {
-                const files = Array.from(event.target.files);
+        function handleImageSelection(event) {
+            let files = Array.from(event.target.files);
 
-                if ((alreadyUploadedCount + selectedImages.length + files.length) > maxImages) {
-                    alert(`You can upload a maximum of ${maxImages} images. You have already uploaded ${alreadyUploadedCount}.`);
-                    imageInput.value = ''; // Clear the input
-                    return;
-                }
+            let availableSlots = maxImages - (alreadyUploadedCount + selectedImages.length);
 
-                selectedImages = [...selectedImages, ...files];
-                currentIndex = selectedImages.length - files.length;
-                renderThumbnails();
-                showImage();
+            if (availableSlots <= 0) {
+                imageMessage.textContent = `You can only upload ${maxImages} images in total. You have already uploaded ${alreadyUploadedCount}.`;
+                imageMessage.style.color = 'red';
+                event.target.value = ''; // Reset input field
+                return;
             }
 
-            function renderThumbnails() {
+            if (files.length > availableSlots) {
+                imageMessage.textContent = `You can only add ${availableSlots} more image(s).`;
+                imageMessage.style.color = 'red';
+                files = files.slice(0, availableSlots);
+            } else {
+                imageMessage.innerHTML = '';
+            }
+
+            selectedImages = [...selectedImages, ...files];
+            currentIndex = selectedImages.length - files.length;
+            renderThumbnails();
+            showImage();
+        }
+
+
+        function renderThumbnails() {
                 const container = document.getElementById('imageThumbnails');
                 container.innerHTML = '';
 
