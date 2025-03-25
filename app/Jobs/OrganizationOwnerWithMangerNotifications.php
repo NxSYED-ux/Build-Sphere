@@ -61,22 +61,20 @@ class OrganizationOwnerWithMangerNotifications implements ShouldQueue
             }
         }
 
-        $managers = ManagerBuilding::where('building_id', $this->buildingId)->get();
+        $managers = ManagerBuilding::where('building_id', $this->buildingId)->pluck('user_id');
 
-        if ($managers) {
-            foreach ($managers as $manager) {
-                if($manager->user_id) {
-                    $managerData = User::find($manager->user_id);
+        if ($managers->isNotEmpty()) {
+            $users = User::whereIn('id', $managers)
+                ->where('id', '!=', $this->initiatorId)
+                ->get();
 
-                    if ($managerData && $managerData->id !== $this->initiatorId) {
-                        Notification::send($managerData, new UserNotification(
-                            $this->image,
-                            $this->heading,
-                            $this->message,
-                            $this->link
-                        ));
-                    }
-                }
+            if ($users->isNotEmpty()) {
+                Notification::send($users, new UserNotification(
+                    $this->image,
+                    $this->heading,
+                    $this->message,
+                    $this->link
+                ));
             }
         }
 
