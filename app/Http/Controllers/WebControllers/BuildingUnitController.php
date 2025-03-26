@@ -268,13 +268,8 @@ class BuildingUnitController extends Controller
     public function adminShow($id)
     {
         try {
-            $unit = BuildingUnit::with(['pictures', 'building', 'organization'])->find($id);
-            return response()->json([
-                'Unit' => $unit,
-                'Pictures' => $unit?->pictures,
-                'Building' => $unit?->building,
-                'Organization' => $unit?->organization,
-            ]);
+            $unit = BuildingUnit::with(['pictures', 'level', 'building', 'organization'])->find($id);
+            return response()->json([ $unit ]);
         } catch (\Exception $e) {
             Log::error('Error fetching Unit Data(Admin): ' . $e->getMessage());
             return response()->json(['error' => 'An error occurred while fetching unit data.'], 500);
@@ -284,7 +279,7 @@ class BuildingUnitController extends Controller
     public function ownerShow($id)
     {
         try {
-            $unit = BuildingUnit::with(['pictures', 'userUnits'])->find($id);
+            $unit = BuildingUnit::with(['pictures', 'userUnits', 'level', 'building', 'organization'])->find($id);
 
             if (!$unit) {
                 return view('Heights.Owner.Units.show', [
