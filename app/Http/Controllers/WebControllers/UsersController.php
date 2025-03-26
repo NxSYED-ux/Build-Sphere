@@ -122,7 +122,7 @@ class UsersController extends Controller
     public function show(string $id)
     {
         try {
-            $user = User::with('role')->findOrFail($id);
+            $user = User::with('role', 'address')->findOrFail($id);
 
             return response()->json([
                 'user' => $user,

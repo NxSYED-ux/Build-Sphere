@@ -279,10 +279,29 @@ class BuildingUnitController extends Controller
     public function ownerShow($id)
     {
         try {
-            $unit = BuildingUnit::with(['pictures', 'userUnits' ])->find($id);
-            return response()->json(['Unit' => $unit]);
+            $unit = BuildingUnit::with(['pictures', 'userUnits'])->find($id);
+
+            if (!$unit) {
+                return view('Heights.Owner.Units.show', [
+                    'unit' => null,
+                    'activeContract' => null,
+                    'pastContract' => null
+                ]);
+            }
+
+            $activeContract = $unit->userUnits()
+                ->where('contract_status', 1)
+                ->first();
+
+            $pastContract = $unit->userUnits()
+                ->where('contract_status', 0)
+                ->orderBy('created_at', 'desc')
+                ->first();
+
+            return view('Heights.Owner.Units.show', compact('unit', 'activeContract', 'pastContract'));
+
         } catch (\Exception $e) {
-            Log::error('Error fetching Unit Data(Admin): ' . $e->getMessage());
+            Log::error("Error fetching Unit Data (Owner) for ID: $id - " . $e->getMessage());
             return response()->json(['error' => 'An error occurred while fetching unit data.'], 500);
         }
     }
