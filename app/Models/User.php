@@ -193,6 +193,7 @@ class User extends Authenticatable implements JWTSubject
             case 'Manager':
             case 'Staff':
                 return optional($this->staffMember)->organization_id;
+            case 'Admin':
             case 'Owner':
                 return optional($this->organization)->id;
             default:

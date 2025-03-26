@@ -265,11 +265,30 @@ class BuildingUnitController extends Controller
 
 
     //Show
-    public function show(BuildingUnit $buildingUnit)
+    public function adminShow($id)
     {
-
+        try {
+            $unit = BuildingUnit::with(['pictures' ])->find($id);
+            return response()->json(['Unit' => $unit]);
+        } catch (\Exception $e) {
+            Log::error('Error fetching Unit Data(Admin): ' . $e->getMessage());
+            return response()->json(['error' => 'An error occurred while fetching unit data.'], 500);
+        }
     }
 
+    public function ownerShow($id)
+    {
+        try {
+            $unit = BuildingUnit::with(['pictures', 'userUnits' ])->find($id);
+            return response()->json(['Unit' => $unit]);
+        } catch (\Exception $e) {
+            Log::error('Error fetching Unit Data(Admin): ' . $e->getMessage());
+            return response()->json(['error' => 'An error occurred while fetching unit data.'], 500);
+        }
+    }
+
+
+    // Edit
     public function adminEdit($id)
     {
         try {
@@ -307,19 +326,16 @@ class BuildingUnitController extends Controller
             $unitTypes = $unitType ? $unitType->values : collect();
 
             if (empty($token['organization_id']) || empty($token['role_name'])) {
-                return redirect()->back()->with('error', 'Unauthorized access detected.');
+                return redirect()->back()->with('error', 'Invalid Unit Id');
             }
 
             $organization_id = $token['organization_id'];
             $role_name = $token['role_name'];
 
             $unit = BuildingUnit::find($id);
-            if(!$unit){
-                return redirect()->back()->with('error', 'Invalid unit Id');
-            }
 
-            if ($organization_id !== $unit->organization_id) {
-                abort(404, 'Page not found');
+            if (!$unit || $organization_id !== $unit->organization_id) {
+                return redirect()->back()->with('error', 'Invalid Unit Id');
             }
 
             $query = Building::select('id', 'name')
@@ -341,6 +357,7 @@ class BuildingUnitController extends Controller
     }
 
 
+    // Update
     public function adminUpdate(Request $request)
     {
         $request->validate([

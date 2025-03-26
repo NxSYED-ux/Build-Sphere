@@ -42,7 +42,7 @@ class SendRoleNotification implements ShouldQueue
 
     public function handle()
     {
-        $users = User::where('role_id', $this->roleId)->get();
+        $users = User::where('role_id', $this->roleId)->where('id', '!=', $this->initiatorId)->get();
 
         if ($users->isNotEmpty()) {
             Notification::send($users, new UserNotification(

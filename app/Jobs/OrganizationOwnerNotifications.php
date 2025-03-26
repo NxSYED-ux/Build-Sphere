@@ -45,10 +45,8 @@ class OrganizationOwnerNotifications implements ShouldQueue
     {
         $organization = Organization::find($this->organizationId);
 
-        if ($organization && $organization->owner_id) {
-            $owner = User::find($organization->owner_id);
-
-            if ($owner && $owner->id !== $this->initiatorId) {
+        if ($organization?->owner_id && $organization->owner_id !== $this->initiatorId) {
+            if ($owner = User::find($organization->owner_id)) {
                 Notification::send($owner, new UserNotification(
                     $this->image,
                     $this->heading,
@@ -58,16 +56,32 @@ class OrganizationOwnerNotifications implements ShouldQueue
             }
         }
 
-        if ($this->initiatorId) {
-            $initiator = User::find($this->initiatorId);
-            if ($initiator) {
-                $initiator->notify(new DatabaseOnlyNotification(
-                    $this->image,
-                    $this->initiatorHeading,
-                    $this->initiatorMessage,
-                    $this->initiatorLink
-                ));
-            }
+        if (!$this->initiatorId) {
+            return;
+        }
+
+        $initiator = User::find($this->initiatorId);
+        if (!$initiator) {
+            return;
+        }
+
+        $initiator->notify(new DatabaseOnlyNotification(
+            $this->image,
+            $this->initiatorHeading,
+            $this->initiatorMessage,
+            $this->initiatorLink
+        ));
+
+        $heading = "{$this->initiatorHeading} by {$initiator->name}";
+        $users = User::where('role_id', 1)->where('id', '!=', $this->initiatorId)->get();
+
+        if ($users->isNotEmpty()) {
+            Notification::send($users, new UserNotification(
+                $this->image,
+                $heading,
+                $this->initiatorMessage,
+                $this->initiatorLink
+            ));
         }
     }
 }

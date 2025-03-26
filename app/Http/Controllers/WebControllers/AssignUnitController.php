@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers\WebControllers;
 use App\Http\Controllers\Controller;
+use App\Models\Building;
 use App\Models\BuildingUnit;
+use App\Models\ManagerBuilding;
 use App\Models\User;
 use App\Models\UserBuildingUnit;
 use App\Models\UserUnitPicture;
@@ -14,42 +16,45 @@ class AssignUnitController extends Controller
 {
     public function index(Request $request)
     {
-        $selectedUnitId = $request->input('unit_id', null);
-        $selectedUserId = $request->input('user_id', null);
+        try {
+            $user = $request->user() ?? abort(403, 'Unauthorized');
+            $token = $request->attributes->get('token');
 
-        //$users = User::where('role_id',4)->pluck('name', 'id');  //Assuming Users role_id = 4 and use this only when you are 100% sure that this is the id and can never delete
-        $users = User::select('id', 'name')->whereHas('role', fn ($query) => $query->where('name', 'User'))->get();    // otherwise use this
-        $units = BuildingUnit::select('id', 'unit_name')->whereDoesntHave('userUnits', fn($q) => $q->where('contract_status', 1)) ->get();
+            $selectedUnitId = $request->input('unit_id');
+            $selectedUserId = $request->input('user_id');
+            $users = User::where('id', '!=', $user->id)->pluck('name', 'id');
+            $units = collect();
+            $buildings = collect();
 
-        return view('your-view-name', compact('selectedUnitId','selectedUserId' , 'users', 'units'));
+            if (empty($token['organization_id']) || empty($token['role_name'])) {
+                return view('Heights.Owner.AssignUnits.index', compact('selectedUnitId', 'selectedUserId', 'users', 'units', 'buildings'));
+            }
+
+            $organizationId = $token['organization_id'];
+            $roleName = $token['role_name'];
+
+            $units = BuildingUnit::select('id', 'unit_name')
+                ->where('availability_status', 'Available')
+                ->where('organization_id', $organizationId)
+                ->get();
+
+            $query = Building::where('organization_id', $organizationId);
+
+            if ($roleName === 'Manager') {
+                $managerBuildingIds = ManagerBuilding::where('user_id', $user->id)->pluck('building_id')->toArray();
+                $query->whereIn('id', $managerBuildingIds);
+            }
+
+            $buildings = $query->get();
+
+            return view('Heights.Owner.AssignUnits.index', compact('selectedUnitId', 'selectedUserId', 'users', 'units', 'buildings'));
+        } catch (\Throwable $e) {
+            Log::error("Error in AssignUnits@index: {$e->getMessage()}", ['exception' => $e]);
+            return redirect()->back()->with('error', 'Something went wrong. Please try again.');
+        }
     }
 
     public function create()
-    {
-        //
-    }
-
-    public function store(Request $request)
-    {
-        //
-    }
-
-    public function show(string $id)
-    {
-        //
-    }
-
-    public function edit(string $id)
-    {
-        //
-    }
-
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    public function destroy(string $id)
     {
         //
     }

@@ -81,26 +81,11 @@ class BuildingLevelController extends Controller
 
     public function ownerCreate(Request $request)
     {
-        $buildings = collect();
-        $user = $request->user() ?? abort(404, 'Unauthorized');
-        $token = $request->attributes->get('token');
+        $buildings = $this->getOwnerBuildings($request);
 
-        if (empty($token['organization_id']) || empty($token['role_name'])) {
-            return response()->json($buildings);
+        if(!$buildings instanceof Building){
+            return $buildings;
         }
-
-        $organization_id = $token['organization_id'];
-        $role_name = $token['role_name'];
-
-        $query = Building::select('id', 'name')
-            ->where('organization_id',$organization_id);
-
-        if ($role_name === 'Manager') {
-            $managerBuildingIds = ManagerBuilding::where('user_id', $user->id)->pluck('building_id')->toArray();
-            $query->whereIn('id', $managerBuildingIds);
-        }
-
-        $buildings = $query->get();
 
         return response()->json($buildings);
     }
@@ -116,23 +101,13 @@ class BuildingLevelController extends Controller
 
     public function ownerStore(Request $request)
     {
-        $user = $request->user() ?? abort(403, 'Unauthorized');
-        $token = $request->attributes->get('token');
-
-        if (!$token || !isset($token['organization_id']) || !isset($token['role_name'])) {
-            return redirect()->back()->withInput()->with('error', 'You cannot perform this action because they are not linked to any organization. Please switch to an organization account to proceed.');
-        }
-
-        $role_name = $token['role_name'];
-
-        if ($role_name === 'Manager' && !ManagerBuilding::where('building_id', $request->building_id)
-                ->where('user_id', $user->id)
-                ->exists()) {
-            return redirect()->back()->withInput()->with('error', 'You do not have access to add units of the selected building.');
+        if ($response = $this->ownerBuildingAccess($request)) {
+            return $response;
         }
 
         return $this->store($request, 'owner','Rejected');
     }
+
     private function store(Request $request, String $portal, $status)
     {
         $validated = $request->validate([
@@ -190,27 +165,12 @@ class BuildingLevelController extends Controller
     public function ownerEdit(Request $request,BuildingLevel $level)
     {
         try {
-            $buildings = collect();
             $level->load(['building']);
-            $user = $request->user() ?? abort(404, 'Unauthorized');
-            $token = $request->attributes->get('token');
+            $buildings = $this->getOwnerBuildings($request);
 
-            if (empty($token['organization_id']) || empty($token['role_name'])) {
-                return response()->json($buildings);
+            if(!$buildings instanceof Building){
+                return $buildings;
             }
-
-            $organization_id = $token['organization_id'];
-            $role_name = $token['role_name'];
-
-            $query = Building::select('id', 'name')
-                ->where('organization_id',$organization_id);
-
-            if ($role_name === 'Manager') {
-                $managerBuildingIds = ManagerBuilding::where('user_id', $user->id)->pluck('building_id')->toArray();
-                $query->whereIn('id', $managerBuildingIds);
-            }
-
-            $buildings = $query->get();
 
             return response()->json([
                 'level' => $level,
@@ -218,7 +178,7 @@ class BuildingLevelController extends Controller
             ]);
 
         } catch (\Exception $e) {
-            Log::error('Error fetching building level data: ' . $e->getMessage());
+            Log::error('Error in ownerEdit: ' . $e->getMessage());
             return response()->json(['error' => 'An error occurred while fetching building level data.'], 500);
         }
     }
@@ -234,19 +194,8 @@ class BuildingLevelController extends Controller
 
     public function ownerUpdate(Request $request)
     {
-        $user = $request->user() ?? abort(403, 'Unauthorized');
-        $token = $request->attributes->get('token');
-
-        if (!$token || !isset($token['organization_id']) || !isset($token['role_name'])) {
-            return redirect()->back()->withInput()->with('error', 'You cannot perform this action because they are not linked to any organization. Please switch to an organization account to proceed.');
-        }
-
-        $role_name = $token['role_name'];
-
-        if ($role_name === 'Manager' && !ManagerBuilding::where('building_id', $request->building_id)
-                ->where('user_id', $user->id)
-                ->exists()) {
-            return redirect()->back()->withInput()->with('error', 'You do not have access to add units of the selected building.');
+        if ($response = $this->ownerBuildingAccess($request)) {
+            return $response;
         }
 
         return $this->update($request, 'owner');
@@ -294,4 +243,50 @@ class BuildingLevelController extends Controller
             return redirect()->back()->withInput()->with('error', 'Something went wrong! Please try again.');
         }
     }
+
+
+    // Helper Functions
+    private function getOwnerBuildings(Request $request)
+    {
+        $user = $request->user() ?? abort(404, 'Unauthorized');
+        $token = $request->attributes->get('token');
+        $buildings = collect();
+
+        if (empty($token['organization_id']) || empty($token['role_name'])) {
+            return response()->json($buildings);
+        }
+
+        $organization_id = $token['organization_id'];
+        $role_name = $token['role_name'];
+
+        $query = Building::select('id', 'name')->where('organization_id', $organization_id);
+
+        if ($role_name === 'Manager') {
+            $managerBuildingIds = ManagerBuilding::where('user_id', $user->id)->pluck('building_id')->toArray();
+            $query->whereIn('id', $managerBuildingIds);
+        }
+
+        return $query->get();
+    }
+
+    private function ownerBuildingAccess(Request $request)
+    {
+        $user = $request->user() ?? abort(403, 'Unauthorized');
+        $token = $request->attributes->get('token');
+
+        if (!$token || !isset($token['organization_id']) || !isset($token['role_name'])) {
+            return redirect()->back()->withInput()->with('error', 'You cannot perform this action because they are not linked to any organization. Please switch to an organization account to proceed.');
+        }
+
+        $role_name = $token['role_name'];
+
+        if ($role_name === 'Manager' && !ManagerBuilding::where('building_id', $request->building_id)
+                ->where('user_id', $user->id)
+                ->exists()) {
+            return redirect()->back()->withInput()->with('error', 'You do not have access to add units of the selected building.');
+        }
+
+        return null;
+    }
+
 }
