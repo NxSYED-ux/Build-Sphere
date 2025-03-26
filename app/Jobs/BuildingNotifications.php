@@ -14,7 +14,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Notification;
 
-class OrganizationOwnerWithMangerNotifications implements ShouldQueue
+class BuildingNotifications implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -29,7 +29,12 @@ class OrganizationOwnerWithMangerNotifications implements ShouldQueue
     protected $initiatorMessage;
     protected $initiatorLink;
 
-    public function __construct($organizationId, $buildingId, $image, $heading, $message, $link, $initiatorId = null, $initiatorHeading = null, $initiatorMessage = null, $initiatorLink = null)
+    protected $toAdmin;
+    protected $adminHeading;
+    protected $adminMessage;
+    protected $adminLink;
+
+    public function __construct($organizationId, $buildingId, $image, $heading, $message, $link, $initiatorId, $initiatorHeading, $initiatorMessage, $initiatorLink, $toAdmin = false, $adminHeading = null, $adminMessage = null, $adminLink = null)
     {
         $this->organizationId = $organizationId;
         $this->buildingId = $buildingId;
@@ -37,16 +42,24 @@ class OrganizationOwnerWithMangerNotifications implements ShouldQueue
         $this->heading = $heading;
         $this->message = $message;
         $this->link = $link;
-        $this->initiatorId = $initiatorId;
 
-        $this->initiatorHeading = $initiatorHeading ?? 'Owner and manager are Notified';
-        $this->initiatorMessage = $initiatorMessage ?? 'The owner of the building and manager has been successfully notified.';
-        $this->initiatorLink = $initiatorLink ?? '';
+        $this->initiatorId = $initiatorId;
+        $this->initiatorHeading = $initiatorHeading;
+        $this->initiatorMessage = $initiatorMessage;
+        $this->initiatorLink = $initiatorLink;
+
+        $this->toAdmin = $toAdmin;
+        $this->adminHeading = $adminHeading;
+        $this->adminMessage = $adminMessage;
+        $this->adminLink = $adminLink;
     }
 
     public function handle()
     {
+        $
         $organization = Organization::find($this->organizationId);
+        $managers = ManagerBuilding::where('building_id', $this->buildingId)->pluck('user_id');
+        $initiator = User::find($this->initiatorId);
 
         if ($organization && $organization->owner_id) {
             $owner = User::find($organization->owner_id);
@@ -60,8 +73,6 @@ class OrganizationOwnerWithMangerNotifications implements ShouldQueue
                 ));
             }
         }
-
-        $managers = ManagerBuilding::where('building_id', $this->buildingId)->pluck('user_id');
 
         if ($managers->isNotEmpty()) {
             $users = User::whereIn('id', $managers)
@@ -78,16 +89,19 @@ class OrganizationOwnerWithMangerNotifications implements ShouldQueue
             }
         }
 
-        if ($this->initiatorId) {
-            $initiator = User::find($this->initiatorId);
-            if ($initiator) {
-                $initiator->notify(new DatabaseOnlyNotification(
-                    $this->image,
-                    $this->initiatorHeading,
-                    $this->initiatorMessage,
-                    $this->initiatorLink
-                ));
-            }
+        if ($initiator) {
+            $initiator->notify(new DatabaseOnlyNotification(
+                $this->image,
+                $this->initiatorHeading,
+                $this->initiatorMessage,
+                $this->initiatorLink
+            ));
+        }
+
+        if($this->toAdmin){
+            $admins = User::where('role_id', 1)
+                ->where('id', '!=', $this->initiatorId)
+                ->get();
         }
     }
 }

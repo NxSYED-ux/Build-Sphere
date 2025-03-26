@@ -268,8 +268,13 @@ class BuildingUnitController extends Controller
     public function adminShow($id)
     {
         try {
-            $unit = BuildingUnit::with(['pictures' ])->find($id);
-            return response()->json(['Unit' => $unit]);
+            $unit = BuildingUnit::with(['pictures', 'building', 'organization'])->find($id);
+            return response()->json([
+                'Unit' => $unit,
+                'Pictures' => $unit?->pictures,
+                'Building' => $unit?->building,
+                'Organization' => $unit?->organization,
+            ]);
         } catch (\Exception $e) {
             Log::error('Error fetching Unit Data(Admin): ' . $e->getMessage());
             return response()->json(['error' => 'An error occurred while fetching unit data.'], 500);
@@ -302,6 +307,17 @@ class BuildingUnitController extends Controller
 
         } catch (\Exception $e) {
             Log::error("Error fetching Unit Data (Owner) for ID: $id - " . $e->getMessage());
+            return response()->json(['error' => 'An error occurred while fetching unit data.'], 500);
+        }
+    }
+
+    public function unitDetails($id)
+    {
+        try {
+            $unit = BuildingUnit::with(['pictures' ])->find($id);
+            return response()->json(['Unit' => $unit]);
+        } catch (\Exception $e) {
+            Log::error('Error fetching Unit Data(Admin): ' . $e->getMessage());
             return response()->json(['error' => 'An error occurred while fetching unit data.'], 500);
         }
     }

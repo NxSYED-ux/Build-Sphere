@@ -4,7 +4,7 @@ namespace App\Http\Controllers\WebControllers;
 
 use App\Http\Controllers\Controller;
 use App\Jobs\OrganizationOwnerNotifications;
-use App\Jobs\OrganizationOwnerWithMangerNotifications;
+use App\Jobs\BuildingNotifications;
 use App\Jobs\SendRoleNotification;
 use App\Models\Address;
 use App\Models\Building;
@@ -544,7 +544,7 @@ class BuildingController extends Controller
 
             if ($portal == 'admin') {
 
-                dispatch(new OrganizationOwnerWithMangerNotifications(
+                dispatch(new BuildingNotifications(
                     $organization_id,
                     $building->id,
                     $notificationImage->file_path,
@@ -561,7 +561,7 @@ class BuildingController extends Controller
 
             } elseif ($portal == 'owner') {
 
-                dispatch(new OrganizationOwnerWithMangerNotifications(
+                dispatch(new BuildingNotifications(
                     $organization_id,
                     $building->id,
                     $notificationImage->file_path,
@@ -624,7 +624,7 @@ class BuildingController extends Controller
                 "admin/buildings/{$building->id}/show",
             ));
 
-            dispatch(new OrganizationOwnerWithMangerNotifications(
+            dispatch(new BuildingNotifications(
                 $organization_id,
                 $building->id,
                 $notificationImage->file_path,
@@ -673,7 +673,7 @@ class BuildingController extends Controller
                 "admin/buildings/{$building->id}/show",
             ));
 
-            dispatch(new OrganizationOwnerWithMangerNotifications(
+            dispatch(new BuildingNotifications(
                 $organization_id,
                 $building->id,
                 $notificationImage->file_path,
@@ -726,7 +726,7 @@ class BuildingController extends Controller
             $Image = $building->load(['pictures']);
             $notificationImage = $Image->pictures->first();
 
-            dispatch(new OrganizationOwnerWithMangerNotifications(
+            dispatch(new BuildingNotifications(
                 $building->organization_id,
                 $building->id,
                 $notificationImage->file_path,
@@ -772,7 +772,7 @@ class BuildingController extends Controller
             $Image = $building->load(['pictures']);
             $notificationImage = $Image->pictures->first();
 
-            dispatch(new OrganizationOwnerWithMangerNotifications(
+            dispatch(new BuildingNotifications(
                 $building->organization_id,
                 $building->id,
                 $notificationImage->file_path,

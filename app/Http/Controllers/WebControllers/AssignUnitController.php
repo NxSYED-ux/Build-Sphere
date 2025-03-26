@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers\WebControllers;
 use App\Http\Controllers\Controller;
+use App\Jobs\BuildingNotifications;
+use App\Jobs\SpecificUserNotification;
+use App\Jobs\UnitNotifications;
 use App\Models\Address;
 use App\Models\Building;
 use App\Models\BuildingUnit;
@@ -66,6 +69,16 @@ class AssignUnitController extends Controller
 
     public function create(Request $request)
     {
+        $loggedUser = $request->user() ?? abort(403, 'Unauthorized');
+        $token = $request->attributes->get('token');
+
+        if (empty($token['organization_id']) || empty($token['role_name'])) {
+            return redirect()->back()->with('error', 'Organization Id is missing');
+        }
+
+        $organizationId = $token['organization_id'];
+        $roleName = $token['role_name'];
+
         $request->validate([
             'userId' => ['nullable', 'integer', 'exists:users,id'],
 
@@ -134,6 +147,31 @@ class AssignUnitController extends Controller
             }
 
             DB::commit();
+
+            $userHeading = "{$request->unitName} " . ($request->type === 'Sold' ? 'Purchased' : 'Rented') . " Successfully";
+            $userMessage = "Congratulations! Your {$request->unitName} has been " .
+                ($request->type === 'Sold' ? 'Purchased' : 'Rented') .
+                " Successfully for Price: {$request->price}";
+
+
+            dispatch( new UnitNotifications(
+                $organizationId,
+                $request->unitId,
+                "{$request->unitName} Assigned Successfully by {$roleName}",
+                "{$request->unitName} has been assigned successfully to {$user->name} for Price: {$request->price} ",
+                "/owner/{$request->unitId}/show",
+
+                $loggedUser->id,
+                "{$request->unitName} Assigned Successfully",
+                "{$request->unitName} has been assigned successfully to {$user->name} for Price: {$request->price}",
+                "/owner/{$request->unitId}/show",
+
+                $user->id,
+                $userHeading,
+                $userMessage,
+                "",
+            ));
+
             return redirect()->back()->with('success', 'Unit assigned successfully.');
 
         } catch (\Exception $e) {
@@ -183,5 +221,4 @@ class AssignUnitController extends Controller
 
         return $user;
     }
-
 }
