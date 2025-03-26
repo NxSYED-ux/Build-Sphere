@@ -7,6 +7,7 @@ use App\Models\Address;
 use App\Models\DropdownType;
 use App\Models\Role;
 use App\Models\User;
+use App\Notifications\CredentialsEmail;
 use GuzzleHttp\Promise\Promise;
 use GuzzleHttp\Promise\Utils;
 use Illuminate\Http\Request;
@@ -109,6 +110,12 @@ class UsersController extends Controller
             ]);
 
             DB::commit();
+
+            $user->notify( new CredentialsEmail(
+                $user->name,
+                $user->email,
+                $password,
+            ));
 
             return redirect()->route('users.index')->with('success', 'User created successfully.');
 

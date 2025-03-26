@@ -14,7 +14,7 @@ return new class extends Migration
             $table->string('email',255)->unique();
             $table->string('password',255);
             $table->string('phone_no',20)->nullable();
-            $table->string('cnic',25);
+            $table->string('cnic',25)->unique();
             $table->date('date_of_birth');
             $table->enum('gender', ['Male', 'Female', 'Other']);
             $table->string('picture',255)->nullable();
@@ -34,7 +34,6 @@ return new class extends Migration
 
             $table->index('role_id');
             $table->index('status');
-            $table->index('cnic');
         });
 
         Schema::create('sessions', function (Blueprint $table) {

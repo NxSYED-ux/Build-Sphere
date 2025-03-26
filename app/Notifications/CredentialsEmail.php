@@ -11,17 +11,15 @@ class CredentialsEmail extends Notification implements ShouldQueue
 {
     use Queueable;
 
-    protected $subject;
+    protected $name;
     protected $email;
     protected $password;
-    protected $url;
 
-    public function __construct($subject, $email, $password, $url)
+    public function __construct($name, $email, $password)
     {
-        $this->subject = $subject;
+        $this->name = $name;
         $this->email = $email;
         $this->password = $password;
-        $this->url = $url;
     }
 
     public function via(object $notifiable): array
@@ -32,12 +30,12 @@ class CredentialsEmail extends Notification implements ShouldQueue
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-            ->subject($this->subject)
-            ->greeting('Hello!')
+            ->subject('Credentials Email')
+            ->greeting('Hello ' . $this->name.'!')
             ->line("Your login credentials are:")
             ->line("**Email:** {$this->email}")
             ->line("**Password:** {$this->password}")
-            ->action('Login Now', $this->url)
+            ->action('Login Now', 'localhost:8000/')
             ->line('Thank you for using our application!');
     }
 
@@ -45,8 +43,7 @@ class CredentialsEmail extends Notification implements ShouldQueue
     {
         return [
             'email' => $this->email,
-            'password' => $this->password,
-            'url' => $this->url
+            'password' => $this->password
         ];
     }
 }
