@@ -68,7 +68,7 @@
                 <!-- Assign Units -->
                 <li class="mb-1">
                     <div id="link-a">
-                        <a href="#" class="link-dark collapsed {{ in_array('Assign-Units', $openSections) ? 'Link-background-color' : '' }} px-1" id="BuildingsTreebtn" >
+                        <a href="{{ route('owner.assignunits.index') }}" class="link-dark collapsed {{ in_array('Assign-Units', $openSections) ? 'Link-background-color' : '' }} px-1" id="BuildingsTreebtn" >
                         <i class="bx bxs-user-check icons"></i> Assign Units </a>
                     </div>
                 </li>

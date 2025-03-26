@@ -147,25 +147,6 @@
                                                 </div>
 
                                                 <!--  -->
-{{--                                                <div class="col-lg-4 col-md-6 col-sm-12">--}}
-{{--                                                    <div class="form-group mb-2">--}}
-{{--                                                        <label for="availability_status">Availability Status</label>--}}
-{{--                                                        <span class="required__field">*</span><br>--}}
-{{--                                                        <select name="availability_status" id="availability_status" class="form-select" required>--}}
-{{--                                                            <option value="Available" {{ old('availability_status', $unit->availability_status) == 'Available' ? 'selected' : '' }}>Available</option>--}}
-{{--                                                            <option value="Rented" {{ old('availability_status', $unit->availability_status) == 'Rented' ? 'selected' : '' }}>Rented</option>--}}
-{{--                                                            <option value="Sold" {{ old('availability_status', $unit->availability_status) == 'Sold' ? 'selected' : '' }}>Sold</option>--}}
-{{--                                                            <option value="Not Available" {{ old('availability_status', $unit->availability_status) == 'Not Available' ? 'selected' : '' }}>Not Available</option>--}}
-{{--                                                        </select>--}}
-{{--                                                        @error('availability_status')--}}
-{{--                                                        <span class="invalid-feedback" role="alert">--}}
-{{--                                                                <strong>{{ $message }}</strong>--}}
-{{--                                                            </span>--}}
-{{--                                                        @enderror--}}
-{{--                                                    </div>--}}
-{{--                                                </div>--}}
-
-                                                <!--  -->
                                                 <div class="col-sm-12 col-md-6 col-lg-4">
                                                     <div class="form-group mb-2">
                                                         <label for="price">Price</label>

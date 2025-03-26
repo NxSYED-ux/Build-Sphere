@@ -392,7 +392,7 @@
                 button.addEventListener("click", function () {
                     let userId = this.dataset.id;
 
-                    fetch(`{{ route('units.details', ':id') }}`.replace(':id', userId), {
+                    fetch(`{{ route('units.show', ':id') }}`.replace(':id', userId), {
                         method: "GET",
                         headers: {
                             "Accept": "application/json"
@@ -402,7 +402,7 @@
                         .then(data => {
                             let unit = data.Unit;
 
-                            document.getElementById("userPicture").src = unit.picture ? unit.picture : "https://via.placeholder.com/150";
+                            document.getElementById("unitPicture").src = unit.pictures.length > 0 ? '/' + unit.pictures[0].file_path : 'default-image.jpg';
                             document.getElementById("unitName").textContent = unit.unit_name;
                             document.getElementById("unitBuilding").textContent = unit.building.name;
                             document.getElementById("unitLevel").textContent = unit.level.level_name;

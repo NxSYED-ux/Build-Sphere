@@ -14,6 +14,7 @@ use App\Http\Controllers\WebControllers\OrganizationController;
 use App\Http\Controllers\WebControllers\OwnerDashboardController;
 use App\Http\Controllers\WebControllers\RolePermissionController;
 use App\Http\Controllers\WebControllers\RoleController;
+use App\Http\Controllers\WebControllers\AssignUnitController;
 use App\Http\Controllers\WebControllers\UsersController;
 use Illuminate\Support\Facades\Route;
 
@@ -51,6 +52,7 @@ Route::fallback(function () {
 Route::middleware(['auth.jwt'])->group(function () {
 
     Route::get('/my-unit', function () { return view('Heights.Owner.Units.show'); });
+
     Route::post('/logout', [AuthController::class, 'logOut'])->name('logout');
     Route::delete('/buildings/{id}/remove-picture', [BuildingController::class, 'destroyImage'])->name('buildings.remove_picture');
     Route::delete('/building_documents/{id}', [BuildingController::class, 'removeDocument'])->name('building_documents.removeDocument');
@@ -238,7 +240,14 @@ Route::prefix('owner')->middleware(['auth.jwt'])->group(function () {
         Route::get('/{unit}/show', [BuildingUnitController::class, 'ownerShow'])->name('owner.units.show');
         Route::get('/{unit}/edit', [BuildingUnitController::class, 'ownerEdit'])->name('owner.units.edit');
         Route::put('/', [BuildingUnitController::class, 'ownerUpdate'])->name('owner.units.update');
-        Route::get('/details/{id}', [BuildingUnitController::class, 'getUnitData'])->name('owner.units.details');
+        Route::get('/details/{id}', [BuildingUnitController::class, 'unitDetails'])->name('owner.units.details');
+
+    });
+
+    Route::prefix('assignunits')->group(function () {
+
+        Route::get('/', [AssignUnitController::class, 'index'])->name('owner.assignunits.index');
+        Route::post('/', [AssignUnitController::class, 'create'])->name('owner.assignunits.store');
 
     });
 
