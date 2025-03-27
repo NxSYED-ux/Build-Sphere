@@ -256,7 +256,7 @@ class BuildingUnitController extends Controller
                 })
                 ->first();
 
-            return response()->json($unit);
+            return response()->json(['Unit' => $unit]);
         } catch (\Exception $e) {
             Log::error('Error fetching Unit Data(Admin): ' . $e->getMessage());
             return response()->json(['error' => 'An error occurred while fetching unit data.'], 500);

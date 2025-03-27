@@ -185,7 +185,7 @@ class ProfileController extends Controller
 
             $user->update(['picture' => $imagePath]);
 
-            return response()->json(['success' => 'Profile picture updated successfully.', 'picture' => $imagePath], 200);
+            return response()->json(['success' => 'Profile picture updated successfully.', 'picture' => $imagePath]);
         } catch (\Exception $e) {
             Log::error("Error in uploadProfilePic: " . $e->getMessage());
             return response()->json(['error' => 'Internal Server Error'], 500);
