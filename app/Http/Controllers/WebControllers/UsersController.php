@@ -189,7 +189,7 @@ class UsersController extends Controller
 
             if (!$user) {
                 DB::rollBack();
-                return redirect()->back()->with('error', 'This user record was modified. Please refresh the page and try again.');
+                return redirect()->back()->with('error', 'Please refresh the page and try again.');
             }
 
             $address = Address::findOrFail($user->address_id);
@@ -231,28 +231,12 @@ class UsersController extends Controller
         }
     }
 
-    protected function handleFileUpload(Request $request): ?string
+    private function handleFileUpload(Request $request): ?string
     {
         $profileImage = $request->file('picture');
         $profileImageName = time() . '_' . $profileImage->getClientOriginalName();
         $profileImagePath = 'uploads/users/images/' . $profileImageName;
         $profileImage->move(public_path('uploads/users/images'), $profileImageName);
         return $profileImagePath;
-    }
-
-    protected function verifyEmail(string $email): bool
-    {
-        $apiKey = env('EMAIL_VALIDATION_API_KEY');
-        $url = "http://apilayer.net/api/check?access_key={$apiKey}&email={$email}&smtp=1&format=1";
-
-        try {
-            $response = Http::get($url);
-            $data = $response->json();
-
-            return ($data['format_valid'] ?? false) && ($data['smtp_check'] ?? false);
-        } catch (\Exception $e) {
-            Log::error("Verify Email failed: " . $e->getMessage());
-            return false;
-        }
     }
 }

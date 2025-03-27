@@ -36,22 +36,16 @@ class AssignUnitController extends Controller
                 ->get();
 
             $users = User::where('id', '!=', $user->id)->pluck('name', 'id');
-            $units = collect();
             $buildings = collect();
 
             if (empty($token['organization_id']) || empty($token['role_name'])) {
-                return view('Heights.Owner.AssignUnits.index', compact('selectedUnitId', 'selectedUserId', 'users', 'units', 'buildings', 'dropdownData'));
+                return view('Heights.Owner.AssignUnits.index', compact('selectedUnitId', 'selectedUserId', 'users', 'buildings', 'dropdownData'));
             }
 
             $organizationId = $token['organization_id'];
             $roleName = $token['role_name'];
 
-            $units = BuildingUnit::select('id', 'unit_name')
-                ->where('availability_status', 'Available')
-                ->where('organization_id', $organizationId)
-                ->get();
-
-            $query = Building::where('organization_id', $organizationId);
+            $query = Building::where('organization_id', $organizationId)->whereNotIn('status', ['Rejected', 'Under Processing']);
 
             if ($roleName === 'Manager') {
                 $managerBuildingIds = ManagerBuilding::where('user_id', $user->id)->pluck('building_id')->toArray();
@@ -60,7 +54,7 @@ class AssignUnitController extends Controller
 
             $buildings = $query->get();
 
-            return view('Heights.Owner.AssignUnits.index', compact('selectedUnitId', 'selectedUserId', 'users', 'units', 'buildings', 'dropdownData'));
+            return view('Heights.Owner.AssignUnits.index', compact('selectedUnitId', 'selectedUserId', 'users', 'buildings', 'dropdownData'));
         } catch (\Exception $e) {
             Log::error("Error in AssignUnits index: {$e->getMessage()}", ['exception' => $e]);
             return redirect()->back()->with('error', 'Something went wrong. Please try again.');
@@ -101,7 +95,7 @@ class AssignUnitController extends Controller
             'rentStartDate' => ['required_if:type,Rented', 'date', 'nullable'],
             'rentEndDate' => ['required_if:type,Rented', 'date', 'after_or_equal:rentStartDate', 'nullable'],
             'purchaseDate' => ['required_if:type,Sold', 'date', 'nullable'],
-            'picture.*' => ['nullable', 'file', 'mimes:png,jpg,jpeg', 'max:2048'],
+            'pictures.*' => ['nullable', 'file', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
         ]);
 
         DB::beginTransaction();
@@ -122,6 +116,11 @@ class AssignUnitController extends Controller
                 return redirect()->back()->withInput()->with('error', 'This unit is already assigned to a user, Please choose another unit.');
             }
 
+            $unit = BuildingUnit::find($request->unitId);
+            $unit->update([
+                'availability_status' => $request->type,
+            ]);
+
             $assignedUnit = UserBuildingUnit::create([
                 'user_id' => $request->userId ?? $user->id,
                 'unit_id' => $request->unitId,
@@ -132,24 +131,24 @@ class AssignUnitController extends Controller
                 'purchase_date' => $request->type === 'Sold' ? $request->purchaseDate : null,
             ]);
 
-            if ($request->hasFile('picture')) {
-                foreach ($request->file('picture') as $picture) {
-                    $ImageName = time() . '_' . $picture->getClientOriginalName();
-                    $ImagePath = 'uploads/units/images/' . $ImageName;
-                    $picture->move(public_path($ImagePath));
+            if ($request->hasFile('pictures')) {
+                foreach ($request->file('pictures') as $image) {
+                    $imageName = time() . '_' . $image->getClientOriginalName();
+                    $imagePath = 'uploads/units/images/' . $imageName;
+                    $image->move(public_path('uploads/units/images'), $imageName);
 
                     UserUnitPicture::create([
                         'user_unit_id' => $assignedUnit->id,
-                        'file_path' => $ImagePath,
-                        'file_name' => $ImageName,
+                        'file_path' => $imagePath,
+                        'file_name' => $imageName,
                     ]);
                 }
             }
 
             DB::commit();
 
-            $userHeading = "{$request->unitName} " . ($request->type === 'Sold' ? 'Purchased' : 'Rented') . " Successfully";
-            $userMessage = "Congratulations! Your {$request->unitName} has been " .
+            $userHeading = "{$unit->name} " . ($request->type === 'Sold' ? 'Purchased' : 'Rented') . " Successfully";
+            $userMessage = "Congratulations! Your {$unit->name} has been " .
                 ($request->type === 'Sold' ? 'Purchased' : 'Rented') .
                 " Successfully for Price: {$request->price}";
 
@@ -157,13 +156,13 @@ class AssignUnitController extends Controller
             dispatch( new UnitNotifications(
                 $organizationId,
                 $request->unitId,
-                "{$request->unitName} Assigned Successfully by {$roleName}",
-                "{$request->unitName} has been assigned successfully to {$user->name} for Price: {$request->price} ",
+                "{$unit->name} Assigned Successfully by {$roleName}",
+                "{$unit->name} has been assigned successfully to {$user->name} for Price: {$request->price} ",
                 "/owner/{$request->unitId}/show",
 
                 $loggedUser->id,
-                "{$request->unitName} Assigned Successfully",
-                "{$request->unitName} has been assigned successfully to {$user->name} for Price: {$request->price}",
+                "{$unit->name} Assigned Successfully",
+                "{$unit->name} has been assigned successfully to {$user->name} for Price: {$request->price}",
                 "/owner/{$request->unitId}/show",
 
                 $user->id,

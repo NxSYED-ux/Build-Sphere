@@ -11,6 +11,7 @@ use App\Models\ManagerBuilding;
 use App\Models\Organization;
 use App\Models\UnitPicture;
 use App\Models\UserBuildingUnit;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
@@ -133,29 +134,21 @@ class BuildingUnitController extends Controller
     public function ownerCreate(Request $request)
     {
         try {
-            $user = $request->user() ?? abort(403, 'Unauthorized');
-            $token = $request->attributes->get('token');
-
             $buildings = collect();
             $unitType = DropdownType::with(['values'])->where('type_name', 'Unit-type')->first();
             $unitTypes = $unitType ? $unitType->values : collect();
+
+            $user = $request->user() ?? abort(403, 'Unauthorized');
+            $token = $request->attributes->get('token');
 
             if (empty($token['organization_id']) || empty($token['role_name'])) {
                 return view('Heights.Owner.Units.create', compact('buildings', 'unitTypes'));
             }
 
-            $organization_id = $token['organization_id'];
             $role_name = $token['role_name'];
+            $organization_id = $token['organization_id'];
 
-            $query = Building::select('id', 'name')
-                ->where('organization_id',$organization_id);
-
-            if ($role_name === 'Manager') {
-                $managerBuildingIds = ManagerBuilding::where('user_id', $user->id)->pluck('building_id')->toArray();
-                $query->whereIn('id', $managerBuildingIds);
-            }
-
-            $buildings = $query->get();
+            $buildings = $this->getBuildingsOwner($organization_id, $role_name, $user->id);
 
             return view('Heights.Owner.Units.create', compact('buildings', 'unitTypes'));
 
@@ -177,22 +170,10 @@ class BuildingUnitController extends Controller
 
     public function ownerStore(Request $request)
     {
-        $user = $request->user() ?? abort(403, 'Unauthorized');
-        $token = $request->attributes->get('token');
-
-        if (!$token || !isset($token['organization_id']) || !isset($token['role_name'])) {
-            return redirect()->back()->withInput()->with('error', 'You cannot perform this action because they are not linked to any organization. Please switch to an organization account to proceed.');
+        $organization_id = $this->validateOwnerAccess($request,'You do not have access to add units of the selected building.');
+        if ($organization_id instanceof RedirectResponse) {
+            return $organization_id;
         }
-
-        $organization_id = $token['organization_id'];
-        $role_name = $token['role_name'];
-
-        if ($role_name === 'Manager' && !ManagerBuilding::where('building_id', $request->building_id)
-                ->where('user_id', $user->id)
-                ->exists()) {
-            return redirect()->back()->withInput()->with('error', 'You do not have access to add units of the selected building.');
-        }
-
         return $this->store($request, 'owner',$organization_id,'Rejected');
     }
 
@@ -268,34 +249,47 @@ class BuildingUnitController extends Controller
     public function adminShow($id)
     {
         try {
-            $unit = BuildingUnit::with(['pictures', 'level', 'building', 'organization'])->find($id);
-            return response()->json(['Unit' => $unit]);
+            $unit = BuildingUnit::with(['pictures', 'level', 'building', 'organization'])
+                ->where('id', $id)
+                ->whereHas('building', function ($query) {
+                    $query->whereNotIn('status', ['Under Processing', 'Rejected']);
+                })
+                ->first();
+
+            return response()->json($unit);
         } catch (\Exception $e) {
             Log::error('Error fetching Unit Data(Admin): ' . $e->getMessage());
             return response()->json(['error' => 'An error occurred while fetching unit data.'], 500);
         }
     }
 
-    public function ownerShow($id)
+    public function ownerShow(Request $request, $id)
     {
         try {
-            $unit = BuildingUnit::with(['pictures', 'userUnits', 'level', 'building', 'organization'])->find($id);
+            $unit = BuildingUnit::with(['pictures', 'level', 'building', 'organization'])->find($id);
 
-            if (!$unit) {
-                return view('Heights.Owner.Units.show', [
-                    'unit' => null,
-                    'activeContract' => null,
-                    'pastContract' => null
-                ]);
+            $organization_id = $this->validateOwnerAccess($request,'You do not have access to view units of the selected building.',false, $unit->building_id);
+            if ($organization_id instanceof RedirectResponse) {
+                return $organization_id;
             }
 
-            $activeContract = $unit->userUnits()
-                ->where('contract_status', 1)
+            if (!$unit || $unit->organization_id !== $organization_id) {
+                return redirect()->back()->with('error', 'Invalid Unit Id');
+            }
+
+            $activeContract = UserBuildingUnit::with(['user', 'updater', 'pictures'])
+                ->where([
+                    ['unit_id', $unit->id],
+                    ['contract_status', 1]
+                ])
                 ->first();
 
-            $pastContract = $unit->userUnits()
-                ->where('contract_status', 0)
-                ->orderBy('created_at', 'desc')
+            $pastContract = UserBuildingUnit::with(['user', 'updater', 'pictures'])
+                ->where([
+                    ['unit_id', $unit->id],
+                    ['contract_status', 0]
+                ])
+                ->latest('updated_at')
                 ->first();
 
             return view('Heights.Owner.Units.show', compact('unit', 'activeContract', 'pastContract'));
@@ -306,35 +300,27 @@ class BuildingUnitController extends Controller
         }
     }
 
-    public function unitDetails($id)
-    {
-        try {
-            $unit = BuildingUnit::with(['pictures' ])->find($id);
-            return response()->json(['Unit' => $unit]);
-        } catch (\Exception $e) {
-            Log::error('Error fetching Unit Data(Admin): ' . $e->getMessage());
-            return response()->json(['error' => 'An error occurred while fetching unit data.'], 500);
-        }
-    }
-
 
     // Edit
     public function adminEdit($id)
     {
         try {
             $allowedStatuses = ['Approved', 'For Re-approval', 'Under Review'];
-            $unit = BuildingUnit::find($id);
+
+            $unit = BuildingUnit::where('id', $id)
+                ->whereHas('building', function ($query) use ($allowedStatuses) {
+                    $query->whereIn('status', $allowedStatuses);
+                })
+                ->first();
+
             if(!$unit){
                 return redirect()->back()->with('error', 'Invalid unit Id');
             }
 
-            $building = $unit->building()->first();
+            $organizations = Organization::where('status', 'Enable')
+                ->orWhere('id', $unit->organization_id)
+                ->get();
 
-            if (!in_array($building->status, $allowedStatuses)) {
-                return redirect()->back()->with('error', 'Invalid unit Id');
-            }
-
-            $organizations = Organization::where('status', 'Enable')->get();
             $unitType = DropdownType::with(['values'])->where('type_name', 'Unit-type')->first();
             $unitTypes = $unitType ? $unitType->values : collect();
 
@@ -349,11 +335,11 @@ class BuildingUnitController extends Controller
     public function ownerEdit(Request $request, $id)
     {
         try{
-            $user = $request->user() ?? abort(403, 'Unauthorized');
-            $token = $request->attributes->get('token');
-
             $unitType = DropdownType::with(['values'])->where('type_name', 'Unit-type')->first();
             $unitTypes = $unitType ? $unitType->values : collect();
+
+            $user = $request->user() ?? abort(403, 'Unauthorized');
+            $token = $request->attributes->get('token');
 
             if (empty($token['organization_id']) || empty($token['role_name'])) {
                 return redirect()->back()->with('error', 'Invalid Unit Id');
@@ -363,20 +349,11 @@ class BuildingUnitController extends Controller
             $role_name = $token['role_name'];
 
             $unit = BuildingUnit::find($id);
-
             if (!$unit || $organization_id !== $unit->organization_id) {
                 return redirect()->back()->with('error', 'Invalid Unit Id');
             }
 
-            $query = Building::select('id', 'name')
-                ->where('organization_id',$organization_id);
-
-            if ($role_name === 'Manager') {
-                $managerBuildingIds = ManagerBuilding::where('user_id', $user->id)->pluck('building_id')->toArray();
-                $query->whereIn('id', $managerBuildingIds);
-            }
-
-            $buildings = $query->get();
+            $buildings = $this->getBuildingsOwner($organization_id, $role_name, $user->id);
 
             return view('Heights.Owner.Units.edit', compact( 'unit', 'buildings', 'unitTypes'));
 
@@ -398,20 +375,9 @@ class BuildingUnitController extends Controller
 
     public function ownerUpdate(Request $request)
     {
-        $user = $request->user() ?? abort(403, 'Unauthorized');
-        $token = $request->attributes->get('token');
-
-        if (!$token || !isset($token['organization_id']) || !isset($token['role_name'])) {
-            return redirect()->back()->withInput()->with('error', 'You cannot perform this action because they are not linked to any organization. Please switch to an organization account to proceed.');
-        }
-
-        $organization_id = $token['organization_id'];
-        $role_name = $token['role_name'];
-
-        if ($role_name === 'Manager' && !ManagerBuilding::where('building_id', $request->building_id)
-                ->where('user_id', $user->id)
-                ->exists()) {
-            return redirect()->back()->withInput()->with('error', 'You do not have access to update units of the selected building.');
+        $organization_id = $this->validateOwnerAccess($request,'You do not have access to update units of the selected building.');
+        if ($organization_id instanceof RedirectResponse) {
+            return $organization_id;
         }
 
         return $this->update($request, 'owner', $organization_id,'Rejected');
@@ -419,6 +385,8 @@ class BuildingUnitController extends Controller
 
     private function update(Request $request, String $portal, $organization_id, $status)
     {
+        $token = $request->attributes->get('token');
+
         $request->validate([
             'unit_id' => 'required|exists:buildingunits,id',
             'unit_name' => [
@@ -455,6 +423,11 @@ class BuildingUnitController extends Controller
                 return redirect()->back()->with('error', 'Please refresh the page and try again.');
             }
 
+            if($token['organization_id'] !== $unit->organization_id){
+                DB::rollBack();
+                return redirect()->back()->with('error', 'The selected unit id is invalid.');
+            }
+
             $unit->update([
                 'unit_name' => $request->unit_name,
                 'unit_type' => $request->unit_type,
@@ -486,7 +459,7 @@ class BuildingUnitController extends Controller
 
             $route = $portal === 'admin' ? 'units.index' : 'owner.units.index';
 
-            return redirect()->route($route)->with('success', 'Unit created successfully.');
+            return redirect()->route($route)->with('success', 'Unit updated successfully.');
 
         } catch (\Exception $e) {
             DB::rollBack();
@@ -496,6 +469,57 @@ class BuildingUnitController extends Controller
     }
 
 
+    // Owner Tree Function
+    public function getUnitDetailsWithActiveContract(Request $request, $id)
+    {
+        try {
+            $unit = BuildingUnit::with([
+                'pictures' => function ($query) {
+                    $query->select('unit_id', 'file_path');
+                },
+                'userUnits' => function ($query) {
+                    $query->where('contract_status', 1)
+                        ->select('id', 'unit_id', 'user_id', 'rent_start_date', 'rent_end_date', 'purchase_date')
+                        ->with(['user' => function ($query) {
+                            $query->select('id', 'name', 'picture');
+                        }]);
+                }
+            ])->find($id);
+
+            $buildingId = $unit->building_id ?? null;
+            $organization_id = $this->validateOwnerAccess($request, 'You do not have access to view units of the selected building.', false, $buildingId);
+
+            if ($organization_id instanceof RedirectResponse) {
+                return $organization_id;
+            }
+
+            if (!$unit || $unit->organization_id !== $organization_id) {
+                return response()->json(['error' => 'Invalid Unit Id.'], 404);
+            }
+
+            return response()->json($unit);
+
+        } catch (\Exception $e) {
+            Log::error('Error fetching Unit Data: ' . $e->getMessage());
+            return response()->json(['error' => 'An error occurred while fetching unit data.'], 500);
+        }
+    }
+
+
+    // Admin Tree & Assign Unit Function
+    public function unitDetails($id)
+    {
+        try {
+            $unit = BuildingUnit::with(['pictures'])->find($id);
+            return response()->json(['Unit' => $unit]);
+        } catch (\Exception $e) {
+            Log::error('Error fetching Unit Details: ' . $e->getMessage());
+            return response()->json(['error' => 'An error occurred while fetching unit data.'], 500);
+        }
+    }
+
+
+    // Delete Unit Image Function
     public function destroyImage(string $id)
     {
         $image = UnitPicture::findOrFail($id);
@@ -513,38 +537,57 @@ class BuildingUnitController extends Controller
     }
 
 
-    public function getUnitData(string $id)
+    // Helper Functions
+    private function validateOwnerAccess(Request $request, $error = null, $keepInput = true, $buildingId = null)
     {
-        try {
-            $id = (int) $id;
+        $user = $request->user() ?? abort(403, 'Unauthorized');
+        $token = $request->attributes->get('token');
 
-            if (!is_numeric($id) || $id <= 0) {
-                return response()->json(['error' => 'Invalid Unit ID'], 400);
-            }
-
-            $unit = BuildingUnit::with([
-                'pictures' => function ($query) {
-                    $query->select('unit_id', 'file_path');
-                },
-                'userUnits' => function ($query) {
-                    $query->where('contract_status', 1)
-                        ->select('id', 'unit_id', 'user_id', 'rent_start_date', 'rent_end_date', 'purchase_date')
-                        ->with(['user' => function ($query) {
-                            $query->select('id', 'name', 'picture');
-                        }]);
-                }
-            ])->select('id', 'unit_name', 'unit_type', 'price', 'sale_or_rent')
-                ->find($id);
-
-            if (!$unit) {
-                return response()->json(['error' => 'Unit not found'], 404);
-            }
-
-            return response()->json(['Unit' => $unit], 200);
-        } catch (\Exception $e) {
-            Log::error('Error fetching Unit Data: ' . $e->getMessage());
-            return response()->json(['error' => 'An error occurred while fetching unit data.'], 500);
+        if (!$token || !isset($token['organization_id']) || !isset($token['role_name'])) {
+            $redirect = redirect()->back()->with('error', 'You cannot perform this action. Please switch to an organization account to proceed.');
+            return $keepInput ? $redirect->withInput() : $redirect;
         }
+
+        $organization_id = $token['organization_id'];
+        $role_name = $token['role_name'];
+        $buildingId = $buildingId ?? $request->building_id;
+
+
+        if ($role_name === 'Manager' && !ManagerBuilding::where('building_id', $buildingId)
+                ->where('user_id', $user->id)
+                ->exists()) {
+            $redirect = redirect()->back()->with('error', $error);
+            return $keepInput ? $redirect->withInput() : $redirect;
+        }
+
+        return $organization_id;
+    }
+
+
+    // Get Building Units
+    public function getBuildingUnits($building_id){
+
+        $units = BuildingUnit::select('id', 'unit_name')
+            ->where('sale_or_rent', '!=', 'Not Available')
+            ->where('availability_status', 'Available')
+            ->where('status', 'Approved')
+            ->where('building_id', $building_id)
+            ->get();
+
+        return response()->json($units);
+    }
+
+    private function getBuildingsOwner($organization_id, $role_name, $user_id)
+    {
+        $query = Building::select('id', 'name')
+            ->where('organization_id', $organization_id);
+
+        if ($role_name === 'Manager') {
+            $managerBuildingIds = ManagerBuilding::where('user_id', $user_id)->pluck('building_id')->toArray();
+            $query->whereIn('id', $managerBuildingIds);
+        }
+
+        return $query->get();
     }
 
 }

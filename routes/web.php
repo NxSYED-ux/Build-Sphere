@@ -166,7 +166,7 @@ Route::prefix('admin')->middleware(['auth.jwt'])->group(function () {
         Route::get('/{unit}/show', [BuildingUnitController::class, 'adminShow'])->name('units.show');
         Route::get('/{unit}/edit', [BuildingUnitController::class, 'adminEdit'])->name('units.edit');
         Route::put('/', [BuildingUnitController::class, 'adminUpdate'])->name('units.update');
-        Route::get('/details/{id}', [BuildingUnitController::class, 'getUnitData'])->name('units.details');
+        Route::get('/details/{id}', [BuildingUnitController::class, 'unitDetails'])->name('units.details');
 
     });
 
@@ -237,14 +237,16 @@ Route::prefix('owner')->middleware(['auth.jwt'])->group(function () {
         Route::get('/', [BuildingUnitController::class, 'ownerIndex'])->name('owner.units.index');
         Route::get('/create', [BuildingUnitController::class, 'ownerCreate'])->name('owner.units.create');
         Route::post('/', [BuildingUnitController::class, 'ownerStore'])->name('owner.units.store');
-        Route::get('/{unit}/show', [BuildingUnitController::class, 'ownerShow'])->name('owner.units.show');
-        Route::get('/{unit}/edit', [BuildingUnitController::class, 'ownerEdit'])->name('owner.units.edit');
+        Route::get('/{id}/show', [BuildingUnitController::class, 'ownerShow'])->name('owner.units.show');
+        Route::get('/{id}/edit', [BuildingUnitController::class, 'ownerEdit'])->name('owner.units.edit');
         Route::put('/', [BuildingUnitController::class, 'ownerUpdate'])->name('owner.units.update');
         Route::get('/details/{id}', [BuildingUnitController::class, 'unitDetails'])->name('owner.units.details');
+        Route::get('/details/{id}/contract', [BuildingUnitController::class, 'getUnitDetailsWithActiveContract'])->name('owner.units.details.contract');
+
 
     });
 
-    Route::prefix('assignunits')->group(function () {
+    Route::prefix('assign-units')->group(function () {
 
         Route::get('/', [AssignUnitController::class, 'index'])->name('owner.assignunits.index');
         Route::post('/', [AssignUnitController::class, 'create'])->name('owner.assignunits.store');
