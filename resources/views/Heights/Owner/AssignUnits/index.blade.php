@@ -361,17 +361,17 @@
                                         <div class="col-md-6">
                                             <div class="mb-3">
                                                 <label for="building_id">Buildings</label>
-                                                <select name="building_id" id="building_id" class="form-select" required>
-                                                    <option value="" disabled selected>Select Building</option>
+                                                <select name="buildingId" id="building_id" class="form-select" required>
+                                                    <option value="" selected>Select Building</option>
                                                     @forelse($buildings as $building)
-                                                        <option value="{{ $building->id }}" {{ old('building_id') == $building->id ? 'selected' : '' }}>
+                                                        <option value="{{ $building->id }}" {{ old('buildingId') == $building->id ? 'selected' : '' }}>
                                                             {{ $building->name }}
                                                         </option>
                                                         @empty
                                                             <option value="">No building found</option>
                                                         @endforelse
                                                 </select>
-                                                @error('building_id')
+                                                @error('buildingId')
                                                 <span class="invalid-feedback" role="alert">
                                                         <strong>{{ $message }}</strong>
                                                     </span>
@@ -381,20 +381,13 @@
                                             <div class="mb-3">
                                                 <label for="unit_id">Units</label>
                                                 <input type="hidden" name="unitName" id="unit_name">
-                                                <select name="unitId" id="unit_id" class="form-select" required>
-                                                    <option value="">Select Unit</option>
-                                                    @forelse($units ?? [] as $unit)
-                                                        <option value="{{ $unit->id }}" {{ old('unitId', $selectedUnitId) == $unit->id ? 'selected' : '' }}>
-                                                            {{ $unit->unit_name }}
-                                                        </option>
-                                                    @empty
-                                                        <option value="">No unit found</option>
-                                                    @endforelse
+                                                <select class="form-select" id="unit_id" name="unitId"  required>
+                                                    <option value="" {{ old('unitId') === null ? 'selected' : '' }}>Select Level</option>
                                                 </select>
                                                 @error('unitId')
                                                 <span class="invalid-feedback" role="alert">
-                                                        <strong>{{ $message }}</strong>
-                                                    </span>
+                                                    <strong>{{ $message }}</strong>
+                                                </span>
                                                 @enderror
                                             </div>
                                         </div>
@@ -555,7 +548,7 @@
 
     </script>
 
-    <!-- Cnic script -->
+    <!-- CNIC script -->
     <script>
         document.getElementById('cnic').addEventListener('input', function (e) {
             const x = e.target.value.replace(/\D/g, '').match(/(\d{0,5})(\d{0,7})(\d{0,1})/);
@@ -630,6 +623,59 @@
 
      </script>
 
+    <!-- Units by building id -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const buildingSelect = document.getElementById("building_id");
+            const unitSelect = document.getElementById("unit_id");
+
+            function fetchUnits(buildingId, selectedUnitId = null) {
+                if (buildingId) {
+                    fetch(`{{ route('owner.buildings.units.available', ':id') }}`.replace(':id', buildingId), {
+                        method: "GET",
+                        headers: {
+                            "X-Requested-With": "XMLHttpRequest",
+                            "Accept": "application/json"
+                        }
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            unitSelect.innerHTML = `<option value="" >Select Unit</option>`;
+
+                            data.units.forEach(unit => {
+                                const option = document.createElement("option");
+                                option.value = unit.id;
+                                option.textContent = unit.unit_name;
+
+                                if (selectedUnitId && unit.id == selectedUnitId) {
+                                    option.selected = true;
+                                }
+
+                                unitSelect.appendChild(option);
+                            });
+                        })
+                        .catch(error => {
+                            console.error("Error fetching units:", error);
+                        });
+                } else {
+                    unitSelect.innerHTML = `<option value="" >Select Unit</option>`;
+                }
+            }
+
+            buildingSelect.addEventListener("change", function () {
+                fetchUnits(this.value);
+            });
+
+            const oldBuildingId = "{{ old('buildingId') }}";
+            const oldUnitId = "{{ old('unitId') }}";
+
+            if (oldBuildingId) {
+                fetchUnits(oldBuildingId, oldUnitId);
+            }
+        });
+    </script>
+
+    <!--   -->
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             let userSelect = document.getElementById("user_id");
@@ -825,7 +871,6 @@
         });
     </script>
 
-
     <!-- Unit Detail script -->
     <script>
         document.addEventListener("DOMContentLoaded", function () {
@@ -851,7 +896,6 @@
                         document.getElementById('unitSaleRent').textContent = unit.sale_or_rent;
                         document.getElementById('unitStatus').textContent = unit.status;
                         document.getElementById('unitArea').textContent = unit.area;
-                        document.getElementById('building_id').value = unit.building_id;
                         document.getElementById('unit_name').value = unit.unit_name;
                     })
                     .catch(error => {

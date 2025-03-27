@@ -90,6 +90,7 @@ class AssignUnitController extends Controller
             'user_postal_code' => ['required_without:userId', 'string', 'max:50'],
 
             'unitId' => ['required', 'integer', 'exists:buildingunits,id'],
+            'buildingId' => ['required', 'integer', 'exists:buildings,id'],
             'type' => ['required', 'in:Rented,Sold'],
             'price' => ['required', 'numeric', 'min:0'],
             'rentStartDate' => ['required_if:type,Rented', 'date', 'nullable'],

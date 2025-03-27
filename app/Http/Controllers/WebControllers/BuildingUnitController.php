@@ -574,7 +574,7 @@ class BuildingUnitController extends Controller
             ->where('building_id', $building_id)
             ->get();
 
-        return response()->json($units);
+        return response()->json(['units' => $units]);
     }
 
     private function getBuildingsOwner($organization_id, $role_name, $user_id)
