@@ -251,7 +251,7 @@
                                                             <label for="building_id">Building</label>
                                                             <span class="required__field">*</span><br>
                                                             <select class="form-select" id="building_id" name="building_id"  required>
-                                                                <option value="" disabled {{ old('building_id') === null ? 'selected' : '' }}>Select Building</option>
+                                                                <option value="" {{ old('building_id') === null ? 'selected' : '' }}>Select Building</option>
                                                                 @foreach($buildings as $building)
                                                                     <option value="{{ $building->id }}" {{ old('building_id') == $building->id ? 'selected' : '' }}>
                                                                         {{ $building->name }}
@@ -271,8 +271,8 @@
                                                         <div class="form-group mb-3">
                                                             <label for="level_id">Level</label>
                                                             <span class="required__field">*</span><br>
-                                                            <select class="form-select" id="level_id" name="level_id" value="{{ old('level_id') }}" required>
-                                                                <option value="" disabled {{ old('level_id') === null ? 'selected' : '' }}>Select Level</option>
+                                                            <select class="form-select" id="level_id" name="level_id"  required>
+                                                                <option value="" {{ old('level_id') === null ? 'selected' : '' }}>Select Level</option>
                                                             </select>
                                                             @error('level_id')
                                                             <span class="invalid-feedback" role="alert">
@@ -385,14 +385,10 @@
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {
-        // const organizationSelect = document.getElementById("organization_id");
         const buildingSelect = document.getElementById("building_id");
         const levelSelect = document.getElementById("level_id");
 
-        // Fetch levels based on selected building
-        buildingSelect.addEventListener("change", function () {
-            const buildingId = this.value;
-
+        function fetchLevels(buildingId, selectedLevelId = null) {
             if (buildingId) {
                 fetch(`{{ route('buildings.levels', ':id') }}`.replace(':id', buildingId), {
                     method: "GET",
@@ -403,14 +399,17 @@
                 })
                     .then(response => response.json())
                     .then(data => {
-                        // Clear previous options
-                        levelSelect.innerHTML = `<option value="" disabled selected>Select Level</option>`;
+                        levelSelect.innerHTML = `<option value="" >Select Level</option>`;
 
-                        // Populate new options
                         for (const [key, value] of Object.entries(data.levels)) {
                             const option = document.createElement("option");
                             option.value = key;
                             option.textContent = value;
+
+                            if (selectedLevelId && key == selectedLevelId) {
+                                option.selected = true;
+                            }
+
                             levelSelect.appendChild(option);
                         }
                     })
@@ -418,12 +417,25 @@
                         console.error("Error fetching levels:", error);
                     });
             } else {
-                // Reset level dropdown if no building is selected
-                levelSelect.innerHTML = `<option value="" disabled selected>Select Level</option>`;
+                levelSelect.innerHTML = `<option value="" >Select Level</option>`;
             }
+        }
+
+        // Fetch levels when a building is selected
+        buildingSelect.addEventListener("change", function () {
+            fetchLevels(this.value);
         });
+
+        // Populate levels on page load if old building_id exists
+        const oldBuildingId = "{{ old('building_id') }}";
+        const oldLevelId = "{{ old('level_id') }}";
+
+        if (oldBuildingId) {
+            fetchLevels(oldBuildingId, oldLevelId);
+        }
     });
 </script>
+
 
 
 @endpush

@@ -304,7 +304,7 @@
         }
 
 
-    /*    */
+        /*    */
         .unit-user-details{
             background-color: var(--sidenavbar-body-color);
         }

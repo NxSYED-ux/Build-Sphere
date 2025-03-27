@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Add User')
+@section('title', 'Assign Unit')
 
 @push('styles')
     <style>
@@ -383,7 +383,7 @@
                                                 <input type="hidden" name="unitName" id="unit_name">
                                                 <select name="unitId" id="unit_id" class="form-select" required>
                                                     <option value="">Select Unit</option>
-                                                    @forelse($units as $unit)
+                                                    @forelse($units ?? [] as $unit)
                                                         <option value="{{ $unit->id }}" {{ old('unitId', $selectedUnitId) == $unit->id ? 'selected' : '' }}>
                                                             {{ $unit->unit_name }}
                                                         </option>
@@ -832,7 +832,7 @@
             const unitSelect = document.getElementById("unit_id");
 
             function fetchUnitDetails(unitId) {
-                if (!unitId) return; // Prevent fetching if no unit is selected
+                if (!unitId) return;
 
                 fetch(`{{ route('owner.units.details', ':id') }}`.replace(':id', unitId), {
                     method: "GET",

@@ -252,8 +252,8 @@
                                                             <div class="form-group mb-3">
                                                                 <label for="organization_id">Organization</label>
                                                                 <span class="required__field">*</span><br>
-                                                                <select class="form-select" id="organization_id" name="organization_id" value="{{ old('organization_id') }}" required>
-                                                                    <option value="" disabled {{ old('organization_id') === null ? 'selected' : '' }}>Select Organization</option>
+                                                                <select class="form-select" id="organization_id" name="organization_id"  required>
+                                                                    <option value=""  {{ old('organization_id') === null ? 'selected' : '' }}>Select Organization</option>
                                                                     @foreach($organizations as $organization)
                                                                         <option value="{{ $organization->id }}" {{ old('organization_id') == $organization->id ? 'selected' : '' }}>
                                                                             {{ $organization->name }}
@@ -273,8 +273,8 @@
                                                             <div class="form-group mb-3">
                                                                 <label for="building_id">Building</label>
                                                                 <span class="required__field">*</span><br>
-                                                                <select class="form-select" id="building_id" name="building_id" value="{{ old('building_id') }}" required>
-                                                                    <option value="" disabled {{ old('building_id') === null ? 'selected' : '' }}>Select Building</option>
+                                                                <select class="form-select" id="building_id" name="building_id" required>
+                                                                    <option value="" {{ old('building_id') === null ? 'selected' : '' }}>Select Building</option>
                                                                 </select>
                                                                 @error('building_id')
                                                                     <span class="invalid-feedback" role="alert">
@@ -289,8 +289,8 @@
                                                             <div class="form-group mb-3">
                                                                 <label for="level_id">Level</label>
                                                                 <span class="required__field">*</span><br>
-                                                                <select class="form-select" id="level_id" name="level_id" value="{{ old('level_id') }}" required>
-                                                                    <option value="" disabled {{ old('level_id') === null ? 'selected' : '' }}>Select Level</option>
+                                                                <select class="form-select" id="level_id" name="level_id" required>
+                                                                    <option value=""  {{ old('level_id') === null ? 'selected' : '' }}>Select Level</option>
                                                                 </select>
                                                                 @error('level_id')
                                                                     <span class="invalid-feedback" role="alert">
@@ -406,9 +406,12 @@
             const buildingSelect = document.getElementById("building_id");
             const levelSelect = document.getElementById("level_id");
 
-            organizationSelect.addEventListener("change", function () {
-                const organizationId = this.value;
+            const oldOrganizationId = "{{ old('organization_id') }}";
+            const oldBuildingId = "{{ old('building_id') }}";
+            const oldLevelId = "{{ old('level_id') }}";
 
+            // Function to fetch buildings based on the selected organization
+            function fetchBuildings(organizationId, callback = null) {
                 if (organizationId) {
                     fetch(`{{ route('organizations.buildings', ':id') }}`.replace(':id', organizationId), {
                         method: "GET",
@@ -419,36 +422,28 @@
                     })
                         .then(response => response.json())
                         .then(data => {
-                            // Clear previous options
-                            buildingSelect.innerHTML = `<option value="" disabled selected>Select Building</option>`;
+                            buildingSelect.innerHTML = `<option value="" >Select Building</option>`;
 
-                            // Populate new options
-                            for (const [key, value] of Object.entries(data.buildings)) {
+                            Object.entries(data.buildings).forEach(([key, value]) => {
                                 const option = document.createElement("option");
                                 option.value = key;
                                 option.textContent = value;
+                                if (key == oldBuildingId) {
+                                    option.selected = true;
+                                }
                                 buildingSelect.appendChild(option);
-                            }
+                            });
 
-                            // Reset level dropdown
-                            levelSelect.innerHTML = `<option value="" disabled selected>Select Level</option>`;
+                            if (callback) callback();
                         })
                         .catch(error => {
                             console.error("Error fetching buildings:", error);
                         });
-                } else {
-                    // Reset both dropdowns if no organization is selected
-                    buildingSelect.innerHTML = `<option value="" disabled selected>Select Building</option>`;
-                    levelSelect.innerHTML = `<option value="" disabled selected>Select Level</option>`;
                 }
-            });
+            }
 
-
-        // Fetch levels based on selected building
-
-            buildingSelect.addEventListener("change", function () {
-                const buildingId = this.value;
-
+            // Function to fetch levels based on the selected building
+            function fetchLevels(buildingId) {
                 if (buildingId) {
                     fetch(`{{ route('buildings.levels', ':id') }}`.replace(':id', buildingId), {
                         method: "GET",
@@ -459,27 +454,47 @@
                     })
                         .then(response => response.json())
                         .then(data => {
-                            // Clear previous options
-                            levelSelect.innerHTML = `<option value="" disabled selected>Select Level</option>`;
+                            levelSelect.innerHTML = `<option value="" >Select Level</option>`;
 
-                            // Populate new options
-                            for (const [key, value] of Object.entries(data.levels)) {
+                            Object.entries(data.levels).forEach(([key, value]) => {
                                 const option = document.createElement("option");
                                 option.value = key;
                                 option.textContent = value;
+                                if (key == oldLevelId) {
+                                    option.selected = true;
+                                }
                                 levelSelect.appendChild(option);
-                            }
+                            });
                         })
                         .catch(error => {
                             console.error("Error fetching levels:", error);
                         });
-                } else {
-                    // Reset level dropdown if no building is selected
-                    levelSelect.innerHTML = `<option value="" disabled selected>Select Level</option>`;
                 }
+            }
+
+            // On organization change, fetch buildings
+            organizationSelect.addEventListener("change", function () {
+                fetchBuildings(this.value, function () {
+                    levelSelect.innerHTML = `<option value=""  >Select Level</option>`;
+                });
             });
+
+            // On building change, fetch levels
+            buildingSelect.addEventListener("change", function () {
+                fetchLevels(this.value);
+            });
+
+            // Populate old values on page load
+            if (oldOrganizationId) {
+                fetchBuildings(oldOrganizationId, function () {
+                    if (oldBuildingId) {
+                        fetchLevels(oldBuildingId);
+                    }
+                });
+            }
         });
     </script>
+
 
 
 @endpush

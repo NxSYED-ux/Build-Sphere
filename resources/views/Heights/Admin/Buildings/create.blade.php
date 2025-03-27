@@ -55,28 +55,17 @@
         }
 
         /* Center the input and preview */
+        /* Center the input and preview */
         .image-input-container {
             text-align: center;
             max-width: 600px;
             margin: 0 auto;
-        }
-
-        .image-input-container .custom-file-label {
-            display: inline-block;
-            background-color: #6c63ff;
-            color: #fff !important;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: bold;
-            margin-bottom: 10px;
-            transition: background-color 0.3s ease;
             position: relative;
-        }
 
-        .image-input-container .custom-file-label:hover {
-            background-color: #5752d3;
+            display: flex;
+            flex-direction: column;
+            min-height: 230px;
+            height: 100% !important;
         }
 
         .image-input-container .image-preview {
@@ -88,35 +77,24 @@
             border: 2px dashed var(--sidenavbar-text-color);
             border-radius: 10px;
             padding: 15px;
-            height: 295px;
+            min-height: 230px;
+            height: 100% !important;
             background-color: var(--main-background-color);
             margin-top: 10px;
             overflow-y: auto;
             text-align: center;
+            position: relative;
         }
 
-        .image-input-container .image-preview::-webkit-scrollbar {
-            width: 8px;
-            position: absolute;
-            right: -2px;
-        }
 
-        .image-input-container .image-preview::-webkit-scrollbar-thumb {
-            background-color: var(--sidenavbar-text-color);
-            border-radius: 10px;
-        }
-
-        .image-input-container .image-preview::-webkit-scrollbar-track {
-            background: transparent;
-        }
-
-        .image-input-container .image-preview p {
+        .image-preview p {
             flex-basis: 100%;
             text-align: center;
             font-size: 16px;
             color: #666;
         }
 
+        /* Ensure images are displayed properly */
         .image-input-container .image-item {
             position: relative;
             width: 120px;
@@ -133,11 +111,31 @@
             object-fit: cover;
         }
 
-        @media (max-width: 575.98px) {
-            .image-input-container .image-item {
-                width: 100px;
-                height: 100px;
-            }
+        /* Always show upload button */
+        .image-preview .upload-btn {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background-color: #6c63ff;
+            color: #fff;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 20px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .image-preview .upload-btn:hover {
+            background-color: #5752d3;
+        }
+
+        /* Hide default file input */
+        .image-input-container input[type="file"] {
+            display: none;
         }
 
         .image-input-container .remove-btn {
@@ -245,7 +243,7 @@
 
                                         <form action="{{ route('buildings.store') }}" method="POST" enctype="multipart/form-data">
                                             @csrf
-                                            <div class="row">
+                                            <div class="row d-flex align-items-stretch">
                                                 <div class="col-lg-8 col-md-8 col-sm-12 col-12">
                                                     <div class="row my-0 py-0">
 
@@ -399,19 +397,19 @@
 
                                                 </div>
                                                 <div class="col-lg-4 col-md-4 col-sm-12 col-12">
-                                                    <div class="image-input-container mt-1">
-                                                        <label for="image-input" class="-sm-block d-md-none btn btn-primary d-flex align-items-center justify-content-center w-100" style="margin-top: 13px !important; color: #ffff !important;">
-                                                            <i class='bx bx-upload fs-5 px-1'></i> Choose Images
-                                                        </label>
+                                                    <div class="image-input-container mt-1 pb-3 d-flex flex-column">
                                                         <input type="file" id="image-input" name="building_pictures[]" accept="image/png, image/jpeg, image/jpg, image/gif" multiple hidden>
-                                                        <div class="image-preview" id="image-preview">
+                                                        @error('pictures')
+                                                        <span class="invalid-feedback" role="alert">
+                                                            <strong>{{ $message }}</strong>
+                                                        </span>
+                                                        @enderror
+                                                        <div class="image-preview flex-grow-4" id="image-preview">
                                                             <p id="image-message">No images selected</p>
-                                                            {{--                                                        <p id="error-message" class="text-danger mt-2"></p>--}}
+                                                            <label for="image-input" class="upload-btn">
+                                                                <i class='bx bx-upload'></i>
+                                                            </label>
                                                         </div>
-                                                        <label for="image-input" class="d-none d-md-block btn btn-primary d-flex align-items-center justify-content-center w-100" style="margin-top: 13px !important; color: #ffff !important;">
-                                                            <i class='bx bx-upload fs-5 px-1'></i> Choose Images
-                                                        </label>
-
                                                     </div>
                                                 </div>
                                             </div>
