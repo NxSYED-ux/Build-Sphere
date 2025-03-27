@@ -497,7 +497,7 @@ class BuildingUnitController extends Controller
                 return response()->json(['error' => 'Invalid Unit Id.'], 404);
             }
 
-            return response()->json($unit);
+            return response()->json(['Unit' => $unit]);
 
         } catch (\Exception $e) {
             Log::error('Error fetching Unit Data: ' . $e->getMessage());
