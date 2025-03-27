@@ -10,7 +10,52 @@
             margin-top: 45px;
         }
 
+        .collapse-btn{
+            background-color: #D3D3D3;
+            color: black;
 
+        }
+
+        .collapse-btn {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            text-align: left;
+            margin-top: 1rem;
+            padding: 10px 15px;
+            font-size: 16px;
+            font-weight: 400;
+            border: 1px solid #ced4da;
+            border-radius: 5px;
+            background-color: #f8f9fa;
+            color: #212529;
+            cursor: pointer;
+            transition: background-color 0.3s ease-in-out, border-color 0.3s ease-in-out;
+        }
+
+        .collapse-btn:hover {
+            background-color: #e9ecef;
+            border-color: #adb5bd;
+        }
+
+        .collapse-btn:focus,
+        .collapse-btn:active {
+            box-shadow: none !important;
+            outline: none !important;
+            background-color: #f8f9fa !important;
+        }
+
+        .collapse-btn i {
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .collapse-btn[aria-expanded="true"] i {
+            transform: rotate(90deg);
+        }
+
+
+        /**/
         #imagePreview {
             display: flex;
             flex-wrap: wrap;
@@ -20,7 +65,7 @@
             border: 2px dashed var(--sidenavbar-text-color);
             border-radius: 10px;
             padding: 15px;
-            height: 275px;
+            height: 200px;
             background-color: var(--main-background-color);
             margin-top: 2px;
             overflow-y: auto;
@@ -36,11 +81,31 @@
             border: 2px dashed var(--sidenavbar-text-color);
             border-radius: 10px;
             padding: 15px;
-            height: 275px;
+            height: 200px;
             background-color: var(--main-background-color);
             margin-top: 2px;
             overflow-y: auto;
             text-align: center;
+            position: relative;
+        }
+
+        .upload-btn {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background: #007bff;
+            color: white;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .upload-btn i {
+            font-size: 20px;
         }
 
         .image-thumbnail {
@@ -53,6 +118,14 @@
             height: 100px;
             object-fit: cover;
         }
+
+        @media (max-width: 575.98px) {
+            .thumbnail-image {
+                width: 80px;
+                height: 80px;
+            }
+        }
+
         .thumbnail-remove {
             position: absolute;
             top: 0;
@@ -226,21 +299,13 @@
                                             </div>
 
                                             <h4>
-                                                <button class="btn w-100 text-start mt-2" style="background-color: #D3D3D3;" type="button" data-bs-toggle="collapse" data-bs-target="#pictures" aria-expanded="false" aria-controls="pictures">
+                                                <button class="collapse-btn w-100 text-start mt-3 d-flex justify-content-between align-items-center"  type="button" data-bs-toggle="collapse" data-bs-target="#pictures" aria-expanded="false" aria-controls="pictures">
                                                     Pictures <i class="fa fa-chevron-down"></i>
                                                 </button>
                                             </h4>
                                             <div id="pictures" class="collapse show collapsible-section">
                                                 <div class="row">
-                                                    <!-- Unit Images -->
-                                                    <div class="col-lg-4 col-md-4 col-sm-12">
-                                                        <label for="imageInput" class="form-label">Unit Pictures</label>
-                                                        <input type="file" id="imageInput" name="unit_pictures[]" class="form-control" multiple>
-                                                        @error('unit_pictures.*')
-                                                        <div class="text-danger">{{ $message }}</div>
-                                                        @enderror
-                                                    </div>
-                                                    <div class="col-lg-4 col-md-8 col-sm-12">
+                                                    <div class="col-lg-6 col-md-6 col-sm-12">
                                                         <label class="form-label">Already Uploaded</label>
                                                         <div id="imagePreview" class="">
                                                             @forelse ($unit->pictures as $image)
@@ -253,12 +318,21 @@
                                                             @endforelse
                                                         </div>
                                                     </div>
-                                                    <div class="col-lg-4 col-md-12 col-sm-12">
+                                                    <div class="col-lg-6 col-md-6 col-sm-12">
                                                         <label class="form-label">New Uploads</label>
-                                                        <div id="uploadImagePreview">
-                                                            <p id="image-message">No images selected</p>
-                                                            <div id="imageThumbnails" class="">
-                                                                <!-- Image thumbnails will be inserted here -->
+                                                        <div class="">
+                                                            <input type="file" id="imageInput" name="unit_pictures[]" accept="image/png, image/jpeg, image/jpg, image/gif" multiple hidden>
+                                                            @error('unit_pictures.*')
+                                                            <span class="invalid-feedback" role="alert">
+                                                                <strong>{{ $message }}</strong>
+                                                            </span>
+                                                            @enderror
+                                                            <div class="flex-grow-4" id="uploadImagePreview">
+                                                                <p id="image-message">No images selected</p>
+                                                                <div id="imageThumbnails"></div>
+                                                                <label for="imageInput" class="upload-btn">
+                                                                    <i class='bx bx-upload'></i>
+                                                                </label>
                                                             </div>
                                                         </div>
                                                     </div>

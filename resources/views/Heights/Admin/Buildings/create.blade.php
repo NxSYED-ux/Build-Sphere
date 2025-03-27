@@ -55,7 +55,6 @@
         }
 
         /* Center the input and preview */
-        /* Center the input and preview */
         .image-input-container {
             text-align: center;
             max-width: 600px;
@@ -103,6 +102,13 @@
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
             border: 1px solid #ddd;
             overflow: hidden;
+        }
+
+        @media (max-width: 575.98px) {
+            .image-input-container .image-item {
+                width: 100px;
+                height: 100px;
+            }
         }
 
         .image-input-container .image-item img {
@@ -160,11 +166,6 @@
             background-color: red;
         }
 
-    </style>
-
-    <style>
-
-
         /* Apply Styles to Elements Inside .document-container */
         #documents{
             background-color: var(--bg-color);
@@ -214,6 +215,7 @@
         }
 
     </style>
+
 @endpush
 
 @section('content')
@@ -399,7 +401,7 @@
                                                 <div class="col-lg-4 col-md-4 col-sm-12 col-12">
                                                     <div class="image-input-container mt-1 pb-3 d-flex flex-column">
                                                         <input type="file" id="image-input" name="building_pictures[]" accept="image/png, image/jpeg, image/jpg, image/gif" multiple hidden>
-                                                        @error('pictures')
+                                                        @error('pictures.*')
                                                         <span class="invalid-feedback" role="alert">
                                                             <strong>{{ $message }}</strong>
                                                         </span>
@@ -519,6 +521,13 @@
         const imagePreview = document.getElementById('image-preview');
         const imageMessage = document.getElementById('image-message');
 
+        // Ensure upload button remains in preview
+        const uploadButton = document.createElement('label');
+        uploadButton.classList.add('upload-btn');
+        uploadButton.setAttribute('for', 'image-input');
+        uploadButton.innerHTML = "<i class='bx bx-upload'></i>";
+        imagePreview.appendChild(uploadButton);
+
         imageInput.addEventListener('change', () => {
             const files = imageInput.files;
 
@@ -527,10 +536,11 @@
                 imageMessage.style.color = 'red';
                 imageInput.value = '';
                 return;
-            } else {
             }
 
+            // Clear previous preview but keep the upload button
             imagePreview.innerHTML = '';
+            imagePreview.appendChild(uploadButton);
 
             if (files.length > 0) {
                 Array.from(files).forEach((file, index) => {
@@ -551,8 +561,9 @@
                         // Remove image on click
                         removeBtn.addEventListener('click', () => {
                             imageItem.remove();
-                            if (imagePreview.children.length === 0) {
+                            if (imagePreview.children.length === 1) { // Only upload button remains
                                 imagePreview.innerHTML = '<p>No images selected</p>';
+                                imagePreview.appendChild(uploadButton);
                             }
                         });
 
@@ -565,8 +576,10 @@
                 });
             } else {
                 imagePreview.innerHTML = '<p>No images selected</p>';
+                imagePreview.appendChild(uploadButton);
             }
         });
+
     </script>
 
     <!-- Collapse Script -->

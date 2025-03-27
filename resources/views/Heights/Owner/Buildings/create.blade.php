@@ -10,29 +10,61 @@
             margin-top: 45px;
         }
 
+        .collapse-btn{
+            background-color: #D3D3D3;
+            color: black;
+
+        }
+
+        .collapse-btn {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            text-align: left;
+            margin-top: 1rem;
+            padding: 10px 15px;
+            font-size: 16px;
+            font-weight: 400;
+            border: 1px solid #ced4da;
+            border-radius: 5px;
+            background-color: #f8f9fa;
+            color: #212529;
+            cursor: pointer;
+            transition: background-color 0.3s ease-in-out, border-color 0.3s ease-in-out;
+        }
+
+        .collapse-btn:hover {
+            background-color: #e9ecef;
+            border-color: #adb5bd;
+        }
+
+        .collapse-btn:focus,
+        .collapse-btn:active {
+            box-shadow: none !important;
+            outline: none !important;
+            background-color: #f8f9fa !important;
+        }
+
+        .collapse-btn i {
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .collapse-btn[aria-expanded="true"] i {
+            transform: rotate(90deg);
+        }
+
         /* Center the input and preview */
         .image-input-container {
             text-align: center;
             max-width: 600px;
             margin: 0 auto;
-        }
-
-        .image-input-container .custom-file-label {
-            display: inline-block;
-            background-color: #6c63ff;
-            color: #fff !important;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: bold;
-            margin-bottom: 10px;
-            transition: background-color 0.3s ease;
             position: relative;
-        }
 
-        .image-input-container .custom-file-label:hover {
-            background-color: #5752d3;
+            display: flex;
+            flex-direction: column;
+            min-height: 230px;
+            height: 100% !important;
         }
 
         .image-input-container .image-preview {
@@ -44,35 +76,24 @@
             border: 2px dashed var(--sidenavbar-text-color);
             border-radius: 10px;
             padding: 15px;
-            height: 295px;
+            min-height: 230px;
+            height: 100% !important;
             background-color: var(--main-background-color);
             margin-top: 10px;
             overflow-y: auto;
             text-align: center;
+            position: relative;
         }
 
-        .image-input-container .image-preview::-webkit-scrollbar {
-            width: 8px;
-            position: absolute;
-            right: -2px;
-        }
 
-        .image-input-container .image-preview::-webkit-scrollbar-thumb {
-            background-color: var(--sidenavbar-text-color);
-            border-radius: 10px;
-        }
-
-        .image-input-container .image-preview::-webkit-scrollbar-track {
-            background: transparent;
-        }
-
-        .image-input-container .image-preview p {
+        .image-preview p {
             flex-basis: 100%;
             text-align: center;
             font-size: 16px;
             color: #666;
         }
 
+        /* Ensure images are displayed properly */
         .image-input-container .image-item {
             position: relative;
             width: 120px;
@@ -83,17 +104,44 @@
             overflow: hidden;
         }
 
+        @media (max-width: 575.98px) {
+            .image-input-container .image-item {
+                width: 100px;
+                height: 100px;
+            }
+        }
+
         .image-input-container .image-item img {
             width: 100%;
             height: 100%;
             object-fit: cover;
         }
 
-        @media (max-width: 575.98px) {
-            .image-input-container .image-item {
-                width: 100px;
-                height: 100px;
-            }
+        /* Always show upload button */
+        .image-preview .upload-btn {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background-color: #6c63ff;
+            color: #fff;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 20px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .image-preview .upload-btn:hover {
+            background-color: #5752d3;
+        }
+
+        /* Hide default file input */
+        .image-input-container input[type="file"] {
+            display: none;
         }
 
         .image-input-container .remove-btn {
@@ -116,6 +164,55 @@
 
         .image-input-container .remove-btn:hover {
             background-color: red;
+        }
+
+
+        /* Apply Styles to Elements Inside .document-container */
+        #documents{
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        #add-document{
+            background-color: #D3D3D3;
+        }
+        .document-container {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        .document-container .bg-light {
+            background-color: var(--bg-color) !important;
+        }
+
+        .document-container .form-control,
+        .document-container .form-select {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+        }
+
+        .document-container .form-control::placeholder {
+            color: var(--border-color);
+        }
+
+        .document-container .btn {
+            background-color: var(--btn-bg);
+            color: var(--btn-text);
+        }
+
+        .document-container .btn:hover {
+            opacity: 0.9;
+        }
+
+        .document-container .btn-danger {
+            background-color: var(--btn-bg);
+            color: var(--btn-text);
+            border-color: var(--btn-bg);
         }
 
     </style>
@@ -282,31 +379,31 @@
 
                                                 </div>
                                                 <div class="col-lg-4 col-md-4 col-sm-12 col-12">
-                                                    <div class="image-input-container mt-1">
-                                                        <label for="image-input" class="-sm-block d-md-none btn btn-primary d-flex align-items-center justify-content-center w-100" style="margin-top: 13px !important; color: #ffff !important;">
-                                                            <i class='bx bx-upload fs-5 px-1'></i> Choose Images
-                                                        </label>
+                                                    <div class="image-input-container mt-1 pb-3 d-flex flex-column">
                                                         <input type="file" id="image-input" name="building_pictures[]" accept="image/png, image/jpeg, image/jpg, image/gif" multiple hidden>
-                                                        <div class="image-preview" id="image-preview">
+                                                        @error('pictures')
+                                                        <span class="invalid-feedback" role="alert">
+                                                            <strong>{{ $message }}</strong>
+                                                        </span>
+                                                        @enderror
+                                                        <div class="image-preview flex-grow-4" id="image-preview">
                                                             <p id="image-message">No images selected</p>
-                                                            {{--                                                        <p id="error-message" class="text-danger mt-2"></p>--}}
+                                                            <label for="image-input" class="upload-btn">
+                                                                <i class='bx bx-upload'></i>
+                                                            </label>
                                                         </div>
-                                                        <label for="image-input" class="d-none d-md-block btn btn-primary d-flex align-items-center justify-content-center w-100" style="margin-top: 13px !important; color: #ffff !important;">
-                                                            <i class='bx bx-upload fs-5 px-1'></i> Choose Images
-                                                        </label>
-
                                                     </div>
                                                 </div>
                                             </div>
 
                                             <h4>
-                                                <button class="btn w-100 text-start  mt-2" style="background-color: #D3D3D3;" type="button" data-bs-toggle="collapse" data-bs-target="#documents" aria-expanded="false" aria-controls="documents">
+                                                <button class="collapse-btn w-100 text-start mt-3 d-flex justify-content-between align-items-center"  type="button" data-bs-toggle="collapse" data-bs-target="#documents" aria-expanded="false" aria-controls="documents">
                                                     Documents <i class="fa fa-chevron-right"></i>
                                                 </button>
                                             </h4>
-                                            <div id="documents" class="collapse collapsible-section">
+                                            <div id="documents" class="collapse collapsible-section  text-center">
                                                 <button type="button" id="add-document" class="btn btn-light mt-21 mb-2">Add Document</button>
-                                                <div id="documents-container" class="container">
+                                                <div id="documents-container" class="container document-container">
                                                     <!-- Document fields will be appended here -->
                                                 </div>
                                             </div>
@@ -402,6 +499,13 @@
         const imagePreview = document.getElementById('image-preview');
         const imageMessage = document.getElementById('image-message');
 
+        // Ensure upload button remains in preview
+        const uploadButton = document.createElement('label');
+        uploadButton.classList.add('upload-btn');
+        uploadButton.setAttribute('for', 'image-input');
+        uploadButton.innerHTML = "<i class='bx bx-upload'></i>";
+        imagePreview.appendChild(uploadButton);
+
         imageInput.addEventListener('change', () => {
             const files = imageInput.files;
 
@@ -410,10 +514,11 @@
                 imageMessage.style.color = 'red';
                 imageInput.value = '';
                 return;
-            } else {
             }
 
+            // Clear previous preview but keep the upload button
             imagePreview.innerHTML = '';
+            imagePreview.appendChild(uploadButton);
 
             if (files.length > 0) {
                 Array.from(files).forEach((file, index) => {
@@ -434,8 +539,9 @@
                         // Remove image on click
                         removeBtn.addEventListener('click', () => {
                             imageItem.remove();
-                            if (imagePreview.children.length === 0) {
+                            if (imagePreview.children.length === 1) { // Only upload button remains
                                 imagePreview.innerHTML = '<p>No images selected</p>';
+                                imagePreview.appendChild(uploadButton);
                             }
                         });
 
@@ -448,8 +554,10 @@
                 });
             } else {
                 imagePreview.innerHTML = '<p>No images selected</p>';
+                imagePreview.appendChild(uploadButton);
             }
         });
+
     </script>
 
     <!-- Collapse Script -->
