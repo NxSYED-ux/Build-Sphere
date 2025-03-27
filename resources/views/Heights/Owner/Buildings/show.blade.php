@@ -609,7 +609,7 @@
             }
 
             // Unit Details Fetch
-            fetch(`{{ route('units.details', ':id') }}`.replace(':id', numericUnitId), {
+            fetch(`{{ route('owner.units.details.contract', ':id') }}`.replace(':id', numericUnitId), {
                 method: "GET",
                 headers: {
                     "X-Requested-With": "XMLHttpRequest",
