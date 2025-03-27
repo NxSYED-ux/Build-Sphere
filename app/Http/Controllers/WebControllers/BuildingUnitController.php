@@ -565,7 +565,7 @@ class BuildingUnitController extends Controller
 
 
     // Get Building Units
-    public function getBuildingUnits($building_id){
+    public function getAvailableBuildingUnits($building_id){
 
         $units = BuildingUnit::select('id', 'unit_name')
             ->where('sale_or_rent', '!=', 'Not Available')

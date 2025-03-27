@@ -213,11 +213,12 @@ Route::prefix('owner')->middleware(['auth.jwt'])->group(function () {
         Route::get('/create', [BuildingController::class, 'ownerCreate'])->name('owner.buildings.create');
         Route::post('/', [BuildingController::class, 'ownerStore'])->name('owner.buildings.store');
         Route::get('/tree', [BuildingTreeController::class, 'tree'])->name('owner.buildings.tree');
-        Route::get('/{building}/show', [BuildingController::class, 'ownerShow'])->name('owner.buildings.show');
-        Route::get('/{building}/edit', [BuildingController::class, 'ownerEdit'])->name('owner.buildings.edit');
+        Route::get('/{id}/show', [BuildingController::class, 'ownerShow'])->name('owner.buildings.show');
+        Route::get('/{id}/edit', [BuildingController::class, 'ownerEdit'])->name('owner.buildings.edit');
         Route::put('/', [BuildingController::class, 'ownerUpdate'])->name('owner.buildings.update');
         Route::post('/submit', [BuildingController::class, 'submitBuilding'])->name('owner.buildings.submit');
         Route::post('/reminder', [BuildingController::class, 'approvalReminder'])->name('owner.buildings.reminder');
+        Route::get('/{id}/available', [BuildingUnitController::class, 'getAvailableBuildingUnits'])->name('owner.buildings.units.available');
 
     });
 
@@ -226,9 +227,9 @@ Route::prefix('owner')->middleware(['auth.jwt'])->group(function () {
         Route::get('/', [BuildingLevelController::class, 'ownerIndex'])->name('owner.levels.index');
         Route::get('/create', [BuildingLevelController::class, 'ownerCreate'])->name('owner.levels.create');
         Route::post('/', [BuildingLevelController::class, 'store'])->name('owner.levels.store');
-        Route::get('/{level}/show', [BuildingLevelController::class, 'show'])->name('owner.levels.show');
-        Route::get('/{level}/edit', [BuildingLevelController::class, 'ownerEdit'])->name('owner.levels.edit');
-        Route::put('/{level}', [BuildingLevelController::class, 'update'])->name('owner.levels.update');
+        Route::get('/{id}/show', [BuildingLevelController::class, 'show'])->name('owner.levels.show');
+        Route::get('/{id}/edit', [BuildingLevelController::class, 'ownerEdit'])->name('owner.levels.edit');
+        Route::put('/{id}', [BuildingLevelController::class, 'update'])->name('owner.levels.update');
 
     });
 
