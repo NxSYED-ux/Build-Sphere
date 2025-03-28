@@ -29,7 +29,7 @@ Route::get('/admin-login', [AuthController::class, 'adminLoginIndex'])->name('ad
 Route::get('/owner-login', [AuthController::class, 'ownerLoginIndex'])->name('owner-login-index');
 
 Route::get('login', [AuthController::class, 'index'])->name('login');
-Route::post('login', [AuthController::class, 'adminLogin'])->name('login');
+Route::post('login', [AuthController::class, 'login'])->name('login');
 
 
 Route::prefix('auth')->group(function () {
@@ -144,6 +144,7 @@ Route::prefix('admin')->middleware(['auth.jwt'])->group(function () {
         Route::delete('/{building}', [BuildingController::class, 'destroy'])->name('buildings.destroy');
         Route::post('/reject', [BuildingController::class, 'rejectBuilding'])->name('buildings.reject');
         Route::post('/approve', [BuildingController::class, 'approveBuilding'])->name('buildings.approve');
+        Route::post('/report-remarks', [BuildingController::class, 'reportBuildingRemarks'])->name('buildings.reportRemarks');
 
     });
 

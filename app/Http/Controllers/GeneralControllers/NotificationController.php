@@ -7,14 +7,6 @@ use Illuminate\Http\Request;
 
 class NotificationController extends Controller
 {
-    public function pusherCredentials(){
-        return response()->json([
-            'key' => env('PUSHER_APP_KEY'),
-            'cluster' => env('PUSHER_APP_CLUSTER', 'ap2'),
-            'userId' => request()->user()->id,
-        ]);
-    }
-
     public function getUnreadNotificationsCount(Request $request)
     {
         try {

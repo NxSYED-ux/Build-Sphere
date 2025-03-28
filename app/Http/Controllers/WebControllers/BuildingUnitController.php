@@ -563,6 +563,19 @@ class BuildingUnitController extends Controller
         return $organization_id;
     }
 
+    private function getBuildingsOwner($organization_id, $role_name, $user_id)
+    {
+        $query = Building::select('id', 'name')
+            ->where('organization_id', $organization_id);
+
+        if ($role_name === 'Manager') {
+            $managerBuildingIds = ManagerBuilding::where('user_id', $user_id)->pluck('building_id')->toArray();
+            $query->whereIn('id', $managerBuildingIds);
+        }
+
+        return $query->get();
+    }
+
 
     // Get Building Units
     public function getAvailableBuildingUnits($building_id){
@@ -575,19 +588,6 @@ class BuildingUnitController extends Controller
             ->get();
 
         return response()->json(['units' => $units]);
-    }
-
-    private function getBuildingsOwner($organization_id, $role_name, $user_id)
-    {
-        $query = Building::select('id', 'name')
-            ->where('organization_id', $organization_id);
-
-        if ($role_name === 'Manager') {
-            $managerBuildingIds = ManagerBuilding::where('user_id', $user_id)->pluck('building_id')->toArray();
-            $query->whereIn('id', $managerBuildingIds);
-        }
-
-        return $query->get();
     }
 
 }

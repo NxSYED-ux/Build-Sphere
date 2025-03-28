@@ -20,28 +20,32 @@ class BuildingTreeController extends Controller
             $units = null;
             $owner = null;
             $buildingsDropDown = null;
+            $buildingId = $request->input('building_id');
 
             $token = $request->attributes->get('token');
 
             if (empty($token['organization_id']) || empty($token['role_name'])) {
-                return view('Heights.Owner.Buildings.tree', compact('building', 'levels', 'units', 'owner', 'buildingsDropDown'));
+                return $buildingId
+                    ? redirect()->back()->with('error', 'Invalid Building ID')
+                    : view('Heights.Owner.Buildings.tree', compact('building', 'levels', 'units', 'owner', 'buildingsDropDown'));
             }
 
             $query = Building::where('organization_id', $token['organization_id']);
 
             if ($token['role_name'] === 'Manager') {
                 $managerBuildings = ManagerBuilding::where('user_id', $user->id)->pluck('building_id')->toArray();
-                if (!empty($managerBuildings)) {
-                    $query->whereIn('id', $managerBuildings);
-                }
+                $query->whereIn('id', $managerBuildings);
             }
 
             $buildingsDropDown = $query->pluck('name', 'id');
+            $buildingId = $buildingId ?? $buildingsDropDown->keys()->first();
 
-            $buildingId = $request->input('building_id') ?? $buildingsDropDown->keys()->first();
+            if (!$buildingId) {
+                return view('Heights.Owner.Buildings.tree', compact('building', 'levels', 'units', 'owner', 'buildingsDropDown'));
+            }
 
             if(!isset($buildingsDropDown[$buildingId])){
-                abort(404, 'Building Not Found');
+                return redirect()->back()->with('error', 'Invalid Building ID');
             }
 
             if ($buildingId) {
@@ -49,13 +53,14 @@ class BuildingTreeController extends Controller
                     'address',
                     'pictures',
                     'organization.owner',
-                    'levels.units.pictures'
+                    'levels',
+                    'units.pictures'
                 ])->find($buildingId);
 
                 if ($building) {
                     $owner = optional($building->organization)->owner;
-                    $levels = $building->levels;
-                    $units = $levels->flatMap->units;
+                    $levels = $building->levels ?? collect();
+                    $units = $building->units ?? collect();
                 }
             }
 

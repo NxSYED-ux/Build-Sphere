@@ -28,10 +28,10 @@ class FCMChannel
                 $message = CloudMessage::withTarget('token', $token)
                     ->withNotification($notification)
                     ->withData([
-                        'image' => $data['image'],
-                        'heading' => $data['heading'],
-                        'message' => $data['message'],
-                        'link' => $data['link'],
+                        'image' => $data['image'] ?? '',
+                        'heading' => $data['heading'] ?? '',
+                        'message' => $data['message'] ?? '',
+                        'link' => is_array($data['link']) ? json_encode($data['link']) : ($data['link'] ?? ''),
                     ]);
 
                 $messaging->send($message);

@@ -28,15 +28,15 @@ class AuthMiddleware
             $tokenData = $payload['user'] ?? null;
 
             if (!$user || $user->status === 0) {
-                return $this->handleResponse($request,'User account is deactivated or deleted by administrator', 403);
+                return $this->handleResponse($request,'User account is deactivated or deleted by administrator', 401);
             }
 
             if (!$tokenData) {
-                return $this->handleResponse($request,'Invalid session ID', 400);
+                return $this->handleResponse($request,'Invalid session ID', 401);
             }
 
             if ($tokenData['role_id'] !== $user->role_id) {
-                return $this->handleResponse($request,'Your role has been changed by administrator', 403);
+                return $this->handleResponse($request,'Your role has been changed by administrator', 401);
             }
 
             $request->attributes->set('token', $tokenData);
@@ -47,11 +47,11 @@ class AuthMiddleware
         } catch (TokenExpiredException $e) {
             return $this->handleResponse($request,'Session has expired', 401);
         } catch (TokenInvalidException $e) {
-            return $this->handleResponse($request,'Invalid session ID', 400);
+            return $this->handleResponse($request,'Invalid session ID', 401);
         } catch (JWTException $e) {
-            return $this->handleResponse($request,'Could not parse token', 400);
+            return $this->handleResponse($request,'Could not parse token', 401);
         } catch (Exception $e) {
-            return $this->handleResponse($request,'Invalid or expired session ID', 400);
+            return $this->handleResponse($request,'Invalid or expired session ID', 401);
         }
     }
 
@@ -73,7 +73,7 @@ class AuthMiddleware
             return response()->json(['error' => $message], $statusCode);
         }
 
-        abort(403, $message);
+        abort(401, $message);
     }
 
 }

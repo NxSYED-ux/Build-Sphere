@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Models\ManagerBuilding;
 use App\Models\User;
 use App\Models\Organization;
 use App\Notifications\DatabaseOnlyNotification;
@@ -18,24 +19,29 @@ class OrganizationOwnerNotifications implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     protected $organizationId;
+    protected $buildingId;
     protected $image;
     protected $heading;
     protected $message;
     protected $link;
+    protected $withManager;
     protected $initiatorId;
     protected $initiatorHeading;
     protected $initiatorMessage;
     protected $initiatorLink;
 
-    public function __construct($organizationId, $image, $heading, $message, $link, $initiatorId = null, $initiatorHeading = null, $initiatorMessage = null, $initiatorLink = null)
+    public function __construct($organizationId, $buildingId, $image, $heading, $message, $link,$withManager = false, $initiatorId = null, $initiatorHeading = null, $initiatorMessage = null, $initiatorLink = null)
     {
         $this->organizationId = $organizationId;
+        $this->buildingId = $buildingId;
         $this->image = $image;
         $this->heading = $heading;
         $this->message = $message;
         $this->link = $link;
-        $this->initiatorId = $initiatorId;
 
+        $this->withManager = $withManager;
+
+        $this->initiatorId = $initiatorId;
         $this->initiatorHeading = $initiatorHeading ?? 'Organization Owner Notified';
         $this->initiatorMessage = $initiatorMessage ?? 'The owner of the organization has been successfully notified.';
         $this->initiatorLink = $initiatorLink ?? '';
@@ -53,6 +59,24 @@ class OrganizationOwnerNotifications implements ShouldQueue
                     $this->message,
                     $this->link
                 ));
+            }
+        }
+
+        if($this->withManager){
+            $managers = ManagerBuilding::where('building_id', $this->buildingId)->pluck('user_id');
+            if ($managers->isNotEmpty()) {
+                $users = User::whereIn('id', $managers)
+                    ->where('id', '!=', $this->initiatorId)
+                    ->get();
+
+                if ($users->isNotEmpty()) {
+                    Notification::send($users, new UserNotification(
+                        $this->image,
+                        $this->heading,
+                        $this->message,
+                        $this->link
+                    ));
+                }
             }
         }
 

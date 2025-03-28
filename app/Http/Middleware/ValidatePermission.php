@@ -14,12 +14,12 @@ class ValidatePermission
         try {
             $user = $request->user();
             if (!$user) {
-                return $this->handleResponse($request, 'Unauthorized: Invalid user data', 401);
+                return $this->handleResponse($request, 'Unauthorized', 403);
             }
 
             $permission = DB::selectOne("SELECT id FROM permissions WHERE name = ? AND status = 1 LIMIT 1", [$requiredPermissionName]);
             if (!$permission) {
-                return $this->handleResponse($request, "Access Denied: The permission for \"$requiredPermissionName\" is either inactive or does not exist.", 400);
+                return $this->handleResponse($request, "Access Denied: The permission for \"$requiredPermissionName\" is either inactive or does not exist.", 403);
             }
 
             $permissionId = $permission->id;

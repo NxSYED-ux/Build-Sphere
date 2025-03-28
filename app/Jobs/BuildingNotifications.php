@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Models\Building;
 use App\Models\ManagerBuilding;
 use App\Models\User;
 use App\Models\Organization;
@@ -20,7 +21,6 @@ class BuildingNotifications implements ShouldQueue
 
     protected $organizationId;
     protected $buildingId;
-    protected $image;
     protected $heading;
     protected $message;
     protected $link;
@@ -34,11 +34,10 @@ class BuildingNotifications implements ShouldQueue
     protected $adminMessage;
     protected $adminLink;
 
-    public function __construct($organizationId, $buildingId, $image, $heading, $message, $link, $initiatorId, $initiatorHeading, $initiatorMessage, $initiatorLink, $toAdmin = false, $adminHeading = null, $adminMessage = null, $adminLink = null)
+    public function __construct($organizationId, $buildingId, $heading, $message, $link, $initiatorId, $initiatorHeading, $initiatorMessage, $initiatorLink, $toAdmin = false, $adminHeading = null, $adminMessage = null, $adminLink = null)
     {
         $this->organizationId = $organizationId;
         $this->buildingId = $buildingId;
-        $this->image = $image;
         $this->heading = $heading;
         $this->message = $message;
         $this->link = $link;
@@ -56,7 +55,9 @@ class BuildingNotifications implements ShouldQueue
 
     public function handle()
     {
-        $
+        $building = Building::with('pictures')->find($this->buildingId);
+        $ImagePath = optional($building->pictures->first())->file_path ?? 'uploads/logo/application-logo.png';
+
         $organization = Organization::find($this->organizationId);
         $managers = ManagerBuilding::where('building_id', $this->buildingId)->pluck('user_id');
         $initiator = User::find($this->initiatorId);
@@ -66,7 +67,7 @@ class BuildingNotifications implements ShouldQueue
 
             if ($owner && $owner->id !== $this->initiatorId) {
                 Notification::send($owner, new UserNotification(
-                    $this->image,
+                    $ImagePath,
                     $this->heading,
                     $this->message,
                     $this->link
@@ -81,7 +82,7 @@ class BuildingNotifications implements ShouldQueue
 
             if ($users->isNotEmpty()) {
                 Notification::send($users, new UserNotification(
-                    $this->image,
+                    $ImagePath,
                     $this->heading,
                     $this->message,
                     $this->link
@@ -91,7 +92,7 @@ class BuildingNotifications implements ShouldQueue
 
         if ($initiator) {
             $initiator->notify(new DatabaseOnlyNotification(
-                $this->image,
+                $ImagePath,
                 $this->initiatorHeading,
                 $this->initiatorMessage,
                 $this->initiatorLink
@@ -102,6 +103,15 @@ class BuildingNotifications implements ShouldQueue
             $admins = User::where('role_id', 1)
                 ->where('id', '!=', $this->initiatorId)
                 ->get();
+
+            if ($admins->isNotEmpty()) {
+                Notification::send($admins, new UserNotification(
+                    $ImagePath,
+                    $this->adminHeading ?? "{$this->initiatorHeading} by {$initiator?->name}",
+                    $this->adminMessage ?? "{$this->initiatorMessage}",
+                    $this->adminLink ?? "{$this->initiatorLink}"
+                ));
+            }
         }
     }
 }

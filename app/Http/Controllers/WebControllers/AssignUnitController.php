@@ -1,9 +1,8 @@
 <?php
 
 namespace App\Http\Controllers\WebControllers;
+
 use App\Http\Controllers\Controller;
-use App\Jobs\BuildingNotifications;
-use App\Jobs\SpecificUserNotification;
 use App\Jobs\UnitNotifications;
 use App\Models\Address;
 use App\Models\Building;
@@ -29,8 +28,10 @@ class AssignUnitController extends Controller
             $user = $request->user() ?? abort(403, 'Unauthorized');
             $token = $request->attributes->get('token');
 
+            $selectedBuildingId = null;
             $selectedUnitId = $request->input('unit_id');
             $selectedUserId = $request->input('user_id');
+
             $dropdownData = DropdownType::with(['values.childs.childs'])
                 ->where('type_name', 'Country')
                 ->get();
@@ -39,7 +40,7 @@ class AssignUnitController extends Controller
             $buildings = collect();
 
             if (empty($token['organization_id']) || empty($token['role_name'])) {
-                return view('Heights.Owner.AssignUnits.index', compact('selectedUnitId', 'selectedUserId', 'users', 'buildings', 'dropdownData'));
+                return view('Heights.Owner.AssignUnits.index', compact('selectedBuildingId', 'selectedUnitId', 'selectedUserId', 'users', 'buildings', 'dropdownData'));
             }
 
             $organizationId = $token['organization_id'];
@@ -54,7 +55,17 @@ class AssignUnitController extends Controller
 
             $buildings = $query->get();
 
-            return view('Heights.Owner.AssignUnits.index', compact('selectedUnitId', 'selectedUserId', 'users', 'buildings', 'dropdownData'));
+            if($selectedUnitId){
+                $checkingSelectedUnit = BuildingUnit::find($selectedUnitId);
+                $selectedUnitId = null;
+                if(!$checkingSelectedUnit || $checkingSelectedUnit->organization_id != $organizationId){
+                    return redirect()->back()->with('error', 'Invalid Unit ID');
+                }
+
+                $selectedBuildingId = $checkingSelectedUnit?->building_id;
+            }
+
+            return view('Heights.Owner.AssignUnits.index', compact('selectedBuildingId', 'selectedUnitId', 'selectedUserId', 'users', 'buildings', 'dropdownData'));
         } catch (\Exception $e) {
             Log::error("Error in AssignUnits index: {$e->getMessage()}", ['exception' => $e]);
             return redirect()->back()->with('error', 'Something went wrong. Please try again.');
@@ -103,6 +114,13 @@ class AssignUnitController extends Controller
 
         try {
             $user = null;
+
+            if ($roleName === 'Manager' && !ManagerBuilding::where('building_id', $request->buildingId)
+                    ->where('user_id', $loggedUser->id)
+                    ->exists()) {
+                return redirect()->back()->withInput()->with('error', 'You do not have access to assign units of the selected building.');
+            }
+
             if(!$request->userId){
                 $user = $this->createUser($request);
             }
@@ -135,8 +153,8 @@ class AssignUnitController extends Controller
             if ($request->hasFile('pictures')) {
                 foreach ($request->file('pictures') as $image) {
                     $imageName = time() . '_' . $image->getClientOriginalName();
-                    $imagePath = 'uploads/units/images/' . $imageName;
-                    $image->move(public_path('uploads/units/images'), $imageName);
+                    $imagePath = 'uploads/units/contract/' . $imageName;
+                    $image->move(public_path('uploads/units/contract'), $imageName);
 
                     UserUnitPicture::create([
                         'user_unit_id' => $assignedUnit->id,
@@ -148,25 +166,26 @@ class AssignUnitController extends Controller
 
             DB::commit();
 
-            $userHeading = "{$unit->name} " . ($request->type === 'Sold' ? 'Purchased' : 'Rented') . " Successfully";
-            $userMessage = "Congratulations! Your {$unit->name} has been " .
-                ($request->type === 'Sold' ? 'Purchased' : 'Rented') .
-                " Successfully for Price: {$request->price}";
+            $userHeading = "{$unit->unit_name} " . ($request->type === 'Sold' ? 'Purchased' : 'Rented') . " Successfully!";
+            $userMessage = "Congratulations! You have successfully " .
+                ($request->type === 'Sold' ? 'purchased' : 'rented') .
+                " {$unit->unit_name} for the price of {$request->price} PKR" .
+                ($request->type === 'Sold' ? '.' : ' per month.');
 
 
             dispatch( new UnitNotifications(
                 $organizationId,
-                $request->unitId,
-                "{$unit->name} Assigned Successfully by {$roleName}",
-                "{$unit->name} has been assigned successfully to {$user->name} for Price: {$request->price} ",
-                "/owner/{$request->unitId}/show",
+                $unit->id,
+                "{$unit->unit_name} Assigned Successfully by {$roleName}",
+                "{$unit->unit_name} has been {$request->type} successfully for Price: {$request->price} ",
+                "/owner/{$unit->id}/show",
 
                 $loggedUser->id,
-                "{$unit->name} Assigned Successfully",
-                "{$unit->name} has been assigned successfully to {$user->name} for Price: {$request->price}",
-                "/owner/{$request->unitId}/show",
+                "{$unit->unit_name} Assigned Successfully",
+                "{$unit->unit_name} has been {$request->type} successfully for Price: {$request->price} ",
+                "/owner/{$unit->id}/show",
 
-                $user->id,
+                $request->userId ?? $user->id,
                 $userHeading,
                 $userMessage,
                 "",

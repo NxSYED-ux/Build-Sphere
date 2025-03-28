@@ -74,18 +74,18 @@ INSERT INTO `buildingpictures` (`id`, `building_id`, `file_path`, `file_name`, `
 (4, 4, 'uploads/buildings/images/1742463409_Building_4.jpg', '1742463409_Building_4.jpeg', '2025-03-20 04:36:49', '2025-03-21 09:03:32');
 
 
-INSERT INTO `buildinglevels` (`id`, `building_id`, `level_name`, `description`, `level_number`, `status`, `created_by`, `updated_by`, `created_at`, `updated_at`) VALUES
-(1, 1, 'First Floor', 'Office space for rent', 1, 'Approved', 1, 1, '2025-02-28 15:12:11', '2025-02-28 15:12:11'),
-(2, 2, 'Second Floor', 'Meeting rooms and conference spaces', 2, 'Approved', 1, 1, '2025-02-28 15:12:11', '2025-02-28 15:12:11'),
-(3, 3, 'Ground Floor', 'Office reception area', 0, 'Approved', 1, 1, '2025-02-28 15:12:11', '2025-03-20 09:42:48'),
-(4, 4, 'First Floor', 'No Description', 1, 'Rejected', 2, 2, '2025-03-20 09:42:48', '2025-03-20 09:42:08'),
-(5, 4, 'Second Floor', 'No Description', 2, 'Rejected', 2, 2, '2025-03-20 09:42:06', '2025-03-20 09:42:06'),
-(6, 4, 'Third First Floor', 'No Description', 3, 'Rejected', 2, 2, '2025-03-20 09:42:48', '2025-03-20 09:42:48'),
-(7, 2, 'First Floor', 'No Description', 1, 'Approved', 1, 1, '2025-03-20 18:00:48', '2025-03-20 18:00:48'),
-(8, 1, 'Second Floor', 'No Description', 2, 'Approved', 1, 1, '2025-03-20 18:02:15', '2025-03-20 18:02:15'),
-(9, 1, 'Third Floor', 'No Description', 3, 'Approved', 1, 1, '2025-03-20 18:03:28', '2025-03-20 18:03:51'),
-(10, 3, 'First Floor', 'No Description', 1, 'Approved', 1, 1, '2025-03-20 18:08:47', '2025-03-20 18:08:47'),
-(11, 3, 'Second Floor', 'No Description', 2, 'Approved', 1, 1, '2025-03-20 18:10:36', '2025-03-20 18:10:36');
+INSERT INTO `buildinglevels` (`id`, `organization_id`, `building_id`, `level_name`, `description`, `level_number`, `status`, `created_by`, `updated_by`, `created_at`, `updated_at`) VALUES
+(1, 1, 1, 'First Floor', 'Office space for rent', 1, 'Approved', 1, 1, '2025-02-28 10:12:11', '2025-03-28 11:22:34'),
+(2, 1, 2, 'Second Floor', 'Meeting rooms and conference spaces', 2, 'Approved', 1, 1, '2025-02-28 10:12:11', '2025-03-28 11:22:34'),
+(3, 2, 3, 'Ground Floor', 'Office reception area', 0, 'Approved', 1, 1, '2025-02-28 10:12:11', '2025-03-28 11:22:46'),
+(4, 1, 4, 'First Floor', 'No Description', 1, 'Rejected', 2, 2, '2025-03-20 04:42:48', '2025-03-28 11:22:34'),
+(5, 1, 4, 'Second Floor', 'No Description', 2, 'Rejected', 2, 2, '2025-03-20 04:42:06', '2025-03-28 11:22:34'),
+(6, 1, 4, 'Third First Floor', 'No Description', 3, 'Rejected', 2, 2, '2025-03-20 04:42:48', '2025-03-28 11:22:34'),
+(7, 1, 2, 'First Floor', 'No Description', 1, 'Approved', 1, 1, '2025-03-20 13:00:48', '2025-03-28 11:22:34'),
+(8, 1, 1, 'Second Floor', 'No Description', 2, 'Approved', 1, 1, '2025-03-20 13:02:15', '2025-03-28 11:22:34'),
+(9, 1, 1, 'Third Floor', 'No Description', 3, 'Approved', 1, 1, '2025-03-20 13:03:28', '2025-03-28 11:22:34'),
+(10, 2, 3, 'First Floor', 'No Description', 1, 'Approved', 1, 1, '2025-03-20 13:08:47', '2025-03-28 11:22:46'),
+(11, 2, 3, 'Second Floor', 'No Description', 2, 'Approved', 1, 1, '2025-03-20 13:10:36', '2025-03-28 11:22:46');
 
 
 INSERT INTO `buildingunits` (`id`, `level_id`, `building_id`, `organization_id`, `unit_name`, `unit_type`, `availability_status`, `sale_or_rent`, `price`, `area`, `description`, `status`, `created_by`, `updated_by`, `created_at`, `updated_at`) VALUES
