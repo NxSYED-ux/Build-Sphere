@@ -41,7 +41,7 @@
     }
 </style>
 
-<header id="navbar" x-data="{ open: false, loginMenu: false, mobileLoginMenu: false }" class="fixed top-0 left-0  w-full transition-all z-50 duration-300 bg-white dark:bg-slate-900 pointer-events-auto">
+<header id="navbar" x-data="{ open: false, loginMenu: false, mobileLoginMenu: false }" class="fixed top-0 left-0  w-full transition-all z-50 duration-300 bg-white  pointer-events-auto">
     <nav class="container mx-auto flex items-center justify-between px-6 py-2 lg:px-8" aria-label="Global">
         <!-- Left: Logo -->
         <div class="flex lg:flex-1 items-center space-x-3">
@@ -58,9 +58,9 @@
 
         <!-- Desktop Menu -->
         <div class="hidden lg:flex lg:gap-x-12">
-            <a href="{{ route('index') }}" class="text-sm font-semibold text-gray-900 dark:text-white">Home</a>
-            <a href="#" class="text-sm font-semibold text-gray-900 dark:text-white">About Us</a>
-            <a href="#" class="text-sm font-semibold text-gray-900 dark:text-white">Contact Us</a>
+            <a href="{{ route('index') }}" class="text-sm font-semibold text-gray-900 ">Home</a>
+            <a href="#" class="text-sm font-semibold text-gray-900 ">About Us</a>
+            <a href="#" class="text-sm font-semibold text-gray-900 ">Contact Us</a>
         </div>
 
         <!-- Mobile Menu Button -->
@@ -84,7 +84,7 @@
                 @mouseenter="loginMenu = true"
                 @mouseleave="loginMenu = false"
                 class="relative">
-                <a href="#" class="text-sm font-semibold text-gray-900 dark:text-white">
+                <a href="#" class="text-sm font-semibold text-gray-900 ">
                     Log in <span aria-hidden="true">&rarr;</span>
                 </a>
 
@@ -92,12 +92,9 @@
                 <div
                     x-show="loginMenu"
                     x-transition
-                    class="absolute right-0 mt-2 w-40 bg-white dark:bg-slate-800 shadow-lg rounded-md py-2 z-50 border border-gray-200 dark:border-gray-700">
-                    <a href="{{ route('admin-login-index') }}" class="block px-4 py-2 text-sm text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">Admin</a>
-                    <a href="{{ route('owner-login-index') }}" class="block px-4 py-2 text-sm text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">Owner</a>
-                    <a href="{{ route('login') }}" class="block px-4 py-2 text-sm text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">Manager</a>
-                    <a href="{{ route('login') }}" class="block px-4 py-2 text-sm text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">Staff</a>
-                    <a href="{{ route('login') }}" class="block px-4 py-2 text-sm text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">User</a>
+                    class="absolute right-0 mt-2 w-40 bg-white shadow-lg rounded-md py-2 z-50 border border-gray-200 ">
+                    <a href="{{ route('login') }}" class="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-100 ">Admin</a>
+                    <a href="{{ route('login') }}" class="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-100 ">Owner</a>
                 </div>
             </div>
         </div>
@@ -128,11 +125,8 @@
                     x-show="mobileLoginMenu"
                     x-transition
                     class="absolute w-full bg-white shadow-md rounded-lg py-2 z-50 border border-gray-200 mt-1">
-                    <a href="{{ route('admin-login-index') }}" class="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-100">Admin</a>
-                    <a href="{{ route('owner-login-index') }}" class="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-100">Owner</a>
-                    <a href="{{ route('login') }}" class="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-100">Manager</a>
-                    <a href="{{ route('login') }}" class="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-100">Staff</a>
-                    <a href="{{ route('login') }}" class="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-100">User</a>
+                    <a href="{{ route('login') }}" class="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-100">Admin</a>
+                    <a href="{{ route('login') }}" class="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-100">Owner</a>
                 </div>
             </div>
         </div>
