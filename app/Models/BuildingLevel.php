@@ -19,6 +19,7 @@ class BuildingLevel extends Model
         'status',  //'approved', 'rejected'
 
         'building_id',
+        'updated_at',
     ];
 
     public $timestamps = true;

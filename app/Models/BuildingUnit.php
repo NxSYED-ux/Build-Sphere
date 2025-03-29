@@ -15,17 +15,19 @@ class BuildingUnit extends Model
 
     protected $fillable = [
         'unit_name',
-        'unit_type',  //'Room, Shop, Apartment, Restaurant, Gym'
+        'unit_type',
         'price',
         'description',
-        'sale_or_rent', //'Sale', 'Rent', 'Not Available'
-        'status', //'Approved', 'Rejected'
+        'sale_or_rent',
+        'status',
         'area' ,
-        'availability_status', //'available', 'rented', 'sold', 'not available'
+        'availability_status',
 
         'level_id',
         'organization_id',
         'building_id',
+
+        'updated_at',
     ];
 
     public $timestamps = true;
