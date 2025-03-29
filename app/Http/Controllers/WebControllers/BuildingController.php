@@ -446,6 +446,7 @@ class BuildingController extends Controller
     private function update(Request $request, String $portal, $organization_id, $role = null)
     {
         $user = $request->user() ?? abort(403, 'Unauthorized');
+        $token = $request->attributes->get('token');
 
         $request->validate([
             'id' => 'required|exists:buildings,id',
@@ -482,6 +483,11 @@ class BuildingController extends Controller
                 return redirect()->back()->with('error', 'Please refresh the page and try again.');
             }
 
+            if($portal === 'owner' && $token['organization_id'] !== $building->organization_id){
+                DB::rollBack();
+                return redirect()->back()->with('error', 'The selected building id is invalid.');
+            }
+
             $address = Address::findOrFail($building->address_id);
 
             $address->update([
@@ -499,6 +505,7 @@ class BuildingController extends Controller
                 'status' => $request->status,
                 'construction_year' => $request->construction_year,
                 'organization_id' => $organization_id,
+                'updated_at' => now(),
             ]);
 
             if ($request->hasFile('building_pictures')) {

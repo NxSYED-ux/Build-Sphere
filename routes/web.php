@@ -228,8 +228,8 @@ Route::prefix('owner')->middleware(['auth.jwt'])->group(function () {
         Route::get('/', [BuildingLevelController::class, 'ownerIndex'])->name('owner.levels.index');
         Route::get('/create', [BuildingLevelController::class, 'ownerCreate'])->name('owner.levels.create');
         Route::post('/', [BuildingLevelController::class, 'ownerStore'])->name('owner.levels.store');
-        Route::get('/{id}/show', [BuildingLevelController::class, 'show'])->name('owner.levels.show');
-        Route::get('/{id}/edit', [BuildingLevelController::class, 'ownerEdit'])->name('owner.levels.edit');
+        Route::get('/{level}/show', [BuildingLevelController::class, 'show'])->name('owner.levels.show');
+        Route::get('/{level}/edit', [BuildingLevelController::class, 'ownerEdit'])->name('owner.levels.edit');
         Route::put('/', [BuildingLevelController::class, 'ownerUpdate'])->name('owner.levels.update');
 
     });
@@ -239,8 +239,8 @@ Route::prefix('owner')->middleware(['auth.jwt'])->group(function () {
         Route::get('/', [BuildingUnitController::class, 'ownerIndex'])->name('owner.units.index');
         Route::get('/create', [BuildingUnitController::class, 'ownerCreate'])->name('owner.units.create');
         Route::post('/', [BuildingUnitController::class, 'ownerStore'])->name('owner.units.store');
-        Route::get('/{id}/show', [BuildingUnitController::class, 'ownerShow'])->name('owner.units.show');
-        Route::get('/{id}/edit', [BuildingUnitController::class, 'ownerEdit'])->name('owner.units.edit');
+        Route::get('/{unit}/show', [BuildingUnitController::class, 'ownerShow'])->name('owner.units.show');
+        Route::get('/{unit}/edit', [BuildingUnitController::class, 'ownerEdit'])->name('owner.units.edit');
         Route::put('/', [BuildingUnitController::class, 'ownerUpdate'])->name('owner.units.update');
         Route::get('/details/{id}', [BuildingUnitController::class, 'unitDetails'])->name('owner.units.details');
         Route::get('/details/{id}/contract', [BuildingUnitController::class, 'getUnitDetailsWithActiveContract'])->name('owner.units.details.contract');

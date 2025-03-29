@@ -423,7 +423,7 @@ class BuildingUnitController extends Controller
                 return redirect()->back()->with('error', 'Please refresh the page and try again.');
             }
 
-            if($token['organization_id'] !== $unit->organization_id){
+            if($portal === 'owner' && $token['organization_id'] !== $unit->organization_id){
                 DB::rollBack();
                 return redirect()->back()->with('error', 'The selected unit id is invalid.');
             }
@@ -439,6 +439,7 @@ class BuildingUnitController extends Controller
                 'building_id' => $request->building_id,
                 'organization_id' => $organization_id,
                 'status' => $status,
+                'updated_at' => now(),
             ]);
 
             if ($request->hasFile('unit_pictures')) {
@@ -543,7 +544,7 @@ class BuildingUnitController extends Controller
         $user = $request->user() ?? abort(403, 'Unauthorized');
         $token = $request->attributes->get('token');
 
-        if (!$token || !isset($token['organization_id']) || !isset($token['role_name'])) {
+        if (!$token || empty($token['organization_id']) || empty($token['role_name'])) {
             $redirect = redirect()->back()->with('error', 'You cannot perform this action. Please switch to an organization account to proceed.');
             return $keepInput ? $redirect->withInput() : $redirect;
         }

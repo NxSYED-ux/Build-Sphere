@@ -9,6 +9,7 @@ use App\Models\BuildingLevel;
 use App\Models\ManagerBuilding;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 
@@ -284,10 +285,7 @@ class BuildingLevelController extends Controller
         ]);
 
         try {
-
-            if($portal === 'owner' && $token['organization_id'] !== $organization_id){
-                return redirect()->back()->with('error', 'You can not perform this action.');
-            }
+            DB::beginTransaction();
 
             $buildingLevel = BuildingLevel::where([
                 ['id', '=', $request->level_id],
@@ -295,7 +293,13 @@ class BuildingLevelController extends Controller
             ])->sharedLock()->first();
 
             if (!$buildingLevel) {
+                DB::rollBack();
                 return redirect()->back()->with('error', 'Please refresh and try again.');
+            }
+
+            if($portal === 'owner' && $token['organization_id'] !== $buildingLevel->organization_id){
+                DB::rollBack();
+                return redirect()->back()->with('error', 'The selected level id is invalid.');
             }
 
             $buildingLevel->update([
@@ -305,8 +309,10 @@ class BuildingLevelController extends Controller
                 'status' => $request->status ?? $buildingLevel->status,
                 'building_id' => $request->building_id,
                 'organization_id' => $organization_id,
-                'updated_at' => $request->updated_at,
+                'updated_at' => now(),
             ]);
+
+            DB::commit();
 
             if($portal === 'admin'){
                 dispatch( new BuildingNotifications(
@@ -340,6 +346,7 @@ class BuildingLevelController extends Controller
 
             return redirect()->back()->with('success', 'Building Level updated successfully.');
         } catch (\Exception $e) {
+            DB::rollBack();
             Log::error('Error in update Building Level: ' . $e->getMessage());
             return redirect()->back()->with('error', 'Something went wrong! Please try again.');
         }
