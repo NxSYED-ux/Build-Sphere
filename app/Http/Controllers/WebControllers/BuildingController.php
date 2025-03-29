@@ -155,7 +155,7 @@ class BuildingController extends Controller
         try{
             $token = $request->attributes->get('token');
 
-            if (!$token || !isset($token['organization_id']) || isset($token['role_name'])) {
+            if (!$token || empty($token['organization_id']) || empty($token['role_name'])) {
                 return redirect()->back()->withInput()->with('error', 'You cannot perform this action because they are not linked to any organization. Please switch to an organization account to proceed.');
             }
 
@@ -434,7 +434,7 @@ class BuildingController extends Controller
     {
         $token = $request->attributes->get('token');
 
-        if (!$token || !isset($token['organization_id']) || isset($token['role_name'])) {
+        if (!$token || empty($token['organization_id']) || empty($token['role_name'])) {
             return redirect()->back()->withInput()->with('error', 'You cannot perform this action because they are not linked to any organization. Please switch to an organization account to proceed.');
         }
 
