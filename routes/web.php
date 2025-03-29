@@ -152,10 +152,10 @@ Route::prefix('admin')->middleware(['auth.jwt'])->group(function () {
 
         Route::get('/', [BuildingLevelController::class, 'adminIndex'])->name('levels.index');
         Route::get('/create', [BuildingLevelController::class, 'adminCreate'])->name('levels.create');
-        Route::post('/', [BuildingLevelController::class, 'store'])->name('levels.store');
+        Route::post('/', [BuildingLevelController::class, 'adminStore'])->name('levels.store');
         Route::get('/{level}/show', [BuildingLevelController::class, 'show'])->name('levels.show');
         Route::get('/{level}/edit', [BuildingLevelController::class, 'adminEdit'])->name('levels.edit');
-        Route::put('/', [BuildingLevelController::class, 'update'])->name('levels.update');
+        Route::put('/', [BuildingLevelController::class, 'adminUpdate'])->name('levels.update');
 
     });
 
@@ -227,10 +227,10 @@ Route::prefix('owner')->middleware(['auth.jwt'])->group(function () {
 
         Route::get('/', [BuildingLevelController::class, 'ownerIndex'])->name('owner.levels.index');
         Route::get('/create', [BuildingLevelController::class, 'ownerCreate'])->name('owner.levels.create');
-        Route::post('/', [BuildingLevelController::class, 'store'])->name('owner.levels.store');
+        Route::post('/', [BuildingLevelController::class, 'ownerStore'])->name('owner.levels.store');
         Route::get('/{id}/show', [BuildingLevelController::class, 'show'])->name('owner.levels.show');
         Route::get('/{id}/edit', [BuildingLevelController::class, 'ownerEdit'])->name('owner.levels.edit');
-        Route::put('/{id}', [BuildingLevelController::class, 'update'])->name('owner.levels.update');
+        Route::put('/', [BuildingLevelController::class, 'ownerUpdate'])->name('owner.levels.update');
 
     });
 
