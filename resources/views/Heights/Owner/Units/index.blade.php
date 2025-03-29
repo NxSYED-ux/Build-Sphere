@@ -117,7 +117,7 @@
         .nav-tabs .nav-item {
             flex: 1;
             text-align: center;
-            max-width: 20%;
+            max-width: 100%;
         }
 
         .nav-tabs .nav-link {
@@ -192,7 +192,7 @@
                                     <h3 class="mb-1">Units</h3>
                                     <a href="{{ route('owner.units.create') }}" class="btn float-end" id="add_button"  data-bs-toggle="tooltip" data-bs-placement="top" title="Add Unit"><i class="fa fa-plus"></i></a>
                                 </div>
-                                <div class="card shadow p-3 pt-1 mb-5 bg-body rounded" style="border: none;">
+                                <div class="card shadow p-2 pt-1 mb-5 bg-body rounded" style="border: none;">
                                     <div class="card-body">
                                         <div class="d-flex justify-content-between align-items-center">
 
@@ -231,12 +231,12 @@
                                                 <a class="nav-link {{ $activeTab === 'Table' ? 'active' : '' }}" id="dropdwon-table-tab" data-bs-toggle="tab" href="#dropdwon-table" role="tab" aria-controls="dropdwon-table" aria-selected="{{ $activeTab === 'Table' ? 'true' : 'false' }}">Table</a>
                                             </li>
                                         </ul>
-                                        <div class="tab-content mt-0 pt-0" id="myTabContent"   style="margin: 0px !important; padding: 0px !important;">
+                                        <div class="tab-content mt-0 pt-0 shadow rounded-bottom pb-2" id="myTabContent" >
                                             <div class="tab-pane fade {{ $activeTab === 'Cards' ? 'show active' : '' }}" id="dropdwon-cards" role="tabpanel" aria-labelledby="dropdwon-cards-tab">
                                                 <div class="container">
                                                     <div class="row text-center mt-2">
                                                         @forelse ($units ?? [] as $unit)
-                                                            <div class="col-lg-4 mb-4">
+                                                            <div class="col-lg-4 col-md-6 col-12 mb-2">
                                                                 <div class="card shadow-sm" style="border-radius: 10px;">
                                                                     <div class="position-relative">
                                                                         @if($unit->pictures->isNotEmpty())
@@ -256,7 +256,7 @@
                                                                         @endif
 
                                                                         <!-- Sale Badge -->
-                                                                        <span class="badge bg-warning position-absolute top-0 start-0 m-2 px-3 py-1 text-white">Sale</span>
+                                                                        <span class="badge bg-warning position-absolute top-0 start-0 m-2 px-3 py-1 text-white">{{ $unit->sale_or_rent }}</span>
 
                                                                         <!-- Favorite Icon -->
                                                                         <span class="position-absolute top-0 end-0 m-2">

@@ -1,0 +1,11 @@
+// Import Bootstrap functions, variables, and mixins first
+@import "bootstrap/scss/functions";
+@import "bootstrap/scss/variables";
+@import "bootstrap/scss/mixins";
+
+// Optional: Override Bootstrap variables (e.g., theme colors)
+$primary: #0d6efd; // Change default blue
+$danger: #dc3545;
+
+// Import the rest of Bootstrap
+@import "bootstrap/scss/bootstrap";

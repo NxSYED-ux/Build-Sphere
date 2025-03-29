@@ -12,10 +12,6 @@
         <!-- Add Font Awesome 4.7 CSS link -->
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
-        <!-- Firebase SDK -->
-        <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-        <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging-compat.js"></script>
-
         <style>
         * {
             padding: 0;
@@ -473,59 +469,12 @@
         @endif
 
 
+        @vite(['resources/js/firebase-messaging.js'])
         <script>
-            document.addEventListener("DOMContentLoaded", async function () {
-                if (!firebase.apps.length) {
-                    firebase.initializeApp({
-                        apiKey: "{{ config('firebase.api_key') }}",
-                        authDomain: "{{ config('firebase.auth_domain') }}",
-                        projectId: "{{ config('firebase.project_id') }}",
-                        messagingSenderId: "{{ config('firebase.messaging_sender_id') }}",
-                        appId: "{{ config('firebase.app_id') }}",
-                    });
-                }
-
-                const messaging = firebase.messaging();
-
-                try {
-                    const registration = await navigator.serviceWorker.register("/firebase-messaging-sw.js");
-
-                    const permission = await Notification.requestPermission();
-                    if (permission === "granted") {
-                        const vapidKey = "BFduxRbXkAJc4aLnR6vuUS0yzbX41SVkxRvdrFjtvm_-6BNfM0VxJHIWy5IFq8DwrdcN5BIP2A4Au36Lc91sXhM";
-                        const token = await messaging.getToken({
-                            vapidKey: vapidKey.trim(),
-                            serviceWorkerRegistration: registration
-                        });
-                        document.getElementById("newFcmToken").value = token;
-                        localStorage.setItem('newFcmToken', token);
-                    }
-                } catch (error) {
-                    console.error("Error retrieving FCM token:", error);
-                }
-
-                // Handle foreground messages
-                messaging.onMessage((payload) => {
-                    console.log("Foreground message received:", payload);
-
-                    if (Notification.permission === "granted") {
-                        // Manually show notification
-                        const notificationTitle = payload.notification.title;
-                        const notificationOptions = {
-                            body: payload.notification.body,
-                            // icon: payload.notification.image || "/img/placeholder-img.jfif"
-                            icon: payload.data?.image
-                                ? `${self.location.origin}/storage/${payload.data.image}`
-                                : "/img/placeholder-img.jfif"
-                        };
-
-                        new Notification(notificationTitle, notificationOptions);
-                    }
-                });
+            document.addEventListener("DOMContentLoaded", () => {
+                initFirebaseMessaging().catch(console.error);
             });
-
         </script>
-
 
 
         <script type="text/javascript">
