@@ -70,7 +70,7 @@ class BuildingNotifications implements ShouldQueue
                     $ImagePath,
                     $this->heading,
                     $this->message,
-                    $this->link
+                    ['web' => $this->link]
                 ));
             }
         }
@@ -85,7 +85,7 @@ class BuildingNotifications implements ShouldQueue
                     $ImagePath,
                     $this->heading,
                     $this->message,
-                    $this->link
+                    ['web' => $this->link]
                 ));
             }
         }
@@ -95,7 +95,7 @@ class BuildingNotifications implements ShouldQueue
                 $ImagePath,
                 $this->initiatorHeading,
                 $this->initiatorMessage,
-                $this->initiatorLink
+                ['web' => $this->initiatorLink]
             ));
         }
 
@@ -109,7 +109,7 @@ class BuildingNotifications implements ShouldQueue
                     $ImagePath,
                     $this->adminHeading ?? "{$this->initiatorHeading} by {$initiator?->name}",
                     $this->adminMessage ?? "{$this->initiatorMessage}",
-                    $this->adminLink ?? "{$this->initiatorLink}"
+                    ['web' => $this->adminLink ?? "{$this->initiatorLink}"]
                 ));
             }
         }
