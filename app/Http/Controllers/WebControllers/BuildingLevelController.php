@@ -323,7 +323,7 @@ class BuildingLevelController extends Controller
                     'owner.levels.index',
 
                     $user->id,
-                    "New Level Created",
+                    "Level Updated",
                     "The level '{$request->level_name}' has been successfully updated with the applied changes.",
                     'levels.index',
 

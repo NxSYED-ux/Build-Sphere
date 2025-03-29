@@ -18,6 +18,7 @@ class BuildingLevel extends Model
         'level_number',
         'status',  //'approved', 'rejected'
 
+        'organization_id',
         'building_id',
         'updated_at',
     ];
