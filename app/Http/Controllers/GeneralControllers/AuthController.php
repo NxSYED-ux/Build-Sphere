@@ -89,7 +89,7 @@ class AuthController extends Controller
             }
 
             $token = JWTAuth::fromUser($user);
-            return $this->handleResponse($request, 200, 'success','Login successful', $route, $token, $permissions);
+            return $this->handleResponse($request, 200, 'success','Login successful', $route, $token, $permissions, $user->name, $user->picture);
 
         } catch (\Exception $e) {
             Log::error("Login error: " . $e->getMessage());
@@ -129,19 +129,21 @@ class AuthController extends Controller
 
 
     // Response Handler Function
-    protected function handleResponse(Request $request, $statusCode, $heading, $data, $redirectTo = null, $token = null, $permissions = null)
+    protected function handleResponse(Request $request, $statusCode, $heading, $data, $redirectTo = null, $token = null, $permissions = null, $name = null, $picture = null)
     {
         if ($request->wantsJson()) {
             return response()->json([
                 $heading === 'password' ? 'error' : $heading => $data,
                 'token' => $token,
                 'permissions' => $permissions,
+                'name' => $name,
+                'picture' => $picture,
             ], $statusCode);
         }
 
         if ($redirectTo) {
             $cookie = $token ? cookie('jwt_token', $token) : cookie()->forget('jwt_token');
-            return redirect()->route($redirectTo)->with($heading, $data)->cookie($cookie);
+            return redirect()->route($redirectTo)->with($heading, $data)->with('permissions', $permissions)->cookie($cookie);
         }
         return redirect()->back()->withErrors([$heading => $data])->withInput();
     }
