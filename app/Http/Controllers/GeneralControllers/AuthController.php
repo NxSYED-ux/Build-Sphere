@@ -51,24 +51,23 @@ class AuthController extends Controller
             if ($platform === 'web') {
                 $rolesWithOwnerAccess = [2, 3, 4];
                 if (in_array($user->role_id, $rolesWithOwnerAccess, true)) {
-                    $route = array_key_exists('Owner Portal', $permissions) ? 'owner_manager_dashboard' :
-                        (array_key_exists('Admin Portal', $permissions) ? 'admin_dashboard' : null);
-
-                    if ($route === 'owner_manager_dashboard') {
+                    if (array_key_exists('Owner Portal', $permissions)) {
+                        $route = 'owner_manager_dashboard';
                         $access = $this->OrganizationAccess($user);
                         if ($access === false || $access === null) {
+                            unset($permissions['Owner Portal']);
                             return $this->handleResponse($request, 500, 'error', 'Your organization is blocked or disabled.');
                         }
                     }
-
+                    elseif (array_key_exists('Admin Portal', $permissions)) {
+                        $route = 'admin_dashboard';
+                    }
                 } else {
                     $route = array_key_exists('Admin Portal', $permissions) ? 'admin_dashboard' :
                         (array_key_exists('Owner Portal', $permissions) ? 'owner_manager_dashboard' : null);
                 }
             }
-            elseif ($platform === 'user-app' && array_key_exists('User Application', $permissions)) {
-                $route = 'Access Granted';
-            } elseif ($platform === 'staff-app' && array_key_exists('Staff Application', $permissions)) {
+            elseif (($platform === 'user-app' && array_key_exists('User Application', $permissions)) || ($platform === 'staff-app' && array_key_exists('Staff Application', $permissions))) {
                 $route = 'Access Granted';
             }
 

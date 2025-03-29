@@ -34,8 +34,8 @@ Route::post('login', [AuthController::class, 'login'])->name('login');
 
 Route::prefix('auth')->group(function () {
 
-    Route::post('/admin-login', [AuthController::class, 'adminLogin'])->name('admin-login');
-    Route::post('/owner-login', [AuthController::class, 'ownerLogin'])->name('owner-login');
+    Route::post('/admin-login', [AuthController::class, 'login'])->name('admin-login');
+    Route::post('/owner-login', [AuthController::class, 'login'])->name('owner-login');
     Route::get('/forget-password', [ForgotPasswordController::class, 'showForgetForm'])->name('password.request');
     Route::post('/forget-password', [ForgotPasswordController::class, 'sendResetLink'])->name('password.email');
     Route::get('/reset-password/{token}', [ForgotPasswordController::class, 'showResetForm'])->name('password.reset');
