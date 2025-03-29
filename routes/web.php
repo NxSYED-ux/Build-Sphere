@@ -25,8 +25,8 @@ Route::get('/', function () { return view('landing-views.index'); })->name('inde
 Route::get('/index', function () { return view('landing-views.index'); });
 
 // Authentication routes
-Route::get('/admin-login', [AuthController::class, 'adminLoginIndex'])->name('admin-login-index');
-Route::get('/owner-login', [AuthController::class, 'ownerLoginIndex'])->name('owner-login-index');
+Route::get('/admin-login', [AuthController::class, 'index'])->name('admin-login-index');
+Route::get('/owner-login', [AuthController::class, 'index'])->name('owner-login-index');
 
 Route::get('login', [AuthController::class, 'index'])->name('login');
 Route::post('login', [AuthController::class, 'login'])->name('login');
