@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Events\RolePermissionUpdated;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -38,17 +39,21 @@ class RolePermission extends Model
 
     protected static function booted()
     {
-        static::creating(function ($model) {
-            $user = request()->user;
-            if ($user) {
+        static::saving(function ($model) {
+            if ($user = request()->user) {
                 $model->granted_by = $user->id;
             }
         });
 
-        static::updating(function ($model) {
-            $user = request()->user;
-            if ($user) {
-                $model->granted_by = $user->id;
+        static::created(function ($model) {
+            if (!empty($model->role_id)) {
+                event(new RolePermissionUpdated($model->role_id, $model->permission_id));
+            }
+        });
+
+        static::updated(function ($model) {
+            if (!empty($model->role_id) && ($model->isDirty('permission_id') || $model->isDirty('status'))) {
+                event(new RolePermissionUpdated($model->role_id, $model->permission_id));
             }
         });
     }
