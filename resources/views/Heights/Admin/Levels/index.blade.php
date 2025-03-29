@@ -201,6 +201,7 @@
                         </div>
 
                         <input type="hidden" name="status" value="Approved">
+                        <input type="hidden" name="organization_id" id="organization_id">
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -224,6 +225,7 @@
 
                     <input type="hidden" name="updated_at" id="edit_updated_at">
                     <input type="hidden" name="level_id" id="edit_level_id">
+                    <input type="hidden" name="organization_id" id="edit_organization_id">
                     <div class="modal-body">
                         <div class="row mb-4">
                             <div class="col-12">
@@ -346,8 +348,27 @@
         });
     </script>
 
-
     <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const buildingSelect = document.getElementById('building_id');
+            const organizationIdInput = document.getElementById('organization_id');
+
+            buildingSelect.addEventListener('change', function() {
+                const selectedOption = this.options[this.selectedIndex];
+                const organizationId = selectedOption.getAttribute('data-organization-id');
+                organizationIdInput.value = organizationId;
+            });
+
+            const editBuildingSelect = document.getElementById('edit_building_id');
+            const editOrganizationIdInput = document.getElementById('edit_organization_id');
+
+            editBuildingSelect.addEventListener('change', function() {
+                const editSelectedOption = this.options[this.selectedIndex];
+                const editOrganizationId = editSelectedOption.getAttribute('data-organization-id');
+                editOrganizationIdInput.value = editOrganizationId;
+            });
+        });
+
         document.addEventListener("DOMContentLoaded", function () {
             // Show the 'Create Level' modal
             document.getElementById("add_button").addEventListener("click", function (e) {
@@ -380,6 +401,7 @@
                                 const option = document.createElement('option');
                                 option.value = building.id;
                                 option.textContent = building.name;
+                                option.setAttribute('data-organization-id', building.organization_id);
                                 buildingSelect.appendChild(option);
                             }
                         });
@@ -416,6 +438,7 @@
                                 document.getElementById("edit_description").value = data.level?.description || "";
                                 document.getElementById("edit_level_number").value = data.level.level_number !== undefined ? data.level.level_number : "";
                                 document.getElementById("edit_status").value = data.level?.status || "";
+                                document.getElementById("edit_organization_id").value = data.level?.organization_id || "";
                                 document.getElementById("edit_updated_at").value = data.level?.updated_at || "";
 
                                 const buildingSelect = document.getElementById("edit_building_id");
@@ -425,7 +448,7 @@
                                     data.buildings.forEach(building => {
                                         if (building && building.id && building.name) {
                                             const isSelected = building.id === data.level?.building_id ? 'selected' : '';
-                                            buildingSelect.innerHTML += `<option value="${building.id}" ${isSelected}>${building.name}</option>`;
+                                            buildingSelect.innerHTML += `<option value="${building.id}" ${isSelected} data-organization-id="${building.organization_id}">${building.name}</option>`;
                                         }
                                     });
                                 } else {

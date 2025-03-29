@@ -113,6 +113,13 @@
         .unit-img-border {
             border: 2px solid var(--modal-border);
         }
+
+        .nav-tabs .nav-item {
+            flex: 1;
+            text-align: center;
+            max-width: 50%;
+        }
+
     </style>
 @endpush
 
@@ -128,6 +135,10 @@
     <x-Owner.side-navbar :openSections="['Buildings', 'Units']"/>
     <x-error-success-model />
 
+    @php
+        $activeTab = 'Cards';
+    @endphp
+
     <div id="main">
 
         <section class="content  mt-1 mb-3 mx-2">
@@ -140,106 +151,121 @@
                                     <h3 class="mb-1">Units</h3>
                                     <a href="{{ route('owner.units.create') }}" class="btn float-end" id="add_button"  data-bs-toggle="tooltip" data-bs-placement="top" title="Add Unit"><i class="fa fa-plus"></i></a>
                                 </div>
-                                <div class="card shadow p-3 pt-1 mb-5 bg-body rounded" style="border: none;">
-                                    <div class="card-body">
-                                        <div class="d-flex justify-content-between align-items-center">
+                                <ul class="nav nav-tabs" id="myTab" role="tablist">
+                                    <li class="nav-item" role="presentation">
+                                        <a class="nav-link {{ $activeTab === 'Cards' ? 'active' : '' }}" id="dropdwon-cards-tab" data-bs-toggle="tab" href="#dropdwon-cards" role="tab" aria-controls="dropdwon-cards" aria-selected="{{ $activeTab === 'Cards' ? 'true' : 'false' }}">Cards</a>
+                                    </li>
+                                    <li class="nav-item" role="presentation">
+                                        <a class="nav-link {{ $activeTab === 'Table' ? 'active' : '' }}" id="dropdwon-table-tab" data-bs-toggle="tab" href="#dropdwon-table" role="tab" aria-controls="dropdwon-table" aria-selected="{{ $activeTab === 'Table' ? 'true' : 'false' }}">Table</a>
+                                    </li>
+                                </ul>
+                                <div class="tab-content mt-0" id="myTabContent">
+                                    <div class="tab-pane fade {{ $activeTab === 'Types' ? 'show active' : '' }}" id="dropdwon-cards" role="tabpanel" aria-labelledby="dropdwon-cards-tab">
+                                    </div>
+                                    <div class="tab-pane fade {{ $activeTab === 'Table' ? 'show active' : '' }}" id="dropdwon-table" role="tabpanel" aria-labelledby="dropdwon-table-tab">
+                                        <div class="card shadow p-3 pt-1 mb-5 bg-body rounded" style="border: none;">
+                                            <div class="card-body">
+                                                <div class="d-flex justify-content-between align-items-center">
 
-                                            <div  class="d-flex align-items-center">
-                                                <button class="btn btn-light" type="button" id="menu-icon" data-bs-toggle="dropdown" aria-expanded="false">
-                                                    <!-- <i class="bx bx-menu"></i> -->
-                                                    <i class='bx bx-export' style="font-size: 20px;"></i>
-                                                </button>
+                                                    <div  class="d-flex align-items-center">
+                                                        <button class="btn btn-light" type="button" id="menu-icon" data-bs-toggle="dropdown" aria-expanded="false">
+                                                            <!-- <i class="bx bx-menu"></i> -->
+                                                            <i class='bx bx-export' style="font-size: 20px;"></i>
+                                                        </button>
 
-                                                <ul id="button-list" class="dropdown-menu dropdown-menu-end" >
-                                                    <li><button class="dropdown-item" type="button" id="copyButton">Copy</button></li>
-                                                    <li><button class="dropdown-item" type="button" id="csvButton">CSV</button></li>
-                                                    <li><button class="dropdown-item" type="button" id="excelButton">Excel</button></li>
-                                                    <li><button class="dropdown-item" type="button" id="pdfButton">PDF</button></li>
-                                                    <li><button class="dropdown-item" type="button" id="printButton">Print</button></li>
-                                                    <!-- <li><button class="dropdown-item" type="button" id="colvisButton">Column Visibility</button></li> -->
-                                                </ul>
-                                            </div>
+                                                        <ul id="button-list" class="dropdown-menu dropdown-menu-end" >
+                                                            <li><button class="dropdown-item" type="button" id="copyButton">Copy</button></li>
+                                                            <li><button class="dropdown-item" type="button" id="csvButton">CSV</button></li>
+                                                            <li><button class="dropdown-item" type="button" id="excelButton">Excel</button></li>
+                                                            <li><button class="dropdown-item" type="button" id="pdfButton">PDF</button></li>
+                                                            <li><button class="dropdown-item" type="button" id="printButton">Print</button></li>
+                                                            <!-- <li><button class="dropdown-item" type="button" id="colvisButton">Column Visibility</button></li> -->
+                                                        </ul>
+                                                    </div>
 
-                                            <form method="GET" action="{{ route('owner.units.index') }}" class="d-flex" style="margin-left: 6px;">
-                                                <input
-                                                    type="text"
-                                                    name="search"
-                                                    class="form-control me-2"
-                                                    placeholder="Search units..."
-                                                    value="{{ request('search') }}"
-                                                >
-                                                <button type="submit" class="btn btn-primary"><i class='bx bx-search' style="font-size: 20px;"></i></button>
-                                            </form>
-                                        </div>
+                                                    <form method="GET" action="{{ route('owner.units.index') }}" class="d-flex" style="margin-left: 6px;">
+                                                        <input
+                                                            type="text"
+                                                            name="search"
+                                                            class="form-control me-2"
+                                                            placeholder="Search units..."
+                                                            value="{{ request('search') }}"
+                                                        >
+                                                        <button type="submit" class="btn btn-primary"><i class='bx bx-search' style="font-size: 20px;"></i></button>
+                                                    </form>
+                                                </div>
 
-                                        <table id="unitsTable" class="table shadow-sm table-hover table-striped">
-                                            <thead class="shadow">
-                                            <tr>
-                                                <th>ID</th>
-                                                <th>Picture</th>
-                                                <th>Name</th>
-                                                <th>Type</th>
-                                                <th>Price</th>
-                                                <th>Status</th>
-                                                <th>Sale or Rent</th>
-                                                <th>Availability Status</th>
-                                                <th>Building</th>
-                                                <th>Level</th>
-                                                <th>Organization</th>
-                                                <th class="w-170 text-center">Actions</th>
-                                            </tr>
-                                            </thead>
-                                            <tbody>
-                                            @forelse ($units ?? [] as $unit)
-                                                <tr>
-                                                    <td>{{ $unit->id }}</td>
-                                                    <td>
-                                                        <div id="unitCarousel{{ $unit->id }}" class="carousel slide" data-bs-ride="carousel">
-                                                            <div class="carousel-inner">
-                                                                @forelse($unit->pictures ?? [] as $key => $picture)
-                                                                    <div class="carousel-item {{ $key == 0 ? 'active' : '' }}">
-                                                                        <img src="{{ asset($picture->file_path) }}" class="d-block" alt="Unit Picture" style="border-radius: 5px; width:100px; height:50px;">
+                                                <table id="unitsTable" class="table shadow-sm table-hover table-striped">
+                                                    <thead class="shadow">
+                                                    <tr>
+                                                        <th>ID</th>
+                                                        <th>Picture</th>
+                                                        <th>Name</th>
+                                                        <th>Type</th>
+                                                        <th>Price</th>
+                                                        <th>Status</th>
+                                                        <th>Sale or Rent</th>
+                                                        <th>Availability Status</th>
+                                                        <th>Building</th>
+                                                        <th>Level</th>
+                                                        <th>Organization</th>
+                                                        <th class="w-170 text-center">Actions</th>
+                                                    </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                    @forelse ($units ?? [] as $unit)
+                                                        <tr>
+                                                            <td>{{ $unit->id }}</td>
+                                                            <td>
+                                                                <div id="unitCarousel{{ $unit->id }}" class="carousel slide" data-bs-ride="carousel">
+                                                                    <div class="carousel-inner">
+                                                                        @forelse($unit->pictures ?? [] as $key => $picture)
+                                                                            <div class="carousel-item {{ $key == 0 ? 'active' : '' }}">
+                                                                                <img src="{{ asset($picture->file_path) }}" class="d-block" alt="Unit Picture" style="border-radius: 5px; width:100px; height:50px;">
+                                                                            </div>
+                                                                        @empty
+                                                                            <img src="{{ asset('img/placeholder-img.jfif') }}" class="d-block" alt="Unit Picture" style="border-radius: 5px; width:100px; height:50px;">
+                                                                        @endforelse
                                                                     </div>
-                                                                @empty
-                                                                    <img src="{{ asset('img/placeholder-img.jfif') }}" class="d-block" alt="Unit Picture" style="border-radius: 5px; width:100px; height:50px;">
-                                                                @endforelse
-                                                            </div>
-                                                        </div>
-                                                    </td>
-                                                    <td>{{ $unit->unit_name }}</td>
-                                                    <td>
-                                                        {{ $unit->unit_type }}
-                                                    </td>
-                                                    <td>{{ $unit->price ?? 'N/A' }}</td>
-                                                    <td>{{ $unit->status ?? 'N/A' }}</td>
-                                                    <td>{{ $unit->sale_or_rent ?? 'N/A' }}</td>
-                                                    <td>{{ $unit->availability_status ?? 'N/A' }}</td>
-                                                    <td>{{ $unit->level->building->name ?? 'N/A' }}</td>
-                                                    <td>{{ $unit->level->level_name ?? 'N/A' }}</td>
-                                                    <td>{{ $unit->organization->name ?? 'N/A' }}</td>
-                                                    <td class="text-center">
-                                                        <a href="javascript:void(0);" class="text-info view-unit" data-id="{{ $unit->id }}" data-bs-toggle="tooltip" data-bs-placement="top" title="View"><i class="fa fa-eye mx-2" style="font-size: 20px;"></i></a>
-                                                        <a href="{{ route('owner.units.edit', $unit->id) }}" class="text-warning" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit">
-                                                            <i class="fa fa-pencil mx-2" style="font-size: 20px;"></i>
-                                                        </a>
-                                                    </td>
-                                                </tr>
-                                            @empty
-                                                <tr>
-                                                    <td colspan="12" class="text-center">No units found.</td>
-                                                </tr>
-                                            @endforelse
-                                            </tbody>
-                                        </table>
+                                                                </div>
+                                                            </td>
+                                                            <td>{{ $unit->unit_name }}</td>
+                                                            <td>
+                                                                {{ $unit->unit_type }}
+                                                            </td>
+                                                            <td>{{ $unit->price ?? 'N/A' }}</td>
+                                                            <td>{{ $unit->status ?? 'N/A' }}</td>
+                                                            <td>{{ $unit->sale_or_rent ?? 'N/A' }}</td>
+                                                            <td>{{ $unit->availability_status ?? 'N/A' }}</td>
+                                                            <td>{{ $unit->level->building->name ?? 'N/A' }}</td>
+                                                            <td>{{ $unit->level->level_name ?? 'N/A' }}</td>
+                                                            <td>{{ $unit->organization->name ?? 'N/A' }}</td>
+                                                            <td class="text-center">
+                                                                <a href="javascript:void(0);" class="text-info view-unit" data-id="{{ $unit->id }}" data-bs-toggle="tooltip" data-bs-placement="top" title="View"><i class="fa fa-eye mx-2" style="font-size: 20px;"></i></a>
+                                                                <a href="{{ route('owner.units.edit', $unit->id) }}" class="text-warning" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit">
+                                                                    <i class="fa fa-pencil mx-2" style="font-size: 20px;"></i>
+                                                                </a>
+                                                            </td>
+                                                        </tr>
+                                                    @empty
+                                                        <tr>
+                                                            <td colspan="12" class="text-center">No units found.</td>
+                                                        </tr>
+                                                    @endforelse
+                                                    </tbody>
+                                                </table>
 
-                                        @if ($units)
-                                            <div class="mt-3">
-                                                {{ $units->links('pagination::bootstrap-5') }}
+                                                @if ($units)
+                                                    <div class="mt-3">
+                                                        {{ $units->links('pagination::bootstrap-5') }}
+                                                    </div>
+                                                @endif
+
                                             </div>
-                                        @endif
-
+                                        </div>
                                     </div>
                                 </div>
+
                             </div>
                         </div>
                     </div>

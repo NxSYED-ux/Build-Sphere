@@ -364,25 +364,26 @@
                                                 <select name="buildingId" id="building_id" class="form-select" required>
                                                     <option value="" selected>Select Building</option>
                                                     @forelse($buildings as $building)
-                                                        <option value="{{ $building->id }}" {{ old('buildingId') == $building->id ? 'selected' : '' }}>
+                                                        <option value="{{ $building->id }}"
+                                                            {{ old('buildingId', $selectedBuildingId) == $building->id ? 'selected' : '' }}>
                                                             {{ $building->name }}
                                                         </option>
-                                                        @empty
-                                                            <option value="">No building found</option>
-                                                        @endforelse
+                                                    @empty
+                                                        <option value="">No building found</option>
+                                                    @endforelse
                                                 </select>
                                                 @error('buildingId')
                                                 <span class="invalid-feedback" role="alert">
-                                                        <strong>{{ $message }}</strong>
-                                                    </span>
+                                                    <strong>{{ $message }}</strong>
+                                                </span>
                                                 @enderror
                                             </div>
 
                                             <div class="mb-3">
                                                 <label for="unit_id">Units</label>
                                                 <input type="hidden" name="unitName" id="unit_name">
-                                                <select class="form-select" id="unit_id" name="unitId"  required>
-                                                    <option value="" {{ old('unitId') === null ? 'selected' : '' }}>Select Level</option>
+                                                <select class="form-select" id="unit_id" name="unitId" required>
+                                                    <option value="" selected>Select Unit</option>
                                                 </select>
                                                 @error('unitId')
                                                 <span class="invalid-feedback" role="alert">
@@ -394,8 +395,8 @@
 
                                         <!-- Second Column: Unit Image -->
                                         <div class="col-md-6 text-center">
-                                            <img id="unitImage" src="{{ asset('img/buildings/Apartment_1.jpg') }}"
-                                                 alt="Unit Image" class="img-fluid rounded shadow w-100"
+                                            <img id="unitImage" src="{{ asset('img/placeholder-unit.png') }}"
+                                                 alt="Unit Image" class="img-fluid rounded  w-100"
                                                  style="height: 150px; object-fit: cover;">
                                         </div>
 
@@ -623,57 +624,87 @@
 
      </script>
 
-    <!-- Units by building id -->
+    <!-- Units by Building ID -->
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            const buildingSelect = document.getElementById("building_id");
             const unitSelect = document.getElementById("unit_id");
+            const buildingSelect = document.getElementById("building_id");
 
-            function fetchUnits(buildingId, selectedUnitId = null) {
-                if (buildingId) {
-                    fetch(`{{ route('owner.buildings.units.available', ':id') }}`.replace(':id', buildingId), {
-                        method: "GET",
-                        headers: {
-                            "X-Requested-With": "XMLHttpRequest",
-                            "Accept": "application/json"
-                        }
-                    })
-                        .then(response => response.json())
-                        .then(data => {
-                            unitSelect.innerHTML = `<option value="" >Select Unit</option>`;
+            // Function to fetch units based on selected building
+            function fetchUnits(buildingId, selectedUnit = null) {
+                if (!buildingId) return;
 
+                fetch(`{{ route('owner.buildings.units.available', ':id') }}`.replace(':id', buildingId), {
+                    method: "GET",
+                    headers: { "X-Requested-With": "XMLHttpRequest", "Accept": "application/json" }
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        unitSelect.innerHTML = `<option value="" selected>Select Unit</option>`;
+
+                        if (data.units.length > 0) {
                             data.units.forEach(unit => {
                                 const option = document.createElement("option");
                                 option.value = unit.id;
                                 option.textContent = unit.unit_name;
-
-                                if (selectedUnitId && unit.id == selectedUnitId) {
-                                    option.selected = true;
-                                }
-
                                 unitSelect.appendChild(option);
                             });
-                        })
-                        .catch(error => {
-                            console.error("Error fetching units:", error);
-                        });
-                } else {
-                    unitSelect.innerHTML = `<option value="" >Select Unit</option>`;
-                }
+                        }
+
+                        // Preselect the unit if available and fetch its details
+                        if (selectedUnit) {
+                            unitSelect.value = selectedUnit;
+                            fetchUnitDetails(selectedUnit);
+                        }
+                    })
+                    .catch(error => console.error("Error fetching units:", error));
             }
 
+            // Function to fetch unit details
+            function fetchUnitDetails(unitId) {
+                if (!unitId) return;
+
+                fetch(`{{ route('owner.units.details', ':id') }}`.replace(':id', unitId), {
+                    method: "GET",
+                    headers: { "Accept": "application/json" }
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        let unit = data.Unit;
+                        document.getElementById('unitImage').src = unit.pictures.length > 0 ? '/' + unit.pictures[0].file_path : 'default-image.jpg';
+                        document.getElementById('unitName').textContent = unit.unit_name;
+                        document.getElementById('unitType').textContent = unit.unit_type;
+                        document.getElementById('unitPrice').textContent = unit.price;
+                        document.getElementById('unitSaleRent').textContent = unit.sale_or_rent;
+                        document.getElementById('unitStatus').textContent = unit.status;
+                        document.getElementById('unitArea').textContent = unit.area;
+                        document.getElementById('unit_name').value = unit.unit_name;
+                    })
+                    .catch(error => console.error("Error fetching unit details:", error));
+            }
+
+            // Get initial values from PHP variables
+            const selectedBuilding = `{{ old('buildingId', $selectedBuildingId) }}`;
+            const selectedUnit = `{{ old('unitId', $selectedUnitId) }}`;
+
+            // Fetch units and details on page load if selectedBuilding and selectedUnit exist
+            if (selectedBuilding) {
+                fetchUnits(selectedBuilding, selectedUnit);
+            }
+
+            // Event listener for building change
             buildingSelect.addEventListener("change", function () {
                 fetchUnits(this.value);
             });
 
-            const oldBuildingId = "{{ old('buildingId') }}";
-            const oldUnitId = "{{ old('unitId') }}";
-
-            if (oldBuildingId) {
-                fetchUnits(oldBuildingId, oldUnitId);
-            }
+            // Event listener for unit change
+            unitSelect.addEventListener("change", function () {
+                fetchUnitDetails(this.value);
+            });
         });
     </script>
+
+
 
     <!--   -->
     <script>
@@ -868,50 +899,6 @@
 
             // Initial check on page load
             toggleInputs(userDropdown.value !== "");
-        });
-    </script>
-
-    <!-- Unit Detail script -->
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            const unitSelect = document.getElementById("unit_id");
-
-            function fetchUnitDetails(unitId) {
-                if (!unitId) return;
-
-                fetch(`{{ route('owner.units.details', ':id') }}`.replace(':id', unitId), {
-                    method: "GET",
-                    headers: {
-                        "Accept": "application/json"
-                    }
-                })
-                    .then(response => response.json())
-                    .then(data => {
-                        let unit = data.Unit;
-
-                        document.getElementById('unitImage').src = unit.pictures.length > 0 ? '/' + unit.pictures[0].file_path : 'default-image.jpg';
-                        document.getElementById('unitName').textContent = unit.unit_name;
-                        document.getElementById('unitType').textContent = unit.unit_type;
-                        document.getElementById('unitPrice').textContent = unit.price;
-                        document.getElementById('unitSaleRent').textContent = unit.sale_or_rent;
-                        document.getElementById('unitStatus').textContent = unit.status;
-                        document.getElementById('unitArea').textContent = unit.area;
-                        document.getElementById('unit_name').value = unit.unit_name;
-                    })
-                    .catch(error => {
-                        console.error("Error:", error);
-                    });
-            }
-
-            // Fetch details on dropdown change
-            unitSelect.addEventListener("change", function () {
-                fetchUnitDetails(this.value);
-            });
-
-            // Fetch details on page load if a unit is already selected
-            if (unitSelect.value) {
-                fetchUnitDetails(unitSelect.value);
-            }
         });
     </script>
 

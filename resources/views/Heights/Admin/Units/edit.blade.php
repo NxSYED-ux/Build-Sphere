@@ -10,6 +10,105 @@
             margin-top: 45px;
         }
 
+        .collapse-btn{
+            background-color: #D3D3D3;
+            color: black;
+
+        }
+
+        .collapse-btn {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            text-align: left;
+            margin-top: 1rem;
+            padding: 10px 15px;
+            font-size: 16px;
+            font-weight: 400;
+            border: 1px solid #ced4da;
+            border-radius: 5px;
+            background-color: #f8f9fa;
+            color: #212529;
+            cursor: pointer;
+            transition: background-color 0.3s ease-in-out, border-color 0.3s ease-in-out;
+        }
+
+        .collapse-btn:hover {
+            background-color: #e9ecef;
+            border-color: #adb5bd;
+        }
+
+        .collapse-btn:focus,
+        .collapse-btn:active {
+            box-shadow: none !important;
+            outline: none !important;
+            background-color: #f8f9fa !important;
+        }
+
+        .collapse-btn i {
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .collapse-btn[aria-expanded="true"] i {
+            transform: rotate(90deg);
+        }
+
+
+        /**/
+        #imagePreview {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            align-items: center;
+            border: 2px dashed var(--sidenavbar-text-color);
+            border-radius: 10px;
+            padding: 15px;
+            height: 200px;
+            background-color: var(--main-background-color);
+            margin-top: 2px;
+            overflow-y: auto;
+            text-align: center;
+        }
+
+        #uploadImagePreview {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            align-items: center;
+            border: 2px dashed var(--sidenavbar-text-color);
+            border-radius: 10px;
+            padding: 15px;
+            height: 200px;
+            background-color: var(--main-background-color);
+            margin-top: 2px;
+            overflow-y: auto;
+            text-align: center;
+            position: relative;
+        }
+
+        .upload-btn {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background: #007bff;
+            color: white !important;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .upload-btn i {
+            font-size: 20px;
+            color: white;
+        }
+
         .image-thumbnail {
             display: inline-block;
             margin: 5px;
@@ -20,6 +119,14 @@
             height: 100px;
             object-fit: cover;
         }
+
+        @media (max-width: 575.98px) {
+            .thumbnail-image {
+                width: 80px;
+                height: 80px;
+            }
+        }
+
         .thumbnail-remove {
             position: absolute;
             top: 0;
@@ -114,25 +221,6 @@
                                                 </div>
 
                                                 <!--  -->
-{{--                                                <div class="col-lg-4 col-md-6 col-sm-12">--}}
-{{--                                                    <div class="form-group mb-2">--}}
-{{--                                                        <label for="availability_status">Availability Status</label>--}}
-{{--                                                        <span class="required__field">*</span><br>--}}
-{{--                                                        <select name="availability_status" id="availability_status" class="form-select" required>--}}
-{{--                                                            <option value="Available" {{ old('availability_status', $unit->availability_status) == 'Available' ? 'selected' : '' }}>Available</option>--}}
-{{--                                                            <option value="Rented" {{ old('availability_status', $unit->availability_status) == 'Rented' ? 'selected' : '' }}>Rented</option>--}}
-{{--                                                            <option value="Sold" {{ old('availability_status', $unit->availability_status) == 'Sold' ? 'selected' : '' }}>Sold</option>--}}
-{{--                                                            <option value="Not Available" {{ old('availability_status', $unit->availability_status) == 'Not Available' ? 'selected' : '' }}>Not Available</option>--}}
-{{--                                                        </select>--}}
-{{--                                                        @error('availability_status')--}}
-{{--                                                        <span class="invalid-feedback" role="alert">--}}
-{{--                                                                <strong>{{ $message }}</strong>--}}
-{{--                                                            </span>--}}
-{{--                                                        @enderror--}}
-{{--                                                    </div>--}}
-{{--                                                </div>--}}
-
-                                                <!--  -->
                                                 <div class="col-sm-12 col-md-6 col-lg-4">
                                                     <div class="form-group mb-2">
                                                         <label for="price">Price</label>
@@ -161,12 +249,16 @@
                                                 </div>
 
                                                 <!--  -->
-                                                <div class="col-sm-12 col-md-6 col-lg-4">
+                                                <div class="col-lg-4 col-md-6 col-sm-12">
                                                     <div class="form-group mb-2">
-                                                        <label for="description">Description</label>
-                                                        <input type="text" name="description" id="description" class="form-control @error('description') is-invalid @enderror" value="{{ old('description', $unit->description) }}" maxlength="50" placeholder="Description">
-                                                        @error('description')
-                                                            <span class="invalid-feedback" role="alert">
+                                                        <label for="status">Status</label>
+                                                        <span class="required__field">*</span><br>
+                                                        <select name="status" id="status" class="form-select" required>
+                                                            <option value="Approved" {{ old('status', $unit->status) == 'Approved' ? 'selected' : '' }}>Approved</option>
+                                                            <option value="Rejected" {{ old('status', $unit->status) == 'Rejected' ? 'selected' : '' }}>Rejected</option>
+                                                        </select>
+                                                        @error('status')
+                                                        <span class="invalid-feedback" role="alert">
                                                                 <strong>{{ $message }}</strong>
                                                             </span>
                                                         @enderror
@@ -226,61 +318,65 @@
                                                     </div>
                                                 </div>
 
-
-                                                <div class="col-lg-4 col-md-6 col-sm-12">
+                                                <!--  -->
+                                                <div class="col-sm-12 col-md-6 col-lg-12">
                                                     <div class="form-group mb-2">
-                                                        <label for="status">Status</label>
-                                                        <span class="required__field">*</span><br>
-                                                        <select name="status" id="status" class="form-select" required>
-                                                            <option value="Approved" {{ old('status', $unit->status) == 'Approved' ? 'selected' : '' }}>Approved</option>
-                                                            <option value="Rejected" {{ old('status', $unit->status) == 'Rejected' ? 'selected' : '' }}>Rejected</option>
-                                                        </select>
-                                                        @error('status')
-                                                            <span class="invalid-feedback" role="alert">
+                                                        <label for="description">Description</label>
+                                                        <input type="text" name="description" id="description" class="form-control @error('description') is-invalid @enderror" value="{{ old('description', $unit->description) }}" maxlength="50" placeholder="Description">
+                                                        @error('description')
+                                                        <span class="invalid-feedback" role="alert">
                                                                 <strong>{{ $message }}</strong>
                                                             </span>
                                                         @enderror
                                                     </div>
                                                 </div>
 
+
                                             </div>
 
                                             <h4>
-                                                <button class="btn w-100 text-start" style="background-color: #D3D3D3;" type="button" data-bs-toggle="collapse" data-bs-target="#pictures" aria-expanded="false" aria-controls="pictures">
+                                                <button class="collapse-btn w-100 text-start mt-3 d-flex justify-content-between align-items-center"  type="button" data-bs-toggle="collapse" data-bs-target="#pictures" aria-expanded="false" aria-controls="pictures">
                                                     Pictures <i class="fa fa-chevron-down"></i>
                                                 </button>
                                             </h4>
                                             <div id="pictures" class="collapse show collapsible-section">
                                                 <div class="row">
-                                                    <!-- Unit Images -->
-                                                    <div class="ccol-lg-4 col-md-4 col-sm-12">
-                                                        <label for="imageInput" class="form-label">Unit Pictures</label>
-                                                        <input type="file" id="imageInput" name="unit_pictures[]" class="form-control" multiple>
-                                                        @error('unit_pictures.*')
-                                                            <div class="text-danger">{{ $message }}</div>
-                                                        @enderror
-                                                    </div>
-                                                    <div class="col-lg-4 col-md-8 col-sm-12">
+                                                    <div class="col-lg-6 col-md-6 col-sm-12">
                                                         <label class="form-label">Already Uploaded</label>
                                                         <div id="imagePreview" class="">
-                                                            @foreach ($unit->pictures as $image)
+                                                            @forelse ($unit->pictures as $image)
                                                                 <div class="image-thumbnail">
                                                                     <img src="{{ asset($image->file_path) }}" class="thumbnail-image" alt="Uploaded Image">
                                                                     <button type="button" class="thumbnail-remove" data-image-id="{{ $image->id }}" onclick="removeExistingImage('{{ $image->id }}')">&times;</button>
                                                                 </div>
-                                                            @endforeach
+                                                            @empty
+                                                                <p >No images selected</p>
+                                                            @endforelse
                                                         </div>
                                                     </div>
-                                                    <div class="col-lg-4 col-md-12 col-sm-12">
+                                                    <div class="col-lg-6 col-md-6 col-sm-12">
                                                         <label class="form-label">New Uploads</label>
-                                                        <div id="imageThumbnails" class="">
-                                                            <!-- Image thumbnails will be inserted here -->
+                                                        <div class="">
+                                                            <input type="file" id="imageInput" name="unit_pictures[]" accept="image/png, image/jpeg, image/jpg, image/gif" multiple hidden>
+                                                            @error('unit_pictures.*')
+                                                            <span class="invalid-feedback" role="alert">
+                                                                <strong>{{ $message }}</strong>
+                                                            </span>
+                                                            @enderror
+                                                            <div class="flex-grow-4" id="uploadImagePreview">
+                                                                <p id="image-message">No images selected</p>
+                                                                <div id="imageThumbnails"></div>
+                                                                <label for="imageInput" class="upload-btn">
+                                                                    <i class='bx bx-upload'></i>
+                                                                </label>
+                                                            </div>
                                                         </div>
                                                     </div>
+
                                                 </div>
                                             </div>
 
-                                            <div class="col-lg-4 col-md-4 col-12 mt-3">
+                                            <div class="col-12 mt-3">
                                                 <button type="submit" class="btn btn-primary w-100">Save</button>
                                             </div>
                                         </form>
@@ -318,8 +414,111 @@
         });
     </script>
 
-    <!-- Remove or delete organization pictures script -->
+    <!-- Unit Pictures script -->
     <script>
+        // document.addEventListener('DOMContentLoaded', function() {
+        let selectedImages = [];
+        let currentIndex = 0;
+        const maxImages = 4;
+        const imageMessage = document.getElementById('image-message');
+        let alreadyUploadedCount = document.querySelectorAll('#imagePreview .image-thumbnail').length;
+
+        const imageInput = document.getElementById('imageInput');
+
+        imageInput.addEventListener('change', handleImageSelection);
+
+        function handleImageSelection(event) {
+            let files = Array.from(event.target.files);
+
+            let availableSlots = maxImages - (alreadyUploadedCount + selectedImages.length);
+
+            if (availableSlots <= 0) {
+                imageMessage.textContent = `You can only upload ${maxImages} images in total. You have already uploaded ${alreadyUploadedCount}.`;
+                imageMessage.style.color = 'red';
+                event.target.value = ''; // Reset input field
+                return;
+            }
+
+            if (files.length > availableSlots) {
+                imageMessage.textContent = `You can only add ${availableSlots} more image(s).`;
+                imageMessage.style.color = 'red';
+                files = files.slice(0, availableSlots);
+            } else {
+                imageMessage.innerHTML = '';
+            }
+
+            selectedImages = [...selectedImages, ...files];
+            currentIndex = selectedImages.length - files.length;
+            renderThumbnails();
+            showImage();
+        }
+
+
+        function renderThumbnails() {
+            const container = document.getElementById('imageThumbnails');
+            container.innerHTML = '';
+
+            selectedImages.forEach((file, index) => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const div = document.createElement('div');
+                    div.classList.add('image-thumbnail');
+
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.classList.add('thumbnail-image');
+                    img.style.width = '100px';
+                    img.style.height = '100px';
+                    img.style.objectFit = 'cover';
+
+                    const removeButton = document.createElement('button');
+                    removeButton.innerHTML = '&#10006;';
+                    removeButton.classList.add('thumbnail-remove');
+                    removeButton.onclick = function() {
+                        removeImage(index);
+                    };
+
+                    div.appendChild(img);
+                    div.appendChild(removeButton);
+                    container.appendChild(div);
+                };
+                reader.readAsDataURL(file);
+            });
+
+            updateImageInput();
+        }
+
+        function showImage() {
+            const img = document.getElementById('currentImage');
+            if (selectedImages.length > 0) {
+                const file = selectedImages[currentIndex];
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    img.src = e.target.result;
+                    img.classList.add('active');
+                    document.getElementById('imageCounter').textContent = `${currentIndex + 1} / ${selectedImages.length}`;
+                };
+                reader.readAsDataURL(file);
+            } else {
+                img.classList.remove('active');
+            }
+        }
+
+        function removeImage(index) {
+            selectedImages.splice(index, 1);
+            currentIndex = Math.min(currentIndex, selectedImages.length - 1);
+            renderThumbnails();
+            showImage();
+        }
+
+        function updateImageInput() {
+            const dt = new DataTransfer();
+            selectedImages.forEach(file => {
+                dt.items.add(file);
+            });
+            imageInput.files = dt.files;
+        }
+
         function removeExistingImage(imageId) {
             Swal.fire({
                 title: 'Are you sure?',
@@ -337,128 +536,36 @@
                             'Content-Type': 'application/json',
                         },
                     })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            // Remove the image from the DOM
-                            document.querySelector(`button[data-image-id="${imageId}"]`).parentElement.remove();
-                            Swal.fire({
-                                title: 'Success!',
-                                text: 'Deleted successfully',
-                                icon: 'success',
-                                confirmButtonText: 'OK'
-                            });
-                        } else {
-                            Swal.fire({
-                                title: 'Error!',
-                                text: 'Failed to remove image.',
-                                icon: 'error',
-                                confirmButtonText: 'OK'
-                            });
-                        }
-                    })
-                    .catch(error => console.error('Error:', error));
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                // Remove the image from the DOM
+                                document.querySelector(`button[data-image-id="${imageId}"]`).parentElement.remove();
+                                alreadyUploadedCount--; // Update the uploaded image count
+                                Swal.fire({
+                                    title: 'Success!',
+                                    text: 'Deleted successfully',
+                                    icon: 'success',
+                                    confirmButtonText: 'OK'
+                                });
+                            } else {
+                                Swal.fire({
+                                    title: 'Error!',
+                                    text: 'Failed to remove image.',
+                                    icon: 'error',
+                                    confirmButtonText: 'OK'
+                                });
+                            }
+                        })
+                        .catch(error => console.error('Error:', error));
                 }
             });
         }
-    </script>
 
-    <!-- Organization Pictures script -->
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            let selectedImages = [];
-            let currentIndex = 0;
-
-            const imageInput = document.getElementById('imageInput');
-
-            imageInput.addEventListener('change', handleImageSelection);
-
-            function handleImageSelection(event) {
-                const files = Array.from(event.target.files);
-                selectedImages = [...selectedImages, ...files];
-                currentIndex = selectedImages.length - files.length;
-                renderThumbnails();
-                showImage();
-            }
-
-            function renderThumbnails() {
-                const container = document.getElementById('imageThumbnails');
-                container.innerHTML = '';
-
-                selectedImages.forEach((file, index) => {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        const div = document.createElement('div');
-                        div.classList.add('image-thumbnail');
-
-                        const img = document.createElement('img');
-                        img.src = e.target.result;
-                        img.classList.add('thumbnail-image');
-                        img.style.width = '100px';
-                        img.style.height = '100px';
-                        img.style.objectFit = 'cover';
-
-                        const removeButton = document.createElement('button');
-                        removeButton.innerHTML = '&#10006;';
-                        removeButton.classList.add('thumbnail-remove');
-                        removeButton.onclick = function() {
-                            removeImage(index);
-                        };
-
-                        div.appendChild(img);
-                        div.appendChild(removeButton);
-                        container.appendChild(div);
-                    };
-                    reader.readAsDataURL(file);
-                });
-
-                updateImageInput();
-            }
-
-            function showImage() {
-                const img = document.getElementById('currentImage');
-                if (selectedImages.length > 0) {
-                    const file = selectedImages[currentIndex];
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        img.src = e.target.result;
-                        img.classList.add('active');
-                        document.getElementById('imageCounter').textContent = `${currentIndex + 1} / ${selectedImages.length}`;
-                    };
-                    reader.readAsDataURL(file);
-                } else {
-                    img.classList.remove('active');
-                }
-            }
-
-            function removeImage(index) {
-                selectedImages.splice(index, 1);
-                currentIndex = Math.min(currentIndex, selectedImages.length - 1);
-                renderThumbnails();
-                showImage();
-            }
-
-            function removeSelectedImage() {
-                if (selectedImages.length > 0) {
-                    selectedImages.splice(currentIndex, 1);
-                    currentIndex = Math.min(currentIndex, selectedImages.length - 1);
-                    renderThumbnails();
-                    showImage();
-                }
-            }
-
-            function updateImageInput() {
-                const dt = new DataTransfer();
-                selectedImages.forEach(file => {
-                    dt.items.add(file);
-                });
-                imageInput.files = dt.files;
-            }
-
-            document.querySelector('form').addEventListener('submit', function(event) {
-                updateImageInput(); // Ensure the imageInput is updated with the selected images before form submission
-            });
+        document.querySelector('form').addEventListener('submit', function(event) {
+            updateImageInput(); // Ensure imageInput is updated before form submission
         });
+        // });
     </script>
 
     <script>

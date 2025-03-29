@@ -94,7 +94,7 @@
             bottom: 10px;
             right: 10px;
             background: #007bff;
-            color: white;
+            color: white !important;
             border-radius: 50%;
             width: 40px;
             height: 40px;
@@ -106,6 +106,7 @@
 
         .upload-btn i {
             font-size: 20px;
+            color: white;
         }
 
         .image-thumbnail {
@@ -233,33 +234,6 @@
                                                     </div>
                                                 </div>
 
-                                                <!--  -->
-                                                <div class="col-sm-12 col-md-6 col-lg-4">
-                                                    <div class="form-group mb-2">
-                                                        <label for="area">Area</label>
-                                                        <span class="required__field">*</span><br>
-                                                        <input type="number" name="area" id="area" class="form-control @error('area') is-invalid @enderror" value="{{ old('area', $unit->area) }}" placeholder="1234" required>
-                                                        @error('area')
-                                                        <span class="invalid-feedback" role="alert">
-                                                                <strong>{{ $message }}</strong>
-                                                            </span>
-                                                        @enderror
-                                                    </div>
-                                                </div>
-
-                                                <!--  -->
-                                                <div class="col-sm-12 col-md-6 col-lg-4">
-                                                    <div class="form-group mb-2">
-                                                        <label for="description">Description</label>
-                                                        <input type="text" name="description" id="description" class="form-control @error('description') is-invalid @enderror" value="{{ old('description', $unit->description) }}" maxlength="50" placeholder="Description">
-                                                        @error('description')
-                                                        <span class="invalid-feedback" role="alert">
-                                                                <strong>{{ $message }}</strong>
-                                                            </span>
-                                                        @enderror
-                                                    </div>
-                                                </div>
-
                                                 <!-- Building Dropdown -->
                                                 <div class="col-sm-12 col-md-6 col-lg-4">
                                                     <div class="form-group mb-2">
@@ -290,6 +264,33 @@
                                                             <option value="" disabled selected>Select Level</option>
                                                         </select>
                                                         @error('level_id')
+                                                        <span class="invalid-feedback" role="alert">
+                                                                <strong>{{ $message }}</strong>
+                                                            </span>
+                                                        @enderror
+                                                    </div>
+                                                </div>
+
+                                                <!--  -->
+                                                <div class="col-sm-12 col-md-6 col-lg-4">
+                                                    <div class="form-group mb-2">
+                                                        <label for="area">Area</label>
+                                                        <span class="required__field">*</span><br>
+                                                        <input type="number" name="area" id="area" class="form-control @error('area') is-invalid @enderror" value="{{ old('area', $unit->area) }}" placeholder="1234" required>
+                                                        @error('area')
+                                                        <span class="invalid-feedback" role="alert">
+                                                                <strong>{{ $message }}</strong>
+                                                            </span>
+                                                        @enderror
+                                                    </div>
+                                                </div>
+
+                                                <!--  -->
+                                                <div class="col-sm-12 col-md-6 col-lg-8">
+                                                    <div class="form-group mb-2">
+                                                        <label for="description">Description</label>
+                                                        <input type="text" name="description" id="description" class="form-control @error('description') is-invalid @enderror" value="{{ old('description', $unit->description) }}" maxlength="50" placeholder="Description">
+                                                        @error('description')
                                                         <span class="invalid-feedback" role="alert">
                                                                 <strong>{{ $message }}</strong>
                                                             </span>
@@ -534,43 +535,6 @@
 
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            // Function to fetch buildings based on selected organization
-            function fetchBuildings(organizationId, selectedBuilding = null, selectedLevel = null) {
-                if (organizationId) {
-                    fetch(`{{ route('organizations.buildings', ':id') }}`.replace(':id', organizationId), {
-                        method: "GET",
-                        headers: { "X-Requested-With": "XMLHttpRequest", "Accept": "application/json" }
-                    })
-                        .then(response => response.json())
-                        .then(data => {
-                            const buildingSelect = document.getElementById("building_id");
-                            buildingSelect.innerHTML = `<option value="" disabled selected>Select Building</option>`;
-
-                            // Populate the buildings dropdown
-                            Object.entries(data.buildings).forEach(([key, value]) => {
-                                const option = document.createElement("option");
-                                option.value = key;
-                                option.textContent = value;
-                                buildingSelect.appendChild(option);
-                            });
-
-                            // Preselect the building if available
-                            if (selectedBuilding) {
-                                buildingSelect.value = selectedBuilding;
-                            }
-
-                            // Reset and populate levels based on the selected building
-                            document.getElementById("level_id").innerHTML = `<option value="" disabled selected>Select Level</option>`;
-                            if (selectedBuilding) {
-                                fetchLevels(selectedBuilding, selectedLevel);
-                            }
-                        })
-                        .catch(error => console.error("Error fetching buildings:", error));
-                } else {
-                    document.getElementById("building_id").innerHTML = `<option value="" disabled selected>Select Building</option>`;
-                    document.getElementById("level_id").innerHTML = `<option value="" disabled selected>Select Level</option>`;
-                }
-            }
 
             // Function to fetch levels based on selected building
             function fetchLevels(buildingId, selectedLevel = null) {
@@ -604,19 +568,10 @@
             }
 
             // Get the initial values from PHP variables
-            {{--const organizationId = `{{ old('organization_id', $unit->organization_id) }}`;--}}
             const selectedBuilding = `{{ old('building_id', $unit->level->building_id) }}`;
             const selectedLevel = `{{ old('level_id', $unit->level_id) }}`;
 
-            // Fetch buildings and levels based on the initial selected values
-            // fetchBuildings(organizationId, selectedBuilding, selectedLevel);
-
             fetchLevels(selectedBuilding, selectedLevel);
-
-            // Trigger building fetch when organization is changed
-            // document.getElementById("organization_id").addEventListener("change", function () {
-            //     fetchBuildings(this.value);
-            // });
 
             // Trigger level fetch when building is changed
             document.getElementById("building_id").addEventListener("change", function () {

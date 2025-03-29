@@ -57,7 +57,6 @@ class AssignUnitController extends Controller
 
             if($selectedUnitId){
                 $checkingSelectedUnit = BuildingUnit::find($selectedUnitId);
-                $selectedUnitId = null;
                 if(!$checkingSelectedUnit || $checkingSelectedUnit->organization_id != $organizationId){
                     return redirect()->back()->with('error', 'Invalid Unit ID');
                 }
