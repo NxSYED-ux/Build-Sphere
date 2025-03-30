@@ -56,7 +56,11 @@ class AssignUnitController extends Controller
             $buildings = $query->get();
 
             if($selectedUnitId){
-                $checkingSelectedUnit = BuildingUnit::find($selectedUnitId);
+                $checkingSelectedUnit = BuildingUnit::where('id', $selectedUnitId)
+                    ->where('sale_or_rent', '!=', 'Not Available')
+                    ->where('availability_status', 'Available')
+                    ->where('status', 'Approved')
+                    ->first();
                 if(!$checkingSelectedUnit || $checkingSelectedUnit->organization_id != $organizationId){
                     return redirect()->back()->with('error', 'Invalid Unit ID');
                 }

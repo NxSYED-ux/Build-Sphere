@@ -177,7 +177,7 @@ class BuildingLevelController extends Controller
 
                    $user->id,
                     "New Level Created",
-                    "The level '{$request->level_name}' has been successfully created successfully.",
+                    "The level '{$request->level_name}' has been successfully created.",
                     'owner.levels.index',
                 ));
             }

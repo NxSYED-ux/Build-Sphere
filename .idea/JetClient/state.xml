@@ -58,16 +58,8 @@
               </option>
               <option name="id" value="3872cca6-e0b1-4a79-9e5f-705d016efd1f" />
               <option name="method" value="GET" />
-              <option name="name" value="NotificationTesting" />
-              <option name="pathVariables">
-                <list>
-                  <pathVariableState>
-                    <option name="key" value="id" />
-                    <option name="value" value="13" />
-                  </pathVariableState>
-                </list>
-              </option>
-              <option name="url" value="http://localhost:8000/api/send-notification/{id}" />
+              <option name="name" value="Permission Testing" />
+              <option name="url" value="http://localhost:8000/api/test-permissions" />
             </requestState>
           </list>
         </option>

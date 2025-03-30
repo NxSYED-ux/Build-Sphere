@@ -89,7 +89,7 @@ class AuthController extends Controller
             }
 
             $token = JWTAuth::fromUser($user);
-            return $this->handleResponse($request, 200, 'success','Login successful', $route, $token, $permissions, $user->name, $user->picture);
+            return $this->handleResponse($request, 200, 'success','Login successful', $route, $token, $permissions, $user->name, $user->picture, $user->email);
 
         } catch (\Exception $e) {
             Log::error("Login error: " . $e->getMessage());
@@ -129,15 +129,15 @@ class AuthController extends Controller
 
 
     // Response Handler Function
-    protected function handleResponse(Request $request, $statusCode, $heading, $data, $redirectTo = null, $token = null, $permissions = null, $name = null, $picture = null)
+    protected function handleResponse(Request $request, $statusCode, $heading, $data, $redirectTo = null, $token = null, $permissions = null, $name = null, $picture = null, $email = null)
     {
         if ($request->wantsJson()) {
             return response()->json([
                 $heading === 'password' ? 'error' : $heading => $data,
                 'token' => $token,
-                'permissions' => $permissions,
                 'name' => $name,
                 'picture' => $picture,
+                'email' => $email,
             ], $statusCode);
         }
 

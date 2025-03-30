@@ -1,11 +1,14 @@
 <?php
 
+use App\Events\UserPermissionUpdated;
 use App\Http\Controllers\GeneralControllers\AuthController;
 use App\Http\Controllers\GeneralControllers\ForgotPasswordController;
 use App\Http\Controllers\GeneralControllers\NotificationController;
 use App\Models\User;
 use App\Notifications\UserNotification;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\GeneralControllers\ProfileController;
@@ -17,6 +20,16 @@ use App\Http\Controllers\AppControllers\FavouritesController;
 use App\Http\Controllers\AppControllers\MyPropertiesController;
 use App\Http\Controllers\AppControllers\QueryController;
 use App\Http\Controllers\AppControllers\DropdownController;
+
+
+Route::get('/test-permissions', function () {
+    Log::info("Triggering UserPermissionUpdated event for user 2.");
+    event(new UserPermissionUpdated(2));
+    return 'ok';
+});
+
+
+
 
 // Without Authentication
 

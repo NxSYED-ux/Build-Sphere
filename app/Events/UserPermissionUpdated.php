@@ -5,16 +5,17 @@ namespace App\Events;
 use App\Models\User;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PrivateChannel;
+use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
-class UserPermissionUpdated
+class UserPermissionUpdated implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    protected $userId;
+    public $userId;
 
     public function __construct($userId)
     {
@@ -28,10 +29,16 @@ class UserPermissionUpdated
 
     public function broadcastWith()
     {
-        return [
-            'permissionsList' => $this->listOfPermissions(),
-        ];
+        try {
+            $permissions = $this->listOfPermissions();
+            return ['permissionsList' => $permissions];
+        } catch (\Exception $e) {
+            Log::error("UserPermissionUpdated broadcastWith failed: " . $e->getMessage());
+            return [];
+        }
     }
+
+
 
     private function listOfPermissions(){
         try{

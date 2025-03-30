@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\WebControllers;
 
 use App\Http\Controllers\Controller;
+use App\Jobs\BuildingNotifications;
 use App\Models\Building;
 use App\Models\BuildingLevel;
 use App\Models\BuildingUnit;
@@ -179,7 +180,10 @@ class BuildingUnitController extends Controller
 
     private function store(Request $request, String $portal, $organization_id, $status)
     {
-         $request->validate([
+        $user = $request->user() ?? abort(403, 'Unauthorized');
+        $token = $request->attributes->get('token');
+
+        $request->validate([
              'unit_name' => [
                  'required',
                  'string',
@@ -196,9 +200,9 @@ class BuildingUnitController extends Controller
             'level_id' => 'required|integer',
             'building_id' => 'required|integer',
             'unit_pictures.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-         ],[
-             'unit_name.unique' => 'This level name is already in use for the selected building.',
-         ]);
+        ],[
+            'unit_name.unique' => 'This level name is already in use for the selected building.',
+        ]);
 
         DB::beginTransaction();
 
@@ -233,7 +237,46 @@ class BuildingUnitController extends Controller
 
             DB::commit();
 
-            $route = $portal === 'admin' ? 'units.index' : 'owner.units.index';
+            if($portal === 'admin'){
+
+                $route = 'units.index';
+
+                dispatch( new BuildingNotifications(
+                    $organization_id,
+                    $request->building_id,
+                    "New Unit Created by Admin",
+                    "The Unit '{$request->unit_name}' has been successfully created by admin and is now available.",
+                    "owner/units/{$unit->id}/show",
+
+                    $user->id,
+                    "New Unit Created",
+                    "The Unit '{$request->unit_name}' has been successfully created and is now available.",
+                    "admin/units/{$unit->id}/show",
+
+                    true,
+                ));
+
+            }
+            elseif ($portal === 'owner'){
+
+                $route = 'owner.units.index';
+
+                dispatch( new BuildingNotifications(
+                    $organization_id,
+                    $request->building_id,
+                    "New Unit Created by {$token['role_name']} ({$user->name})",
+                    "The Unit '{$request->level_name}' has been successfully created by {$token['role_name']}.",
+                    "owner/units/{$unit->id}/show",
+
+                    $user->id,
+                    "New Unit Created",
+                    "The Unit '{$request->level_name}' has been successfully created successfully.",
+                    "owner/units/{$unit->id}/show",
+                ));
+            }
+            else{
+                abort(404, 'Page Not Found.');
+            }
 
             return redirect()->route($route)->with('success', 'Unit created successfully.');
 
@@ -385,6 +428,7 @@ class BuildingUnitController extends Controller
 
     private function update(Request $request, String $portal, $organization_id, $status)
     {
+        $user = $request->user() ?? abort(403, 'Unauthorized');
         $token = $request->attributes->get('token');
 
         $request->validate([
@@ -458,7 +502,46 @@ class BuildingUnitController extends Controller
 
             DB::commit();
 
-            $route = $portal === 'admin' ? 'units.index' : 'owner.units.index';
+            if($portal === 'admin'){
+
+                $route = 'units.index';
+
+                dispatch( new BuildingNotifications(
+                    $organization_id,
+                    $request->building_id,
+                    "Unit Updated by Admin",
+                    "The Unit '{$request->unit_name}' has been successfully updated by admin.",
+                    "owner/units/{$unit->id}/show",
+
+                    $user->id,
+                    "Unit Updated",
+                    "The Unit '{$request->unit_name}' has been successfully updated with the applied changes.",
+                    "admin/units/{$unit->id}/show",
+
+                    true,
+                ));
+
+            }
+            elseif ($portal === 'owner'){
+
+                $route = 'owner.units.index';
+
+                dispatch( new BuildingNotifications(
+                    $organization_id,
+                    $request->building_id,
+                    "Unit Updated by {$token['role_name']} ({$user->name})",
+                    "The Unit '{$request->unit_name}' has been successfully updated by {$token['role_name']}.",
+                    "owner/units/{$unit->id}/show",
+
+                    $user->id,
+                    "Unit Updated",
+                    "The Unit '{$request->unit_name}' has been successfully updated with the applied changes.",
+                    "owner/units/{$unit->id}/show",
+                ));
+            }
+            else{
+                abort(404, 'Page Not Found.');
+            }
 
             return redirect()->route($route)->with('success', 'Unit updated successfully.');
 
