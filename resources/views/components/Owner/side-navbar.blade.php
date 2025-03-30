@@ -1,6 +1,20 @@
 
 @props(['openSections' => []])
 
+@php
+    $permissions = json_decode(request('permissions', '{}'), true);
+@endphp
+
+<div class="" style="margin-left: 300px; margin-top: 100px;">
+
+    <h2>Your Permissions:</h2>
+    <ul>
+        @foreach($permissions as $permission => $value)
+            <li>{{ $permission }}</li>
+        @endforeach
+    </ul>
+</div>
+
 <!-- &times; -->
 <div id="mySidenav" class="sidenav" >
 

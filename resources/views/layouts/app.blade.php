@@ -9,6 +9,7 @@
 
     @vite(['resources/scss/app.scss', 'resources/js/app.js'])
 
+{{--    <link href="{{ asset('css/bootsrap.min.css') }}" rel="stylesheet">--}}
     <link href="{{ asset('css/topnavbar.css') }}" rel="stylesheet">
     <link href="{{ asset('css/sidenavbar.css') }}" rel="stylesheet">
     <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
