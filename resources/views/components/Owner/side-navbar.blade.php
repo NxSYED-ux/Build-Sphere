@@ -5,16 +5,6 @@
     $permissions = json_decode(request('permissions', '{}'), true);
 @endphp
 
-<div class="" style="margin-left: 300px; margin-top: 100px;">
-
-    <h2>Your Permissions:</h2>
-    <ul>
-        @foreach($permissions as $permission => $value)
-            <li>{{ $permission }}</li>
-        @endforeach
-    </ul>
-</div>
-
 <!-- &times; -->
 <div id="mySidenav" class="sidenav" >
 
@@ -55,7 +45,7 @@
                 </li>
 
                 <!-- Buildings -->
-                <li class="mb-1">
+                <li class="mb-1" id="OwnerBuildingss" style="display: none;">
                     <div id="link-a">
                         <a href="#"
                             class="link-dark link-toggle collapsed d-flex justify-content-between align-items-center"
@@ -71,16 +61,16 @@
 
                     <div class="collapse {{ in_array('Buildings', $openSections) ? 'show' : '' }}" id="Buildings" style="">
                         <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                            <li><a href="{{ route('owner.buildings.index') }}" class="link-dark {{ in_array('Building', $openSections) ? 'Link-background-color' : '' }}" data-bs-target="#Buildings "><i class="bx bx-buildings icons"></i> Buildings</a></li>
-                            <li><a href="{{ route('owner.levels.index') }}" class="link-dark {{ in_array('Levels', $openSections) ? 'Link-background-color' : '' }}" data-bs-target="#AdminControl" ><i class="bx bxs-city icons"></i> Levels</a></li>
-                            <li><a href="{{ route('owner.units.index') }}" class="link-dark {{ in_array('Units', $openSections) ? 'Link-background-color' : '' }}" data-bs-target="#AdminControl" ><i class="bx bxs-home icons"></i> Units</a></li>
+                            <li  id="OwnerBuildings" style="display: none;"><a href="{{ route('owner.buildings.index') }}" class="link-dark {{ in_array('Building', $openSections) ? 'Link-background-color' : '' }}" data-bs-target="#Buildings "><i class="bx bx-buildings icons"></i> Buildings</a></li>
+                            <li  id="OwnerLevels" style="display: none;"><a href="{{ route('owner.levels.index') }}" class="link-dark {{ in_array('Levels', $openSections) ? 'Link-background-color' : '' }}" data-bs-target="#AdminControl" ><i class="bx bxs-city icons"></i> Levels</a></li>
+                            <li  id="OwnerUnits" style="display: none;"><a href="{{ route('owner.units.index') }}" class="link-dark {{ in_array('Units', $openSections) ? 'Link-background-color' : '' }}" data-bs-target="#AdminControl" ><i class="bx bxs-home icons"></i> Units</a></li>
                         </ul>
                     </div>
 
                 </li>
 
                 <!-- Assign Units -->
-                <li class="mb-1">
+                <li class="mb-1" id="OwnerAssignUnits" style="display: none;">
                     <div id="link-a">
                         <a href="{{ route('owner.assignunits.index') }}" class="link-dark collapsed {{ in_array('Assign-Units', $openSections) ? 'Link-background-color' : '' }} px-1" id="BuildingsTreebtn" >
                         <i class="bx bxs-user-check icons"></i> Assign Units </a>
@@ -88,7 +78,7 @@
                 </li>
 
                 <!-- Buildings Tree -->
-                <li class="mb-1">
+                <li class="mb-1"  id="OwnerBuildingsTree" style="display: none;">
                     <div id="link-a">
                         <a href="{{ route('owner.buildings.tree') }}" class="link-dark collapsed {{ in_array('Buildings-Tree', $openSections) ? 'Link-background-color' : '' }} px-1" id="BuildingsTreebtn" >
                         <i class="bx bx-network-chart icons"></i> Buildings Tree </a>
@@ -96,7 +86,7 @@
                 </li>
 
                 <!-- Rentals -->
-                <li class="mb-1">
+                <li class="mb-1" id="OwnerRentals" style="display: none;">
                     <div id="link-a">
                         <a href="" class="link-dark collapsed {{ in_array('Rentals', $openSections) ? 'Link-background-color' : '' }} px-1" id="Organizationbtn" >
                         <i class="bx bxs-business icons"></i> Rentals </a>
@@ -104,7 +94,7 @@
                 </li>
 
                 <!-- Memberships -->
-                <li class="mb-1">
+                <li class="mb-1" id="OwnerMemberships" style="display: none;">
                     <div id="link-a">
                         <a href="#" class="link-dark collapsed {{ in_array('Memberships', $openSections) ? 'Link-background-color' : '' }} px-1" id="Membershipsbtn" >
                         <i class='bx bxs-credit-card-front icons' ></i> Memberships </a>
@@ -112,7 +102,7 @@
                 </li>
 
                 <!-- Department -->
-                <li class="mb-1">
+                <li class="mb-1" id="OwnerDepartments" style="display: none;">
                     <div id="link-a">
                         <a href="#" class="link-dark collapsed {{ in_array('Departments', $openSections) ? 'Link-background-color' : '' }} px-1" id="Departmentsbtn" >
                         <i class='bx bx-git-repo-forked icons'></i> Departments </a>
@@ -120,7 +110,7 @@
                 </li>
 
                 <!-- Staff -->
-                <li class="mb-1">
+                <li class="mb-1" id="OwnerStaff" style="display: none;">
                     <div id="link-a">
                         <a href="#" class="link-dark collapsed {{ in_array('Staff', $openSections) ? 'Link-background-color' : '' }} px-1" id="Ownerbtn" >
                         <i class="bx bx-user icons"></i> Staff </a>
@@ -128,7 +118,7 @@
                 </li>
 
                  <!-- Reports -->
-                 <li class="mb-1">
+                 <li class="mb-1" id="OwnerReports" style="display: none;">
                     <div id="link-a">
                         <a href="#" class="link-dark collapsed {{ in_array('Reports', $openSections) ? 'Link-background-color' : '' }} px-1" id="Reportsbtn" >
                         <i class="bx bxs-pie-chart-alt-2 icons"></i> Reports </a>
@@ -139,6 +129,107 @@
 
         </div>
     </div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        let sessionPermissions = @json(session('permissions', []));
+
+        if (Object.keys(sessionPermissions).length > 0) {
+            localStorage.setItem("userPermissions", JSON.stringify(sessionPermissions));
+        }
+        applyPermissions();
+        watchLocalStorage();
+    });
+
+    function applyPermissions() {
+        let storedPermissions = JSON.parse(localStorage.getItem("userPermissions")) || {};
+
+        if(storedPermissions['Owner Portal']) {
+
+            // Buildings
+            if (storedPermissions['Owner Portal'].includes('Owner Buildings') || storedPermissions['Owner Portal'].includes('Owner Levels') || storedPermissions['Owner Portal'].includes('Owner Units')) {
+                document.getElementById("OwnerBuildingss").style.display = "block";
+                if(storedPermissions['Owner Portal'].includes('Owner Buildings')){
+                    document.getElementById("OwnerBuildings").style.display = "block";
+                } else {
+                    document.getElementById("OwnerBuildings").style.display = "none";
+                }
+                if(storedPermissions['Owner Portal'].includes('Owner Levels')){
+                    document.getElementById("OwnerLevels").style.display = "block";
+                } else {
+                    document.getElementById("OwnerLevels").style.display = "none";
+                }
+                if(storedPermissions['Owner Portal'].includes('Owner Units')){
+                    document.getElementById("OwnerUnits").style.display = "block";
+                } else {
+                    document.getElementById("OwnerUnits").style.display = "none";
+                }
+            } else {
+                document.getElementById("OwnerBuildingss").style.display = "none";
+            }
+
+            // Owner Assign Units
+            if (storedPermissions['Owner Portal'].includes('Owner Assign Units')) {
+                document.getElementById("OwnerAssignUnits").style.display = "block";
+            } else {
+                document.getElementById("OwnerAssignUnits").style.display = "none";
+            }
+
+            // Owner Buildings Tree
+            if (storedPermissions['Owner Portal'].includes('Owner Buildings Tree')) {
+                document.getElementById("OwnerBuildingsTree").style.display = "block";
+            } else {
+                document.getElementById("OwnerBuildingsTree").style.display = "none";
+            }
+
+            // Owner Rentals
+            if (storedPermissions['Owner Portal'].includes('Owner User Units')) {
+                document.getElementById("OwnerRentals").style.display = "block";
+            } else {
+                document.getElementById("OwnerRentals").style.display = "none";
+            }
+
+            // Owner Departments
+            if (storedPermissions['Owner Portal'].includes('Owner Departments')) {
+                document.getElementById("OwnerDepartments").style.display = "block";
+            } else {
+                document.getElementById("OwnerDepartments").style.display = "none";
+            }
+
+            // Owner Memberships
+            if (storedPermissions['Owner Portal'].includes('Owner Memberships')) {
+                document.getElementById("OwnerMemberships").style.display = "block";
+            } else {
+                document.getElementById("OwnerMemberships").style.display = "none";
+            }
+
+            // Owner Staff
+            if (storedPermissions['Owner Portal'].includes('Owner Staff')) {
+                document.getElementById("OwnerStaff").style.display = "block";
+            } else {
+                document.getElementById("OwnerStaff").style.display = "none";
+            }
+
+            // Owner Reports
+            if (storedPermissions['Owner Portal'].includes('Owner Reports')) {
+                document.getElementById("OwnerReports").style.display = "block";
+            } else {
+                document.getElementById("OwnerReports").style.display = "none";
+            }
+        }
+
+    }
+
+    function watchLocalStorage() {
+        window.addEventListener("storage", function (event) {
+            if (event.key === "userPermissions") {
+                applyPermissions();
+            }
+        });
+    }
+</script>
+
+
 
 <script>
     document.querySelector('.closebtn').addEventListener('mouseover', function () {
