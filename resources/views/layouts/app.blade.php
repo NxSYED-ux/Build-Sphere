@@ -6,6 +6,7 @@
     <link rel="icon" type="image/png" href="{{ asset('logos/Light-theme-Logo.svg') }}">
     <link id="theme-stylesheet" rel="stylesheet" href="{{ asset('css/light.css') }}">
     <meta name="user-id" content="{{ auth()->id() }}">
+    <meta name="role-id" content="{{ auth()->user()->role_id }}">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <script>
         window.initialPermissions = @json(session('permissions', []));

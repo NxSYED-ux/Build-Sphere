@@ -2,21 +2,17 @@ document.addEventListener("DOMContentLoaded", function() {
     // 1. Check for required elements
     const csrfMeta = document.querySelector('meta[name="csrf-token"]');
     const userMeta = document.querySelector('meta[name="user-id"]');
+    const roleMeta = document.querySelector('meta[name="role-id"]');
 
-    if (!csrfMeta || !userMeta) {
-        console.error("Required meta tags not found!");
+    if (!csrfMeta || !userMeta || !roleMeta) {
         return;
     }
 
-    console.log("[Permissions] Initializing permission system...");
-
     // 2. Load initial permissions
     const sessionPermissions = window.initialPermissions || {};
-    console.log("[Permissions] Initial permissions:", sessionPermissions);
 
     if (Object.keys(sessionPermissions).length > 0) {
         localStorage.setItem("userPermissions", JSON.stringify(sessionPermissions));
-        console.log("[Permissions] Saved initial permissions to localStorage");
     }
 
     // 3. Apply initial permissions
@@ -24,17 +20,16 @@ document.addEventListener("DOMContentLoaded", function() {
 
     // 4. Initialize Pusher if configured
     if (import.meta.env.VITE_PUSHER_APP_KEY) {
-        initializePusher(csrfMeta.content, userMeta.content);
+        initializePusher(csrfMeta.content, userMeta.content, roleMeta.content);
     } else {
-        console.warn("Pusher not configured - real-time updates disabled");
+        console.warn("User menu error 1");
     }
 
     // 5. Watch for cross-tab updates
     watchLocalStorage();
 });
 
-function initializePusher(csrfToken, userId) {
-    console.log("[Permissions] Initializing Pusher connection...");
+function initializePusher(csrfToken, userId, roleId) {
 
     const pusher = new Pusher(import.meta.env.VITE_PUSHER_APP_KEY, {
         cluster: import.meta.env.VITE_PUSHER_APP_CLUSTER || 'ap2',
@@ -47,33 +42,42 @@ function initializePusher(csrfToken, userId) {
         }
     });
 
-    const channelName = `private-userPermissions.${userId}`;
-    console.log(`[Permissions] Subscribing to channel: ${channelName}`);
+    const userChannelName = `private-userPermissions.${userId}`;
 
-    const channel = pusher.subscribe(channelName);
+    const userChannel = pusher.subscribe(userChannelName);
 
-    channel.bind('pusher:subscription_succeeded', () => {
-        console.log("[Permissions] Successfully subscribed to channel");
+    userChannel.bind('pusher:subscription_error', (err) => {
+        console.error("Usermenu error 2:", err);
     });
 
-    channel.bind('pusher:subscription_error', (err) => {
-        console.error("[Permissions] Subscription error:", err);
-    });
-
-    channel.bind('App\\Events\\UserPermissionUpdated', function(data) {
-        console.log("[Permissions] Received update event:", data);
-        // alert(JSON.stringify(data));
+    userChannel.bind('App\\Events\\UserPermissionUpdated', function(data) {
 
         if (data.permissionsList) {
             localStorage.setItem("userPermissions", JSON.stringify(data.permissionsList));
-            console.log("[Permissions] Updated permissions in localStorage");
             applyPermissions();
         }
+    });
+
+    const roleChannelName = `private-rolePermissions.${roleId}`;
+
+    const roleChannel = pusher.subscribe(roleChannelName);
+
+    roleChannel.bind('pusher:subscription_succeeded', () => {
+        console.log("[Permissions] Successfully subscribed to channel");
+    });
+
+
+    roleChannel.bind('pusher:subscription_error', (err) => {
+        console.error("Rolemenu error 1:", err);
+    });
+
+    roleChannel.bind('App\\Events\\RolePermissionUpdated', function(data) {
+
+         alert('Role permissions' + data);
     });
 }
 
 function applyPermissions() {
-    console.log("[Permissions] Applying permissions...");
     const storedPermissions = JSON.parse(localStorage.getItem("userPermissions")) || {};
 
     const safeApply = (elementId, shouldShow) => {
@@ -84,7 +88,6 @@ function applyPermissions() {
     };
 
     if (storedPermissions['Owner Portal']) {
-        // Buildings Section
         const hasBuildingAccess = ['Owner Buildings', 'Owner Levels', 'Owner Units']
             .some(perm => storedPermissions['Owner Portal'].includes(perm));
 
@@ -107,7 +110,6 @@ function applyPermissions() {
 function watchLocalStorage() {
     window.addEventListener("storage", (event) => {
         if (event.key === "userPermissions") {
-            console.log("[Permissions] Detected permissions change in another tab");
             applyPermissions();
         }
     });
