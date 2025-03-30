@@ -43,11 +43,10 @@ function initializePusher(csrfToken, userId, roleId) {
     });
 
     const userChannelName = `private-userPermissions.${userId}`;
-
     const userChannel = pusher.subscribe(userChannelName);
 
     userChannel.bind('pusher:subscription_error', (err) => {
-        console.error("Usermenu error 2:", err);
+        console.error("UserMenu error 2:", err);
     });
 
     userChannel.bind('App\\Events\\UserPermissionUpdated', function(data) {
@@ -59,21 +58,14 @@ function initializePusher(csrfToken, userId, roleId) {
     });
 
     const roleChannelName = `private-rolePermissions.${roleId}`;
-
     const roleChannel = pusher.subscribe(roleChannelName);
 
-    roleChannel.bind('pusher:subscription_succeeded', () => {
-        console.log("[Permissions] Successfully subscribed to channel");
-    });
-
-
     roleChannel.bind('pusher:subscription_error', (err) => {
-        console.error("Rolemenu error 1:", err);
+        console.error("RoleMenu error 1:", err);
     });
 
     roleChannel.bind('App\\Events\\RolePermissionUpdated', function(data) {
-
-         alert('Role permissions' + data);
+        alert('Role Permissions : ' + JSON.stringify(data));
     });
 }
 

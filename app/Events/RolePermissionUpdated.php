@@ -5,11 +5,12 @@ namespace App\Events;
 use App\Models\Permission;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PrivateChannel;
+use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 
-class RolePermissionUpdated
+class RolePermissionUpdated implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
@@ -31,28 +32,32 @@ class RolePermissionUpdated
 
     public function broadcastWith()
     {
-        try{
+        try {
             $permission = $this->retrievePermission();
+
+            if (!$permission) {
+                return ['error' => 'Permission not found'];
+            }
+
             return [
                 'permissionName' => $permission->name,
                 'permissionHeader' => $permission->header,
                 'permissionStatus' => $this->status,
             ];
-        }catch (\Exception $e) {
+        } catch (\Exception $e) {
             Log::error("rolePermissionsErr broadcastWith failed: " . $e->getMessage());
             return [];
         }
     }
 
-    private function retrievePermission(){
-        try{
-            $permission = Permission::where('id', $this->permissionId)
-                ->select('name', 'header')
-                ->first();
-
-            return $permission;
-        }catch (\Exception $e){
-            Log::error('Unable to retrieve permissions (Role Permission Event): '.$e->getMessage());
+    private function retrievePermission()
+    {
+        try {
+            return Permission::select('name', 'header')
+                ->where('id', $this->permissionId)
+                ->firstOrFail();
+        } catch (\Exception $e) {
+            Log::error('Unable to retrieve permissions (Role Permission Event): ' . $e->getMessage());
             return null;
         }
     }
