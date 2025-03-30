@@ -15,23 +15,25 @@ class RolePermissionUpdated
 
     protected $roleId;
     protected $permissionId;
+    protected $status;
 
-    public function __construct($roleId, $permissionId)
+    public function __construct($roleId, $permissionId, $status)
     {
         $this->roleId = $roleId;
         $this->permissionId = $permissionId;
-
+        $this->status = $status;
     }
 
     public function broadcastOn()
     {
-        return new PrivateChannel('role-permissions.' . $this->roleId);
+        return new PrivateChannel('rolePermissions.' . $this->roleId);
     }
 
     public function broadcastWith()
     {
         return [
             'updated_permission' => $this->retrievePermission(),
+            'status' => $this->status,
         ];
     }
 

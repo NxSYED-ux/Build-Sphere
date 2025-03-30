@@ -143,7 +143,9 @@ class AuthController extends Controller
 
         if ($redirectTo) {
             $cookie = $token ? cookie('jwt_token', $token) : cookie()->forget('jwt_token');
-            return redirect()->route($redirectTo)->with($heading, $data)->with('permissions', $permissions)->cookie($cookie);
+            return redirect()->route($redirectTo, ['permissions' => json_encode($permissions)])
+                ->with($heading, $data)
+                ->cookie($cookie);
         }
         return redirect()->back()->withErrors([$heading => $data])->withInput();
     }
