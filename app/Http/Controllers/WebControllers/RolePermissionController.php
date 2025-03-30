@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\WebControllers;
 
+use App\Events\RolePermissionUpdated;
 use App\Http\Controllers\Controller;
 use App\Models\Permission;
 use App\Models\Role;
@@ -88,6 +89,8 @@ class RolePermissionController extends Controller
                 'granted_by' => $user->id,
                 'updated_at' => now()
             ]);
+
+            event(new RolePermissionUpdated($request->role_id, $request->permission_id, $request->status));
 
             if ($request->status == 0) {
                 $this->disableChildPermissions($request->role_id, $request->permission_id);

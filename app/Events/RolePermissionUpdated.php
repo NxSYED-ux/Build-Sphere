@@ -31,10 +31,17 @@ class RolePermissionUpdated
 
     public function broadcastWith()
     {
-        return [
-            'updated_permission' => $this->retrievePermission(),
-            'status' => $this->status,
-        ];
+        try{
+            $permission = $this->retrievePermission();
+            return [
+                'permissionName' => $permission->name,
+                'permissionHeader' => $permission->header,
+                'permissionStatus' => $this->status,
+            ];
+        }catch (\Exception $e) {
+            Log::error("rolePermissionsErr broadcastWith failed: " . $e->getMessage());
+            return [];
+        }
     }
 
     private function retrievePermission(){
