@@ -1404,155 +1404,8 @@
           <option name="workspaceId" value="drafts" />
         </requestHistoryState>
         <requestHistoryState>
-          <option name="dateTime" value="1742496874984" />
-          <option name="id" value="d1733cdd-e86c-4cf3-ac62-e80985337277" />
-          <option name="request">
-            <requestState>
-              <option name="auth">
-                <authState>
-                  <option name="bearer">
-                    <pw>
-                      <option name="token" value="eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvbG9naW4iLCJpYXQiOjE3NDA5MjE3ODIsImV4cCI6MTc3MjAyNTc4MiwibmJmIjoxNzQwOTIxNzgyLCJqdGkiOiJsTXhweGRMWHBvdUdnUWVaIiwic3ViIjoiMSIsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjciLCJ1c2VyIjp7ImlkIjoxLCJyb2xlX2lkIjoxLCJyb2xlX25hbWUiOiJBZG1pbiIsIm9yZ2FuaXphdGlvbl9pZCI6bnVsbH19.a2kjPrjeex6ab63X8NTCRHsVyVYDJ6ird76Tl25Nz-o" />
-                    </pw>
-                  </option>
-                  <option name="type" value="BEARER" />
-                </authState>
-              </option>
-              <option name="id" value="3872cca6-e0b1-4a79-9e5f-705d016efd1f" />
-              <option name="method" value="GET" />
-              <option name="name" value="NotificationTesting" />
-              <option name="pathVariables">
-                <list>
-                  <pathVariableState>
-                    <option name="key" value="id" />
-                    <option name="value" value="13" />
-                  </pathVariableState>
-                </list>
-              </option>
-              <option name="url" value="http://localhost:8000/api/send-notification/{id}" />
-            </requestState>
-          </option>
-          <option name="response">
-            <responseState>
-              <option name="bodyBytesBase64" value="eyJtZXNzYWdlIjoiTm90aWZpY2F0aW9uIHNlbnQgdG8gdXNlciBJRDogMTMifQ==" />
-              <option name="bodyString" value="{&#10;  &quot;message&quot;: &quot;Notification sent to user ID: 13&quot;&#10;}" />
-              <option name="code" value="200" />
-              <option name="connectionEstablishingTime" value="2" />
-              <option name="contentType" value="application/json" />
-              <option name="headers">
-                <list>
-                  <headerState>
-                    <option name="key" value="Host" />
-                    <option name="value" value="localhost:8000" />
-                  </headerState>
-                  <headerState>
-                    <option name="key" value="Connection" />
-                    <option name="value" value="close" />
-                  </headerState>
-                  <headerState>
-                    <option name="key" value="X-Powered-By" />
-                    <option name="value" value="PHP/8.2.12" />
-                  </headerState>
-                  <headerState>
-                    <option name="key" value="Cache-Control" />
-                    <option name="value" value="no-cache, private" />
-                  </headerState>
-                  <headerState>
-                    <option name="key" value="Date" />
-                    <option name="value" value="Thu, 20 Mar 2025 18:54:34 GMT" />
-                  </headerState>
-                  <headerState>
-                    <option name="key" value="Content-Type" />
-                    <option name="value" value="application/json" />
-                  </headerState>
-                  <headerState>
-                    <option name="key" value="Access-Control-Allow-Origin" />
-                    <option name="value" value="*" />
-                  </headerState>
-                </list>
-              </option>
-              <option name="id" value="d1733cdd-e86c-4cf3-ac62-e80985337277" />
-              <option name="message" value="OK" />
-              <option name="prettyResponseType" value="JSON" />
-              <option name="rawBodyString" value="{&quot;message&quot;:&quot;Notification sent to user ID: 13&quot;}" />
-              <option name="size" value="46" />
-              <option name="time" value="284" />
-            </responseState>
-          </option>
-          <option name="workspaceId" value="drafts" />
-        </requestHistoryState>
-        <requestHistoryState>
-          <option name="dateTime" value="1743338351304" />
-          <option name="id" value="553d57b9-0991-4e7e-aa95-ed8b8dccce08" />
-          <option name="request">
-            <requestState>
-              <option name="auth">
-                <authState>
-                  <option name="bearer">
-                    <pw>
-                      <option name="token" value="eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvbG9naW4iLCJpYXQiOjE3NDA5MjE3ODIsImV4cCI6MTc3MjAyNTc4MiwibmJmIjoxNzQwOTIxNzgyLCJqdGkiOiJsTXhweGRMWHBvdUdnUWVaIiwic3ViIjoiMSIsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjciLCJ1c2VyIjp7ImlkIjoxLCJyb2xlX2lkIjoxLCJyb2xlX25hbWUiOiJBZG1pbiIsIm9yZ2FuaXphdGlvbl9pZCI6bnVsbH19.a2kjPrjeex6ab63X8NTCRHsVyVYDJ6ird76Tl25Nz-o" />
-                    </pw>
-                  </option>
-                  <option name="type" value="BEARER" />
-                </authState>
-              </option>
-              <option name="id" value="3872cca6-e0b1-4a79-9e5f-705d016efd1f" />
-              <option name="method" value="GET" />
-              <option name="name" value="Permission Testing" />
-              <option name="url" value="http://localhost:8000/api/test-permissions" />
-            </requestState>
-          </option>
-          <option name="response">
-            <responseState>
-              <option name="bodyString" value="" />
-              <option name="code" value="200" />
-              <option name="connectionEstablishingTime" value="124" />
-              <option name="contentType" value="text/html; charset=UTF-8" />
-              <option name="headers">
-                <list>
-                  <headerState>
-                    <option name="key" value="Host" />
-                    <option name="value" value="localhost:8000" />
-                  </headerState>
-                  <headerState>
-                    <option name="key" value="Connection" />
-                    <option name="value" value="close" />
-                  </headerState>
-                  <headerState>
-                    <option name="key" value="X-Powered-By" />
-                    <option name="value" value="PHP/8.2.12" />
-                  </headerState>
-                  <headerState>
-                    <option name="key" value="Content-Type" />
-                    <option name="value" value="text/html; charset=UTF-8" />
-                  </headerState>
-                  <headerState>
-                    <option name="key" value="Cache-Control" />
-                    <option name="value" value="no-cache, private" />
-                  </headerState>
-                  <headerState>
-                    <option name="key" value="Date" />
-                    <option name="value" value="Sun, 30 Mar 2025 12:39:11 GMT" />
-                  </headerState>
-                  <headerState>
-                    <option name="key" value="Access-Control-Allow-Origin" />
-                    <option name="value" value="*" />
-                  </headerState>
-                </list>
-              </option>
-              <option name="id" value="553d57b9-0991-4e7e-aa95-ed8b8dccce08" />
-              <option name="message" value="OK" />
-              <option name="prettyResponseType" value="HTML" />
-              <option name="previewType" value="HTML" />
-              <option name="rawBodyString" value="" />
-              <option name="time" value="310" />
-            </responseState>
-          </option>
-          <option name="workspaceId" value="drafts" />
-        </requestHistoryState>
-        <requestHistoryState>
-          <option name="dateTime" value="1743338418662" />
-          <option name="id" value="211c9c49-73f1-44cd-87e6-fe0dcdb17660" />
+          <option name="dateTime" value="1743343278254" />
+          <option name="id" value="1b740077-616f-40fe-84c3-c88a28a7183c" />
           <option name="request">
             <requestState>
               <option name="auth">
@@ -1576,7 +1429,7 @@
               <option name="bodyBytesBase64" value="b2s=" />
               <option name="bodyString" value="ok" />
               <option name="code" value="200" />
-              <option name="connectionEstablishingTime" value="3" />
+              <option name="connectionEstablishingTime" value="4" />
               <option name="contentType" value="text/html; charset=UTF-8" />
               <option name="headers">
                 <list>
@@ -1602,7 +1455,7 @@
                   </headerState>
                   <headerState>
                     <option name="key" value="Date" />
-                    <option name="value" value="Sun, 30 Mar 2025 12:40:18 GMT" />
+                    <option name="value" value="Sun, 30 Mar 2025 14:01:18 GMT" />
                   </headerState>
                   <headerState>
                     <option name="key" value="Access-Control-Allow-Origin" />
@@ -1610,20 +1463,226 @@
                   </headerState>
                 </list>
               </option>
-              <option name="id" value="211c9c49-73f1-44cd-87e6-fe0dcdb17660" />
+              <option name="id" value="1b740077-616f-40fe-84c3-c88a28a7183c" />
               <option name="message" value="OK" />
               <option name="prettyResponseType" value="HTML" />
               <option name="previewType" value="HTML" />
               <option name="rawBodyString" value="ok" />
               <option name="size" value="2" />
-              <option name="time" value="236" />
+              <option name="time" value="538" />
             </responseState>
           </option>
           <option name="workspaceId" value="drafts" />
         </requestHistoryState>
         <requestHistoryState>
-          <option name="dateTime" value="1743338442263" />
-          <option name="id" value="86ada3cb-0beb-4e4b-9a74-14c45d2150a8" />
+          <option name="dateTime" value="1743343545039" />
+          <option name="id" value="02125238-f2b2-4545-bd7a-f9f6dbed7b4d" />
+          <option name="request">
+            <requestState>
+              <option name="auth">
+                <authState>
+                  <option name="bearer">
+                    <pw>
+                      <option name="token" value="eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvbG9naW4iLCJpYXQiOjE3NDA5MjE3ODIsImV4cCI6MTc3MjAyNTc4MiwibmJmIjoxNzQwOTIxNzgyLCJqdGkiOiJsTXhweGRMWHBvdUdnUWVaIiwic3ViIjoiMSIsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjciLCJ1c2VyIjp7ImlkIjoxLCJyb2xlX2lkIjoxLCJyb2xlX25hbWUiOiJBZG1pbiIsIm9yZ2FuaXphdGlvbl9pZCI6bnVsbH19.a2kjPrjeex6ab63X8NTCRHsVyVYDJ6ird76Tl25Nz-o" />
+                    </pw>
+                  </option>
+                  <option name="type" value="BEARER" />
+                </authState>
+              </option>
+              <option name="id" value="3872cca6-e0b1-4a79-9e5f-705d016efd1f" />
+              <option name="method" value="GET" />
+              <option name="name" value="Permission Testing" />
+              <option name="url" value="http://localhost:8000/api/test-permissions" />
+            </requestState>
+          </option>
+          <option name="response">
+            <responseState>
+              <option name="bodyBytesBase64" value="b2s=" />
+              <option name="bodyString" value="ok" />
+              <option name="code" value="200" />
+              <option name="connectionEstablishingTime" value="11" />
+              <option name="contentType" value="text/html; charset=UTF-8" />
+              <option name="headers">
+                <list>
+                  <headerState>
+                    <option name="key" value="Host" />
+                    <option name="value" value="localhost:8000" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Connection" />
+                    <option name="value" value="close" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="X-Powered-By" />
+                    <option name="value" value="PHP/8.2.12" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Content-Type" />
+                    <option name="value" value="text/html; charset=UTF-8" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Cache-Control" />
+                    <option name="value" value="no-cache, private" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Date" />
+                    <option name="value" value="Sun, 30 Mar 2025 14:05:45 GMT" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Access-Control-Allow-Origin" />
+                    <option name="value" value="*" />
+                  </headerState>
+                </list>
+              </option>
+              <option name="id" value="02125238-f2b2-4545-bd7a-f9f6dbed7b4d" />
+              <option name="message" value="OK" />
+              <option name="prettyResponseType" value="HTML" />
+              <option name="previewType" value="HTML" />
+              <option name="rawBodyString" value="ok" />
+              <option name="size" value="2" />
+              <option name="time" value="546" />
+            </responseState>
+          </option>
+          <option name="workspaceId" value="drafts" />
+        </requestHistoryState>
+        <requestHistoryState>
+          <option name="dateTime" value="1743345284062" />
+          <option name="id" value="7898e6ce-ba21-4483-ac14-2f6cf91f617c" />
+          <option name="request">
+            <requestState>
+              <option name="auth">
+                <authState>
+                  <option name="bearer">
+                    <pw>
+                      <option name="token" value="eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvbG9naW4iLCJpYXQiOjE3NDA5MjE3ODIsImV4cCI6MTc3MjAyNTc4MiwibmJmIjoxNzQwOTIxNzgyLCJqdGkiOiJsTXhweGRMWHBvdUdnUWVaIiwic3ViIjoiMSIsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjciLCJ1c2VyIjp7ImlkIjoxLCJyb2xlX2lkIjoxLCJyb2xlX25hbWUiOiJBZG1pbiIsIm9yZ2FuaXphdGlvbl9pZCI6bnVsbH19.a2kjPrjeex6ab63X8NTCRHsVyVYDJ6ird76Tl25Nz-o" />
+                    </pw>
+                  </option>
+                  <option name="type" value="BEARER" />
+                </authState>
+              </option>
+              <option name="id" value="3872cca6-e0b1-4a79-9e5f-705d016efd1f" />
+              <option name="method" value="GET" />
+              <option name="name" value="Permission Testing" />
+              <option name="url" value="http://localhost:8000/api/test-permissions" />
+            </requestState>
+          </option>
+          <option name="response">
+            <responseState>
+              <option name="code" value="500" />
+              <option name="connectionEstablishingTime" value="32" />
+              <option name="contentType" value="text/html; charset=UTF-8" />
+              <option name="headers">
+                <list>
+                  <headerState>
+                    <option name="key" value="Host" />
+                    <option name="value" value="localhost:8000" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Connection" />
+                    <option name="value" value="close" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="X-Powered-By" />
+                    <option name="value" value="PHP/8.2.12" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Cache-Control" />
+                    <option name="value" value="no-cache, private" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="date" />
+                    <option name="value" value="Sun, 30 Mar 2025 14:34:44 GMT" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Content-Type" />
+                    <option name="value" value="text/html; charset=UTF-8" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Access-Control-Allow-Origin" />
+                    <option name="value" value="*" />
+                  </headerState>
+                </list>
+              </option>
+              <option name="id" value="7898e6ce-ba21-4483-ac14-2f6cf91f617c" />
+              <option name="message" value="Internal Server Error" />
+              <option name="prettyResponseType" value="HTML" />
+              <option name="previewType" value="HTML" />
+              <option name="size" value="333071" />
+              <option name="time" value="10023" />
+            </responseState>
+          </option>
+          <option name="workspaceId" value="drafts" />
+        </requestHistoryState>
+        <requestHistoryState>
+          <option name="dateTime" value="1743345303549" />
+          <option name="id" value="75bb7406-214f-4982-82cc-51baa7c0717c" />
+          <option name="request">
+            <requestState>
+              <option name="auth">
+                <authState>
+                  <option name="bearer">
+                    <pw>
+                      <option name="token" value="eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvbG9naW4iLCJpYXQiOjE3NDA5MjE3ODIsImV4cCI6MTc3MjAyNTc4MiwibmJmIjoxNzQwOTIxNzgyLCJqdGkiOiJsTXhweGRMWHBvdUdnUWVaIiwic3ViIjoiMSIsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjciLCJ1c2VyIjp7ImlkIjoxLCJyb2xlX2lkIjoxLCJyb2xlX25hbWUiOiJBZG1pbiIsIm9yZ2FuaXphdGlvbl9pZCI6bnVsbH19.a2kjPrjeex6ab63X8NTCRHsVyVYDJ6ird76Tl25Nz-o" />
+                    </pw>
+                  </option>
+                  <option name="type" value="BEARER" />
+                </authState>
+              </option>
+              <option name="id" value="3872cca6-e0b1-4a79-9e5f-705d016efd1f" />
+              <option name="method" value="GET" />
+              <option name="name" value="Permission Testing" />
+              <option name="url" value="http://localhost:8000/api/test-permissions" />
+            </requestState>
+          </option>
+          <option name="response">
+            <responseState>
+              <option name="code" value="500" />
+              <option name="contentType" value="text/html; charset=UTF-8" />
+              <option name="headers">
+                <list>
+                  <headerState>
+                    <option name="key" value="Host" />
+                    <option name="value" value="localhost:8000" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Connection" />
+                    <option name="value" value="close" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="X-Powered-By" />
+                    <option name="value" value="PHP/8.2.12" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Cache-Control" />
+                    <option name="value" value="no-cache, private" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="date" />
+                    <option name="value" value="Sun, 30 Mar 2025 14:35:03 GMT" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Content-Type" />
+                    <option name="value" value="text/html; charset=UTF-8" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Access-Control-Allow-Origin" />
+                    <option name="value" value="*" />
+                  </headerState>
+                </list>
+              </option>
+              <option name="id" value="75bb7406-214f-4982-82cc-51baa7c0717c" />
+              <option name="message" value="Internal Server Error" />
+              <option name="prettyResponseType" value="HTML" />
+              <option name="previewType" value="HTML" />
+              <option name="size" value="333071" />
+              <option name="time" value="8782" />
+            </responseState>
+          </option>
+          <option name="workspaceId" value="drafts" />
+        </requestHistoryState>
+        <requestHistoryState>
+          <option name="dateTime" value="1743345331004" />
+          <option name="id" value="d4931d53-e056-4810-b918-f7bdc0dfb56e" />
           <option name="request">
             <requestState>
               <option name="auth">
@@ -1672,7 +1731,7 @@
                   </headerState>
                   <headerState>
                     <option name="key" value="Date" />
-                    <option name="value" value="Sun, 30 Mar 2025 12:40:42 GMT" />
+                    <option name="value" value="Sun, 30 Mar 2025 14:35:31 GMT" />
                   </headerState>
                   <headerState>
                     <option name="key" value="Access-Control-Allow-Origin" />
@@ -1680,20 +1739,20 @@
                   </headerState>
                 </list>
               </option>
-              <option name="id" value="86ada3cb-0beb-4e4b-9a74-14c45d2150a8" />
+              <option name="id" value="d4931d53-e056-4810-b918-f7bdc0dfb56e" />
               <option name="message" value="OK" />
               <option name="prettyResponseType" value="HTML" />
               <option name="previewType" value="HTML" />
               <option name="rawBodyString" value="ok" />
               <option name="size" value="2" />
-              <option name="time" value="197" />
+              <option name="time" value="206" />
             </responseState>
           </option>
           <option name="workspaceId" value="drafts" />
         </requestHistoryState>
         <requestHistoryState>
-          <option name="dateTime" value="1743338563064" />
-          <option name="id" value="ccb3f2da-d508-4366-9840-eed63f67625e" />
+          <option name="dateTime" value="1743345465439" />
+          <option name="id" value="f8f4bd74-ef49-42b8-9d29-9661c4f02e4b" />
           <option name="request">
             <requestState>
               <option name="auth">
@@ -1717,7 +1776,6 @@
               <option name="bodyBytesBase64" value="b2s=" />
               <option name="bodyString" value="ok" />
               <option name="code" value="200" />
-              <option name="connectionEstablishingTime" value="3" />
               <option name="contentType" value="text/html; charset=UTF-8" />
               <option name="headers">
                 <list>
@@ -1743,7 +1801,7 @@
                   </headerState>
                   <headerState>
                     <option name="key" value="Date" />
-                    <option name="value" value="Sun, 30 Mar 2025 12:42:43 GMT" />
+                    <option name="value" value="Sun, 30 Mar 2025 14:37:45 GMT" />
                   </headerState>
                   <headerState>
                     <option name="key" value="Access-Control-Allow-Origin" />
@@ -1751,20 +1809,20 @@
                   </headerState>
                 </list>
               </option>
-              <option name="id" value="ccb3f2da-d508-4366-9840-eed63f67625e" />
+              <option name="id" value="f8f4bd74-ef49-42b8-9d29-9661c4f02e4b" />
               <option name="message" value="OK" />
               <option name="prettyResponseType" value="HTML" />
               <option name="previewType" value="HTML" />
               <option name="rawBodyString" value="ok" />
               <option name="size" value="2" />
-              <option name="time" value="238" />
+              <option name="time" value="259" />
             </responseState>
           </option>
           <option name="workspaceId" value="drafts" />
         </requestHistoryState>
         <requestHistoryState>
-          <option name="dateTime" value="1743338649538" />
-          <option name="id" value="ebfc7775-5994-4745-b129-6f1076f59e1d" />
+          <option name="dateTime" value="1743345583145" />
+          <option name="id" value="f7aef6ce-6f22-44b9-aea2-4cb7b0d3d041" />
           <option name="request">
             <requestState>
               <option name="auth">
@@ -1788,7 +1846,6 @@
               <option name="bodyBytesBase64" value="b2s=" />
               <option name="bodyString" value="ok" />
               <option name="code" value="200" />
-              <option name="connectionEstablishingTime" value="2" />
               <option name="contentType" value="text/html; charset=UTF-8" />
               <option name="headers">
                 <list>
@@ -1814,7 +1871,7 @@
                   </headerState>
                   <headerState>
                     <option name="key" value="Date" />
-                    <option name="value" value="Sun, 30 Mar 2025 12:44:09 GMT" />
+                    <option name="value" value="Sun, 30 Mar 2025 14:39:43 GMT" />
                   </headerState>
                   <headerState>
                     <option name="key" value="Access-Control-Allow-Origin" />
@@ -1822,20 +1879,20 @@
                   </headerState>
                 </list>
               </option>
-              <option name="id" value="ebfc7775-5994-4745-b129-6f1076f59e1d" />
+              <option name="id" value="f7aef6ce-6f22-44b9-aea2-4cb7b0d3d041" />
               <option name="message" value="OK" />
               <option name="prettyResponseType" value="HTML" />
               <option name="previewType" value="HTML" />
               <option name="rawBodyString" value="ok" />
               <option name="size" value="2" />
-              <option name="time" value="195" />
+              <option name="time" value="204" />
             </responseState>
           </option>
           <option name="workspaceId" value="drafts" />
         </requestHistoryState>
         <requestHistoryState>
-          <option name="dateTime" value="1743338673471" />
-          <option name="id" value="8f066c31-0506-47ac-bcfd-d88523ef098c" />
+          <option name="dateTime" value="1743345973686" />
+          <option name="id" value="5427aee2-3e5b-441d-a757-c474de920bc3" />
           <option name="request">
             <requestState>
               <option name="auth">
@@ -1859,7 +1916,7 @@
               <option name="bodyBytesBase64" value="b2s=" />
               <option name="bodyString" value="ok" />
               <option name="code" value="200" />
-              <option name="connectionEstablishingTime" value="2" />
+              <option name="connectionEstablishingTime" value="9" />
               <option name="contentType" value="text/html; charset=UTF-8" />
               <option name="headers">
                 <list>
@@ -1885,7 +1942,7 @@
                   </headerState>
                   <headerState>
                     <option name="key" value="Date" />
-                    <option name="value" value="Sun, 30 Mar 2025 12:44:33 GMT" />
+                    <option name="value" value="Sun, 30 Mar 2025 14:46:13 GMT" />
                   </headerState>
                   <headerState>
                     <option name="key" value="Access-Control-Allow-Origin" />
@@ -1893,20 +1950,20 @@
                   </headerState>
                 </list>
               </option>
-              <option name="id" value="8f066c31-0506-47ac-bcfd-d88523ef098c" />
+              <option name="id" value="5427aee2-3e5b-441d-a757-c474de920bc3" />
               <option name="message" value="OK" />
               <option name="prettyResponseType" value="HTML" />
               <option name="previewType" value="HTML" />
               <option name="rawBodyString" value="ok" />
               <option name="size" value="2" />
-              <option name="time" value="193" />
+              <option name="time" value="239" />
             </responseState>
           </option>
           <option name="workspaceId" value="drafts" />
         </requestHistoryState>
         <requestHistoryState>
-          <option name="dateTime" value="1743339304823" />
-          <option name="id" value="e59b50f8-012d-4317-a40b-ad101662f242" />
+          <option name="dateTime" value="1743346050631" />
+          <option name="id" value="2b20e7f3-84f4-437a-9978-83d7eb4ae633" />
           <option name="request">
             <requestState>
               <option name="auth">
@@ -1930,7 +1987,7 @@
               <option name="bodyBytesBase64" value="b2s=" />
               <option name="bodyString" value="ok" />
               <option name="code" value="200" />
-              <option name="connectionEstablishingTime" value="2" />
+              <option name="connectionEstablishingTime" value="5" />
               <option name="contentType" value="text/html; charset=UTF-8" />
               <option name="headers">
                 <list>
@@ -1956,7 +2013,7 @@
                   </headerState>
                   <headerState>
                     <option name="key" value="Date" />
-                    <option name="value" value="Sun, 30 Mar 2025 12:55:04 GMT" />
+                    <option name="value" value="Sun, 30 Mar 2025 14:47:30 GMT" />
                   </headerState>
                   <headerState>
                     <option name="key" value="Access-Control-Allow-Origin" />
@@ -1964,20 +2021,20 @@
                   </headerState>
                 </list>
               </option>
-              <option name="id" value="e59b50f8-012d-4317-a40b-ad101662f242" />
+              <option name="id" value="2b20e7f3-84f4-437a-9978-83d7eb4ae633" />
               <option name="message" value="OK" />
               <option name="prettyResponseType" value="HTML" />
               <option name="previewType" value="HTML" />
               <option name="rawBodyString" value="ok" />
               <option name="size" value="2" />
-              <option name="time" value="290" />
+              <option name="time" value="210" />
             </responseState>
           </option>
           <option name="workspaceId" value="drafts" />
         </requestHistoryState>
         <requestHistoryState>
-          <option name="dateTime" value="1743339308829" />
-          <option name="id" value="5e19fdd8-a44e-4496-a94f-ad7dfca62923" />
+          <option name="dateTime" value="1743346305387" />
+          <option name="id" value="ef610c62-3c21-4aa8-b9f6-13c4101f70e1" />
           <option name="request">
             <requestState>
               <option name="auth">
@@ -2001,7 +2058,7 @@
               <option name="bodyBytesBase64" value="b2s=" />
               <option name="bodyString" value="ok" />
               <option name="code" value="200" />
-              <option name="connectionEstablishingTime" value="1" />
+              <option name="connectionEstablishingTime" value="6" />
               <option name="contentType" value="text/html; charset=UTF-8" />
               <option name="headers">
                 <list>
@@ -2027,7 +2084,7 @@
                   </headerState>
                   <headerState>
                     <option name="key" value="Date" />
-                    <option name="value" value="Sun, 30 Mar 2025 12:55:08 GMT" />
+                    <option name="value" value="Sun, 30 Mar 2025 14:51:45 GMT" />
                   </headerState>
                   <headerState>
                     <option name="key" value="Access-Control-Allow-Origin" />
@@ -2035,84 +2092,13 @@
                   </headerState>
                 </list>
               </option>
-              <option name="id" value="5e19fdd8-a44e-4496-a94f-ad7dfca62923" />
+              <option name="id" value="ef610c62-3c21-4aa8-b9f6-13c4101f70e1" />
               <option name="message" value="OK" />
               <option name="prettyResponseType" value="HTML" />
               <option name="previewType" value="HTML" />
               <option name="rawBodyString" value="ok" />
               <option name="size" value="2" />
-              <option name="time" value="228" />
-            </responseState>
-          </option>
-          <option name="workspaceId" value="drafts" />
-        </requestHistoryState>
-        <requestHistoryState>
-          <option name="dateTime" value="1743339743687" />
-          <option name="id" value="9b4fb146-ae29-4a8d-89ec-1f37ab172dc4" />
-          <option name="request">
-            <requestState>
-              <option name="auth">
-                <authState>
-                  <option name="bearer">
-                    <pw>
-                      <option name="token" value="eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvbG9naW4iLCJpYXQiOjE3NDA5MjE3ODIsImV4cCI6MTc3MjAyNTc4MiwibmJmIjoxNzQwOTIxNzgyLCJqdGkiOiJsTXhweGRMWHBvdUdnUWVaIiwic3ViIjoiMSIsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjciLCJ1c2VyIjp7ImlkIjoxLCJyb2xlX2lkIjoxLCJyb2xlX25hbWUiOiJBZG1pbiIsIm9yZ2FuaXphdGlvbl9pZCI6bnVsbH19.a2kjPrjeex6ab63X8NTCRHsVyVYDJ6ird76Tl25Nz-o" />
-                    </pw>
-                  </option>
-                  <option name="type" value="BEARER" />
-                </authState>
-              </option>
-              <option name="id" value="3872cca6-e0b1-4a79-9e5f-705d016efd1f" />
-              <option name="method" value="GET" />
-              <option name="name" value="Permission Testing" />
-              <option name="url" value="http://localhost:8000/api/test-permissions" />
-            </requestState>
-          </option>
-          <option name="response">
-            <responseState>
-              <option name="bodyBytesBase64" value="b2s=" />
-              <option name="bodyString" value="ok" />
-              <option name="code" value="200" />
-              <option name="connectionEstablishingTime" value="2" />
-              <option name="contentType" value="text/html; charset=UTF-8" />
-              <option name="headers">
-                <list>
-                  <headerState>
-                    <option name="key" value="Host" />
-                    <option name="value" value="localhost:8000" />
-                  </headerState>
-                  <headerState>
-                    <option name="key" value="Connection" />
-                    <option name="value" value="close" />
-                  </headerState>
-                  <headerState>
-                    <option name="key" value="X-Powered-By" />
-                    <option name="value" value="PHP/8.2.12" />
-                  </headerState>
-                  <headerState>
-                    <option name="key" value="Content-Type" />
-                    <option name="value" value="text/html; charset=UTF-8" />
-                  </headerState>
-                  <headerState>
-                    <option name="key" value="Cache-Control" />
-                    <option name="value" value="no-cache, private" />
-                  </headerState>
-                  <headerState>
-                    <option name="key" value="Date" />
-                    <option name="value" value="Sun, 30 Mar 2025 13:02:23 GMT" />
-                  </headerState>
-                  <headerState>
-                    <option name="key" value="Access-Control-Allow-Origin" />
-                    <option name="value" value="*" />
-                  </headerState>
-                </list>
-              </option>
-              <option name="id" value="9b4fb146-ae29-4a8d-89ec-1f37ab172dc4" />
-              <option name="message" value="OK" />
-              <option name="prettyResponseType" value="HTML" />
-              <option name="previewType" value="HTML" />
-              <option name="rawBodyString" value="ok" />
-              <option name="size" value="2" />
-              <option name="time" value="265" />
+              <option name="time" value="261" />
             </responseState>
           </option>
           <option name="workspaceId" value="drafts" />

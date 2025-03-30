@@ -43,6 +43,7 @@ class UserPermissionUpdated implements ShouldBroadcast
     private function listOfPermissions(){
         try{
             $user = User::find($this->userId);
+            Log::info(1);
 
             $permissions = DB::select("
                 SELECT perm.name, perm.header

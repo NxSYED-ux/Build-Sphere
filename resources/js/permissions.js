@@ -60,8 +60,9 @@ function initializePusher(csrfToken, userId) {
         console.error("[Permissions] Subscription error:", err);
     });
 
-    channel.bind('App\\Events\\UserPermissionsUpdated', function(data) {
+    channel.bind('App\\Events\\UserPermissionUpdated', function(data) {
         console.log("[Permissions] Received update event:", data);
+        alert(JSON.stringify(data));
 
         if (data.permissionsList) {
             localStorage.setItem("userPermissions", JSON.stringify(data.permissionsList));
