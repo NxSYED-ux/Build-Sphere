@@ -47,13 +47,13 @@ class RolePermission extends Model
 
         static::created(function ($model) {
             if (!empty($model->role_id)) {
-                event(new RolePermissionUpdated($model->role_id, $model->permission_id));
+                event(new RolePermissionUpdated($model->role_id, $model->permission_id, $model->status));
             }
         });
 
         static::updated(function ($model) {
             if (!empty($model->role_id) && ($model->isDirty('permission_id') || $model->isDirty('status'))) {
-                event(new RolePermissionUpdated($model->role_id, $model->permission_id));
+                event(new RolePermissionUpdated($model->role_id, $model->permission_id, $model->status));
             }
         });
     }
