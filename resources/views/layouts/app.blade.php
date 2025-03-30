@@ -5,9 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/png" href="{{ asset('logos/Light-theme-Logo.svg') }}">
     <link id="theme-stylesheet" rel="stylesheet" href="{{ asset('css/light.css') }}">
+    <meta name="user-id" content="{{ auth()->id() }}">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <script>
+        window.initialPermissions = @json(session('permissions', []));
+    </script>
     <title>@yield('title', 'My App')</title>
 
-    @vite(['resources/scss/app.scss', 'resources/js/app.js'])
+    @vite(['resources/scss/app.scss', 'resources/js/app.js', 'resources/js/permissions.js'])
 
 {{--    <link href="{{ asset('css/bootsrap.min.css') }}" rel="stylesheet">--}}
     <link href="{{ asset('css/topnavbar.css') }}" rel="stylesheet">

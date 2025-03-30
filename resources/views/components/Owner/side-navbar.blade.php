@@ -130,106 +130,104 @@
         </div>
     </div>
 
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        let sessionPermissions = @json(session('permissions', []));
+{{--<script>--}}
+{{--    document.addEventListener("DOMContentLoaded", function () {--}}
+{{--        let sessionPermissions = @json(session('permissions', []));--}}
 
-        if (Object.keys(sessionPermissions).length > 0) {
-            localStorage.setItem("userPermissions", JSON.stringify(sessionPermissions));
-        }
-        applyPermissions();
-        watchLocalStorage();
-    });
+{{--        if (Object.keys(sessionPermissions).length > 0) {--}}
+{{--            localStorage.setItem("userPermissions", JSON.stringify(sessionPermissions));--}}
+{{--        }--}}
+{{--        applyPermissions();--}}
+{{--        watchLocalStorage();--}}
+{{--    });--}}
 
-    function applyPermissions() {
-        let storedPermissions = JSON.parse(localStorage.getItem("userPermissions")) || {};
+{{--    function applyPermissions() {--}}
+{{--        let storedPermissions = JSON.parse(localStorage.getItem("userPermissions")) || {};--}}
 
-        if(storedPermissions['Owner Portal']) {
+{{--        if(storedPermissions['Owner Portal']) {--}}
 
-            // Buildings
-            if (storedPermissions['Owner Portal'].includes('Owner Buildings') || storedPermissions['Owner Portal'].includes('Owner Levels') || storedPermissions['Owner Portal'].includes('Owner Units')) {
-                document.getElementById("OwnerBuildingss").style.display = "block";
-                if(storedPermissions['Owner Portal'].includes('Owner Buildings')){
-                    document.getElementById("OwnerBuildings").style.display = "block";
-                } else {
-                    document.getElementById("OwnerBuildings").style.display = "none";
-                }
-                if(storedPermissions['Owner Portal'].includes('Owner Levels')){
-                    document.getElementById("OwnerLevels").style.display = "block";
-                } else {
-                    document.getElementById("OwnerLevels").style.display = "none";
-                }
-                if(storedPermissions['Owner Portal'].includes('Owner Units')){
-                    document.getElementById("OwnerUnits").style.display = "block";
-                } else {
-                    document.getElementById("OwnerUnits").style.display = "none";
-                }
-            } else {
-                document.getElementById("OwnerBuildingss").style.display = "none";
-            }
+{{--            // Buildings--}}
+{{--            if (storedPermissions['Owner Portal'].includes('Owner Buildings') || storedPermissions['Owner Portal'].includes('Owner Levels') || storedPermissions['Owner Portal'].includes('Owner Units')) {--}}
+{{--                document.getElementById("OwnerBuildingss").style.display = "block";--}}
+{{--                if(storedPermissions['Owner Portal'].includes('Owner Buildings')){--}}
+{{--                    document.getElementById("OwnerBuildings").style.display = "block";--}}
+{{--                } else {--}}
+{{--                    document.getElementById("OwnerBuildings").style.display = "none";--}}
+{{--                }--}}
+{{--                if(storedPermissions['Owner Portal'].includes('Owner Levels')){--}}
+{{--                    document.getElementById("OwnerLevels").style.display = "block";--}}
+{{--                } else {--}}
+{{--                    document.getElementById("OwnerLevels").style.display = "none";--}}
+{{--                }--}}
+{{--                if(storedPermissions['Owner Portal'].includes('Owner Units')){--}}
+{{--                    document.getElementById("OwnerUnits").style.display = "block";--}}
+{{--                } else {--}}
+{{--                    document.getElementById("OwnerUnits").style.display = "none";--}}
+{{--                }--}}
+{{--            } else {--}}
+{{--                document.getElementById("OwnerBuildingss").style.display = "none";--}}
+{{--            }--}}
 
-            // Owner Assign Units
-            if (storedPermissions['Owner Portal'].includes('Owner Assign Units')) {
-                document.getElementById("OwnerAssignUnits").style.display = "block";
-            } else {
-                document.getElementById("OwnerAssignUnits").style.display = "none";
-            }
+{{--            // Owner Assign Units--}}
+{{--            if (storedPermissions['Owner Portal'].includes('Owner Assign Units')) {--}}
+{{--                document.getElementById("OwnerAssignUnits").style.display = "block";--}}
+{{--            } else {--}}
+{{--                document.getElementById("OwnerAssignUnits").style.display = "none";--}}
+{{--            }--}}
 
-            // Owner Buildings Tree
-            if (storedPermissions['Owner Portal'].includes('Owner Buildings Tree')) {
-                document.getElementById("OwnerBuildingsTree").style.display = "block";
-            } else {
-                document.getElementById("OwnerBuildingsTree").style.display = "none";
-            }
+{{--            // Owner Buildings Tree--}}
+{{--            if (storedPermissions['Owner Portal'].includes('Owner Buildings Tree')) {--}}
+{{--                document.getElementById("OwnerBuildingsTree").style.display = "block";--}}
+{{--            } else {--}}
+{{--                document.getElementById("OwnerBuildingsTree").style.display = "none";--}}
+{{--            }--}}
 
-            // Owner Rentals
-            if (storedPermissions['Owner Portal'].includes('Owner User Units')) {
-                document.getElementById("OwnerRentals").style.display = "block";
-            } else {
-                document.getElementById("OwnerRentals").style.display = "none";
-            }
+{{--            // Owner Rentals--}}
+{{--            if (storedPermissions['Owner Portal'].includes('Owner User Units')) {--}}
+{{--                document.getElementById("OwnerRentals").style.display = "block";--}}
+{{--            } else {--}}
+{{--                document.getElementById("OwnerRentals").style.display = "none";--}}
+{{--            }--}}
 
-            // Owner Departments
-            if (storedPermissions['Owner Portal'].includes('Owner Departments')) {
-                document.getElementById("OwnerDepartments").style.display = "block";
-            } else {
-                document.getElementById("OwnerDepartments").style.display = "none";
-            }
+{{--            // Owner Departments--}}
+{{--            if (storedPermissions['Owner Portal'].includes('Owner Departments')) {--}}
+{{--                document.getElementById("OwnerDepartments").style.display = "block";--}}
+{{--            } else {--}}
+{{--                document.getElementById("OwnerDepartments").style.display = "none";--}}
+{{--            }--}}
 
-            // Owner Memberships
-            if (storedPermissions['Owner Portal'].includes('Owner Memberships')) {
-                document.getElementById("OwnerMemberships").style.display = "block";
-            } else {
-                document.getElementById("OwnerMemberships").style.display = "none";
-            }
+{{--            // Owner Memberships--}}
+{{--            if (storedPermissions['Owner Portal'].includes('Owner Memberships')) {--}}
+{{--                document.getElementById("OwnerMemberships").style.display = "block";--}}
+{{--            } else {--}}
+{{--                document.getElementById("OwnerMemberships").style.display = "none";--}}
+{{--            }--}}
 
-            // Owner Staff
-            if (storedPermissions['Owner Portal'].includes('Owner Staff')) {
-                document.getElementById("OwnerStaff").style.display = "block";
-            } else {
-                document.getElementById("OwnerStaff").style.display = "none";
-            }
+{{--            // Owner Staff--}}
+{{--            if (storedPermissions['Owner Portal'].includes('Owner Staff')) {--}}
+{{--                document.getElementById("OwnerStaff").style.display = "block";--}}
+{{--            } else {--}}
+{{--                document.getElementById("OwnerStaff").style.display = "none";--}}
+{{--            }--}}
 
-            // Owner Reports
-            if (storedPermissions['Owner Portal'].includes('Owner Reports')) {
-                document.getElementById("OwnerReports").style.display = "block";
-            } else {
-                document.getElementById("OwnerReports").style.display = "none";
-            }
-        }
+{{--            // Owner Reports--}}
+{{--            if (storedPermissions['Owner Portal'].includes('Owner Reports')) {--}}
+{{--                document.getElementById("OwnerReports").style.display = "block";--}}
+{{--            } else {--}}
+{{--                document.getElementById("OwnerReports").style.display = "none";--}}
+{{--            }--}}
+{{--        }--}}
 
-    }
+{{--    }--}}
 
-    function watchLocalStorage() {
-        window.addEventListener("storage", function (event) {
-            if (event.key === "userPermissions") {
-                applyPermissions();
-            }
-        });
-    }
-</script>
-
-
+{{--    function watchLocalStorage() {--}}
+{{--        window.addEventListener("storage", function (event) {--}}
+{{--            if (event.key === "userPermissions") {--}}
+{{--                applyPermissions();--}}
+{{--            }--}}
+{{--        });--}}
+{{--    }--}}
+{{--</script> --}}
 
 <script>
     document.querySelector('.closebtn').addEventListener('mouseover', function () {
