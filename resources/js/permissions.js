@@ -65,8 +65,33 @@ function initializePusher(csrfToken, userId, roleId) {
     });
 
     roleChannel.bind('App\\Events\\RolePermissionUpdated', function(data) {
-        alert('Role Permissions : ' + JSON.stringify(data));
+        handleRolePermissionUpdate(data);
     });
+}
+
+function handleRolePermissionUpdate(data) {
+    const storedPermissions = JSON.parse(localStorage.getItem("userPermissions")) || {};
+
+    if (!storedPermissions[data.permissionHeader]) {
+        storedPermissions[data.permissionHeader] = [];
+    }
+
+    if (data.permissionStatus === 0) {
+        storedPermissions[data.permissionHeader] = storedPermissions[data.permissionHeader].filter(
+            perm => perm !== data.permissionName
+        );
+
+        if (storedPermissions[data.permissionHeader].length === 0) {
+            delete storedPermissions[data.permissionHeader];
+        }
+    } else if (data.permissionStatus === 1) {
+        if (!storedPermissions[data.permissionHeader].includes(data.permissionName)) {
+            storedPermissions[data.permissionHeader].push(data.permissionName);
+        }
+    }
+    localStorage.setItem("userPermissions", JSON.stringify(storedPermissions));
+
+    applyPermissions();
 }
 
 function applyPermissions() {
