@@ -62,7 +62,7 @@ function initializePusher(csrfToken, userId) {
 
     channel.bind('App\\Events\\UserPermissionUpdated', function(data) {
         console.log("[Permissions] Received update event:", data);
-        alert(JSON.stringify(data));
+        // alert(JSON.stringify(data));
 
         if (data.permissionsList) {
             localStorage.setItem("userPermissions", JSON.stringify(data.permissionsList));
