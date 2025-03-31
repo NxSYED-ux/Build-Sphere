@@ -151,6 +151,10 @@
       <excludeFolder url="file://$MODULE_DIR$/vendor/symfony/cache" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/symfony/cache-contracts" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/symfony/var-exporter" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/laravel/cashier" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/moneyphp/money" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/stripe/stripe-php" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/symfony/polyfill-intl-icu" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
