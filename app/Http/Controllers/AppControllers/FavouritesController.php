@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Favorite;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class FavouritesController extends Controller
 {
@@ -26,7 +27,8 @@ class FavouritesController extends Controller
                     ])
                         ->whereHas('level', function ($levelQuery) {
                             $levelQuery->whereHas('building', function ($buildingQuery) {
-                                $buildingQuery->whereHas('address');
+                                $buildingQuery->whereIn('status', ['Approved', 'For Re-Approval'])
+                                ->whereHas('address');
                             });
                         });
                 })
@@ -62,25 +64,20 @@ class FavouritesController extends Controller
 
     public function insertFavorite(Request $request)
     {
+        $user = $request->user() ?? null;
+
+        if (!$user) {
+            return response()->json(['error' => 'User not authenticated.'], 401);
+        }
+
+        $request->validate([
+            'unit_id' => 'required|integer|exists:buildingunits,id',
+        ]);
+
         try {
-            $user = $request->user() ?? null;
-            $unit_id = $request->input('unit_id');
-
-            if (!$user) {
-                return response()->json(['error' => 'User not authenticated.'], 401);
-            }
-
-            if (!is_numeric($unit_id)) {
-                return response()->json(['error' => 'Invalid unit ID.'], 400);
-            }
-
-            if (!$unit_id) {
-                return response()->json(['error' => 'Unit ID is required.'], 400);
-            }
-
             $existingFavorite = Favorite::where([
                 'user_id' => $user->id,
-                'unit_id' => $unit_id
+                'unit_id' => $request->unit_id,
             ])->first();
 
             if ($existingFavorite) {
@@ -89,7 +86,7 @@ class FavouritesController extends Controller
 
             Favorite::create([
                 'user_id' => $user->id,
-                'unit_id' => $unit_id,
+                'unit_id' => $request->unit_id,
             ]);
 
             return response()->json(['message' => 'Favorite added successfully.'], 201);
@@ -101,16 +98,16 @@ class FavouritesController extends Controller
 
     public function deleteFavorite(Request $request, $unit_id)
     {
+        $user = $request->user() ?? null;
+        if (!$user) {
+            return response()->json(['error' => 'User not authenticated.'], 401);
+        }
+
+        if (!is_numeric($unit_id)) {
+            return response()->json(['error' => 'Invalid unit ID.'], 400);
+        }
+
         try {
-            $user = $request->user() ?? null;
-            if (!$user) {
-                return response()->json(['error' => 'User not authenticated.'], 401);
-            }
-
-            if (!is_numeric($unit_id)) {
-                return response()->json(['error' => 'Invalid unit ID.'], 400);
-            }
-
             $existingFavorite = Favorite::where([
                 'user_id' => $user->id,
                 'unit_id' => $unit_id
@@ -122,30 +119,30 @@ class FavouritesController extends Controller
 
             $existingFavorite->delete();
 
-            return response()->json(['message' => 'Favorite deleted successfully.'], 200);
+            return response()->json(['message' => 'Favorite deleted successfully.']);
         } catch (\Exception $e) {
-            \Log::error('Error deleting favorite: ' . $e->getMessage());
+            Log::error('Error deleting favorite: ' . $e->getMessage());
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
 
     public function favouritesList(Request $request)
     {
-        try {
-            $user = $request->user() ?? null;
-            if (!$user) {
-                return response()->json(['error' => 'User not authenticated.'], 401);
-            }
+        $user = $request->user() ?? null;
+        if (!$user) {
+            return response()->json(['error' => 'User not authenticated.'], 401);
+        }
 
+        try {
             $favorites = Favorite::where('user_id', $user->id)
                 ->select('unit_id')
                 ->get();
 
             return response()->json([
                 'favorites_list' => $favorites,
-            ], 200);
+            ]);
         } catch (\Exception $e) {
-            \Log::error("Error in favouritesList: " . $e->getMessage());
+            Log::error("Error in favouritesList: " . $e->getMessage());
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }

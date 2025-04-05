@@ -123,7 +123,7 @@ class AuthController extends Controller
             return $this->handleResponse($request, 200, 'success', 'Logout successful', 'login');
         } catch (JWTException $e) {
             Log::error("Logout error: " . $e->getMessage());
-            return $this->handleResponse($request, 500, 'error', '', '/');
+            return $this->handleResponse($request, 500, 'error', 'Something went wrong.', '/');
         }
     }
 
@@ -170,23 +170,29 @@ class AuthController extends Controller
 
 
     // List of Permissions
-    private function listOfPermissions($user){
+    private function listOfPermissions($user) {
+        try {
+            $permissions = DB::select("
+            SELECT perm.name, perm.header
+            FROM permissions perm
+            LEFT JOIN userpermissions userPerm
+                ON perm.id = userPerm.permission_id AND userPerm.user_id = ?
+            LEFT JOIN rolepermissions rolePerm
+                ON perm.id = rolePerm.permission_id AND rolePerm.role_id = ?
+            WHERE
+                (userPerm.permission_id IS NOT NULL AND rolePerm.permission_id IS NOT NULL AND userPerm.status = 1)
+                OR
+                (userPerm.permission_id IS NULL AND rolePerm.status = 1);
+        ", [$user->id, $user->role_id]);
 
-        $permissions = DB::select("
-                SELECT perm.name, perm.header
-                FROM permissions perm
-                LEFT JOIN userpermissions userPerm
-                    ON perm.id = userPerm.permission_id AND userPerm.user_id = ?
-                LEFT JOIN rolepermissions rolePerm
-                    ON perm.id = rolePerm.permission_id AND rolePerm.role_id = ?
-                WHERE COALESCE(userPerm.status, rolePerm.status) = 1
-            ", [$user->id, $user->role_id]);
+            return collect($permissions)->groupBy('header')->map(function ($group) {
+                return $group->pluck('name')->toArray();
+            })->toArray();
 
-        $permissionNames = collect($permissions)->groupBy('header')->map(function ($group) {
-            return $group->pluck('name')->toArray();
-        })->toArray();
-
-        return $permissionNames;
+        } catch (\Exception $e) {
+            Log::error("Error fetching permissions: " . $e->getMessage());
+            return [];
+        }
     }
 
 

@@ -4,18 +4,11 @@ use App\Events\UserPermissionUpdated;
 use App\Http\Controllers\GeneralControllers\AuthController;
 use App\Http\Controllers\GeneralControllers\ForgotPasswordController;
 use App\Http\Controllers\GeneralControllers\NotificationController;
-use App\Models\User;
-use App\Notifications\UserNotification;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\GeneralControllers\ProfileController;
-use App\Http\Controllers\AppControllers\HomePageController;
-use App\Http\Controllers\AppControllers\UnitDetailsController;
-use App\Http\Controllers\AppControllers\BuildingUnitsController;
-use App\Http\Controllers\AppControllers\OrganizationDetailsController;
+use App\Http\Controllers\AppControllers\ListingController;
 use App\Http\Controllers\AppControllers\FavouritesController;
 use App\Http\Controllers\AppControllers\MyPropertiesController;
 use App\Http\Controllers\AppControllers\QueryController;
@@ -82,15 +75,15 @@ Route::middleware(['auth.jwt'])->group(function () {
         });
 
         Route::middleware('check.permission:User Homepage,json')->group(function () {
-            Route::get('/home', [HomePageController::class, 'homePage']);
-            Route::get('/unit_details/{id}', [UnitDetailsController::class, 'unitDetails']);
-            Route::get('/organization_details/{id}', [OrganizationDetailsController::class, 'organizationDetails']);
-            Route::get('/building_units/{id}', [BuildingUnitsController::class, 'specificBuildingUnits']);
+            Route::get('/home', [ListingController::class, 'homePageListings']);
+            Route::get('/unit_details/{id}', [ListingController::class, 'unitDetails']);
+            Route::get('/organization_details/{id}', [ListingController::class, 'organizationWithBuildings']);
+            Route::get('/building_units/{id}', [ListingController::class, 'specificBuildingUnits']);
         });
 
         Route::get('/favorites-list', [FavouritesController::class, 'favouritesList']);
 
-        Route::middleware('check.permission:Show Favorites,json')->group(function () {
+        Route::middleware('check.permission:Favorites,json')->group(function () {
             Route::get('/favorites', [FavouritesController::class, 'showFavourites']);
         });
         Route::middleware('check.permission:Add Favorites,json')->group(function () {

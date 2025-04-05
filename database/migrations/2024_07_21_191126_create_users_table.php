@@ -22,6 +22,11 @@ return new class extends Migration
             $table->unsignedBigInteger('address_id')->unique();
             $table->tinyInteger('status')->default(1);
             $table->text('reset_token')->nullable();
+
+            $table->string('stripe_id')->nullable()->index();
+            $table->string('pm_type')->nullable();
+            $table->string('pm_last_four', 4)->nullable();
+
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
             $table->timestamp('created_at')->useCurrent();
