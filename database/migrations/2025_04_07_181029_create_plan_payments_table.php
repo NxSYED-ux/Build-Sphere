@@ -15,6 +15,9 @@ return new class extends Migration
             $table->foreignId('plan_id')->constrained()->onDelete('cascade');
             $table->foreignId('organization_id')->constrained()->onDelete('cascade');
 
+            $table->string('type'); // Type of subscription (e.g., "Free", "Premium")
+            $table->string('billing_cycle'); // E.g., "monthly", "yearly"
+
             $table->string('stripe_payment_id')->unique();
             $table->decimal('amount', 10, 2);
             $table->string('currency', 10)->default('PKR');
