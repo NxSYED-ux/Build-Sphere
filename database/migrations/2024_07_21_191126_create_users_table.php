@@ -25,7 +25,7 @@ return new class extends Migration
             $table->tinyInteger('status')->default(1);
             $table->text('reset_token')->nullable();
 
-            $table->string('stripe_id')->nullable()->index();
+            $table->string('stripe_customer_id')->nullable()->index();
 
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();

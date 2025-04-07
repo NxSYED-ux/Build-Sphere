@@ -9,7 +9,7 @@ class UserPermission extends Model
 {
     use HasFactory;
 
-    protected $table = 'userpermissions';
+    protected $table = 'userPermissions';
 
     protected $primaryKey = 'id';
 
