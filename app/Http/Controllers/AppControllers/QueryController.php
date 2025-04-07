@@ -26,7 +26,8 @@ class QueryController extends Controller
 
             $userUnits = UserBuildingUnit::where('user_id', $user->id)
                 ->whereHas('unit.building', function ($query) {
-                    $query->whereIn('status', ['Approved', 'For Re-Approval']);
+                    $query->whereIn('status', ['Approved', 'For Re-Approval'])
+                            ->where('isFreeze', 0);
                 })
                 ->with(['unit:id,unit_name,organization_id'])
                 ->get();

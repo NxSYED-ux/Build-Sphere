@@ -19,13 +19,13 @@ return new class extends Migration
             $table->enum('gender', ['Male', 'Female', 'Other']);
             $table->string('picture',255)->nullable();
             $table->unsignedInteger('role_id');
+            $table->tinyInteger('is_super_admin')->default(0);
+            $table->tinyInteger('is_verified')->default(0);
             $table->unsignedBigInteger('address_id')->unique();
             $table->tinyInteger('status')->default(1);
             $table->text('reset_token')->nullable();
 
             $table->string('stripe_id')->nullable()->index();
-            $table->string('pm_type')->nullable();
-            $table->string('pm_last_four', 4)->nullable();
 
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();

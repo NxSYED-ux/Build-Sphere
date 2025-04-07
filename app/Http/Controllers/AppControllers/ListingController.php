@@ -75,7 +75,8 @@ class ListingController extends Controller
             $availableUnits = $query
                 ->whereHas('level')
                 ->whereHas('level.building', function ($buildingQuery) {
-                    $buildingQuery->whereIn('status', ['Approved', 'For Re-Approval']);
+                    $buildingQuery->whereIn('status', ['Approved', 'For Re-Approval'])
+                                    ->where('isFreeze', 0);
                 })
                 ->whereHas('level.building.address')
                 ->with([
@@ -120,7 +121,8 @@ class ListingController extends Controller
                 ->where('status', 'Approved')
                 ->select('id', 'unit_name', 'unit_type', 'price', 'area', 'sale_or_rent', 'description', 'level_id', 'organization_id')
                 ->whereHas('level.building', function ($query) {
-                    $query->whereIn('status', ['Approved', 'For Re-Approval']);
+                    $query->whereIn('status', ['Approved', 'For Re-Approval'])
+                            ->where('isFreeze', 0);
                 })
                 ->with([
                     'level:id,building_id,level_name',
@@ -165,6 +167,7 @@ class ListingController extends Controller
 
             $buildings = Building::where('organization_id', $id)
                 ->whereIn('status', ['Approved', 'For Re-Approval'])
+                ->where('isFreeze', 0)
                 ->select('id', 'name', 'address_id')
                 ->with([
                     'address:id,location,city,province,country',
@@ -194,6 +197,7 @@ class ListingController extends Controller
 
             $building = Building::where('id', $id)
                 ->whereIn('status', ['Approved', 'For Re-Approval'])
+                ->where('isFreeze', 0)
                 ->select('id', 'name', 'address_id')
                 ->with([
                     'address:id,location,city,province,country',

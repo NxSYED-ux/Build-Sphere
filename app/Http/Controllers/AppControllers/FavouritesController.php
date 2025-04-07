@@ -28,7 +28,8 @@ class FavouritesController extends Controller
                         ->whereHas('level', function ($levelQuery) {
                             $levelQuery->whereHas('building', function ($buildingQuery) {
                                 $buildingQuery->whereIn('status', ['Approved', 'For Re-Approval'])
-                                ->whereHas('address');
+                                    ->where('isFreeze', 0)
+                                    ->whereHas('address');
                             });
                         });
                 })
