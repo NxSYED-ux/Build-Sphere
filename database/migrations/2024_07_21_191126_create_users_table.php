@@ -38,6 +38,7 @@ return new class extends Migration
             $table->foreign('updated_by')->references('id')->on('users');
 
             $table->index('role_id');
+            $table->index('is_super_admin');
             $table->index('status');
         });
 
