@@ -1,4 +1,5 @@
 document.addEventListener("DOMContentLoaded", function() {
+    // 1. Check for required elements
     const csrfMeta = document.querySelector('meta[name="csrf-token"]');
     const userMeta = document.querySelector('meta[name="user-id"]');
     const roleMeta = document.querySelector('meta[name="role-id"]');
@@ -7,20 +8,24 @@ document.addEventListener("DOMContentLoaded", function() {
         return;
     }
 
+    // 2. Load initial permissions
     const sessionPermissions = window.initialPermissions || {};
 
     if (Object.keys(sessionPermissions).length > 0) {
         localStorage.setItem("userPermissions", JSON.stringify(sessionPermissions));
     }
 
+    // 3. Apply initial permissions
     applyPermissions();
 
+    // 4. Initialize Pusher if configured
     if (import.meta.env.VITE_PUSHER_APP_KEY) {
         initializePusher(csrfMeta.content, userMeta.content, roleMeta.content);
     } else {
-        console.warn("Menu error");
+        console.warn("User menu error 1");
     }
 
+    // 5. Watch for cross-tab updates
     watchLocalStorage();
 });
 
@@ -37,27 +42,26 @@ function initializePusher(csrfToken, userId, roleId) {
         }
     });
 
-    // User Permission Channel
     const userChannelName = `private-userPermissions.${userId}`;
     const userChannel = pusher.subscribe(userChannelName);
 
     userChannel.bind('pusher:subscription_error', (err) => {
-        console.error("Error in User Menu : ", err);
+        console.error("UserMenu error 2:", err);
     });
 
     userChannel.bind('App\\Events\\UserPermissionUpdated', function(data) {
+
         if (data.permissionsList) {
             localStorage.setItem("userPermissions", JSON.stringify(data.permissionsList));
             applyPermissions();
         }
     });
 
-    // Role Permission Channel
     const roleChannelName = `private-rolePermissions.${roleId}`;
     const roleChannel = pusher.subscribe(roleChannelName);
 
     roleChannel.bind('pusher:subscription_error', (err) => {
-        console.error("Error in Role Menu : ", err);
+        console.error("RoleMenu error 1:", err);
     });
 
     roleChannel.bind('App\\Events\\RolePermissionUpdated', function(data) {
@@ -68,6 +72,10 @@ function initializePusher(csrfToken, userId, roleId) {
 function handleRolePermissionUpdate(data) {
     const storedPermissions = JSON.parse(localStorage.getItem("userPermissions")) || {};
 
+    if (!storedPermissions[data.permissionHeader]) {
+        storedPermissions[data.permissionHeader] = [];
+    }
+
     if (data.permissionStatus === 0) {
         storedPermissions[data.permissionHeader] = storedPermissions[data.permissionHeader].filter(
             perm => perm !== data.permissionName
@@ -77,15 +85,10 @@ function handleRolePermissionUpdate(data) {
             delete storedPermissions[data.permissionHeader];
         }
     } else if (data.permissionStatus === 1) {
-        if (!storedPermissions[data.permissionHeader]) {
-            storedPermissions[data.permissionHeader] = [];
-        }
-
         if (!storedPermissions[data.permissionHeader].includes(data.permissionName)) {
             storedPermissions[data.permissionHeader].push(data.permissionName);
         }
     }
-
     localStorage.setItem("userPermissions", JSON.stringify(storedPermissions));
 
     applyPermissions();
@@ -118,6 +121,28 @@ function applyPermissions() {
         safeApply("OwnerMemberships", storedPermissions['Owner Portal'].includes('Owner Memberships'));
         safeApply("OwnerStaff", storedPermissions['Owner Portal'].includes('Owner Staff'));
         safeApply("OwnerReports", storedPermissions['Owner Portal'].includes('Owner Reports'));
+    }
+
+    if (storedPermissions['Admin Portal']) {
+        const hasAdminControlAccess = ['User Management', 'User Roles', 'Role Permissions', 'Dropdowns']
+            .some(perm => storedPermissions['Admin Portal'].includes(perm));
+
+        const hasBuildingAccess = ['Admin Buildings', 'Admin Levels', 'Admin Units']
+            .some(perm => storedPermissions['Admin Portal'].includes(perm));
+
+        safeApply("AdminControls", hasAdminControlAccess);
+        safeApply("AdminUserManagement", storedPermissions['Admin Portal'].includes('User Management'));
+        safeApply("AdminUserRoles", storedPermissions['Admin Portal'].includes('User Roles'));
+        safeApply("AdminRolePermissions", storedPermissions['Admin Portal'].includes('Role Permissions'));
+        safeApply("AdminDropdowns", storedPermissions['Admin Portal'].includes('Dropdowns'));
+        safeApply("AdminBuildingss", hasBuildingAccess);
+        safeApply("AdminBuildings", storedPermissions['Admin Portal'].includes('Admin Buildings'));
+        safeApply("AdminLevels", storedPermissions['Admin Portal'].includes('Admin Levels'));
+        safeApply("AdminUnits", storedPermissions['Admin Portal'].includes('Admin Units'));
+
+        // Other Sections
+        safeApply("AdminOrganizations", storedPermissions['Admin Portal'].includes('Organizations'));
+        safeApply("AdminReports", storedPermissions['Admin Portal'].includes('Admin Reports'));
     }
 }
 

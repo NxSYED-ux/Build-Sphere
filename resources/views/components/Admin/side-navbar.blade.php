@@ -41,7 +41,7 @@
                 </li>
 
                 <!-- Admin Control -->
-                <li class="mb-1">
+                <li class="mb-1" id="AdminControls" style="display: none;">
                     <div id="link-a">
                         <a href="#"
                             class="link-dark link-toggle collapsed d-flex justify-content-between align-items-center"
@@ -57,17 +57,17 @@
 
                     <div class="collapse {{ in_array('AdminControl', $openSections) ? 'show' : '' }}" id="AdminControl" style="">
                         <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                            <li><a href="{{ route('users.index') }}" class="link-dark {{ in_array('UserManagement', $openSections) ? 'Link-background-color' : '' }}" data-bs-target="#AdminControl "><i class="bx bxs-user-account icons"></i> Users Management</a></li>
-                            <li><a href="{{ route('roles.index') }}" class="link-dark {{ in_array('UserRoles', $openSections) ? 'Link-background-color' : '' }}" data-bs-target="#AdminControl" ><i class="bx bx-street-view icons"></i> User Roles</a></li>
-                            <li><a href="{{ route('role.permissions') }}" class="link-dark {{ in_array('RolePermissions', $openSections) ? 'Link-background-color' : '' }}" data-bs-target="#AdminControl" ><i class="bx bxs-low-vision icons"></i> Role Permissions</a></li>
-                            <li><a href="{{ route('types.index') }}" class="link-dark {{ in_array('Dropdown', $openSections) ? 'Link-background-color' : '' }}" data-bs-target="#AdminControl"><i class="bx bx-menu icons"></i> List of values</a></li>
+                            <li id="AdminUserManagement" style="display: none;"><a href="{{ route('users.index') }}" class="link-dark {{ in_array('UserManagement', $openSections) ? 'Link-background-color' : '' }}" data-bs-target="#AdminControl "><i class="bx bxs-user-account icons"></i> Users Management</a></li>
+                            <li id="AdminUserRoles" style="display: none;"><a href="{{ route('roles.index') }}" class="link-dark {{ in_array('UserRoles', $openSections) ? 'Link-background-color' : '' }}" data-bs-target="#AdminControl" ><i class="bx bx-street-view icons"></i> User Roles</a></li>
+                            <li id="AdminRolePermissions" style="display: none;"><a href="{{ route('role.permissions') }}" class="link-dark {{ in_array('RolePermissions', $openSections) ? 'Link-background-color' : '' }}" data-bs-target="#AdminControl" ><i class="bx bxs-low-vision icons"></i> Role Permissions</a></li>
+                            <li id="AdminDropdowns" style="display: none;"><a href="{{ route('types.index') }}" class="link-dark {{ in_array('Dropdown', $openSections) ? 'Link-background-color' : '' }}" data-bs-target="#AdminControl"><i class="bx bx-menu icons"></i> List of values</a></li>
                         </ul>
                     </div>
 
                 </li>
 
                 <!-- Buildings -->
-                <li class="mb-1">
+                <li class="mb-1" id="AdminBuildingss" style="display: none;">
                     <div id="link-a">
                         <a href="#"
                             class="link-dark link-toggle collapsed d-flex justify-content-between align-items-center"
@@ -83,16 +83,16 @@
 
                     <div class="collapse {{ in_array('Buildings', $openSections) ? 'show' : '' }}" id="Buildings" style="">
                         <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                            <li><a href="{{ route('buildings.index') }}" class="link-dark {{ in_array('Building', $openSections) ? 'Link-background-color' : '' }}" data-bs-target="#Buildings "><i class="bx bx-buildings icons"></i> Buildings</a></li>
-                            <li><a href="{{ route('levels.index') }}" class="link-dark {{ in_array('Levels', $openSections) ? 'Link-background-color' : '' }}" data-bs-target="#AdminControl" ><i class="bx bxs-city icons"></i> Levels</a></li>
-                            <li><a href="{{ route('units.index') }}" class="link-dark {{ in_array('Units', $openSections) ? 'Link-background-color' : '' }}" data-bs-target="#AdminControl" ><i class="bx bxs-home icons"></i> Units</a></li>
+                            <li id="AdminBuildings" style="display: none;"><a href="{{ route('buildings.index') }}" class="link-dark {{ in_array('Building', $openSections) ? 'Link-background-color' : '' }}" data-bs-target="#Buildings "><i class="bx bx-buildings icons"></i> Buildings</a></li>
+                            <li id="AdminLevels" style="display: none;"><a href="{{ route('levels.index') }}" class="link-dark {{ in_array('Levels', $openSections) ? 'Link-background-color' : '' }}" data-bs-target="#AdminControl" ><i class="bx bxs-city icons"></i> Levels</a></li>
+                            <li id="AdminUnits" style="display: none;"><a href="{{ route('units.index') }}" class="link-dark {{ in_array('Units', $openSections) ? 'Link-background-color' : '' }}" data-bs-target="#AdminControl" ><i class="bx bxs-home icons"></i> Units</a></li>
                         </ul>
                     </div>
 
                 </li>
 
                 <!-- Organizations -->
-                <li class="mb-1">
+                <li class="mb-1" id="AdminOrganizations" style="display: none;">
                     <div id="link-a">
                         <a href="{{ route('organizations.index') }}" class="link-dark collapsed {{ in_array('Organizations', $openSections) ? 'Link-background-color' : '' }} px-1" id="Organizationbtn" >
                         <i class="bx bxs-business icons"></i> Organizations </a>
@@ -100,7 +100,7 @@
                 </li>
 
                 <!-- Reports -->
-                <li class="mb-1">
+                <li class="mb-1" id="AdminReports" style="display: none;">
                     <div id="link-a">
                         <a href="#" class="link-dark  link-toggle collapsed d-flex justify-content-between align-items-center"  data-bs-toggle="collapse"
                             data-bs-target="#Reports" aria-expanded="{{ in_array('Reports', $openSections) ? 'true' : 'false' }}" onclick="toggleSection('Reports')" >
@@ -113,8 +113,8 @@
                     </div>
                     <div class="collapse {{ in_array('Reports', $openSections) ? 'show' : '' }}" id="Reports">
                         <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                            <li><a href="#" class="link-dark {{ in_array('', $openSections) ? 'Link-background-color' : '' }}" data-bs-target="#Reports" ><i class="bx bx-bar-chart icons"></i> Report1</a> </li>
-                            <li><a href="#" class="link-dark {{ in_array('', $openSections) ? 'Link-background-color' : '' }}" data-bs-target="#Reports" ><i class="bx bx-line-chart-down icons"></i> Report2</a> </li>
+                            <li id="AdminReport1"><a href="#" class="link-dark {{ in_array('', $openSections) ? 'Link-background-color' : '' }}" data-bs-target="#Reports" ><i class="bx bx-bar-chart icons"></i> Report1</a> </li>
+                            <li id="AdminReport2"><a href="#" class="link-dark {{ in_array('', $openSections) ? 'Link-background-color' : '' }}" data-bs-target="#Reports" ><i class="bx bx-line-chart-down icons"></i> Report2</a> </li>
                         </ul>
                     </div>
                 </li>
