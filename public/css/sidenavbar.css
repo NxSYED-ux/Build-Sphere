@@ -49,7 +49,7 @@
     }
 
     #mySidenav .application-tagline {
-        font-size: 8px;
+        font-size: 9px;
         color: var(--sidenavbar-text-color);
         opacity: 0.8;
     }

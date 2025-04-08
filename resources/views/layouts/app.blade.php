@@ -7,6 +7,7 @@
     <link id="theme-stylesheet" rel="stylesheet" href="{{ asset('css/light.css') }}">
     <meta name="user-id" content="{{ auth()->id() }}">
     <meta name="role-id" content="{{ auth()->user()->role_id }}">
+    <meta name="is-super-admin" content="{{ auth()->user()->is_super_admin }}">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <script>
         window.initialPermissions = @json(session('permissions', []));
@@ -66,6 +67,11 @@
             background-color: var(--main-background-color);
             color: var(--main-text-color);
         }
+
+        .hidden {
+            display: none !important;
+        }
+
 
         @media screen and (min-width: 769px) {
             #main {
