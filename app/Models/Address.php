@@ -33,14 +33,14 @@ class Address extends Model
     // Has One Relations
     public function user()
     {
-        return $this->hasOne(User::class, 'address_id');
+        return $this->hasOne(User::class, 'address_id', 'id');
     }
     public function organization()
     {
-        return $this->hasOne(Organization::class, 'address_id');
+        return $this->hasOne(Organization::class, 'address_id', 'id');
     }
     public function building()
     {
-        return $this->hasOne(Building::class, 'address_id');
+        return $this->hasOne(Building::class, 'address_id', 'id');
     }
 }

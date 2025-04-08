@@ -9,7 +9,7 @@ class DropdownType extends Model
 {
     use HasFactory;
 
-    protected $table = 'dropdowntypes';
+    protected $table = 'dropDownTypes';
 
     protected $primaryKey = 'id';
 

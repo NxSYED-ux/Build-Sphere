@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Log;
 
 class ValidatePermission
 {
-    public function handle(Request $request, Closure $next, $requiredPermissionName, $ignoreUserPermission = true)
+    public function handle(Request $request, Closure $next, $requiredPermissionName)
     {
         try {
             $user = $request->user();
@@ -30,7 +30,7 @@ class ValidatePermission
                     (SELECT status FROM rolepermissions WHERE role_id = ? AND permission_id = ? LIMIT 1) AS role_permission
             ", [$user->id, $permissionId, $user->role_id, $permissionId]);
 
-            if ($exists->user_permission !== null) {
+            if ($exists->user_permission !== null && $exists->role_permission !== null) {
                 if ($exists->user_permission == 1) {
                     return $next($request);
                 }

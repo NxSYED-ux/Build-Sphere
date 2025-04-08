@@ -9,7 +9,7 @@ class BuildingPicture extends Model
 {
     use HasFactory;
 
-    protected $table = 'buildingpictures';
+    protected $table = 'buildingPictures';
 
     protected $primaryKey = 'id';
 

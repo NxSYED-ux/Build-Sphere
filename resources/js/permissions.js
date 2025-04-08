@@ -1,5 +1,4 @@
 document.addEventListener("DOMContentLoaded", function() {
-    // 1. Check for required elements
     const csrfMeta = document.querySelector('meta[name="csrf-token"]');
     const userMeta = document.querySelector('meta[name="user-id"]');
     const roleMeta = document.querySelector('meta[name="role-id"]');
@@ -8,24 +7,20 @@ document.addEventListener("DOMContentLoaded", function() {
         return;
     }
 
-    // 2. Load initial permissions
     const sessionPermissions = window.initialPermissions || {};
 
     if (Object.keys(sessionPermissions).length > 0) {
         localStorage.setItem("userPermissions", JSON.stringify(sessionPermissions));
     }
 
-    // 3. Apply initial permissions
     applyPermissions();
 
-    // 4. Initialize Pusher if configured
     if (import.meta.env.VITE_PUSHER_APP_KEY) {
         initializePusher(csrfMeta.content, userMeta.content, roleMeta.content);
     } else {
-        console.warn("User menu error 1");
+        console.warn("Menu error");
     }
 
-    // 5. Watch for cross-tab updates
     watchLocalStorage();
 });
 
@@ -42,26 +37,27 @@ function initializePusher(csrfToken, userId, roleId) {
         }
     });
 
+    // User Permission Channel
     const userChannelName = `private-userPermissions.${userId}`;
     const userChannel = pusher.subscribe(userChannelName);
 
     userChannel.bind('pusher:subscription_error', (err) => {
-        console.error("UserMenu error 2:", err);
+        console.error("Error in User Menu : ", err);
     });
 
     userChannel.bind('App\\Events\\UserPermissionUpdated', function(data) {
-
         if (data.permissionsList) {
             localStorage.setItem("userPermissions", JSON.stringify(data.permissionsList));
             applyPermissions();
         }
     });
 
+    // Role Permission Channel
     const roleChannelName = `private-rolePermissions.${roleId}`;
     const roleChannel = pusher.subscribe(roleChannelName);
 
     roleChannel.bind('pusher:subscription_error', (err) => {
-        console.error("RoleMenu error 1:", err);
+        console.error("Error in Role Menu : ", err);
     });
 
     roleChannel.bind('App\\Events\\RolePermissionUpdated', function(data) {
@@ -72,10 +68,6 @@ function initializePusher(csrfToken, userId, roleId) {
 function handleRolePermissionUpdate(data) {
     const storedPermissions = JSON.parse(localStorage.getItem("userPermissions")) || {};
 
-    if (!storedPermissions[data.permissionHeader]) {
-        storedPermissions[data.permissionHeader] = [];
-    }
-
     if (data.permissionStatus === 0) {
         storedPermissions[data.permissionHeader] = storedPermissions[data.permissionHeader].filter(
             perm => perm !== data.permissionName
@@ -85,10 +77,15 @@ function handleRolePermissionUpdate(data) {
             delete storedPermissions[data.permissionHeader];
         }
     } else if (data.permissionStatus === 1) {
+        if (!storedPermissions[data.permissionHeader]) {
+            storedPermissions[data.permissionHeader] = [];
+        }
+
         if (!storedPermissions[data.permissionHeader].includes(data.permissionName)) {
             storedPermissions[data.permissionHeader].push(data.permissionName);
         }
     }
+
     localStorage.setItem("userPermissions", JSON.stringify(storedPermissions));
 
     applyPermissions();

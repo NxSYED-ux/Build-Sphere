@@ -158,12 +158,12 @@ class BuildingLevelController extends Controller
                    $request->building_id,
                    "New Level Created by Admin",
                    "The level '{$request->level_name}' has been successfully created by admin and is now available for use.",
-                   'owner.levels.index',
+                   'owner/levels',
 
                    $user->id,
                     "New Level Created",
                     "The level '{$request->level_name}' has been successfully created and is now available for use.",
-                    'levels.index',
+                    'admin/levels',
 
                    true,
                 ));
@@ -173,12 +173,12 @@ class BuildingLevelController extends Controller
                    $request->building_id,
                    "New Level Created by {$token['role_name']} ({$user->name})",
                    "The level '{$request->level_name}' has been successfully created by {$token['role_name']}.",
-                   'owner.levels.index',
+                   'owner/levels',
 
                    $user->id,
                     "New Level Created",
                     "The level '{$request->level_name}' has been successfully created.",
-                    'owner.levels.index',
+                    'owner/levels',
                 ));
             }
 
@@ -320,12 +320,12 @@ class BuildingLevelController extends Controller
                     $request->building_id,
                     "Level Updated by Admin",
                     "The level '{$request->level_name}' has been successfully updated by admin.",
-                    'owner.levels.index',
+                    'owner/levels',
 
                     $user->id,
                     "Level Updated",
                     "The level '{$request->level_name}' has been successfully updated with the applied changes.",
-                    'levels.index',
+                    'admin/levels',
 
                     true,
                 ));
@@ -335,12 +335,12 @@ class BuildingLevelController extends Controller
                     $request->building_id,
                     "Level Updated by {$token['role_name']} ({$user->name})",
                     "The level '{$request->level_name}' has been successfully updated by {$token['role_name']}.",
-                    'owner.levels.index',
+                    'owner/levels',
 
                     $user->id,
                     "Level Updated",
                     "The level '{$request->level_name}' has been successfully updated with the applied changes.",
-                    'owner.levels.index',
+                    'owner/levels',
                 ));
             }
 

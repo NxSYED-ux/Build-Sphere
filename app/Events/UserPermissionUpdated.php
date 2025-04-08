@@ -38,12 +38,9 @@ class UserPermissionUpdated implements ShouldBroadcast
         }
     }
 
-
-
     private function listOfPermissions(){
         try{
             $user = User::find($this->userId);
-            Log::info(1);
 
             $permissions = DB::select("
                 SELECT perm.name, perm.header
@@ -55,11 +52,9 @@ class UserPermissionUpdated implements ShouldBroadcast
                 WHERE COALESCE(userPerm.status, rolePerm.status) = 1
             ", [$user->id, $user->role_id]);
 
-            $permissionNames = collect($permissions)->groupBy('header')->map(function ($group) {
+            return collect($permissions)->groupBy('header')->map(function ($group) {
                 return $group->pluck('name')->toArray();
             })->toArray();
-
-            return $permissionNames;
 
         }catch (\Exception $e){
             Log::error('Unable to retrieve permissions (User Permission Event): ' . $e->getMessage());

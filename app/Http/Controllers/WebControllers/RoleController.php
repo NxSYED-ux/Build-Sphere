@@ -3,6 +3,7 @@
 
 namespace App\Http\Controllers\WebControllers;
 
+use App\Events\RolePermissionUpdated;
 use App\Http\Controllers\Controller;
 use App\Models\Permission;
 use App\Models\Role;
@@ -17,7 +18,6 @@ class RoleController extends Controller
     public function index()
     {
         try {
-            app('userPermissions');
             $roles = Role::all();
             return view('Heights.Admin.Roles.index', compact('roles'));
         } catch (\Exception $exception) {
@@ -159,7 +159,7 @@ class RoleController extends Controller
 
             if (!$role) {
                 DB::rollBack();
-                return redirect()->back()->with('error', 'This role has been updated by another user. Please refresh the page and try again.');
+                return redirect()->back()->with('error', 'Please refresh the page and try again.');
             }
 
             $role->update([
@@ -179,18 +179,24 @@ class RoleController extends Controller
                 RolePermission::where('role_id', $roleId)
                     ->whereIn('permission_id', $permissionsToRemove)
                     ->delete();
+
+                foreach ($permissionsToRemove as $permissionId) {
+                    event(new RolePermissionUpdated($role->id, $permissionId,0));
+                }
             }
 
             if (!empty($permissionsToAdd)) {
-                $rolePermissions = collect($permissionsToAdd)->map(function ($permissionId) use ($user, $roleId) {
-                    return [
-                        'role_id' => $roleId,
-                        'permission_id' => $permissionId,
-                        'granted_by' => $user->id,
-                    ];
-                })->toArray();
+                $rolePermissions = array_map(fn($id) => [
+                    'role_id' => $roleId,
+                    'permission_id' => $id,
+                    'granted_by' => $user->id,
+                ], $permissionsToAdd);
 
                 RolePermission::insert($rolePermissions);
+
+                foreach ($permissionsToAdd as $permissionId) {
+                    event(new RolePermissionUpdated($roleId, $permissionId, 1));
+                }
             }
 
             DB::commit();

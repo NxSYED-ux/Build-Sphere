@@ -19,9 +19,14 @@ return new class extends Migration
             $table->enum('gender', ['Male', 'Female', 'Other']);
             $table->string('picture',255)->nullable();
             $table->unsignedInteger('role_id');
+            $table->tinyInteger('is_super_admin')->default(0);
+            $table->tinyInteger('is_verified')->default(0);
             $table->unsignedBigInteger('address_id')->unique();
             $table->tinyInteger('status')->default(1);
             $table->text('reset_token')->nullable();
+
+            $table->string('stripe_customer_id')->nullable()->index();
+
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
             $table->timestamp('created_at')->useCurrent();
@@ -33,6 +38,7 @@ return new class extends Migration
             $table->foreign('updated_by')->references('id')->on('users');
 
             $table->index('role_id');
+            $table->index('is_super_admin');
             $table->index('status');
         });
 

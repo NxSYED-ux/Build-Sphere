@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Events\UserPermissionUpdated;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -10,7 +9,7 @@ class UserPermission extends Model
 {
     use HasFactory;
 
-    protected $table = 'userpermissions';
+    protected $table = 'userPermissions';
 
     protected $primaryKey = 'id';
 
@@ -42,18 +41,6 @@ class UserPermission extends Model
         static::saving(function ($model) {
             if ($user = request()->user) {
                 $model->granted_by = $user->id;
-            }
-        });
-
-        static::created(function ($model) {
-            if (!empty($model->user_id)) {
-                event(new UserPermissionUpdated($model->user_id));
-            }
-        });
-
-        static::updated(function ($model) {
-            if (!empty($model->user_id) && ($model->isDirty('permission_id') || $model->isDirty('status'))) {
-                event(new UserPermissionUpdated($model->user_id));
             }
         });
     }

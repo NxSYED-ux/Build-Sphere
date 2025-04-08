@@ -1,0 +1,19 @@
+{
+  "resources/js/app.js": {
+    "file": "assets/app2.js",
+    "name": "app",
+    "src": "resources/js/app.js",
+    "isEntry": true
+  },
+  "resources/js/firebase-messaging.js": {
+    "file": "assets/firebase-messaging.js",
+    "name": "firebase-messaging",
+    "src": "resources/js/firebase-messaging.js",
+    "isEntry": true
+  },
+  "resources/scss/app.scss": {
+    "file": "assets/app.css",
+    "src": "resources/scss/app.scss",
+    "isEntry": true
+  }
+}

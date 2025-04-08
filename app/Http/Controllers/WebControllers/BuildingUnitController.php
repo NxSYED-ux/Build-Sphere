@@ -265,12 +265,12 @@ class BuildingUnitController extends Controller
                     $organization_id,
                     $request->building_id,
                     "New Unit Created by {$token['role_name']} ({$user->name})",
-                    "The Unit '{$request->level_name}' has been successfully created by {$token['role_name']}.",
+                    "The Unit '{$request->unit_name}' has been successfully created by {$token['role_name']}.",
                     "owner/units/{$unit->id}/show",
 
                     $user->id,
                     "New Unit Created",
-                    "The Unit '{$request->level_name}' has been successfully created successfully.",
+                    "The Unit '{$request->unit_name}' has been successfully created.",
                     "owner/units/{$unit->id}/show",
                 ));
             }

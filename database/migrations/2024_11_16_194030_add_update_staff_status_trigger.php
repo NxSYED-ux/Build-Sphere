@@ -13,7 +13,7 @@ return new class extends Migration {
             FOR EACH ROW
             BEGIN
                 IF OLD.status <> NEW.status THEN
-                    UPDATE staffmembers SET status = NEW.status WHERE user_id = NEW.id;
+                    UPDATE staffMembers SET status = NEW.status WHERE user_id = NEW.id;
                 END IF;
             END;
         ');

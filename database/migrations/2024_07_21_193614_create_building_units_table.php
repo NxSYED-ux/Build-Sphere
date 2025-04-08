@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('buildingunits', function (Blueprint $table) {
+        Schema::create('buildingUnits', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('level_id');
             $table->unsignedBigInteger('building_id');
@@ -28,7 +28,7 @@ return new class extends Migration
 
             $table->foreign('organization_id')->references('id')->on('organizations');
             $table->foreign('building_id')->references('id')->on('buildings');
-            $table->foreign('level_id')->references('id')->on('buildinglevels');
+            $table->foreign('level_id')->references('id')->on('buildingLevels');
             $table->foreign('created_by')->references('id')->on('users');
             $table->foreign('updated_by')->references('id')->on('users');
         });
@@ -36,6 +36,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('buildingunits');
+        Schema::dropIfExists('buildingUnits');
     }
 };

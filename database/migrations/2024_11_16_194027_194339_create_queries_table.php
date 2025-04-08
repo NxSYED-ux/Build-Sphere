@@ -23,10 +23,10 @@ return new class extends Migration
             $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
 
             $table->foreign('user_id')->references('id')->on('users');
-            $table->foreign('unit_id')->references('id')->on('buildingunits');
+            $table->foreign('unit_id')->references('id')->on('buildingUnits');
             $table->foreign('building_id')->references('id')->on('buildings');
             $table->foreign('department_id')->references('id')->on('departments');
-            $table->foreign('staff_member_id')->references('id')->on('staffmembers');
+            $table->foreign('staff_member_id')->references('id')->on('staffMembers');
         });
     }
 
