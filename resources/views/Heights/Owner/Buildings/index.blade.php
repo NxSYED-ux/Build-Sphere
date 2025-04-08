@@ -9,7 +9,7 @@
         #main {
             margin-top: 45px;
         }
-        #add_button {
+        #Owner-Building-Add-Button {
             width: 45px;
             height: 45px;
             margin-right: 10px;
@@ -20,6 +20,9 @@
             font-weight: bold;
             align-items: center;
             justify-content: center;
+        }
+
+        .Owner-Building-Edit-Button{
         }
 
         th, td {
@@ -55,7 +58,7 @@
                             <div class="container mt-2">
                                 <div class="d-flex justify-content-between align-items-center mb-2">
                                     <h3 class="mb-1">Buildings</h3>
-                                    <a href="{{ route('owner.buildings.create') }}" class="btn float-end" id="add_button"  data-bs-toggle="tooltip" data-bs-placement="top" title="Add Building"><i class="fa fa-plus"></i></a>
+                                    <a href="{{ route('owner.buildings.create') }}" class="btn float-end hidden" id="Owner-Building-Add-Button"  data-bs-toggle="tooltip" data-bs-placement="top" title="Add Building"><i class="fa fa-plus"></i></a>
                                 </div>
                                 <div class="card shadow p-3 pt-1 mb-5 bg-body rounded" style="border: none;">
                                     <div class="card-body " style="overflow-x: auto;">
@@ -131,7 +134,7 @@
                                                         <a href="{{ route('owner.buildings.show', ['building' => $building->id]) }}" class="text-info" title="View"><i class="fa fa-eye mx-2" style="font-size: 20px;margin-right:5px;;"></i></a>
                                                         @endif
                                                         <a href="{{ route('owner.levels.index', ['building_id' => $building->id]) }}" class="text-" title="View Levels"><i class="bx bxs-city icons" style="font-size: 20px;margin-right:5px; color: grey;"></i></a>
-                                                        <a href="{{ route('owner.buildings.edit', $building->id) }}" class="text-warning"  title="Edit">
+                                                        <a href="{{ route('owner.buildings.edit', $building->id) }}" class="text-warning Owner-Building-Edit-Button hidden" title="Edit">
                                                             <i class="fa fa-pencil mx-2" style="font-size: 20px;"></i>
                                                         </a>
                                                     </td>

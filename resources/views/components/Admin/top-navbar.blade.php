@@ -30,7 +30,7 @@
 
                 <div class="application-text">
                     <span class="application-logo-text">HMS</span>
-                    <span class="application-tagline">Elevate Your Living</span>
+                    <span class="application-tagline">Rise With HMS</span>
                 </div>
             </a>
         </div>

@@ -3,8 +3,16 @@ document.addEventListener("DOMContentLoaded", function() {
     const csrfMeta = document.querySelector('meta[name="csrf-token"]');
     const userMeta = document.querySelector('meta[name="user-id"]');
     const roleMeta = document.querySelector('meta[name="role-id"]');
+    const superAdminMeta = document.querySelector('meta[name="is-super-admin"]');
 
-    if (!csrfMeta || !userMeta || !roleMeta) {
+    if (!csrfMeta || !userMeta || !roleMeta || !superAdminMeta) {
+        return;
+    }
+
+    const isSuperAdmin = parseInt(superAdminMeta.content);
+
+    if (isSuperAdmin === 1) {
+        showAllPermissionBlocks();
         return;
     }
 
@@ -97,30 +105,54 @@ function handleRolePermissionUpdate(data) {
 function applyPermissions() {
     const storedPermissions = JSON.parse(localStorage.getItem("userPermissions")) || {};
 
-    const safeApply = (elementId, shouldShow) => {
-        const element = document.getElementById(elementId);
-        if (element) {
-            element.style.display = shouldShow ? "block" : "none";
-        }
+    // const safeApply = (selector, shouldShow) => {
+    //     if (!selector) return;
+    //
+    //     // Handle class-based selectors
+    //     if (selector.startsWith('.')) {
+    //         document.querySelectorAll(selector).forEach(el => {
+    //             el.style.display = shouldShow ? 'block' : 'none';
+    //         });
+    //     } else {
+    //         // Default: treat as ID
+    //         const element = document.getElementById(selector);
+    //         if (element) {
+    //             element.style.display = shouldShow ? 'block' : 'none';
+    //         }
+    //     }
+    // };
+
+    const toggleVisibility = (selector, shouldShow) => {
+        document.querySelectorAll(selector).forEach(el => {
+            if (shouldShow) {
+                el.classList.remove('hidden');
+            } else {
+                el.classList.add('hidden');
+            }
+        });
     };
+
 
     if (storedPermissions['Owner Portal']) {
         const hasBuildingAccess = ['Owner Buildings', 'Owner Levels', 'Owner Units']
             .some(perm => storedPermissions['Owner Portal'].includes(perm));
 
-        safeApply("OwnerBuildingss", hasBuildingAccess);
-        safeApply("OwnerBuildings", storedPermissions['Owner Portal'].includes('Owner Buildings'));
-        safeApply("OwnerLevels", storedPermissions['Owner Portal'].includes('Owner Levels'));
-        safeApply("OwnerUnits", storedPermissions['Owner Portal'].includes('Owner Units'));
+        toggleVisibility("#OwnerBuildingss", hasBuildingAccess);
+        toggleVisibility("#OwnerBuildings", storedPermissions['Owner Portal'].includes('Owner Buildings'));
+        toggleVisibility("#OwnerLevels", storedPermissions['Owner Portal'].includes('Owner Levels'));
+        toggleVisibility("#OwnerUnits", storedPermissions['Owner Portal'].includes('Owner Units'));
+
+        toggleVisibility("#Owner-Building-Add-Button", storedPermissions['Owner Portal'].includes('Owner Add Building'));
+        toggleVisibility(".Owner-Building-Edit-Button", storedPermissions['Owner Portal'].includes('Owner Edit Building'));
 
         // Other Sections
-        safeApply("OwnerAssignUnits", storedPermissions['Owner Portal'].includes('Owner Assign Units'));
-        safeApply("OwnerBuildingsTree", storedPermissions['Owner Portal'].includes('Owner Buildings Tree'));
-        safeApply("OwnerRentals", storedPermissions['Owner Portal'].includes('Owner User Units'));
-        safeApply("OwnerDepartments", storedPermissions['Owner Portal'].includes('Owner Departments'));
-        safeApply("OwnerMemberships", storedPermissions['Owner Portal'].includes('Owner Memberships'));
-        safeApply("OwnerStaff", storedPermissions['Owner Portal'].includes('Owner Staff'));
-        safeApply("OwnerReports", storedPermissions['Owner Portal'].includes('Owner Reports'));
+        toggleVisibility("#OwnerAssignUnits", storedPermissions['Owner Portal'].includes('Owner Assign Units'));
+        toggleVisibility("#OwnerBuildingsTree", storedPermissions['Owner Portal'].includes('Owner Buildings Tree'));
+        toggleVisibility("#OwnerRentals", storedPermissions['Owner Portal'].includes('Owner User Units'));
+        toggleVisibility("#OwnerDepartments", storedPermissions['Owner Portal'].includes('Owner Departments'));
+        toggleVisibility("#OwnerMemberships", storedPermissions['Owner Portal'].includes('Owner Memberships'));
+        toggleVisibility("#OwnerStaff", storedPermissions['Owner Portal'].includes('Owner Staff'));
+        toggleVisibility("#OwnerReports", storedPermissions['Owner Portal'].includes('Owner Reports'));
     }
 
     if (storedPermissions['Admin Portal']) {
@@ -130,19 +162,19 @@ function applyPermissions() {
         const hasBuildingAccess = ['Admin Buildings', 'Admin Levels', 'Admin Units']
             .some(perm => storedPermissions['Admin Portal'].includes(perm));
 
-        safeApply("AdminControls", hasAdminControlAccess);
-        safeApply("AdminUserManagement", storedPermissions['Admin Portal'].includes('User Management'));
-        safeApply("AdminUserRoles", storedPermissions['Admin Portal'].includes('User Roles'));
-        safeApply("AdminRolePermissions", storedPermissions['Admin Portal'].includes('Role Permissions'));
-        safeApply("AdminDropdowns", storedPermissions['Admin Portal'].includes('Dropdowns'));
-        safeApply("AdminBuildingss", hasBuildingAccess);
-        safeApply("AdminBuildings", storedPermissions['Admin Portal'].includes('Admin Buildings'));
-        safeApply("AdminLevels", storedPermissions['Admin Portal'].includes('Admin Levels'));
-        safeApply("AdminUnits", storedPermissions['Admin Portal'].includes('Admin Units'));
+        toggleVisibility("#AdminControls", hasAdminControlAccess);
+        toggleVisibility("#AdminUserManagement", storedPermissions['Admin Portal'].includes('User Management'));
+        toggleVisibility("#AdminUserRoles", storedPermissions['Admin Portal'].includes('User Roles'));
+        toggleVisibility("#AdminRolePermissions", storedPermissions['Admin Portal'].includes('Role Permissions'));
+        toggleVisibility("#AdminDropdowns", storedPermissions['Admin Portal'].includes('Dropdowns'));
+        toggleVisibility("#AdminBuildingss", hasBuildingAccess);
+        toggleVisibility("#AdminBuildings", storedPermissions['Admin Portal'].includes('Admin Buildings'));
+        toggleVisibility("#AdminLevels", storedPermissions['Admin Portal'].includes('Admin Levels'));
+        toggleVisibility("#AdminUnits", storedPermissions['Admin Portal'].includes('Admin Units'));
 
         // Other Sections
-        safeApply("AdminOrganizations", storedPermissions['Admin Portal'].includes('Organizations'));
-        safeApply("AdminReports", storedPermissions['Admin Portal'].includes('Admin Reports'));
+        toggleVisibility("#AdminOrganizations", storedPermissions['Admin Portal'].includes('Organizations'));
+        toggleVisibility("#AdminReports", storedPermissions['Admin Portal'].includes('Admin Reports'));
     }
 }
 
@@ -153,3 +185,28 @@ function watchLocalStorage() {
         }
     });
 }
+
+(function showAllPermissionBlocks() {
+    const allSelectors = [
+        "OwnerBuildingss", "OwnerBuildings", "OwnerLevels", "OwnerUnits",
+        "OwnerAssignUnits", "OwnerBuildingsTree", "OwnerRentals", "Owner-Building-Add-Button", ".Owner-Building-Edit-Button",
+        "OwnerDepartments", "OwnerMemberships", "OwnerStaff", "OwnerReports",
+        "AdminControls", "AdminUserManagement", "AdminUserRoles", "AdminRolePermissions",
+        "AdminDropdowns", "AdminBuildingss", "AdminBuildings", "AdminLevels",
+        "AdminUnits", "AdminOrganizations", "AdminReports"
+    ];
+
+    allSelectors.forEach(selector => {
+        if (selector.startsWith('.')) {
+            // Handle class selectors
+            document.querySelectorAll(selector).forEach(el => {
+                el.classList.remove('hidden'); // Show by removing hidden class
+            });
+        } else {
+            // Handle ID selectors
+            const el = document.getElementById(selector);
+            if (el) el.classList.remove('hidden'); // Show by removing hidden class
+        }
+    });
+})();
+

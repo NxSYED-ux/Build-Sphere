@@ -213,12 +213,12 @@
                                         <h5 class="text mb-3 font-weight-bold permission-Heading">
                                             <a class="text-decoration-none font-weight-bold permission-Heading d-flex justify-content-between align-items-center w-100" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-{{ Str::slug($header) }}" aria-expanded="true" onclick="toggleIcon(this)">
                                                 {{ $header }}
-                                                <i class="bx bx-chevron-down collapse-icon fw-bold" style="font-size: 25px; margin-right: 5px;"></i>
+                                                <i class="bx bx-chevron-right collapse-icon fw-bold" style="font-size: 25px; margin-right: 5px;"></i>
                                             </a>
                                         </h5>
 
                                         <!-- Collapsible Content -->
-                                        <div class="collapse show" id="collapse-{{ Str::slug($header) }}">
+                                        <div class="collapse" id="collapse-{{ Str::slug($header) }}">
                                             <div class="row">
                                                 @foreach ($perms ?? [] as $perm)
                                                     <div class="col-md-12 mb-2 border rounded-4 shadow-sm parent">
