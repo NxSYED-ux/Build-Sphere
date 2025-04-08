@@ -105,23 +105,6 @@ function handleRolePermissionUpdate(data) {
 function applyPermissions() {
     const storedPermissions = JSON.parse(localStorage.getItem("userPermissions")) || {};
 
-    // const safeApply = (selector, shouldShow) => {
-    //     if (!selector) return;
-    //
-    //     // Handle class-based selectors
-    //     if (selector.startsWith('.')) {
-    //         document.querySelectorAll(selector).forEach(el => {
-    //             el.style.display = shouldShow ? 'block' : 'none';
-    //         });
-    //     } else {
-    //         // Default: treat as ID
-    //         const element = document.getElementById(selector);
-    //         if (element) {
-    //             element.style.display = shouldShow ? 'block' : 'none';
-    //         }
-    //     }
-    // };
-
     const toggleVisibility = (selector, shouldShow) => {
         document.querySelectorAll(selector).forEach(el => {
             if (shouldShow) {
@@ -144,6 +127,10 @@ function applyPermissions() {
 
         toggleVisibility("#Owner-Building-Add-Button", storedPermissions['Owner Portal'].includes('Owner Add Building'));
         toggleVisibility(".Owner-Building-Edit-Button", storedPermissions['Owner Portal'].includes('Owner Edit Building'));
+        toggleVisibility("#Owner-Level-Add-Button", storedPermissions['Owner Portal'].includes('Owner Add Level'));
+        toggleVisibility(".Owner-Level-Edit-Button", storedPermissions['Owner Portal'].includes('Owner Edit Level'));
+        toggleVisibility("#Owner-Unit-Add-Button", storedPermissions['Owner Portal'].includes('Owner Add Unit'));
+        toggleVisibility(".Owner-Unit-Edit-Button", storedPermissions['Owner Portal'].includes('Owner Edit Unit'));
 
         // Other Sections
         toggleVisibility("#OwnerAssignUnits", storedPermissions['Owner Portal'].includes('Owner Assign Units'));
@@ -167,10 +154,18 @@ function applyPermissions() {
         toggleVisibility("#AdminUserRoles", storedPermissions['Admin Portal'].includes('User Roles'));
         toggleVisibility("#AdminRolePermissions", storedPermissions['Admin Portal'].includes('Role Permissions'));
         toggleVisibility("#AdminDropdowns", storedPermissions['Admin Portal'].includes('Dropdowns'));
+
         toggleVisibility("#AdminBuildingss", hasBuildingAccess);
         toggleVisibility("#AdminBuildings", storedPermissions['Admin Portal'].includes('Admin Buildings'));
         toggleVisibility("#AdminLevels", storedPermissions['Admin Portal'].includes('Admin Levels'));
         toggleVisibility("#AdminUnits", storedPermissions['Admin Portal'].includes('Admin Units'));
+
+        toggleVisibility("#Admin-Building-Add-Button", storedPermissions['Admin Portal'].includes('Admin Add Building'));
+        toggleVisibility(".Admin-Building-Edit-Button", storedPermissions['Admin Portal'].includes('Admin Edit Building'));
+        toggleVisibility("#Admin-Level-Add-Button", storedPermissions['Admin Portal'].includes('Admin Add Level'));
+        toggleVisibility(".Admin-Level-Edit-Button", storedPermissions['Admin Portal'].includes('Admin Edit Level'));
+        toggleVisibility("#Admin-Unit-Add-Button", storedPermissions['Admin Portal'].includes('Admin Add Unit'));
+        toggleVisibility(".Admin-Unit-Edit-Button", storedPermissions['Admin Portal'].includes('Admin Edit Unit'));
 
         // Other Sections
         toggleVisibility("#AdminOrganizations", storedPermissions['Admin Portal'].includes('Organizations'));
@@ -189,23 +184,25 @@ function watchLocalStorage() {
 (function showAllPermissionBlocks() {
     const allSelectors = [
         "OwnerBuildingss", "OwnerBuildings", "OwnerLevels", "OwnerUnits",
-        "OwnerAssignUnits", "OwnerBuildingsTree", "OwnerRentals", "Owner-Building-Add-Button", ".Owner-Building-Edit-Button",
+        "OwnerAssignUnits", "OwnerBuildingsTree", "OwnerRentals", "Owner-Building-Add-Button", ".Owner-Building-Edit-Button", "Owner-Level-Add-Button", "Owner-Level-Edit-Button", "Owner-Unit-Add-Button", "Owner-Unit-Edit-Button",
         "OwnerDepartments", "OwnerMemberships", "OwnerStaff", "OwnerReports",
-        "AdminControls", "AdminUserManagement", "AdminUserRoles", "AdminRolePermissions",
-        "AdminDropdowns", "AdminBuildingss", "AdminBuildings", "AdminLevels",
-        "AdminUnits", "AdminOrganizations", "AdminReports"
+
+        "AdminControls", "AdminUserManagement", "AdminUserRoles", "AdminRolePermissions", "AdminDropdowns",
+        "AdminBuildingss", "AdminBuildings", "AdminLevels", "AdminUnits",
+        "Admin-Building-Add-Button", ".Admin-Building-Edit-Button", "Admin-Level-Add-Button", ".Admin-Level-Edit-Button", "Admin-Unit-Add-Button", ".Admin-Unit-Edit-Button",
+        "AdminOrganizations", "AdminReports"
     ];
 
     allSelectors.forEach(selector => {
         if (selector.startsWith('.')) {
             // Handle class selectors
             document.querySelectorAll(selector).forEach(el => {
-                el.classList.remove('hidden'); // Show by removing hidden class
+                el.classList.remove('hidden');
             });
         } else {
             // Handle ID selectors
             const el = document.getElementById(selector);
-            if (el) el.classList.remove('hidden'); // Show by removing hidden class
+            if (el) el.classList.remove('hidden');
         }
     });
 })();

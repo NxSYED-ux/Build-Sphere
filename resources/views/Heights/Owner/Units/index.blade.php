@@ -9,7 +9,7 @@
         #main {
             margin-top: 45px;
         }
-        #add_button {
+        #Owner-Unit-Add-Button {
             width: 45px;
             height: 45px;
             margin-right: 10px;
@@ -190,7 +190,7 @@
                             <div class="container mt-2">
                                 <div class="d-flex justify-content-between align-items-center mb-2">
                                     <h3 class="mb-1">Units</h3>
-                                    <a href="{{ route('owner.units.create') }}" class="btn float-end" id="add_button"  data-bs-toggle="tooltip" data-bs-placement="top" title="Add Unit"><i class="fa fa-plus"></i></a>
+                                    <a href="{{ route('owner.units.create') }}" class="btn float-end hidden" id="Owner-Unit-Add-Button"  data-bs-toggle="tooltip" data-bs-placement="top" title="Add Unit"><i class="fa fa-plus"></i></a>
                                 </div>
                                 <div class="card shadow p-2 pt-1 mb-5 bg-body rounded" style="border: none;">
                                     <div class="card-body">
@@ -338,7 +338,7 @@
                                                         <td>{{ $unit->organization->name ?? 'N/A' }}</td>
                                                         <td class="text-center">
                                                             <a href="javascript:void(0);" class="text-info view-unit" data-id="{{ $unit->id }}" data-bs-toggle="tooltip" data-bs-placement="top" title="View"><i class="fa fa-eye mx-2" style="font-size: 20px;"></i></a>
-                                                            <a href="{{ route('owner.units.edit', $unit->id) }}" class="text-warning" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit">
+                                                            <a href="{{ route('owner.units.edit', $unit->id) }}" class="text-warning hidden Owner-Unit-Edit-Button" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit">
                                                                 <i class="fa fa-pencil mx-2" style="font-size: 20px;"></i>
                                                             </a>
                                                         </td>

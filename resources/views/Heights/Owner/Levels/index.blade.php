@@ -9,7 +9,7 @@
         #main {
             margin-top: 45px;
         }
-        #add_button {
+        #Owner-Level-Add-Button {
             width: 45px;
             height: 45px;
             margin-right: 10px;
@@ -78,7 +78,7 @@
                             <div class="container mt-2">
                                 <div class="d-flex justify-content-between align-items-center mb-2">
                                     <h3 class="mb-1">Levels</h3>
-                                    <a href="#" class="btn float-end" id="add_button"  data-bs-toggle="tooltip" data-bs-placement="top" title="Add Level"><i class="fa fa-plus"></i></a>
+                                    <a href="#" class="btn float-end hidden" id="Owner-Level-Add-Button"  data-bs-toggle="tooltip" data-bs-placement="top" title="Add Level"><i class="fa fa-plus"></i></a>
                                 </div>
                                 <div class="card shadow p-3 mb-5 bg-body rounded" style="border: none;">
                                     <div class="card-body " style="overflow-x: auto;">
@@ -107,7 +107,7 @@
                                                     <td>{{ $level->building->name ?? 'N/A' }}</td>
                                                     <td class="w-170 text-center">
                                                         <a href="{{ route('owner.units.index', ['level_id' => $level->id]) }}" class="text-info" title="View Units"><i class="bx bxs-home icons" style="font-size: 20px;margin-right:5px;;"></i></a>
-                                                        <a href="#" class="text-warning edit_level_button" id="edit_level_button" data-id="{{ $level->id }}" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit">
+                                                        <a href="#" class="text-warning Owner-Level-Edit-Button hidden" id="Owner-Level-Edit-Button" data-id="{{ $level->id }}" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit">
                                                             <i class="fa fa-pencil" style="font-size: 20px;"></i>
                                                         </a>
                                                     </td>
@@ -331,7 +331,7 @@
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             // Show the 'Create Level' modal
-            document.getElementById("add_button").addEventListener("click", function (e) {
+            document.getElementById("Owner-Level-Add-Button").addEventListener("click", function (e) {
                 e.preventDefault();
                 let createModal = new bootstrap.Modal(document.getElementById("createLevelModal"));
                 createModal.show();
@@ -373,7 +373,7 @@
 
 
 
-            const editButtons = document.querySelectorAll(".edit_level_button");
+            const editButtons = document.querySelectorAll(".Owner-Level-Edit-Button");
 
             editButtons.forEach(button => {
                 button.addEventListener("click", function (e) {
