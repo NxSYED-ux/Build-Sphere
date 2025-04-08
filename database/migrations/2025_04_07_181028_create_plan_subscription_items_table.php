@@ -20,6 +20,7 @@ return new class extends Migration
             $table->integer('quantity');
 
             $table->integer('used')->default(0);
+            $table->json('meta')->nullable();
 
             $table->foreign('subscription_id')->references('id')->on('planSubscriptions')->onDelete('cascade');
             $table->foreign('service_id')->references('id')->on('planServices')->onDelete('cascade');

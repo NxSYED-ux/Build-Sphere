@@ -16,8 +16,14 @@ class PlanSubscriptionItem extends Model
         'service_name',
         'service_keyword',
         'quantity',
+        'meta',
         'used',
     ];
+
+    protected $casts = [
+        'meta' => 'array',
+    ];
+
 
     // Belongs to Relations
     public function subscription()
