@@ -115,12 +115,24 @@
                         <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
                             <li id="AdminReport1"><a href="#" class="link-dark {{ in_array('', $openSections) ? 'Link-background-color' : '' }}" data-bs-target="#Reports" ><i class="bx bx-bar-chart icons"></i> Report1</a> </li>
                             <li id="AdminReport2"><a href="#" class="link-dark {{ in_array('', $openSections) ? 'Link-background-color' : '' }}" data-bs-target="#Reports" ><i class="bx bx-line-chart-down icons"></i> Report2</a> </li>
+                            <li id="AdminReport3"><a href="#" class="link-dark {{ in_array('', $openSections) ? 'Link-background-color' : '' }}" data-bs-target="#Reports" ><i class="bx bx-line-chart-down icons"></i> Report2</a> </li>
+                            <li id="AdminReport4"><a href="#" class="link-dark {{ in_array('', $openSections) ? 'Link-background-color' : '' }}" data-bs-target="#Reports" ><i class="bx bx-line-chart-down icons"></i> Report2</a> </li>
+                            <li id="AdminReport5"><a href="#" class="link-dark {{ in_array('', $openSections) ? 'Link-background-color' : '' }}" data-bs-target="#Reports" ><i class="bx bx-line-chart-down icons"></i> Report2</a> </li>
+                            <li id="AdminReport6"><a href="#" class="link-dark {{ in_array('', $openSections) ? 'Link-background-color' : '' }}" data-bs-target="#Reports" ><i class="bx bx-line-chart-down icons"></i> Report2</a> </li>
+                            <li id="AdminReport7"><a href="#" class="link-dark {{ in_array('', $openSections) ? 'Link-background-color' : '' }}" data-bs-target="#Reports" ><i class="bx bx-line-chart-down icons"></i> Report2</a> </li>
+                            <li id="AdminReport8"><a href="#" class="link-dark {{ in_array('', $openSections) ? 'Link-background-color' : '' }}" data-bs-target="#Reports" ><i class="bx bx-line-chart-down icons"></i> Report2</a> </li>
                         </ul>
                     </div>
                 </li>
 
             </ul>
 
+        </div>
+
+        <div class="switch-portal-btn-container hidden" id="switch-owner-portal-btn">
+            <a href="{{ route('owner_manager_dashboard') }}" class="switch-portal-btn">
+                Switch to Owner Portal
+            </a>
         </div>
     </div>
 

@@ -33,201 +33,108 @@
         <i class='bx bx-menu-alt-right'></i>
     </a>
 
-        <div class="scrollable-content pt-4">
-            <ul class=" ps-0 ">
+    <div class="scrollable-content pt-4">
+        <ul class=" ps-0 ">
 
-                <!-- Dashboard -->
-                <li class="mb-1">
-                    <div id="link-a">
-                        <a href="{{ route('owner_manager_dashboard') }}" class="link-dark collapsed {{ in_array('Dashboard', $openSections) ? 'Link-background-color' : '' }} px-1" id="AdminDashboardbtn" >
-                        <i class="bx bxs-dashboard icons"></i> Dashboard </a>
-                    </div>
-                </li>
+            <!-- Dashboard -->
+            <li class="mb-1">
+                <div id="link-a">
+                    <a href="{{ route('owner_manager_dashboard') }}" class="link-dark collapsed {{ in_array('Dashboard', $openSections) ? 'Link-background-color' : '' }} px-1" id="AdminDashboardbtn" >
+                    <i class="bx bxs-dashboard icons"></i> Dashboard </a>
+                </div>
+            </li>
 
-                <!-- Buildings -->
-                <li class="mb-1 hidden" id="OwnerBuildingss">
-                    <div id="link-a">
-                        <a href="#"
-                            class="link-dark link-toggle collapsed d-flex justify-content-between align-items-center"
-                            data-bs-toggle="collapse" data-bs-target="#Buildings" aria-expanded="{{ in_array('Buildings', $openSections) ? 'true' : 'false' }}"
-                            onclick="toggleSection('Buildings')">
-                            <span class="d-flex align-items-center">
-                                <i class="bx bx-buildings icons"></i> <!-- Adjusted with spacing -->
-                                <span>Buildings</span>
-                            </span>
-                            <i class="fa fa-chevron-left  chevron-icon" style="cursor: pointer;"></i>
-                        </a>
-                    </div>
+            <!-- Buildings -->
+            <li class="mb-1 hidden" id="OwnerBuildingss">
+                <div id="link-a">
+                    <a href="#"
+                        class="link-dark link-toggle collapsed d-flex justify-content-between align-items-center"
+                        data-bs-toggle="collapse" data-bs-target="#Buildings" aria-expanded="{{ in_array('Buildings', $openSections) ? 'true' : 'false' }}"
+                        onclick="toggleSection('Buildings')">
+                        <span class="d-flex align-items-center">
+                            <i class="bx bx-buildings icons"></i> <!-- Adjusted with spacing -->
+                            <span>Buildings</span>
+                        </span>
+                        <i class="fa fa-chevron-left  chevron-icon" style="cursor: pointer;"></i>
+                    </a>
+                </div>
 
-                    <div class="collapse {{ in_array('Buildings', $openSections) ? 'show' : '' }}" id="Buildings" style="">
-                        <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                            <li  id="OwnerBuildings" class="hidden"><a href="{{ route('owner.buildings.index') }}" class="link-dark {{ in_array('Building', $openSections) ? 'Link-background-color' : '' }}" data-bs-target="#Buildings "><i class="bx bx-buildings icons"></i> Buildings</a></li>
-                            <li  id="OwnerLevels" class="hidden"><a href="{{ route('owner.levels.index') }}" class="link-dark {{ in_array('Levels', $openSections) ? 'Link-background-color' : '' }}" data-bs-target="#AdminControl" ><i class="bx bxs-city icons"></i> Levels</a></li>
-                            <li  id="OwnerUnits" class="hidden"><a href="{{ route('owner.units.index') }}" class="link-dark {{ in_array('Units', $openSections) ? 'Link-background-color' : '' }}" data-bs-target="#AdminControl" ><i class="bx bxs-home icons"></i> Units</a></li>
-                        </ul>
-                    </div>
+                <div class="collapse {{ in_array('Buildings', $openSections) ? 'show' : '' }}" id="Buildings" style="">
+                    <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+                        <li  id="OwnerBuildings" class="hidden"><a href="{{ route('owner.buildings.index') }}" class="link-dark {{ in_array('Building', $openSections) ? 'Link-background-color' : '' }}" data-bs-target="#Buildings "><i class="bx bx-buildings icons"></i> Buildings</a></li>
+                        <li  id="OwnerLevels" class="hidden"><a href="{{ route('owner.levels.index') }}" class="link-dark {{ in_array('Levels', $openSections) ? 'Link-background-color' : '' }}" data-bs-target="#AdminControl" ><i class="bx bxs-city icons"></i> Levels</a></li>
+                        <li  id="OwnerUnits" class="hidden"><a href="{{ route('owner.units.index') }}" class="link-dark {{ in_array('Units', $openSections) ? 'Link-background-color' : '' }}" data-bs-target="#AdminControl" ><i class="bx bxs-home icons"></i> Units</a></li>
+                    </ul>
+                </div>
 
-                </li>
+            </li>
 
-                <!-- Assign Units -->
-                <li class="mb-1 hidden" id="OwnerAssignUnits">
-                    <div id="link-a">
-                        <a href="{{ route('owner.assignunits.index') }}" class="link-dark collapsed {{ in_array('Assign-Units', $openSections) ? 'Link-background-color' : '' }} px-1" id="BuildingsTreebtn" >
-                        <i class="bx bxs-user-check icons"></i> Assign Units </a>
-                    </div>
-                </li>
+            <!-- Assign Units -->
+            <li class="mb-1 hidden" id="OwnerAssignUnits">
+                <div id="link-a">
+                    <a href="{{ route('owner.assignunits.index') }}" class="link-dark collapsed {{ in_array('Assign-Units', $openSections) ? 'Link-background-color' : '' }} px-1" id="BuildingsTreebtn" >
+                    <i class="bx bxs-user-check icons"></i> Assign Units </a>
+                </div>
+            </li>
 
-                <!-- Buildings Tree -->
-                <li class="mb-1 hidden"  id="OwnerBuildingsTree">
-                    <div id="link-a">
-                        <a href="{{ route('owner.buildings.tree') }}" class="link-dark collapsed {{ in_array('Buildings-Tree', $openSections) ? 'Link-background-color' : '' }} px-1" id="BuildingsTreebtn" >
-                        <i class="bx bx-network-chart icons"></i> Buildings Tree </a>
-                    </div>
-                </li>
+            <!-- Buildings Tree -->
+            <li class="mb-1 hidden"  id="OwnerBuildingsTree">
+                <div id="link-a">
+                    <a href="{{ route('owner.buildings.tree') }}" class="link-dark collapsed {{ in_array('Buildings-Tree', $openSections) ? 'Link-background-color' : '' }} px-1" id="BuildingsTreebtn" >
+                    <i class="bx bx-network-chart icons"></i> Buildings Tree </a>
+                </div>
+            </li>
 
-                <!-- Rentals -->
-                <li class="mb-1 hidden" id="OwnerRentals">
-                    <div id="link-a">
-                        <a href="" class="link-dark collapsed {{ in_array('Rentals', $openSections) ? 'Link-background-color' : '' }} px-1" id="Organizationbtn" >
-                        <i class="bx bxs-business icons"></i> Rentals </a>
-                    </div>
-                </li>
+            <!-- Rentals -->
+            <li class="mb-1 hidden" id="OwnerRentals">
+                <div id="link-a">
+                    <a href="" class="link-dark collapsed {{ in_array('Rentals', $openSections) ? 'Link-background-color' : '' }} px-1" id="Organizationbtn" >
+                    <i class="bx bxs-business icons"></i> Rentals </a>
+                </div>
+            </li>
 
-                <!-- Memberships -->
-                <li class="mb-1 hidden" id="OwnerMemberships">
-                    <div id="link-a">
-                        <a href="#" class="link-dark collapsed {{ in_array('Memberships', $openSections) ? 'Link-background-color' : '' }} px-1" id="Membershipsbtn" >
-                        <i class='bx bxs-credit-card-front icons' ></i> Memberships </a>
-                    </div>
-                </li>
+            <!-- Memberships -->
+            <li class="mb-1 hidden" id="OwnerMemberships">
+                <div id="link-a">
+                    <a href="#" class="link-dark collapsed {{ in_array('Memberships', $openSections) ? 'Link-background-color' : '' }} px-1" id="Membershipsbtn" >
+                    <i class='bx bxs-credit-card-front icons' ></i> Memberships </a>
+                </div>
+            </li>
 
-                <!-- Department -->
-                <li class="mb-1 hidden" id="OwnerDepartments">
-                    <div id="link-a">
-                        <a href="#" class="link-dark collapsed {{ in_array('Departments', $openSections) ? 'Link-background-color' : '' }} px-1" id="Departmentsbtn" >
-                        <i class='bx bx-git-repo-forked icons'></i> Departments </a>
-                    </div>
-                </li>
+            <!-- Department -->
+            <li class="mb-1 hidden" id="OwnerDepartments">
+                <div id="link-a">
+                    <a href="#" class="link-dark collapsed {{ in_array('Departments', $openSections) ? 'Link-background-color' : '' }} px-1" id="Departmentsbtn" >
+                    <i class='bx bx-git-repo-forked icons'></i> Departments </a>
+                </div>
+            </li>
 
-                <!-- Staff -->
-                <li class="mb-1 hidden" id="OwnerStaff">
-                    <div id="link-a">
-                        <a href="#" class="link-dark collapsed {{ in_array('Staff', $openSections) ? 'Link-background-color' : '' }} px-1" id="Ownerbtn" >
-                        <i class="bx bx-user icons"></i> Staff </a>
-                    </div>
-                </li>
+            <!-- Staff -->
+            <li class="mb-1 hidden" id="OwnerStaff">
+                <div id="link-a">
+                    <a href="#" class="link-dark collapsed {{ in_array('Staff', $openSections) ? 'Link-background-color' : '' }} px-1" id="Ownerbtn" >
+                    <i class="bx bx-user icons"></i> Staff </a>
+                </div>
+            </li>
 
-                 <!-- Reports -->
-                 <li class="mb-1 hidden" id="OwnerReports">
-                    <div id="link-a">
-                        <a href="#" class="link-dark collapsed {{ in_array('Reports', $openSections) ? 'Link-background-color' : '' }} px-1" id="Reportsbtn" >
-                        <i class="bx bxs-pie-chart-alt-2 icons"></i> Reports </a>
-                    </div>
-                </li>
+             <!-- Reports -->
+             <li class="mb-1 hidden" id="OwnerReports">
+                <div id="link-a">
+                    <a href="#" class="link-dark collapsed {{ in_array('Reports', $openSections) ? 'Link-background-color' : '' }} px-1" id="Reportsbtn" >
+                    <i class="bx bxs-pie-chart-alt-2 icons"></i> Reports </a>
+                </div>
+            </li>
 
-            </ul>
+        </ul>
 
-        </div>
     </div>
 
-{{--<script>--}}
-{{--    document.addEventListener("DOMContentLoaded", function () {--}}
-{{--        let sessionPermissions = @json(session('permissions', []));--}}
-
-{{--        if (Object.keys(sessionPermissions).length > 0) {--}}
-{{--            localStorage.setItem("userPermissions", JSON.stringify(sessionPermissions));--}}
-{{--        }--}}
-{{--        applyPermissions();--}}
-{{--        watchLocalStorage();--}}
-{{--    });--}}
-
-{{--    function applyPermissions() {--}}
-{{--        let storedPermissions = JSON.parse(localStorage.getItem("userPermissions")) || {};--}}
-
-{{--        if(storedPermissions['Owner Portal']) {--}}
-
-{{--            // Buildings--}}
-{{--            if (storedPermissions['Owner Portal'].includes('Owner Buildings') || storedPermissions['Owner Portal'].includes('Owner Levels') || storedPermissions['Owner Portal'].includes('Owner Units')) {--}}
-{{--                document.getElementById("OwnerBuildingss").style.display = "block";--}}
-{{--                if(storedPermissions['Owner Portal'].includes('Owner Buildings')){--}}
-{{--                    document.getElementById("OwnerBuildings").style.display = "block";--}}
-{{--                } else {--}}
-{{--                    document.getElementById("OwnerBuildings").style.display = "none";--}}
-{{--                }--}}
-{{--                if(storedPermissions['Owner Portal'].includes('Owner Levels')){--}}
-{{--                    document.getElementById("OwnerLevels").style.display = "block";--}}
-{{--                } else {--}}
-{{--                    document.getElementById("OwnerLevels").style.display = "none";--}}
-{{--                }--}}
-{{--                if(storedPermissions['Owner Portal'].includes('Owner Units')){--}}
-{{--                    document.getElementById("OwnerUnits").style.display = "block";--}}
-{{--                } else {--}}
-{{--                    document.getElementById("OwnerUnits").style.display = "none";--}}
-{{--                }--}}
-{{--            } else {--}}
-{{--                document.getElementById("OwnerBuildingss").style.display = "none";--}}
-{{--            }--}}
-
-{{--            // Owner Assign Units--}}
-{{--            if (storedPermissions['Owner Portal'].includes('Owner Assign Units')) {--}}
-{{--                document.getElementById("OwnerAssignUnits").style.display = "block";--}}
-{{--            } else {--}}
-{{--                document.getElementById("OwnerAssignUnits").style.display = "none";--}}
-{{--            }--}}
-
-{{--            // Owner Buildings Tree--}}
-{{--            if (storedPermissions['Owner Portal'].includes('Owner Buildings Tree')) {--}}
-{{--                document.getElementById("OwnerBuildingsTree").style.display = "block";--}}
-{{--            } else {--}}
-{{--                document.getElementById("OwnerBuildingsTree").style.display = "none";--}}
-{{--            }--}}
-
-{{--            // Owner Rentals--}}
-{{--            if (storedPermissions['Owner Portal'].includes('Owner User Units')) {--}}
-{{--                document.getElementById("OwnerRentals").style.display = "block";--}}
-{{--            } else {--}}
-{{--                document.getElementById("OwnerRentals").style.display = "none";--}}
-{{--            }--}}
-
-{{--            // Owner Departments--}}
-{{--            if (storedPermissions['Owner Portal'].includes('Owner Departments')) {--}}
-{{--                document.getElementById("OwnerDepartments").style.display = "block";--}}
-{{--            } else {--}}
-{{--                document.getElementById("OwnerDepartments").style.display = "none";--}}
-{{--            }--}}
-
-{{--            // Owner Memberships--}}
-{{--            if (storedPermissions['Owner Portal'].includes('Owner Memberships')) {--}}
-{{--                document.getElementById("OwnerMemberships").style.display = "block";--}}
-{{--            } else {--}}
-{{--                document.getElementById("OwnerMemberships").style.display = "none";--}}
-{{--            }--}}
-
-{{--            // Owner Staff--}}
-{{--            if (storedPermissions['Owner Portal'].includes('Owner Staff')) {--}}
-{{--                document.getElementById("OwnerStaff").style.display = "block";--}}
-{{--            } else {--}}
-{{--                document.getElementById("OwnerStaff").style.display = "none";--}}
-{{--            }--}}
-
-{{--            // Owner Reports--}}
-{{--            if (storedPermissions['Owner Portal'].includes('Owner Reports')) {--}}
-{{--                document.getElementById("OwnerReports").style.display = "block";--}}
-{{--            } else {--}}
-{{--                document.getElementById("OwnerReports").style.display = "none";--}}
-{{--            }--}}
-{{--        }--}}
-
-{{--    }--}}
-
-{{--    function watchLocalStorage() {--}}
-{{--        window.addEventListener("storage", function (event) {--}}
-{{--            if (event.key === "userPermissions") {--}}
-{{--                applyPermissions();--}}
-{{--            }--}}
-{{--        });--}}
-{{--    }--}}
-{{--</script> --}}
+    <div class="switch-portal-btn-container hidden" id="switch-admin-portal-btn">
+        <a href="{{ route('admin_dashboard') }}" class="switch-portal-btn">
+            Switch to Admin Portal
+        </a>
+    </div>
+</div>
 
 <script>
     document.querySelector('.closebtn').addEventListener('mouseover', function () {

@@ -9,7 +9,7 @@
         display: flex;
         justify-content: center;
         align-items: center;
-        /*background-color: rgba(255, 255, 255, 0.9);*/
+        background-color: var(--body-background-color);
         z-index: 9999; /* Ensures the loading animation is on top of other content */
     }
 
@@ -32,11 +32,12 @@
         50% { transform: scale(1.2); opacity: 0.5; }
         100% { transform: scale(1); opacity: 1; }
     }
+
 </style>
 
 
 <div class="loading-animation" id="loadingAnimation">
-    <img src="{{ asset('img/loading.gif') }}" alt="Loading..." class="loading-gif">
+    <img src="{{ asset('img/Loading1.gif') }}" alt="Loading..." class="loading-gif">
 {{--    <div class="loading-spinner"></div>--}}
 </div>
 

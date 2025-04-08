@@ -115,6 +115,14 @@
             background-color: red;
         }
 
+        #user-details i{
+            color: var(--main-text-color);
+        }
+
+
+        #unit-details strong{
+            color: var(--main-text-color);
+        }
 
     </style>
 @endpush
@@ -140,7 +148,7 @@
                         @csrf
 
                         <div class="row">
-                            <div class="col-md-6" >
+                            <div class="col-md-6" id="user-details">
                                 <div class="card shadow p-3 mb-2 bg-body rounded border-none" style="border: none;">
                                     <div class="row">
 
@@ -148,7 +156,7 @@
                                         <div class="col-sm-12 col-md-12 col-lg-12">
                                             <div class="form-group mb-2">
                                                 <label for="user_id">User</label>
-                                                <select name="userId" id="user_id" class="form-select" required>
+                                                <select name="userId" id="user_id" class="form-select">
                                                     <option value="">Select User</option>
                                                     @forelse($users as $id => $name)
                                                         <option value="{{ $id }}" {{ old('userId', $selectedUserId) == $id ? 'selected' : '' }}>
@@ -404,7 +412,7 @@
 
                                     <div class="row mt-4">
                                         <div class="col-md-12">
-                                            <div class="row">
+                                            <div class="row" id="unit-details">
                                                 <div class="col-md-4">
                                                     <p><strong>Unit Name:</strong> <span id="unitName">-</span></p>
                                                 </div>
@@ -462,26 +470,31 @@
                                             </div>
                                         </div>
 
-                                        <!-- Rent Dates (Only Show for "Rented") -->
+                                        <!-- Rent Cycle and Duration (Only Show for "Rented") -->
                                         <div class="col-sm-12 col-md-6 col-lg-6 rent-fields d-none">
                                             <div class="form-group mb-2">
-                                                <label for="rent_start_date">Rent Start Date <span class="required__field indicator d-none">*</span><br></label>
-                                                <input type="date" class="form-control" id="rent_start_date" name="rentStartDate" value="{{ old('rentStartDate', date('Y-m-d')) }}">
-                                                @error('rentStartDate')
+                                                <label for="rent_cycle">Rent Cycle <span class="required__field indicator d-none">*</span><br></label>
+                                                <select name="rentCycle" id="rent_cycle" class="form-select">
+                                                    <option value="">Select Cycle</option>
+                                                    <option value="Monthly" {{ old('rentCycle') == 'Monthly' ? 'selected' : '' }}>Monthly</option>
+                                                    <option value="Yearly" {{ old('rentCycle') == 'Yearly' ? 'selected' : '' }}>Yearly</option>
+                                                </select>
+                                                @error('rentCycle')
                                                 <div class="text-danger">{{ $message }}</div>
                                                 @enderror
                                             </div>
                                         </div>
 
-                                        <div class="col-sm-12 col-md-6 col-lg-6 rent-fields d-none">
+                                        <div class="col-sm-12 col-md-6 col-lg-6 rent-fields d-none" id="duration_field_wrapper">
                                             <div class="form-group mb-2">
-                                                <label for="rent_end_date">Rent End Date <span class="required__field indicator d-none">*</span><br></label>
-                                                <input type="date" class="form-control" id="rent_end_date" name="rentEndDate" value="{{ old('rentEndDate', date('Y-m-d')) }}">
-                                                @error('rentEndDate')
+                                                <label for="duration_count">Number of <span id="duration_label">Months/Years</span> <span class="required__field indicator d-none">*</span><br></label>
+                                                <input type="number" min="1" class="form-control" id="duration_count" name="rentDuration" value="{{ old('rentDuration') }}">
+                                                @error('rentDuration')
                                                 <div class="text-danger">{{ $message }}</div>
                                                 @enderror
                                             </div>
                                         </div>
+
 
                                         <!-- Purchase Date (Only Show for "Sold") -->
                                         <div class="col-sm-12 col-md-12 col-lg-12 purchase-field d-none">
@@ -704,8 +717,6 @@
         });
     </script>
 
-
-
     <!--   -->
     <script>
         document.addEventListener("DOMContentLoaded", function () {
@@ -904,82 +915,54 @@
 
     <!-- Sold/ Rented Contract type -->
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            const contractType = document.getElementById("contract_type");
-            const rentFields = document.querySelectorAll(".rent-fields");
-            const purchaseField = document.querySelector(".purchase-field");
-
-            // Helper to update the required indicator visibility in the label for a given input.
-            function updateIndicator(input, show) {
-                let label = document.querySelector("label[for='" + input.id + "']");
-                if (label) {
-                    let indicator = label.querySelector(".indicator");
-                    if (indicator) {
-                        if (show) {
-                            indicator.classList.remove("d-none");
-                        } else {
-                            indicator.classList.add("d-none");
-                        }
-                    }
-                }
-            }
-
-            // Clears input value and removes its required attribute and hides its indicator.
-            function clearInput(element) {
-                const input = element.querySelector("input");
-                if (input) {
-                    input.value = "";
-                    input.removeAttribute("required");
-                    updateIndicator(input, false);
-                }
-            }
-
-            // Set required attribute on input and show its required indicator.
-            function setRequired(input) {
-                if (input) {
-                    input.setAttribute("required", "");
-                    updateIndicator(input, true);
-                }
-            }
+        document.addEventListener('DOMContentLoaded', function () {
+            const contractType = document.getElementById('contract_type');
+            const rentFields = document.querySelectorAll('.rent-fields');
+            const purchaseField = document.querySelector('.purchase-field');
+            const indicators = document.querySelectorAll('.required__field.indicator');
+            const rentCycle = document.getElementById('rent_cycle');
+            const durationLabel = document.getElementById('duration_label');
+            const durationFieldWrapper = document.getElementById('duration_field_wrapper');
 
             function toggleFields() {
-                if (contractType.value === "Rented") {
-                    // Show rent fields, set them as required, and hide & clear purchase field.
-                    rentFields.forEach(field => {
-                        field.classList.remove("d-none");
-                        const input = field.querySelector("input");
-                        if (input) {
-                            setRequired(input);
-                        }
-                    });
-                    purchaseField.classList.add("d-none");
-                    clearInput(purchaseField);
-                } else if (contractType.value === "Sold") {
-                    // Show purchase field, set it as required, and hide & clear rent fields.
-                    purchaseField.classList.remove("d-none");
-                    const purchaseInput = purchaseField.querySelector("input");
-                    if (purchaseInput) {
-                        setRequired(purchaseInput);
-                    }
-                    rentFields.forEach(field => {
-                        field.classList.add("d-none");
-                        clearInput(field);
-                    });
+                const value = contractType.value;
+                if (value === 'Rented') {
+                    rentFields.forEach(field => field.classList.remove('d-none'));
+                    purchaseField.classList.add('d-none');
+                    indicators.forEach(el => el.classList.remove('d-none'));
+                } else if (value === 'Sold') {
+                    purchaseField.classList.remove('d-none');
+                    rentFields.forEach(field => field.classList.add('d-none'));
+                    indicators.forEach(el => el.classList.remove('d-none'));
                 } else {
-                    // No valid selection: hide both sections and clear their values and required attributes.
-                    rentFields.forEach(field => {
-                        field.classList.add("d-none");
-                        clearInput(field);
-                    });
-                    purchaseField.classList.add("d-none");
-                    clearInput(purchaseField);
+                    purchaseField.classList.add('d-none');
+                    rentFields.forEach(field => field.classList.add('d-none'));
+                    indicators.forEach(el => el.classList.add('d-none'));
                 }
             }
 
-            contractType.addEventListener("change", toggleFields);
-            toggleFields(); // Initialize on page load
+            function updateDurationLabel() {
+                const selected = rentCycle.value;
+                if (selected === 'Monthly') {
+                    durationLabel.innerText = 'Months';
+                    durationFieldWrapper.classList.remove('d-none');
+                } else if (selected === 'Yearly') {
+                    durationLabel.innerText = 'Years';
+                    durationFieldWrapper.classList.remove('d-none');
+                } else {
+                    durationFieldWrapper.classList.add('d-none');
+                }
+            }
+
+            contractType.addEventListener('change', toggleFields);
+            rentCycle.addEventListener('change', updateDurationLabel);
+
+            // Initialize on page load
+            toggleFields();
+            updateDurationLabel();
         });
     </script>
+
 
 
 

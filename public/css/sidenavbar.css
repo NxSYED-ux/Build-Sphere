@@ -1,6 +1,6 @@
 
     #mySidenav::-webkit-scrollbar {
-        width: 0; /* Set the width to 0 to hide the scrollbar */
+        width: 0;
     }
 
     #mySidenav {
@@ -19,6 +19,43 @@
         align-items: center;
         transition: 0.2s ease;
     }
+
+    .scrollable-content {
+        height: 83lvh;
+        overflow-y: auto;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+    }
+
+    .scrollable-content::-webkit-scrollbar {
+        display: none;
+    }
+
+    .switch-portal-btn-container {
+        padding: 1rem;
+        position: sticky;
+        bottom: 0;
+        background-color: var(--sidenavbar-body-color);
+        border-top: 1px solid var(--sidenavbar-seperator-color);
+        z-index: 2;
+        text-align: center;
+    }
+
+    .switch-portal-btn {
+        display: inline-block;
+        color: #007bff;
+        font-size: 1rem;
+        font-weight: 500;
+        text-decoration: none;
+        padding: 0.5rem;
+        transition: color 0.2s ease, text-decoration 0.2s ease;
+    }
+
+    .switch-portal-btn:hover {
+        color: #0056b3;
+        text-decoration: underline;
+    }
+
 
     #mySidenav .application-box {
         flex-shrink: 0;
