@@ -13,8 +13,8 @@ return new class extends Migration
             $table->string('name',50)->unique();
             $table->unsignedBigInteger('address_id')->unique();
             $table->enum('status', ['Enable', 'Disable', 'Block'])->default('Enable');
-            $table->date('membership_start_date');
-            $table->date('membership_end_date');
+            $table->date('membership_start_date')->nullable();
+            $table->date('membership_end_date')->nullable();
             $table->unsignedBigInteger('owner_id')->unique();
             $table->unsignedBigInteger('created_by');
             $table->unsignedBigInteger('updated_by');

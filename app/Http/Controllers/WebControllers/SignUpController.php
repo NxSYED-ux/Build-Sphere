@@ -193,7 +193,6 @@ class SignUpController extends Controller
 
     }
 
-
     private function handleFileUpload(Request $request, string $source, string $folder): ?array
     {
         if (!$request->hasFile($source) || !$folder) {
