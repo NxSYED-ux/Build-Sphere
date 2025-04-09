@@ -24,6 +24,7 @@ class SignUpController extends Controller
         $dropdownData = DropdownType::with(['values.childs.childs'])
             ->where('type_name', 'Country')
             ->get();
+
         return view('landing-views.ownerSignUp', compact('dropdownData'));
     }
 
@@ -209,6 +210,5 @@ class SignUpController extends Controller
             'name' => $fileName,
         ];
     }
-
 
 }
