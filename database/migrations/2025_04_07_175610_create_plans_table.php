@@ -12,6 +12,7 @@ return new class extends Migration
             $table->id();
             $table->string('name'); // e.g., Free, Pro, Enterprise
             $table->text('description')->nullable();
+            $table->boolean('active')->default(true);
             $table->timestamps();
         });
     }

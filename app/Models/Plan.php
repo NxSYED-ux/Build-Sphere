@@ -12,6 +12,7 @@ class Plan extends Model
     protected $fillable = [
         'name',
         'description',
+        'status'
     ];
 
     // Has Many Relations
