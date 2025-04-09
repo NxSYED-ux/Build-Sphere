@@ -33,7 +33,9 @@ class landingController extends Controller
             })
             ->with(['services' => function ($query) use ($planCycle) {
                 $query->where('status', 1)
-                    ->with(['priceForCycle' => fn ($q) => $q->select('*')]);
+                    ->with(['prices' => function ($priceQuery) use ($planCycle) {
+                        $priceQuery->where('billing_cycle', $planCycle);
+                    }]);
             }])
             ->get();
 
@@ -45,23 +47,21 @@ class landingController extends Controller
                 'plan_name' => $plan->name,
                 'plan_description' => $plan->description,
                 'services' => $plan->services->map(function ($service) {
+                    $price = $service->prices->first();
+
                     return [
                         'service_id' => $service->id,
                         'service_name' => $service->name,
                         'service_quantity' => $service->quantity,
-                        'prices' => $service->prices->map(function ($price) {
-                            return [
-                                'price_id' => $price->id,
-                                'amount' => $price->amount,
-                                'billing_cycle' => $price->billing_cycle,
-                            ];
-                        }),
+                        'price' => $price ? [
+                            'price_id' => $price->id,
+                            'amount' => $price->amount,
+                            'billing_cycle' => $price->billing_cycle,
+                        ] : null,
                     ];
                 }),
             ];
         });
-
-        Log::info('Plans : ' . $organizedPlans);
 
         return response()->json(['plans' => $organizedPlans]);
     }

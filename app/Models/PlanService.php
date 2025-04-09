@@ -41,9 +41,4 @@ class PlanService extends Model
         return $this->hasMany(PlanServicePrice::class, 'service_id', 'id');
     }
 
-    public function priceForCycle($cycle)
-    {
-        return $this->hasOne(PlanServicePrice::class)->where('billing_cycle', $cycle);
-    }
-
 }
