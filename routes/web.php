@@ -27,6 +27,7 @@ Route::get('/', [landingController::class, 'index'])->name('index');
 Route::get('/index', [landingController::class, 'index']);
 
 Route::get('/checkout', [landingController::class, 'checkout'])->name('checkout');
+Route::get('/plans/{planCycle}', [landingController::class, 'plans'])->name('plans');
 
 // Authentication routes
 Route::get('/admin-login', [AuthController::class, 'index'])->name('admin-login-index');

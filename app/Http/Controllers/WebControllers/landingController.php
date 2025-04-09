@@ -55,7 +55,8 @@ class landingController extends Controller
                         'service_quantity' => $service->quantity,
                         'price' => $price ? [
                             'price_id' => $price->id,
-                            'amount' => $price->amount,
+                            'price' => $price->price,
+                            'price_currency' => $price->currency,
                             'billing_cycle' => $price->billing_cycle,
                         ] : null,
                     ];

@@ -80,7 +80,27 @@
             </div>
             <p class="mx-auto mt-6 max-w-2xl text-center text-lg font-medium text-pretty text-gray-600 sm:text-xl/8">Choose an affordable plan that’s packed with the best features for engaging your audience, creating customer loyalty, and driving sales.</p>
 
-            <div class="mx-auto mt-16 grid max-w-6xl grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            <div class="mt-6 flex justify-center">
+                <div class="relative inline-flex">
+                    <label for="billing-cycle" class="sr-only">Billing Cycle</label>
+                    <select id="billing-cycle" name="billing-cycle" class="block w-100 appearance-none rounded-md border border-gray-300 bg-white px-4 py-2 pr-10 text-base font-medium text-gray-700 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500">
+                        @forelse($planCycles as $planCycle)
+                            <option value="{{ $planCycle }}">{{ $planCycle }} Month</option>
+                        @empty
+                            <option value="">No Plans Cycle</option>
+                        @endforelse
+
+                    </select>
+                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+                        <svg class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.293l3.71-4.06a.75.75 0 111.08 1.04l-4.25 4.65a.75.75 0 01-1.08 0l-4.25-4.65a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="mx-auto mt-10 grid max-w-6xl grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
                 <!-- Card 1 -->
                 <div class="group rounded-3xl bg-white p-8 ring-1 ring-gray-900/10 transition-all duration-300 hover:bg-gray-900 hover:text-white">
                     <h3 id="tier-hobby" class="text-base/7 font-semibold text-indigo-600 group-hover:text-white">Basic</h3>
@@ -202,5 +222,36 @@
 @endsection
 
 @push('scripts')
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const planCycleSelect = document.getElementById("billing-cycle");
+
+            function fetchPlans(cycleId) {
+                if (!cycleId) return;
+
+                fetch(`{{ route('plans', ':planCycle') }}`.replace(':planCycle', 1), {
+                    method: "GET",
+                    headers: {
+                        "Accept": "application/json"
+                    }
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        let plans = data.plans;
+                        console.log("Fetched Plans:", plans);
+                    })
+                    .catch(error => console.error("Error fetching plans:", error));
+            }
+
+            planCycleSelect.addEventListener("change", function () {
+                fetchPlans(this.value);
+            });
+
+            if (planCycleSelect.value) {
+                fetchPlans(planCycleSelect.value);
+            }
+        });
+    </script>
 
 @endpush
