@@ -33,9 +33,7 @@ class landingController extends Controller
             })
             ->with(['services' => function ($query) use ($planCycle) {
                 $query->where('status', 1)
-                    ->with(['prices' => function ($priceQuery) use ($planCycle) {
-                        $priceQuery->where('billing_cycle', $planCycle);
-                    }]);
+                    ->with(['priceForCycle' => fn ($q) => $q->select('*')]);
             }])
             ->get();
 
