@@ -25,7 +25,7 @@ class AssignUnitController extends Controller
     public function index(Request $request)
     {
         try {
-            $user = $request->user() ?? abort(403, 'Unauthorized');
+            $user = $request->user() ?? abort(401, 'Unauthorized');
             $token = $request->attributes->get('token');
 
             $selectedBuildingId = null;

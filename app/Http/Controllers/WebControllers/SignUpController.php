@@ -93,7 +93,6 @@ class SignUpController extends Controller
     }
 
     public function register(Request $request){
-
         $request->validate([
             'otp' => ['required', 'numeric'],
 
@@ -154,9 +153,10 @@ class SignUpController extends Controller
                 'cnic' => $request->cnic,
                 'picture' => $profileImage ? $profileImage['name'] : null,
                 'gender' => $request->gender,
-                'role_id' => $request->role_id,
+                'role_id' => 2,
                 'address_id' => $address->id,
                 'date_of_birth' => $request->date_of_birth,
+                'is_verified' => 1,
             ]);
 
             $org_address = Address::create([
@@ -182,7 +182,8 @@ class SignUpController extends Controller
 
             DB::commit();
 
-            return redirect()->route('packageScreen.index');
+            $selectedPackage = $request->input('package_id');
+            return view('landing-views.checkOut', compact('selectedPackage'));
 
         } catch (\Exception $e) {
             DB::rollBack();
