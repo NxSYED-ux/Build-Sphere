@@ -10,7 +10,6 @@ use App\Http\Controllers\WebControllers\BuildingTreeController;
 use App\Http\Controllers\WebControllers\BuildingUnitController;
 use App\Http\Controllers\WebControllers\DropdownTypeController;
 use App\Http\Controllers\WebControllers\DropdownValueController;
-use App\Http\Controllers\WebControllers\landingController;
 use App\Http\Controllers\WebControllers\OrganizationController;
 use App\Http\Controllers\WebControllers\OwnerDashboardController;
 use App\Http\Controllers\WebControllers\RolePermissionController;
@@ -23,8 +22,8 @@ use Illuminate\Support\Facades\Route;
 // Route for Pusher Authentication
 Route::post('/pusher/auth', [AuthController::class, 'authenticatePusher'])->name('pusher.auth');
 
-Route::get('/', [landingController::class, 'index'])->name('index');
-Route::get('/index', [landingController::class, 'index']);
+Route::get('/', function () { return view('landing-views.index'); })->name('index');
+Route::get('/index', function () { return view('landing-views.index'); });
 
 Route::get('/checkout', [landingController::class, 'checkout'])->name('checkout');
 
