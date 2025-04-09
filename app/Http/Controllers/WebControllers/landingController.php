@@ -20,13 +20,16 @@ class landingController extends Controller
         return view('landing-views.checkout');
     }
 
-    public function plans()
+    public function plans($planCycle)
     {
         $plans = Plan::where('status', 1)
-            ->with(['services' => function ($query) {
+            ->whereHas('services', function ($query) use ($planCycle) {
                 $query->where('status', 1)
-                    ->with('prices');
-            }])
+                    ->whereHas('price', function ($priceQuery) use ($planCycle) {
+                        $priceQuery->where('billing_cycle', $planCycle);
+                    });
+            })
+            ->with(['services', 'services.price'])
             ->get();
 
         return response()->json(['plans' => $plans]);
