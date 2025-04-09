@@ -14,7 +14,9 @@ return new class extends Migration
             $table->string('otp', 10);
             $table->timestamp('expires_at');
             $table->boolean('is_used')->default(false);
-            $table->timestamps();
+
+            $table->timestamp('created_at')->useCurrent();
+            $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
         });
     }
 

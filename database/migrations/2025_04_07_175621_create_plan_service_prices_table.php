@@ -15,9 +15,9 @@ return new class extends Migration
 
             $table->string('billing_cycle');
             $table->decimal('price', 10, 2);
-            $table->string('currency', 10)->default('PKR');
 
-            $table->timestamps();
+            $table->timestamp('created_at')->useCurrent();
+            $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
 
             $table->foreign('service_id')->references('id')->on('planServices')->onDelete('cascade');
             $table->unique(['service_id', 'billing_cycle']);

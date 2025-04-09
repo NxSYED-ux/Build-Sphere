@@ -12,8 +12,11 @@ return new class extends Migration
             $table->id();
             $table->string('name'); // e.g., Free, Pro, Enterprise
             $table->text('description')->nullable();
+            $table->string('currency', 10)->default('PKR');
             $table->boolean('status')->default(true);
-            $table->timestamps();
+
+            $table->timestamp('created_at')->useCurrent();
+            $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
         });
     }
 

@@ -14,8 +14,7 @@ class PlanServicePrice extends Model
     protected $fillable = [
         'service_id',
         'billing_cycle',
-        'price',
-        'currency'
+        'price'
     ];
 
     // Belongs to Relations

@@ -16,7 +16,7 @@ class PlanService extends Model
         'name',
         'keyword',
         'quantity',
-        'is_active',
+        'status',
         'meta',
     ];
 

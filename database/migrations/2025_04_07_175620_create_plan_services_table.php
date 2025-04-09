@@ -18,7 +18,8 @@ return new class extends Migration
             $table->boolean('status')->default(true);
             $table->json('meta')->nullable();  // Optional: for extra service-specific options
 
-            $table->timestamps();
+            $table->timestamp('created_at')->useCurrent();
+            $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
         });
     }
 
