@@ -15,7 +15,7 @@ return new class extends Migration
             $table->string('name'); // For frontend: e.g., "Manage Buildings"
             $table->string('keyword'); // For backend: e.g., "buildings"
             $table->integer('quantity')->nullable(); // Null = unlimited
-            $table->tinyInteger('is_active')->default(1);
+            $table->boolean('status')->default(true);
             $table->json('meta')->nullable();  // Optional: for extra service-specific options
 
             $table->timestamps();
