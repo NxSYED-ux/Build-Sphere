@@ -518,7 +518,7 @@ INSERT INTO `rolepermissions` (`id`, `role_id`, `permission_id`, `status`, `gran
 (147, 5, 54, 1, 1, '2025-03-29 11:46:36', '2025-03-29 11:46:36');
 
 
-INSERT INTO `plans` (`id`, `name`, `description`, `active`, `created_at`, `updated_at`) VALUES
+INSERT INTO `plans` (`id`, `name`, `description`, `status`, `created_at`, `updated_at`) VALUES
 (1, 'Basic', 'Essential tools for managing a single building and handling daily operations with ease.', 1, NULL, NULL),
 (2, 'Standard', 'Ideal for growing property managers who need more control and building coverage.', 1, NULL, NULL),
 (3, 'Pro', 'Advanced features for professionals managing multiple properties with automation and insights.', 1, NULL, NULL);

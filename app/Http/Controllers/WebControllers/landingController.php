@@ -22,7 +22,6 @@ class landingController extends Controller
 
     public function plans($planCycle)
     {
-
         $plans = Plan::where('status', 1)
             ->whereHas('services', function ($query) use ($planCycle) {
                 $query->where('status', 1)
@@ -30,7 +29,12 @@ class landingController extends Controller
                         $priceQuery->where('billing_cycle', $planCycle);
                     });
             })
-            ->with(['services', 'services.prices'])
+            ->with(['services' => function ($query) use ($planCycle) {
+                $query->where('status', 1)
+                    ->with(['prices' => function ($priceQuery) use ($planCycle) {
+                        $priceQuery->where('billing_cycle', $planCycle);
+                    }]);
+            }])
             ->get();
 
         return response()->json(['plans' => $plans]);
