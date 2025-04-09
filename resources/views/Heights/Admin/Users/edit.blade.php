@@ -257,9 +257,9 @@
                                             </div>
 
                                             <div class="row mb-3">
-                                                <div class="col-md-4">
+                                                <div class="col-sm-12 col-md-6 col-lg-4 ">
                                                     <div class="form-group">
-                                                        <label for="picture">Picture (Leave blank to keep current picture)</label>
+                                                        <label for="picture">Picture <span style="font-size: 12px;">(Leave blank to keep current picture)</span></label>
                                                         <input type="file" name="picture" id="picture" class="form-control" onchange="previewImage(event)">
                                                         @error('picture')
                                                             <span class="invalid-feedback" role="alert">
@@ -268,7 +268,7 @@
                                                         @enderror
                                                     </div>
                                                 </div>
-                                                <div class="col-md-4 d-flex align-items-center">
+                                                <div class="col-sm-12 col-md-6 col-lg-4 mt-2  d-flex justify-content-center align-items-center">
                                                     <img id="avatar" class="avatar" src="{{ asset($user->picture ??  'https://via.placeholder.com/150') }}" alt="User Picture">
                                                 </div>
                                             </div>

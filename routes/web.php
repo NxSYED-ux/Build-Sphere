@@ -15,6 +15,7 @@ use App\Http\Controllers\WebControllers\OwnerDashboardController;
 use App\Http\Controllers\WebControllers\RolePermissionController;
 use App\Http\Controllers\WebControllers\RoleController;
 use App\Http\Controllers\WebControllers\AssignUnitController;
+use App\Http\Controllers\WebControllers\SignUpController;
 use App\Http\Controllers\WebControllers\UsersController;
 use Illuminate\Support\Facades\Route;
 
@@ -28,8 +29,12 @@ Route::get('/index', function () { return view('landing-views.index'); });
 Route::get('/admin-login', [AuthController::class, 'index'])->name('admin-login-index');
 Route::get('/owner-login', [AuthController::class, 'index'])->name('owner-login-index');
 
-Route::get('login', [AuthController::class, 'index'])->name('login');
-Route::post('login', [AuthController::class, 'login'])->name('login');
+Route::get('/login', [AuthController::class, 'index'])->name('login');
+Route::post('/login', [AuthController::class, 'login'])->name('login');
+
+Route::get('/owner-signUp', [SignUpController::class, 'index'])->name('owner-signUp-index');
+Route::post('/owner-signUp', [SignUpController::class, 'register'])->name('owner-signUp-register');
+Route::post('/send_signup_otp', [SignUpController::class, 'send_otp'])->name('send_signup_otp');
 
 
 Route::prefix('auth')->group(function () {

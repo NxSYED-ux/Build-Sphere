@@ -119,7 +119,7 @@
                                                         <span id="cnic_status"></span><br>
                                                         <div class="position-relative">
                                                             <input type="text" name="cnic" id="cnic" class="form-control @error('cnic') is-invalid @enderror"
-                                                                value="{{ old('cnic') }}" maxlength="15" placeholder="12345-1234567-1">
+                                                                value="{{ old('cnic') }}" maxlength="15" placeholder="12345-1234567-1" required>
                                                             <i class='bx bxs-id-card input-icon position-absolute top-50 end-0 translate-middle-y me-3'></i>
                                                         </div>
                                                         @error('cnic')
@@ -239,7 +239,7 @@
                                                         <input type="file" name="picture" id="picture" class="form-control" accept="image/*" onchange="previewImage(event)">
                                                     </div>
                                                 </div>
-                                                <div class="col-sm-12 col-md-6 col-lg-4 d-flex align-items-center">
+                                                <div class="col-sm-12 col-md-6 col-lg-4 d-flex justify-content-center align-items-center">
                                                     <img id="avatar" class="avatar" src="{{ old('picture') ? asset(old('picture')) : asset('img/placeholder-profile.png') }}" alt="User Picture">
                                                 </div>
                                             </div>
