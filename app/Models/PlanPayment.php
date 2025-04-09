@@ -9,6 +9,8 @@ class PlanPayment extends Model
 {
     use HasFactory;
 
+    protected $table = 'planPayments';
+
     protected $fillable = [
         'user_id',
         'plan_id',
