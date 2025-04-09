@@ -524,7 +524,7 @@ INSERT INTO `plans` (`id`, `name`, `description`, `active`, `created_at`, `updat
 (3, 'Pro', 'Advanced features for professionals managing multiple properties with automation and insights.', 1, NULL, NULL);
 
 
-INSERT INTO `planservices` (`id`, `plan_id`, `name`, `keyword`, `quantity`, `is_active`, `meta`, `created_at`, `updated_at`) VALUES
+INSERT INTO `planservices` (`id`, `plan_id`, `name`, `keyword`, `quantity`, `status`, `meta`, `created_at`, `updated_at`) VALUES
 (1, 1, 'Building Management', 'building', 3, 1, NULL, '2025-04-09 13:20:14', '2025-04-09 13:20:14'),
 (2, 1, 'Manager Accounts', 'manager', 2, 1, NULL, '2025-04-09 13:20:14', '2025-04-09 13:20:14'),
 (3, 1, 'Staff per Building', 'staff', 20, 1, NULL, '2025-04-09 13:20:14', '2025-04-09 13:20:14'),
