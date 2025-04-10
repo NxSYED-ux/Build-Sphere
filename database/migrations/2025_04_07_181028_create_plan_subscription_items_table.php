@@ -8,11 +8,11 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('planSubscriptionItems', function (Blueprint $table) {
+        Schema::create('plansubscriptionitems', function (Blueprint $table) {
             $table->id();
 
             $table->foreignId('organization_id')->constrained()->onDelete('cascade');
-            $table->unsignedBigInteger('subscription_id');
+            $table->foreignId('subscription_id')->constrained()->onDelete('cascade');
             $table->unsignedBigInteger('service_id');
 
             $table->string('service_name');
@@ -22,8 +22,7 @@ return new class extends Migration
             $table->integer('used')->default(0);
             $table->json('meta')->nullable();
 
-            $table->foreign('subscription_id')->references('id')->on('planSubscriptions')->onDelete('cascade');
-            $table->foreign('service_id')->references('id')->on('planServices')->onDelete('cascade');
+            $table->foreign('service_id')->references('id')->on('planservices')->onDelete('cascade');
 
             $table->timestamps();
         });

@@ -16,7 +16,7 @@ return new class extends Migration
             $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
 
             $table->foreign('user_id')->references('id')->on('users');
-            $table->foreign('unit_id')->references('id')->on('buildingUnits');
+            $table->foreign('unit_id')->references('id')->on('buildingunits');
         });
     }
 

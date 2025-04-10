@@ -9,7 +9,7 @@ class DropdownValue extends Model
 {
     use HasFactory;
 
-    protected $table = 'dropDownValues';
+    protected $table = 'dropdownvalues';
 
     protected $primaryKey = 'id';
 

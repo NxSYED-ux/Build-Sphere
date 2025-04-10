@@ -24,7 +24,7 @@
     <h1 class="text-3xl font-bold text-gray-800 mb-8">Complete Your Subscription</h1>
 
     <div class="flex flex-col lg:flex-row gap-8">
-        <!-- Left Side - Payment Details -->
+        <!-- Left Side - Transaction Details -->
         <div class="lg:w-1/2 bg-white rounded-xl shadow-md p-6">
             <h2 class="text-xl font-semibold text-gray-700 mb-6">Payment Information</h2>
 

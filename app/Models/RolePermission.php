@@ -9,7 +9,7 @@ class RolePermission extends Model
 {
     use HasFactory;
 
-    protected $table = 'rolePermissions';
+    protected $table = 'rolepermissions';
 
     protected $primaryKey = 'id';
 

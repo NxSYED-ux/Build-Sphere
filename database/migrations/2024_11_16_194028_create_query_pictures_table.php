@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('queryPictures', function (Blueprint $table) {
+        Schema::create('querypictures', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('query_id');
             $table->string('file_path',255)->nullable();
@@ -22,6 +22,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('queryPictures');
+        Schema::dropIfExists('querypictures');
     }
 };

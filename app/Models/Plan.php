@@ -26,11 +26,11 @@ class Plan extends Model
 
     public function subscriptions()
     {
-        return $this->hasMany(PlanSubscription::class, 'plan_id', 'id');
+        return $this->hasMany(Subscription::class, 'plan_id', 'id');
     }
 
-    public function payments()
+    public function transactions()
     {
-        return $this->hasMany(PlanPayment::class, 'plan_id', 'id');
+        return $this->hasMany(Transaction::class, 'plan_id', 'id');
     }
 }

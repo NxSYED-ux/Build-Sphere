@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\WebControllers;
 
 use App\Http\Controllers\Controller;
-use App\Models\DropdownType;
-use App\Models\DropdownValue;
+use App\Models\DropDownType;
+use App\Models\DropDownValue;
 use Illuminate\Http\Request;
 
 class DropdownValueController extends Controller
@@ -15,8 +15,8 @@ class DropdownValueController extends Controller
     public function index()
     {
         $activeTab = 'Values';
-        $types = DropdownType::with('values','parent')->get();
-        $values = DropdownVALUE::with('type','parent')->get();
+        $types = DropDownType::with('values','parent')->get();
+        $values = DropDownValue::with('type','parent')->get();
         return view('Heights.Admin.Dropdown.index', compact('types', 'values', 'activeTab'));
     }
 
@@ -25,8 +25,8 @@ class DropdownValueController extends Controller
      */
     public function create()
     {
-        $types = DropdownType::with(['values', 'parent'])->get();
-        $values = DropdownVALUE::all();
+        $types = DropDownType::with(['values', 'parent'])->get();
+        $values = DropDownValue::all();
         return view('Heights.Admin.Dropdown.create', compact('types', 'values'));
     }
 
@@ -55,7 +55,7 @@ class DropdownValueController extends Controller
             return redirect()->back()->withErrors(['error' => 'Value already exists with this combination.'])->withInput();
         }
 
-        DropdownValue::create($validatedData);
+        DropDownValue::create($validatedData);
 
         return redirect()->route('values.index')->with('success', 'Value added successfully.');
     }
@@ -73,7 +73,7 @@ class DropdownValueController extends Controller
      */
     public function edit(string $id)
     {
-        $value = DropdownVALUE::findOrFail($id);
+        $value = DropDownValue::findOrFail($id);
         if ($value) {
             return response()->json($value);
         }
@@ -103,7 +103,7 @@ class DropdownValueController extends Controller
             return redirect()->back()->withErrors(['error' => 'Value already exists with this combination.'])->withInput();
         }
 
-        $value = DropdownValue::findOrFail($id);
+        $value = DropDownValue::findOrFail($id);
         $value->update($request->all());
 
         return redirect()->route('values.index')->with('success', 'Value updated successfully.');
@@ -119,7 +119,7 @@ class DropdownValueController extends Controller
 
     protected function checkIfValueExists($value_name, $dropdown_type_id, $parent_value_id = null, $id = null)
     {
-        $query = DropdownValue::where('value_name', $value_name)
+        $query = DropDownValue::where('value_name', $value_name)
                             ->where('dropdown_type_id', $dropdown_type_id);
 
         if (!is_null($id)) {

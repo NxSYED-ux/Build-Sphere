@@ -9,7 +9,7 @@ class PlanSubscriptionItem extends Model
 {
     use HasFactory;
 
-    protected $table = 'planSubscriptionItems';
+    protected $table = 'plansubscriptionitems';
 
     protected $fillable = [
         'organization_id',
@@ -30,7 +30,7 @@ class PlanSubscriptionItem extends Model
     // Belongs to Relations
     public function subscription()
     {
-        return $this->belongsTo(PlanSubscription::class, 'subscription_id', 'id');
+        return $this->belongsTo(Subscription::class, 'subscription_id', 'id');
     }
 
     public function service()

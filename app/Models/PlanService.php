@@ -9,25 +9,24 @@ class PlanService extends Model
 {
     use HasFactory;
 
-    protected $table = 'planServices';
+    protected $table = 'planservices';
 
     protected $fillable = [
         'plan_id',
-        'name',
-        'keyword',
+        'service_catalog_id',
         'quantity',
         'status',
-        'meta',
-    ];
-
-    protected $casts = [
-        'meta' => 'array',
     ];
 
     // Belongs to Relations
+    public function serviceCatalog()
+    {
+        return $this->belongsTo(PlanServiceCatalog::class, 'service_catalog_id');
+    }
+
     public function plan()
     {
-        return $this->belongsTo(Plan::class, 'plan_id', 'id');
+        return $this->belongsTo(Plan::class);
     }
 
     // Has Many Relations

@@ -9,7 +9,7 @@ class BuildingLevel extends Model
 {
     use HasFactory;
 
-    protected $table = 'buildingLevels';
+    protected $table = 'buildinglevels';
     protected $primaryKey = 'id';
 
     protected $fillable = [

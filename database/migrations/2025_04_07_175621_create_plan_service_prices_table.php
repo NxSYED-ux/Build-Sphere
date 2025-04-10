@@ -8,24 +8,32 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('planServicePrices', function (Blueprint $table) {
+        Schema::create('billing_cycles', function (Blueprint $table) {
+            $table->id();
+            $table->integer('duration_months');
+            $table->string('description')->nullable();
+        });
+
+        Schema::create('planserviceprices', function (Blueprint $table) {
             $table->id();
 
             $table->unsignedBigInteger('service_id');
+            $table->foreignId('billing_cycle_id')->constrained('billing_cycles')->onDelete('cascade');
 
-            $table->string('billing_cycle');
             $table->decimal('price', 10, 2);
 
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
 
-            $table->foreign('service_id')->references('id')->on('planServices')->onDelete('cascade');
-            $table->unique(['service_id', 'billing_cycle']);
+            $table->foreign('service_id')->references('id')->on('planservices')->onDelete('cascade');
+            $table->unique(['service_id', 'billing_cycle_id']);
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('planServicePrices');
+        Schema::dropIfExists('planserviceprices');
+        Schema::dropIfExists('billing_cycles');
     }
 };
+

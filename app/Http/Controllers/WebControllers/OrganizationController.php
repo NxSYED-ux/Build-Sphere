@@ -5,7 +5,7 @@ namespace App\Http\Controllers\WebControllers;
 use App\Http\Controllers\Controller;
 use App\Models\Address;
 use App\Models\Building;
-use App\Models\DropdownType;
+use App\Models\DropDownType;
 use App\Models\Organization;
 use App\Models\OrganizationPicture;
 use App\Models\User;
@@ -22,7 +22,7 @@ class OrganizationController extends Controller
         try {
             $activeTab = 'Tab1';
             $organizations = Organization::with('address', 'pictures', 'owner')->get();
-            $dropdownData = DropdownType::with(['values.childs.childs'])->where('type_name', 'Country')->get(); // Country -> Province -> City
+            $dropdownData = DropDownType::with(['values.childs.childs'])->where('type_name', 'Country')->get(); // Country -> Province -> City
             $owners = User::where('role_id', 2)
                 ->whereNotIn('id', Organization::pluck('owner_id'))
                 ->pluck('name', 'id');
@@ -102,7 +102,7 @@ class OrganizationController extends Controller
     public function edit(string $id)
     {
         $organization = Organization::with('address','pictures')->findOrFail($id);
-        $dropdownData = DropdownType::with(['values.childs.childs'])->where('type_name', 'Country')->get(); // Country -> Province -> City
+        $dropdownData = DropDownType::with(['values.childs.childs'])->where('type_name', 'Country')->get(); // Country -> Province -> City
         $owners = User::where('role_id',2)->pluck('name', 'id');
         return view('Heights.Admin.Organizations.edit',compact('organization','dropdownData', 'owners'));
     }

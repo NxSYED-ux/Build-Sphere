@@ -9,7 +9,7 @@ class ManagerBuilding extends Model
 {
     use HasFactory;
 
-    protected $table = 'managerBuildings';
+    protected $table = 'managerbuildings';
 
     protected $fillable = [
         'user_id',

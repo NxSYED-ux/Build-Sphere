@@ -9,7 +9,7 @@ class StaffMember extends Model
 {
     use HasFactory;
 
-    protected $table = 'staffMembers';
+    protected $table = 'staffmembers';
 
     protected $primaryKey = 'id';
 

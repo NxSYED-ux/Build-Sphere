@@ -9,7 +9,7 @@ class UnitDocument extends Model
 {
     use HasFactory;
 
-    protected $table = 'unitDocuments';
+    protected $table = 'unitdocuments';
 
     protected $primaryKey = 'id';
 

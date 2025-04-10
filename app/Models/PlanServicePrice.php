@@ -9,11 +9,11 @@ class PlanServicePrice extends Model
 {
     use HasFactory;
 
-    protected $table = 'planServicePrices';
+    protected $table = 'planserviceprices';
 
     protected $fillable = [
         'service_id',
-        'billing_cycle',
+        'billing_cycle_id',
         'price'
     ];
 
@@ -21,5 +21,10 @@ class PlanServicePrice extends Model
     public function planService()
     {
         return $this->belongsTo(PlanService::class, 'service_id', 'id');
+    }
+
+    public function billingCycle()
+    {
+        return $this->belongsTo(BillingCycle::class);
     }
 }

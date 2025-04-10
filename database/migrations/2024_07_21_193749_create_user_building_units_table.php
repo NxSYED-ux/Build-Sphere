@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('userBuildingUnits', function (Blueprint $table) {
+        Schema::create('userbuildingunits', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('unit_id');
@@ -24,7 +24,7 @@ return new class extends Migration
             $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
 
             $table->foreign('user_id')->references('id')->on('users');
-            $table->foreign('unit_id')->references('id')->on('buildingUnits');
+            $table->foreign('unit_id')->references('id')->on('buildingunits');
             $table->foreign('created_by')->references('id')->on('users');
             $table->foreign('updated_by')->references('id')->on('users');
         });
@@ -32,6 +32,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('userBuildingUnits');
+        Schema::dropIfExists('userbuildingunits');
     }
 };

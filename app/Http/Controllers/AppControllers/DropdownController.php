@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\AppControllers;
 
 use App\Http\Controllers\Controller;
-use App\Models\DropdownType;
-use App\Models\DropdownValue;
+use App\Models\DropDownType;
+use App\Models\DropDownValue;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
@@ -17,7 +17,7 @@ class DropdownController extends Controller
                 return response()->json(['error' => 'Type is required'], 400);
             }
 
-            $data = DropdownType::where('type_name', $type)
+            $data = DropDownType::where('type_name', $type)
                 ->where('status', 1)
                 ->with(['values' => function ($query) {
                     $query->where('status', 1)->select('value_name', 'dropdown_type_id');
@@ -46,7 +46,7 @@ class DropdownController extends Controller
                 return response()->json(['error' => 'Value is required'], 400);
             }
 
-            $data = DropdownValue::where('value_name', $value)
+            $data = DropDownValue::where('value_name', $value)
                 ->where('status', 1)
                 ->with(['childs' => function ($query) {
                     $query->where('status', 1);

@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('dropDownValues', function (Blueprint $table) {
+        Schema::create('dropdownvalues', function (Blueprint $table) {
             $table->unsignedInteger('id',true);
             $table->string('value_name',50)->unique();
             $table->text('description')->nullable();
@@ -18,13 +18,13 @@ return new class extends Migration
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
 
-            $table->foreign('dropdown_type_id')->references('id')->on('dropDownValues');
-            $table->foreign('parent_value_id')->references('id')->on('dropDownValues');
+            $table->foreign('dropdown_type_id')->references('id')->on('dropdowntypes');
+            $table->foreign('parent_value_id')->references('id')->on('dropdownvalues');
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('dropDownValues');
+        Schema::dropIfExists('dropdownvalues');
     }
 };

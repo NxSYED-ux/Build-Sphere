@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('userUnitPictures', function (Blueprint $table) {
+        Schema::create('userunitpictures', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_unit_id');
             $table->string('file_path',255)->nullable();
@@ -16,12 +16,12 @@ return new class extends Migration
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
 
-            $table->foreign('user_unit_id')->references('id')->on('userBuildingUnits');
+            $table->foreign('user_unit_id')->references('id')->on('userbuildingunits');
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('userUnitPictures');
+        Schema::dropIfExists('userunitpictures');
     }
 };
