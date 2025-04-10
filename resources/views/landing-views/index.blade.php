@@ -99,120 +99,122 @@
                 </div>
             </div>
 
-
-            <div class="mx-auto mt-10 grid max-w-6xl grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                <!-- Card 1 -->
-                <div class="group rounded-3xl bg-white p-8 ring-1 ring-gray-900/10 transition-all duration-300 hover:bg-gray-900 hover:text-white">
-                    <h3 id="tier-hobby" class="text-base/7 font-semibold text-indigo-600 group-hover:text-white">Basic</h3>
-                    <p class="mt-4 flex items-baseline gap-x-2">
-                        <span class="text-5xl font-semibold tracking-tight text-gray-900 group-hover:text-white">$29</span>
-                        <span class="text-base text-gray-500 group-hover:text-white">/month</span>
-                    </p>
-                    <p class="mt-6 text-base/7 text-gray-600 group-hover:text-white">The perfect plan if you&#039;re just getting started with our product.</p>
-                    <ul role="list" class="mt-8 space-y-3 text-sm/6 text-gray-600 sm:mt-10">
-                        <li class="flex gap-x-3 group-hover:text-white">
-                            <svg class="h-6 w-5 flex-none text-indigo-600" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
-                                <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z" clip-rule="evenodd" />
-                            </svg>
-                            25 products
-                        </li>
-                        <li class="flex gap-x-3 group-hover:text-white">
-                            <svg class="h-6 w-5 flex-none text-indigo-600" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
-                                <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z" clip-rule="evenodd" />
-                            </svg>
-                            Up to 10,000 subscribers
-                        </li>
-                        <li class="flex gap-x-3 group-hover:text-white">
-                            <svg class="h-6 w-5 flex-none text-indigo-600" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
-                                <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z" clip-rule="evenodd" />
-                            </svg>
-                            Advanced analytics
-                        </li>
-                        <li class="flex gap-x-3 group-hover:text-white">
-                            <svg class="h-6 w-5 flex-none text-indigo-600" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
-                                <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z" clip-rule="evenodd" />
-                            </svg>
-                            24-hour support response time
-                        </li>
-                    </ul>
-                    <a href="#" aria-describedby="tier-hobby" class="mt-8 block rounded-md px-3.5 py-2.5 text-center text-sm font-semibold text-indigo-600 ring-1 ring-indigo-200 ring-inset hover:bg-indigo-500 hover:text-white hover:ring-indigo-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 sm:mt-10">Get started today</a>
-                </div>
-
-                <!-- Card 2 (Hover Color Reference) -->
-                <div class="group relative rounded-3xl bg-gray-900 p-8 ring-1 ring-gray-900/10 transition-all duration-300">
-                    <h3 id="tier-hobby" class="text-base/7 font-semibold text-indigo-400">Enterprise</h3>
-                    <p class="mt-4 flex items-baseline gap-x-2">
-                        <span class="text-5xl font-semibold tracking-tight text-white">$99</span>
-                        <span class="text-base text-gray-500">/month</span>
-                    </p>
-                    <p class="mt-6 text-base/7 text-gray-300 ">The perfect plan if you&#039;re just getting started with our product.</p>
-                    <ul role="list" class="mt-8 space-y-3 text-sm/6 text-gray-300 sm:mt-10">
-                        <li class="flex gap-x-3">
-                            <svg class="h-6 w-5 flex-none text-indigo-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
-                                <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z" clip-rule="evenodd" />
-                            </svg>
-                            25 products
-                        </li>
-                        <li class="flex gap-x-3">
-                            <svg class="h-6 w-5 flex-none text-indigo-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
-                                <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z" clip-rule="evenodd" />
-                            </svg>
-                            Up to 10,000 subscribers
-                        </li>
-                        <li class="flex gap-x-3">
-                            <svg class="h-6 w-5 flex-none text-indigo-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
-                                <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z" clip-rule="evenodd" />
-                            </svg>
-                            Advanced analytics
-                        </li>
-                        <li class="flex gap-x-3">
-                            <svg class="h-6 w-5 flex-none text-indigo-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
-                                <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z" clip-rule="evenodd" />
-                            </svg>
-                            24-hour support response time
-                        </li>
-                    </ul>
-                    <a href="#" aria-describedby="tier-enterprise" class="mt-8 block rounded-md bg-indigo-500 px-3.5 py-2.5 text-center text-sm font-semibold text-white shadow-xs hover:bg-indigo-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500 sm:mt-10">Get started today</a>
-                </div>
-
-                <!-- Card 3 -->
-                <div class="group rounded-3xl bg-white p-8 ring-1 ring-gray-900/10 transition-all duration-300 hover:bg-gray-900 hover:text-white">
-                    <h3 id="tier-hobby" class="text-base/7 font-semibold text-indigo-600 group-hover:text-white">Basic</h3>
-                    <p class="mt-4 flex items-baseline gap-x-2">
-                        <span class="text-5xl font-semibold tracking-tight text-gray-900 group-hover:text-white">$29</span>
-                        <span class="text-base text-gray-500 group-hover:text-white">/month</span>
-                    </p>
-                    <p class="mt-6 text-base/7 text-gray-600 group-hover:text-white">The perfect plan if you&#039;re just getting started with our product.</p>
-                    <ul role="list" class="mt-8 space-y-3 text-sm/6 text-gray-600 sm:mt-10">
-                        <li class="flex gap-x-3 group-hover:text-white">
-                            <svg class="h-6 w-5 flex-none text-indigo-600" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
-                                <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z" clip-rule="evenodd" />
-                            </svg>
-                            25 products
-                        </li>
-                        <li class="flex gap-x-3 group-hover:text-white">
-                            <svg class="h-6 w-5 flex-none text-indigo-600" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
-                                <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z" clip-rule="evenodd" />
-                            </svg>
-                            Up to 10,000 subscribers
-                        </li>
-                        <li class="flex gap-x-3 group-hover:text-white">
-                            <svg class="h-6 w-5 flex-none text-indigo-600" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
-                                <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z" clip-rule="evenodd" />
-                            </svg>
-                            Advanced analytics
-                        </li>
-                        <li class="flex gap-x-3 group-hover:text-white">
-                            <svg class="h-6 w-5 flex-none text-indigo-600" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
-                                <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z" clip-rule="evenodd" />
-                            </svg>
-                            24-hour support response time
-                        </li>
-                    </ul>
-                    <a href="#" aria-describedby="tier-hobby" class="mt-8 block rounded-md px-3.5 py-2.5 text-center text-sm font-semibold text-indigo-600 ring-1 ring-indigo-200 ring-inset hover:bg-indigo-500 hover:text-white hover:ring-indigo-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 sm:mt-10">Get started today</a>
-                </div>
+            <div class="mx-auto mt-10 grid max-w-6xl grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 card-grid">
 
             </div>
+{{--            <div class="mx-auto mt-10 grid max-w-6xl grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">--}}
+{{--                <!-- Card 1 -->--}}
+{{--                <div class="group rounded-3xl bg-white p-8 ring-1 ring-gray-900/10 transition-all duration-300 hover:bg-gray-900 hover:text-white">--}}
+{{--                    <h3 id="tier-hobby" class="text-base/7 font-semibold text-indigo-600 group-hover:text-white plan_name">Basic</h3>--}}
+{{--                    <p class="mt-4 flex items-baseline gap-x-2">--}}
+{{--                        <span class="text-5xl font-semibold tracking-tight text-gray-900 group-hover:text-white plan_price">$29</span>  <!--currency PKR -->--}}
+{{--                        <span class="text-base text-gray-500 group-hover:text-white billing_cycle">/month</span>--}}
+{{--                    </p>--}}
+{{--                    <p class="mt-6 text-base/7 text-gray-600 group-hover:text-white plan_description">The perfect plan if you&#039;re just getting started with our product.</p>--}}
+{{--                    <ul role="list" class="mt-8 space-y-3 text-sm/6 text-gray-600 sm:mt-10">--}}
+{{--                        <li class="flex gap-x-3 group-hover:text-white">--}}
+{{--                            <svg class="h-6 w-5 flex-none text-indigo-600" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">--}}
+{{--                                <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z" clip-rule="evenodd" />--}}
+{{--                            </svg>--}}
+{{--                            2x Building Management  <!-- where 2 is service_quantity and Building Management is a service_name-->--}}
+{{--                        </li>--}}
+{{--                        <li class="flex gap-x-3 group-hover:text-white">--}}
+{{--                            <svg class="h-6 w-5 flex-none text-indigo-600" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">--}}
+{{--                                <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z" clip-rule="evenodd" />--}}
+{{--                            </svg>--}}
+{{--                            2x Manager Accounts--}}
+{{--                        </li>--}}
+{{--                        <li class="flex gap-x-3 group-hover:text-white">--}}
+{{--                            <svg class="h-6 w-5 flex-none text-indigo-600" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">--}}
+{{--                                <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z" clip-rule="evenodd" />--}}
+{{--                            </svg>--}}
+{{--                            20x Staff per Building--}}
+{{--                        </li>--}}
+{{--                        <li class="flex gap-x-3 group-hover:text-white">--}}
+{{--                            <svg class="h-6 w-5 flex-none text-indigo-600" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">--}}
+{{--                                <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z" clip-rule="evenodd" />--}}
+{{--                            </svg>--}}
+{{--                            5x Levels Per Buildings--}}
+{{--                        </li>--}}
+{{--                    </ul>--}}
+{{--                    <a href="#" aria-describedby="tier-hobby" class="mt-8 block rounded-md px-3.5 py-2.5 text-center text-sm font-semibold text-indigo-600 ring-1 ring-indigo-200 ring-inset hover:bg-indigo-500 hover:text-white hover:ring-indigo-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 sm:mt-10">Get started today</a>--}}
+{{--                </div>--}}
+
+{{--                <!-- Card 2 (Hover Color Reference) -->--}}
+{{--                <div class="group relative rounded-3xl bg-gray-900 p-8 ring-1 ring-gray-900/10 transition-all duration-300">--}}
+{{--                    <h3 id="tier-hobby" class="text-base/7 font-semibold text-indigo-400">Enterprise</h3>--}}
+{{--                    <p class="mt-4 flex items-baseline gap-x-2">--}}
+{{--                        <span class="text-5xl font-semibold tracking-tight text-white">$99</span>--}}
+{{--                        <span class="text-base text-gray-500">/month</span>--}}
+{{--                    </p>--}}
+{{--                    <p class="mt-6 text-base/7 text-gray-300 ">The perfect plan if you&#039;re just getting started with our product.</p>--}}
+{{--                    <ul role="list" class="mt-8 space-y-3 text-sm/6 text-gray-300 sm:mt-10">--}}
+{{--                        <li class="flex gap-x-3">--}}
+{{--                            <svg class="h-6 w-5 flex-none text-indigo-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">--}}
+{{--                                <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z" clip-rule="evenodd" />--}}
+{{--                            </svg>--}}
+{{--                            25 products--}}
+{{--                        </li>--}}
+{{--                        <li class="flex gap-x-3">--}}
+{{--                            <svg class="h-6 w-5 flex-none text-indigo-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">--}}
+{{--                                <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z" clip-rule="evenodd" />--}}
+{{--                            </svg>--}}
+{{--                            Up to 10,000 subscribers--}}
+{{--                        </li>--}}
+{{--                        <li class="flex gap-x-3">--}}
+{{--                            <svg class="h-6 w-5 flex-none text-indigo-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">--}}
+{{--                                <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z" clip-rule="evenodd" />--}}
+{{--                            </svg>--}}
+{{--                            Advanced analytics--}}
+{{--                        </li>--}}
+{{--                        <li class="flex gap-x-3">--}}
+{{--                            <svg class="h-6 w-5 flex-none text-indigo-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">--}}
+{{--                                <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z" clip-rule="evenodd" />--}}
+{{--                            </svg>--}}
+{{--                            24-hour support response time--}}
+{{--                        </li>--}}
+{{--                    </ul>--}}
+{{--                    <a href="#" aria-describedby="tier-enterprise" class="mt-8 block rounded-md bg-indigo-500 px-3.5 py-2.5 text-center text-sm font-semibold text-white shadow-xs hover:bg-indigo-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500 sm:mt-10">Get started today</a>--}}
+{{--                </div>--}}
+
+{{--                <!-- Card 3 -->--}}
+{{--                <div class="group rounded-3xl bg-white p-8 ring-1 ring-gray-900/10 transition-all duration-300 hover:bg-gray-900 hover:text-white">--}}
+{{--                    <h3 id="tier-hobby" class="text-base/7 font-semibold text-indigo-600 group-hover:text-white">Basic</h3>--}}
+{{--                    <p class="mt-4 flex items-baseline gap-x-2">--}}
+{{--                        <span class="text-5xl font-semibold tracking-tight text-gray-900 group-hover:text-white">$29</span>--}}
+{{--                        <span class="text-base text-gray-500 group-hover:text-white">/month</span>--}}
+{{--                    </p>--}}
+{{--                    <p class="mt-6 text-base/7 text-gray-600 group-hover:text-white">The perfect plan if you&#039;re just getting started with our product.</p>--}}
+{{--                    <ul role="list" class="mt-8 space-y-3 text-sm/6 text-gray-600 sm:mt-10">--}}
+{{--                        <li class="flex gap-x-3 group-hover:text-white">--}}
+{{--                            <svg class="h-6 w-5 flex-none text-indigo-600" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">--}}
+{{--                                <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z" clip-rule="evenodd" />--}}
+{{--                            </svg>--}}
+{{--                            25 products--}}
+{{--                        </li>--}}
+{{--                        <li class="flex gap-x-3 group-hover:text-white">--}}
+{{--                            <svg class="h-6 w-5 flex-none text-indigo-600" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">--}}
+{{--                                <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z" clip-rule="evenodd" />--}}
+{{--                            </svg>--}}
+{{--                            Up to 10,000 subscribers--}}
+{{--                        </li>--}}
+{{--                        <li class="flex gap-x-3 group-hover:text-white">--}}
+{{--                            <svg class="h-6 w-5 flex-none text-indigo-600" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">--}}
+{{--                                <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z" clip-rule="evenodd" />--}}
+{{--                            </svg>--}}
+{{--                            Advanced analytics--}}
+{{--                        </li>--}}
+{{--                        <li class="flex gap-x-3 group-hover:text-white">--}}
+{{--                            <svg class="h-6 w-5 flex-none text-indigo-600" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">--}}
+{{--                                <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z" clip-rule="evenodd" />--}}
+{{--                            </svg>--}}
+{{--                            24-hour support response time--}}
+{{--                        </li>--}}
+{{--                    </ul>--}}
+{{--                    <a href="#" aria-describedby="tier-hobby" class="mt-8 block rounded-md px-3.5 py-2.5 text-center text-sm font-semibold text-indigo-600 ring-1 ring-indigo-200 ring-inset hover:bg-indigo-500 hover:text-white hover:ring-indigo-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 sm:mt-10">Get started today</a>--}}
+{{--                </div>--}}
+
+{{--            </div>--}}
 
         </div>
 
@@ -226,11 +228,12 @@
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             const planCycleSelect = document.getElementById("billing-cycle");
+            const plansContainer = document.querySelector(".card-grid"); // Select the container where cards will be inserted
 
             function fetchPlans(cycleId) {
                 if (!cycleId) return;
 
-                fetch(`{{ route('plans', ':planCycle') }}`.replace(':planCycle', 1), {
+                fetch(`{{ route('plans', ':planCycle') }}`.replace(':planCycle', cycleId), {
                     method: "GET",
                     headers: {
                         "Accept": "application/json"
@@ -240,8 +243,87 @@
                     .then(data => {
                         let plans = data.plans;
                         console.log("Fetched Plans:", plans);
+                        renderPlans(plans);
                     })
                     .catch(error => console.error("Error fetching plans:", error));
+            }
+
+            function renderPlans(plans) {
+                // Clear existing cards
+                plansContainer.innerHTML = '';
+
+                // Create a card for each plan
+                plans.forEach(plan => {
+                    const card = document.createElement('div');
+                    card.className = 'group rounded-3xl bg-white p-8 ring-1 ring-gray-900/10 transition-all duration-300 hover:bg-gray-900 hover:text-white';
+
+                    // Plan name
+                    const planName = document.createElement('h3');
+                    planName.className = 'text-base/7 font-semibold text-indigo-600 group-hover:text-white plan_name';
+                    planName.id = `tier-${plan.plan_name.toLowerCase()}`;
+                    planName.textContent = plan.plan_name;
+
+                    // Price section
+                    const priceSection = document.createElement('p');
+                    priceSection.className = 'mt-4 flex items-baseline gap-x-2';
+
+                    const price = document.createElement('span');
+                    price.className = 'text-5xl font-semibold tracking-tight text-gray-900 group-hover:text-white plan_price';
+                    price.textContent = `${plan.currency === 'PKR' ? 'Rs.' : '$'}${plan.total_price}`;
+
+                    const billingCycle = document.createElement('span');
+                    billingCycle.className = 'text-base text-gray-500 group-hover:text-white billing_cycle';
+                    billingCycle.textContent = '/month';
+
+                    priceSection.appendChild(price);
+                    priceSection.appendChild(billingCycle);
+
+                    // Description
+                    const description = document.createElement('p');
+                    description.className = 'mt-6 text-base/7 text-gray-600 group-hover:text-white plan_description';
+                    description.textContent = plan.plan_description;
+
+                    // Services list
+                    const servicesList = document.createElement('ul');
+                    servicesList.className = 'mt-8 space-y-3 text-sm/6 text-gray-600 sm:mt-10';
+                    servicesList.setAttribute('role', 'list');
+
+                    plan.services.forEach(service => {
+                        const serviceItem = document.createElement('li');
+                        serviceItem.className = 'flex gap-x-3 group-hover:text-white';
+
+                        const checkIcon = document.createElement('svg');
+                        checkIcon.className = 'h-6 w-5 flex-none text-indigo-600';
+                        checkIcon.setAttribute('viewBox', '0 0 20 20');
+                        checkIcon.setAttribute('fill', 'currentColor');
+                        checkIcon.setAttribute('aria-hidden', 'true');
+                        checkIcon.setAttribute('data-slot', 'icon');
+                        checkIcon.innerHTML = '<path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z" clip-rule="evenodd" />';
+
+                        const serviceText = document.createTextNode(`${service.service_quantity}x ${service.service_name}`);
+
+                        serviceItem.appendChild(checkIcon);
+                        serviceItem.appendChild(serviceText);
+                        servicesList.appendChild(serviceItem);
+                    });
+
+                    // Button
+                    const button = document.createElement('a');
+                    button.href = '#';
+                    button.className = 'mt-8 block rounded-md px-3.5 py-2.5 text-center text-sm font-semibold text-indigo-600 ring-1 ring-indigo-200 ring-inset hover:bg-indigo-500 hover:text-white hover:ring-indigo-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 sm:mt-10';
+                    button.setAttribute('aria-describedby', `tier-${plan.plan_name.toLowerCase()}`);
+                    button.textContent = 'Get started today';
+
+                    // Append all elements to the card
+                    card.appendChild(planName);
+                    card.appendChild(priceSection);
+                    card.appendChild(description);
+                    card.appendChild(servicesList);
+                    card.appendChild(button);
+
+                    // Add card to container
+                    plansContainer.appendChild(card);
+                });
             }
 
             planCycleSelect.addEventListener("change", function () {
@@ -253,5 +335,36 @@
             }
         });
     </script>
+
+{{--    <script>--}}
+{{--        document.addEventListener("DOMContentLoaded", function () {--}}
+{{--            const planCycleSelect = document.getElementById("billing-cycle");--}}
+
+{{--            function fetchPlans(cycleId) {--}}
+{{--                if (!cycleId) return;--}}
+
+{{--                fetch(`{{ route('plans', ':planCycle') }}`.replace(':planCycle', 1), {--}}
+{{--                    method: "GET",--}}
+{{--                    headers: {--}}
+{{--                        "Accept": "application/json"--}}
+{{--                    }--}}
+{{--                })--}}
+{{--                    .then(response => response.json())--}}
+{{--                    .then(data => {--}}
+{{--                        let plans = data.plans;--}}
+{{--                        console.log("Fetched Plans:", plans);--}}
+{{--                    })--}}
+{{--                    .catch(error => console.error("Error fetching plans:", error));--}}
+{{--            }--}}
+
+{{--            planCycleSelect.addEventListener("change", function () {--}}
+{{--                fetchPlans(this.value);--}}
+{{--            });--}}
+
+{{--            if (planCycleSelect.value) {--}}
+{{--                fetchPlans(planCycleSelect.value);--}}
+{{--            }--}}
+{{--        });--}}
+{{--    </script>--}}
 
 @endpush

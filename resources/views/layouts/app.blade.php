@@ -186,6 +186,7 @@
     </div>
 
     <!-- Include jQuery library -->
+    <script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>
     <script src="{{ asset('jquery/jquery-3.7.1.min.js') }}"></script>
     <!-- Include SweetAlert2 JS from CDN -->
     <script src="{{ asset('js/sweetalert.js') }}"></script>
