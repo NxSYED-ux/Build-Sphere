@@ -79,6 +79,10 @@
 
                                     <form action="{{ route('owner-signUp-register') }}" method="POST" enctype="multipart/form-data">
                                         @csrf
+
+                                        <input type="hidden" name="package" value="{{$package}}">
+                                        <input type="hidden" name="cycle" value="{{$cycle}}">
+
                                         <div class="row rounded p-2" style="background-color: #f8f9fa;">
                                             <h5 class="mb-2">Organization</h5>
                                             <div class="col-lg-10">

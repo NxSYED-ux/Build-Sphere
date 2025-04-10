@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\BillingCycle;
 use App\Models\Plan;
 use App\Models\PlanServicePrice;
+use Illuminate\Http\Request;
 
 
 class landingController extends Controller
@@ -16,10 +17,14 @@ class landingController extends Controller
         return view('landing-views.index', compact('planCycles'));
     }
 
-    public function checkout(){
+    public function checkout(Request $request){
+
+        $selectedPackage = $request->query('package');
+        $selectedCycle = $request->query('cycle');
+
         $planCycles = BillingCycle::pluck('duration_months');
 
-        return view('landing-views.checkout', compact('planCycles'));
+        return view('landing-views.checkout', compact('planCycles', 'selectedCycle', 'selectedPackage'));
     }
 
     public function plans($planCycle)

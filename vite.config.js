@@ -8,19 +8,20 @@ export default defineConfig({
                 'resources/scss/app.scss',
                 'resources/js/app.js',
                 'resources/js/firebase-messaging.js',
-                'resources/js/permissions.js'
+                'resources/js/permissions.js',
             ],
             refresh: true,
         }),
     ],
     build: {
         manifest: true,
+        outDir: 'public/build',
         rollupOptions: {
             output: {
-                entryFileNames: 'assets/[name].js',
-                chunkFileNames: 'assets/[name].js',
-                assetFileNames: 'assets/[name].[ext]'
-            }
-        }
-    }
+                entryFileNames: '[name].js',
+                chunkFileNames: '[name].js',
+                assetFileNames: '[name].[ext]',
+            },
+        },
+    },
 });

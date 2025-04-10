@@ -4,6 +4,7 @@ namespace App\Http\Controllers\WebControllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\Address;
+use App\Models\BillingCycle;
 use App\Models\DropDownType;
 use App\Models\Organization;
 use App\Models\OrganizationPicture;
@@ -20,12 +21,15 @@ use Illuminate\Validation\ValidationException;
 
 class SignUpController extends Controller
 {
-    public function index(){
+    public function index(Request $request){
+        $package = $request->query('package');
+        $cycle = $request->query('cycle');
+
         $dropdownData = DropDownType::with(['values.childs.childs'])
             ->where('type_name', 'Country')
             ->get();
 
-        return view('landing-views.ownerSignUp', compact('dropdownData'));
+        return view('landing-views.ownerSignUp', compact('dropdownData','package', 'cycle'));
     }
 
     public function send_otp(Request $request)
@@ -184,8 +188,9 @@ class SignUpController extends Controller
 
             $selectedPackage = $request->input('package');
             $selectedCycle = $request->input('cycle');
+            $planCycles = BillingCycle::pluck('duration_months');
 
-            return view('landing-views.checkOut', compact('selectedPackage', 'selectedCycle'));
+            return view('landing-views.checkout', compact('planCycles' ,'selectedPackage', 'selectedCycle'));
 
         } catch (\Exception $e) {
             DB::rollBack();
