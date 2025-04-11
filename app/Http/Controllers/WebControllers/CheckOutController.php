@@ -118,7 +118,6 @@ class CheckOutController extends Controller
                 'description' => $planDetails['plan_name'] . ': ' . $planDetails['plan_description'],
                 'automatic_payment_methods' => [
                     'enabled' => true,
-                    'allow_redirects' => 'never',
                 ],
             ]);
 
