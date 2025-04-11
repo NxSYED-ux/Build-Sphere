@@ -21,7 +21,7 @@ class CheckOutController extends Controller
     public function index(Request $request){
         $request->validate([
             'email' => 'required|string|email|exists:users,email',
-            'organization_name' => 'required|string|exists:organizations,name',
+//            'organization_name' => 'required|string|exists:organizations,name',
         ]);
         try {
             $email = $request->input('email');
@@ -143,16 +143,6 @@ class CheckOutController extends Controller
                         'default_payment_method' => $request->payment_method_id,
                     ],
                 ]);
-
-//                Subscription::create([
-//                    'customer_payment_id' => $user->customer_payment_id,
-//                    'organization_id' => ,
-//
-//                ]);
-//
-//                Transaction::create([
-//
-//                ]);
 
                 return response()->json(['success' => true]);
             }
