@@ -8,6 +8,7 @@ use App\Http\Controllers\WebControllers\BuildingController;
 use App\Http\Controllers\WebControllers\BuildingLevelController;
 use App\Http\Controllers\WebControllers\BuildingTreeController;
 use App\Http\Controllers\WebControllers\BuildingUnitController;
+use App\Http\Controllers\WebControllers\CheckOutController;
 use App\Http\Controllers\WebControllers\DropdownTypeController;
 use App\Http\Controllers\WebControllers\DropdownValueController;
 use App\Http\Controllers\WebControllers\landingController;
@@ -26,7 +27,7 @@ Route::post('/pusher/auth', [AuthController::class, 'authenticatePusher'])->name
 Route::get('/', [landingController::class, 'index'])->name('index');
 Route::get('/index', [landingController::class, 'index']);
 
-Route::get('/checkout', [landingController::class, 'checkout'])->name('checkout');
+Route::get('/checkout', [CheckOutController::class, 'index'])->name('checkout');
 Route::get('/plans/{planCycle}', [landingController::class, 'plans'])->name('plans');
 
 // Authentication routes

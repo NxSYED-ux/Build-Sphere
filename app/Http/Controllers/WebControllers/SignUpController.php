@@ -188,16 +188,14 @@ class SignUpController extends Controller
 
             $selectedPackage = $request->input('package');
             $selectedCycle = $request->input('cycle');
-            $planCycles = BillingCycle::pluck('duration_months');
 
-            return view('landing-views.checkout', compact('planCycles' ,'selectedPackage', 'selectedCycle'));
+            return view('landing-views.checkout', compact('selectedPackage', 'selectedCycle'));
 
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Failed to register: ' . $e->getMessage());
             return redirect()->back()->withInput()->with('error', 'Failed to register. Please try again.');
         }
-
     }
 
     private function handleFileUpload(Request $request, string $source, string $folder): ?array
