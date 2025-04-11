@@ -5,18 +5,27 @@ namespace App\Http\Controllers\WebControllers;
 use App\Http\Controllers\Controller;
 use App\Models\BillingCycle;
 use App\Models\Plan;
+use App\Models\Subscription;
+use App\Models\Transaction;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Stripe\Customer;
 use Stripe\PaymentIntent;
+use Stripe\PaymentMethod;
 use Stripe\Stripe;
 
 
 class CheckOutController extends Controller
 {
     public function index(Request $request){
+        $request->validate([
+            'email' => 'required|string|email|exists:users,email',
+            'organization_name' => 'required|string|exists:organizations,name',
+        ]);
         try {
             $email = $request->input('email');
+            $organization_name = $request->input('organization_name');
             $selectedPackage = $request->input('package');
             $selectedCycle = $request->input('cycle');
             $planCycles = BillingCycle::pluck('duration_months');
@@ -107,6 +116,10 @@ class CheckOutController extends Controller
                 'confirmation_method' => 'manual',
                 'confirm' => true,
                 'description' => $planDetails['plan_name'] . ': ' . $planDetails['plan_description'],
+                'automatic_payment_methods' => [
+                    'enabled' => true,
+                    'allow_redirects' => 'never',
+                ],
             ]);
 
             if (
@@ -121,6 +134,28 @@ class CheckOutController extends Controller
             }
 
             if ($paymentIntent->status === 'succeeded') {
+
+                $customer = Customer::retrieve($user->customer_payment_id);
+
+                PaymentMethod::retrieve($request->payment_method_id)->attach([
+                    'customer' => $customer->id,
+                ]);
+
+                Customer::update($customer->id, [
+                    'invoice_settings' => [
+                        'default_payment_method' => $request->payment_method_id,
+                    ],
+                ]);
+
+//                Subscription::create([
+//                    'customer_payment_id' => $user->customer_payment_id,
+//                    'organization_id' => ,
+//
+//                ]);
+//
+//                Transaction::create([
+//
+//                ]);
 
                 return response()->json(['success' => true]);
             }
