@@ -116,9 +116,7 @@ class CheckOutController extends Controller
                 'confirmation_method' => 'manual',
                 'confirm' => true,
                 'description' => $planDetails['plan_name'] . ': ' . $planDetails['plan_description'],
-                'automatic_payment_methods' => [
-                    'enabled' => true,
-                ],
+                'return_url' => route('checkout.success'),
             ]);
 
             if (
