@@ -21,7 +21,7 @@ class CheckOutController extends Controller
     public function index(Request $request){
         $request->validate([
             'email' => 'required|string|email|exists:users,email',
-//            'organization_name' => 'required|string|exists:organizations,name',
+            'organization_name' => 'required|string|exists:organizations,name',
         ]);
         try {
             $email = $request->input('email');
@@ -108,6 +108,19 @@ class CheckOutController extends Controller
 
             Stripe::setApiKey(config('services.stripe.secret'));
 
+            $customer = Customer::retrieve($user->customer_payment_id);
+
+            PaymentMethod::retrieve($request->payment_method_id)->attach([
+                'customer' => $customer->id,
+            ]);
+
+            Customer::update($customer->id, [
+                'invoice_settings' => [
+                    'default_payment_method' => $request->payment_method_id,
+                ],
+            ]);
+
+
             $paymentIntent = PaymentIntent::create([
                 'amount' => $planDetails['total_price'] * 100,
                 'currency' => $planDetails['currency'],
@@ -131,18 +144,6 @@ class CheckOutController extends Controller
             }
 
             if ($paymentIntent->status === 'succeeded') {
-
-                $customer = Customer::retrieve($user->customer_payment_id);
-
-                PaymentMethod::retrieve($request->payment_method_id)->attach([
-                    'customer' => $customer->id,
-                ]);
-
-                Customer::update($customer->id, [
-                    'invoice_settings' => [
-                        'default_payment_method' => $request->payment_method_id,
-                    ],
-                ]);
 
                 return response()->json(['success' => true]);
             }
