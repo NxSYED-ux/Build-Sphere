@@ -28,6 +28,7 @@ Route::get('/', [landingController::class, 'index'])->name('index');
 Route::get('/index', [landingController::class, 'index']);
 
 Route::get('/checkout', [CheckOutController::class, 'index'])->name('checkout');
+Route::post('/checkout', [CheckOutController::class, 'index'])->name('checkout.processing');
 Route::get('/plans/{planCycle}', [landingController::class, 'plans'])->name('plans');
 
 // Authentication routes

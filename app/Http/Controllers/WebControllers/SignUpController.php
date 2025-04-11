@@ -4,7 +4,6 @@ namespace App\Http\Controllers\WebControllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\Address;
-use App\Models\BillingCycle;
 use App\Models\DropDownType;
 use App\Models\Organization;
 use App\Models\OrganizationPicture;
@@ -18,6 +17,9 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Validation\ValidationException;
+use Stripe\Stripe;
+use Stripe\Customer;
+
 
 class SignUpController extends Controller
 {
@@ -126,7 +128,7 @@ class SignUpController extends Controller
         DB::beginTransaction();
 
         try {
-
+            Stripe::setApiKey(config('services.stripe.secret'));
             $otpCheck = $this->verify_otp($request->email, $request->otp);
 
             if (!$otpCheck['status']) {
@@ -154,6 +156,19 @@ class SignUpController extends Controller
                 'postal_code' => $request->postal_code,
             ]);
 
+            $stripeCustomer = Customer::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'phone' => $request->phone_no,
+                'address' => [
+                    'line1' => $request->location,
+                    'city' => $request->city,
+                    'state' => $request->province,
+                    'postal_code' => $request->postal_code,
+                    'country' => $request->country,
+                ],
+            ]);
+
             $user = User::create([
                 'name' => $request->name,
                 'email' => $request->email,
@@ -166,6 +181,7 @@ class SignUpController extends Controller
                 'address_id' => $address->id,
                 'date_of_birth' => $request->date_of_birth,
                 'is_verified' => 1,
+                'customer_payment_id' => $stripeCustomer->id,
             ]);
 
             $org_address = Address::create([
@@ -197,6 +213,7 @@ class SignUpController extends Controller
             $selectedCycle = $request->input('cycle');
 
             return redirect()->route('checkout', [
+                'email' => $user->email,
                 'package' => $selectedPackage,
                 'cycle' => $selectedCycle,
             ]);
