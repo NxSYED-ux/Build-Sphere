@@ -267,7 +267,7 @@
         }
 
         .fade-out {
-            animation: fadeOut 0.8s ease-out forwards;
+            animation: fadeOut 0.5s ease-out forwards;
         }
 
         @keyframes fadeOut {
@@ -469,12 +469,26 @@
         @endif
 
 
-        @vite(['resources/js/firebase-messaging.js'])
         <script>
-            document.addEventListener("DOMContentLoaded", () => {
-                initFirebaseMessaging().catch(console.error);
+            window.FIREBASE_CONFIG = {
+                apiKey: "{{ env('VITE_FIREBASE_API_KEY') }}",
+                authDomain: "{{ env('VITE_FIREBASE_AUTH_DOMAIN') }}",
+                projectId: "{{ env('VITE_FIREBASE_PROJECT_ID') }}",
+                messagingSenderId: "{{ env('VITE_FIREBASE_MESSAGING_SENDER_ID') }}",
+                appId: "{{ env('VITE_FIREBASE_APP_ID') }}",
+                vapidKey: "{{ env('VITE_FIREBASE_VAPID_KEY') }}"
+            };
+        </script>
+
+        <!-- Include Firebase messaging script -->
+        <script src="{{ asset('js/appjs/firebase-messaging.js') }}"></script>
+        <script>
+            // Initialize Firebase Messaging
+            document.addEventListener("DOMContentLoaded", function () {
+                initFirebaseMessaging();
             });
         </script>
+
 
 
         <script type="text/javascript">

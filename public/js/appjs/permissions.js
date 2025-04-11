@@ -5,7 +5,10 @@ document.addEventListener("DOMContentLoaded", function() {
     const roleMeta = document.querySelector('meta[name="role-id"]');
     const superAdminMeta = document.querySelector('meta[name="is-super-admin"]');
 
-    if (!csrfMeta || !userMeta || !roleMeta || !superAdminMeta) {
+    const pusherKeyMeta = document.querySelector('meta[name="pusher-key"]');
+    const pusherClusterMeta = document.querySelector('meta[name="pusher-cluster"]');
+
+    if (!csrfMeta || !userMeta || !roleMeta || !superAdminMeta || !pusherKeyMeta) {
         return;
     }
 
@@ -27,8 +30,11 @@ document.addEventListener("DOMContentLoaded", function() {
     applyPermissions();
 
     // 4. Initialize Pusher if configured
-    if (import.meta.env.VITE_PUSHER_APP_KEY) {
-        initializePusher(csrfMeta.content, userMeta.content, roleMeta.content);
+    const pusherKey = pusherKeyMeta.content;
+    const pusherCluster = pusherClusterMeta?.content || 'ap2';
+
+    if (pusherKey) {
+        initializePusher(csrfMeta.content, userMeta.content, roleMeta.content, pusherKey, pusherCluster);
     } else {
         console.warn("User menu error 1");
     }
@@ -37,10 +43,10 @@ document.addEventListener("DOMContentLoaded", function() {
     watchLocalStorage();
 });
 
-function initializePusher(csrfToken, userId, roleId) {
+function initializePusher(csrfToken, userId, roleId, pusherKey, pusherCluster) {
 
-    const pusher = new Pusher(import.meta.env.VITE_PUSHER_APP_KEY, {
-        cluster: import.meta.env.VITE_PUSHER_APP_CLUSTER || 'ap2',
+    const pusher = new Pusher(pusherKey, {
+        cluster: pusherCluster || 'ap2',
         encrypted: true,
         authEndpoint: '/pusher/auth',
         auth: {

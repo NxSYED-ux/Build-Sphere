@@ -1,16 +1,9 @@
 @extends('layouts.guest')
 
-@section('title', 'Organization')
+@section('title', 'SignUp')
 
 @push('styles')
     <style>
-        .avatar {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            margin-bottom: 20px;
-            object-fit: cover;
-        }
 
         .image-upload-frame {
             position: relative;
@@ -28,7 +21,7 @@
         }
 
         .image-upload-frame:hover {
-            border-color: #0d6efd;
+            border-color: #008CFF;
         }
 
         .image-upload-frame img {
@@ -41,12 +34,12 @@
             position: absolute;
             bottom: 8px;
             right: 8px;
-            background-color: #0d6efd;
+            background-color: #008CFF;
             border: none;
             border-radius: 50%;
             padding: 6px;
             cursor: pointer;
-            color: #fff;
+            color: #fff !important;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -58,6 +51,40 @@
 
         .upload-btn i {
             font-size: 16px;
+            color: #ffff;
+        }
+
+        .submitBtn{
+            background-color: #008CFF;
+            color: #ffff;
+        }
+
+        .submitBtn:hover{
+            background-color: #008CFF;
+            color: #ffff;
+            opacity: 0.9;
+        }
+
+        .card{
+            background-color: var(--main-background-color) !important;
+        }
+
+        .form-cards{
+            background-color: var(--body-card-bg) !important;)
+        }
+        h4{
+            color: var(--main-text-color);
+        }
+        .verifyBtn{
+            border: 1px solid #008CFF;
+            background-color: #008CFF;
+            color: #ffff;
+        }
+        .verifyBtn:hover{
+            border: 1px solid #008CFF;
+            background-color: #008CFF;
+            color: #ffff;
+            opacity: 0.9;
         }
     </style>
 @endpush
@@ -70,21 +97,21 @@
                 <div class="col-md-12">
                     <div class="box" style="overflow-x: auto;">
                         <div class="container mt-2">
-                            <div class="d-flex justify-content-between align-items-center mb-2">
-                                <h4 class="mb-0">Sign Up</h4>
-                                <a href="{{ route('admin-login-index') }}" class="btn btn-secondary">Login</a>
+                            <div class="d-flex justify-content-between align-items-center  px-1">
+                                <h4 class="mb-0 fw-bold">Sign Up</h4>
+                                <a href="{{ route('login') }}" class="btn btn-secondary">Login</a>
                             </div>
-                            <div class="card shadow p-3 mb-5 bg-body rounded" style="border: none;">
+                            <div class="card mb-5 bg-body rounded" style="border: none;">
                                 <div class="card-body " >
 
-                                    <form action="{{ route('owner-signUp-register') }}" method="POST" enctype="multipart/form-data">
+                                    <form action="{{ route('signUp') }}" method="POST" enctype="multipart/form-data">
                                         @csrf
 
                                         <input type="hidden" name="package" value="{{$package}}">
                                         <input type="hidden" name="cycle" value="{{$cycle}}">
 
-                                        <div class="row rounded p-2" style="background-color: #f8f9fa;">
-                                            <h5 class="mb-2">Organization</h5>
+                                        <div class="row rounded shadow p-2 form-cards">
+                                            <h5 class="mb-3 mt-1">Organization</h5>
                                             <div class="col-lg-10">
                                                 <div class="row">
 
@@ -184,8 +211,8 @@
                                             </div>
                                         </div>
 
-                                        <div class="row rounded p-2 my-2" style="background-color: #f8f9fa;">
-                                            <h5 class="mb-2">Owner Details</h5>
+                                        <div class="row rounded shadow p-2 my-2 mt-3 form-cards">
+                                            <h5 class="mb-3 mt-1">Owner Details</h5>
                                             <div class="col-lg-10">
                                                 <div class="row">
                                                     <div class="col-sm-12 col-md-6 col-lg-4">
@@ -241,7 +268,7 @@
                                                     <div class="col-sm-12 col-md-6 col-lg-4">
                                                         <div class="form-group mb-3">
                                                             <label for="email">Email</label>
-                                                            <span class="required__field">*</span><br>
+                                                            <span class="required__field">*</span>
                                                             <div class="position-relative">
                                                                 <input type="email" name="email" id="email"
                                                                        class="form-control @error('email') is-invalid @enderror"
@@ -258,12 +285,13 @@
 
                                                     <!-- OTP & Verify -->
                                                     <div class="col-sm-12 col-md-6 col-lg-4">
-                                                        <div class="form-group mb-3">
+                                                        <div class="form-group mb-1">
                                                             <label for="email_otp">Verify Email</label>
-                                                            <div class="d-flex">
-                                                                <input type="text" name="otp" id="email_otp" class="form-control me-2"
+                                                            <div class="d-flex ">
+
+                                                                <input type="text" name="otp" id="email_otp" class="form-control me-2" style="min-height: 38px;"
                                                                        placeholder="Enter OTP" maxlength="6" @error('otp') is-invalid @enderror" value="{{ old('otp') }}">
-                                                                <button type="button" id="verifyEmailBtn" class="btn btn-outline-primary">Verify</button>
+                                                                <button type="button" id="verifyEmailBtn" class="btn verifyBtn">Verify</button>
                                                             </div>
                                                             <small class="text-muted" id="otpStatusText">OTP will be sent to your email</small>
                                                             @error('otp')
@@ -278,7 +306,7 @@
                                                     <div class="col-sm-12 col-md-6 col-lg-4">
                                                         <div class="form-group mb-3">
                                                             <label for="password">Password</label>
-                                                            <span class="required__field">*</span><br>
+                                                            <span class="required__field">*</span>
                                                             <div class="position-relative">
                                                                 <input type="password" name="password" id="password"
                                                                        class="form-control @error('password') is-invalid @enderror"
@@ -406,8 +434,8 @@
                                         </div>
 
                                         <div class="row">
-                                            <div class="col-12">
-                                                <button type="submit" class="btn btn-primary w-100">Submit</button>
+                                            <div class="col-12 px-3">
+                                                <button type="submit" class="btn w-100 mt-1 submitBtn">Submit</button>
                                             </div>
                                         </div>
 

@@ -78,26 +78,25 @@
             </button>
         </div>
 
-        <!-- Login Button with Dropdown (Desktop) -->
-        <div class="hidden lg:flex lg:flex-1 lg:justify-end relative">
-            <div
-                @mouseenter="loginMenu = true"
-                @mouseleave="loginMenu = false"
-                class="relative">
-                <a href="#" class="text-sm font-semibold text-gray-900 ">
-                    Log in <span aria-hidden="true">&rarr;</span>
-                </a>
+        <!-- Login/Signup Section (Desktop) -->
+        <div class="hidden  lg:flex lg:flex-1 lg:justify-end lg:space-x-4 lg:ml-auto">
+            <!-- Login -->
+            <a href="{{ route('login') }}"
+               class="text-sm font-medium text-gray-700 hover:text-gray-900 pt-2 transition-colors duration-200">
+                Log In
+            </a>
 
-                <!-- Dropdown Menu -->
-                <div
-                    x-show="loginMenu"
-                    x-transition
-                    class="absolute right-0 mt-2 w-40 bg-white shadow-lg rounded-md py-2 z-50 border border-gray-200 ">
-                    <a href="{{ route('login') }}" class="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-100 ">Admin</a>
-                    <a href="{{ route('login') }}" class="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-100 ">Owner</a>
-                </div>
-            </div>
+            <!-- Divider -->
+            <span class="h-9 w-px bg-gray-300"></span>
+
+            <!-- Sign Up Button -->
+            <a href="{{ route('signUp') }}"
+               class="inline-flex items-center justify-center rounded-md bg-gray-900 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-gray-800 transition-colors duration-200">
+                Sign Up
+            </a>
         </div>
+
+
     </nav>
 
     <!-- Mobile Menu -->
@@ -112,23 +111,13 @@
             <a href="#" class="block text-center px-3 py-2 text-base font-semibold text-gray-900 hover:bg-gray-50">
                 Contact Us
             </a>
+            <a href="{{ route('login') }}" class="block text-center px-3 py-2 text-base font-semibold text-gray-900 hover:bg-gray-50">
+                Log In
+            </a>
+            <a href="{{ route('signUp') }}" class="block text-center px-3 py-2 text-base font-semibold text-gray-900 hover:bg-gray-50">
+                Sign Up
+            </a>
 
-            <!-- Mobile Login Dropdown -->
-            <div class="relative">
-                <button
-                    @click="mobileLoginMenu = !mobileLoginMenu"
-                    class="block w-full text-center px-3 py-2 text-base font-semibold text-gray-900 hover:bg-gray-50">
-                    Log in
-                </button>
-
-                <div
-                    x-show="mobileLoginMenu"
-                    x-transition
-                    class="absolute w-full bg-white shadow-md rounded-lg py-2 z-50 border border-gray-200 mt-1">
-                    <a href="{{ route('login') }}" class="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-100">Admin</a>
-                    <a href="{{ route('login') }}" class="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-100">Owner</a>
-                </div>
-            </div>
         </div>
     </div>
 </header>

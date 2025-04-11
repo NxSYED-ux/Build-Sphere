@@ -9,14 +9,17 @@
     <meta name="role-id" content="{{ auth()->user()->role_id }}">
     <meta name="is-super-admin" content="{{ auth()->user()->is_super_admin }}">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="pusher-key" content="{{ env('PUSHER_APP_KEY') }}">
+    <meta name="pusher-cluster" content="{{ env('PUSHER_APP_CLUSTER', 'ap2') }}">
+
+
     <script>
         window.initialPermissions = @json(session('permissions', []));
     </script>
     <title>@yield('title', 'My App')</title>
 
-    @vite(['resources/scss/app.scss', 'resources/js/app.js', 'resources/js/permissions.js'])
 
-{{--    <link href="{{ asset('css/bootsrap.min.css') }}" rel="stylesheet">--}}
+    <link href="{{ asset('css/bootstrap.min.css') }}" rel="stylesheet">
     <link href="{{ asset('css/topnavbar.css') }}" rel="stylesheet">
     <link href="{{ asset('css/sidenavbar.css') }}" rel="stylesheet">
     <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
@@ -147,7 +150,7 @@
         }
 
         input:focus::placeholder, textarea:focus::placeholder {
-            color: lightgray;
+            color: #6c757d;
         }
 
         .toast-progress {
@@ -186,9 +189,38 @@
     </div>
 
     <!-- Include jQuery library -->
+    <script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>
     <script src="{{ asset('jquery/jquery-3.7.1.min.js') }}"></script>
     <!-- Include SweetAlert2 JS from CDN -->
     <script src="{{ asset('js/sweetalert.js') }}"></script>
+
+    <script>
+        window.FIREBASE_CONFIG = {
+            apiKey: "{{ env('VITE_FIREBASE_API_KEY') }}",
+            authDomain: "{{ env('VITE_FIREBASE_AUTH_DOMAIN') }}",
+            projectId: "{{ env('VITE_FIREBASE_PROJECT_ID') }}",
+            messagingSenderId: "{{ env('VITE_FIREBASE_MESSAGING_SENDER_ID') }}",
+            appId: "{{ env('VITE_FIREBASE_APP_ID') }}",
+            vapidKey: "{{ env('VITE_FIREBASE_VAPID_KEY') }}"
+        };
+
+        window.PUSHER_CONFIG = {
+            appKey: "{{ env('VITE_PUSHER_APP_KEY') }}",
+            appCluster: "{{ env('VITE_PUSHER_APP_CLUSTER') }}"
+        };
+    </script>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-messaging-compat.js"></script>
+
+
+    <!-- Your Notification Script -->
+    <script src="{{ asset('js/appjs/notifications.js') }}"></script>
+
+
+    <script src="{{ asset('js/appjs/permissions.js') }}"></script>
+
 
     <!-- Toogle script -->
     <script>

@@ -3,7 +3,7 @@
 @section('title', 'Checkout Screen')
 
 @push('styles')
-    <script src="https://js.stripe.com/v3/"></script>
+
     <style>
         .plan-card {
             min-width: 180px;
@@ -38,6 +38,9 @@
                     Email Address
                 </label>
                 <input type="email" id="email" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <input type="hidden" id="selectedPlanId" value="">
+                <input type="hidden" id="selectedPlanCycle" value="">
+                <input type="hidden" id="selectedBillingCycleId" value="">
             </div>
 
             <div class="flex items-center mb-6">
@@ -111,52 +114,97 @@
 
 @push('scripts')
 
+    <script src="https://js.stripe.com/v3/"></script>
     <script>
-        // This would be replaced with actual Stripe.js implementation
-        document.addEventListener('DOMContentLoaded', function() {
-            // Simulate Stripe Elements
-            const stripe = Stripe('pk_test_your_publishable_key');
+        document.addEventListener('DOMContentLoaded', async function () {
+            const stripe = Stripe("{{ config('services.stripe.public') }}");
             const elements = stripe.elements();
-            const cardElement = elements.create('card');
-            cardElement.mount('#card-element');
+            const card = elements.create("card");
+            card.mount("#card-element");
 
-            // Plan selection
-            const planCards = document.querySelectorAll('.plan-card');
-            planCards.forEach(card => {
-                card.addEventListener('click', function() {
-                    planCards.forEach(c => c.classList.remove('selected-plan', 'border-blue-500'));
-                    this.classList.add('selected-plan', 'border-blue-500');
+            const submitButton = document.getElementById("submit-button");
+            const emailInput = document.getElementById("email");
+            const selectedPlanId = document.getElementById('selectedPlanId');
+            const selectedPlanCycle = document.getElementById('selectedPlanCycle');
+            const selectedBillingCycleId = document.getElementById('selectedBillingCycleId');
 
-                    // Update payment button and order summary
-                    const planName = this.querySelector('h3').textContent;
-                    const planPrice = this.querySelector('span.text-2xl').textContent;
-                    document.querySelector('#submit-button').textContent = `Pay ${planPrice}/month`;
 
-                    // Update order summary
-                    document.querySelector('.order-summary-plan').textContent = `${planName} (Monthly)`;
-                    document.querySelector('.order-summary-price').textContent = `${planPrice}`;
+            // Payment submission
+            if (submitButton) {
+                submitButton.addEventListener("click", async () => {
+                    submitButton.disabled = true;
+
+                    const { paymentMethod, error } = await stripe.createPaymentMethod({
+                        type: 'card',
+                        card: card,
+                        billing_details: {
+                            email: emailInput.value
+                        }
+                    });
+
+                    if (error) {
+                        document.getElementById("card-errors").textContent = error.message;
+                        submitButton.disabled = false;
+                        return;
+                    }
+
+                    const planId = selectedPlanId.value;
+                    const planCycle = selectedPlanCycle.value;
+                    const billingCycleId = selectedBillingCycleId.value;
+                    const email = emailInput.value;
+
+                    try {
+                        const dataToSend = {
+                            payment_method_id: paymentMethod.id,
+                            email: email,
+                            plan_id: planId,
+                            plan_cycle: planCycle,
+                            plan_cycle_id: billingCycleId
+                        };
+
+                        // Show alert with all data being sent
+                        alert("About to send the following data:\n" + JSON.stringify(dataToSend, null, 2));
+
+                        const response = await fetch("{{ route('checkout.processing') }}", {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Accept': 'application/json',
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                            },
+                            body: JSON.stringify(dataToSend)
+                        });
+
+                        const result = await response.json();
+
+                        if (result.requires_action) {
+                            const confirmResult = await stripe.confirmCardPayment(result.client_secret);
+
+                            if (confirmResult.error) {
+                                alert("Payment failed: " + confirmResult.error.message);
+                            } else if (confirmResult.paymentIntent.status === "succeeded") {
+                                alert("Payment successful!");
+                                window.location.href = "{{ route('login') }}"  ;
+                            }
+                        } else if (result.success) {
+                            alert("Payment successful!");
+                            window.location.href = "{{ route('login') }}";
+                        } else {
+                            alert("Payment failed. Please try again.");
+                        }
+
+                    } catch (err) {
+                        console.error("Error:", err);
+                        alert("An error occurred. Please try again.");
+                    }
+
+
+                    submitButton.disabled = false;
                 });
-            });
-
-            // Billing toggle
-            const monthlyBtn = document.getElementById('monthly-btn');
-            const yearlyBtn = document.getElementById('yearly-btn');
-
-            monthlyBtn.addEventListener('click', function() {
-                monthlyBtn.classList.add('bg-blue-600', 'text-white');
-                monthlyBtn.classList.remove('text-gray-500');
-                yearlyBtn.classList.remove('bg-blue-600', 'text-white');
-                yearlyBtn.classList.add('text-gray-500');
-            });
-
-            yearlyBtn.addEventListener('click', function() {
-                yearlyBtn.classList.add('bg-blue-600', 'text-white');
-                yearlyBtn.classList.remove('text-gray-500');
-                monthlyBtn.classList.remove('bg-blue-600', 'text-white');
-                monthlyBtn.classList.add('text-gray-500');
-            });
+            }
         });
     </script>
+
 
     <script>
         document.addEventListener("DOMContentLoaded", function () {
@@ -185,8 +233,16 @@
                 const subtotalPrice = document.getElementById('plan_subtotal_price');
                 const totalPrice = document.getElementById('plan_total_price');
 
+                const selectedPlanId = document.getElementById('selectedPlanId');
+                const selectedPlanCycle = document.getElementById('selectedPlanCycle');
+                const selectedBillingCycleId = document.getElementById('selectedBillingCycleId');
+
                 planNameElements.forEach(el => el.textContent = plan.plan_name);
                 planCycleElements.forEach(el => el.textContent = cycleId);
+
+                selectedPlanId.value = plan.plan_id;
+                selectedPlanCycle.value = cycleId;
+                selectedBillingCycleId.value = plan.billing_cycle_id;
 
                 if (subtotalPrice) subtotalPrice.textContent = `${currencySymbol}${formattedTotalPrice}`;
                 if (totalPrice) totalPrice.textContent = `${currencySymbol}${formattedTotalPrice}`;

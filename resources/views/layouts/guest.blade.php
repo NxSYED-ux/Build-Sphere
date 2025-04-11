@@ -8,7 +8,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'My App')</title>
 
-    @vite(['resources/scss/app.scss', 'resources/js/app.js'])
+    <link href="{{ asset('css/bootstrap.min.css') }}" rel="stylesheet">
 
     <!-- Include SweetAlert2 CSS from CDN -->
     <link rel="stylesheet" href="{{ asset('css/sweetalert.css') }}">
@@ -169,6 +169,7 @@
     @yield('content')
 </div>
 
+<script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>
 <!-- Include SweetAlert2 JS from CDN -->
 <script src="{{ asset('js/sweetalert.js') }}"></script>
 

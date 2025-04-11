@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/png" href="{{ asset('logos/Light-theme-Logo.svg') }}">
     <script src="{{ asset('js/tailwind.js') }}"></script>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'My App')</title>
 
     <!-- Alpine.js for Mobile Menu -->

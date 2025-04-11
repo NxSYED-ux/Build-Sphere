@@ -28,7 +28,8 @@ Route::get('/', [landingController::class, 'index'])->name('index');
 Route::get('/index', [landingController::class, 'index']);
 
 Route::get('/checkout', [CheckOutController::class, 'index'])->name('checkout');
-Route::post('/checkout', [CheckOutController::class, 'index'])->name('checkout.processing');
+Route::post('/checkout/success', [CheckOutController::class, 'index'])->name('checkout.success');
+Route::post('/checkout', [CheckOutController::class, 'checkout'])->name('checkout.processing');
 Route::get('/plans/{planCycle}', [landingController::class, 'plans'])->name('plans');
 
 // Authentication routes
@@ -38,8 +39,8 @@ Route::get('/owner-login', [AuthController::class, 'index'])->name('owner-login-
 Route::get('/login', [AuthController::class, 'index'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('login');
 
-Route::get('/owner-signUp', [SignUpController::class, 'index'])->name('owner-signUp-index');
-Route::post('/owner-signUp', [SignUpController::class, 'register'])->name('owner-signUp-register');
+Route::get('/signUp', [SignUpController::class, 'index'])->name('signUp');
+Route::post('/signUp', [SignUpController::class, 'register'])->name('signUp');
 Route::post('/send_signup_otp', [SignUpController::class, 'send_otp'])->name('send_signup_otp');
 
 

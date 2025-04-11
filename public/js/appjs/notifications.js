@@ -1,7 +1,3 @@
-import { initializeApp } from 'firebase/app';
-import { getMessaging, onMessage } from 'firebase/messaging';
-import Pusher from 'pusher-js';
-
 function showNotification(title, message, link, image) {
     const notifications = document.getElementById("notifications");
     if (!notifications) return;
@@ -39,42 +35,31 @@ function showNotification(title, message, link, image) {
 
     notifications.prepend(newNotification);
 
-    // Update notification badges
     ['notification-badge', 'notification-badge2'].forEach(id => {
         const badge = document.getElementById(id);
         if (badge) badge.style.display = 'block';
     });
 
-    // Start progress bar animation
     setTimeout(() => {
         const progressBar = newNotification.querySelector('.toast-progress');
         if (progressBar) progressBar.style.width = '0%';
     }, 10);
 
-    // Remove notification after delay
     setTimeout(() => {
         newNotification.classList.remove("show");
         setTimeout(() => newNotification.remove(), 500);
     }, 10000);
 }
 
-// Initialize Firebase
 document.addEventListener("DOMContentLoaded", async () => {
     try {
-        const firebaseConfig = {
-            apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-            authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
-            projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
-            messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
-            appId: import.meta.env.VITE_FIREBASE_APP_ID
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const messaging = getMessaging(app);
+        const firebaseConfig = window.FIREBASE_CONFIG;
+        const app = firebase.initializeApp(firebaseConfig);
+        const messaging = firebase.messaging();
 
         const permission = await Notification.requestPermission();
         if (permission === "granted") {
-            onMessage(messaging, (payload) => {
+            messaging.onMessage((payload) => {
                 showNotification(
                     payload.notification?.title || payload.data?.heading || "New Notification",
                     payload.notification?.body || payload.data?.message || "",
@@ -88,9 +73,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     // Initialize Pusher
-    if (import.meta.env.VITE_PUSHER_APP_KEY) {
-        const pusher = new Pusher(import.meta.env.VITE_PUSHER_APP_KEY, {
-            cluster: import.meta.env.VITE_PUSHER_APP_CLUSTER || 'ap2',
+    if (window.PUSHER_CONFIG.appKey) {
+        const pusher = new Pusher(window.PUSHER_CONFIG.appKey, {
+            cluster: window.PUSHER_CONFIG.appCluster || 'ap2',
             encrypted: true
         });
 

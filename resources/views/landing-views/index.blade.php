@@ -141,7 +141,6 @@
                     .then(response => response.json())
                     .then(data => {
                         let plans = data.plans;
-                        console.log("Fetched Plans:", plans);
                         renderPlans(plans, cycleId);
                     })
                     .catch(error => console.error("Error fetching plans:", error));
@@ -182,7 +181,7 @@
 
                     // Button with plan_id, plan_name, and cycleId passed as URL parameters
                     const button = document.createElement('a');
-                    button.href = `{{ route('owner-signUp-index') }}?package=${encodeURIComponent(plan.plan_name)}&cycle=${cycleId}`;
+                    button.href = `{{ route('signUp') }}?package=${encodeURIComponent(plan.plan_name)}&cycle=${cycleId}`;
                     button.className = 'mt-6 block rounded-md px-3.5 py-2.5 text-center text-sm font-semibold text-indigo-600 ring-1 ring-indigo-200 ring-inset group-hover:bg-indigo-500 group-hover:text-white hover:bg-indigo-500  hover:text-white hover:ring-indigo-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600';
                     button.setAttribute('aria-describedby', `tier-${plan.plan_name.toLowerCase()}`);
                     button.textContent = 'Get started today';
@@ -197,14 +196,14 @@
                         serviceItem.className = 'flex gap-x-3 group-hover:text-white items-start';
 
                         serviceItem.innerHTML = `
-                <svg class="h-6 w-5 flex-none text-indigo-600" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
-                    <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8
-                    10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1
-                    1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1
-                    1.05-.143Z" clip-rule="evenodd" />
-                </svg>
-                <span>${service.service_quantity}x ${service.service_name}</span>
-            `;
+                            <svg class="h-6 w-5 flex-none text-indigo-600" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
+                                <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8
+                                10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1
+                                1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1
+                                1.05-.143Z" clip-rule="evenodd" />
+                            </svg>
+                            <span>${service.service_quantity}x ${service.service_name}</span>
+                        `;
 
                         servicesList.appendChild(serviceItem);
                     });

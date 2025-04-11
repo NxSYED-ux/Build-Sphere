@@ -45,8 +45,7 @@
                     <div id="link-a">
                         <a href="#"
                             class="link-dark link-toggle collapsed d-flex justify-content-between align-items-center"
-                            data-bs-toggle="collapse" data-bs-target="#AdminControl" aria-expanded="{{ in_array('AdminControl', $openSections) ? 'true' : 'false' }}"
-                            onclick="toggleSection('AdminControl')">
+                            data-bs-toggle="collapse" data-bs-target="#AdminControl" aria-expanded="{{ in_array('AdminControl', $openSections) ? 'true' : 'false' }}">
                             <span class="d-flex align-items-center">
                                 <i class="bx bxl-trip-advisor icons"></i> <!-- Adjusted with spacing -->
                                 <span>Admin Control</span>
@@ -71,8 +70,7 @@
                     <div id="link-a">
                         <a href="#"
                             class="link-dark link-toggle collapsed d-flex justify-content-between align-items-center"
-                            data-bs-toggle="collapse" data-bs-target="#Buildings" aria-expanded="{{ in_array('Buildings', $openSections) ? 'true' : 'false' }}"
-                            onclick="toggleSection('Buildings')">
+                            data-bs-toggle="collapse" data-bs-target="#Buildings" aria-expanded="{{ in_array('Buildings', $openSections) ? 'true' : 'false' }}">
                             <span class="d-flex align-items-center">
                                 <i class="bx bx-buildings icons"></i> <!-- Adjusted with spacing -->
                                 <span>Buildings</span>
@@ -103,7 +101,7 @@
                 <li class="mb-1 hidden" id="AdminReports">
                     <div id="link-a">
                         <a href="#" class="link-dark  link-toggle collapsed d-flex justify-content-between align-items-center"  data-bs-toggle="collapse"
-                            data-bs-target="#Reports" aria-expanded="{{ in_array('Reports', $openSections) ? 'true' : 'false' }}" onclick="toggleSection('Reports')" >
+                            data-bs-target="#Reports" aria-expanded="{{ in_array('Reports', $openSections) ? 'true' : 'false' }}" >
                             <span class="d-flex align-items-center">
                                 <i class="bx bxs-pie-chart-alt-2 icons"></i> <!-- Adjusted with spacing -->
                                 <span>Reports</span>

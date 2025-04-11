@@ -4,7 +4,7 @@ async function initFirebaseMessaging() {
             await loadFirebaseSDK();
         }
 
-        const firebaseConfig = window.FIREBASE_CONFIG; // Use the global config object
+        const firebaseConfig = window.FIREBASE_CONFIG;
         if (!firebase.apps.length) {
             firebase.initializeApp(firebaseConfig);
         }
