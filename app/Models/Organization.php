@@ -20,6 +20,8 @@ class Organization extends Model
         'status',
         'membership_start_date',
         'membership_end_date',
+        'created_by',
+        'updated_by',
     ];
 
     public $timestamps = true;

@@ -123,24 +123,29 @@ class SignUpController extends Controller
             'org_postal_code' => ['bail', 'nullable', 'string', 'max:50'],
         ]);
 
-        $otpCheck = $this->verify_otp($request->email, $request->otp);
-
-        if (!$otpCheck['status']) {
-            return redirect()->back()->withInput()->with('error', $otpCheck['message']);
-        }
-
-        $profileImage = null;
-        if($request->hasFile('picture')){
-            $profileImage = $this->handleFileUpload($request, 'picture', 'users');
-        }
-
-        $organizationImage = null;
-        if($request->hasFile('org_picture')){
-            $organizationImage = $this->handleFileUpload($request, 'org_picture','organizations');
-        }
-
         DB::beginTransaction();
+
         try {
+
+            $otpCheck = $this->verify_otp($request->email, $request->otp);
+
+            if (!$otpCheck['status']) {
+                DB::rollBack();
+                return redirect()->back()->withInput()->with('error', $otpCheck['message']);
+            }
+
+            $profileImage = null;
+            if($request->hasFile('picture')){
+                DB::rollBack();
+                $profileImage = $this->handleFileUpload($request, 'picture', 'users');
+            }
+
+            $organizationImage = null;
+            if($request->hasFile('org_picture')){
+                DB::rollBack();
+                $organizationImage = $this->handleFileUpload($request, 'org_picture','organizations');
+            }
+
             $address = Address::create([
                 'location' => $request->location,
                 'country' => $request->country,
@@ -176,6 +181,8 @@ class SignUpController extends Controller
                 'owner_id' => $user->id,
                 'address_id' => $org_address->id,
                 'status' => 'Disable',
+                'created_by' => $user->id,
+                'updated_by' => $user->id,
             ]);
 
             OrganizationPicture::create([
@@ -189,7 +196,10 @@ class SignUpController extends Controller
             $selectedPackage = $request->input('package');
             $selectedCycle = $request->input('cycle');
 
-            return view('landing-views.checkout', compact('selectedPackage', 'selectedCycle'));
+            return redirect()->route('checkout', [
+                'package' => $selectedPackage,
+                'cycle' => $selectedCycle,
+            ]);
 
         } catch (\Exception $e) {
             DB::rollBack();
