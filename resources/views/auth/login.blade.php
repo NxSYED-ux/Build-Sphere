@@ -257,7 +257,7 @@
         @keyframes fadeInScale {
             0% {
                 opacity: 0;
-                transform: scale(0.5);
+                transform: scale(0.2);
             }
 
             100% {
@@ -468,15 +468,19 @@
                 </script>
         @endif
 
-
         <script>
             window.FIREBASE_CONFIG = {
-                apiKey: "{{ env('VITE_FIREBASE_API_KEY') }}",
-                authDomain: "{{ env('VITE_FIREBASE_AUTH_DOMAIN') }}",
-                projectId: "{{ env('VITE_FIREBASE_PROJECT_ID') }}",
-                messagingSenderId: "{{ env('VITE_FIREBASE_MESSAGING_SENDER_ID') }}",
-                appId: "{{ env('VITE_FIREBASE_APP_ID') }}",
-                vapidKey: "{{ env('VITE_FIREBASE_VAPID_KEY') }}"
+                apiKey: "{{ config('firebase.api_key') }}",
+                authDomain: "{{ config('firebase.auth_domain') }}",
+                projectId: "{{ config('firebase.project_id') }}",
+                messagingSenderId: "{{ config('firebase.messaging_sender_id') }}",
+                appId: "{{ config('firebase.app_id') }}",
+                vapidKey: "{{ config('firebase.vapid_key') }}" // Add this to config if not already present
+            };
+
+            window.PUSHER_CONFIG = {
+                appKey: "{{ config('broadcasting.connections.pusher.key') }}",
+                appCluster: "{{ config('broadcasting.connections.pusher.options.cluster') }}"
             };
         </script>
 
@@ -544,7 +548,7 @@
                             preloader.style.display = "none";
                             mainContent.style.display = "block";
                         }, 800);
-                    }, 1300);
+                    }, 900);
                 }
             });
         </script>

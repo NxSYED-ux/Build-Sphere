@@ -1,6 +1,6 @@
 @extends('layouts.landing')
 
-@section('title', 'Home')
+@section('title', 'HMS - Professional Property & Building Management')
 
 @push('styles')
 
@@ -44,7 +44,7 @@
                         A complete solution for building owners, tenants, and financial management.
                     </p>
                     <div class="flex justify-center items-center mt-8">
-                        <a href="#" target="_blank" rel="nofollow"
+                        <a href="{{ route('signUp') }}" rel="nofollow"
                            class="px-6 py-3 text-white font-medium text-lg border border-white rounded-full
                           transition-all duration-300 hover:bg-white hover:text-black">
                             Get Started
@@ -165,7 +165,7 @@
 
                     const price = document.createElement('span');
                     price.className = 'text-5xl font-semibold tracking-tight text-gray-900 group-hover:text-white plan_price';
-                    price.textContent = `${plan.currency === 'PKR' ? 'Rs.' : '$'}${plan.total_price}`;
+                    price.textContent = `${plan.currency === 'PKR' ? 'Rs.' : '$'}${plan.total_price / cycleId}`;
 
                     const billingCycle = document.createElement('span');
                     billingCycle.className = 'text-base text-gray-500 group-hover:text-white billing_cycle';

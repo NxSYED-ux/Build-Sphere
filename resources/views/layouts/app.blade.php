@@ -5,19 +5,49 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/png" href="{{ asset('logos/Light-theme-Logo.svg') }}">
     <link id="theme-stylesheet" rel="stylesheet" href="{{ asset('css/light.css') }}">
+    <title>@yield('title', 'My App')</title>
+    <meta name="description" content="HMS is among the best property management companies, offering expert building management and professional property management services for residential and commercial properties. We take the hassle out of ownership with efficient rent collection, maintenance, compliance, and more—maximizing your property's value and performance.">
+    <meta name="keywords" content="property management, building management, professional property management, rent collection, residential property services, commercial property services, HMS">
+    <meta name="robots" content="index, follow">
+    <meta name="author" content="HMS Team">
+
+    <!-- Open Graph for Facebook and LinkedIn -->
+    <meta property="og:title" content="HMS | Expert Property Management Services">
+    <meta property="og:description" content="Top-tier property management services for residential and commercial properties. Hassle-free rent collection, maintenance, and more.">
+    <meta property="og:image" content="{{ asset('logos/Light-theme-Logo.svg') }}">
+    <meta property="og:url" content="http://127.0.0.1:8000/">
+    <meta property="og:type" content="website">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="HMS | Expert Property Management Services">
+    <meta name="twitter:description" content="Residential and commercial property management done right. Rent, maintain, and grow with HMS.">
+    <meta name="twitter:image" content="{{ asset('logos/Light-theme-Logo.svg') }}">
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="http://127.0.0.1:8000/">
+
     <meta name="user-id" content="{{ auth()->id() }}">
     <meta name="role-id" content="{{ auth()->user()->role_id }}">
     <meta name="is-super-admin" content="{{ auth()->user()->is_super_admin }}">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <meta name="pusher-key" content="{{ env('PUSHER_APP_KEY') }}">
-    <meta name="pusher-cluster" content="{{ env('PUSHER_APP_CLUSTER', 'ap2') }}">
+    <!-- Firebase Meta Tags -->
+    <meta name="firebase-api-key" content="{{ config('firebase.api_key') }}">
+    <meta name="firebase-auth-domain" content="{{ config('firebase.auth_domain') }}">
+    <meta name="firebase-project-id" content="{{ config('firebase.project_id') }}">
+    <meta name="firebase-messaging-sender-id" content="{{ config('firebase.messaging_sender_id') }}">
+    <meta name="firebase-app-id" content="{{ config('firebase.app_id') }}">
+    <meta name="firebase-vapid-key" content="{{ config('firebase.vapid_key') }}">
+
+    <!-- Pusher Meta Tags -->
+    <meta name="pusher-key" content="{{ config('broadcasting.connections.pusher.key') }}">
+    <meta name="pusher-cluster" content="{{ config('broadcasting.connections.pusher.options.cluster') }}">
+
 
 
     <script>
         window.initialPermissions = @json(session('permissions', []));
     </script>
-    <title>@yield('title', 'My App')</title>
-
 
     <link href="{{ asset('css/bootstrap.min.css') }}" rel="stylesheet">
     <link href="{{ asset('css/topnavbar.css') }}" rel="stylesheet">
@@ -174,6 +204,50 @@
             }
         }
 
+        .btn-primary{
+            border-color: var(--breadcrumb-text2-color);
+            color: #fff;
+            background-color: var(--breadcrumb-text2-color);
+        }
+
+        .btn-primary:hover{
+            border-color: var(--breadcrumb-text2-color);
+            color: #fff;
+            background-color: var(--breadcrumb-text2-color);
+            opacity: 0.9;
+        }
+
+        .btn-outline-primary{
+            border-color: var(--breadcrumb-text2-color);
+            color: var(--breadcrumb-text2-color);
+            background-color: #fff;
+        }
+
+        .btn-outline-primary:hover{
+            border-color: var(--breadcrumb-text2-color);
+            color: #fff;
+            background-color: var(--breadcrumb-text2-color);
+        }
+
+        .btn-secondary {
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: bold;
+            background-color: #6c757d;
+            color: #ffff;
+        }
+
+        .text-primary{
+            -webkit-text-fill-color: var(--breadcrumb-text2-color);
+        }
+
+        @media (max-width: 576px) {
+            .custom-pagination-wrapper {
+                display: flex;
+                justify-content: center;
+            }
+        }
+
     </style>
 
     @stack('styles')
@@ -194,21 +268,8 @@
     <!-- Include SweetAlert2 JS from CDN -->
     <script src="{{ asset('js/sweetalert.js') }}"></script>
 
-    <script>
-        window.FIREBASE_CONFIG = {
-            apiKey: "{{ env('VITE_FIREBASE_API_KEY') }}",
-            authDomain: "{{ env('VITE_FIREBASE_AUTH_DOMAIN') }}",
-            projectId: "{{ env('VITE_FIREBASE_PROJECT_ID') }}",
-            messagingSenderId: "{{ env('VITE_FIREBASE_MESSAGING_SENDER_ID') }}",
-            appId: "{{ env('VITE_FIREBASE_APP_ID') }}",
-            vapidKey: "{{ env('VITE_FIREBASE_VAPID_KEY') }}"
-        };
 
-        window.PUSHER_CONFIG = {
-            appKey: "{{ env('VITE_PUSHER_APP_KEY') }}",
-            appCluster: "{{ env('VITE_PUSHER_APP_CLUSTER') }}"
-        };
-    </script>
+
 
     <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>

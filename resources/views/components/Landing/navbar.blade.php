@@ -35,7 +35,7 @@
     }
 
     #navbar .application-tagline {
-        font-size: 8px;
+        font-size: 9px;
         color: var(--sidenavbar-text-color);
         opacity: 0.8;
     }
@@ -50,7 +50,7 @@
                     <img class="application-logo" src="{{ asset('logos/Light-theme-Logo.svg') }}" alt="Logo">
                     <div class="application-text">
                         <span class="application-logo-text">HMS</span>
-                        <span class="application-tagline">Elevate Your Living</span>
+                        <span class="application-tagline">Rise With HMS</span>
                     </div>
                 </a>
             </div>
