@@ -4,6 +4,7 @@ namespace App\Http\Controllers\WebControllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\BillingCycle;
+use App\Models\Organization;
 use App\Models\Plan;
 use App\Models\Subscription;
 use App\Models\Transaction;
@@ -18,30 +19,44 @@ use Stripe\Stripe;
 
 class CheckOutController extends Controller
 {
-    public function index(Request $request){
+    public function index(Request $request)
+    {
         $request->validate([
-            'email' => 'required|string|email|exists:users,email',
-            'organization_name' => 'required|string|exists:organizations,name',
+            'organization_name' => 'required|string',
         ]);
+
         try {
-            $email = $request->input('email');
+            $organization = Organization::where('name', $request->organization_name)
+                ->first();
+
+            if (!$organization) {
+                return redirect()->back()->with('error', 'Invalid request. Please try again or contact support if the issue persists.');
+            }
+
+            $id = $request->input('id');
             $organization_name = $request->input('organization_name');
             $selectedPackage = $request->input('package');
             $selectedCycle = $request->input('cycle');
             $planCycles = BillingCycle::pluck('duration_months');
+
+            return view('landing-views.checkout', compact(
+                'planCycles',
+                'id',
+                'organization_name',
+                'selectedPackage',
+                'selectedCycle'
+            ));
         } catch (\Exception $e) {
             Log::error('Error fetching billing cycles: ' . $e->getMessage());
-            $planCycles = collect();
+            return redirect()->back()->with('error', 'Something went wrong. Please try again later.');
         }
-
-        return view('landing-views.checkout', compact('planCycles', 'email', 'selectedPackage', 'selectedCycle'));
     }
-
 
     public function checkout(Request $request)
     {
         $request->validate([
-            'email' => 'required|email',
+            'id' => 'required|exists:organizations,owner_id',
+            'organization_name' => 'required|string|exists:organizations,name',
             'plan_id' => 'required|exists:plans,id',
             'plan_cycle_id' => 'required|exists:billing_cycles,id',
             'plan_cycle' => 'required',
@@ -49,7 +64,7 @@ class CheckOutController extends Controller
         ]);
 
         try {
-            $user = User::where('email', $request->email)->first();
+            $user = User::where('id', $request->id)->first();
             if (!$user) {
                 return response()->json(['error' => 'User not found.'], 404);
             }
@@ -126,10 +141,12 @@ class CheckOutController extends Controller
                 'currency' => $planDetails['currency'],
                 'customer' => $user->customer_payment_id,
                 'payment_method' => $request->payment_method_id,
-                'confirmation_method' => 'manual',
                 'confirm' => true,
                 'description' => $planDetails['plan_name'] . ': ' . $planDetails['plan_description'],
-                'return_url' => route('checkout.success'),
+                'automatic_payment_methods' => [
+                    'enabled' => true,
+                    'allow_redirects' => 'never',
+                ],
             ]);
 
             if (

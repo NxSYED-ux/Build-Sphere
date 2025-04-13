@@ -213,7 +213,7 @@ class SignUpController extends Controller
             $selectedCycle = $request->input('cycle');
 
             return redirect()->route('checkout', [
-                'email' => $user->email,
+                'organization_name' => $organization->name,
                 'package' => $selectedPackage,
                 'cycle' => $selectedCycle,
             ]);

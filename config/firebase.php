@@ -11,7 +11,7 @@ return [
 
     'default' => env('FIREBASE_PROJECT', 'app'),
 
-    'credentials' => env('FIREBASE_CREDENTIALS', base_path('storage/firebase_credentials.json')),
+    'credentials' => storage_path( env('FIREBASE_CREDENTIALS', 'firebase_credentials.json')),
 
     'api_key' => env('VITE_FIREBASE_API_KEY'),
     'auth_domain' => env('VITE_FIREBASE_AUTH_DOMAIN'),
@@ -60,7 +60,7 @@ return [
              *
              */
 
-            'credentials' => env('FIREBASE_CREDENTIALS'),
+            'credentials' => storage_path( env('FIREBASE_CREDENTIALS', 'firebase_credentials.json')),
 
             /*
              * ------------------------------------------------------------------------
