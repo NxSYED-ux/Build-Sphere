@@ -31,6 +31,15 @@
             overflow-x: auto;
         }
 
+        /* Unit Card*/
+        .unit-card{
+            background-color: var(--body-card-bg) !important;
+        }
+
+        #myTabContent{
+            background-color: var(--body-background-color);
+        }
+
 
 
         /*  Unit Model */
@@ -121,13 +130,14 @@
         }
 
         .nav-tabs .nav-link {
-            background-color: var(--nav-tabs-inactive-bg-color) !important; /* Change to your desired color */
+            background-color: var(--nav-tabs-inactive-bg-color) !important;
             color: var(--nav-tabs-inactive-text-color) !important;
-            border-bottom: 1px solid var(--nav-tabs-inactive-border-color) !important; /* Corrected */
+            border-bottom: none;
         }
         .nav-tabs .nav-link.active {
-            background-color: var(--nav-tabs-active-bg-color) !important; /* Change to your desired color */
+            background-color: var(--body-background-color) !important;
             color: var(--nav-tabs-active-text-color) !important;
+            /*border-bottom: 1px solid var(--nav-tabs-inactive-border-color) !important;*/
         }
 
         /* DataTables Entries Dropdown */
@@ -231,13 +241,13 @@
                                                 <a class="nav-link {{ $activeTab === 'Table' ? 'active' : '' }}" id="dropdwon-table-tab" data-bs-toggle="tab" href="#dropdwon-table" role="tab" aria-controls="dropdwon-table" aria-selected="{{ $activeTab === 'Table' ? 'true' : 'false' }}">Table</a>
                                             </li>
                                         </ul>
-                                        <div class="tab-content mt-0 pt-0 shadow rounded-bottom pb-2" id="myTabContent" >
+                                        <div class="tab-content mt-0 pt-0 border rounded-bottom" id="myTabContent" >
                                             <div class="tab-pane fade {{ $activeTab === 'Cards' ? 'show active' : '' }}" id="dropdwon-cards" role="tabpanel" aria-labelledby="dropdwon-cards-tab">
                                                 <div class="container">
-                                                    <div class="row text-center mt-2">
+                                                    <div class="row text-center mt-3">
                                                         @forelse ($units ?? [] as $unit)
-                                                            <div class="col-lg-4 col-md-6 col-12 mb-2">
-                                                                <div class="card shadow-sm" style="border-radius: 10px;">
+                                                            <div class="col-lg-4 col-md-6 col-12 mb-3">
+                                                                <div class="card unit-card shadow-sm" style="border-radius: 10px;">
                                                                     <div class="position-relative">
                                                                         @if($unit->pictures->isNotEmpty())
                                                                             <div id="carousel{{ $unit->id }}" class="carousel slide" data-bs-ride="carousel">
@@ -255,30 +265,39 @@
                                                                                  alt="Unit Picture" style="border-radius: 10px 10px 0 0; height: 180px; object-fit: cover;">
                                                                         @endif
 
-                                                                        <!-- Sale Badge -->
-                                                                        <span class="badge bg-warning position-absolute top-0 start-0 m-2 px-3 py-1 text-white">{{ $unit->sale_or_rent }}</span>
+                                                                        <!-- Top Left Badges -->
+                                                                        <div class="position-absolute top-0 start-0 m-2 d-flex gap-1">
+                                                                            <span class="badge bg-warning  px-3 py-2" style="color: #fff !important;">{{ $unit->sale_or_rent }}</span>
+                                                                            <span class="badge bg-info  px-3 py-2" style="color: #fff !important;">{{ $unit->unit_type }}</span>
+                                                                        </div>
 
-                                                                        <!-- Favorite Icon -->
-                                                                        <span class="position-absolute top-0 end-0 m-2">
-                                                                            <i class="bi bi-heart text-white fs-4"></i>
-                                                                        </span>
+                                                                        <!-- Top Right Icons -->
+                                                                        <div class="position-absolute top-0 end-0 m-2 d-flex gap-1">
+                                                                            <a href="{{ route('owner.units.show', $unit->id) }}" class="btn btn-light btn-sm rounded-circle shadow"><i class="fa fa-eye"></i></a>
+                                                                            <a href="{{ route('owner.units.edit', $unit->id) }}" class="btn btn-light btn-sm rounded-circle shadow"><i class="fa fa-pencil"></i></a>
+                                                                        </div>
                                                                     </div>
 
-                                                                    <div class="card-body text-start">
-                                                                        <h5 class="fw-bold mb-1">{{ $unit->unit_name ?? 'Shop 03' }}</h5>
 
+                                                                    <div class="card-body mt-2 pt-0 text-start position-relative">
+                                                                        <h5 class="fw-bold mb-1">{{ $unit->unit_name ?? 'Shop 03' }}</h5>
+                                                                        <span class="badge  {{ $unit->status === "Approved" ? 'bg-success' : 'bg-danger' }} position-absolute py-2" style="top: 0; right: 10px; color: #fff !important;">{{ $unit->status }}</span>
                                                                         <!-- Location -->
-                                                                        <p class="text-muted mb-1">
-                                                                            <i class="bi bi-geo-alt-fill text-success"></i> {{ $unit->building->address ? $unit->building->address->location .', ' . $unit->building->address->city .', ' .  $unit->building->address->province  .', ' .  $unit->building->address->country : ''  }}
+                                                                        <p class="mb-1">
+                                                                            <svg width="15" height="15" viewBox="0 0 17 20" fill="none"
+                                                                                 xmlns="http://www.w3.org/2000/svg">
+                                                                                <path d="M14.173 14.8819L13.053 16.0558C12.2275 16.9144 11.1564 18.0184 9.83928 19.3679C9.0163 20.2113 7.71058 20.2112 6.88769 19.3677L3.59355 15.9718C3.17955 15.541 2.83301 15.1777 2.55386 14.8819C-0.654672 11.4815 -0.654672 5.9683 2.55386 2.56789C5.76239 -0.832524 10.9645 -0.832524 14.173 2.56789C17.3815 5.9683 17.3815 11.4815 14.173 14.8819ZM10.7226 8.9996C10.7226 7.61875 9.66633 6.49936 8.36344 6.49936C7.06056 6.49936 6.0043 7.61875 6.0043 8.9996C6.0043 10.3804 7.06056 11.4998 8.36344 11.4998C9.66633 11.4998 10.7226 10.3804 10.7226 8.9996Z" fill="red"/>
+                                                                            </svg>
+                                                                            {{ $unit->building->address ? $unit->building->address->location .', ' . $unit->building->address->city .', ' .  $unit->building->address->province  .', ' .  $unit->building->address->country : 'No Address'  }}
                                                                         </p>
 
                                                                         <!-- Price -->
-                                                                        <p class="fw-bold mb-1">
-                                                                            Rs {{ number_format($unit->price ?? 135000) }} PKR
-                                                                        </p>
+                                                                        <div class="d-flex justify-content-between align-items-center">
+                                                                            <p class="fw-bold mb-0 me-2">{{ $unit->building->name }}</p>
+                                                                            <p class="fw-bold mb-0">Rs {{ number_format($unit->price ?? 135000) }} PKR</p>
+                                                                        </div>
 
-                                                                        <!-- Link -->
-                                                                        <a href="#" class="text-primary fw-bold text-decoration-none">{{ $unit->unit_type }}</a>
+
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -337,7 +356,7 @@
                                                         <td>{{ $unit->level->level_name ?? 'N/A' }}</td>
                                                         <td>{{ $unit->organization->name ?? 'N/A' }}</td>
                                                         <td class="text-center">
-                                                            <a href="javascript:void(0);" class="text-info view-unit" data-id="{{ $unit->id }}" data-bs-toggle="tooltip" data-bs-placement="top" title="View"><i class="fa fa-eye mx-2" style="font-size: 20px;"></i></a>
+                                                            <a href="{{ route('owner.units.show', $unit->id) }}" class="text-info view-unit" data-id="{{ $unit->id }}" data-bs-toggle="tooltip" data-bs-placement="top" title="View"><i class="fa fa-eye mx-2" style="font-size: 20px;"></i></a>
                                                             <a href="{{ route('owner.units.edit', $unit->id) }}" class="text-warning hidden Owner-Unit-Edit-Button" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit">
                                                                 <i class="fa fa-pencil mx-2" style="font-size: 20px;"></i>
                                                             </a>
@@ -353,7 +372,7 @@
                                             </div>
                                         </div>
                                         @if ($units)
-                                            <div class="mt-3">
+                                            <div class="mt-3 custom-pagination-wrapper">
                                                 {{ $units->links('pagination::bootstrap-5') }}
                                             </div>
                                         @endif

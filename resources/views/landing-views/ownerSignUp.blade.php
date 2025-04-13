@@ -435,7 +435,7 @@
 
                                         <div class="row">
                                             <div class="col-12 px-3">
-                                                <button type="submit" class="btn w-100 mt-1 submitBtn">Submit</button>
+                                                <button type="submit" class="btn w-100 mt-1 submitBtn">Submit</button> 
                                             </div>
                                         </div>
 

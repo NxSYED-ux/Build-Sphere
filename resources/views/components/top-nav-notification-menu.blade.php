@@ -41,7 +41,7 @@
                 })
                     .then(response => response.json())
                     .then(data => {
-
+                        console.log(data);
                         const notificationList = document.getElementById("notificationList");
                         notificationList.innerHTML = "";
 
@@ -51,8 +51,8 @@
 
                                 notificationList.innerHTML += `
                            <a class="d-flex align-items-center text-decoration-none p-2 border-bottom notification-link"
-                               ${notification.data.link ? `href="${notification.read_at ? window.location.origin + '/' + notification.data.link : 'javascript:void(0);'}"` : ''}
-                               onclick="${notification.read_at ? '' : `markNotificationAsRead('${notification.id}', '${window.location.origin}/${notification.data.link}')`}">
+                               ${notification.data.link.web ? `href="${notification.read_at ? window.location.origin + '/' + notification.data.link.web : 'javascript:void(0);'}"` : ''}
+                               onclick="${notification.read_at ? '' : `markNotificationAsRead('${notification.id}', '${window.location.origin}/${notification.data.link.web}')`}">
 
                                 <img src="${notification.data.image ? '{{ asset('/') }}' + notification.data.image : '{{ asset('img/placeholder-img.jfif') }}'}"
                                      class="rounded-circle me-2 notification-item-img"

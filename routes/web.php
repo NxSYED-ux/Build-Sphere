@@ -21,6 +21,10 @@ use App\Http\Controllers\WebControllers\SignUpController;
 use App\Http\Controllers\WebControllers\UsersController;
 use Illuminate\Support\Facades\Route;
 
+Route::fallback(function () {
+    return back();
+});
+
 // Route for Pusher Authentication
 Route::post('/pusher/auth', [AuthController::class, 'authenticatePusher'])->name('pusher.auth');
 
@@ -32,17 +36,12 @@ Route::post('/checkout/success', [CheckOutController::class, 'index'])->name('ch
 Route::post('/checkout', [CheckOutController::class, 'checkout'])->name('checkout.processing');
 Route::get('/plans/{planCycle}', [landingController::class, 'plans'])->name('plans');
 
-// Authentication routes
-Route::get('/admin-login', [AuthController::class, 'index'])->name('admin-login-index');
-Route::get('/owner-login', [AuthController::class, 'index'])->name('owner-login-index');
-
 Route::get('/login', [AuthController::class, 'index'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('login');
 
 Route::get('/signUp', [SignUpController::class, 'index'])->name('signUp');
 Route::post('/signUp', [SignUpController::class, 'register'])->name('signUp');
 Route::post('/send_signup_otp', [SignUpController::class, 'send_otp'])->name('send_signup_otp');
-
 
 Route::prefix('auth')->group(function () {
 
@@ -55,15 +54,7 @@ Route::prefix('auth')->group(function () {
 
 });
 
-
-
-Route::fallback(function () {
-    return back();
-});
-
 Route::middleware(['auth.jwt'])->group(function () {
-
-    Route::get('/my-unit', function () { return view('Heights.Owner.Units.show'); });
 
     Route::post('/logout', [AuthController::class, 'logOut'])->name('logout');
     Route::delete('/buildings/{id}/remove-picture', [BuildingController::class, 'destroyImage'])->name('buildings.remove_picture');
