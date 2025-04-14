@@ -6,32 +6,24 @@ use App\Http\Controllers\Controller;
 use App\Models\DropdownType;
 use App\Models\DropdownValue;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class DropdownTypeController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
         $activeTab = 'Types';
         $types = DropdownType::with('values','parent')->get();
         $values = DropdownValue::with('type','parent')->get();
 
-        return view('Heights.Admin.DropdownType.index', compact('types', 'values', 'activeTab'));
+        return view('Heights.Admin.Dropdown.index', compact('types', 'values', 'activeTab'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
         return redirect()->back();
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         $validatedData = $request->validate([
@@ -45,21 +37,16 @@ class DropdownTypeController extends Controller
             DropdownType::create($validatedData);
             return redirect()->route('types.index')->with('success', 'Type added successfully.');
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'An error occurred while creating the DropdownType Type.');
+            Log::error('Error in creating drop down type : ' . $e->getMessage());
+            return redirect()->back()->with('error', 'An error occurred while creating the Dropdown Type.');
         }
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(string $id)
     {
         return redirect()->back();
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(string $id)
     {
         $type = DropdownType::findorfail($id);
@@ -69,14 +56,11 @@ class DropdownTypeController extends Controller
         return response()->json(['message' => 'Not found'], 404);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, string $id)
     {
         $type = DropdownType::findorfail($id);
         if (!$type) {
-            return redirect()->back()->with('error', 'DropdownType Type not found.');
+            return redirect()->back()->with('error', 'Dropdown Type not found.');
         }
 
         $validatedData = $request->validate([
@@ -90,13 +74,11 @@ class DropdownTypeController extends Controller
             $type->update($validatedData);
             return redirect()->route('types.index')->with('success', 'Type updated successfully.');
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'An error occurred while updating the DropdownType Type.');
+            Log::error('Error in updating drop down type : ' . $e->getMessage());
+            return redirect()->back()->with('error', 'An error occurred while updating the Dropdown Type.');
         }
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(string $id)
     {
         return redirect()->back();
