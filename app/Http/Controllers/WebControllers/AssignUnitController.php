@@ -7,7 +7,7 @@ use App\Jobs\UnitNotifications;
 use App\Models\Address;
 use App\Models\Building;
 use App\Models\BuildingUnit;
-use App\Models\DropDownType;
+use App\Models\DropdownType;
 use App\Models\ManagerBuilding;
 use App\Models\User;
 use App\Models\UserBuildingUnit;
@@ -18,7 +18,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
-use Illuminate\Validation\Rule;
 
 class AssignUnitController extends Controller
 {
@@ -32,7 +31,7 @@ class AssignUnitController extends Controller
             $selectedUnitId = $request->input('unit_id');
             $selectedUserId = $request->input('user_id');
 
-            $dropdownData = DropDownType::with(['values.childs.childs'])
+            $dropdownData = DropdownType::with(['values.childs.childs'])
                 ->where('type_name', 'Country')
                 ->get();
 

@@ -11,7 +11,7 @@ use App\Models\Building;
 use App\Models\BuildingDocument;
 use App\Models\BuildingLevel;
 use App\Models\BuildingPicture;
-use App\Models\DropDownType;
+use App\Models\DropdownType;
 use App\Models\ManagerBuilding;
 use App\Models\Organization;
 use App\Notifications\DatabaseOnlyNotification;
@@ -111,15 +111,15 @@ class BuildingController extends Controller
     private function create(string $portal)
     {
         try {
-            $dropdownData = DropDownType::with(['values.childs.childs'])
+            $dropdownData = DropdownType::with(['values.childs.childs'])
                 ->where('type_name', 'Country')
                 ->get();
 
-            $documentType = DropDownType::with(['values'])
+            $documentType = DropdownType::with(['values'])
                 ->where('type_name', 'Building-document-type')
                 ->first();
 
-            $buildingType = DropDownType::with(['values'])
+            $buildingType = DropdownType::with(['values'])
                 ->where('type_name', 'Building-type')
                 ->first();
 
@@ -389,15 +389,15 @@ class BuildingController extends Controller
         try {
             $building->load(['address', 'organization','pictures', 'documents']);
 
-            $dropdownData = DropDownType::with(['values.childs.childs'])
+            $dropdownData = DropdownType::with(['values.childs.childs'])
                 ->where('type_name', 'Country')
                 ->get();
 
-            $documentType = DropDownType::with(['values'])
+            $documentType = DropdownType::with(['values'])
                 ->where('type_name', 'Building-document-type')
                 ->first();
 
-            $buildingType = DropDownType::with(['values'])
+            $buildingType = DropdownType::with(['values'])
                 ->where('type_name', 'Building-type')
                 ->first();
 

@@ -5,7 +5,7 @@ namespace App\Http\Controllers\GeneralControllers;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Address;
-use App\Models\DropDownType;
+use App\Models\DropdownType;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
@@ -43,7 +43,7 @@ class ProfileController extends Controller
 
         $dropdownData = null;
         if(!$request->wantsJson()){
-            $dropdownData = DropDownType::with(['values.childs.childs'])
+            $dropdownData = DropdownType::with(['values.childs.childs'])
                 ->where('type_name', 'Country')
                 ->get();
         }

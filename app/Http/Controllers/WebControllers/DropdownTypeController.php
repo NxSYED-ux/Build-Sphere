@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\WebControllers;
 
 use App\Http\Controllers\Controller;
-use App\Models\DropDownType;
-use App\Models\DropDownValue;
+use App\Models\DropdownType;
+use App\Models\DropdownValue;
 use Illuminate\Http\Request;
 
 class DropdownTypeController extends Controller
@@ -15,10 +15,10 @@ class DropdownTypeController extends Controller
     public function index()
     {
         $activeTab = 'Types';
-        $types = DropDownType::with('values','parent')->get();
-        $values = DropDownValue::with('type','parent')->get();
+        $types = DropdownType::with('values','parent')->get();
+        $values = DropdownValue::with('type','parent')->get();
 
-        return view('Heights.Admin.Dropdown.index', compact('types', 'values', 'activeTab'));
+        return view('Heights.Admin.DropdownType.index', compact('types', 'values', 'activeTab'));
     }
 
     /**
@@ -42,10 +42,10 @@ class DropdownTypeController extends Controller
         ]);
 
         try {
-            DropDownType::create($validatedData);
+            DropdownType::create($validatedData);
             return redirect()->route('types.index')->with('success', 'Type added successfully.');
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'An error occurred while creating the Dropdown Type.');
+            return redirect()->back()->with('error', 'An error occurred while creating the DropdownType Type.');
         }
     }
 
@@ -62,7 +62,7 @@ class DropdownTypeController extends Controller
      */
     public function edit(string $id)
     {
-        $type = DropDownType::findorfail($id);
+        $type = DropdownType::findorfail($id);
         if ($type) {
             return response()->json($type);
         }
@@ -74,9 +74,9 @@ class DropdownTypeController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $type = DropDownType::findorfail($id);
+        $type = DropdownType::findorfail($id);
         if (!$type) {
-            return redirect()->back()->with('error', 'Dropdown Type not found.');
+            return redirect()->back()->with('error', 'DropdownType Type not found.');
         }
 
         $validatedData = $request->validate([
@@ -90,7 +90,7 @@ class DropdownTypeController extends Controller
             $type->update($validatedData);
             return redirect()->route('types.index')->with('success', 'Type updated successfully.');
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'An error occurred while updating the Dropdown Type.');
+            return redirect()->back()->with('error', 'An error occurred while updating the DropdownType Type.');
         }
     }
 

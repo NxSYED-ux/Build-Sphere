@@ -7,7 +7,7 @@ use App\Jobs\BuildingNotifications;
 use App\Models\Building;
 use App\Models\BuildingLevel;
 use App\Models\BuildingUnit;
-use App\Models\DropDownType;
+use App\Models\DropdownType;
 use App\Models\ManagerBuilding;
 use App\Models\Organization;
 use App\Models\UnitPicture;
@@ -121,7 +121,7 @@ class BuildingUnitController extends Controller
     {
         try {
             $organizations = Organization::where('status', 'Enable')->get();
-            $unitType = DropDownType::with(['values'])->where('type_name', 'Unit-type')->first();
+            $unitType = DropdownType::with(['values'])->where('type_name', 'Unit-type')->first();
             $unitTypes = $unitType ? $unitType->values : collect();
 
             return view('Heights.Admin.Units.create', compact('organizations', 'unitTypes'));
@@ -136,7 +136,7 @@ class BuildingUnitController extends Controller
     {
         try {
             $buildings = collect();
-            $unitType = DropDownType::with(['values'])->where('type_name', 'Unit-type')->first();
+            $unitType = DropdownType::with(['values'])->where('type_name', 'Unit-type')->first();
             $unitTypes = $unitType ? $unitType->values : collect();
 
             $user = $request->user() ?? abort(403, 'Unauthorized');
@@ -364,7 +364,7 @@ class BuildingUnitController extends Controller
                 ->orWhere('id', $unit->organization_id)
                 ->get();
 
-            $unitType = DropDownType::with(['values'])->where('type_name', 'Unit-type')->first();
+            $unitType = DropdownType::with(['values'])->where('type_name', 'Unit-type')->first();
             $unitTypes = $unitType ? $unitType->values : collect();
 
             return view('Heights.Admin.Units.edit', compact( 'unit', 'organizations', 'unitTypes'));
@@ -378,7 +378,7 @@ class BuildingUnitController extends Controller
     public function ownerEdit(Request $request, $id)
     {
         try{
-            $unitType = DropDownType::with(['values'])->where('type_name', 'Unit-type')->first();
+            $unitType = DropdownType::with(['values'])->where('type_name', 'Unit-type')->first();
             $unitTypes = $unitType ? $unitType->values : collect();
 
             $user = $request->user() ?? abort(403, 'Unauthorized');

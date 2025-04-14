@@ -4,7 +4,7 @@ namespace App\Http\Controllers\WebControllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\Address;
-use App\Models\DropDownType;
+use App\Models\DropdownType;
 use App\Models\Role;
 use App\Models\User;
 use App\Notifications\CredentialsEmail;
@@ -47,7 +47,7 @@ class UsersController extends Controller
     {
         try {
             $roles = Role::where('status', 1)->pluck('name', 'id')->all();
-            $dropdownData = DropDownType::with(['values.childs.childs'])
+            $dropdownData = DropdownType::with(['values.childs.childs'])
                 ->where('type_name', 'Country')
                 ->get();
 
@@ -143,7 +143,7 @@ class UsersController extends Controller
             $roles = Role::where('status', 1)
                 ->orWhere('id', $user->role_id)
                 ->get();
-            $dropdownData = DropDownType::with(['values.childs.childs'])
+            $dropdownData = DropdownType::with(['values.childs.childs'])
                 ->where('type_name', 'Country')
                 ->get();
 

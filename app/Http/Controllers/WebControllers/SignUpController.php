@@ -4,7 +4,7 @@ namespace App\Http\Controllers\WebControllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\Address;
-use App\Models\DropDownType;
+use App\Models\DropdownType;
 use App\Models\Organization;
 use App\Models\OrganizationPicture;
 use App\Models\Otp;
@@ -27,7 +27,7 @@ class SignUpController extends Controller
         $package = $request->query('package');
         $cycle = $request->query('cycle');
 
-        $dropdownData = DropDownType::with(['values.childs.childs'])
+        $dropdownData = DropdownType::with(['values.childs.childs'])
             ->where('type_name', 'Country')
             ->get();
 
