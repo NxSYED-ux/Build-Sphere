@@ -7,10 +7,10 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 class Subscription extends Model
 {
-    protected $table = 'subscription';
+    protected $table = 'subscriptions';
 
     protected $fillable = [
-        'stripe_customer_id',
+        'customer_payment_id',
         'user_id',
         'organization_id',
         'building_id',
@@ -18,7 +18,8 @@ class Subscription extends Model
         'source_id',
         'source_name',
         'billing_cycle',
-        'stripe_status',
+        'subscription_status',
+        'price_at_subscription',
         'trial_ends_at',
         'ends_at',
     ];

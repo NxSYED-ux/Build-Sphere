@@ -35,15 +35,13 @@ class landingController extends Controller
 
             $plans = Plan::where('status', 1)
                 ->whereHas('services', function ($query) use ($billing_cycle) {
-                    $query->where('status', 1)
-                        ->with('serviceCatalog')
+                    $query->with('serviceCatalog')
                         ->whereHas('prices', function ($priceQuery) use ($billing_cycle) {
                             $priceQuery->where('billing_cycle_id', $billing_cycle->id);
                         });
                 })
                 ->with(['services' => function ($query) use ($billing_cycle) {
-                    $query->where('status', 1)
-                        ->with('serviceCatalog')
+                    $query->with('serviceCatalog')
                         ->whereHas('prices', function ($q) use ($billing_cycle) {
                             $q->where('billing_cycle_id', $billing_cycle->id);
                         })

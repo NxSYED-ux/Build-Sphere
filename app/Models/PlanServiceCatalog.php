@@ -13,16 +13,20 @@ class PlanServiceCatalog extends Model
 
     protected $fillable = [
         'title',
-        'keyword',
         'description',
-        'is_mandatory',
     ];
 
     public $timestamps = false;
 
+    // Has Many Relations
     public function planServices()
     {
-        return $this->hasMany(PlanService::class, 'service_catalog_id');
+        return $this->hasMany(PlanService::class, 'service_catalog_id', 'id');
+    }
+
+    public function planSubscriptionItems()
+    {
+        return $this->hasMany(PlanSubscriptionItem::class, 'service_catalog_id', 'id');
     }
 }
 

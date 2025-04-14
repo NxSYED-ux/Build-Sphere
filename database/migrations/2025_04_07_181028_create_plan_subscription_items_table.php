@@ -13,16 +13,10 @@ return new class extends Migration
 
             $table->foreignId('organization_id')->constrained()->onDelete('cascade');
             $table->foreignId('subscription_id')->constrained()->onDelete('cascade');
-            $table->unsignedBigInteger('service_id');
-
-            $table->string('service_name');
-            $table->string('service_keyword');
+            $table->foreignId('service_catalog_id')->constrained('planservicecatalog')->onDelete('cascade');
             $table->integer('quantity');
-
             $table->integer('used')->default(0);
             $table->json('meta')->nullable();
-
-            $table->foreign('service_id')->references('id')->on('planservices')->onDelete('cascade');
 
             $table->timestamps();
         });

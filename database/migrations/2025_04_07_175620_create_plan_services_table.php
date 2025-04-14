@@ -11,11 +11,8 @@ return new class extends Migration
         Schema::create('planservicecatalog', function (Blueprint $table) {
             $table->id();
 
-            $table->string('title', 255); // For frontend: e.g., "Manage Buildings"
-            $table->string('keyword', 255); // For backend: e.g., "buildings"
+            $table->string('title', 255);
             $table->string('description')->nullable();
-
-            $table->boolean('is_mandatory')->default(true);
         });
 
         Schema::create('planservices', function (Blueprint $table) {
@@ -23,8 +20,7 @@ return new class extends Migration
             $table->foreignId('plan_id')->constrained()->onDelete('cascade');
             $table->foreignId('service_catalog_id')->constrained('planservicecatalog')->onDelete('cascade');
 
-            $table->integer('quantity')->nullable(); // Null = unlimited
-            $table->boolean('status')->default(true);
+            $table->integer('quantity')->default(0);
 
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();

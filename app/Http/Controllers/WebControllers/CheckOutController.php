@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\BillingCycle;
 use App\Models\Organization;
 use App\Models\Plan;
+use App\Models\PlanSubscriptionItem;
 use App\Models\Subscription;
 use App\Models\Transaction;
 use App\Models\User;
@@ -15,6 +16,7 @@ use Stripe\Customer;
 use Stripe\PaymentIntent;
 use Stripe\PaymentMethod;
 use Stripe\Stripe;
+use Illuminate\Support\Facades\DB;
 
 
 class CheckOutController extends Controller
@@ -33,7 +35,8 @@ class CheckOutController extends Controller
                 return redirect()->back()->with('error', 'Invalid request. Please try again or contact support if the issue persists.');
             }
 
-            $id = $request->input('id');
+            $owner_id = $request->input('id');
+            $organization_id = $organization->id;
             $organization_name = $request->input('organization_name');
             $selectedPackage = $request->input('package');
             $selectedCycle = $request->input('cycle');
@@ -41,7 +44,8 @@ class CheckOutController extends Controller
 
             return view('landing-views.checkout', compact(
                 'planCycles',
-                'id',
+                'owner_id',
+                'organization_id',
                 'organization_name',
                 'selectedPackage',
                 'selectedCycle'
@@ -54,17 +58,20 @@ class CheckOutController extends Controller
 
     public function checkout(Request $request)
     {
+        Log::info($request);
         $request->validate([
-            'id' => 'required|exists:organizations,owner_id',
-            'organization_name' => 'required|string|exists:organizations,name',
+            'owner_id' => 'required',
+            'organization_id' => 'required',
             'plan_id' => 'required|exists:plans,id',
             'plan_cycle_id' => 'required|exists:billing_cycles,id',
-            'plan_cycle' => 'required',
+            'plan_cycle' => 'required|integer',
             'payment_method_id' => 'required|string',
         ]);
 
+
         try {
-            $user = User::where('id', $request->id)->first();
+            Log::info($request);
+            $user = User::find($request->owner_id);
             if (!$user) {
                 return response()->json(['error' => 'User not found.'], 404);
             }
@@ -74,14 +81,13 @@ class CheckOutController extends Controller
             $plan = Plan::where('id', $request->plan_id)
                 ->where('status', 1)
                 ->whereHas('services', function ($query) use ($billing_cycle_id) {
-                    $query->where('status', 1)
+                    $query->with('serviceCatalog')
                         ->whereHas('prices', function ($priceQuery) use ($billing_cycle_id) {
                             $priceQuery->where('billing_cycle_id', $billing_cycle_id);
                         });
                 })
                 ->with(['services' => function ($query) use ($billing_cycle_id) {
-                    $query->where('status', 1)
-                        ->with('serviceCatalog')
+                    $query->with('serviceCatalog')
                         ->whereHas('prices', function ($q) use ($billing_cycle_id) {
                             $q->where('billing_cycle_id', $billing_cycle_id);
                         })
@@ -106,6 +112,7 @@ class CheckOutController extends Controller
 
                 return [
                     'service_id' => $service->id,
+                    'service_catalog_id' => $service->serviceCatalog->id,
                     'service_name' => $service->serviceCatalog->title ?? '',
                     'service_description' => $service->serviceCatalog->description ?? '',
                     'service_quantity' => $service->quantity,
@@ -113,7 +120,6 @@ class CheckOutController extends Controller
             });
 
             $planDetails = [
-                'plan_id' => $plan->id,
                 'plan_name' => $plan->name,
                 'plan_description' => $plan->description,
                 'currency' => $plan->currency,
@@ -134,7 +140,6 @@ class CheckOutController extends Controller
                     'default_payment_method' => $request->payment_method_id,
                 ],
             ]);
-
 
             $paymentIntent = PaymentIntent::create([
                 'amount' => $planDetails['total_price'] * 100,
@@ -161,17 +166,84 @@ class CheckOutController extends Controller
             }
 
             if ($paymentIntent->status === 'succeeded') {
+                DB::beginTransaction();
 
-                return response()->json(['success' => true]);
+                try {
+                    $transaction = Transaction::create([
+                        'transaction_title' => "{$plan->name} ({$request->plan_cycle} Months)",
+                        'transaction_category' => 'New',
+                        'buyer_id' => $request->organization_id,
+                        'buyer_type' => 'organization',
+                        'seller_type' => 'platform',
+                        'payment_method' => 'Card',
+                        'gateway_payment_id' => $paymentIntent->id,
+                        'price' => $planDetails['total_price'],
+                        'currency' => $planDetails['currency'],
+                        'status' => 'Completed',
+                        'is_subscription' => true,
+                        'billing_cycle' => $request->plan_cycle . ' Months',
+                        'subscription_start_date' => now(),
+                        'subscription_end_date' => now()->addMonths((int) $request->plan_cycle),
+                        'source_id' => $plan->id,
+                        'source_name' => 'plan',
+                    ]);
+
+                    $subscription = Subscription::create([
+                        'customer_payment_id' => $user->customer_payment_id,
+                        'user_id' => $user->id,
+                        'organization_id' => $request->organization_id,
+                        'source_id' => $plan->id,
+                        'source_name' => 'plan',
+                        'billing_cycle' => $request->plan_cycle,
+                        'subscription_status' => 'Active',
+                        'price_at_subscription' => $planDetails['total_price'],
+                        'ends_at' => now()->addMonths((int) $request->plan_cycle),
+                    ]);
+
+                    foreach ($planDetails['services'] as $service) {
+                        PlanSubscriptionItem::create([
+                            'organization_id' => $request->organization_id,
+                            'subscription_id' => $subscription->id,
+                            'service_catalog_id' => $service['service_catalog_id'],
+                            'quantity' => $service['service_quantity'],
+                        ]);
+                    }
+
+                    Organization::where('id', $request->organization_id)->update(['status' => 'Enable']);
+
+                    DB::commit();
+
+                    return response()->json(['success' => true, 'transaction_id' => $transaction->id]);
+                } catch (\Exception $e) {
+                    DB::rollBack();
+                    Log::error('DB Transaction Failed during checkout: ' . $e->getMessage());
+                    return response()->json([
+                        'error' => 'Payment succeeded, but something went wrong while saving data. Please contact support.',
+                    ], 500);
+                }
             }
 
             Log::warning('Stripe payment not succeeded', ['status' => $paymentIntent->status]);
+
+             Transaction::create([
+                'transaction_title' => "{$plan->name} ({$request->plan_cycle} Months)",
+                'transaction_category' => 'New',
+                'buyer_id' => $request->organization_id,
+                'buyer_type' => 'organization',
+                'seller_type' => 'platform',
+                'payment_method' => 'Card',
+                'gateway_payment_id' => $paymentIntent->id,
+                'price' => $planDetails['total_price'],
+                'currency' => $planDetails['currency'],
+                'status' => 'Failed',
+                'source_id' => $plan->id,
+                'source_name' => 'plan',
+            ]);
 
             return response()->json([
                 'error' => 'Payment failed.',
                 'status' => $paymentIntent->status,
             ]);
-
         } catch (\Exception $e) {
             Log::error('Error while Checkout Plan: ' . $e->getMessage());
 
@@ -181,5 +253,6 @@ class CheckOutController extends Controller
             ], 500);
         }
     }
+
 
 }

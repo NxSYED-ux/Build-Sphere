@@ -524,34 +524,34 @@ INSERT INTO `plans` (`id`, `name`, `description`, `currency`, `status`, `created
 (3, 'Pro', 'Advanced features for professionals managing multiple properties with automation and insights.', 'PKR', 1, '2025-04-09 18:26:51', '2025-04-09 18:26:53');
 
 
-INSERT INTO `planservicecatalog` (`id`, `title`, `keyword`, `description`, `is_mandatory`) VALUES
-(1, 'Building Management', ' buildings', 'Oversee and organize all registered buildings in one place. Includes configuration, status updates, and essential building data.', 1),
-(2, 'Manager Accounts', 'managers', 'Create and manage accounts for building managers. Assign responsibilities and control access to their respective buildings.', 1),
-(3, 'Staff Members per Building', 'staffMembers', 'Assign staff members to individual buildings. Manage queries, and responsibilities per building.', 1),
-(4, 'Levels per Building', 'levels', 'Define and manage the number of floors or levels for each building. Useful for unit mapping and navigation purposes.', 1),
-(5, 'Units per Building', 'units', 'Add and track all residential or commercial units within a building. Enables easy management of occupancy and availability.', 1),
-(6, 'Featured Memberships', 'memberships', 'Highlight premium membership options for users. Offers additional visibility and benefits over standard plans.', 1);
+INSERT INTO `planservicecatalog` (`id`, `title`, `description`) VALUES
+(1, 'Building Management', 'Oversee and organize all registered buildings in one place. Includes configuration, status updates, and essential building data.'),
+(2, 'Manager Accounts', 'Create and manage accounts for building managers. Assign responsibilities and control access to their respective buildings.'),
+(3, 'Staff Members per Building', 'Assign staff members to individual buildings. Manage queries, and responsibilities per building.'),
+(4, 'Levels per Building', 'Define and manage the number of floors or levels for each building. Useful for unit mapping and navigation purposes.'),
+(5, 'Units per Building', 'Add and track all residential or commercial units within a building. Enables easy management of occupancy and availability.'),
+(6, 'Featured Memberships', 'Highlight premium membership options for users. Offers additional visibility and benefits over standard plans.');
 
 
-INSERT INTO `planservices` (`id`, `plan_id`, `service_catalog_id`, `quantity`, `status`, `created_at`, `updated_at`) VALUES
-(1, 1, 1, 3, 1, '2025-04-10 14:03:17', '2025-04-10 14:03:17'),
-(2, 1, 2, 2, 1, '2025-04-10 14:03:17', '2025-04-10 14:03:17'),
-(3, 1, 3, 20, 1, '2025-04-10 14:03:17', '2025-04-10 14:03:17'),
-(4, 1, 4, 5, 1, '2025-04-10 14:03:17', '2025-04-10 14:03:17'),
-(5, 1, 5, 25, 1, '2025-04-10 14:03:17', '2025-04-10 14:03:17'),
-(6, 1, 6, 2, 1, '2025-04-10 14:03:17', '2025-04-10 14:03:17'),
-(7, 2, 1, 5, 1, '2025-04-10 14:03:17', '2025-04-10 14:03:17'),
-(8, 2, 2, 3, 1, '2025-04-10 14:03:17', '2025-04-10 14:03:17'),
-(9, 2, 3, 30, 1, '2025-04-10 14:03:17', '2025-04-10 14:03:17'),
-(10, 2, 4, 8, 1, '2025-04-10 14:03:17', '2025-04-10 14:03:17'),
-(11, 2, 5, 40, 1, '2025-04-10 14:03:17', '2025-04-10 14:03:17'),
-(12, 2, 6, 5, 1, '2025-04-10 14:03:17', '2025-04-10 14:03:17'),
-(13, 3, 1, 7, 1, '2025-04-10 14:03:17', '2025-04-10 14:03:17'),
-(14, 3, 2, 5, 1, '2025-04-10 14:03:17', '2025-04-10 14:03:17'),
-(15, 3, 3, 50, 1, '2025-04-10 14:03:17', '2025-04-10 14:03:17'),
-(16, 3, 4, 10, 1, '2025-04-10 14:03:17', '2025-04-10 14:03:17'),
-(17, 3, 5, 60, 1, '2025-04-10 14:03:17', '2025-04-10 14:03:17'),
-(18, 3, 6, 5, 1, '2025-04-10 14:03:17', '2025-04-10 14:03:17');
+INSERT INTO `planservices` (`id`, `plan_id`, `service_catalog_id`, `quantity`, `created_at`, `updated_at`) VALUES
+(1, 1, 1, 3, '2025-04-10 14:03:17', '2025-04-10 14:03:17'),
+(2, 1, 2, 2, '2025-04-10 14:03:17', '2025-04-10 14:03:17'),
+(3, 1, 3, 20, '2025-04-10 14:03:17', '2025-04-10 14:03:17'),
+(4, 1, 4, 5, '2025-04-10 14:03:17', '2025-04-10 14:03:17'),
+(5, 1, 5, 25,'2025-04-10 14:03:17', '2025-04-10 14:03:17'),
+(6, 1, 6, 2, '2025-04-10 14:03:17', '2025-04-10 14:03:17'),
+(7, 2, 1, 5, '2025-04-10 14:03:17', '2025-04-10 14:03:17'),
+(8, 2, 2, 3, '2025-04-10 14:03:17', '2025-04-10 14:03:17'),
+(9, 2, 3, 30, '2025-04-10 14:03:17', '2025-04-10 14:03:17'),
+(10, 2, 4, 8, '2025-04-10 14:03:17', '2025-04-10 14:03:17'),
+(11, 2, 5, 40, '2025-04-10 14:03:17', '2025-04-10 14:03:17'),
+(12, 2, 6, 5,'2025-04-10 14:03:17', '2025-04-10 14:03:17'),
+(13, 3, 1, 7,'2025-04-10 14:03:17', '2025-04-10 14:03:17'),
+(14, 3, 2, 5, '2025-04-10 14:03:17', '2025-04-10 14:03:17'),
+(15, 3, 3, 50, '2025-04-10 14:03:17', '2025-04-10 14:03:17'),
+(16, 3, 4, 10, '2025-04-10 14:03:17', '2025-04-10 14:03:17'),
+(17, 3, 5, 60, '2025-04-10 14:03:17', '2025-04-10 14:03:17'),
+(18, 3, 6, 5, '2025-04-10 14:03:17', '2025-04-10 14:03:17');
 
 
 INSERT INTO `billing_cycles` (`id`, `duration_months`, `description`) VALUES

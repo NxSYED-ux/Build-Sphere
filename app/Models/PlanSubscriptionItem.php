@@ -14,12 +14,10 @@ class PlanSubscriptionItem extends Model
     protected $fillable = [
         'organization_id',
         'subscription_id',
-        'service_id',
-        'service_name',
-        'service_keyword',
         'quantity',
-        'meta',
+        'service_catalog_id',
         'used',
+        'meta',
     ];
 
     protected $casts = [
@@ -33,9 +31,9 @@ class PlanSubscriptionItem extends Model
         return $this->belongsTo(Subscription::class, 'subscription_id', 'id');
     }
 
-    public function service()
+    public function serviceCatalog()
     {
-        return $this->belongsTo(PlanService::class, 'service_id', 'id');
+        return $this->belongsTo(PlanServiceCatalog::class, 'service_catalog_id', 'id');
     }
 
     public function organization()

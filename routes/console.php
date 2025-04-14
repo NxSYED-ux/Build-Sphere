@@ -7,10 +7,8 @@ Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote')->everySecond();
 
-
 Artisan::command('start:queue', function () {
     $this->info('Queue worker started...');
-
     Artisan::call('queue:work', [
         '--tries' => 3,
         '--stop-when-empty' => true,

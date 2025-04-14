@@ -2,29 +2,23 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Transaction extends Model
 {
-    use HasFactory;
-
-    protected $table = 'transaction';
-
-    protected $primaryKey = 'id';
-
     protected $fillable = [
-        'is_admin_transaction',
-        'user_id',
-        'organization_id',
-        'building_id',
-        'unit_id',
         'transaction_title',
         'transaction_category',
-        'admin_transaction_type',
-        'organization_transaction_type',
-        'user_transaction_type',
+        'buyer_id',
+        'buyer_type',
+        'buyer_transaction_type',
+        'seller_id',
+        'seller_type',
+        'seller_transaction_type',
+        'building_id',
+        'unit_id',
         'payment_method',
         'gateway_payment_id',
         'price',
@@ -35,40 +29,42 @@ class Transaction extends Model
         'subscription_start_date',
         'subscription_end_date',
         'source_id',
-        'source_name'
+        'source_name',
     ];
 
     protected $casts = [
         'subscription_start_date' => 'datetime',
         'subscription_end_date' => 'datetime',
-        'price' => 'decimal:2',
         'is_subscription' => 'boolean',
     ];
 
-    // Belongs to Relations
-    public function user()
+    public function buyer(): MorphTo
     {
-        return $this->belongsTo(User::class, 'user_id', 'id');
+        return $this->morphTo(null, 'buyer_type', 'buyer_id');
     }
 
-    public function organization()
+    public function seller(): MorphTo
     {
-        return $this->belongsTo(Organization::class, 'organization_id', 'id');
+        return $this->morphTo(null, 'seller_type', 'seller_id');
     }
 
-    public function building()
+    public function building(): BelongsTo
     {
-        return $this->belongsTo(Building::class, 'building_id', 'id');
+        return $this->belongsTo(Building::class);
     }
 
-    public function unit()
+    public function unit(): BelongsTo
     {
-        return $this->belongsTo(BuildingUnit::class, 'unit_id', 'id');
+        return $this->belongsTo(BuildingUnit::class);
     }
 
-    // Polymorphic relationship to source (e.g., Plan, Rental, etc.)
-    public function source(): MorphTo
+    public function isPlatformSeller(): bool
     {
-        return $this->morphTo(null, 'source_name', 'source_id');
+        return $this->seller_type === 'platform';
+    }
+
+    public function isPlatformBuyer(): bool
+    {
+        return $this->buyer_type === 'platform';
     }
 }
