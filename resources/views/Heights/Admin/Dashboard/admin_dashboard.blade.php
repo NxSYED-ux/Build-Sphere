@@ -250,204 +250,11 @@
                             <!-- Map  -->
                             <div class="row my-2">
                                 <div data-aos="fade-up" class="aos-init aos-animate">
-                                <iframe style="border:0; width: 100%; height: 350px;"
-                                    src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d12097.433213460943!2d-74.0062269!3d40.7101282!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0xb89d1fe6bc499443!2sDowntown+Conference+Center!5e0!3m2!1smk!2sbg!4v1539943755621"
-                                    frameborder="0" allowfullscreen=""></iframe>
+                                    <iframe  style="border:0; width: 100%; height: 350px;" class="embed-map-frame" frameborder="0" scrolling="no" marginheight="0" marginwidth="0"
+                                          src="https://maps.google.com/maps?width=600&height=350&hl=en&q=COMSATS&t=&z=15&ie=UTF8&iwloc=B&output=embed">
+                                    </iframe>
                                 </div>
-                            </div>
-
-                            <!-- Building Table -->
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <div class="box mx-1">
-                                        <div class="container mt-4">
-                                            <div class="d-flex justify-content-between align-items-center mb-0">
-                                                <h2 class="">Buildings</h2>
-                                            </div>
-                                            <div class="card shadow mb-5 bg-body rounded" style="border: none;">
-                                                <div class="card-body rounded" style="overflow-x: auto;">
-                                                    <table id="usersTable" class="table shadow-sm table-hover table-striped">  <!-- table-bordered -->
-                                                    <thead class="shadow">
-                                                        <tr>
-                                                            <th>ID</th>
-                                                            <th>Name</th>
-                                                            <th>Address</th>
-                                                            <th>Floors</th>
-                                                            <th>Year Built</th>
-                                                            <th>Type</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        <tr>
-                                                            <td>1</td>
-                                                            <td>Skyline Tower</td>
-                                                            <td>123 Main St</td>
-                                                            <td>50</td>
-                                                            <td>2018</td>
-                                                            <td>Commercial</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>2</td>
-                                                            <td>Maple Apartments</td>
-                                                            <td>456 Oak Ave</td>
-                                                            <td>20</td>
-                                                            <td>2019</td>
-                                                            <td>Residential</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>3</td>
-                                                            <td>Sunset Plaza</td>
-                                                            <td>789 Pine Blvd</td>
-                                                            <td>15</td>
-                                                            <td>2017</td>
-                                                            <td>Mixed-Use</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>4</td>
-                                                            <td>Greenwood Complex</td>
-                                                            <td>321 Birch Ln</td>
-                                                            <td>12</td>
-                                                            <td>2020</td>
-                                                            <td>Commercial</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>5</td>
-                                                            <td>Blue Ridge Estates</td>
-                                                            <td>654 Cedar Dr</td>
-                                                            <td>25</td>
-                                                            <td>2018</td>
-                                                            <td>Residential</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>6</td>
-                                                            <td>Parkview Towers</td>
-                                                            <td>987 Elm St</td>
-                                                            <td>30</td>
-                                                            <td>2019</td>
-                                                            <td>Commercial</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>7</td>
-                                                            <td>Riverfront Residences</td>
-                                                            <td>159 Maple Rd</td>
-                                                            <td>22</td>
-                                                            <td>2020</td>
-                                                            <td>Residential</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>8</td>
-                                                            <td>Lakeview Plaza</td>
-                                                            <td>753 Ash St</td>
-                                                            <td>18</td>
-                                                            <td>2017</td>
-                                                            <td>Mixed-Use</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>9</td>
-                                                            <td>City Center</td>
-                                                            <td>852 Walnut Ave</td>
-                                                            <td>40</td>
-                                                            <td>2018</td>
-                                                            <td>Commercial</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>10</td>
-                                                            <td>Harbor Heights</td>
-                                                            <td>951 Willow Ln</td>
-                                                            <td>28</td>
-                                                            <td>2019</td>
-                                                            <td>Residential</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>11</td>
-                                                            <td>Metro Lofts</td>
-                                                            <td>147 Spruce St</td>
-                                                            <td>35</td>
-                                                            <td>2020</td>
-                                                            <td>Residential</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>12</td>
-                                                            <td>Pinehurst Building</td>
-                                                            <td>258 Aspen Blvd</td>
-                                                            <td>16</td>
-                                                            <td>2019</td>
-                                                            <td>Commercial</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>13</td>
-                                                            <td>Oakridge Estates</td>
-                                                            <td>369 Sycamore Dr</td>
-                                                            <td>10</td>
-                                                            <td>2018</td>
-                                                            <td>Residential</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>14</td>
-                                                            <td>Brookside Apartments</td>
-                                                            <td>741 Birch Ln</td>
-                                                            <td>8</td>
-                                                            <td>2017</td>
-                                                            <td>Residential</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>15</td>
-                                                            <td>Hilltop View</td>
-                                                            <td>852 Oak Ave</td>
-                                                            <td>25</td>
-                                                            <td>2020</td>
-                                                            <td>Mixed-Use</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>16</td>
-                                                            <td>Summit Towers</td>
-                                                            <td>963 Pine Blvd</td>
-                                                            <td>33</td>
-                                                            <td>2019</td>
-                                                            <td>Commercial</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>17</td>
-                                                            <td>Cascade Heights</td>
-                                                            <td>174 Maple Rd</td>
-                                                            <td>20</td>
-                                                            <td>2018</td>
-                                                            <td>Residential</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>18</td>
-                                                            <td>Meadowview Complex</td>
-                                                            <td>285 Cedar Dr</td>
-                                                            <td>12</td>
-                                                            <td>2017</td>
-                                                            <td>Commercial</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>19</td>
-                                                            <td>Sunrise Estates</td>
-                                                            <td>396 Birch Ln</td>
-                                                            <td>15</td>
-                                                            <td>2019</td>
-                                                            <td>Residential</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>20</td>
-                                                            <td>Crestview Towers</td>
-                                                            <td>507 Spruce St</td>
-                                                            <td>40</td>
-                                                            <td>2020</td>
-                                                            <td>Commercial</td>
-                                                        </tr>
-                                                    </tbody>
-
-                                                    </table>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
+                             </div>
 
                         </section>
                     </div>
@@ -461,170 +268,76 @@
 
 @push('scripts')
 
-    <!-- Add DataTables JS -->
-    <script src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/1.11.3/js/dataTables.bootstrap5.min.js"></script>
-
-    <!-- Add DataTables Buttons JS -->
-    <script src="https://cdn.datatables.net/buttons/2.3.6/js/dataTables.buttons.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.bootstrap5.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.html5.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.print.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
-
-    <!-- Data Table script -->
-    <script>
-        $(document).ready(function () {
-            var table = $('#usersTable').DataTable({
-                "pageLength": 10,
-                "lengthMenu": [10, 20, 50, 100],
-                "language": {
-                    "paginate": {
-                        "first": "First",
-                        "last": "Last",
-                        "next": "Next",
-                        "previous": "Previous"
-                    },
-                    "lengthMenu": "Show _MENU_ users per page",
-                    "search": "Search:"
-                },
-                "columnDefs": [
-                    {
-                        "targets": [0, 1, 2, 3, 4, 5],
-                        "visible": true
-                    },
-                    {
-                        "targets": '_all',
-                        "visible": false
-                    }
-                ],
-                dom: 'Bfrtip',
-                buttons: [
-                    {
-                        extend: 'copy',
-                        exportOptions: {
-                            columns: ':visible'
-                        }
-                    },
-                    {
-                        extend: 'csv',
-                        exportOptions: {
-                            columns: ':visible'
-                        }
-                    },
-                    {
-                        extend: 'excel',
-                        exportOptions: {
-                            columns: ':visible'
-                        }
-                    },
-                    {
-                        extend: 'pdf',
-                        exportOptions: {
-                            columns: ':visible'
-                        }
-                    },
-                    {
-                        extend: 'print',
-                        exportOptions: {
-                            columns: ':visible'
-                        },
-                        customize: function (win) {
-                            var table = $(win.document.body).find('table');
-                            table.addClass('display').css('width', '100%');
-                            table.find('td').css('text-align', 'center');
-                        }
-                    },
-                    'colvis'
-                ],
-                initComplete: function () {
-                    table.buttons().container().appendTo('#datatable-buttons');
-                }
-            });
-        });
-    </script>
-
-    <!-- Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-P7JSYB1CSP"></script>
-    <script>
-        if (window.self === window.top) {
-            window.dataLayer = window.dataLayer || [];
-            function gtag() { dataLayer.push(arguments); }
-            gtag('js', new Date());
-            gtag('config', 'G-P7JSYB1CSP');
-        }
-    </script>
-
-    <!-- Cloudflare Insights -->
-    <script defer
-        src="https://static.cloudflareinsights.com/beacon.min.js/v8b253dfea2ab4077af8c6f58422dfbfd1689876627854"
-        integrity="sha512-bjgnUKX4azu3dLTVtie9u6TKqgx29RBwfj3QXYt5EKfWM/9hPSAI/4qcV5NACjwAo8UtTeWefx6Zq5PHcMm7Tg=="
-        data-cf-beacon='{"rayId":"807fd0b9dd75d1dc","token":"68c5ca450bae485a842ff76066d69420","version":"2023.8.0","si":100}'
-        crossorigin="anonymous">
-    </script>
-
     <!-- // charts -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!--  -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <script>
-        let Jsondata;
+        document.addEventListener("DOMContentLoaded", function () {
+            let Jsondata;
 
-        fetch("{{ asset('js/data.json') }}")
-            .then(function(response) {
-                if (response.status === 200) {
-                    return response.json();
+            fetch("{{ asset('js/data.json') }}")
+                .then(response => {
+                    if (response.ok) {
+                        return response.json();
+                    }
+                    throw new Error("Failed to load JSON data.");
+                })
+                .then(data => {
+                    Jsondata = data;
+                    createChart(Jsondata, 'bar', 'barChart');
+                    createChart(Jsondata, 'line', 'lineChart');
+                })
+                .catch(error => console.error(error));
+
+            function createChart(data, type, chartId) {
+                const canvas = document.getElementById(chartId);
+                if (!canvas) {
+                    console.error(`Canvas with ID "${chartId}" not found.`);
+                    return;
                 }
-            })
-            .then(function(data) {
-                Jsondata = data;
-                createChart(Jsondata, 'bar', 'barChart');
-                createChart(Jsondata, 'line', 'lineChart');
-                createChart(Jsondata, 'doughnut', 'doughnutChart');
-                createChart(Jsondata, 'polarArea', 'polarAreaChart');
-                createChart(Jsondata, 'radar', 'radarChart');
-            });
 
-        function createChart(data, type, chartId) {
-            const ctx = document.getElementById(chartId).getContext('2d');
-            new Chart(ctx, {
-                type: type,
-                data: {
-                    labels: data.map(row => row.month),
-                    datasets: [
-                        {
-                            label: 'Income',
-                            data: data.map(row => row.income),
-                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                            borderColor: 'rgba(75, 192, 192, 1)',
-                            borderWidth: 1
-                        },
-                        {
-                            label: 'Expenses',
-                            data: data.map(row => row.expenses),
-                            backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                            borderColor: 'rgba(255, 99, 132, 1)',
-                            borderWidth: 1
-                        }
-                    ]
-                },
-                options: {
-                    scales: {
-                        y: {
-                            beginAtZero: true
-                        }
+                const ctx = canvas.getContext('2d');
+                new Chart(ctx, {
+                    type: type,
+                    data: {
+                        labels: data.map(row => row.month),
+                        datasets: [
+                            {
+                                label: 'Income',
+                                data: data.map(row => row.income),
+                                backgroundColor: type === 'bar' ? 'rgba(75, 192, 192, 0.2)' : 'transparent',
+                                borderColor: 'rgba(75, 192, 192, 1)',
+                                borderWidth: 2,
+                                fill: type === 'line'
+                            },
+                            {
+                                label: 'Expenses',
+                                data: data.map(row => row.expenses),
+                                backgroundColor: type === 'bar' ? 'rgba(255, 99, 132, 0.2)' : 'transparent',
+                                borderColor: 'rgba(255, 99, 132, 1)',
+                                borderWidth: 2,
+                                fill: type === 'line'
+                            }
+                        ]
                     },
-                    responsive: true,
-                    maintainAspectRatio: false,
-                }
-            });
-        }
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            }
+        });
     </script>
 
-     <!-- current date and time -->
+
+    <!-- current date and time -->
     <script>
         // Create an array of month names
         const monthNames = ["JANUARY", "FEBRUARY", "MARCH", "APRIL", "MAY", "JUNE", "JULY", "AUGUST", "SEPTEMBER", "OCTOBER", "NOVEMBER", "DECEMBER"];

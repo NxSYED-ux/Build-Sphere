@@ -60,10 +60,13 @@ document.addEventListener("DOMContentLoaded", async () => {
         const permission = await Notification.requestPermission();
         if (permission === "granted") {
             messaging.onMessage((payload) => {
+                console.log("🔔 Firebase Notification Payload:", payload);
+
+                const parsedLink = JSON.parse(payload.data?.link || "{}");
                 showNotification(
                     payload.notification?.title || payload.data?.heading || "New Notification",
                     payload.notification?.body || payload.data?.message || "",
-                    payload.data?.link || "#",
+                    parsedLink?.web || "#",
                     payload.notification?.image || payload.data?.image
                 );
             });

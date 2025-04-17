@@ -10,7 +10,7 @@ async function initFirebaseMessaging() {
         }
 
         const messaging = firebase.messaging();
-        const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
+        const registration = await navigator.serviceWorker.register('/js/appjs/firebase-messaging-sw.js');
 
         const permission = await Notification.requestPermission();
         if (permission === "granted") {
@@ -32,10 +32,10 @@ async function initFirebaseMessaging() {
 async function loadFirebaseSDK() {
     return new Promise((resolve) => {
         const script = document.createElement('script');
-        script.src = "https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js";
+        script.src = "/js/firebase-app-compat.js";
         script.onload = () => {
             const messagingScript = document.createElement('script');
-            messagingScript.src = "https://www.gstatic.com/firebasejs/9.6.10/firebase-messaging-compat.js";
+            messagingScript.src = "/js/firebase-messaging-compat.js";
             messagingScript.onload = resolve;
             document.head.appendChild(messagingScript);
         };

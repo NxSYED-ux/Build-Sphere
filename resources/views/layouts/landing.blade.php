@@ -22,7 +22,7 @@
     <meta property="og:title" content="HMS | Expert Property Management Services">
     <meta property="og:description" content="Top-tier property management services for residential and commercial properties. Hassle-free rent collection, maintenance, and more.">
     <meta property="og:image" content="{{ asset('logos/Light-theme-Logo.svg') }}">
-    <meta property="og:url" content="http://127.0.0.1:8000/">
+    <meta property="og:url" content="{{ url()->current() }}">
     <meta property="og:type" content="website">
 
     <!-- Twitter Card -->
@@ -32,7 +32,7 @@
     <meta name="twitter:image" content="{{ asset('logos/Light-theme-Logo.svg') }}">
 
     <!-- Canonical URL -->
-    <link rel="canonical" href="http://127.0.0.1:8000/">
+    <link rel="canonical" href="{{ url()->current() }}">
 
 
     <!-- Alpine.js for Mobile Menu -->

@@ -15,7 +15,7 @@
     <meta property="og:title" content="HMS | Expert Property Management Services">
     <meta property="og:description" content="Top-tier property management services for residential and commercial properties. Hassle-free rent collection, maintenance, and more.">
     <meta property="og:image" content="{{ asset('logos/Light-theme-Logo.svg') }}">
-    <meta property="og:url" content="http://127.0.0.1:8000/">
+    <meta property="og:url" content="{{ url()->current() }}">
     <meta property="og:type" content="website">
 
     <!-- Twitter Card -->
@@ -25,7 +25,7 @@
     <meta name="twitter:image" content="{{ asset('logos/Light-theme-Logo.svg') }}">
 
     <!-- Canonical URL -->
-    <link rel="canonical" href="http://127.0.0.1:8000/">
+    <link rel="canonical" href="{{ url()->current() }}">
 
     <meta name="user-id" content="{{ auth()->id() }}">
     <meta name="role-id" content="{{ auth()->user()->role_id }}">
@@ -53,7 +53,7 @@
     <link href="{{ asset('css/topnavbar.css') }}" rel="stylesheet">
     <link href="{{ asset('css/sidenavbar.css') }}" rel="stylesheet">
 
-    <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
+    <script src="{{ asset('pusher.js') }}"></script>
     <!-- Include SweetAlert2 CSS from CDN -->
     <link rel="stylesheet" href="{{ asset('css/sweetalert.css') }}">
     <!-- Add DataTables CSS link -->
@@ -273,8 +273,8 @@
 
 
     <!-- Firebase SDKs -->
-    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-messaging-compat.js"></script>
+    <script src="{{ asset('js/firebase-app-compat.js') }}"></script>
+    <script src="{{ asset('js/firebase-messaging-compat.js') }}"></script>
 
     <script>
         function getMeta(name) {
