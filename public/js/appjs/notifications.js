@@ -1,21 +1,3 @@
-function getMeta(name) {
-    return document.querySelector(`meta[name="${name}"]`)?.getAttribute('content') || '';
-}
-
-window.FIREBASE_CONFIG = {
-    apiKey: getMeta('firebase-api-key'),
-    authDomain: getMeta('firebase-auth-domain'),
-    projectId: getMeta('firebase-project-id'),
-    messagingSenderId: getMeta('firebase-messaging-sender-id'),
-    appId: getMeta('firebase-app-id'),
-    vapidKey: getMeta('firebase-vapid-key')
-};
-
-window.PUSHER_CONFIG = {
-    appKey: getMeta('pusher-key'),
-    appCluster: getMeta('pusher-cluster')
-};
-
 function showNotification(title, message, link, image) {
     const notifications = document.getElementById("notifications");
     if (!notifications) return;

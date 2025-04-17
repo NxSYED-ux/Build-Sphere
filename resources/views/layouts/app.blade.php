@@ -52,6 +52,7 @@
     <link href="{{ asset('css/bootstrap.min.css') }}" rel="stylesheet">
     <link href="{{ asset('css/topnavbar.css') }}" rel="stylesheet">
     <link href="{{ asset('css/sidenavbar.css') }}" rel="stylesheet">
+
     <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
     <!-- Include SweetAlert2 CSS from CDN -->
     <link rel="stylesheet" href="{{ asset('css/sweetalert.css') }}">
@@ -275,6 +276,25 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-messaging-compat.js"></script>
 
+    <script>
+        function getMeta(name) {
+            return document.querySelector(`meta[name="${name}"]`)?.getAttribute('content') || '';
+        }
+
+        window.FIREBASE_CONFIG = {
+            apiKey: getMeta('firebase-api-key'),
+            authDomain: getMeta('firebase-auth-domain'),
+            projectId: getMeta('firebase-project-id'),
+            messagingSenderId: getMeta('firebase-messaging-sender-id'),
+            appId: getMeta('firebase-app-id'),
+            vapidKey: getMeta('firebase-vapid-key')
+        };
+
+        window.PUSHER_CONFIG = {
+            appKey: getMeta('pusher-key'),
+            appCluster: getMeta('pusher-cluster')
+        };
+    </script>
 
     <!-- Your Notification Script -->
     <script src="{{ asset('js/appjs/notifications.js') }}"></script>
