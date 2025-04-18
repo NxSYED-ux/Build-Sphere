@@ -22,7 +22,7 @@ use App\Http\Controllers\WebControllers\UsersController;
 use Illuminate\Support\Facades\Route;
 
 Route::fallback(function () {
-    return back();
+    abort(404, 'Page Not Found');
 });
 
 // Route for Pusher Authentication
