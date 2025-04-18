@@ -489,7 +489,7 @@
         <script>
             // Initialize Firebase Messaging
             document.addEventListener("DOMContentLoaded", function () {
-                initFirebaseMessaging();
+               // initFirebaseMessaging();
             });
         </script>
 

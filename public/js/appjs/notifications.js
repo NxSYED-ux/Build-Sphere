@@ -67,7 +67,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                     payload.notification?.title || payload.data?.heading || "New Notification",
                     payload.notification?.body || payload.data?.message || "",
                     parsedLink?.web || "#",
-                    payload.notification?.image || payload.data?.image
+                    payload.notification?.image || payload.data?.image || '/img/placeholder-img.jfif'
                 );
             });
         }

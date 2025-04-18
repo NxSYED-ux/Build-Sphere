@@ -44,10 +44,10 @@
 async function loadFirebaseSDK() {
     return new Promise((resolve) => {
         const script = document.createElement('script');
-        script.src = "https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js";
+        script.src = "https://www.gstatic.com/firebasejs/11.5.0/firebase-app-compat.js";
         script.onload = () => {
             const messagingScript = document.createElement('script');
-            messagingScript.src = "https://www.gstatic.com/firebasejs/9.6.10/firebase-messaging-compat.js";
+            messagingScript.src = "https://www.gstatic.com/firebasejs/11.5.0/firebase-messaging-compat.js";
             messagingScript.onload = resolve;
             document.head.appendChild(messagingScript);
         };

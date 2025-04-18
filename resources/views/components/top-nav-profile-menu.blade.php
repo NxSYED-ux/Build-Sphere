@@ -39,13 +39,21 @@
         </li>
 
         <script>
-            function handleLogout() {
+            async function handleLogout() {
                 const fcmToken = localStorage.getItem('newFcmToken');
 
                 if (fcmToken) {
                     document.getElementById('fcm_token').value = fcmToken;
 
                     localStorage.removeItem('newFcmToken');
+                }
+
+                if ('serviceWorker' in navigator) {
+                    const registration = await navigator.serviceWorker.getRegistration('/js/appjs/firebase-messaging-sw.js');
+                    if (registration) {
+                        await registration.unregister();
+                        console.log('Firebase messaging service worker unregistered.');
+                    }
                 }
 
                 document.getElementById('logout-form').submit();

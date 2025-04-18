@@ -1,84 +1,97 @@
-async function initFirebaseMessaging() {
-    try {
-        if (typeof firebase === 'undefined') {
-            await loadFirebaseSDK();
-        }
+(function() {
+     if (!window.FIREBASE_CONFIG) {
+        console.error("Firebase config is missing");
+        return;
+    }
 
-        const firebaseConfig = window.FIREBASE_CONFIG;
-        if (!firebase.apps.length) {
-            firebase.initializeApp(firebaseConfig);
-        }
+    async function loadFirebaseSDK() {
+        return new Promise((resolve) => {
+            if (typeof firebase !== 'undefined') return resolve();
 
-        const messaging = firebase.messaging();
-        const registration = await navigator.serviceWorker.register('/js/appjs/firebase-messaging-sw.js');
-
-        const permission = await Notification.requestPermission();
-        if (permission === "granted") {
-            const token = await messaging.getToken({
-                vapidKey: window.FIREBASE_CONFIG.vapidKey,
-                serviceWorkerRegistration: registration
+            const loadScript = (src) => new Promise(resolve => {
+                const script = document.createElement('script');
+                script.src = src;
+                script.onload = resolve;
+                document.head.appendChild(script);
             });
-            storeFCMToken(token);
-        }
 
-        messaging.onMessage(handleForegroundMessage);
-
-    } catch (error) {
-        console.error("Firebase Messaging Error:", error);
-    }
-}
-
-// Helper Functions (unchanged)
-async function loadFirebaseSDK() {
-    return new Promise((resolve) => {
-        const script = document.createElement('script');
-        script.src = "/js/firebase-app-compat.js";
-        script.onload = () => {
-            const messagingScript = document.createElement('script');
-            messagingScript.src = "/js/firebase-messaging-compat.js";
-            messagingScript.onload = resolve;
-            document.head.appendChild(messagingScript);
-        };
-        document.head.appendChild(script);
-    });
-}
-
-function storeFCMToken(token) {
-    localStorage.setItem('fcmToken', token);
-    const fcmInput = document.getElementById('newFcmToken');
-    if (fcmInput) {
-        fcmInput.value = token;
-    }
-    // sendTokenToServer(token); // Optional: enable if needed
-}
-
-async function sendTokenToServer(token) {
-    try {
-        await fetch('/api/store-fcm-token', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content
-            },
-            body: JSON.stringify({ token })
+            loadScript('/js/firebase-app-compat.js')
+                .then(() => loadScript('/js/firebase-messaging-compat.js'))
+                .then(resolve);
         });
-    } catch (error) {
-        console.error("Token submission failed:", error);
     }
-}
 
-function handleForegroundMessage(payload) {
-    if (Notification.permission === "granted") {
-        new Notification(
-            payload.notification?.title || "New Notification",
-            {
-                body: payload.notification?.body,
-                icon: payload.notification?.image || '/img/placeholder-img.jfif',
-                data: { url: payload.data?.link || '/' }
+    function storeFCMToken(token) {
+        localStorage.setItem('fcmToken', token);
+        const fcmInput = document.getElementById('newFcmToken');
+        if (fcmInput) fcmInput.value = token;
+    }
+
+    function handleForegroundMessage(payload) {
+        if (Notification.permission === "granted") {
+            try {
+                const link = payload.data?.link ? JSON.parse(payload.data.link) : {};
+                const notification = new Notification(
+                    payload.notification?.title || "New Notification",
+                    {
+                        body: payload.notification?.body,
+                        icon: payload.notification?.image || '/img/placeholder-img.jfif',
+                        data: { url: link.web || "#" }
+                    }
+                );
+                notification.onclick = () => window.open(link.web || "#", '_blank');
+            } catch (error) {
+                console.error("Notification error:", error);
             }
-        );
+        }
     }
-}
 
-// Make available for legacy usage
-window.initFirebaseMessaging = initFirebaseMessaging;
+    async function initFirebaseMessaging() {
+        try {
+            await loadFirebaseSDK();
+
+            if (!firebase.apps.length) {
+                firebase.initializeApp(window.FIREBASE_CONFIG);
+            }
+
+            const registration = await navigator.serviceWorker.register(
+                '/firebase-messaging-sw.js',
+                { scope: '/' }
+            );
+
+            // Wait for service worker to be ready
+            await navigator.serviceWorker.ready;
+
+            // Send config to service worker
+            if (registration.active) {
+                registration.active.postMessage({
+                    type: 'FIREBASE_CONFIG',
+                    config: window.FIREBASE_CONFIG
+                });
+            }
+
+            const messaging = firebase.messaging();
+            const permission = await Notification.requestPermission();
+
+            if (permission === "granted") {
+                const token = await messaging.getToken({
+                    vapidKey: window.FIREBASE_CONFIG.vapidKey,
+                    serviceWorkerRegistration: registration
+                });
+                storeFCMToken(token);
+            }
+
+            messaging.onMessage(handleForegroundMessage);
+
+        } catch (error) {
+            console.error("Firebase Messaging Error:", error);
+        }
+    }
+
+    window.initFirebaseMessaging = initFirebaseMessaging;
+
+    // Auto-init if conditions are met
+    if ('serviceWorker' in navigator) {
+        document.addEventListener('DOMContentLoaded', initFirebaseMessaging);
+    }
+})();

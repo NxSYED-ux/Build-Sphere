@@ -34,10 +34,27 @@
     <!-- Canonical URL -->
     <link rel="canonical" href="{{ url()->current() }}">
 
+    <!-- Include SweetAlert2 CSS from CDN -->
+    <link rel="stylesheet" href="{{ asset('css/sweetalert.css') }}">
 
     <!-- Alpine.js for Mobile Menu -->
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font/css/materialdesignicons.min.css">
+
+    <style>
+        :root{
+            /* Sweet Alert */
+            --swal-bg-color: #fff;
+            --swal-text-color: #000;
+            --swal-icon-success-color: #28a745;
+            --swal-icon-error-color: #ff5b61;
+            --swal-border-color: #ddd;
+            --swal-button-bg: #007bff;
+            --swal-button-text: #fff;
+            --swal-button-border: white;
+            --swal-timer-progress-bar-color: grey;
+        }
+    </style>
 
 </head>
 <body>
@@ -46,6 +63,9 @@
 <div class="content">
     @yield('content')
 </div>
+
+<!-- Include SweetAlert2 JS from CDN -->
+<script src="{{ asset('js/sweetalert.js') }}"></script>
 
 @stack('scripts')
 <body>
