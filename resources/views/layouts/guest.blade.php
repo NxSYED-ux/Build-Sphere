@@ -13,26 +13,13 @@
     <!-- Include SweetAlert2 CSS from CDN -->
     <link rel="stylesheet" href="{{ asset('css/sweetalert.css') }}">
     <!-- Add Font Awesome 4.7 CSS link -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+{{--    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">--}}
     <!-- Box Icons css link -->
     <link href='https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css' rel='stylesheet'>
     <!-- Font Families -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 
-    <script>
-        (function() {
-            const themeStylesheet = document.getElementById('theme-stylesheet');
-            const savedTheme = localStorage.getItem('theme') || 'light'; // Default to light
-
-            if (savedTheme === 'dark') {
-                themeStylesheet.setAttribute('href', '{{ asset('css/dark.css') }}');
-                document.documentElement.classList.add('dark');
-            } else {
-                themeStylesheet.setAttribute('href', '{{ asset('css/light.css') }}');
-                document.documentElement.classList.remove('dark');
-            }
-        })();
-    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
         body {
@@ -172,37 +159,6 @@
 <script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>
 <!-- Include SweetAlert2 JS from CDN -->
 <script src="{{ asset('js/sweetalert.js') }}"></script>
-
-<script>
-    function applyTheme() {
-        const themeToggle = document.getElementById('theme-toggle');
-        const themeStylesheet = document.getElementById('theme-stylesheet');
-        const savedTheme = localStorage.getItem('theme') || 'light'; // Default to light
-
-        if (savedTheme === 'dark') {
-            themeStylesheet.setAttribute('href', '{{ asset('css/dark.css') }}');
-            themeToggle.checked = true;
-        } else {
-            themeStylesheet.setAttribute('href', '{{ asset('css/light.css') }}');
-            themeToggle.checked = false;
-        }
-    }
-
-    document.addEventListener('DOMContentLoaded', applyTheme);
-
-    // Toggle theme when the user changes the switch
-    document.getElementById('theme-toggle').addEventListener('change', function() {
-        const themeStylesheet = document.getElementById('theme-stylesheet');
-
-        if (this.checked) {
-            localStorage.setItem('theme', 'dark');
-            themeStylesheet.setAttribute('href', '{{ asset('css/dark.css') }}');
-        } else {
-            localStorage.setItem('theme', 'light');
-            themeStylesheet.setAttribute('href', '{{ asset('css/light.css') }}');
-        }
-    });
-</script>
 
 @stack('scripts')
 

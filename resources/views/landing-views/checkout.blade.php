@@ -281,7 +281,6 @@
     </script>
 
 
-    /* Fetching Plans Script */
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             const planCycleSelect = document.getElementById("billing-cycle");

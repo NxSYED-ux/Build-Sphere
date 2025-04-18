@@ -56,6 +56,9 @@ Route::prefix('auth')->group(function () {
 
 Route::middleware(['auth.jwt'])->group(function () {
 
+    Route::get('/plans', function () {
+        return view('Heights.Admin.Plans.create');
+    });
     Route::post('/logout', [AuthController::class, 'logOut'])->name('logout');
     Route::delete('/buildings/{id}/remove-picture', [BuildingController::class, 'destroyImage'])->name('buildings.remove_picture');
     Route::delete('/building_documents/{id}', [BuildingController::class, 'removeDocument'])->name('building_documents.removeDocument');
