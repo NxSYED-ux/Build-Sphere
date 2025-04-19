@@ -14,6 +14,7 @@ use App\Http\Controllers\WebControllers\DropdownValueController;
 use App\Http\Controllers\WebControllers\landingController;
 use App\Http\Controllers\WebControllers\OrganizationController;
 use App\Http\Controllers\WebControllers\OwnerDashboardController;
+use App\Http\Controllers\WebControllers\PlanController;
 use App\Http\Controllers\WebControllers\RolePermissionController;
 use App\Http\Controllers\WebControllers\RoleController;
 use App\Http\Controllers\WebControllers\AssignUnitController;
@@ -78,6 +79,16 @@ Route::prefix('admin')->middleware(['auth.jwt'])->group(function () {
 
         Route::get('/', [AdminDashboardController::class, 'index'])->name('admin_dashboard');
         Route::get('/data', [AdminDashboardController::class, 'data'])->name('admin_dashboard.data');
+
+    });
+
+    Route::prefix('plans')->group(function () {
+
+        Route::get('/', [PlanController::class, 'index'])->name('plans.index');
+        Route::get('/create', [PlanController::class, 'create'])->name('plans.create');
+        Route::get('/{id}/show', [PlanController::class, 'show'])->name('plans.show');
+        Route::get('/{id}/edit', [PlanController::class, 'edit'])->name('plans.edit');
+
 
     });
 

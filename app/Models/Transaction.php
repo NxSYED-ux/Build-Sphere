@@ -57,14 +57,4 @@ class Transaction extends Model
     {
         return $this->belongsTo(BuildingUnit::class);
     }
-
-    public function isPlatformSeller(): bool
-    {
-        return $this->seller_type === 'platform';
-    }
-
-    public function isPlatformBuyer(): bool
-    {
-        return $this->buyer_type === 'platform';
-    }
 }

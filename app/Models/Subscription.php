@@ -32,22 +32,22 @@ class Subscription extends Model
     // Belongs to Relations
     public function user()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'user_id', 'id');
     }
 
     public function organization()
     {
-        return $this->belongsTo(Organization::class);
+        return $this->belongsTo(Organization::class, 'organization_id', 'id');
     }
 
     public function building()
     {
-        return $this->belongsTo(Building::class);
+        return $this->belongsTo(Building::class, 'building_id', 'id');
     }
 
     public function unit()
     {
-        return $this->belongsTo(BuildingUnit::class, 'unit_id');
+        return $this->belongsTo(BuildingUnit::class, 'unit_id', 'id');
     }
 
     // Polymorphic relationship to source (e.g., Plan, Rental, etc.)
