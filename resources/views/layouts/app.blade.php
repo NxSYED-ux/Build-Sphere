@@ -53,7 +53,7 @@
     <link href="{{ asset('css/topnavbar.css') }}" rel="stylesheet">
     <link href="{{ asset('css/sidenavbar.css') }}" rel="stylesheet">
 
-    <script src="{{ asset('pusher.js') }}"></script>
+    <script src="{{ asset('js/pusher.js') }}"></script>
     <!-- Include SweetAlert2 CSS from CDN -->
     <link rel="stylesheet" href="{{ asset('css/sweetalert.css') }}">
     <!-- Add DataTables CSS link -->

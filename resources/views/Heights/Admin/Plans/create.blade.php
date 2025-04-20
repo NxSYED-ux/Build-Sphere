@@ -191,9 +191,6 @@
                                             <li class="nav-item" role="presentation">
                                                 <button class="nav-link active" id="all-tab" data-bs-toggle="tab" data-bs-target="#all" type="button" role="tab">All Services</button>
                                             </li>
-                                            <li class="nav-item" role="presentation">
-                                                <button class="nav-link" id="popular-tab" data-bs-toggle="tab" data-bs-target="#popular" type="button" role="tab">Most Popular</button>
-                                            </li>
                                         </ul>
 
                                         <div class="tab-content" id="servicesTabContent">
@@ -291,54 +288,6 @@
                                                 </div>
                                             </div>
 
-                                            <div class="tab-pane fade" id="popular" role="tabpanel">
-                                                <div class="row">
-                                                    <!-- Building Management -->
-                                                    <div class="col-md-6">
-                                                        <div class="feature-card" onclick="toggleSelection(this)">
-                                                            <div class="feature-icon">
-                                                                <i class="fas fa-building"></i>
-                                                            </div>
-                                                            <h5>Building Management</h5>
-                                                            <p class="text-muted small">Oversee and organize all registered buildings in one place.</p>
-                                                            <div class="quantity-control mt-3" style="display: none;">
-                                                                <label class="form-label">Quantity</label>
-                                                                <input type="number" class="form-control" min="1" value="1" data-service-id="1">
-                                                            </div>
-                                                        </div>
-                                                    </div>
-
-                                                    <!-- Manager Accounts -->
-                                                    <div class="col-md-6">
-                                                        <div class="feature-card" onclick="toggleSelection(this)">
-                                                            <div class="feature-icon">
-                                                                <i class="fas fa-user-tie"></i>
-                                                            </div>
-                                                            <h5>Manager Accounts</h5>
-                                                            <p class="text-muted small">Create and manage accounts for building managers.</p>
-                                                            <div class="quantity-control mt-3" style="display: none;">
-                                                                <label class="form-label">Quantity</label>
-                                                                <input type="number" class="form-control" min="1" value="1" data-service-id="2">
-                                                            </div>
-                                                        </div>
-                                                    </div>
-
-                                                    <!-- Units per Building -->
-                                                    <div class="col-md-6">
-                                                        <div class="feature-card" onclick="toggleSelection(this)">
-                                                            <div class="feature-icon">
-                                                                <i class="fas fa-door-open"></i>
-                                                            </div>
-                                                            <h5>Units per Building</h5>
-                                                            <p class="text-muted small">Add and track all residential or commercial units.</p>
-                                                            <div class="quantity-control mt-3" style="display: none;">
-                                                                <label class="form-label">Quantity</label>
-                                                                <input type="number" class="form-control" min="1" value="1" data-service-id="5">
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
                                         </div>
                                     </div>
 
