@@ -86,8 +86,10 @@ Route::prefix('admin')->middleware(['auth.jwt'])->group(function () {
 
         Route::get('/', [PlanController::class, 'index'])->name('plans.index');
         Route::get('/create', [PlanController::class, 'create'])->name('plans.create');
+        Route::post('/', [PlanController::class, 'store'])->name('plans.store');
         Route::get('/{id}/show', [PlanController::class, 'show'])->name('plans.show');
         Route::get('/{id}/edit', [PlanController::class, 'edit'])->name('plans.edit');
+        Route::put('/', [PlanController::class, 'update'])->name('plans.update');
 
 
     });
