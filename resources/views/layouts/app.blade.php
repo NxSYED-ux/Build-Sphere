@@ -221,15 +221,15 @@
         }
 
         .btn-outline-primary{
-            border-color: var(--breadcrumb-text2-color);
-            color: var(--breadcrumb-text2-color);
-            background-color: #fff;
+            color: var(--btn-outline-primary) !important;
+            background-color: var(--btn-outline-bg-primary) !important;
+            border-color: var(--btn-outline-border-primary) !important;
         }
 
         .btn-outline-primary:hover{
-            border-color: var(--breadcrumb-text2-color);
-            color: #fff;
-            background-color: var(--breadcrumb-text2-color);
+            color: var(--btn-hover-outline-primary) !important;
+            background-color: var(--btn-hover-outline-bg-primary) !important;
+            border-color: var(--btn-hover-outline-border-primary) !important;
         }
 
         .btn-secondary {

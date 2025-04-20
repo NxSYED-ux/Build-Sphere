@@ -97,6 +97,14 @@
                     </div>
                 </li>
 
+                <!-- Plans -->
+                <li class="mb-1 " id="AdminPlans">
+                    <div id="link-a">
+                        <a href="{{ route('plans.index') }}" class="link-dark collapsed {{ in_array('Plans', $openSections) ? 'Link-background-color' : '' }} px-1" id="Planbtn" >
+                            <i class="bx bxs-business icons"></i> Plans </a>
+                    </div>
+                </li>
+
                 <!-- Reports -->
                 <li class="mb-1 hidden" id="AdminReports">
                     <div id="link-a">

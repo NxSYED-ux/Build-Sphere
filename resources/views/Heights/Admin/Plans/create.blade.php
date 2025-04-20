@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Add User')
+@section('title', 'Create Plan')
 
 @push('styles')
     <style>
@@ -132,7 +132,7 @@
 @section('content')
     <x-Admin.top-navbar :searchVisible="false" :breadcrumbLinks="[
             ['url' => route('admin_dashboard'), 'label' => 'Dashboard'],
-            ['url' =>  '', 'label' => 'Plans'],
+            ['url' =>  route('plans.index'), 'label' => 'Plans'],
             ['url' => '', 'label' => 'Create Plan']
         ]"
     />

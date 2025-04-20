@@ -3,197 +3,204 @@
 @section('title', $planDetails['plan_name'] . ' - Plan Details')
 
 @section('content')
-    <div class="container py-4">
-        <!-- Header Section -->
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h1 class="display-6 fw-bold text-gradient-primary mb-2">{{ $planDetails['plan_name'] }}</h1>
-                        <nav aria-label="breadcrumb">
-                            <ol class="breadcrumb">
-                                <li class="breadcrumb-item">
-                                    <a href="{{ route('plans.index') }}" class="text-decoration-none">Plans</a>
-                                </li>
-                                <li class="breadcrumb-item active" aria-current="page">Details</li>
-                            </ol>
-                        </nav>
-                    </div>
-                    <div class="d-flex gap-2">
-                        <a href="{{ route('plans.edit', $planDetails['plan_id']) }}" class="btn btn-primary px-4">
-                            <i class="bi bi-pencil-square me-2"></i> Edit Plan
-                        </a>
-                        <a href="{{ route('plans.index') }}" class="btn btn-outline-secondary px-4">
-                            <i class="bi bi-arrow-left me-2"></i> Back
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <x-Admin.top-navbar :searchVisible="false" :breadcrumbLinks="[
+            ['url' => route('admin_dashboard'), 'label' => 'Dashboard'],
+            ['url' =>  route('plans.index'), 'label' => 'Plans'],
+            ['url' => '', 'label' => 'Details']
+        ]"
+    />
+    <x-Admin.side-navbar :openSections="['Plans']" />
+    <x-error-success-model />
 
-        <!-- Billing Cycle and Pricing -->
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="card border-0 shadow-sm">
-                    <div class="card-body p-4">
-                        <form method="GET" action="{{ route('plans.show', $planDetails['plan_id']) }}">
-                            <div class="row align-items-center">
-                                <div class="col-md-4 mb-3 mb-md-0">
-                                    <label class="form-label fw-semibold text-muted">Billing Cycle</label>
-                                    <select name="planCycle" class="form-select form-select-lg" onchange="this.form.submit()">
-                                        @foreach($billing_cycles as $cycle)
-                                            <option value="{{ $cycle->duration_months }}"
-                                                {{ $selected_cycle->duration_months == $cycle->duration_months ? 'selected' : '' }}>
-                                                {{ $cycle->duration_months }} Month{{ $cycle->duration_months > 1 ? 's' : '' }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                                <div class="col-md-8">
-                                    <div class="d-flex flex-column flex-md-row align-items-center justify-content-md-end gap-3">
-                                        <div class="text-center text-md-end">
-                                            <span class="d-block text-muted small">Total Price</span>
-                                            <span class="display-5 fw-bold text-dark">
-                                            {{ number_format($planDetails['total_price'], 2) }} {{ $planDetails['currency'] }}
-                                        </span>
-                                        </div>
-                                        <div class="vr d-none d-md-block"></div>
-                                        <div class="text-center text-md-start">
-                                            <span class="d-block text-muted small">Billing Period</span>
-                                            <span class="h4 fw-bold text-primary">
-                                            {{ $selected_cycle->duration_months }} month{{ $selected_cycle->duration_months > 1 ? 's' : '' }}
-                                        </span>
-                                        </div>
+    <div id="main">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="container pt-5 pb-3 mt-2">
+
+                        <div class="row mb-2">
+                            <div class="col-12">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h1 class="display-6 fw-bold text-gradient-primary mb-2">{{ $planDetails['plan_name'] }}</h1>
+                                    </div>
+                                    <div class="d-flex gap-2">
+                                        <a href="{{ route('plans.edit', $planDetails['plan_id']) }}" class="btn btn-primary px-4">
+                                            <i class="bi bi-pencil-square me-2"></i> Edit Plan
+                                        </a>
+                                        <a href="{{ route('plans.index') }}" class="btn btn-outline-secondary px-4">
+                                            <i class="bi bi-arrow-left me-2"></i> Back
+                                        </a>
                                     </div>
                                 </div>
                             </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="row">
-            <!-- Left Column - Plan Details -->
-            <div class="col-lg-8">
-                <!-- Plan Description -->
-                <div class="card border-0 shadow-sm mb-4">
-                    <div class="card-header bg-white border-bottom-0 py-3">
-                        <h5 class="fw-semibold mb-0 d-flex align-items-center">
-                            <i class="bi bi-file-text text-primary me-2"></i> Plan Description
-                        </h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="p-3 bg-light rounded">
-                            <p class="mb-0">{{ $planDetails['plan_description'] }}</p>
                         </div>
-                    </div>
-                </div>
 
-                <!-- Included Services -->
-                <div class="card border-0 shadow-sm mb-4">
-                    <div class="card-header bg-white border-bottom-0 py-3">
-                        <h5 class="fw-semibold mb-0 d-flex align-items-center">
-                            <i class="bi bi-list-check text-primary me-2"></i> Included Services
-                        </h5>
-                    </div>
-                    <div class="card-body p-0">
-                        <div class="table-responsive">
-                            <table class="table table-hover align-middle mb-0">
-                                <thead class="table-light">
-                                <tr>
-                                    <th width="5%" class="ps-4">#</th>
-                                    <th width="25%">Service</th>
-                                    <th width="45%">Description</th>
-                                    <th width="10%" class="text-center">Qty</th>
-                                    <th width="15%" class="text-end pe-4">Price</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                @foreach($planDetails['services'] as $index => $service)
-                                    <tr>
-                                        <td class="ps-4">{{ $index + 1 }}</td>
-                                        <td class="fw-semibold">{{ $service['service_name'] }}</td>
-                                        <td class="text-muted">{{ $service['service_description'] }}</td>
-                                        <td class="text-center">{{ $service['service_quantity'] }}</td>
-                                        <td class="text-end pe-4 fw-semibold">
-                                            {{ number_format($service['price']['price'], 2) }}
-                                        </td>
-                                    </tr>
-                                @endforeach
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Right Column - Subscriptions -->
-            <div class="col-lg-4">
-                <div class="card border-0 shadow-sm sticky-top" style="top: 20px;">
-                    <div class="card-header bg-white border-bottom-0 py-3">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <h5 class="fw-semibold mb-0 d-flex align-items-center">
-                                <i class="bi bi-people-fill text-primary me-2"></i> Subscriptions
-                            </h5>
-                            <span class="badge bg-primary rounded-pill">{{ $subscriptions->count() }}</span>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        @if($subscriptions->count() > 0)
-                            <div class="list-group list-group-flush">
-                                @foreach($subscriptions as $subscription)
-                                    <div class="list-group-item border-0 px-0 py-3">
-                                        <div class="d-flex align-items-start">
-                                            <div class="position-relative me-3">
-                                                @if($subscription->organization && $subscription->organization->pictures->first())
-                                                    <img src="{{ asset($subscription->organization->pictures->first()->file_path) }}"
-                                                         class="rounded-circle" width="48" height="48" alt="Organization logo">
-                                                @else
-                                                    <div class="rounded-circle bg-light text-primary d-flex align-items-center justify-content-center"
-                                                         style="width: 48px; height: 48px;">
-                                                        <i class="bi bi-building fs-5"></i>
-                                                    </div>
-                                                @endif
-                                                <span class="position-absolute bottom-0 end-0 bg-{{ $subscription->subscription_status === 'active' ? 'success' : 'secondary' }} rounded-circle p-1 border border-2 border-white"></span>
-                                            </div>
-                                            <div class="flex-grow-1">
-                                                <h6 class="fw-semibold mb-1">
-                                                    {{ $subscription->organization->name ?? 'Unknown Organization' }}
-                                                </h6>
-                                                <div class="text-muted small">
-                                                    <div class="d-flex align-items-center mb-1">
-                                                        <i class="bi bi-calendar me-2"></i>
-                                                        {{ $subscription->updated_at->format('M d, Y') }}
-                                                    </div>
-                                                    <div class="d-flex flex-wrap align-items-center gap-2">
-                                                    <span class="badge bg-light text-dark d-flex align-items-center">
-                                                        <i class="bi bi-arrow-repeat me-1"></i>
-                                                        <span class="me-1">{{ $subscription->billing_cycle }}</span>mo
-                                                    </span>
-                                                        <span class="badge bg-light text-dark d-flex align-items-center">
-                                                        <i class="bi bi-cash-coin me-1"></i>
-                                                        {{ $subscription->price_at_subscription }} {{ $planDetails['currency'] }}
-                                                    </span>
-                                                        <span class="badge bg-{{ $subscription->subscription_status === 'active' ? 'success' : 'secondary' }} text-white">
-                                                        {{ ucfirst($subscription->subscription_status) }}
-                                                    </span>
+                        <div class="row mb-3">
+                            <div class="col-12">
+                                <div class="card border-0 shadow-sm">
+                                    <div class="card-body p-4">
+                                        <form method="GET" action="{{ route('plans.show', $planDetails['plan_id']) }}">
+                                            <div class="row align-items-center">
+                                                <div class="col-md-4 mb-3 mb-md-0">
+                                                    <label class="form-label fw-semibold text-muted">Billing Cycle</label>
+                                                    <select name="planCycle" class="form-select form-select-lg" onchange="this.form.submit()">
+                                                        @foreach($billing_cycles as $cycle)
+                                                            <option value="{{ $cycle->duration_months }}"
+                                                                {{ $selected_cycle->duration_months == $cycle->duration_months ? 'selected' : '' }}>
+                                                                {{ $cycle->duration_months }} Month{{ $cycle->duration_months > 1 ? 's' : '' }}
+                                                            </option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-8">
+                                                    <div class="d-flex flex-column flex-md-row align-items-center justify-content-md-end gap-3">
+                                                        <div class="text-center text-md-end">
+                                                            <span class="d-block text-muted small">Total Price</span>
+                                                            <span class="display-5 fw-bold text-dark">
+                                                            {{ number_format($planDetails['total_price'], 2) }} {{ $planDetails['currency'] }}
+                                                        </span>
+                                                        </div>
+                                                        <div class="vr d-none d-md-block"></div>
+                                                        <div class="text-center text-md-start">
+                                                            <span class="d-block text-muted small">Billing Period</span>
+                                                            <span class="h4 fw-bold text-primary">
+                                                            {{ $selected_cycle->duration_months }} month{{ $selected_cycle->duration_months > 1 ? 's' : '' }}
+                                                        </span>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-lg-8">
+                                <!-- Plan Description -->
+                                <div class="card border-0 shadow-sm mb-4">
+                                    <div class="card-header bg-white border-bottom-0 pt-3 pb-0">
+                                        <h5 class="fw-semibold mb-0 d-flex align-items-center">
+                                            <i class="bi bi-file-text text-primary me-2"></i> Plan Description
+                                        </h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="p-3 bg-light rounded">
+                                            <p class="mb-0">{{ $planDetails['plan_description'] }}</p>
                                         </div>
                                     </div>
-                                @endforeach
-                            </div>
-                        @else
-                            <div class="text-center py-4">
-                                <div class="bg-light rounded-circle p-4 d-inline-block mb-3">
-                                    <i class="bi bi-people text-muted" style="font-size: 2rem;"></i>
                                 </div>
-                                <h6 class="fw-semibold">No subscriptions yet</h6>
-                                <p class="text-muted small mb-0">This plan hasn't been subscribed to by any organizations</p>
+
+                                <!-- Included Services -->
+                                <div class="card border-0 shadow-sm mb-4">
+                                    <div class="card-header bg-white border-bottom-0 py-3">
+                                        <h5 class="fw-semibold mb-0 d-flex align-items-center">
+                                            <i class="bi bi-list-check text-primary me-2"></i> Included Services
+                                        </h5>
+                                    </div>
+                                    <div class="card-body p-0">
+                                        <div class="table-responsive">
+                                            <table class="table table-hover align-middle mb-0">
+                                                <thead class="table-light">
+                                                <tr>
+                                                    <th width="5%" class="ps-4">#</th>
+                                                    <th width="25%">Service</th>
+                                                    <th width="45%">Description</th>
+                                                    <th width="10%" class="text-center">Qty</th>
+                                                    <th width="15%" class="text-end pe-4">Price</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                @foreach($planDetails['services'] as $index => $service)
+                                                    <tr>
+                                                        <td class="ps-4">{{ $index + 1 }}</td>
+                                                        <td class="fw-semibold">{{ $service['service_name'] }}</td>
+                                                        <td class="text-muted">{{ $service['service_description'] }}</td>
+                                                        <td class="text-center">{{ $service['service_quantity'] }}</td>
+                                                        <td class="text-end pe-4 fw-semibold">
+                                                            {{ number_format($service['price']['price'], 2) }}
+                                                        </td>
+                                                    </tr>
+                                                @endforeach
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                        @endif
+
+                            <!-- Right Column - Subscriptions -->
+                            <div class="col-lg-4">
+                                <div class="card border-0 shadow-sm sticky-top" style="top: 20px;">
+                                    <div class="card-header bg-white border-bottom-0 py-3">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <h5 class="fw-semibold mb-0 d-flex align-items-center">
+                                                <i class="bi bi-people-fill text-primary me-2"></i> Subscriptions
+                                            </h5>
+                                            <span class="badge bg-primary rounded-pill">{{ $subscriptions->count() }}</span>
+                                        </div>
+                                    </div>
+                                    <div class="card-body">
+                                        @if($subscriptions->count() > 0)
+                                            <div class="list-group list-group-flush">
+                                                @foreach($subscriptions as $subscription)
+                                                    <div class="list-group-item border-0 px-0 py-3">
+                                                        <div class="d-flex align-items-start">
+                                                            <div class="position-relative me-3">
+                                                                @if($subscription->organization && $subscription->organization->pictures->first())
+                                                                    <img src="{{ asset($subscription->organization->pictures->first()->file_path) }}"
+                                                                         class="rounded-circle" width="48" height="48" alt="Organization logo">
+                                                                @else
+                                                                    <div class="rounded-circle bg-light text-primary d-flex align-items-center justify-content-center"
+                                                                         style="width: 48px; height: 48px;">
+                                                                        <i class="bi bi-building fs-5"></i>
+                                                                    </div>
+                                                                @endif
+                                                                <span class="position-absolute bottom-0 end-0 bg-{{ $subscription->subscription_status === 'active' ? 'success' : 'secondary' }} rounded-circle p-1 border border-2 border-white"></span>
+                                                            </div>
+                                                            <div class="flex-grow-1">
+                                                                <h6 class="fw-semibold mb-1">
+                                                                    {{ $subscription->organization->name ?? 'Unknown Organization' }}
+                                                                </h6>
+                                                                <div class="text-muted small">
+                                                                    <div class="d-flex align-items-center mb-1">
+                                                                        <i class="bi bi-calendar me-2"></i>
+                                                                        {{ $subscription->updated_at->format('M d, Y') }}
+                                                                    </div>
+                                                                    <div class="d-flex flex-wrap align-items-center gap-2">
+                                                                    <span class="badge bg-light text-dark d-flex align-items-center">
+                                                                        <i class="bi bi-arrow-repeat me-1"></i>
+                                                                        <span class="me-1">{{ $subscription->billing_cycle }}</span>mo
+                                                                    </span>
+                                                                        <span class="badge bg-light text-dark d-flex align-items-center">
+                                                                        <i class="bi bi-cash-coin me-1"></i>
+                                                                        {{ $subscription->price_at_subscription }} {{ $planDetails['currency'] }}
+                                                                    </span>
+                                                                        <span class="badge bg-{{ $subscription->subscription_status === 'active' ? 'success' : 'secondary' }} text-white">
+                                                                        {{ ucfirst($subscription->subscription_status) }}
+                                                                    </span>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                @endforeach
+                                            </div>
+                                        @else
+                                            <div class="text-center py-4">
+                                                <div class="bg-light rounded-circle p-4 d-inline-block mb-3">
+                                                    <i class="bi bi-people text-muted" style="font-size: 2rem;"></i>
+                                                </div>
+                                                <h6 class="fw-semibold">No subscriptions yet</h6>
+                                                <p class="text-muted small mb-0">This plan hasn't been subscribed to by any organizations</p>
+                                            </div>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

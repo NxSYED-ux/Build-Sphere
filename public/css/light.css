@@ -129,5 +129,14 @@
             --btn-text: #ffffff;
 
 
+        /* Buttons */
+        --btn-outline-primary: #008CFF;
+        --btn-outline-bg-primary: #fff;
+        --btn-outline-border-primary: #008CFF;
+
+        --btn-hover-outline-primary: #fff;
+        --btn-hover-outline-bg-primary: #008CFF;
+        --btn-hover-outline-border-primary: #008CFF;
+
     }
 
