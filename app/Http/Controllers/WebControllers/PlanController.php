@@ -113,7 +113,7 @@ class PlanController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'plan_name' => 'required|string|max:255|unique:plans,plan_name',
+            'plan_name' => 'required|string|max:255|unique:plans,name',
             'plan_description' => 'nullable|string',
             'currency' => 'required|string|size:3',
             'services' => 'required|array',
@@ -306,7 +306,7 @@ class PlanController extends Controller
     {
         $validated = $request->validate([
             'plan_id' => 'required|exists:plans,id',
-            'plan_name' => 'required|string|max:255|unique:plans,plan_name,' . $request->plan_id . ',id',
+            'plan_name' => 'required|string|max:255|unique:plans,name,' . $request->plan_id . ',id',
             'plan_description' => 'nullable|string',
             'currency' => 'required|string|size:3',
             'services' => 'required|array',
