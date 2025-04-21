@@ -289,13 +289,13 @@
                                                                     <h6>Prices per Billing Cycle</h6>
                                                                     @foreach($priceCycles as $cycle)
                                                                         <div class="price-input-group" data-cycle-id="{{ $cycle['id'] }}" style="display: none;">
-                                                                            <label for="price_{{ $service->id }}_{{ $cycle['id'] }}" class="form-label">{{ $cycle['name'] }} Price *</label>
+                                                                            <label for="price_{{ $service->id }}_{{ $cycle['id'] }}" class="form-label">{{ $cycle['name'] }} Price</label>
                                                                             <input type="number"
                                                                                    name="services[{{ $service->id }}][prices][{{ $cycle['id'] }}]"
                                                                                    class="form-control price-input"
                                                                                    id="price_{{ $service->id }}_{{ $cycle['id'] }}"
                                                                                    min="0" step="0.01" value="0"
-                                                                                   placeholder="0.00" disabled>
+                                                                                   placeholder="0.00" >
                                                                             <small class="" style="color: var(--sidenavbar-text-color);">Per month: <span class="per-month-price" id="per_month_{{ $service->id }}_{{ $cycle['id'] }}">0.00</span></small>
                                                                         </div>
                                                                     @endforeach
@@ -320,7 +320,7 @@
                                             <div class="summary-item">
                                                 <h6>Currency</h6>
                                                 <p class="mb-0" id="summaryCurrency">USD</p>
-                                            </div> 
+                                            </div>
 
                                             <div class="summary-item">
                                                 <h6>Services & Pricing</h6>
@@ -439,7 +439,6 @@
 
             const selectedCycles = Array.from(document.querySelectorAll('input[name="billing_cycles[]"]:checked'));
 
-
             const servicesList = document.getElementById('selectedServicesList');
             const allServices = Array.from(document.querySelectorAll('.service-card'));
 
@@ -449,14 +448,7 @@
             }
 
             let html = '<div class="table-responsive"><table class="price-table">';
-            html += '<thead><tr><th>Service</th><th>Qty</th>';
-
-            selectedCycles.forEach(cycle => {
-                const cycleName = cycle.closest('.billing-cycle-card').querySelector('h5').textContent;
-                html += `<th>${cycleName}</th>`;
-            });
-
-            html += '</tr></thead><tbody>';
+            html += '<thead><tr><th>Service</th><th>Qty</th></tr></thead><tbody>';
 
             const cycleTotals = {};
 
@@ -468,7 +460,7 @@
                 const quantityInput = serviceCard.querySelector('.quantity-input');
                 const quantity = quantityInput ? quantityInput.value : '0';
 
-                html += `<tr><td>${serviceName}</td><td>${quantity}</td>`;
+                html += `<tr><td>${serviceName}</td><td>${quantity}</td></tr>`;
 
                 selectedCycles.forEach(cycle => {
                     const cycleId = cycle.value;
@@ -479,11 +471,7 @@
                         cycleTotals[cycleId] = 0;
                     }
                     cycleTotals[cycleId] += priceValue;
-
-                    html += `<td>${formatCurrency(priceValue)}</td>`;
                 });
-
-                html += '</tr>';
             });
 
             html += '</tbody></table></div>';
@@ -500,18 +488,19 @@
                     const total = cycleTotals[cycleId] || 0;
 
                     totalsHtml += `
-                        <div class="mb-3 border rounded p-2">
-                            <div class="fw-bold">${cycleName}</div>
-                            <div class="d-flex justify-content-between">
-                                <div>Total:</div>
-                                <div>${formatCurrency(total)}</div>
-                            </div>
-                        </div>
-                    `;
+                <div class="mb-3 border rounded p-2">
+                    <div class="fw-bold">${cycleName}</div>
+                    <div class="d-flex justify-content-between">
+                        <div>Total:</div>
+                        <div>${formatCurrency(total)}</div>
+                    </div>
+                </div>
+            `;
                 });
                 cycleTotalsElement.innerHTML = totalsHtml;
             }
         }
+
 
         document.addEventListener('DOMContentLoaded', function() {
             // Initialize all price inputs as disabled

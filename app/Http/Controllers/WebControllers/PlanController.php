@@ -321,8 +321,8 @@ class PlanController extends Controller
             'plan_name' => 'required|string|max:255|unique:plans,name,' . $request->plan_id . ',id',
             'plan_description' => 'nullable|string',
             'currency' => 'required|string|size:3',
-            'unSelectedCycles' => 'required|array',
-            'unSelectedCycles.*' => 'required|exists:billing_cycles,id',
+//            'unSelectedCycles' => 'required|array',
+//            'unSelectedCycles.*' => 'required|exists:billing_cycles,id',
             'services' => 'required|array',
             'services.*.id' => 'required|exists:services,id',
             'services.*.quantity' => 'required|integer|min:0',
@@ -330,6 +330,7 @@ class PlanController extends Controller
             'services.*.prices.*' => 'required|numeric|min:0',
             'updated_at' => 'required',
         ]);
+        $unselectedCycles = $request->input('unSelectedCycles', []);
 
         try {
             DB::beginTransaction();
@@ -350,7 +351,7 @@ class PlanController extends Controller
                 'currency' => $validated['currency'],
             ]);
 
-            $unselectedCycles = $validated['unSelectedCycles'];
+//            $unselectedCycles = $validated['unSelectedCycles'];
 
             foreach ($validated['services'] as $serviceData) {
                 $service = $plan->services()->findOrFail($serviceData['id']);

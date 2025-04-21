@@ -151,7 +151,7 @@
         }
 
         .billing-cycle-card .form-check {
-            pointer-events: none; /* Prevent double click events */
+            pointer-events: none;
         }
 
         .price-table {
@@ -176,10 +176,9 @@
         }
 
         .last-updated {
-            font-size: 0.8rem;
-            color: var(--sidenavbar-text-color);
-            text-align: right;
-            margin-top: 10px;
+            font-size: 0.85rem;
+            color: var(--dark-color);
+            font-style: italic;
         }
     </style>
 @endpush
@@ -200,20 +199,32 @@
                 <div class="row">
                     <div class="col-md-12">
                         <form id="planForm" action="{{ route('plans.update') }}" method="POST">
+                            @method('PUT')
                             @csrf
                             <input type="hidden" name="plan_id" value="{{ $planDetails['plan_id'] }}">
                             <input type="hidden" name="updated_at" value="{{ $planDetails['updated_at'] }}">
+
+                            <!-- Container for dynamic unselected cycles -->
+                            <div id="unselectedCyclesContainer"></div>
+
+                            <!-- Add hidden fields for each service ID -->
+                            @foreach($planDetails['services'] as $service)
+                                <input type="hidden" name="services[{{ $service['service_id'] }}][id]" value="{{ $service['service_id'] }}">
+                            @endforeach
 
                             <div class="container py-1">
                                 <div class="row">
                                     <div class="col-lg-8">
                                         <div class="form-section">
-                                            <h3 class="section-title">Plan Information</h3>
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <h3 class="section-title">Plan Information</h3>
+                                                <span class="last-updated">Last updated: {{ \Carbon\Carbon::parse($planDetails['updated_at'])->format('M d, Y H:i') }}</span>
+                                            </div>
 
                                             <div class="row">
                                                 <div class="col-md-6 mb-2">
                                                     <label for="plan_name" class="form-label">Plan Name *</label>
-                                                    <input type="text" name="plan_name" class="form-control  @error('plan_name') is-invalid @enderror" id="plan_name"
+                                                    <input type="text" name="plan_name" class="form-control @error('plan_name') is-invalid @enderror" id="plan_name"
                                                            placeholder="e.g., Enterprise Plan" value="{{ $planDetails['plan_name'] }}" required>
                                                     @error('plan_name')
                                                     <span class="invalid-feedback" role="alert">
@@ -224,8 +235,9 @@
                                                 <div class="col-md-6 mb-3">
                                                     <label for="currency" class="form-label">Currency *</label>
                                                     <select class="form-select" name="currency" id="currency" required>
-                                                        <option value="USD" {{ $planDetails['currency'] == 'USD' ? 'selected' : '' }}>USD</option>
-                                                        <option value="PKR" {{ $planDetails['currency'] == 'PKR' ? 'selected' : '' }}>PKR</option>
+                                                        @foreach($currencies as $currency)
+                                                            <option value="{{ $currency }}" {{ $planDetails['currency'] == $currency ? 'selected' : '' }}>{{ $currency }}</option>
+                                                        @endforeach
                                                     </select>
                                                     @error('currency')
                                                     <span class="invalid-feedback" role="alert">
@@ -236,7 +248,7 @@
                                             </div>
                                             <div class="mb-2">
                                                 <label for="plan_description" class="form-label">Description</label>
-                                                <textarea class="form-control  @error('plan_description') is-invalid @enderror" name="plan_description" id="plan_description"
+                                                <textarea class="form-control @error('plan_description') is-invalid @enderror" name="plan_description" id="plan_description"
                                                           rows="3" placeholder="Brief description of what this plan offers">{{ $planDetails['plan_description'] }}</textarea>
                                                 @error('plan_description')
                                                 <span class="invalid-feedback" role="alert">
@@ -252,7 +264,6 @@
 
                                             <div class="row">
                                                 @php
-                                                    // Get all unique billing cycle IDs from the plan's services
                                                     $activeCycleIds = [];
                                                     foreach ($planDetails['services'] as $service) {
                                                         foreach ($service['prices'] as $price) {
@@ -263,21 +274,21 @@
                                                     }
                                                 @endphp
 
-                                                @foreach([1 => '1 Month', 6 => '6 Months', 12 => '12 Months'] as $months => $name)
+                                                @foreach($priceCycles as $cycle)
                                                     @php
-                                                        $isActive = in_array($months, $activeCycleIds);
+                                                        $isActive = in_array($cycle['id'], $activeCycleIds);
                                                     @endphp
                                                     <div class="col-md-4 mb-2">
                                                         <div class="billing-cycle-card {{ $isActive ? 'selected' : '' }}"
-                                                             onclick="toggleBillingCycleSelection(this, {{ $months }})">
+                                                             onclick="toggleBillingCycleSelection(this, {{ $cycle['id'] }})">
                                                             <div class="form-check">
                                                                 <input class="form-check-input" type="checkbox"
                                                                        name="billing_cycles[]"
-                                                                       id="cycle_{{ $months }}"
-                                                                       value="{{ $months }}"
+                                                                       id="cycle_{{ $cycle['id'] }}"
+                                                                       value="{{ $cycle['id'] }}"
                                                                     {{ $isActive ? 'checked' : '' }}>
-                                                                <label class="form-check-label" for="cycle_{{ $months }}">
-                                                                    <h5>{{ $name }}</h5>
+                                                                <label class="form-check-label" for="cycle_{{ $cycle['id'] }}">
+                                                                    <h5>{{ $cycle['name'] }}</h5>
                                                                 </label>
                                                             </div>
                                                         </div>
@@ -313,16 +324,28 @@
 
                                                                 <div class="price-inputs">
                                                                     <h6>Prices per Billing Cycle</h6>
-                                                                    @foreach($service['prices'] as $price)
-                                                                        <div class="price-input-group" data-cycle-id="{{ $price['billing_cycle_id'] }}" style="display: block;">
-                                                                            <label for="price_{{ $service['service_id'] }}_{{ $price['billing_cycle_id'] }}" class="form-label">{{ $price['billing_cycle'] }} Price *</label>
+                                                                    @foreach($priceCycles as $cycle)
+                                                                        @php
+                                                                            $existingPrice = null;
+                                                                            foreach ($service['prices'] as $price) {
+                                                                                if ($price['billing_cycle_id'] == $cycle['id']) {
+                                                                                    $existingPrice = $price;
+                                                                                    break;
+                                                                                }
+                                                                            }
+                                                                        @endphp
+                                                                        <div class="price-input-group" data-cycle-id="{{ $cycle['id'] }}" style="display: {{ in_array($cycle['id'], $activeCycleIds) ? 'block' : 'none' }};">
+                                                                            <label for="price_{{ $service['service_id'] }}_{{ $cycle['id'] }}" class="form-label">{{ $cycle['name'] }} Price *</label>
                                                                             <input type="number"
-                                                                                   name="services[{{ $service['service_id'] }}][prices][{{ $price['billing_cycle_id'] }}]"
+                                                                                   name="services[{{ $service['service_id'] }}][prices][{{ $cycle['id'] }}]"
                                                                                    class="form-control price-input"
-                                                                                   id="price_{{ $service['service_id'] }}_{{ $price['billing_cycle_id'] }}"
-                                                                                   min="0" step="0.01" value="{{ $price['price'] }}"
+                                                                                   id="price_{{ $service['service_id'] }}_{{ $cycle['id'] }}"
+                                                                                   min="0" step="0.01"
+                                                                                   value="{{ $existingPrice ? $existingPrice['price'] : '0.00' }}"
                                                                                    placeholder="0.00" required>
-                                                                            <small class="" style="color: var(--sidenavbar-text-color);">Per month: <span class="per-month-price" id="per_month_{{ $service['service_id'] }}_{{ $price['billing_cycle_id'] }}">{{ number_format($price['price'] / $price['billing_cycle_id'], 2) }}</span></small>
+                                                                            <small class="" style="color: var(--sidenavbar-text-color);">Per month: <span class="per-month-price" id="per_month_{{ $service['service_id'] }}_{{ $cycle['id'] }}">
+                                                                                {{ $existingPrice ? number_format($existingPrice['price'] / $cycle['id'], 2) : '0.00' }}
+                                                                            </span></small>
                                                                         </div>
                                                                     @endforeach
                                                                 </div>
@@ -331,10 +354,6 @@
                                                     </div>
                                                 @endforeach
                                             </div>
-                                        </div>
-
-                                        <div class="last-updated">
-                                            Last updated: {{ \Carbon\Carbon::parse($planDetails['updated_at'])->format('M d, Y H:i') }}
                                         </div>
                                     </div>
 
@@ -352,26 +371,6 @@
                                                 <p class="mb-0" id="summaryCurrency">{{ $planDetails['currency'] }}</p>
                                             </div>
 
-                                            <div class="summary-item">
-                                                <h6>Selected Billing Cycles</h6>
-                                                <div id="selectedCyclesList">
-                                                    @php
-                                                        $cycleNames = [];
-                                                        foreach ($planDetails['services'] as $service) {
-                                                            foreach ($service['prices'] as $price) {
-                                                                $cycleNames[$price['billing_cycle_id']] = $price['billing_cycle'];
-                                                            }
-                                                        }
-                                                    @endphp
-                                                    @if(count($cycleNames) > 0)
-                                                        @foreach($cycleNames as $id => $name)
-                                                            <span class="badge bg-primary me-1">{{ $name }}</span>
-                                                        @endforeach
-                                                    @else
-                                                        <p class="small" style="color: var(--sidenavbar-text-color);">No cycles selected</p>
-                                                    @endif
-                                                </div>
-                                            </div>
 
                                             <div class="summary-item">
                                                 <h6>Services & Pricing</h6>
@@ -444,6 +443,15 @@
 
 @push('scripts')
     <script>
+        // Store the original prices for reference
+        const originalPrices = {};
+        @foreach($planDetails['services'] as $service)
+            originalPrices[{{ $service['service_id'] }}] = {};
+        @foreach($service['prices'] as $price)
+            originalPrices[{{ $service['service_id'] }}][{{ $price['billing_cycle_id'] }}] = {{ $price['price'] }};
+        @endforeach
+        @endforeach
+
         function updatePerMonthPrice(priceInput, cycleId) {
             const serviceId = priceInput.closest('.service-details').getAttribute('data-service-id');
             const cycleMonths = getCycleMonths(cycleId);
@@ -452,15 +460,14 @@
 
             const perMonthElement = document.getElementById(`per_month_${serviceId}_${cycleId}`);
             if (perMonthElement) {
-                perMonthElement.textContent = perMonth.toFixed(2); // no currency prefix
+                perMonthElement.textContent = perMonth.toFixed(2);
             }
         }
 
         function getCycleMonths(cycleId) {
-            return cycleId; // Since we're using the months directly as IDs
+            return cycleId;
         }
 
-        // Toggle service selection and show/hide details
         function toggleServiceSelection(element, serviceId) {
             const card = element.closest('.service-card');
             const details = card.querySelector('.service-details');
@@ -477,22 +484,28 @@
 
         function toggleBillingCycleSelection(element, cycleId) {
             const checkbox = element.querySelector('input[type="checkbox"]');
-
             checkbox.checked = !checkbox.checked;
 
             if (checkbox.checked) {
                 element.classList.add('selected');
                 document.querySelectorAll(`.price-input-group[data-cycle-id="${cycleId}"]`).forEach(el => {
                     el.style.display = 'block';
+                    const priceInput = el.querySelector('.price-input');
+                    if (priceInput && !priceInput.value) {
+                        const serviceId = el.closest('.service-details').getAttribute('data-service-id');
+                        priceInput.value = (originalPrices[serviceId] && originalPrices[serviceId][cycleId]) ?
+                            originalPrices[serviceId][cycleId] : '0.00';
+                        updatePerMonthPrice(priceInput, cycleId);
+                    }
                 });
             } else {
                 element.classList.remove('selected');
                 document.querySelectorAll(`.price-input-group[data-cycle-id="${cycleId}"]`).forEach(el => {
                     el.style.display = 'none';
-                    el.querySelector('.price-input').value = '';
                 });
             }
 
+            updateUnselectedCycles();
             updateSummary();
         }
 
@@ -506,33 +519,15 @@
             document.getElementById('summaryCurrency').textContent = currency;
 
             const selectedCycles = Array.from(document.querySelectorAll('input[name="billing_cycles[]"]:checked'));
-            const cyclesList = document.getElementById('selectedCyclesList');
 
-            if (selectedCycles.length === 0) {
-                cyclesList.innerHTML = '<p class="small" style="color: var(--sidenavbar-text-color);">No cycles selected</p>';
-            } else {
-                let html = '';
-                selectedCycles.forEach(cycle => {
-                    const cycleName = cycle.closest('.billing-cycle-card').querySelector('h5').textContent;
-                    html += `<span class="badge bg-primary me-1">${cycleName}</span>`;
-                });
-                cyclesList.innerHTML = html;
-            }
 
             const servicesList = document.getElementById('selectedServicesList');
             const allServices = Array.from(document.querySelectorAll('.service-card'));
 
-            if (allServices.length === 0) {
-                servicesList.innerHTML = '<p class="text-muted small">No services available</p>';
-                return;
-            }
-
             let html = '<div class="table-responsive"><table class="price-table">';
             html += '<thead><tr><th>Service</th><th>Qty</th>';
-
             html += '</tr></thead><tbody>';
 
-            // Object to store totals for each cycle
             const cycleTotals = {};
 
             allServices.forEach(serviceCard => {
@@ -552,15 +547,12 @@
                     if (priceInput) {
                         const priceValue = parseFloat(priceInput.value);
                         if (!isNaN(priceValue)) {
-
-                            // Calculate total for this cycle
                             if (!cycleTotals[cycleId]) {
                                 cycleTotals[cycleId] = 0;
                             }
                             cycleTotals[cycleId] += priceValue;
                         }
                     }
-
                 });
 
                 html += '</tr>';
@@ -569,7 +561,6 @@
             html += '</tbody></table></div>';
             servicesList.innerHTML = html;
 
-            // Update cycle totals display
             const cycleTotalsElement = document.getElementById('cycleTotals');
             if (selectedCycles.length === 0) {
                 cycleTotalsElement.innerHTML = '<p class="small" style="color: var(--sidenavbar-text-color);">Select billing cycles and set prices to see totals</p>';
@@ -592,6 +583,23 @@
                 });
                 cycleTotalsElement.innerHTML = totalsHtml;
             }
+        }
+
+        function updateUnselectedCycles() {
+            const allCycleIds = @json($priceCycles->pluck('id'));
+            const selectedCycleIds = Array.from(document.querySelectorAll('input[name="billing_cycles[]"]:checked')).map(c => parseInt(c.value));
+            const unselectedCycles = allCycleIds.filter(id => !selectedCycleIds.includes(id));
+
+            const container = document.getElementById('unselectedCyclesContainer');
+            container.innerHTML = '';
+
+            unselectedCycles.forEach(cycleId => {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'unSelectedCycles[]';
+                input.value = cycleId;
+                container.appendChild(input);
+            });
         }
 
         document.addEventListener('DOMContentLoaded', function() {
@@ -626,7 +634,7 @@
                         const serviceId = details.getAttribute('data-service-id');
                         for (const cycleId of selectedCycleIds) {
                             const priceInput = card.querySelector(`input[name="services[${serviceId}][prices][${cycleId}]"]`);
-                            if (!priceInput || !priceInput.value) {
+                            if (!priceInput || priceInput.value === '') {
                                 e.preventDefault();
                                 alert(`Please set prices for all selected billing cycles for service: ${card.querySelector('h5').textContent}`);
                                 return;
@@ -634,14 +642,20 @@
                         }
                     }
                 }
+
+                // Disable all unselected cycle inputs before submission
+                const unselectedCycleIds = Array.from(document.querySelectorAll('#unselectedCyclesContainer input')).map(input => input.value);
+                unselectedCycleIds.forEach(cycleId => {
+                    document.querySelectorAll(`input[name^="services["][name$="[prices][${cycleId}]"]`).forEach(input => {
+                        input.disabled = true;
+                    });
+                });
             });
 
-            // Initialize all service details as visible
             document.querySelectorAll('.service-details').forEach(el => {
                 el.style.display = 'block';
             });
 
-            // Initialize all active billing cycle price inputs as visible
             document.querySelectorAll('input[name="billing_cycles[]"]:checked').forEach(checkbox => {
                 const cycleId = checkbox.value;
                 document.querySelectorAll(`.price-input-group[data-cycle-id="${cycleId}"]`).forEach(el => {
@@ -649,6 +663,7 @@
                 });
             });
 
+            updateUnselectedCycles();
             updateSummary();
         });
     </script>
