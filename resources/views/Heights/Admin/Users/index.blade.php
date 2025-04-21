@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Dashboard')
+@section('title', 'Users')
 
 @push('styles')
 
@@ -11,18 +11,6 @@
         }
         #main {
             margin-top: 45px;
-        }
-        #add_button {
-            width: 45px;
-            height: 45px;
-            margin-right: 10px;
-            background-color: #adadad;
-            color: black;
-            border: 1px solid grey;
-            font-size: 25px;
-            font-weight: bold;
-            align-items: center;
-            justify-content: center;
         }
 
         th, td {
@@ -157,7 +145,9 @@
                             <div class="container mt-2">
                                 <div class="d-flex justify-content-between align-items-center mb-2">
                                     <h3 class="mb-1">User Management</h3>
-                                    <a href="{{ route('users.create') }}" class="btn float-end" id="add_button"  data-bs-toggle="tooltip" data-bs-placement="top" title="Add User"><i class="fa fa-plus"></i></a>
+                                    <a href="{{ route('users.create') }}" class="btn float-end add_button" id="add_button"  data-bs-toggle="tooltip" data-bs-placement="top" title="Add User">
+                                        <x-icon name="add" type="svg" class="" size="25" />
+                                    </a>
                                 </div>
                                 <div class="card shadow p-1 mb-5 bg-body rounded" style="border: none;">
                                     <div class="card-body rounded" style="overflow-x: auto;">
@@ -165,8 +155,7 @@
 
                                             <div  class="d-flex align-items-center">
                                                 <button class="btn btn-light" type="button" id="menu-icon" data-bs-toggle="dropdown" aria-expanded="false">
-                                                    <!-- <i class="bx bx-menu"></i> -->
-                                                    <i class='bx bx-export' style="font-size: 20px;"></i>
+                                                    <x-icon name="export" type="icon" class="" size="20px" />
                                                 </button>
 
                                                 <ul id="button-list" class="dropdown-menu dropdown-menu-end" >
@@ -182,7 +171,7 @@
                                             <form method="GET" action="{{ route('users.index') }}" class="d-flex" style="margin-left: 6px;">
                                                 <input type="text"  name="search" class="form-control me-2" placeholder="Search users..." value="{{ request('search') }}">
                                                 <button type="submit" class="btn btn-primary d-flex justify-content-center align-items-center" style="height: 40px; width: 40px;">
-                                                    <i class='bx bx-search' style="font-size: 20px;"></i>
+                                                    <x-icon name="search" type="icon" class="" size="20px" />
                                                 </button>
 
                                             </form>
@@ -218,9 +207,16 @@
                                                     <td>{{ $user->address->city ?? 'N/A' }}</td>
                                                     <td>{{ $user->status ? 'Active' : 'Inactive' }}</td>
                                                     <td class="w-170 text-center">
-                                                        <a href="javascript:void(0);" class="text-info view-user" data-id="{{ $user->id }}" data-bs-toggle="tooltip" data-bs-placement="top" title="View"><i class="fa fa-eye mx-2" style="font-size: 20px;"></i></a>
-                                                        <a href="{{ route('users.edit', $user->id) }}" class="text-warning @if($user->role_id === 6) disabled-link @endif" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit"> <i class="fa fa-pencil mx-2" style="font-size: 20px;"></i> </a>
+                                                        <div class="d-flex justify-content-center align-items-center gap-3">
+                                                            <a href="javascript:void(0);" class="text-info view-user" data-id="{{ $user->id }}" data-bs-toggle="tooltip" data-bs-placement="top" title="View">
+                                                                <x-icon name="view" type="icon" class="" size="20px" />
+                                                            </a>
+                                                            <a href="{{ route('users.edit', $user->id) }}" class="text-warning @if($user->role_id === 6) disabled-link @endif" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit">
+                                                                <x-icon name="edit" type="icon" class="" size="20px" />
+                                                            </a>
+                                                        </div>
                                                     </td>
+
                                                 </tr>
                                                 @empty
                                                     <tr>

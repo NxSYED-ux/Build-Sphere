@@ -9,18 +9,6 @@
         #main {
             margin-top: 45px;
         }
-        #Owner-Level-Add-Button {
-            width: 45px;
-            height: 45px;
-            margin-right: 10px;
-            background-color: #adadad;
-            color: black;
-            border: 1px solid grey;
-            font-size: 25px;
-            font-weight: bold;
-            align-items: center;
-            justify-content: center;
-        }
 
         /* Model Windows */
         .modal-content{
@@ -78,7 +66,9 @@
                             <div class="container mt-2">
                                 <div class="d-flex justify-content-between align-items-center mb-2">
                                     <h3 class="mb-1">Levels</h3>
-                                    <a href="#" class="btn float-end hidden" id="Owner-Level-Add-Button"  data-bs-toggle="tooltip" data-bs-placement="top" title="Add Level"><i class="fa fa-plus"></i></a>
+                                    <a href="#" class="btn float-end hidden add_button" id="Owner-Level-Add-Button"  data-bs-toggle="tooltip" data-bs-placement="top" title="Add Level">
+                                        <x-icon name="add" type="svg" class="" size="25" />
+                                    </a>
                                 </div>
                                 <div class="card shadow p-3 mb-5 bg-body rounded" style="border: none;">
                                     <div class="card-body " style="overflow-x: auto;">

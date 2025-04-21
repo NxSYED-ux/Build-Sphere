@@ -10,45 +10,6 @@
             margin-top: 45px;
         }
 
-        #add_button {
-            width: 45px;
-            height: 45px;
-            margin-right: 10px;
-            background-color: #adadad;
-            color: black;
-            border: 1px solid grey;
-            font-size: 25px;
-            font-weight: bold;
-            align-items: center;
-            justify-content: center;
-        }
-
-        #add_dropdwon_type_button{
-            width: 45px;
-            height: 45px;
-            margin-right: 10px;
-            background-color: #adadad;
-            color: black;
-            border: 1px solid grey;
-            font-size: 25px;
-            font-weight: bold;
-            align-items: center;
-            justify-content: center;
-        }
-
-        #add_dropdwon_value_button{
-            width: 45px;
-            height: 45px;
-            margin-right: 10px;
-            background-color: #adadad;
-            color: black;
-            border: 1px solid grey;
-            font-size: 25px;
-            font-weight: bold;
-            align-items: center;
-            justify-content: center;
-        }
-
         .nav-tabs .nav-link {
             background-color: var(--nav-tabs-inactive-bg-color) !important; /* Change to your desired color */
             color: var(--nav-tabs-inactive-text-color) !important;
@@ -160,7 +121,9 @@
                                     <div class="tab-pane fade {{ $activeTab === 'Types' ? 'show active' : '' }}" id="dropdwon-types" role="tabpanel" aria-labelledby="dropdwon-types-tab">
                                         <div class="card shadow p-3 pt-1 mb-5 bg-body rounded" style="border: none;">
                                             <div class="card-body" style="overflow-x: auto;">
-                                                <a href="#" class="btn float-end" id="add_dropdwon_type_button"  data-bs-toggle="tooltip" data-bs-placement="top" title="Add"><i class="fa fa-plus"></i></a>
+                                                <a href="#" class="btn float-end add_button" id="add_dropdwon_type_button"  data-bs-toggle="tooltip" data-bs-placement="top" title="Add">
+                                                    <x-icon name="add" type="svg" class="" size="25" />
+                                                </a>
                                                 <h3 class="mb-4">Types</h3>
                                                 <div style="overflow-x: auto;">
                                                     <table id="typesTable" class="table shadow-sm table-hover table-striped">
@@ -184,7 +147,7 @@
                                                                     <td>{{ $type->status ? 'Active' : 'Inactive' }}</td>
                                                                     <td class="text-center" style="width: 70px;">
                                                                         <a href="#" class="text-warning edit_dropdwon_type_button" id="edit_dropdwon_type_button" data-id="{{ $type->id }}" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit">
-                                                                            <i class="fa fa-pencil" style="font-size: 20px;"></i>
+                                                                            <x-icon name="edit" type="icon" class="" size="20px" />
                                                                         </a>
                                                                     </td>
                                                                 </tr>
@@ -203,7 +166,9 @@
                                     <div class="tab-pane fade {{ $activeTab === 'Values' ? 'show active' : '' }}" id="dropdwon-values" role="tabpanel" aria-labelledby="dropdwon-values-tab">
                                         <div class="card shadow p-3 pt-1 mb-5 bg-body rounded" style="border: none;">
                                             <div class="card-body" style="overflow-x: auto;">
-                                                <a href="#" class="btn float-end" id="add_dropdwon_value_button"  data-bs-toggle="tooltip" data-bs-placement="top" title="Add Value"><i class="fa fa-plus"></i></a>
+                                                <a href="#" class="btn float-end add_button" id="add_dropdwon_value_button"  data-bs-toggle="tooltip" data-bs-placement="top" title="Add Value">
+                                                    <x-icon name="add" type="svg" class="" size="25" />
+                                                </a>
 {{--                                                <a href="{{ route('values.create') }}" class="btn float-end" id="add_button"><i class="fa fa-plus"></i></a>--}}
                                                 <h3 class="mb-4">Values</h3>
                                                 <div style="overflow-x: auto;">
@@ -230,7 +195,7 @@
                                                                 <td>{{ $value->status ? 'Active' : 'Inactive' }}</td>
                                                                 <td class="text-center" style="width: 100px;">
                                                                     <a href="#" class="text-warning edit_dropdwon_value_button" id="edit_dropdwon_value_button" data-id="{{ $value->id }}" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit Value">
-                                                                        <i class="fa fa-pencil" style="font-size: 20px;"></i>
+                                                                        <x-icon name="edit" type="icon" class="" size="20px" />
                                                                     </a>
 {{--                                                                    <a href="{{ route('values.edit', $value->id) }}" class="text-warning" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit"><i class="fa fa-pencil" style="font-size: 20px;"></i></a>--}}
                                                                 </td>

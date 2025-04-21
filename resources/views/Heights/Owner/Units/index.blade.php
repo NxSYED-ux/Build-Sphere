@@ -9,18 +9,6 @@
         #main {
             margin-top: 45px;
         }
-        #Owner-Unit-Add-Button {
-            width: 45px;
-            height: 45px;
-            margin-right: 10px;
-            background-color: #adadad;
-            color: black;
-            border: 1px solid grey;
-            font-size: 25px;
-            font-weight: bold;
-            align-items: center;
-            justify-content: center;
-        }
 
         th, td {
             white-space: nowrap;
@@ -200,7 +188,9 @@
                             <div class="container mt-2">
                                 <div class="d-flex justify-content-between align-items-center mb-2">
                                     <h3 class="mb-1">Units</h3>
-                                    <a href="{{ route('owner.units.create') }}" class="btn float-end hidden" id="Owner-Unit-Add-Button"  data-bs-toggle="tooltip" data-bs-placement="top" title="Add Unit"><i class="fa fa-plus"></i></a>
+                                    <a href="{{ route('owner.units.create') }}" class="btn float-end hidden add_button" id="Owner-Unit-Add-Button"  data-bs-toggle="tooltip" data-bs-placement="top" title="Add Unit">
+                                        <x-icon name="add" type="svg" class="" size="25" />
+                                    </a>
                                 </div>
                                 <div class="card shadow p-2 pt-1 mb-5 bg-body rounded" style="border: none;">
                                     <div class="card-body">

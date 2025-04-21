@@ -206,7 +206,9 @@
                                                                     <td>{{ $organization->membership_end_date ? $organization->membership_end_date->format('Y-m-d') : '' }}</td>
                                                                     <td>{{ $organization->status }}</td>
                                                                     <td class="text-center" style="width: 70px;">
-                                                                        <a href="{{ route('organizations.edit', $organization->id) }}" class="text-warning" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit"> <i class="fa fa-pencil mx-2" style="font-size: 20px;"></i> </a>
+                                                                        <a href="{{ route('organizations.edit', $organization->id) }}" class="text-warning" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit">
+                                                                            <x-icon name="edit" type="icon" class="" size="20px" />
+                                                                        </a>
 
                                                                     </td>
                                                                 </tr>

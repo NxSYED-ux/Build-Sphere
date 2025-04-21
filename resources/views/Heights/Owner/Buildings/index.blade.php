@@ -9,18 +9,6 @@
         #main {
             margin-top: 45px;
         }
-        #Owner-Building-Add-Button {
-            width: 45px;
-            height: 45px;
-            margin-right: 10px;
-            background-color: #adadad;
-            color: black;
-            border: 1px solid grey;
-            font-size: 25px;
-            font-weight: bold;
-            align-items: center;
-            justify-content: center;
-        }
 
         .Owner-Building-Edit-Button{
         }
@@ -58,7 +46,9 @@
                             <div class="container mt-2">
                                 <div class="d-flex justify-content-between align-items-center mb-2">
                                     <h3 class="mb-1">Buildings</h3>
-                                    <a href="{{ route('owner.buildings.create') }}" class="btn float-end hidden" id="Owner-Building-Add-Button"  data-bs-toggle="tooltip" data-bs-placement="top" title="Add Building"><i class="fa fa-plus"></i></a>
+                                    <a href="{{ route('owner.buildings.create') }}" class="btn float-end hidden add_button" id="Owner-Building-Add-Button"  data-bs-toggle="tooltip" data-bs-placement="top" title="Add Building">
+                                        <x-icon name="add" type="svg" class="" size="25" />
+                                    </a>
                                 </div>
                                 <div class="card shadow p-3 pt-1 mb-5 bg-body rounded" style="border: none;">
                                     <div class="card-body " style="overflow-x: auto;">
@@ -67,8 +57,7 @@
 
                                             <div  class="d-flex align-items-center">
                                                 <button class="btn btn-light" type="button" id="menu-icon" data-bs-toggle="dropdown" aria-expanded="false">
-                                                    <!-- <i class="bx bx-menu"></i> -->
-                                                    <i class='bx bx-export' style="font-size: 20px;"></i>
+                                                    <x-icon name="export" type="icon" class="" size="20px" />
                                                 </button>
 
                                                 <ul id="button-list" class="dropdown-menu dropdown-menu-end" >
@@ -84,7 +73,7 @@
                                             <form method="GET" action="{{ route('owner.buildings.index') }}" class="d-flex" style="margin-left: 6px;">
                                                 <input type="text"  name="search" class="form-control me-2" placeholder="Search buildings..." value="{{ request('search') }}">
                                                 <button type="submit" class="btn btn-primary d-flex justify-content-center align-items-center" style="height: 40px; width: 40px;">
-                                                    <i class='bx bx-search' style="font-size: 20px;"></i>
+                                                    <x-icon name="search" type="icon" class="" size="20px" />
                                                 </button>
 
                                             </form>
@@ -128,15 +117,19 @@
                                                         {{ $building->status ?? 'N/A' }}
                                                     </td>
                                                     <td class="w-170 text-center">
-                                                        @if($building->status === "Under Processing" || $building->status === "Reapproved")
-                                                            <a href="{{ route('owner.buildings.show', ['building' => $building->id]) }}" class="text-info" title="Submit"><i class='bx bxs-right-top-arrow-circle' style="font-size: 20px;margin-right:5px; color: orange;"></i></a>
-                                                        @else
-                                                        <a href="{{ route('owner.buildings.show', ['building' => $building->id]) }}" class="text-info" title="View"><i class="fa fa-eye mx-2" style="font-size: 20px;margin-right:5px;;"></i></a>
-                                                        @endif
-                                                        <a href="{{ route('owner.levels.index', ['building_id' => $building->id]) }}" class="text-" title="View Levels"><i class="bx bxs-city icons" style="font-size: 20px;margin-right:5px; color: grey;"></i></a>
-                                                        <a href="{{ route('owner.buildings.edit', $building->id) }}" class="text-warning Owner-Building-Edit-Button hidden" title="Edit">
-                                                            <i class="fa fa-pencil mx-2" style="font-size: 20px;"></i>
-                                                        </a>
+                                                        <div class="d-flex justify-content-center align-items-center gap-3">
+                                                            @if($building->status === "Under Processing" || $building->status === "Reapproved")
+                                                                <a href="{{ route('owner.buildings.show', ['building' => $building->id]) }}" class="text-info" title="Submit"><i class='bx bxs-right-top-arrow-circle' style="font-size: 20px;margin-right:5px; color: orange;"></i></a>
+                                                            @else
+                                                            <a href="{{ route('owner.buildings.show', ['building' => $building->id]) }}" class="text-info" title="View">
+                                                                <x-icon name="view" type="icon" class="" size="20px" />
+                                                            </a>
+                                                            @endif
+                                                            <a href="{{ route('owner.levels.index', ['building_id' => $building->id]) }}" class="text-" title="View Levels"><i class="bx bxs-city icons" style="font-size: 20px;margin-right:5px; color: grey;"></i></a>
+                                                            <a href="{{ route('owner.buildings.edit', $building->id) }}" class="text-warning Owner-Building-Edit-Button hidden" title="Edit">
+                                                                <x-icon name="edit" type="icon" class="" size="20px" />
+                                                            </a>
+                                                        </div>
                                                     </td>
                                                 </tr>
                                                 @empty

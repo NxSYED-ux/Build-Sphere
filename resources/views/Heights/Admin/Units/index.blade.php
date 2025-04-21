@@ -9,18 +9,6 @@
         #main {
             margin-top: 45px;
         }
-        #Admin-Unit-Add-Button {
-            width: 45px;
-            height: 45px;
-            margin-right: 10px;
-            background-color: #adadad;
-            color: black;
-            border: 1px solid grey;
-            font-size: 25px;
-            font-weight: bold;
-            align-items: center;
-            justify-content: center;
-        }
 
         th, td {
             white-space: nowrap;
@@ -141,7 +129,9 @@
                             <div class="container mt-2">
                                 <div class="d-flex justify-content-between align-items-center mb-2">
                                     <h3 class="mb-1">Units</h3>
-                                    <a href="{{ route('units.create') }}" class="btn float-end hidden" id="Admin-Unit-Add-Button"  data-bs-toggle="tooltip" data-bs-placement="top" title="Add Unit"><i class="fa fa-plus"></i></a>
+                                    <a href="{{ route('units.create') }}" class="btn float-end hidden add_button" id="Admin-Unit-Add-Button"  data-bs-toggle="tooltip" data-bs-placement="top" title="Add Unit">
+                                        <x-icon name="add" type="svg" class="" size="25" />
+                                    </a>
                                 </div>
                                 <div class="card shadow p-3 pt-1 mb-5 bg-body rounded" style="border: none;">
                                     <div class="card-body">
@@ -149,8 +139,7 @@
 
                                             <div  class="d-flex align-items-center">
                                                 <button class="btn btn-light" type="button" id="menu-icon" data-bs-toggle="dropdown" aria-expanded="false">
-                                                    <!-- <i class="bx bx-menu"></i> -->
-                                                    <i class='bx bx-export' style="font-size: 20px;"></i>
+                                                    <x-icon name="export" type="icon" class="" size="20px" />
                                                 </button>
 
                                                 <ul id="button-list" class="dropdown-menu dropdown-menu-end" >
@@ -171,7 +160,9 @@
                                                     placeholder="Search units..."
                                                     value="{{ request('search') }}"
                                                 >
-                                                <button type="submit" class="btn btn-primary"><i class='bx bx-search' style="font-size: 20px;"></i></button>
+                                                <button type="submit" class="btn btn-primary">
+                                                    <x-icon name="search" type="icon" class="" size="20px" />
+                                                </button>
                                             </form>
                                         </div>
 
@@ -220,11 +211,15 @@
                                                         <td>{{ $unit->level->building->name ?? 'N/A' }}</td>
                                                         <td>{{ $unit->level->level_name ?? 'N/A' }}</td>
                                                         <td>{{ $unit->organization->name ?? 'N/A' }}</td>
-                                                        <td class="text-center">
-                                                            <a href="javascript:void(0);" class="text-info view-unit" data-id="{{ $unit->id }}" data-bs-toggle="tooltip" data-bs-placement="top" title="View"><i class="fa fa-eye mx-2" style="font-size: 20px;"></i></a>
-                                                            <a href="{{ route('units.edit', $unit->id) }}" class="text-warning Admin-Unit-Edit-Button hidden" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit">
-                                                                <i class="fa fa-pencil mx-2" style="font-size: 20px;"></i>
-                                                            </a>
+                                                        <td class="text-center ">
+                                                            <div class="d-flex justify-content-center align-items-center gap-3">
+                                                                <a href="javascript:void(0);" class="text-info view-unit" data-id="{{ $unit->id }}" data-bs-toggle="tooltip" data-bs-placement="top" title="View">
+                                                                    <x-icon name="view" type="icon" class="" size="20px" />
+                                                                </a>
+                                                                <a href="{{ route('units.edit', $unit->id) }}" class="text-warning Admin-Unit-Edit-Button hidden" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit">
+                                                                    <x-icon name="edit" type="icon" class="" size="20px" />
+                                                                </a>
+                                                            </div>
                                                         </td>
                                                     </tr>
                                                 @empty

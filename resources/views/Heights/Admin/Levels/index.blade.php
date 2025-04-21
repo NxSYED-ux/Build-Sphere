@@ -9,18 +9,6 @@
         #main {
             margin-top: 45px;
         }
-        #Admin-Level-Add-Button {
-            width: 45px;
-            height: 45px;
-            margin-right: 10px;
-            background-color: #adadad;
-            color: black;
-            border: 1px solid grey;
-            font-size: 25px;
-            font-weight: bold;
-            align-items: center;
-            justify-content: center;
-        }
 
         /* Model Windows */
         .modal-content{
@@ -79,7 +67,9 @@
                             <div class="container mt-2">
                                 <div class="d-flex justify-content-between align-items-center mb-2">
                                     <h3 class="mb-1">Levels</h3>
-                                    <a href="#" class="btn float-end hidden" id="Admin-Level-Add-Button"  data-bs-toggle="tooltip" data-bs-placement="top" title="Add Level"><i class="fa fa-plus"></i></a>
+                                    <a href="#" class="btn float-end hidden add_button" id="Admin-Level-Add-Button"  data-bs-toggle="tooltip" data-bs-placement="top" title="Add Level">
+                                        <x-icon name="add" type="svg" class="" size="25" />
+                                    </a>
                                 </div>
                                 <div class="card shadow p-3 mb-5 bg-body rounded" style="border: none;">
                                     <div class="card-body " style="overflow-x: auto;">
@@ -107,10 +97,14 @@
                                                     </td>
                                                     <td>{{ $level->building->name ?? 'N/A' }}</td>
                                                     <td class="w-170 text-center">
-                                                        <a href="{{ route('units.index', ['level_id' => $level->id]) }}" class="text-info" title="View Units"><i class="bx bxs-home icons" style="font-size: 20px;margin-right:5px;;"></i></a>
-                                                        <a href="#" class="text-warning Admin-Level-Edit-Button hidden" data-id="{{ $level->id }}" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit">
-                                                            <i class="fa fa-pencil" style="font-size: 20px;"></i>
-                                                        </a>
+                                                        <div class="d-flex justify-content-center align-items-center gap-3">
+                                                            <a href="{{ route('units.index', ['level_id' => $level->id]) }}" class="text-info" title="View Units">
+                                                                <x-icon name="view" type="icon" class="" size="20px" />
+                                                            </a>
+                                                            <a href="#" class="text-warning Admin-Level-Edit-Button hidden" data-id="{{ $level->id }}" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit">
+                                                                <x-icon name="edit" type="icon" class="" size="20px" />
+                                                            </a>
+                                                        </div>
                                                     </td>
                                                 </tr>
                                             @empty

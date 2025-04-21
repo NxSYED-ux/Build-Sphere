@@ -67,7 +67,7 @@
     <link href="https://cdn.datatables.net/buttons/2.3.6/css/buttons.bootstrap5.min.css" rel="stylesheet">
 
     <!-- Add Font Awesome 4.7 CSS link -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+{{--    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">--}}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <!-- Box Icons css link -->
@@ -109,6 +109,20 @@
             overflow-y: auto;
             background-color: var(--main-background-color);
             color: var(--main-text-color);
+        }
+
+        .add_button {
+            width: 45px;
+            height: 45px;
+            margin-right: 10px;
+            background-color: #adadad;
+            color: #333333;
+            border: 1px solid grey;
+            font-size: 25px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .hidden {
@@ -184,6 +198,12 @@
             border: 1px solid #ccc !important;
             box-shadow: none !important;
         }
+
+        select, .form-select{
+            max-height: 40px !important;
+            overflow-y: auto !important;
+        }
+
 
         input::placeholder, textarea::placeholder {
             color: var(--placeholder-color) !important;

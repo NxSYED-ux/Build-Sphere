@@ -10,19 +10,6 @@
             margin-top: 45px;
         }
 
-        #add_button {
-            width: 45px;
-            height: 45px;
-            margin-right: 10px;
-            background-color: #adadad;
-            color: black;
-            border: 1px solid grey;
-            font-size: 25px;
-            font-weight: bold;
-            align-items: center;
-            justify-content: center;
-        }
-
         .modal-content{
             background: var(--modal-header-bg);
             color: var(--modal-text);
@@ -112,7 +99,7 @@
                             <div class="container mt-2">
                                 <div class="d-flex justify-content-between align-items-center mb-2">
                                     <h3 class="mb-1">Roles</h3>
-                                    <a href="#" class="btn float-end" id="add_button"> <i class="fa fa-plus"></i> </a>
+                                    <a href="#" class="btn float-end add_button" id="add_button"> <x-icon name="add" type="svg" class="" size="25" /></a>
                                 </div>
                                 <div class="card shadow p-3 mb-5 bg-body rounded" style="border: none;">
                                     <div class="card-body" style="overflow-x: auto;">
@@ -134,7 +121,9 @@
                                                         <td>{{ $role->description }}</td>
                                                         <td>{{ $role->status ? 'Active' : 'Inactive' }}</td>
                                                         <td class="text-center" style="width: 100px;">
-                                                            <a href="#" class="text-warning edit-role-button" id="edit-role-button" data-id="{{ $role->id }}" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit"><i class="fa fa-pencil" style="font-size: 20px;"></i></a>
+                                                            <a href="#" class="text-warning edit-role-button" id="edit-role-button" data-id="{{ $role->id }}" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit">
+                                                                <x-icon name="view" type="icon" class="" size="20px" />
+                                                            </a>
                                                         </td>
                                                     </tr>
                                                 @empty
