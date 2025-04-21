@@ -114,7 +114,7 @@
                     </div>
                 </div>
 
-                <input type="hidden" id="owner_id" value="17">
+                <input type="hidden" id="owner_id" value="{{ $owner_id }}">
                 <input type="hidden" id="organization_id" value="{{ $organization_id }}">
                 {{--                <input type="hidden" id="organization_name" value="{{ $organization_name }}">--}}
 

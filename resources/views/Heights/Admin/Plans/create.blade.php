@@ -7,31 +7,27 @@
         body {
         }
         #main {
+            font-family: 'Nunito', sans-serif;
             margin-top: 45px;
         }
         :root {
-            --primary-color: #4e73df;
+            --primary-color: #008CFF;
             --secondary-color: #1cc88a;
             --dark-color: #5a5c69;
             --light-color: #f8f9fc;
         }
 
-        body {
-            font-family: 'Nunito', sans-serif;
-            background-color: var(--light-color);
-        }
-
         .form-section {
-            background-color: white;
+            background-color: var(--body-card-bg);
             border-radius: 15px;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-            padding: 2.5rem;
-            margin-bottom: 2rem;
+            padding: 2rem;
+            margin-bottom: 1.6rem;
         }
 
         .section-title {
             position: relative;
-            margin-bottom: 1.5rem;
+            margin-bottom: 1.2rem;
             padding-bottom: 0.75rem;
         }
 
@@ -45,28 +41,32 @@
             background-color: var(--primary-color);
         }
 
-        .feature-card {
+        .service-card {
             border: 1px solid rgba(0, 0, 0, 0.1);
             border-radius: 10px;
-            padding: 1.5rem;
+            padding: 0 1rem 1rem 1rem;
             margin-bottom: 1.5rem;
             transition: all 0.3s;
+            background-color: var(--body-background-color);
         }
 
-        .feature-card:hover {
+        .service-card:hover {
             border-color: var(--primary-color);
             box-shadow: 0 5px 15px rgba(78, 115, 223, 0.1);
         }
 
-        .feature-card.selected {
-            border-color: var(--primary-color);
-            background-color: rgba(78, 115, 223, 0.05);
+        .service-card .card-header {
+            cursor: pointer;
+            padding: 0;
+            background: none;
+            border: none;
         }
 
-        .feature-icon {
+        .service-icon {
             font-size: 1.5rem;
             color: var(--primary-color);
-            margin-bottom: 1rem;
+            top: 3px;
+            right: 7px;
         }
 
         .btn-custom {
@@ -87,7 +87,7 @@
         }
 
         .summary-card {
-            background-color: white;
+            background-color: var(--body-card-bg);
             border-radius: 15px;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
             padding: 2rem;
@@ -126,6 +126,54 @@
             background-color: var(--primary-color);
             border-color: var(--primary-color);
         }
+
+        .price-input-group {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px dashed #eee;
+        }
+
+        .billing-cycle-card {
+            margin-bottom: 10px;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            padding-top: 10px;
+            height: 50px;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .billing-cycle-card.selected {
+            border-color: var(--primary-color);
+            background-color: rgba(78, 115, 223, 0.05);
+        }
+
+        .billing-cycle-card .form-check {
+            pointer-events: none; /* Prevent double click events */
+        }
+
+        .price-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .price-table th, .price-table td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .price-table th {
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+
+        .per-month-price {
+            font-size: 0.85rem;
+            color: var(--secondary-color);
+        }
     </style>
 @endpush
 
@@ -140,418 +188,379 @@
     <x-error-success-model />
 
     <div id="main">
-
         <section class="content my-3 mx-2">
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-md-12">
-                        <div class="container py-1">
-                            <div class="row">
-                                <div class="col-lg-8">
-                                    <!-- Plan Information Section -->
-                                    <div class="form-section">
-                                        <h3 class="section-title">Plan Information</h3>
+                        <form id="planForm" action="{{ route('plans.store') }}" method="POST">
+                            @csrf
+                            <div class="container py-1">
+                                <div class="row">
+                                    <div class="col-lg-8">
+                                        <div class="form-section">
+                                            <h3 class="section-title">Plan Information</h3>
 
-                                        <div class="mb-3">
-                                            <label for="planName" class="form-label">Plan Name</label>
-                                            <input type="text" class="form-control" id="planName" placeholder="e.g., Enterprise Plan">
-                                        </div>
-
-                                        <div class="mb-3">
-                                            <label for="planDescription" class="form-label">Description</label>
-                                            <textarea class="form-control" id="planDescription" rows="3" placeholder="Brief description of what this plan offers"></textarea>
-                                        </div>
-
-                                        <div class="row">
-                                            <div class="col-md-6 mb-3">
-                                                <label for="planCurrency" class="form-label">Currency</label>
-                                                <select class="form-select" id="planCurrency">
-                                                    <option value="PKR" selected>PKR - Pakistani Rupee</option>
-                                                    <option value="USD">USD - US Dollar</option>
-                                                    <option value="EUR">EUR - Euro</option>
-                                                    <option value="GBP">GBP - British Pound</option>
+                                            <div class="row">
+                                                <div class="col-md-6 mb-2">
+                                                    <label for="plan_name" class="form-label">Plan Name *</label>
+                                                    <input type="text" name="plan_name" class="form-control" id="plan_name"
+                                                           placeholder="e.g., Enterprise Plan" required>
+                                                </div>
+                                                <div class="col-md-6 mb-3">
+                                                <label for="currency" class="form-label">Currency *</label>
+                                                <select class="form-select" name="currency" id="currency" required>
+                                                    @foreach($currencies as $currency)
+                                                        <option value="{{ $currency }}">{{ $currency }}</option>
+                                                    @endforeach
                                                 </select>
                                             </div>
-                                            <div class="col-md-6 mb-3">
-                                                <label class="form-label">Status</label>
-                                                <div class="form-check form-switch">
-                                                    <input class="form-check-input" type="checkbox" id="planStatus" checked>
-                                                    <label class="form-check-label" for="planStatus">Active</label>
-                                                </div>
+                                            </div>
+                                            <div class="mb-2">
+                                                <label for="plan_description" class="form-label">Description</label>
+                                                <textarea class="form-control" name="plan_description" id="plan_description"
+                                                          rows="3" placeholder="Brief description of what this plan offers"></textarea>
+                                            </div>
+
+
+
+                                        </div>
+
+                                        <div class="form-section">
+                                            <h3 class="section-title">Billing Cycles</h3>
+                                            <p class="mb-4" style="color: var(--sidenavbar-text-color);">Select which billing cycles will be available for this plan</p>
+
+                                            <div class="row">
+                                                @foreach($priceCycles as $cycle)
+                                                    <div class="col-md-4 mb-2">
+                                                        <div class="billing-cycle-card" onclick="toggleBillingCycleSelection(this, {{ $cycle['id'] }})">
+                                                            <div class="form-check">
+                                                                <input class="form-check-input" type="checkbox"
+                                                                       name="billing_cycles[]"
+                                                                       id="cycle_{{ $cycle['id'] }}"
+                                                                       value="{{ $cycle['id'] }}">
+                                                                <label class="form-check-label" for="cycle_{{ $cycle['id'] }}">
+                                                                    <h5>{{ $cycle['name'] }}</h5>
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                @endforeach
+                                            </div>
+                                        </div>
+
+                                        <div class="form-section">
+                                            <h3 class="section-title">Plan Services</h3>
+                                            <p class="mb-4" style="color: var(--sidenavbar-text-color);">Set quantities and prices for each service</p>
+
+                                            <div class="row">
+                                                @foreach($services as $service)
+                                                    <div class="col-md-6">
+                                                        <div class="service-card position-relative">
+                                                            <div class="card-header" onclick="toggleServiceSelection(this, {{ $service->id }})">
+
+                                                                <h5 class="mt-4">{{ $service->title }}</h5>
+                                                                <p class="small" style="color: var(--sidenavbar-text-color);">{{ $service->description }}</p>
+                                                            </div>
+                                                            <div class="service-icon position-absolute m-2">
+                                                                <i class="fas fa-{{ $service->icon ?? 'cog' }}"></i>
+                                                            </div>
+
+                                                            <div class="service-details" style="display: none;" data-service-id="{{ $service->id }}">
+                                                                <div class="mb-3">
+                                                                    <label for="quantity_{{ $service->id }}" class="form-label">Quantity *</label>
+                                                                    <input type="number" name="services[{{ $service->id }}][quantity]"
+                                                                           class="form-control quantity-input"
+                                                                           id="quantity_{{ $service->id }}"
+                                                                           min="0" value="0" required>
+                                                                </div>
+
+                                                                <div class="price-inputs">
+                                                                    <h6>Prices per Billing Cycle</h6>
+                                                                    @foreach($priceCycles as $cycle)
+                                                                        <div class="price-input-group" data-cycle-id="{{ $cycle['id'] }}" style="display: none;">
+                                                                            <label for="price_{{ $service->id }}_{{ $cycle['id'] }}" class="form-label">{{ $cycle['name'] }} Price *</label>
+                                                                            <input type="number"
+                                                                                   name="services[{{ $service->id }}][prices][{{ $cycle['id'] }}]"
+                                                                                   class="form-control price-input"
+                                                                                   id="price_{{ $service->id }}_{{ $cycle['id'] }}"
+                                                                                   min="0" step="0.01"
+                                                                                   placeholder="0.00" required>
+                                                                            <small class="" style="color: var(--sidenavbar-text-color);">Per month: <span class="per-month-price" id="per_month_{{ $service->id }}_{{ $cycle['id'] }}">0.00</span></small>
+                                                                        </div>
+                                                                    @endforeach
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                @endforeach
                                             </div>
                                         </div>
                                     </div>
 
-                                    <!-- Services Selection Section -->
-                                    <div class="form-section">
-                                        <h3 class="section-title">Select Services</h3>
-                                        <p class="text-muted mb-4">Choose which services to include in your plan and set their quantities</p>
+                                    <div class="col-lg-4">
+                                        <div class="summary-card">
+                                            <h3 class="section-title">Plan Summary</h3>
 
-                                        <ul class="nav nav-tabs mb-4" id="servicesTab" role="tablist">
-                                            <li class="nav-item" role="presentation">
-                                                <button class="nav-link active" id="all-tab" data-bs-toggle="tab" data-bs-target="#all" type="button" role="tab">All Services</button>
-                                            </li>
-                                        </ul>
+                                            <div class="mb-4">
+                                                <h5 id="summaryPlanName">New Plan</h5>
+                                                <p class="small" style="color: var(--sidenavbar-text-color);" id="summaryPlanDescription">No description provided</p>
+                                            </div>
 
-                                        <div class="tab-content" id="servicesTabContent">
-                                            <div class="tab-pane fade show active" id="all" role="tabpanel">
-                                                <div class="row">
-                                                    <!-- Building Management -->
-                                                    <div class="col-md-6">
-                                                        <div class="feature-card" onclick="toggleSelection(this)">
-                                                            <div class="feature-icon">
-                                                                <i class="fas fa-building"></i>
-                                                            </div>
-                                                            <h5>Building Management</h5>
-                                                            <p class="text-muted small">Oversee and organize all registered buildings in one place.</p>
-                                                            <div class="quantity-control mt-3" style="display: none;">
-                                                                <label class="form-label">Quantity</label>
-                                                                <input type="number" class="form-control" min="1" value="1" data-service-id="1">
-                                                            </div>
-                                                        </div>
-                                                    </div>
-
-                                                    <!-- Manager Accounts -->
-                                                    <div class="col-md-6">
-                                                        <div class="feature-card" onclick="toggleSelection(this)">
-                                                            <div class="feature-icon">
-                                                                <i class="fas fa-user-tie"></i>
-                                                            </div>
-                                                            <h5>Manager Accounts</h5>
-                                                            <p class="text-muted small">Create and manage accounts for building managers.</p>
-                                                            <div class="quantity-control mt-3" style="display: none;">
-                                                                <label class="form-label">Quantity</label>
-                                                                <input type="number" class="form-control" min="1" value="1" data-service-id="2">
-                                                            </div>
-                                                        </div>
-                                                    </div>
-
-                                                    <!-- Staff Members per Building -->
-                                                    <div class="col-md-6">
-                                                        <div class="feature-card" onclick="toggleSelection(this)">
-                                                            <div class="feature-icon">
-                                                                <i class="fas fa-users"></i>
-                                                            </div>
-                                                            <h5>Staff Members per Building</h5>
-                                                            <p class="text-muted small">Assign staff members to individual buildings.</p>
-                                                            <div class="quantity-control mt-3" style="display: none;">
-                                                                <label class="form-label">Quantity</label>
-                                                                <input type="number" class="form-control" min="1" value="1" data-service-id="3">
-                                                            </div>
-                                                        </div>
-                                                    </div>
-
-                                                    <!-- Levels per Building -->
-                                                    <div class="col-md-6">
-                                                        <div class="feature-card" onclick="toggleSelection(this)">
-                                                            <div class="feature-icon">
-                                                                <i class="fas fa-layer-group"></i>
-                                                            </div>
-                                                            <h5>Levels per Building</h5>
-                                                            <p class="text-muted small">Define and manage the number of floors or levels.</p>
-                                                            <div class="quantity-control mt-3" style="display: none;">
-                                                                <label class="form-label">Quantity</label>
-                                                                <input type="number" class="form-control" min="1" value="1" data-service-id="4">
-                                                            </div>
-                                                        </div>
-                                                    </div>
-
-                                                    <!-- Units per Building -->
-                                                    <div class="col-md-6">
-                                                        <div class="feature-card" onclick="toggleSelection(this)">
-                                                            <div class="feature-icon">
-                                                                <i class="fas fa-door-open"></i>
-                                                            </div>
-                                                            <h5>Units per Building</h5>
-                                                            <p class="text-muted small">Add and track all residential or commercial units.</p>
-                                                            <div class="quantity-control mt-3" style="display: none;">
-                                                                <label class="form-label">Quantity</label>
-                                                                <input type="number" class="form-control" min="1" value="1" data-service-id="5">
-                                                            </div>
-                                                        </div>
-                                                    </div>
-
-                                                    <!-- Featured Memberships -->
-                                                    <div class="col-md-6">
-                                                        <div class="feature-card" onclick="toggleSelection(this)">
-                                                            <div class="feature-icon">
-                                                                <i class="fas fa-crown"></i>
-                                                            </div>
-                                                            <h5>Featured Memberships</h5>
-                                                            <p class="text-muted small">Highlight premium membership options for users.</p>
-                                                            <div class="quantity-control mt-3" style="display: none;">
-                                                                <label class="form-label">Quantity</label>
-                                                                <input type="number" class="form-control" min="1" value="1" data-service-id="6">
-                                                            </div>
-                                                        </div>
-                                                    </div>
+                                            <div class="summary-item">
+                                                <h6>Selected Billing Cycles</h6>
+                                                <div id="selectedCyclesList">
+                                                    <p class="small" style="color: var(--sidenavbar-text-color);">No cycles selected</p>
                                                 </div>
                                             </div>
 
-                                        </div>
-                                    </div>
-
-                                    <!-- Billing Cycle Section -->
-                                    <div class="form-section">
-                                        <h3 class="section-title">Billing Cycle</h3>
-                                        <p class="text-muted mb-4">Select your preferred billing cycle</p>
-
-                                        <div class="row">
-                                            <div class="col-md-4 mb-3">
-                                                <div class="card h-100">
-                                                    <div class="card-body text-center">
-                                                        <h5 class="card-title">Monthly</h5>
-                                                        <p class="card-text text-muted small">Pay month-to-month with no long-term commitment</p>
-                                                        <div class="form-check d-flex justify-content-center">
-                                                            <input class="form-check-input" type="radio" name="billingCycle" id="monthly" value="1" checked>
-                                                            <label class="form-check-label ms-2" for="monthly">
-                                                                Select
-                                                            </label>
-                                                        </div>
-                                                    </div>
+                                            <div class="summary-item">
+                                                <h6>Services & Pricing</h6>
+                                                <div id="selectedServicesList">
+                                                    <p class="small" style="color: var(--sidenavbar-text-color);">No services configured</p>
                                                 </div>
                                             </div>
-                                            <div class="col-md-4 mb-3">
-                                                <div class="card h-100">
-                                                    <div class="card-body text-center">
-                                                        <h5 class="card-title">6 Months</h5>
-                                                        <p class="card-text text-muted small">Save 10% with our semi-annual billing</p>
-                                                        <div class="form-check d-flex justify-content-center">
-                                                            <input class="form-check-input" type="radio" name="billingCycle" id="semiannual" value="2">
-                                                            <label class="form-check-label ms-2" for="semiannual">
-                                                                Select
-                                                            </label>
-                                                        </div>
-                                                    </div>
+
+                                            <div class="summary-item">
+                                                <h6>Total Amount per Billing Cycle</h6>
+                                                <div id="cycleTotals">
+                                                    <p class="small" style="color: var(--sidenavbar-text-color);">Select billing cycles and set prices to see totals</p>
                                                 </div>
                                             </div>
-                                            <div class="col-md-4 mb-3">
-                                                <div class="card h-100">
-                                                    <div class="card-body text-center">
-                                                        <h5 class="card-title">Annual</h5>
-                                                        <p class="card-text text-muted small">Save 15% with our annual billing</p>
-                                                        <div class="form-check d-flex justify-content-center">
-                                                            <input class="form-check-input" type="radio" name="billingCycle" id="annual" value="3">
-                                                            <label class="form-check-label ms-2" for="annual">
-                                                                Select
-                                                            </label>
-                                                        </div>
-                                                    </div>
-                                                </div>
+
+{{--                                            <div class="summary-item">--}}
+{{--                                                <h6>Currency</h6>--}}
+{{--                                                <p class="mb-0" id="summaryCurrency">USD</p>--}}
+{{--                                            </div>--}}
+
+                                            <div class="d-grid mt-4">
+                                                <button type="submit" class="btn btn-primary-custom btn-custom">Create Plan</button>
                                             </div>
-                                        </div>
-                                    </div>
-                                </div>
 
-                                <!-- Order Summary -->
-                                <div class="col-lg-4">
-                                    <div class="summary-card">
-                                        <h3 class="section-title">Plan Summary</h3>
-
-                                        <div class="mb-4">
-                                            <h5 id="summaryPlanName">Custom Plan</h5>
-                                            <p class="text-muted small" id="summaryPlanDescription">No description provided</p>
-                                        </div>
-
-                                        <div class="summary-item">
-                                            <h6>Selected Services</h6>
-                                            <div id="selectedServicesList">
-                                                <p class="text-muted small">No services selected</p>
+                                            <div class="alert alert-info mt-3 small">
+                                                <i class="fas fa-info-circle me-2"></i> You can modify this plan later from your dashboard.
                                             </div>
-                                        </div>
-
-                                        <div class="summary-item">
-                                            <h6>Billing Cycle</h6>
-                                            <p class="mb-0" id="summaryBillingCycle">Monthly</p>
-                                        </div>
-
-                                        <div class="summary-item">
-                                            <h6>Total Price</h6>
-                                            <div class="d-flex justify-content-between align-items-center">
-                                                <span class="price-display" id="totalPrice">PKR 0.00</span>
-                                                <span class="text-muted small" id="billingNote">per month</span>
-                                            </div>
-                                        </div>
-
-                                        <div class="d-grid mt-4">
-                                            <button class="btn btn-primary-custom btn-custom" onclick="createPlan()">Create Plan</button>
-                                        </div>
-
-                                        <div class="alert alert-info mt-3 small">
-                                            <i class="fas fa-info-circle me-2"></i> You can modify this plan later from your dashboard.
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </form>
                     </div>
                 </div>
             </div>
         </section>
     </div>
-
 @endsection
 
 @push('scripts')
-
     <script>
-        // Service prices for different billing cycles (service_id -> billing_cycle_id -> price)
-        const servicePrices = {
-            1: {1: 350.00, 2: 1890.00, 3: 3570.00},
-            2: {1: 350.00, 2: 1890.00, 3: 3570.00},
-            3: {1: 350.00, 2: 1890.00, 3: 3570.00},
-            4: {1: 350.00, 2: 1890.00, 3: 3570.00},
-            5: {1: 350.00, 2: 1890.00, 3: 3570.00},
-            6: {1: 350.00, 2: 1890.00, 3: 3570.00}
-        };
+        function updatePerMonthPrice(priceInput, cycleId) {
+            const serviceId = priceInput.closest('.service-details').getAttribute('data-service-id');
+            const cycleMonths = getCycleMonths(cycleId);
+            const price = parseFloat(priceInput.value) || 0;
+            const perMonth = price / cycleMonths;
 
-        // Toggle service selection
-        function toggleSelection(card) {
-            card.classList.toggle('selected');
-            const quantityControl = card.querySelector('.quantity-control');
+            const perMonthElement = document.getElementById(`per_month_${serviceId}_${cycleId}`);
+            if (perMonthElement) {
+                perMonthElement.textContent = formatCurrency(perMonth);
+            }
+        }
 
-            if (card.classList.contains('selected')) {
-                quantityControl.style.display = 'block';
+        function getCycleMonths(cycleId) {
+            const cycles = {
+                1: 1,
+                2: 6,
+                3: 12
+            };
+            return cycles[cycleId] || 1;
+        }
+
+        // Format currency
+        function formatCurrency(amount) {
+            const currency = document.getElementById('currency').value;
+            return `${currency} ${amount.toFixed(2)}`;
+        }
+
+        // Toggle service selection and show/hide details
+        function toggleServiceSelection(element, serviceId) {
+            const card = element.closest('.service-card');
+            const details = card.querySelector('.service-details');
+            const isSelected = details.style.display === 'block';
+
+            if (isSelected) {
+                details.style.display = 'none';
             } else {
-                quantityControl.style.display = 'none';
-                quantityControl.querySelector('input').value = 1;
+                details.style.display = 'block';
+                card.querySelector('.quantity-input').value = 1;
             }
 
             updateSummary();
         }
 
-        // Update order summary
+        function toggleBillingCycleSelection(element, cycleId) {
+            const checkbox = element.querySelector('input[type="checkbox"]');
+
+            checkbox.checked = !checkbox.checked;
+
+            if (checkbox.checked) {
+                element.classList.add('selected');
+                document.querySelectorAll(`.price-input-group[data-cycle-id="${cycleId}"]`).forEach(el => {
+                    el.style.display = 'block';
+                });
+            } else {
+                element.classList.remove('selected');
+                document.querySelectorAll(`.price-input-group[data-cycle-id="${cycleId}"]`).forEach(el => {
+                    el.style.display = 'none';
+                    el.querySelector('.price-input').value = '';
+                });
+            }
+
+            updateSummary();
+        }
+
         function updateSummary() {
-            // Update plan info
-            const planName = document.getElementById('planName').value || 'Custom Plan';
-            const planDescription = document.getElementById('planDescription').value || 'No description provided';
+            const planName = document.getElementById('plan_name').value || 'New Plan';
+            const planDescription = document.getElementById('plan_description').value || 'No description provided';
+            const currency = document.getElementById('currency').value;
 
             document.getElementById('summaryPlanName').textContent = planName;
             document.getElementById('summaryPlanDescription').textContent = planDescription;
+            // document.getElementById('summaryCurrency').textContent = currency;
 
-            // Update billing cycle
-            const billingCycle = document.querySelector('input[name="billingCycle"]:checked');
-            let cycleText = 'Monthly';
-            let billingNote = 'per month';
+            const selectedCycles = Array.from(document.querySelectorAll('input[name="billing_cycles[]"]:checked'));
+            const cyclesList = document.getElementById('selectedCyclesList');
 
-            if (billingCycle) {
-                if (billingCycle.value === '2') {
-                    cycleText = '6 Months';
-                    billingNote = 'every 6 months (save 10%)';
-                } else if (billingCycle.value === '3') {
-                    cycleText = 'Annual';
-                    billingNote = 'per year (save 15%)';
-                }
+            if (selectedCycles.length === 0) {
+                cyclesList.innerHTML = '<p class="small" style="color: var(--sidenavbar-text-color);">No cycles selected</p>';
+            } else {
+                let html = '';
+                selectedCycles.forEach(cycle => {
+                    const cycleName = cycle.closest('.billing-cycle-card').querySelector('h5').textContent;
+                    html += `<span class="badge bg-primary me-1">${cycleName}</span>`;
+                });
+                cyclesList.innerHTML = html;
             }
 
-            document.getElementById('summaryBillingCycle').textContent = cycleText;
-            document.getElementById('billingNote').textContent = billingNote;
-
-            // Update selected services
-            const selectedServices = document.querySelectorAll('.feature-card.selected');
             const servicesList = document.getElementById('selectedServicesList');
+            const allServices = Array.from(document.querySelectorAll('.service-card'));
 
-            if (selectedServices.length === 0) {
-                servicesList.innerHTML = '<p class="text-muted small">No services selected</p>';
-                document.getElementById('totalPrice').textContent = 'PKR 0.00';
+            if (allServices.length === 0) {
+                servicesList.innerHTML = '<p class="text-muted small">No services available</p>';
                 return;
             }
 
-            let html = '';
-            let totalPrice = 0;
-            const billingCycleId = billingCycle ? billingCycle.value : '1';
+            let html = '<div class="table-responsive"><table class="price-table">';
+            html += '<thead><tr><th>Service</th><th>Qty</th>';
 
-            selectedServices.forEach(service => {
-                const serviceTitle = service.querySelector('h5').textContent;
-                const quantityInput = service.querySelector('input[type="number"]');
-                const quantity = quantityInput ? parseInt(quantityInput.value) : 1;
-                const serviceId = quantityInput ? quantityInput.getAttribute('data-service-id') : null;
-
-                if (serviceId && servicePrices[serviceId] && servicePrices[serviceId][billingCycleId]) {
-                    const servicePrice = servicePrices[serviceId][billingCycleId] * quantity;
-                    totalPrice += servicePrice;
-
-                    html += `
-                        <div class="d-flex justify-content-between mb-2">
-                            <span>${serviceTitle} (x${quantity})</span>
-                            <span>PKR ${servicePrice.toFixed(2)}</span>
-                        </div>
-                    `;
-                }
+            selectedCycles.forEach(cycle => {
+                const cycleId = cycle.value;
+                const cycleName = cycle.closest('.billing-cycle-card').querySelector('h5').textContent;
+                html += `<th>${cycleName}</th>`;
             });
 
+            html += '</tr></thead><tbody>';
+
+            // Object to store totals for each cycle
+            const cycleTotals = {};
+
+            allServices.forEach(serviceCard => {
+                const serviceId = serviceCard.querySelector('.service-details')?.getAttribute('data-service-id');
+                if (!serviceId) return;
+
+                const serviceName = serviceCard.querySelector('h5').textContent;
+                const quantityInput = serviceCard.querySelector('.quantity-input');
+                const quantity = quantityInput ? quantityInput.value : '0';
+
+                html += `<tr><td>${serviceName}</td><td>${quantity}</td>`;
+
+                selectedCycles.forEach(cycle => {
+                    const cycleId = cycle.value;
+                    const priceInput = serviceCard.querySelector(`input[name="services[${serviceId}][prices][${cycleId}]"]`);
+                    let price = 'Not set';
+
+                    if (priceInput) {
+                        const priceValue = parseFloat(priceInput.value);
+                        if (!isNaN(priceValue)) {
+                            const cycleMonths = getCycleMonths(cycleId);
+                            const perMonthValue = priceValue / cycleMonths;
+                            price = `${currency} ${priceValue.toFixed(2)}`;
+
+                            // Calculate total for this cycle
+                            if (!cycleTotals[cycleId]) {
+                                cycleTotals[cycleId] = 0;
+                            }
+                            cycleTotals[cycleId] += priceValue;
+                        }
+                    }
+
+                    html += `<td>${price}</td>`;
+                });
+
+                html += '</tr>';
+            });
+
+            html += '</tbody></table></div>';
             servicesList.innerHTML = html;
 
-            // Update total price
-            const currency = document.getElementById('planCurrency').value;
-            document.getElementById('totalPrice').textContent = `${currency} ${totalPrice.toFixed(2)}`;
+            // Update cycle totals display
+            const cycleTotalsElement = document.getElementById('cycleTotals');
+            if (selectedCycles.length === 0) {
+                cycleTotalsElement.innerHTML = '<p class="text-muted small">Select billing cycles and set prices to see totals</p>';
+            } else {
+                let totalsHtml = '<ul class="list-unstyled">';
+                selectedCycles.forEach(cycle => {
+                    const cycleId = cycle.value;
+                    const cycleName = cycle.closest('.billing-cycle-card').querySelector('h5').textContent;
+                    const total = cycleTotals[cycleId] || 0;
+                    totalsHtml += `<li class="mb-1"><strong>${cycleName}:</strong> ${currency} ${total.toFixed(2)}</li>`;
+                });
+                totalsHtml += '</ul>';
+                cycleTotalsElement.innerHTML = totalsHtml;
+            }
         }
 
-        // Create plan function
-        function createPlan() {
-            const planName = document.getElementById('planName').value;
-            const planDescription = document.getElementById('planDescription').value;
-            const currency = document.getElementById('planCurrency').value;
-            const status = document.getElementById('planStatus').checked ? 1 : 0;
-            const billingCycle = document.querySelector('input[name="billingCycle"]:checked').value;
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('plan_name').addEventListener('input', updateSummary);
+            document.getElementById('plan_description').addEventListener('input', updateSummary);
+            document.getElementById('currency').addEventListener('change', updateSummary);
 
-            if (!planName) {
-                alert('Please enter a plan name');
-                return;
-            }
-
-            // Collect selected services
-            const selectedServices = [];
-            document.querySelectorAll('.feature-card.selected').forEach(service => {
-                const quantityInput = service.querySelector('input[type="number"]');
-                if (quantityInput) {
-                    selectedServices.push({
-                        service_id: quantityInput.getAttribute('data-service-id'),
-                        quantity: parseInt(quantityInput.value)
-                    });
+            document.addEventListener('input', function(e) {
+                if (e.target.classList.contains('quantity-input')) {
+                    updateSummary();
+                } else if (e.target.classList.contains('price-input')) {
+                    const cycleId = e.target.closest('.price-input-group').getAttribute('data-cycle-id');
+                    updatePerMonthPrice(e.target, cycleId);
+                    updateSummary();
                 }
             });
 
-            if (selectedServices.length === 0) {
-                alert('Please select at least one service');
-                return;
-            }
+            document.getElementById('planForm').addEventListener('submit', function(e) {
+                const selectedCycles = document.querySelectorAll('input[name="billing_cycles[]"]:checked').length;
+                if (selectedCycles === 0) {
+                    e.preventDefault();
+                    alert('Please select at least one billing cycle');
+                    return;
+                }
 
-            // Here you would typically send this data to your backend
-            console.log('Creating plan with:', {
-                name: planName,
-                description: planDescription,
-                currency: currency,
-                status: status,
-                billing_cycle: billingCycle,
-                services: selectedServices
+                const selectedCycleIds = Array.from(document.querySelectorAll('input[name="billing_cycles[]"]:checked')).map(c => c.value);
+                const serviceCards = document.querySelectorAll('.service-card');
+
+                for (const card of serviceCards) {
+                    const details = card.querySelector('.service-details[style="display: block;"]');
+                    if (details) {
+                        const serviceId = details.getAttribute('data-service-id');
+                        for (const cycleId of selectedCycleIds) {
+                            const priceInput = card.querySelector(`input[name="services[${serviceId}][prices][${cycleId}]"]`);
+                            if (!priceInput || !priceInput.value) {
+                                e.preventDefault();
+                                alert(`Please set prices for all selected billing cycles for service: ${card.querySelector('h5').textContent}`);
+                                return;
+                            }
+                        }
+                    }
+                }
             });
 
-            alert('Plan created successfully!');
-            // window.location.href = 'index.html'; // Redirect after creation
-        }
-
-        // Initialize event listeners
-        document.addEventListener('DOMContentLoaded', function() {
-            // Update summary when any input changes
-            document.getElementById('planName').addEventListener('input', updateSummary);
-            document.getElementById('planDescription').addEventListener('input', updateSummary);
-            document.getElementById('planCurrency').addEventListener('change', updateSummary);
-
-            // Update summary when billing cycle changes
-            document.querySelectorAll('input[name="billingCycle"]').forEach(radio => {
-                radio.addEventListener('change', updateSummary);
-            });
-
-            // Update summary when service quantities change
-            document.querySelectorAll('.quantity-control input').forEach(input => {
-                input.addEventListener('change', updateSummary);
-                input.addEventListener('input', updateSummary);
-            });
-
-            // Initial summary update
             updateSummary();
         });
     </script>
-
 @endpush

@@ -41,8 +41,7 @@
 
     <x-Admin.top-navbar :searchVisible="false" :breadcrumbLinks="[
             ['url' => route('admin_dashboard'), 'label' => 'Dashboard'],
-            ['url' =>  route('plans.index'), 'label' => 'Plans'],
-            ['url' => '', 'label' => 'Create Plan']
+            ['url' =>  '', 'label' => 'Plans']
         ]"
     />
     <x-Admin.side-navbar :openSections="['Plans']" />

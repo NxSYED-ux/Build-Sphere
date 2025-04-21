@@ -101,7 +101,7 @@
                 <li class="mb-1 " id="AdminPlans">
                     <div id="link-a">
                         <a href="{{ route('plans.index') }}" class="link-dark collapsed {{ in_array('Plans', $openSections) ? 'Link-background-color' : '' }} px-1" id="Planbtn" >
-                            <i class="bx bxs-business icons"></i> Plans </a>
+                            <i class="fas fa-crown icons" style="font-size: 20px;"></i> Plans </a>
                     </div>
                 </li>
 
