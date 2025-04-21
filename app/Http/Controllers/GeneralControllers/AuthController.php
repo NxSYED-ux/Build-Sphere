@@ -104,6 +104,8 @@ class AuthController extends Controller
             JWTAuth::factory()->setTTL($ttlInMinutes);
             $token = JWTAuth::fromUser($user);
 
+            Log::info('Token : ' . $token);
+
             return $this->handleResponse($request, 200, 'success','Login successful', $route, $token, $permissions, $user->name, $user->picture, $user->email);
 
         } catch (\Exception $e) {

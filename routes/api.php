@@ -113,10 +113,10 @@ Route::middleware(['auth.jwt'])->group(function () {
 
         Route::prefix('cards')->group(function () {
 
-            Route::get('/cards', [CardController::class, 'getSavedCards']);
-            Route::post('/cards/add', [CardController::class, 'addCard']);
-            Route::post('/cards/set-default', [CardController::class, 'setDefaultCard']);
-            Route::delete('/cards/remove', [CardController::class, 'removeCard']);
+            Route::get('/', [CardController::class, 'getSavedCards']);
+            Route::post('/', [CardController::class, 'addCard']);
+            Route::post('/set-default', [CardController::class, 'setDefaultCard']);
+            Route::delete('/', [CardController::class, 'removeCard']);
 
         });
 

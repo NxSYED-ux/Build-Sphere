@@ -7,13 +7,9 @@
     <script src="{{ asset('js/tailwind.js') }}"></script>
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'My App')</title>
-    <meta name="description" content="HMS is among the best property management companies, offering expert building management and professional property management services for residential and commercial properties. We take the hassle out of ownership with efficient rent collection, maintenance, compliance, and more—maximizing your property's value and performance.">
-    <meta name="keywords" content="HMS, best property management companies, professional property management, building management, property services">
-    <!-- SEO & Social Media -->
-    <meta name="robots" content="index, follow">
-    <meta name="author" content="HMS Team">
 
-    <meta name="description" content="HMS offers expert building and property management services for residential and commercial properties. From rent collection to maintenance and legal compliance, we ensure your property performs at its best.">
+    <!-- SEO Meta -->
+    <meta name="description" content="HMS is among the best property management companies, offering expert building management and professional property management services for residential and commercial properties. We take the hassle out of ownership with efficient rent collection, maintenance, compliance, and more—maximizing your property's value and performance.">
     <meta name="keywords" content="property management, building management, professional property management, rent collection, residential property services, commercial property services, HMS">
     <meta name="robots" content="index, follow">
     <meta name="author" content="HMS Team">
@@ -39,6 +35,8 @@
 
     <!-- Alpine.js for Mobile Menu -->
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+    <!-- Material Design Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font/css/materialdesignicons.min.css">
 
     <style>

@@ -9,9 +9,9 @@
               <option name="auth">
                 <authState>
                   <option name="bearer">
-                    <pw>
+                    <pE>
                       <option name="token" value="eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvbG9naW4iLCJpYXQiOjE3NDA4MzczNjUsImV4cCI6MTc0MDg1MTc2NSwibmJmIjoxNzQwODM3MzY1LCJqdGkiOiJnWmtNa1dKWjVjb0ROYlZtIiwic3ViIjoiOSIsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjciLCJ1c2VyIjp7ImlkIjo5LCJyb2xlX2lkIjo0LCJvcmdhbml6YXRpb25faWQiOm51bGx9fQ.mGrN2avREDWQ5swZwMjiUvBnrphaALOXvDNIQR9fsXs" />
-                    </pw>
+                    </pE>
                   </option>
                   <option name="type" value="BEARER" />
                 </authState>
@@ -33,9 +33,9 @@
               <option name="auth">
                 <authState>
                   <option name="bearer">
-                    <pw>
+                    <pE>
                       <option name="token" value="eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvbG9naW4iLCJpYXQiOjE3NDA5MjE3ODIsImV4cCI6MTc3MjAyNTc4MiwibmJmIjoxNzQwOTIxNzgyLCJqdGkiOiJsTXhweGRMWHBvdUdnUWVaIiwic3ViIjoiMSIsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjciLCJ1c2VyIjp7ImlkIjoxLCJyb2xlX2lkIjoxLCJyb2xlX25hbWUiOiJBZG1pbiIsIm9yZ2FuaXphdGlvbl9pZCI6bnVsbH19.a2kjPrjeex6ab63X8NTCRHsVyVYDJ6ird76Tl25Nz-o" />
-                    </pw>
+                    </pE>
                   </option>
                   <option name="type" value="BEARER" />
                 </authState>
@@ -49,9 +49,9 @@
               <option name="auth">
                 <authState>
                   <option name="bearer">
-                    <pw>
+                    <pE>
                       <option name="token" value="eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvbG9naW4iLCJpYXQiOjE3NDA5MjE3ODIsImV4cCI6MTc3MjAyNTc4MiwibmJmIjoxNzQwOTIxNzgyLCJqdGkiOiJsTXhweGRMWHBvdUdnUWVaIiwic3ViIjoiMSIsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjciLCJ1c2VyIjp7ImlkIjoxLCJyb2xlX2lkIjoxLCJyb2xlX25hbWUiOiJBZG1pbiIsIm9yZ2FuaXphdGlvbl9pZCI6bnVsbH19.a2kjPrjeex6ab63X8NTCRHsVyVYDJ6ird76Tl25Nz-o" />
-                    </pw>
+                    </pE>
                   </option>
                   <option name="type" value="BEARER" />
                 </authState>
@@ -60,6 +60,145 @@
               <option name="method" value="GET" />
               <option name="name" value="Permission Testing" />
               <option name="url" value="http://localhost:8000/api/test-permissions" />
+            </requestState>
+            <requestState>
+              <option name="auth">
+                <authState>
+                  <option name="type" value="BEARER" />
+                </authState>
+              </option>
+              <option name="body">
+                <bodyState>
+                  <option name="raw" value="{&#10;  &quot;email&quot;: &quot;syedmu729@gmail.com&quot;,&#10;  &quot;password&quot;: &quot;Syed@123&quot;&#10;}" />
+                  <option name="type" value="JSON" />
+                </bodyState>
+              </option>
+              <option name="headers">
+                <list>
+                  <headerState>
+                    <option name="key" value="Accept" />
+                    <option name="value" value="application/json" />
+                  </headerState>
+                </list>
+              </option>
+              <option name="id" value="48d81448-6033-43aa-b3e2-cefdac7c7c7e" />
+              <option name="method" value="POST" />
+              <option name="name" value="User Login" />
+              <option name="url" value="http://localhost:8000/api/auth/user-login" />
+            </requestState>
+            <requestState>
+              <option name="auth">
+                <authState>
+                  <option name="bearer">
+                    <pE>
+                      <option name="token" value="eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwMDAvYXBpL2F1dGgvdXNlci1sb2dpbiIsImlhdCI6MTc0NTIzNDE4OCwiZXhwIjoxNzQ3ODI2MTg4LCJuYmYiOjE3NDUyMzQxODgsImp0aSI6IjlneXZhRzBKRnVZU2lXd3oiLCJzdWIiOiIyNiIsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjciLCJ1c2VyIjp7ImlkIjoyNiwicm9sZV9pZCI6Miwicm9sZV9uYW1lIjoiT3duZXIiLCJvcmdhbml6YXRpb25faWQiOjR9fQ.5o9BKkQdVdbToOaomkEywqWkMe0mzE4D-mdI9s36epo" />
+                    </pE>
+                  </option>
+                  <option name="type" value="BEARER" />
+                </authState>
+              </option>
+              <option name="headers">
+                <list>
+                  <headerState>
+                    <option name="key" value="Accept" />
+                    <option name="value" value="application/json" />
+                  </headerState>
+                </list>
+              </option>
+              <option name="id" value="e26c28fe-7c95-4f65-b1e3-ba6bf3b66088" />
+              <option name="method" value="GET" />
+              <option name="name" value="Card" />
+              <option name="url" value="http://localhost:8000/api/user/cards" />
+            </requestState>
+            <requestState>
+              <option name="auth">
+                <authState>
+                  <option name="bearer">
+                    <pE>
+                      <option name="token" value="eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwMDAvYXBpL2F1dGgvdXNlci1sb2dpbiIsImlhdCI6MTc0NTIzNDE4OCwiZXhwIjoxNzQ3ODI2MTg4LCJuYmYiOjE3NDUyMzQxODgsImp0aSI6IjlneXZhRzBKRnVZU2lXd3oiLCJzdWIiOiIyNiIsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjciLCJ1c2VyIjp7ImlkIjoyNiwicm9sZV9pZCI6Miwicm9sZV9uYW1lIjoiT3duZXIiLCJvcmdhbml6YXRpb25faWQiOjR9fQ.5o9BKkQdVdbToOaomkEywqWkMe0mzE4D-mdI9s36epo" />
+                    </pE>
+                  </option>
+                  <option name="type" value="BEARER" />
+                </authState>
+              </option>
+              <option name="body">
+                <bodyState>
+                  <option name="raw" value="{&#10;  &quot;payment_method_id&quot;: &quot;pm_card_visa&quot;&#10;}&#10;" />
+                  <option name="type" value="JSON" />
+                </bodyState>
+              </option>
+              <option name="headers">
+                <list>
+                  <headerState>
+                    <option name="key" value="Accept" />
+                    <option name="value" value="application/json" />
+                  </headerState>
+                </list>
+              </option>
+              <option name="id" value="024d89b6-773b-4518-9343-d3ffdb21c254" />
+              <option name="method" value="POST" />
+              <option name="name" value="Add Card" />
+              <option name="url" value="http://localhost:8000/api/user/cards" />
+            </requestState>
+            <requestState>
+              <option name="auth">
+                <authState>
+                  <option name="bearer">
+                    <pE>
+                      <option name="token" value="eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwMDAvYXBpL2F1dGgvdXNlci1sb2dpbiIsImlhdCI6MTc0NTIzNDE4OCwiZXhwIjoxNzQ3ODI2MTg4LCJuYmYiOjE3NDUyMzQxODgsImp0aSI6IjlneXZhRzBKRnVZU2lXd3oiLCJzdWIiOiIyNiIsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjciLCJ1c2VyIjp7ImlkIjoyNiwicm9sZV9pZCI6Miwicm9sZV9uYW1lIjoiT3duZXIiLCJvcmdhbml6YXRpb25faWQiOjR9fQ.5o9BKkQdVdbToOaomkEywqWkMe0mzE4D-mdI9s36epo" />
+                    </pE>
+                  </option>
+                  <option name="type" value="BEARER" />
+                </authState>
+              </option>
+              <option name="body">
+                <bodyState>
+                  <option name="raw" value="{&#10;  &quot;payment_method_id&quot; : &quot;pm_1RGIb1Gaie07GUSYJvmUWVZZ&quot;&#10;}" />
+                  <option name="type" value="JSON" />
+                </bodyState>
+              </option>
+              <option name="headers">
+                <list>
+                  <headerState>
+                    <option name="key" value="Accept" />
+                    <option name="value" value="application/json" />
+                  </headerState>
+                </list>
+              </option>
+              <option name="id" value="a8f75579-fc80-49b3-96bd-368006fcfe83" />
+              <option name="method" value="POST" />
+              <option name="name" value="Set Default Card" />
+              <option name="url" value="http://localhost:8000/api/user/cards/set-default" />
+            </requestState>
+            <requestState>
+              <option name="auth">
+                <authState>
+                  <option name="bearer">
+                    <pE>
+                      <option name="token" value="eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwMDAvYXBpL2F1dGgvdXNlci1sb2dpbiIsImlhdCI6MTc0NTIzNDE4OCwiZXhwIjoxNzQ3ODI2MTg4LCJuYmYiOjE3NDUyMzQxODgsImp0aSI6IjlneXZhRzBKRnVZU2lXd3oiLCJzdWIiOiIyNiIsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjciLCJ1c2VyIjp7ImlkIjoyNiwicm9sZV9pZCI6Miwicm9sZV9uYW1lIjoiT3duZXIiLCJvcmdhbml6YXRpb25faWQiOjR9fQ.5o9BKkQdVdbToOaomkEywqWkMe0mzE4D-mdI9s36epo" />
+                    </pE>
+                  </option>
+                  <option name="type" value="BEARER" />
+                </authState>
+              </option>
+              <option name="body">
+                <bodyState>
+                  <option name="raw" value="{&#10;  &quot;payment_method_id&quot; : &quot;pm_1RGHjUGaie07GUSYgloEOe3g&quot;&#10;}" />
+                  <option name="type" value="JSON" />
+                </bodyState>
+              </option>
+              <option name="headers">
+                <list>
+                  <headerState>
+                    <option name="key" value="Accept" />
+                    <option name="value" value="application/json" />
+                  </headerState>
+                </list>
+              </option>
+              <option name="id" value="942bcf1b-f4cc-486f-a54e-85027243dbef" />
+              <option name="method" value="DELETE" />
+              <option name="name" value="Remove Card" />
+              <option name="url" value="http://localhost:8000/api/user/cards" />
             </requestState>
           </list>
         </option>

@@ -6,6 +6,8 @@
     <link rel="icon" type="image/png" href="{{ asset('logos/Light-theme-Logo.svg') }}">
     <link id="theme-stylesheet" rel="stylesheet" href="{{ asset('css/light.css') }}">
     <title>@yield('title', 'My App')</title>
+
+    <!-- SEO Meta -->
     <meta name="description" content="HMS is among the best property management companies, offering expert building management and professional property management services for residential and commercial properties. We take the hassle out of ownership with efficient rent collection, maintenance, compliance, and more—maximizing your property's value and performance.">
     <meta name="keywords" content="property management, building management, professional property management, rent collection, residential property services, commercial property services, HMS">
     <meta name="robots" content="index, follow">
@@ -24,13 +26,15 @@
     <meta name="twitter:description" content="Residential and commercial property management done right. Rent, maintain, and grow with HMS.">
     <meta name="twitter:image" content="{{ asset('logos/Light-theme-Logo.svg') }}">
 
-    <!-- Canonical URL -->
+    <!-- Canonical Meta Tags -->
     <link rel="canonical" href="{{ url()->current() }}">
 
+    <!-- User Info-->
     <meta name="user-id" content="{{ auth()->id() }}">
     <meta name="role-id" content="{{ auth()->user()->role_id }}">
     <meta name="is-super-admin" content="{{ auth()->user()->is_super_admin }}">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+
     <!-- Firebase Meta Tags -->
     <meta name="firebase-api-key" content="{{ config('firebase.api_key') }}">
     <meta name="firebase-auth-domain" content="{{ config('firebase.auth_domain') }}">
@@ -43,8 +47,6 @@
     <meta name="pusher-key" content="{{ config('broadcasting.connections.pusher.key') }}">
     <meta name="pusher-cluster" content="{{ config('broadcasting.connections.pusher.options.cluster') }}">
 
-
-
     <script>
         window.initialPermissions = @json(session('permissions', []));
     </script>
@@ -54,18 +56,23 @@
     <link href="{{ asset('css/sidenavbar.css') }}" rel="stylesheet">
 
     <script src="{{ asset('js/pusher.js') }}"></script>
+
     <!-- Include SweetAlert2 CSS from CDN -->
     <link rel="stylesheet" href="{{ asset('css/sweetalert.css') }}">
+
     <!-- Add DataTables CSS link -->
     <link href="https://cdn.datatables.net/1.11.3/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+
     <!-- Add DataTables Buttons CSS link -->
     <link href="https://cdn.datatables.net/buttons/2.3.6/css/buttons.bootstrap5.min.css" rel="stylesheet">
+
     <!-- Add Font Awesome 4.7 CSS link -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <!-- Box Icons css link -->
     <link href='https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css' rel='stylesheet'>
+
     <!-- Font Families -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 

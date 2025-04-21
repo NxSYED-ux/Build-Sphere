@@ -22,19 +22,22 @@ class CardController extends Controller
         try {
             Stripe::setApiKey(config('services.stripe.secret'));
 
+            $customer = Customer::retrieve($user->customer_payment_id);
+            $defaultPaymentMethodId = $customer->invoice_settings->default_payment_method ?? null;
+
             $paymentMethods = PaymentMethod::all([
                 'customer' => $user->customer_payment_id,
                 'type' => 'card',
             ]);
 
-            $cards = collect($paymentMethods->data)->map(function ($method) {
+            $cards = collect($paymentMethods->data)->map(function ($method) use ($defaultPaymentMethodId) {
                 return [
                     'id' => $method->id,
                     'brand' => $method->card->brand,
                     'last4' => $method->card->last4,
                     'exp_month' => $method->card->exp_month,
                     'exp_year' => $method->card->exp_year,
-                    'is_default' => $method->id === $method->customer->invoice_settings->default_payment_method ?? false,
+                    'is_default' => $method->id === $defaultPaymentMethodId,
                 ];
             });
 
@@ -149,7 +152,7 @@ class CardController extends Controller
             }
 
             $activeSubscription = Subscription::where('user_id', $user->id)
-                ->where('status', 'active')
+                ->where('subscription_status', 'Active')
                 ->exists();
 
             $attachedCards = PaymentMethod::all([
