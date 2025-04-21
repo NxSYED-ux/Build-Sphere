@@ -200,6 +200,36 @@
               <option name="name" value="Remove Card" />
               <option name="url" value="http://localhost:8000/api/user/cards" />
             </requestState>
+            <requestState>
+              <option name="auth">
+                <authState>
+                  <option name="bearer">
+                    <pE>
+                      <option name="token" value="eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL3Jpc2V3aXRoaG1zLmNvbS9hcGkvYXV0aC91c2VyLWxvZ2luIiwiaWF0IjoxNzQ1MjQzMjY2LCJleHAiOjE3NDc4MzUyNjYsIm5iZiI6MTc0NTI0MzI2NiwianRpIjoiTFgwVnRmYm9vRHJmZ3JzNiIsInN1YiI6IjEzIiwicHJ2IjoiMjNiZDVjODk0OWY2MDBhZGIzOWU3MDFjNDAwODcyZGI3YTU5NzZmNyIsInVzZXIiOnsiaWQiOjEzLCJyb2xlX2lkIjo1LCJyb2xlX25hbWUiOiJVc2VyIiwib3JnYW5pemF0aW9uX2lkIjpudWxsfX0.1aHaOydOkpRZvE44lhdq__5wZxQYCQjE0ys6TIf-LCo" />
+                    </pE>
+                  </option>
+                  <option name="type" value="BEARER" />
+                </authState>
+              </option>
+              <option name="body">
+                <bodyState>
+                  <option name="raw" value="{&#10;  &quot;payment_method_id&quot; : &quot;pm_1RGNKqGaie07GUSYNWBtqymH&quot;&#10;}" />
+                  <option name="type" value="JSON" />
+                </bodyState>
+              </option>
+              <option name="headers">
+                <list>
+                  <headerState>
+                    <option name="key" value="Accept" />
+                    <option name="value" value="application/json" />
+                  </headerState>
+                </list>
+              </option>
+              <option name="id" value="4cf90802-859e-488d-aea1-b4010f3c0090" />
+              <option name="method" value="DELETE" />
+              <option name="name" value="Remove Card Live" />
+              <option name="url" value="http://risewithhms.com/api/user/cards" />
+            </requestState>
           </list>
         </option>
       </draftsState>
