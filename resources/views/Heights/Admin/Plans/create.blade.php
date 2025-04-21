@@ -203,8 +203,13 @@
                                             <div class="row">
                                                 <div class="col-md-6 mb-2">
                                                     <label for="plan_name" class="form-label">Plan Name *</label>
-                                                    <input type="text" name="plan_name" class="form-control" id="plan_name"
+                                                    <input type="text" name="plan_name" class="form-control  @error('plan_name') is-invalid @enderror" id="plan_name"
                                                            placeholder="e.g., Enterprise Plan" required>
+                                                    @error('plan_name')
+                                                    <span class="invalid-feedback" role="alert">
+                                                        <strong>{{ $message }}</strong>
+                                                    </span>
+                                                    @enderror
                                                 </div>
                                                 <div class="col-md-6 mb-3">
                                                 <label for="currency" class="form-label">Currency *</label>
@@ -213,12 +218,22 @@
                                                         <option value="{{ $currency }}">{{ $currency }}</option>
                                                     @endforeach
                                                 </select>
+                                                @error('currency')
+                                                <span class="invalid-feedback" role="alert">
+                                                    <strong>{{ $message }}</strong>
+                                                </span>
+                                                @enderror
                                             </div>
                                             </div>
                                             <div class="mb-2">
                                                 <label for="plan_description" class="form-label">Description</label>
-                                                <textarea class="form-control" name="plan_description" id="plan_description"
+                                                <textarea class="form-control  @error('plan_description') is-invalid @enderror" name="plan_description" id="plan_description"
                                                           rows="3" placeholder="Brief description of what this plan offers"></textarea>
+                                                @error('plan_description')
+                                                <span class="invalid-feedback" role="alert">
+                                                    <strong>{{ $message }}</strong>
+                                                </span>
+                                                @enderror
                                             </div>
 
 
@@ -283,7 +298,7 @@
                                                                                    name="services[{{ $service->id }}][prices][{{ $cycle['id'] }}]"
                                                                                    class="form-control price-input"
                                                                                    id="price_{{ $service->id }}_{{ $cycle['id'] }}"
-                                                                                   min="0" step="0.01"
+                                                                                   min="0" step="0.01" value="0"
                                                                                    placeholder="0.00" required>
                                                                             <small class="" style="color: var(--sidenavbar-text-color);">Per month: <span class="per-month-price" id="per_month_{{ $service->id }}_{{ $cycle['id'] }}">0.00</span></small>
                                                                         </div>
@@ -307,6 +322,11 @@
                                             </div>
 
                                             <div class="summary-item">
+                                                <h6>Currency</h6>
+                                                <p class="mb-0" id="summaryCurrency">USD</p>
+                                            </div>
+
+                                            <div class="summary-item">
                                                 <h6>Selected Billing Cycles</h6>
                                                 <div id="selectedCyclesList">
                                                     <p class="small" style="color: var(--sidenavbar-text-color);">No cycles selected</p>
@@ -327,10 +347,7 @@
                                                 </div>
                                             </div>
 
-{{--                                            <div class="summary-item">--}}
-{{--                                                <h6>Currency</h6>--}}
-{{--                                                <p class="mb-0" id="summaryCurrency">USD</p>--}}
-{{--                                            </div>--}}
+
 
                                             <div class="d-grid mt-4">
                                                 <button type="submit" class="btn btn-primary-custom btn-custom">Create Plan</button>
@@ -424,7 +441,7 @@
 
             document.getElementById('summaryPlanName').textContent = planName;
             document.getElementById('summaryPlanDescription').textContent = planDescription;
-            // document.getElementById('summaryCurrency').textContent = currency;
+            document.getElementById('summaryCurrency').textContent = currency;
 
             const selectedCycles = Array.from(document.querySelectorAll('input[name="billing_cycles[]"]:checked'));
             const cyclesList = document.getElementById('selectedCyclesList');
@@ -451,11 +468,11 @@
             let html = '<div class="table-responsive"><table class="price-table">';
             html += '<thead><tr><th>Service</th><th>Qty</th>';
 
-            selectedCycles.forEach(cycle => {
-                const cycleId = cycle.value;
-                const cycleName = cycle.closest('.billing-cycle-card').querySelector('h5').textContent;
-                html += `<th>${cycleName}</th>`;
-            });
+            // selectedCycles.forEach(cycle => {
+            //     const cycleId = cycle.value;
+            //     const cycleName = cycle.closest('.billing-cycle-card').querySelector('h5').textContent;
+            //     html += `<th>${cycleName}</th>`;
+            // });
 
             html += '</tr></thead><tbody>';
 
@@ -475,14 +492,10 @@
                 selectedCycles.forEach(cycle => {
                     const cycleId = cycle.value;
                     const priceInput = serviceCard.querySelector(`input[name="services[${serviceId}][prices][${cycleId}]"]`);
-                    let price = 'Not set';
 
                     if (priceInput) {
                         const priceValue = parseFloat(priceInput.value);
                         if (!isNaN(priceValue)) {
-                            const cycleMonths = getCycleMonths(cycleId);
-                            const perMonthValue = priceValue / cycleMonths;
-                            price = `${currency} ${priceValue.toFixed(2)}`;
 
                             // Calculate total for this cycle
                             if (!cycleTotals[cycleId]) {
@@ -492,7 +505,6 @@
                         }
                     }
 
-                    html += `<td>${price}</td>`;
                 });
 
                 html += '</tr>';
