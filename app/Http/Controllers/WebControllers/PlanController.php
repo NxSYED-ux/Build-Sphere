@@ -350,7 +350,7 @@ class PlanController extends Controller
                 'currency' => $validated['currency'],
             ]);
 
-            $unselectedCycles = $validated['unSelectedCycles'];
+            $unselectedCycles = $request->input('unSelectedCycles', []);
 
             foreach ($validated['services'] as $serviceData) {
                 $service = $plan->services()->findOrFail($serviceData['id']);
