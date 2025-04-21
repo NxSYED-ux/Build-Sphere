@@ -295,7 +295,18 @@ class PlanController extends Controller
                 'updated_at' => $plan->updated_at,
             ];
 
-            return view('Heights.Admin.Plans.edit', compact('planDetails'));
+            $priceCycles = BillingCycle::all()->map(function ($cycle) {
+                return [
+                    'id' => $cycle->id,
+                    'name' => $cycle->duration_months . ' Months',
+                ];
+            });
+
+            return view('Heights.Admin.Plans.edit', [
+                'planDetails' => $planDetails,
+                'priceCycles' => $priceCycles,
+                'currencies' => ['USD', 'PKR'],
+            ]);
 
         } catch (\Exception $e) {
             Log::error('Error loading plan edit form: ' . $e->getMessage());
@@ -310,7 +321,10 @@ class PlanController extends Controller
             'plan_name' => 'required|string|max:255|unique:plans,name,' . $request->plan_id . ',id',
             'plan_description' => 'nullable|string',
             'currency' => 'required|string|size:3',
+            'unSelectedCycles' => 'required|array',
+            'unSelectedCycles.*' => 'required|exists:billing_cycles,id',
             'services' => 'required|array',
+            'services.*.id' => 'required|exists:services,id',
             'services.*.quantity' => 'required|integer|min:0',
             'services.*.prices' => 'required|array',
             'services.*.prices.*' => 'required|numeric|min:0',
@@ -321,8 +335,8 @@ class PlanController extends Controller
             DB::beginTransaction();
 
             $plan = Plan::where([
-                ['id', '=', $request->plan_id],
-                ['updated_at', '=', $request->updated_at]
+                ['id', '=', $validated['plan_id']],
+                ['updated_at', '=', $validated['updated_at']]
             ])->sharedLock()->first();
 
             if (!$plan) {
@@ -336,19 +350,32 @@ class PlanController extends Controller
                 'currency' => $validated['currency'],
             ]);
 
-            foreach ($validated['services'] as $serviceId => $serviceData) {
-                $service = $plan->services()->findOrFail($serviceId);
+            $unselectedCycles = $validated['unSelectedCycles'];
+
+            foreach ($validated['services'] as $serviceData) {
+                $service = $plan->services()->findOrFail($serviceData['id']);
                 $service->update(['quantity' => $serviceData['quantity']]);
 
+                if (!empty($unselectedCycles)) {
+                    PlanServicePrice::where('service_id', $service->id)
+                        ->whereIn('billing_cycle_id', $unselectedCycles)
+                        ->delete();
+                }
+
                 foreach ($serviceData['prices'] as $billingCycleId => $price) {
-                    $service->prices()
-                        ->where('billing_cycle_id', $billingCycleId)
-                        ->update(['price' => $price]);
+                    PlanServicePrice::updateOrCreate(
+                        [
+                            'service_id' => $service->id,
+                            'billing_cycle_id' => $billingCycleId
+                        ],
+                        [
+                            'price' => $price
+                        ]
+                    );
                 }
             }
 
             DB::commit();
-
             return redirect()->route('plans.index')->with('success', 'Plan updated successfully');
 
         } catch (\Exception $e) {

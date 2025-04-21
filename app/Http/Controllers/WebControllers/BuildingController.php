@@ -450,7 +450,7 @@ class BuildingController extends Controller
 
         $request->validate([
             'id' => 'required|exists:buildings,id',
-            'name' => 'required|string|max:255|unique:buildings,name,'. $request->id . 'id',
+            'name' => 'required|string|max:255|unique:buildings,name,'. $request->id . ',id',
             'building_type' => 'required|string|max:50',
             'area' => 'nullable|numeric',
             'status' => 'required|string',
