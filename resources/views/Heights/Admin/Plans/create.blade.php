@@ -151,7 +151,7 @@
         }
 
         .billing-cycle-card .form-check {
-            pointer-events: none; /* Prevent double click events */
+            pointer-events: none;
         }
 
         .price-table {
@@ -212,18 +212,18 @@
                                                     @enderror
                                                 </div>
                                                 <div class="col-md-6 mb-3">
-                                                <label for="currency" class="form-label">Currency *</label>
-                                                <select class="form-select" name="currency" id="currency" required>
-                                                    @foreach($currencies as $currency)
-                                                        <option value="{{ $currency }}">{{ $currency }}</option>
-                                                    @endforeach
-                                                </select>
-                                                @error('currency')
-                                                <span class="invalid-feedback" role="alert">
+                                                    <label for="currency" class="form-label">Currency *</label>
+                                                    <select class="form-select" name="currency" id="currency" required>
+                                                        @foreach($currencies as $currency)
+                                                            <option value="{{ $currency }}">{{ $currency }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                    @error('currency')
+                                                    <span class="invalid-feedback" role="alert">
                                                     <strong>{{ $message }}</strong>
                                                 </span>
-                                                @enderror
-                                            </div>
+                                                    @enderror
+                                                </div>
                                             </div>
                                             <div class="mb-2">
                                                 <label for="plan_description" class="form-label">Description</label>
@@ -235,9 +235,6 @@
                                                 </span>
                                                 @enderror
                                             </div>
-
-
-
                                         </div>
 
                                         <div class="form-section">
@@ -272,7 +269,6 @@
                                                     <div class="col-md-6">
                                                         <div class="service-card position-relative">
                                                             <div class="card-header" onclick="toggleServiceSelection(this, {{ $service->id }})">
-
                                                                 <h5 class="mt-4">{{ $service->title }}</h5>
                                                                 <p class="small" style="color: var(--sidenavbar-text-color);">{{ $service->description }}</p>
                                                             </div>
@@ -299,7 +295,7 @@
                                                                                    class="form-control price-input"
                                                                                    id="price_{{ $service->id }}_{{ $cycle['id'] }}"
                                                                                    min="0" step="0.01" value="0"
-                                                                                   placeholder="0.00" required>
+                                                                                   placeholder="0.00" disabled>
                                                                             <small class="" style="color: var(--sidenavbar-text-color);">Per month: <span class="per-month-price" id="per_month_{{ $service->id }}_{{ $cycle['id'] }}">0.00</span></small>
                                                                         </div>
                                                                     @endforeach
@@ -324,14 +320,7 @@
                                             <div class="summary-item">
                                                 <h6>Currency</h6>
                                                 <p class="mb-0" id="summaryCurrency">USD</p>
-                                            </div>
-
-                                            <div class="summary-item">
-                                                <h6>Selected Billing Cycles</h6>
-                                                <div id="selectedCyclesList">
-                                                    <p class="small" style="color: var(--sidenavbar-text-color);">No cycles selected</p>
-                                                </div>
-                                            </div>
+                                            </div> 
 
                                             <div class="summary-item">
                                                 <h6>Services & Pricing</h6>
@@ -376,10 +365,9 @@
 
             const perMonthElement = document.getElementById(`per_month_${serviceId}_${cycleId}`);
             if (perMonthElement) {
-                perMonthElement.textContent = perMonth.toFixed(2); // no currency prefix
+                perMonthElement.textContent = perMonth.toFixed(2);
             }
         }
-
 
         function getCycleMonths(cycleId) {
             const cycles = {
@@ -390,13 +378,11 @@
             return cycles[cycleId] || 1;
         }
 
-        // Format currency
         function formatCurrency(amount) {
             const currency = document.getElementById('currency').value;
             return `${currency} ${amount.toFixed(2)}`;
         }
 
-        // Toggle service selection and show/hide details
         function toggleServiceSelection(element, serviceId) {
             const card = element.closest('.service-card');
             const details = card.querySelector('.service-details');
@@ -414,19 +400,28 @@
 
         function toggleBillingCycleSelection(element, cycleId) {
             const checkbox = element.querySelector('input[type="checkbox"]');
-
             checkbox.checked = !checkbox.checked;
 
             if (checkbox.checked) {
                 element.classList.add('selected');
                 document.querySelectorAll(`.price-input-group[data-cycle-id="${cycleId}"]`).forEach(el => {
                     el.style.display = 'block';
+                    const priceInput = el.querySelector('.price-input');
+                    if (priceInput) {
+                        priceInput.disabled = false;
+                        priceInput.required = true;
+                    }
                 });
             } else {
                 element.classList.remove('selected');
                 document.querySelectorAll(`.price-input-group[data-cycle-id="${cycleId}"]`).forEach(el => {
                     el.style.display = 'none';
-                    el.querySelector('.price-input').value = '';
+                    const priceInput = el.querySelector('.price-input');
+                    if (priceInput) {
+                        priceInput.value = '';
+                        priceInput.disabled = true;
+                        priceInput.required = false;
+                    }
                 });
             }
 
@@ -443,18 +438,7 @@
             document.getElementById('summaryCurrency').textContent = currency;
 
             const selectedCycles = Array.from(document.querySelectorAll('input[name="billing_cycles[]"]:checked'));
-            const cyclesList = document.getElementById('selectedCyclesList');
 
-            if (selectedCycles.length === 0) {
-                cyclesList.innerHTML = '<p class="small" style="color: var(--sidenavbar-text-color);">No cycles selected</p>';
-            } else {
-                let html = '';
-                selectedCycles.forEach(cycle => {
-                    const cycleName = cycle.closest('.billing-cycle-card').querySelector('h5').textContent;
-                    html += `<span class="badge bg-primary me-1">${cycleName}</span>`;
-                });
-                cyclesList.innerHTML = html;
-            }
 
             const servicesList = document.getElementById('selectedServicesList');
             const allServices = Array.from(document.querySelectorAll('.service-card'));
@@ -467,9 +451,13 @@
             let html = '<div class="table-responsive"><table class="price-table">';
             html += '<thead><tr><th>Service</th><th>Qty</th>';
 
+            selectedCycles.forEach(cycle => {
+                const cycleName = cycle.closest('.billing-cycle-card').querySelector('h5').textContent;
+                html += `<th>${cycleName}</th>`;
+            });
+
             html += '</tr></thead><tbody>';
 
-            // Object to store totals for each cycle
             const cycleTotals = {};
 
             allServices.forEach(serviceCard => {
@@ -485,19 +473,14 @@
                 selectedCycles.forEach(cycle => {
                     const cycleId = cycle.value;
                     const priceInput = serviceCard.querySelector(`input[name="services[${serviceId}][prices][${cycleId}]"]`);
+                    const priceValue = priceInput ? parseFloat(priceInput.value) || 0 : 0;
 
-                    if (priceInput) {
-                        const priceValue = parseFloat(priceInput.value);
-                        if (!isNaN(priceValue)) {
-
-                            // Calculate total for this cycle
-                            if (!cycleTotals[cycleId]) {
-                                cycleTotals[cycleId] = 0;
-                            }
-                            cycleTotals[cycleId] += priceValue;
-                        }
+                    if (!cycleTotals[cycleId]) {
+                        cycleTotals[cycleId] = 0;
                     }
+                    cycleTotals[cycleId] += priceValue;
 
+                    html += `<td>${formatCurrency(priceValue)}</td>`;
                 });
 
                 html += '</tr>';
@@ -506,7 +489,6 @@
             html += '</tbody></table></div>';
             servicesList.innerHTML = html;
 
-            // Update cycle totals display
             const cycleTotalsElement = document.getElementById('cycleTotals');
             if (selectedCycles.length === 0) {
                 cycleTotalsElement.innerHTML = '<p class="small" style="color: var(--sidenavbar-text-color);">Select billing cycles and set prices to see totals</p>';
@@ -522,17 +504,21 @@
                             <div class="fw-bold">${cycleName}</div>
                             <div class="d-flex justify-content-between">
                                 <div>Total:</div>
-                                <div>${currency} ${total.toFixed(2)}</div>
+                                <div>${formatCurrency(total)}</div>
                             </div>
                         </div>
                     `;
                 });
                 cycleTotalsElement.innerHTML = totalsHtml;
-
             }
         }
 
         document.addEventListener('DOMContentLoaded', function() {
+            // Initialize all price inputs as disabled
+            document.querySelectorAll('.price-input').forEach(input => {
+                input.disabled = true;
+            });
+
             document.getElementById('plan_name').addEventListener('input', updateSummary);
             document.getElementById('plan_description').addEventListener('input', updateSummary);
             document.getElementById('currency').addEventListener('change', updateSummary);
@@ -572,6 +558,18 @@
                         }
                     }
                 }
+
+                // Disable all unselected price inputs before submission
+                document.querySelectorAll('.price-input-group').forEach(group => {
+                    const cycleId = group.getAttribute('data-cycle-id');
+                    const isSelected = document.querySelector(`input[name="billing_cycles[]"][value="${cycleId}"]:checked`);
+                    if (!isSelected) {
+                        const priceInput = group.querySelector('.price-input');
+                        if (priceInput) {
+                            priceInput.disabled = true;
+                        }
+                    }
+                });
             });
 
             updateSummary();
