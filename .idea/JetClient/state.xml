@@ -166,9 +166,9 @@
                 </list>
               </option>
               <option name="id" value="a8f75579-fc80-49b3-96bd-368006fcfe83" />
-              <option name="method" value="POST" />
+              <option name="method" value="PUT" />
               <option name="name" value="Set Default Card" />
-              <option name="url" value="http://localhost:8000/api/user/cards/set-default" />
+              <option name="url" value="http://localhost:8000/api/user/cards" />
             </requestState>
             <requestState>
               <option name="auth">
