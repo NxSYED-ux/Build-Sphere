@@ -27,16 +27,15 @@ class CredentialsEmail extends Notification implements ShouldQueue
         return ['mail'];
     }
 
-    public function toMail(object $notifiable): MailMessage
+    public function toMail($notifiable)
     {
         return (new MailMessage)
             ->subject('Credentials Email')
-            ->greeting('Hello ' . $this->name.'!')
-            ->line("Your login credentials are:")
-            ->line("**Email:** {$this->email}")
-            ->line("**Password:** {$this->password}")
-            ->action('Login Now', 'localhost:8000/')
-            ->line('Thank you for using our application!');
+            ->markdown('emails.credentials', [
+                'name' => $this->name,
+                'email' => $this->email,
+                'password' => $this->password,
+            ]);
     }
 
     public function toArray(object $notifiable): array

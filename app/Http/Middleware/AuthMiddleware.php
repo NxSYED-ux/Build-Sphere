@@ -67,13 +67,13 @@ class AuthMiddleware
         return null;
     }
 
-    private function handleResponse(Request $request ,$message, $statusCode)
+    private function handleResponse(Request $request ,string $message, int $statusCode)
     {
         if ($request->wantsJson()) {
             return response()->json(['error' => $message], $statusCode);
         }
 
-        abort(401, $message);
+        return redirect()->route('login')->with('error', $message);
     }
 
 }

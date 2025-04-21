@@ -1,6 +1,7 @@
 <?php
 
 use App\Events\UserPermissionUpdated;
+use App\Http\Controllers\AppControllers\CardController;
 use App\Http\Controllers\GeneralControllers\AuthController;
 use App\Http\Controllers\GeneralControllers\ForgotPasswordController;
 use App\Http\Controllers\GeneralControllers\NotificationController;
@@ -109,6 +110,15 @@ Route::middleware(['auth.jwt'])->group(function () {
 
         Route::get('/my-unit-names', [QueryController::class, 'userUnitNames']);
         Route::get('/corresponding-departments/{organizationId}', [QueryController::class, 'correspondingDepartments']);
+
+        Route::prefix('cards')->group(function () {
+
+            Route::get('/cards', [CardController::class, 'getSavedCards']);
+            Route::post('/cards/add', [CardController::class, 'addCard']);
+            Route::post('/cards/set-default', [CardController::class, 'setDefaultCard']);
+            Route::delete('/cards/remove', [CardController::class, 'removeCard']);
+
+        });
 
     });
 

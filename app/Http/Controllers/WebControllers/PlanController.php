@@ -313,13 +313,20 @@ class PlanController extends Controller
             'services.*.quantity' => 'required|integer|min:0',
             'services.*.prices' => 'required|array',
             'services.*.prices.*' => 'required|numeric|min:0',
+            'updated_at' => 'required',
         ]);
 
         try {
-            $plan = Plan::find($request->plan_id);
+            DB::beginTransaction();
 
-            if(!$plan) {
-                return redirect()->back()->with('error', 'Plan not found.');
+            $plan = Plan::where([
+                ['id', '=', $request->plan_id],
+                ['updated_at', '=', $request->updated_at]
+            ])->sharedLock()->first();
+
+            if (!$plan) {
+                DB::rollBack();
+                return redirect()->back()->with('error', 'Please refresh the page and try again.');
             }
 
             $plan->update([
@@ -339,15 +346,18 @@ class PlanController extends Controller
                 }
             }
 
+            DB::commit();
+
             return redirect()->route('plans.index')->with('success', 'Plan updated successfully');
 
         } catch (\Exception $e) {
+            DB::rollBack();
             Log::error('Error updating plan: ' . $e->getMessage());
             return back()->with('error', 'Failed to update plan. Please try again.');
         }
     }
 
-    public function discontinue(){
+    public function discontinue($id){
 
     }
 }

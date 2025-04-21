@@ -35,7 +35,7 @@ class CheckOutController extends Controller
                 return redirect()->back()->with('error', 'Invalid request. Please try again or contact support if the issue persists.');
             }
 
-            $owner_id = $request->input('id');
+            $owner_id = $organization->owner_id;
             $organization_id = $organization->id;
             $organization_name = $request->input('organization_name');
             $selectedPackage = $request->input('package');
@@ -58,7 +58,6 @@ class CheckOutController extends Controller
 
     public function checkout(Request $request)
     {
-        Log::info($request);
         $request->validate([
             'owner_id' => 'required',
             'organization_id' => 'required',
@@ -253,6 +252,4 @@ class CheckOutController extends Controller
             ], 500);
         }
     }
-
-
 }

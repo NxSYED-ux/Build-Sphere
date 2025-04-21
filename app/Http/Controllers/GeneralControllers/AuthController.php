@@ -56,7 +56,9 @@ class AuthController extends Controller
                         $access = $this->OrganizationAccess($user);
                         if ($access === false || $access === null) {
                             unset($permissions['Owner Portal']);
-                            return $this->handleResponse($request, 500, 'error', 'Your organization is blocked or disabled.');
+                            return $this->handleResponse(
+                                $request, 500, 'error', 'Account is blocked due to unpaid subscription. Please contact the owner.'
+                            );
                         }
                     }
                     elseif (array_key_exists('Admin Portal', $permissions)) {
@@ -67,7 +69,15 @@ class AuthController extends Controller
                         (array_key_exists('Owner Portal', $permissions) ? 'owner_manager_dashboard' : null);
                 }
             }
-            elseif (($platform === 'user-app' && array_key_exists('User Application', $permissions)) || ($platform === 'staff-app' && array_key_exists('Staff Application', $permissions))) {
+            elseif (($platform === 'user-app' && array_key_exists('User Application', $permissions))) {
+                $route = 'Access Granted';
+            }elseif ($platform === 'staff-app' && array_key_exists('Staff Application', $permissions)){
+                $access = $this->OrganizationAccess($user);
+                if ($access === false || $access === null) {
+                    return $this->handleResponse(
+                        $request, 500, 'error', 'Account is blocked due to unpaid subscription. Please contact the owner.'
+                    );
+                }
                 $route = 'Access Granted';
             }
 
@@ -88,7 +98,12 @@ class AuthController extends Controller
                 }
             }
 
+            // For Web 6 Hours while for mobile 30 days
+            $ttlInMinutes = $platform === 'web' ? (6 * 60) : (30 * 24 * 60);
+
+            JWTAuth::factory()->setTTL($ttlInMinutes);
             $token = JWTAuth::fromUser($user);
+
             return $this->handleResponse($request, 200, 'success','Login successful', $route, $token, $permissions, $user->name, $user->picture, $user->email);
 
         } catch (\Exception $e) {
@@ -199,23 +214,17 @@ class AuthController extends Controller
     // Organization Status Check
     private function OrganizationAccess($user)
     {
-        $organization = null;
-
         if ($user->role_id === 2) {
-            $organization = $user->organization;
-        } elseif ($user->staffMember) {
-            $organization = Organization::find($user->staffMember->organization_id);
+            return true;
         }
+
+        $organization = $user->staffMember ? Organization::find($user->staffMember->organization_id) : null;
 
         if (!$organization) {
             return null;
         }
 
         if ($organization->status === 'Blocked') {
-            return false;
-        }
-
-        if ($organization->status === 'Disable' && $user->role_id === 2) {
             return false;
         }
 

@@ -17,6 +17,10 @@ class ValidatePermission
                 return $this->handleResponse($request, 'Unauthorized', 403);
             }
 
+            if($user->is_super_admin === 1){
+                return $next($request);
+            }
+
             $permission = DB::selectOne("SELECT id FROM permissions WHERE name = ? AND status = 1 LIMIT 1", [$requiredPermissionName]);
             if (!$permission) {
                 return $this->handleResponse($request, "Access Denied: The permission for \"$requiredPermissionName\" is either inactive or does not exist.", 403);
