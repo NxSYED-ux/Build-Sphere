@@ -349,7 +349,7 @@
 
 
 
-                                            <div class="d-grid mt-4">
+                                            <div class="d-grid mt-1">
                                                 <button type="submit" class="btn btn-primary-custom btn-custom">Create Plan</button>
                                             </div>
 
@@ -468,12 +468,6 @@
             let html = '<div class="table-responsive"><table class="price-table">';
             html += '<thead><tr><th>Service</th><th>Qty</th>';
 
-            // selectedCycles.forEach(cycle => {
-            //     const cycleId = cycle.value;
-            //     const cycleName = cycle.closest('.billing-cycle-card').querySelector('h5').textContent;
-            //     html += `<th>${cycleName}</th>`;
-            // });
-
             html += '</tr></thead><tbody>';
 
             // Object to store totals for each cycle
@@ -516,17 +510,26 @@
             // Update cycle totals display
             const cycleTotalsElement = document.getElementById('cycleTotals');
             if (selectedCycles.length === 0) {
-                cycleTotalsElement.innerHTML = '<p class="text-muted small">Select billing cycles and set prices to see totals</p>';
+                cycleTotalsElement.innerHTML = '<p class="small" style="color: var(--sidenavbar-text-color);">Select billing cycles and set prices to see totals</p>';
             } else {
-                let totalsHtml = '<ul class="list-unstyled">';
+                let totalsHtml = '';
                 selectedCycles.forEach(cycle => {
                     const cycleId = cycle.value;
                     const cycleName = cycle.closest('.billing-cycle-card').querySelector('h5').textContent;
                     const total = cycleTotals[cycleId] || 0;
-                    totalsHtml += `<li class="mb-1"><strong>${cycleName}:</strong> ${currency} ${total.toFixed(2)}</li>`;
+
+                    totalsHtml += `
+                        <div class="mb-3 border rounded p-2">
+                            <div class="fw-bold">${cycleName}</div>
+                            <div class="d-flex justify-content-between">
+                                <div>Total:</div>
+                                <div>${currency} ${total.toFixed(2)}</div>
+                            </div>
+                        </div>
+                    `;
                 });
-                totalsHtml += '</ul>';
                 cycleTotalsElement.innerHTML = totalsHtml;
+
             }
         }
 
