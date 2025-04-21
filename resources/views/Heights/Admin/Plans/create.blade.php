@@ -347,8 +347,6 @@
                                                 </div>
                                             </div>
 
-
-
                                             <div class="d-grid mt-1">
                                                 <button type="submit" class="btn btn-primary-custom btn-custom">Create Plan</button>
                                             </div>
@@ -378,9 +376,10 @@
 
             const perMonthElement = document.getElementById(`per_month_${serviceId}_${cycleId}`);
             if (perMonthElement) {
-                perMonthElement.textContent = formatCurrency(perMonth);
+                perMonthElement.textContent = perMonth.toFixed(2); // no currency prefix
             }
         }
+
 
         function getCycleMonths(cycleId) {
             const cycles = {
