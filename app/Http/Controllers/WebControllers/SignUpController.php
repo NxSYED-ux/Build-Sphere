@@ -175,7 +175,7 @@ class SignUpController extends Controller
                 'password' => Hash::make($request->password),
                 'phone_no' => $request->phone_no,
                 'cnic' => $request->cnic,
-                'picture' => $profileImage ? $profileImage['name'] : null,
+                'picture' => $profileImage ? $profileImage['path'] : null,
                 'gender' => $request->gender,
                 'role_id' => 2,
                 'address_id' => $address->id,
