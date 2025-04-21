@@ -292,6 +292,7 @@ class PlanController extends Controller
                 'plan_description' => $plan->description,
                 'currency' => $plan->currency,
                 'services' => $services,
+                'updated_at' => $plan->updated_at,
             ];
 
             return view('Heights.Admin.Plans.edit', compact('planDetails'));

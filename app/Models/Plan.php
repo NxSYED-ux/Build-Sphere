@@ -15,7 +15,8 @@ class Plan extends Model
         'name',
         'description',
         'currency',
-        'status'
+        'status',
+        'updated_at'
     ];
 
     // Has Many Relations
