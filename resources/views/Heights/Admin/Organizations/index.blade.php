@@ -328,8 +328,6 @@
                                                                 <th>Name</th>
                                                                 <th>Owner</th>
                                                                 <th>City</th>
-                                                                <th>Membership Start Date</th>
-                                                                <th>Membership End Date</th>
                                                                 <th>Status</th>
                                                                 <th class="text-center" style="width: 70px;">Actions</th>
                                                             </tr>
@@ -344,8 +342,6 @@
                                                                     <td>{{ $organization->name }}</td>
                                                                     <td>{{ $organization->owner->name }}</td>
                                                                     <td>{{ $organization->address->city ?? 'N/A' }}</td>
-                                                                    <td>{{ $organization->membership_start_date ? $organization->membership_start_date->format('Y-m-d') : '' }}</td>
-                                                                    <td>{{ $organization->membership_end_date ? $organization->membership_end_date->format('Y-m-d') : '' }}</td>
                                                                     <td>{{ $organization->status }}</td>
                                                                     <td class="text-center" style="width: 70px;">
                                                                         <a href="{{ route('organizations.edit', $organization->id) }}" class="text-warning" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit">
@@ -438,7 +434,7 @@
                                                                                    placeholder="e.g. acct_1L9..."
                                                                                 {{ old('is_online_payments_enabled') ? 'required' : '' }}>
                                                                         </div>
-                                                                        <small class="text-muted">Found in your Stripe Dashboard</small>
+{{--                                                                        <small class="text-muted">Found in your Stripe Dashboard</small>--}}
                                                                         @error('merchant_id')
                                                                         <div class="invalid-feedback d-block">{{ $message }}</div>
                                                                         @enderror
@@ -448,23 +444,27 @@
                                                                         <label class="form-label">
                                                                             Online Payments <span class="text-danger">*</span>
                                                                         </label>
-                                                                        <div class="form-check form-switch mt-2">
-                                                                            <input class="form-check-input"
-                                                                                   type="checkbox"
-                                                                                   role="switch"
-                                                                                   id="enable_online_payments"
-                                                                                   name="is_online_payment_enabled"
-                                                                                   value="1"
-                                                                                   style="transform: scale(1.3); margin-right: 10px;"
-                                                                                {{ old('is_online_payments_enabled') ? 'checked' : '' }}>
-                                                                            <label class="form-check-label" for="enable_online_payments">
-                                                                                Enable Online Payments
+                                                                        <div class="d-flex align-items-center mt-2">
+                                                                            <label class="form-check-label me-3" for="enable_online_payments">
+                                                                                Enable
                                                                             </label>
+                                                                            <div class="form-check form-switch m-0">
+                                                                                <input class="form-check-input"
+                                                                                       type="checkbox"
+                                                                                       role="switch"
+                                                                                       id="enable_online_payments"
+                                                                                       name="is_online_payment_enabled"
+                                                                                       value="1"
+                                                                                       style="transform: scale(1.3);"
+                                                                                    {{ old('is_online_payment_enabled', $is_online_payment_enabled ?? false) ? 'checked' : '' }}>
+                                                                            </div>
                                                                         </div>
-                                                                        @error('is_online_payments_enabled')
+                                                                        @error('is_online_payment_enabled')
                                                                         <div class="invalid-feedback d-block">{{ $message }}</div>
                                                                         @enderror
                                                                     </div>
+
+
                                                                 </div>
                                                             </div>
 
