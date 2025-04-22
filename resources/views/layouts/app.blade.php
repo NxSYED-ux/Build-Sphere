@@ -199,10 +199,6 @@
             box-shadow: none !important;
         }
 
-        select, .form-select{
-            max-height: 40px !important;
-            overflow-y: auto !important;
-        }
 
 
         input::placeholder, textarea::placeholder {

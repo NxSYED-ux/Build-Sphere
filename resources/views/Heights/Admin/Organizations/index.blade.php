@@ -268,6 +268,11 @@
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
+
+        .form-check-input:checked {
+            background-color: var(--breadcrumb-text2-color); /* Bootstrap 'success' green */
+            border-color: #198754;
+        }
     </style>
 @endpush
 
@@ -412,6 +417,52 @@
                                                                         </select>
                                                                         @error('owner_id')
                                                                         <div class="invalid-feedback">{{ $message }}</div>
+                                                                        @enderror
+                                                                    </div>
+                                                                </div>
+
+                                                                <div class="row">
+                                                                    <div class="col-md-6 mb-3">
+                                                                        <label for="stripe_merchant_id" class="form-label">
+                                                                            Stripe Merchant ID <span class="text-danger" id="merchant-required-star" style="display: none;">*</span>
+                                                                        </label>
+                                                                        <div class="input-group">
+                                                                            <span class="input-group-text" style="background-color: var(--sidenavbar-body-color);">
+                                                                                <i class="fab fa-stripe text-primary"></i>
+                                                                            </span>
+                                                                            <input type="text"
+                                                                                   name="merchant_id"
+                                                                                   id="stripe_merchant_id"
+                                                                                   class="form-control @error('merchant_id') is-invalid @enderror"
+                                                                                   value="{{ old('merchant_id') }}"
+                                                                                   placeholder="e.g. acct_1L9..."
+                                                                                {{ old('is_online_payments_enabled') ? 'required' : '' }}>
+                                                                        </div>
+                                                                        <small class="text-muted">Found in your Stripe Dashboard</small>
+                                                                        @error('merchant_id')
+                                                                        <div class="invalid-feedback d-block">{{ $message }}</div>
+                                                                        @enderror
+                                                                    </div>
+
+                                                                    <div class="col-md-6 mb-3">
+                                                                        <label class="form-label">
+                                                                            Online Payments <span class="text-danger">*</span>
+                                                                        </label>
+                                                                        <div class="form-check form-switch mt-2">
+                                                                            <input class="form-check-input"
+                                                                                   type="checkbox"
+                                                                                   role="switch"
+                                                                                   id="enable_online_payments"
+                                                                                   name="is_online_payment_enabled"
+                                                                                   value="1"
+                                                                                   style="transform: scale(1.3); margin-right: 10px;"
+                                                                                {{ old('is_online_payments_enabled') ? 'checked' : '' }}>
+                                                                            <label class="form-check-label" for="enable_online_payments">
+                                                                                Enable Online Payments
+                                                                            </label>
+                                                                        </div>
+                                                                        @error('is_online_payments_enabled')
+                                                                        <div class="invalid-feedback d-block">{{ $message }}</div>
                                                                         @enderror
                                                                     </div>
                                                                 </div>
@@ -620,6 +671,28 @@
         });
     </script>
 
+    <!-- Merchant id -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const toggle = document.getElementById('enable_online_payments');
+            const merchantInput = document.getElementById('stripe_merchant_id');
+            const merchantStar = document.getElementById('merchant-required-star');
+
+            function toggleMerchantRequirement() {
+                if (toggle.checked) {
+                    merchantInput.setAttribute('required', 'required');
+                    merchantStar.style.display = 'inline';
+                } else {
+                    merchantInput.removeAttribute('required');
+                    merchantStar.style.display = 'none';
+                }
+            }
+
+            toggle.addEventListener('change', toggleMerchantRequirement);
+            toggleMerchantRequirement(); // on page load
+        });
+    </script>
+
     <script>
 
         // Location Dropdowns
@@ -776,6 +849,7 @@
             const loadingOverlay = document.getElementById("loadingOverlay");
 
             let selectedPlan = null;
+            let isInitialLoad = true; // Flag to track initial load
 
             function showLoading() {
                 loadingOverlay.style.display = 'flex';
@@ -797,7 +871,6 @@
                 const plan_cycle = document.getElementById('plan_cycle');
                 const plan_cycle_id = document.getElementById('plan_cycle_id');
 
-
                 selectedPlanId.value = plan.plan_id;
                 selectedPlanCycle.value = cycleId;
                 selectedBillingCycleId.value = plan.billing_cycle_id;
@@ -810,7 +883,10 @@
             function fetchPlans(cycleId) {
                 if (!cycleId) return;
 
-                showLoading();
+                if (!isInitialLoad) { // Only show loading if not initial load
+                    showLoading();
+                }
+
                 const url = `{{ route('plans', ':planCycle') }}`.replace(':planCycle', cycleId);
 
                 fetch(url, {
@@ -832,7 +908,12 @@
                         }
                     })
                     .catch(error => console.error("Error fetching plans:", error))
-                    .finally(() => hideLoading());
+                    .finally(() => {
+                        if (!isInitialLoad) { // Only hide loading if we showed it
+                            hideLoading();
+                        }
+                        isInitialLoad = false; // Set flag to false after first load
+                    });
             }
 
             function renderPlans(plans) {
@@ -841,11 +922,11 @@
 
                 if (plans.length === 0) {
                     plansContainer.innerHTML = `
-                        <div class="col-12 text-center py-4">
-                            <i class="fas fa-exclamation-circle fa-2x text-muted mb-3"></i>
-                            <p class="">No plans available for this billing cycle</p>
-                        </div>
-                    `;
+                <div class="col-12 text-center py-4">
+                    <i class="fas fa-exclamation-circle fa-2x text-muted mb-3"></i>
+                    <p class="">No plans available for this billing cycle</p>
+                </div>
+            `;
                     return;
                 }
 
@@ -864,12 +945,12 @@
                     planCard.dataset.planId = plan.plan_name;
 
                     planCard.innerHTML = `
-                        <div class="d-flex justify-content-between align-items-center mb-2">
-                            <h4 class="mb-0">${plan.plan_name}</h4>
-                        </div>
-                        <div class="plan-price">${currency}${monthlyPrice}<span class="plan-cycle">/month</span></div>
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <h4 class="mb-0">${plan.plan_name}</h4>
+                </div>
+                <div class="plan-price">${currency}${monthlyPrice}<span class="plan-cycle">/month</span></div>
 
-                    `;
+            `;
 
                     planCard.addEventListener('click', () => {
                         selectedPlan = plan.plan_name;
@@ -900,40 +981,40 @@
                 const currency = plan.currency === 'PKR' ? 'Rs.' : '$';
 
                 selectedPlanDetails.innerHTML = `
-                    <div class="selected-plan-header d-flex flex-column flex-sm-row align-items-sm-center justify-content-between">
-                        <div class="selected-plan-title">${plan.plan_name} Plan</div>
-                        <div class="selected-plan-price mt-2 mt-sm-0">${currency}${monthlyPrice}<span class="text-muted fs-6">/month</span></div>
-                    </div>
+            <div class="selected-plan-header d-flex flex-column flex-sm-row align-items-sm-center justify-content-between">
+                <div class="selected-plan-title">${plan.plan_name} Plan</div>
+                <div class="selected-plan-price mt-2 mt-sm-0">${currency}${monthlyPrice}<span class="text-muted fs-6">/month</span></div>
+            </div>
 
-                    <div class="selected-plan-features">
-                        <h6 class="fw-bold mb-3">Included Features:</h6>
-                        ${plan.services.map(service => `
-                            <div class="selected-plan-feature">
-                                <svg class="bi" width="20" height="20" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z" clip-rule="evenodd" />
-                                </svg>
-                                <div>
-                                    <div class="fw-medium">${service.service_quantity}x ${service.service_name}</div>
-                                    <small class="small">${service.service_description || 'No description available'}</small>
-                                </div>
-                            </div>
-                        `).join('')}
-                    </div>
-                    <div class="selected-plan-summary mt-4 pt-3 border-top">
-                        <div class="d-flex justify-content-between mb-2">
-                            <span>Billing Cycle:</span>
-                            <span class="fw-medium">${cycleId} Months</span>
-                        </div>
-                        <div class="d-flex justify-content-between mb-2">
-                            <span>Monthly Price:</span>
-                            <span class="fw-medium">${currency}${monthlyPrice}</span>
-                        </div>
-                        <div class="d-flex justify-content-between fw-bold fs-5 mt-3 pt-2 border-top">
-                            <span>Total:</span>
-                            <span>${currency}${totalPrice}</span>
+            <div class="selected-plan-features">
+                <h6 class="fw-bold mb-3">Included Features:</h6>
+                ${plan.services.map(service => `
+                    <div class="selected-plan-feature">
+                        <svg class="bi" width="20" height="20" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z" clip-rule="evenodd" />
+                        </svg>
+                        <div>
+                            <div class="fw-medium">${service.service_quantity}x ${service.service_name}</div>
+                            <small class="small">${service.service_description || 'No description available'}</small>
                         </div>
                     </div>
-                `;
+                `).join('')}
+            </div>
+            <div class="selected-plan-summary mt-4 pt-3 border-top">
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Billing Cycle:</span>
+                    <span class="fw-medium">${cycleId} Months</span>
+                </div>
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Monthly Price:</span>
+                    <span class="fw-medium">${currency}${monthlyPrice}</span>
+                </div>
+                <div class="d-flex justify-content-between fw-bold fs-5 mt-3 pt-2 border-top">
+                    <span>Total:</span>
+                    <span>${currency}${totalPrice}</span>
+                </div>
+            </div>
+        `;
 
                 updatePriceDisplays(plan, cycleId);
             }
@@ -943,7 +1024,7 @@
                 fetchPlans(this.value);
             });
 
-            // Initial fetch
+            // Initial fetch - won't show loading overlay
             if (planCycleSelect.value) {
                 fetchPlans(planCycleSelect.value);
             } else if (planCycleSelect.options.length > 0) {

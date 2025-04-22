@@ -187,13 +187,16 @@
 @push('scripts')
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            // Create a route template with a placeholder
-            const routeTemplate = @json(route('plans.destroy', ['id' => '__ID__']));
+            const routeTemplate = "{{ route('plans.destroy', ['id' => '__ID__']) }}";
 
             document.querySelectorAll('.delete-plan-btn').forEach(button => {
                 button.addEventListener('click', function () {
                     const planId = this.getAttribute('data-plan-id');
                     const planName = this.getAttribute('data-plan-name');
+
+                    const bgColor = getComputedStyle(document.documentElement).getPropertyValue('--swal-bg-color').trim();
+                    const textColor = getComputedStyle(document.documentElement).getPropertyValue('--swal-text-color').trim();
+                    const iconColor = getComputedStyle(document.documentElement).getPropertyValue('--swal-icon-warning-color').trim();
 
                     Swal.fire({
                         title: `Delete ${planName}?`,
@@ -210,6 +213,14 @@
                         center top
                         no-repeat
                     `,
+                        background: bgColor,
+                        color: textColor,
+                        iconColor: iconColor,
+                        customClass: {
+                            popup: 'theme-swal-popup',
+                            confirmButton: 'theme-swal-button',
+                            cancelButton: 'theme-swal-cancel-button'
+                        },
                         showClass: {
                             popup: 'animate__animated animate__fadeInDown'
                         },
@@ -218,7 +229,6 @@
                         }
                     }).then((result) => {
                         if (result.isConfirmed) {
-                            // Replace placeholder with actual ID
                             const actionUrl = routeTemplate.replace('__ID__', planId);
 
                             const form = document.createElement('form');
@@ -228,7 +238,7 @@
                             const csrfToken = document.createElement('input');
                             csrfToken.type = 'hidden';
                             csrfToken.name = '_token';
-                            csrfToken.value = '{{ csrf_token() }}';
+                            csrfToken.value = "{{ csrf_token() }}";
 
                             const methodInput = document.createElement('input');
                             methodInput.type = 'hidden';
@@ -239,17 +249,12 @@
                             form.appendChild(methodInput);
                             document.body.appendChild(form);
                             form.submit();
-
-                            Swal.fire(
-                                'Deleted!',
-                                'Your plan has been deleted.',
-                                'success'
-                            );
                         }
                     });
                 });
             });
         });
     </script>
+
 
 @endpush

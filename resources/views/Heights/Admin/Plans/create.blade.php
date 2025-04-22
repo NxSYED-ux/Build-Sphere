@@ -203,7 +203,7 @@
                                             <div class="mb-3">
                                                     <label for="plan_name" class="form-label">Plan Name *</label>
                                                     <input type="text" name="plan_name" class="form-control  @error('plan_name') is-invalid @enderror" id="plan_name"
-                                                           placeholder="e.g., Enterprise Plan" required>
+                                                           placeholder="e.g., Enterprise Plan" value="{{ old('plan_name') }}" required>
                                                     @error('plan_name')
                                                     <span class="invalid-feedback" role="alert">
                                                         <strong>{{ $message }}</strong>
@@ -213,7 +213,7 @@
                                             <div class="mb-3">
                                                 <label for="plan_description" class="form-label">Description</label>
                                                 <textarea class="form-control  @error('plan_description') is-invalid @enderror" name="plan_description" id="plan_description"
-                                                          rows="3" placeholder="Brief description of what this plan offers"></textarea>
+                                                          rows="3" maxlength="250" placeholder="Brief description of what this plan offers">{{ old('plan_description') }}</textarea>
                                                 @error('plan_description')
                                                 <span class="invalid-feedback" role="alert">
                                                     <strong>{{ $message }}</strong>
@@ -226,7 +226,7 @@
                                                     <label for="currency" class="form-label">Currency *</label>
                                                     <select class="form-select" name="currency" id="currency" required>
                                                         @foreach($currencies as $currency)
-                                                            <option value="{{ $currency }}">{{ $currency }}</option>
+                                                            <option value="{{ $currency }}" {{ old('currency') == $currency ? 'selected' : '' }}>{{ $currency }}</option>
                                                         @endforeach
                                                     </select>
                                                     @error('currency')
@@ -239,7 +239,7 @@
                                                     <label for="status" class="form-label">Status *</label>
                                                     <select class="form-select" name="status" id="status" required>
                                                         @foreach($status as $status)
-                                                            <option value="{{ $status }}">{{ $status }}</option>
+                                                            <option value="{{ $status }}" {{ old('status') == $status ? 'selected' : '' }}>{{ $status }}</option>
                                                         @endforeach
                                                     </select>
                                                     @error('status')
@@ -258,12 +258,15 @@
                                             <div class="row">
                                                 @foreach($priceCycles as $cycle)
                                                     <div class="col-md-4 mb-2">
-                                                        <div class="billing-cycle-card" onclick="toggleBillingCycleSelection(this, {{ $cycle['id'] }})">
+                                                        <div class="billing-cycle-card {{ in_array($cycle['id'], old('billing_cycles', [])) ? 'selected' : '' }}"
+                                                             onclick="toggleBillingCycleSelection(this, {{ $cycle['id'] }})">
                                                             <div class="form-check">
-                                                                <input class="form-check-input" type="checkbox"
+                                                                <input class="form-check-input @error('billing_cycles') is-invalid @enderror"
+                                                                       type="checkbox"
                                                                        name="billing_cycles[]"
                                                                        id="cycle_{{ $cycle['id'] }}"
-                                                                       value="{{ $cycle['id'] }}">
+                                                                       value="{{ $cycle['id'] }}"
+                                                                    {{ in_array($cycle['id'], old('billing_cycles', [])) ? 'checked' : '' }}>
                                                                 <label class="form-check-label" for="cycle_{{ $cycle['id'] }}">
                                                                     <h5>{{ $cycle['name'] }}</h5>
                                                                 </label>
@@ -271,7 +274,16 @@
                                                         </div>
                                                     </div>
                                                 @endforeach
+
+                                                @error('billing_cycles')
+                                                <div class="col-12">
+                                                    <span class="text-danger">
+                                                        <strong>{{ $message }}</strong>
+                                                    </span>
+                                                </div>
+                                                @enderror
                                             </div>
+
                                         </div>
 
                                         <div class="form-section">
@@ -280,9 +292,12 @@
 
                                             <div class="row">
                                                 @foreach($services as $service)
+                                                    @php
+                                                        $serviceId = $service->id;
+                                                    @endphp
                                                     <div class="col-md-6">
                                                         <div class="service-card position-relative">
-                                                            <div class="card-header" onclick="toggleServiceSelection(this, {{ $service->id }})">
+                                                            <div class="card-header" onclick="toggleServiceSelection(this, {{ $serviceId }})">
                                                                 <h5 class="mt-4">{{ $service->title }}</h5>
                                                                 <p class="small" style="color: var(--sidenavbar-text-color);">{{ $service->description }}</p>
                                                             </div>
@@ -290,27 +305,47 @@
                                                                 <i class="fas fa-{{ $service->icon ?? 'cog' }}"></i>
                                                             </div>
 
-                                                            <div class="service-details" style="display: none;" data-service-id="{{ $service->id }}">
+                                                            <div class="service-details" style="display: none;" data-service-id="{{ $serviceId }}">
                                                                 <div class="mb-3">
-                                                                    <label for="quantity_{{ $service->id }}" class="form-label">Quantity *</label>
-                                                                    <input type="number" name="services[{{ $service->id }}][quantity]"
-                                                                           class="form-control quantity-input"
-                                                                           id="quantity_{{ $service->id }}"
-                                                                           min="0" value="0" required>
+                                                                    <label for="quantity_{{ $serviceId }}" class="form-label">Quantity *</label>
+                                                                    <input type="number"
+                                                                           name="services[{{ $serviceId }}][quantity]"
+                                                                           class="form-control quantity-input @error("services.$serviceId.quantity") is-invalid @enderror"
+                                                                           id="quantity_{{ $serviceId }}"
+                                                                           min="0"
+                                                                           value="{{ old("services.$serviceId.quantity", 0) }}"
+                                                                           required>
+                                                                    @error("services.$serviceId.quantity")
+                                                                    <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
+                                                                    @enderror
                                                                 </div>
 
                                                                 <div class="price-inputs">
                                                                     <h6>Prices per Billing Cycle</h6>
                                                                     @foreach($priceCycles as $cycle)
-                                                                        <div class="price-input-group" data-cycle-id="{{ $cycle['id'] }}" style="display: none;">
-                                                                            <label for="price_{{ $service->id }}_{{ $cycle['id'] }}" class="form-label">{{ $cycle['name'] }} Price</label>
+                                                                        @php
+                                                                            $cycleId = $cycle['id'];
+                                                                            $priceOldValue = old("services.$serviceId.prices.$cycleId", 0);
+                                                                        @endphp
+                                                                        <div class="price-input-group" data-cycle-id="{{ $cycleId }}" style="display: none;">
+                                                                            <label for="price_{{ $serviceId }}_{{ $cycleId }}" class="form-label">{{ $cycle['name'] }} Price</label>
                                                                             <input type="number"
-                                                                                   name="services[{{ $service->id }}][prices][{{ $cycle['id'] }}]"
-                                                                                   class="form-control price-input"
-                                                                                   id="price_{{ $service->id }}_{{ $cycle['id'] }}"
-                                                                                   min="0" step="0.01" value="0"
-                                                                                   placeholder="0.00" >
-                                                                            <small class="" style="color: var(--sidenavbar-text-color);">Per month: <span class="per-month-price" id="per_month_{{ $service->id }}_{{ $cycle['id'] }}">0.00</span></small>
+                                                                                   name="services[{{ $serviceId }}][prices][{{ $cycleId }}]"
+                                                                                   class="form-control price-input @error("services.$serviceId.prices.$cycleId") is-invalid @enderror"
+                                                                                   id="price_{{ $serviceId }}_{{ $cycleId }}"
+                                                                                   min="0"
+                                                                                   step="0.01"
+                                                                                   value="{{ $priceOldValue }}"
+                                                                                   placeholder="0.00">
+                                                                            @error("services.$serviceId.prices.$cycleId")
+                                                                            <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
+                                                                            @enderror
+                                                                            <small class="" style="color: var(--sidenavbar-text-color);">
+                                                                                Per month:
+                                                                                <span class="per-month-price" id="per_month_{{ $serviceId }}_{{ $cycleId }}">
+                                                                                    {{ number_format($priceOldValue, 2) }}
+                                                                                </span>
+                                                                            </small>
                                                                         </div>
                                                                     @endforeach
                                                                 </div>
@@ -319,6 +354,7 @@
                                                     </div>
                                                 @endforeach
                                             </div>
+
                                         </div>
                                     </div>
 
