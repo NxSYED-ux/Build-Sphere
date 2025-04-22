@@ -269,7 +269,7 @@
                                                                     </span>
                                                                         <span class="d-flex align-items-center">
                                                                             <i class="bx bx-coin me-1"></i>
-                                                                            {{ $subscription->price_at_subscription }} {{ $planDetails['currency'] }}
+                                                                            {{ $subscription->price_at_subscription }} {{ $subscription->currency_at_subscription }}
                                                                         </span>
                                                                         <span class="badge bg-{{ $subscription->subscription_status === 'active' ? 'success' : 'secondary' }} text-white">
                                                                         {{ ucfirst($subscription->subscription_status) }}
