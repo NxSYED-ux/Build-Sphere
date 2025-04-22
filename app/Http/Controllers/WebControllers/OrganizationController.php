@@ -50,7 +50,7 @@ class OrganizationController extends Controller
             'city' => ['nullable', 'string', 'max:50'],
             'postal_code' => ['nullable', 'string', 'max:50'],
             'is_online_payment_enabled' => ['required', 'in:0,1'],
-            'merchant_id' => ['required_if:is_online_payment_enabled,1', 'string', 'max:50'],
+            'merchant_id' => ['nullable', 'required_if:is_online_payment_enabled,1', 'string', 'max:50'],
             'plan_id' => 'required|exists:plans,id',
             'plan_cycle_id' => 'required|exists:billing_cycles,id',
             'plan_cycle' => 'required|integer',
@@ -62,7 +62,7 @@ class OrganizationController extends Controller
         $billing_cycle_id = $request->plan_cycle_id;
 
         $plan = Plan::where('id', $request->plan_id)
-            ->where('status', '!=', 'Deleted')
+            ->whereNotIn('status', ['Deleted', 'Inactive'])
             ->whereHas('services', function ($query) use ($billing_cycle_id) {
                 $query->with('serviceCatalog')
                     ->whereHas('prices', function ($priceQuery) use ($billing_cycle_id) {
@@ -81,7 +81,7 @@ class OrganizationController extends Controller
             ->first();
 
         if (!$plan) {
-            return response()->json(['error' => 'The requested plan is currently unavailable due to administrative changes.'], 404);
+            return redirect()->back()->withInput()->with('error', 'The requested plan is currently unavailable due to administrative changes.');
         }
 
         $totalPrice = 0;
@@ -165,7 +165,6 @@ class OrganizationController extends Controller
             return redirect()->back()->withInput()->with('error', 'Something went wrong. Try again later.');
         }
     }
-
 
     public function show(string $id)
     {
