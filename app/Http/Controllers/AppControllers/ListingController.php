@@ -129,7 +129,7 @@ class ListingController extends Controller
                     'level.building:id,name,address_id',
                     'level.building.address:id,location,city,province,country',
                     'pictures:unit_id,file_path',
-                    'organization:id,name',
+                    'organization:id,name,is_online_payment_enabled',
                     'organization.pictures:organization_id,file_path'
                 ])
                 ->first();
