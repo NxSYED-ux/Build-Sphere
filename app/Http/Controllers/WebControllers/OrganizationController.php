@@ -140,6 +140,8 @@ class OrganizationController extends Controller
                 }
             }
 
+            DB::commit();
+
             ProcessSuccessfulCheckout::dispatch(
                 $request->owner_id,
                 $request->organization_id,
@@ -150,8 +152,6 @@ class OrganizationController extends Controller
                 now(),
                 'Cash',
             );
-
-            DB::commit();
 
             return redirect()->route('organizations.index')->with('success', 'Organization created successfully.');
 
