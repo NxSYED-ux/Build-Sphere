@@ -148,7 +148,7 @@ class OrganizationController extends Controller
                 $request->plan_cycle,
                 'null',
                 now(),
-                'Card',
+                'Cash',
             );
 
             DB::commit();
