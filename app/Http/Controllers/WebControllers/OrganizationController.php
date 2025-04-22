@@ -143,8 +143,8 @@ class OrganizationController extends Controller
             DB::commit();
 
             ProcessSuccessfulCheckout::dispatch(
-                $request->owner_id,
-                $request->organization_id,
+                $organization->owner_id,
+                $organization->id,
                 $plan->id,
                 $planDetails,
                 $request->plan_cycle,
