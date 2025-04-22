@@ -125,6 +125,21 @@
             justify-content: center;
         }
 
+        .add_button:hover {
+            width: 45px;
+            height: 45px;
+            opacity: 0.9;
+            margin-right: 10px;
+            background-color: #adadad;
+            color: black;
+            border: 1px solid grey;
+            font-size: 25px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
         .hidden {
             display: none !important;
         }

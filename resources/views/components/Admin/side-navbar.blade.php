@@ -129,7 +129,7 @@
 
         </div>
 
-        <div class="switch-portal-btn-container hidden" id="switch-owner-portal-btn">
+        <div class="switch-portal-btn-container hidden switch-owner-portal-btn">
             <a href="{{ route('owner_manager_dashboard') }}" class="switch-portal-btn">
                 Switch to Owner Portal
             </a>

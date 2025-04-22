@@ -122,7 +122,7 @@
                                                         <td>{{ $role->status ? 'Active' : 'Inactive' }}</td>
                                                         <td class="text-center" style="width: 100px;">
                                                             <a href="#" class="text-warning edit-role-button" id="edit-role-button" data-id="{{ $role->id }}" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit">
-                                                                <x-icon name="view" type="icon" class="" size="20px" />
+                                                                <x-icon name="edit" type="icon" class="" size="20px" />
                                                             </a>
                                                         </td>
                                                     </tr>

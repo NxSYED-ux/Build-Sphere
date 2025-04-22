@@ -129,7 +129,7 @@
 
     </div>
 
-    <div class="switch-portal-btn-container hidden" id="switch-admin-portal-btn">
+    <div class="switch-portal-btn-container hidden switch-admin-portal-btn">
         <a href="{{ route('admin_dashboard') }}" class="switch-portal-btn">
             Switch to Admin Portal
         </a>

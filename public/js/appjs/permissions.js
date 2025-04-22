@@ -15,7 +15,7 @@ document.addEventListener("DOMContentLoaded", function() {
     const isSuperAdmin = parseInt(superAdminMeta.content);
 
     if (isSuperAdmin === 1) {
-        // showAllPermissionBlocks();
+        showAllPermissionBlocks();
         return;
     }
 
@@ -44,7 +44,6 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 
 function initializePusher(csrfToken, userId, roleId, pusherKey, pusherCluster) {
-
     const pusher = new Pusher(pusherKey, {
         cluster: pusherCluster || 'ap2',
         encrypted: true,
@@ -64,7 +63,6 @@ function initializePusher(csrfToken, userId, roleId, pusherKey, pusherCluster) {
     });
 
     userChannel.bind('App\\Events\\UserPermissionUpdated', function(data) {
-
         if (data.permissionsList) {
             localStorage.setItem("userPermissions", JSON.stringify(data.permissionsList));
             applyPermissions();
@@ -121,7 +119,6 @@ function applyPermissions() {
         });
     };
 
-
     if (storedPermissions['Owner Portal']) {
         const hasBuildingAccess = ['Owner Buildings', 'Owner Levels', 'Owner Units']
             .some(perm => storedPermissions['Owner Portal'].includes(perm));
@@ -147,7 +144,7 @@ function applyPermissions() {
         toggleVisibility("#OwnerStaff", storedPermissions['Owner Portal'].includes('Owner Staff'));
         toggleVisibility("#OwnerReports", storedPermissions['Owner Portal'].includes('Owner Reports'));
 
-        toggleVisibility("#switch-owner-portal-btn", storedPermissions['Owner Portal'].length > 0);
+        toggleVisibility(".switch-owner-portal-btn", storedPermissions['Owner Portal'].length > 0);
     }
 
     if (storedPermissions['Admin Portal']) {
@@ -179,7 +176,7 @@ function applyPermissions() {
         toggleVisibility("#AdminOrganizations", storedPermissions['Admin Portal'].includes('Organizations'));
         toggleVisibility("#AdminReports", storedPermissions['Admin Portal'].includes('Admin Reports'));
 
-        toggleVisibility("#switch-admin-portal-btn", storedPermissions['Admin Portal'].length > 0);
+        toggleVisibility(".switch-admin-portal-btn", storedPermissions['Admin Portal'].length > 0);
     }
 }
 
@@ -191,31 +188,30 @@ function watchLocalStorage() {
     });
 }
 
-// (function showAllPermissionBlocks() {
-//     const allSelectors = [
-//         "switch-admin-portal-btn",
-//         "OwnerBuildingss", "OwnerBuildings", "OwnerLevels", "OwnerUnits",
-//         "OwnerAssignUnits", "OwnerBuildingsTree", "OwnerRentals", "Owner-Building-Add-Button", ".Owner-Building-Edit-Button", "Owner-Level-Add-Button", "Owner-Level-Edit-Button", "Owner-Unit-Add-Button", "Owner-Unit-Edit-Button",
-//         "OwnerDepartments", "OwnerMemberships", "OwnerStaff", "OwnerReports",
-//
-//         "switch-owner-portal-btn",
-//         "AdminControls", "AdminUserManagement", "AdminUserRoles", "AdminRolePermissions", "AdminDropdowns",
-//         "AdminBuildingss", "AdminBuildings", "AdminLevels", "AdminUnits",
-//         "Admin-Building-Add-Button", ".Admin-Building-Edit-Button", "Admin-Level-Add-Button", ".Admin-Level-Edit-Button", "Admin-Unit-Add-Button", ".Admin-Unit-Edit-Button",
-//         "AdminOrganizations", "AdminReports"
-//     ];
-//
-//     allSelectors.forEach(selector => {
-//         if (selector.startsWith('.')) {
-//             // Handle class selectors
-//             document.querySelectorAll(selector).forEach(el => {
-//                 el.classList.remove('hidden');
-//             });
-//         } else {
-//             // Handle ID selectors
-//             const el = document.getElementById(selector);
-//             if (el) el.classList.remove('hidden');
-//         }
-//     });
-// })();
-//
+function showAllPermissionBlocks() {
+    const allSelectors = [
+        ".switch-admin-portal-btn",
+        "#OwnerBuildingss", "#OwnerBuildings", "#OwnerLevels", "#OwnerUnits",
+        "#OwnerAssignUnits", "#OwnerBuildingsTree", "#OwnerRentals", "#Owner-Building-Add-Button", ".Owner-Building-Edit-Button", "#Owner-Level-Add-Button", ".Owner-Level-Edit-Button", "#Owner-Unit-Add-Button", ".Owner-Unit-Edit-Button",
+        "#OwnerDepartments", "#OwnerMemberships", "#OwnerStaff", "#OwnerReports",
+
+        ".switch-owner-portal-btn",
+        "#AdminControls", "#AdminUserManagement", "#AdminUserRoles", "#AdminRolePermissions", "#AdminDropdowns",
+        "#AdminBuildingss", "#AdminBuildings", "#AdminLevels", "#AdminUnits",
+        "#Admin-Building-Add-Button", ".Admin-Building-Edit-Button", "#Admin-Level-Add-Button", ".Admin-Level-Edit-Button", "#Admin-Unit-Add-Button", ".Admin-Unit-Edit-Button",
+        "#AdminOrganizations", "#AdminReports"
+    ];
+
+    allSelectors.forEach(selector => {
+        if (selector.startsWith('.')) {
+            // Handle class selectors
+            document.querySelectorAll(selector).forEach(el => {
+                el.classList.remove('hidden');
+            });
+        } else {
+            // Handle ID selectors
+            const el = document.querySelector(selector);
+            if (el) el.classList.remove('hidden');
+        }
+    });
+}

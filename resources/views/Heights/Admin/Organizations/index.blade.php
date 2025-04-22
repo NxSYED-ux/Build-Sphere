@@ -449,13 +449,9 @@
                                                                                 Enable
                                                                             </label>
                                                                             <div class="form-check form-switch m-0">
-                                                                                <input class="form-check-input"
-                                                                                       type="checkbox"
-                                                                                       role="switch"
-                                                                                       id="enable_online_payments"
-                                                                                       name="is_online_payment_enabled"
-                                                                                       value="1"
-                                                                                       style="transform: scale(1.3);"
+                                                                                <input type="hidden" name="is_online_payment_enabled" value="0">
+                                                                                <input class="form-check-input" type="checkbox" role="switch" id="enable_online_payments"
+                                                                                       name="is_online_payment_enabled" value="1" style="transform: scale(1.3);"
                                                                                     {{ old('is_online_payment_enabled', $is_online_payment_enabled ?? false) ? 'checked' : '' }}>
                                                                             </div>
                                                                         </div>
