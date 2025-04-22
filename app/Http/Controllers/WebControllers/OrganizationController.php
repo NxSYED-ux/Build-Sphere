@@ -181,7 +181,7 @@ class OrganizationController extends Controller
 
     public function update(Request $request, string $id)
     {
-        $validatedData = $request->validate([
+         $request->validate([
             'name' => 'required|string|max:255|unique:organizations,name,' . $id,
             'owner_id' => 'required|integer',
             'status' => 'required|string',
