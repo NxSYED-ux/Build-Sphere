@@ -13,7 +13,7 @@ return new class extends Migration
             $table->string('name')->unique(); // e.g., Free, Pro, Enterprise
             $table->text('description')->nullable();
             $table->string('currency', 10)->default('PKR');
-            $table->boolean('status')->default(true);
+            $table->string('status')->default('Active')->comment('Inactive, Active, Deleted, Custom');
 
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();

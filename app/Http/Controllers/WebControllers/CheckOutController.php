@@ -78,7 +78,7 @@ class CheckOutController extends Controller
             $billing_cycle_id = $request->plan_cycle_id;
 
             $plan = Plan::where('id', $request->plan_id)
-                ->where('status', 1)
+                ->where('status', '!=', 'Deleted')
                 ->whereHas('services', function ($query) use ($billing_cycle_id) {
                     $query->with('serviceCatalog')
                         ->whereHas('prices', function ($priceQuery) use ($billing_cycle_id) {
@@ -97,7 +97,7 @@ class CheckOutController extends Controller
                 ->first();
 
             if (!$plan) {
-                return response()->json(['error' => 'Valid plan not found for the selected billing cycle.'], 404);
+                return response()->json(['error' => 'The requested plan is currently unavailable due to administrative changes.'], 404);
             }
 
             $totalPrice = 0;

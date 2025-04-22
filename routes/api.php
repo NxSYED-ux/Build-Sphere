@@ -115,7 +115,7 @@ Route::middleware(['auth.jwt'])->group(function () {
 
             Route::get('/', [CardController::class, 'getSavedCards']);
             Route::post('/', [CardController::class, 'addCard']);
-            Route::post('/set-default', [CardController::class, 'setDefaultCard']);
+            Route::put('/', [CardController::class, 'setDefaultCard']);
             Route::delete('/', [CardController::class, 'removeCard']);
 
         });

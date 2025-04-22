@@ -518,10 +518,9 @@ INSERT INTO `rolepermissions` (`id`, `role_id`, `permission_id`, `status`, `gran
 (147, 5, 54, 1, 1, '2025-03-29 11:46:36', '2025-03-29 11:46:36');
 
 
-INSERT INTO `plans` (`id`, `name`, `description`, `currency`, `status`, `created_at`, `updated_at`) VALUES
-(1, 'Basic', 'Essential tools for managing a single building and handling daily operations with ease.', 'PKR', 1, '2025-04-09 18:26:50', '2025-04-09 18:26:53'),
-(2, 'Standard', 'Ideal for growing property managers who need more control and building coverage.', 'PKR', 1, '2025-04-09 18:26:50', '2025-04-09 18:26:53'),
-(3, 'Pro', 'Advanced features for professionals managing multiple properties with automation and insights.', 'PKR', 1, '2025-04-09 18:26:51', '2025-04-09 18:26:53');
+INSERT INTO heights.plans (id, name, description, currency, status, created_at, updated_at) VALUES (1, 'Basic', 'Essential tools for managing a single building and handling daily operations with ease.', 'PKR', 'Active', '2025-04-09 18:26:50', '2025-04-22 14:09:43');
+INSERT INTO heights.plans (id, name, description, currency, status, created_at, updated_at) VALUES (2, 'Standard', 'Ideal for growing property managers who need more control and building coverage.', 'PKR', 'Active', '2025-04-09 18:26:50', '2025-04-22 14:09:43');
+INSERT INTO heights.plans (id, name, description, currency, status, created_at, updated_at) VALUES (3, 'Pro', 'Advanced features for professionals managing multiple properties with automation and insights.', 'PKR', 'Active', '2025-04-09 18:26:51', '2025-04-22 14:09:43');
 
 
 INSERT INTO `planservicecatalog` (`id`, `title`, `description`) VALUES

@@ -29,7 +29,8 @@ class PlanController extends Controller
                 ]);
             }
 
-            $plans = Plan::whereHas('services', function ($query) use ($billing_cycle) {
+            $plans = Plan::where('status', '!=', 'Deleted')
+                ->whereHas('services', function ($query) use ($billing_cycle) {
                     $query->with('serviceCatalog')
                         ->whereHas('prices', function ($priceQuery) use ($billing_cycle) {
                             $priceQuery->where('billing_cycle_id', $billing_cycle->id);
@@ -68,6 +69,7 @@ class PlanController extends Controller
                     'plan_name' => $plan->name,
                     'plan_description' => $plan->description,
                     'currency' => $plan->currency,
+                    'status' => $plan->status,
                     'total_price' => $totalPrice,
                     'plan_cycle_id' => $billing_cycle->id,
                     'services' => $services,
@@ -102,6 +104,7 @@ class PlanController extends Controller
                 'services' => $services,
                 'priceCycles' => $priceCycles,
                 'currencies' => ['USD', 'PKR'],
+                'status' => ['Active', 'Inactive', 'Custom'],
             ]);
 
         } catch (\Exception $e) {
@@ -116,6 +119,7 @@ class PlanController extends Controller
             'plan_name' => 'required|string|max:255|unique:plans,name',
             'plan_description' => 'nullable|string',
             'currency' => 'required|string|size:3',
+            'status' => 'required|in:Active,Inactive,Custom',
             'services' => 'required|array',
             'services.*.quantity' => 'required|integer|min:0',
             'services.*.prices' => 'required|array',
@@ -129,6 +133,7 @@ class PlanController extends Controller
                 'name' => $validated['plan_name'],
                 'description' => $validated['plan_description'],
                 'currency' => $validated['currency'],
+                'status' => $validated['status'],
             ]);
 
             foreach ($validated['services'] as $serviceId => $serviceData) {
@@ -148,7 +153,6 @@ class PlanController extends Controller
                     ]);
                 }
             }
-
 
             DB::commit();
 
@@ -250,6 +254,7 @@ class PlanController extends Controller
     {
         try {
             $plan = Plan::where('id', $id)
+                ->where('status', '!=', 'Deleted')
                 ->whereHas('services', function ($query) {
                     $query->whereHas('prices');
                 })
@@ -262,7 +267,7 @@ class PlanController extends Controller
                 ->first();
 
             if (!$plan) {
-                return redirect()->back()->with('error', 'Plan not found or does not match the billing cycle.');
+                return redirect()->back()->with('error', 'The selected plan was either deleted or does not exist in the system.');
             }
 
             $services = $plan->services->map(function ($service) {
@@ -291,6 +296,7 @@ class PlanController extends Controller
                 'plan_name' => $plan->name,
                 'plan_description' => $plan->description,
                 'currency' => $plan->currency,
+                'status' => $plan->status,
                 'services' => $services,
                 'updated_at' => $plan->updated_at,
             ];
@@ -306,6 +312,7 @@ class PlanController extends Controller
                 'planDetails' => $planDetails,
                 'priceCycles' => $priceCycles,
                 'currencies' => ['USD', 'PKR'],
+                'status' => ['Active', 'Inactive', 'Custom'],
             ]);
 
         } catch (\Exception $e) {
@@ -321,6 +328,7 @@ class PlanController extends Controller
             'plan_name' => 'required|string|max:255|unique:plans,name,' . $request->plan_id . ',id',
             'plan_description' => 'nullable|string',
             'currency' => 'required|string|size:3',
+            'status' => 'required|in:Active,Inactive,Custom',
             'unSelectedCycles' => 'nullable|array',
             'unSelectedCycles.*' => 'nullable|exists:billing_cycles,id',
             'services' => 'required|array',
@@ -336,18 +344,30 @@ class PlanController extends Controller
 
             $plan = Plan::where([
                 ['id', '=', $validated['plan_id']],
+                ['status', '!=', 'Deleted'],
                 ['updated_at', '=', $validated['updated_at']]
             ])->sharedLock()->first();
 
             if (!$plan) {
                 DB::rollBack();
-                return redirect()->back()->with('error', 'Please refresh the page and try again.');
+                return redirect()->back()->with('error', 'The plan has been modified or removed by another admin. Please reload the page to get the latest version.');
+            }
+
+            if (in_array($plan->status, ['Active', 'Custom']) && $request->status === 'Inactive') {
+                $hasActiveSubscriptions = $plan->subscriptions()
+                    ->where('subscription_status', 'Active')
+                    ->exists();
+
+                if ($hasActiveSubscriptions) {
+                    return redirect()->back()->with('error', "Plan '{$plan->name}' cannot be marked as inactive because it has active subscriptions.");
+                }
             }
 
             $plan->update([
                 'name' => $validated['plan_name'],
                 'description' => $validated['plan_description'],
                 'currency' => $validated['currency'],
+                'status' => $validated['status'],
             ]);
 
             $unselectedCycles = $request->input('unSelectedCycles', []);
@@ -385,7 +405,24 @@ class PlanController extends Controller
         }
     }
 
-    public function discontinue($id){
+    public function delete($id)
+    {
+        $plan = Plan::find($id);
 
+        if (!$plan) {
+            return redirect()->back()->with('error', 'Plan not found');
+        }
+
+        $hasActiveSubscriptions = $plan->subscriptions()
+            ->where('subscription_status', 'Active')
+            ->exists();
+
+        if ($hasActiveSubscriptions) {
+            return redirect()->back()->with('error', "Plan '{$plan->name}' cannot be deleted because it has active subscriptions.");
+        }
+
+        $plan->update(['status' => 'Deleted']);
+
+        return redirect()->route('plans.index')->with('success', 'Plan deleted successfully');
     }
 }
