@@ -2,6 +2,99 @@
 
 @section('title', $planDetails['plan_name'] . ' - Plan Details')
 
+@section('styles')
+    <style>
+        .text-gradient-primary {
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .card {
+            border-radius: 0.75rem;
+            border: none;
+        }
+
+        .card-body{
+
+        }
+
+
+        .table th {
+            font-weight: 600;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #6c757d;
+        }
+
+        .table td {
+            vertical-align: middle;
+        }
+
+        .list-group-item {
+            border-left: none;
+            border-right: none;
+            transition: all 0.2s ease;
+            background-color: var(--body-background-color) !important;
+        }
+
+        .list-group-item:hover {
+            background-color: var(--body-background-color) !important;
+        }
+
+        .list-group-item:first-child {
+            border-top: none;
+        }
+
+        .list-group-item:last-child {
+            border-bottom: none;
+        }
+
+        .form-select-lg {
+            padding: 0.75rem 1rem;
+            font-size: 1rem;
+        }
+
+        .badge.bg-light {
+            padding: 0.35em 0.65em;
+            background-color: #f1f5f9;
+            color: var(--main-text-color) !important;
+        }
+
+        .badge.text-white {
+            padding: 0.35em 0.65em;
+            font-weight: 500;
+        }
+
+        .btn-primary {
+            background-color: #4f46e5;
+            border-color: #4f46e5;
+        }
+
+        .btn-primary:hover {
+            background-color: #4338ca;
+            border-color: #4338ca;
+        }
+
+        .btn-outline-secondary {
+            border-color: #6c757d;
+            color: #6c757d;
+        }
+
+        .btn-outline-secondary:hover {
+            background-color: #6c757d;
+            color: #fff;
+        }
+
+        .vr {
+            border-left: 2px solid #dee2e6;
+            height: 100%;
+        }
+    </style>
+@endsection
+
 @section('content')
     <x-Admin.top-navbar :searchVisible="false" :breadcrumbLinks="[
             ['url' => route('admin_dashboard'), 'label' => 'Dashboard'],
@@ -26,10 +119,10 @@
                                     </div>
                                     <div class="d-flex gap-2">
                                         <a href="{{ route('plans.edit', $planDetails['plan_id']) }}" class="btn btn-primary px-4">
-                                            <i class="bi bi-pencil-square me-2"></i> Edit Plan
+                                             Edit Plan
                                         </a>
                                         <a href="{{ route('plans.index') }}" class="btn btn-outline-secondary px-4">
-                                            <i class="bi bi-arrow-left me-2"></i> Back
+                                             Back
                                         </a>
                                     </div>
                                 </div>
@@ -80,14 +173,14 @@
                         <div class="row">
                             <div class="col-lg-8">
                                 <!-- Plan Description -->
-                                <div class="card border-0 shadow-sm mb-4">
-                                    <div class="card-header bg-white border-bottom-0 pt-3 pb-0">
-                                        <h5 class="fw-semibold mb-0 d-flex align-items-center">
-                                            <i class="bi bi-file-text text-primary me-2"></i> Plan Description
+                                <div class="card border-0 shadow-sm mb-4 plan-description-card">
+                                    <div class="card-header border-bottom-0 pt-3 pb-0">
+                                        <h5 class="fw-semibold mb-0 d-flex align-items-center" style="color: var(--main-text-color);">
+                                            <i class="bx bx-file text-primary me-2"></i> Plan Description
                                         </h5>
                                     </div>
                                     <div class="card-body">
-                                        <div class="p-3 bg-light rounded">
+                                        <div class="p-3 rounded shadow-sm" style="background-color: var(--body-background-color) !important;">
                                             <p class="mb-0">{{ $planDetails['plan_description'] }}</p>
                                         </div>
                                     </div>
@@ -95,9 +188,9 @@
 
                                 <!-- Included Services -->
                                 <div class="card border-0 shadow-sm mb-4">
-                                    <div class="card-header bg-white border-bottom-0 py-3">
-                                        <h5 class="fw-semibold mb-0 d-flex align-items-center">
-                                            <i class="bi bi-list-check text-primary me-2"></i> Included Services
+                                    <div class="card-header border-bottom-0 py-3">
+                                        <h5 class="fw-semibold mb-0 d-flex align-items-center" style="color: var(--main-text-color);">
+                                            <i class="bx bx-list-check text-primary me-2"></i> Included Services
                                         </h5>
                                     </div>
                                     <div class="card-body p-0">
@@ -112,12 +205,12 @@
                                                     <th width="15%" class="text-end pe-4">Price</th>
                                                 </tr>
                                                 </thead>
-                                                <tbody>
+                                                <tbody class="border">
                                                 @foreach($planDetails['services'] as $index => $service)
                                                     <tr>
                                                         <td class="ps-4">{{ $index + 1 }}</td>
                                                         <td class="fw-semibold">{{ $service['service_name'] }}</td>
-                                                        <td class="text-muted">{{ $service['service_description'] }}</td>
+                                                        <td class="text-fade" >{{ $service['service_description'] }}</td>
                                                         <td class="text-center">{{ $service['service_quantity'] }}</td>
                                                         <td class="text-end pe-4 fw-semibold">
                                                             {{ number_format($service['price']['price'], 2) }}
@@ -134,50 +227,50 @@
                             <!-- Right Column - Subscriptions -->
                             <div class="col-lg-4">
                                 <div class="card border-0 shadow-sm sticky-top" style="top: 20px;">
-                                    <div class="card-header bg-white border-bottom-0 py-3">
+                                    <div class="card-header border-bottom-0 py-3">
                                         <div class="d-flex justify-content-between align-items-center">
-                                            <h5 class="fw-semibold mb-0 d-flex align-items-center">
-                                                <i class="bi bi-people-fill text-primary me-2"></i> Subscriptions
+                                            <h5 class="fw-semibold mb-0 d-flex align-items-center" style="color: var(--main-text-color);">
+                                                <i class="bx bxs-crown text-primary me-2"></i> Subscriptions
                                             </h5>
-                                            <span class="badge bg-primary rounded-pill">{{ $subscriptions->count() }}</span>
+                                            <span class="badge bg-primary rounded-pill" style="color: #fff !important;">{{ $subscriptions->count() }}</span>
                                         </div>
                                     </div>
-                                    <div class="card-body">
+                                    <div class="card-body border-top" >
                                         @if($subscriptions->count() > 0)
                                             <div class="list-group list-group-flush">
                                                 @foreach($subscriptions as $subscription)
-                                                    <div class="list-group-item border-0 px-0 py-3">
+                                                    <div class="list-group-item border-0 px-2 py-3 mb-2 rounded shadow-sm" style="background-color: var(--body-background-color) !important;">
                                                         <div class="d-flex align-items-start">
                                                             <div class="position-relative me-3">
                                                                 @if($subscription->organization && $subscription->organization->pictures->first())
-                                                                    <img src="{{ asset($subscription->organization->pictures->first()->file_path) }}"
-                                                                         class="rounded-circle" width="48" height="48" alt="Organization logo">
+                                                                    <img src="{{ asset(optional($subscription->organization->pictures->first())->file_path ?? 'img/organization_placeholder.png') }}" alt="Organization Logo"
+                                                                         class="rounded-circle" width="50" height="50">
                                                                 @else
-                                                                    <div class="rounded-circle bg-light text-primary d-flex align-items-center justify-content-center"
+                                                                    <div class="rounded-circle text-primary d-flex align-items-center justify-content-center"
                                                                          style="width: 48px; height: 48px;">
                                                                         <i class="bi bi-building fs-5"></i>
                                                                     </div>
                                                                 @endif
                                                                 <span class="position-absolute bottom-0 end-0 bg-{{ $subscription->subscription_status === 'active' ? 'success' : 'secondary' }} rounded-circle p-1 border border-2 border-white"></span>
                                                             </div>
-                                                            <div class="flex-grow-1">
+                                                            <div class="flex-grow-1" style="color: var(--main-text-color) !important;">
                                                                 <h6 class="fw-semibold mb-1">
                                                                     {{ $subscription->organization->name ?? 'Unknown Organization' }}
                                                                 </h6>
-                                                                <div class="text-muted small">
+                                                                <div class=" small" >
                                                                     <div class="d-flex align-items-center mb-1">
-                                                                        <i class="bi bi-calendar me-2"></i>
+                                                                        <i class="bx bx-calendar me-2"></i>
                                                                         {{ $subscription->updated_at->format('M d, Y') }}
                                                                     </div>
                                                                     <div class="d-flex flex-wrap align-items-center gap-2">
-                                                                    <span class="badge bg-light text-dark d-flex align-items-center">
-                                                                        <i class="bi bi-arrow-repeat me-1"></i>
+                                                                    <span class="d-flex align-items-center">
+                                                                        <i class="bx bx-circle me-1"></i>
                                                                         <span class="me-1">{{ $subscription->billing_cycle }}</span>mo
                                                                     </span>
-                                                                        <span class="badge bg-light text-dark d-flex align-items-center">
-                                                                        <i class="bi bi-cash-coin me-1"></i>
-                                                                        {{ $subscription->price_at_subscription }} {{ $planDetails['currency'] }}
-                                                                    </span>
+                                                                        <span class="d-flex align-items-center">
+                                                                            <i class="bx bx-coin me-1"></i>
+                                                                            {{ $subscription->price_at_subscription }} {{ $planDetails['currency'] }}
+                                                                        </span>
                                                                         <span class="badge bg-{{ $subscription->subscription_status === 'active' ? 'success' : 'secondary' }} text-white">
                                                                         {{ ucfirst($subscription->subscription_status) }}
                                                                     </span>
@@ -189,12 +282,12 @@
                                                 @endforeach
                                             </div>
                                         @else
-                                            <div class="text-center py-4">
-                                                <div class="bg-light rounded-circle p-4 d-inline-block mb-3">
-                                                    <i class="bi bi-people text-muted" style="font-size: 2rem;"></i>
+                                            <div class="text-center pt-0 pb-2">
+                                                <div class=" rounded-circle px-4 py-1 d-inline-block mb-3">
+                                                    <i class="bx bxs-user-badge" style="font-size: 2rem;"></i>
                                                 </div>
                                                 <h6 class="fw-semibold">No subscriptions yet</h6>
-                                                <p class="text-muted small mb-0">This plan hasn't been subscribed to by any organizations</p>
+                                                <p class="small mb-0">This plan hasn't been subscribed to by any organizations</p>
                                             </div>
                                         @endif
                                     </div>
@@ -208,89 +301,4 @@
     </div>
 @endsection
 
-@section('styles')
-    <style>
-        .text-gradient-primary {
-            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-        }
 
-        .card {
-            border-radius: 0.75rem;
-            border: none;
-            background-color: #ffffff;
-        }
-
-        .table th {
-            font-weight: 600;
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            color: #6c757d;
-        }
-
-        .table td {
-            vertical-align: middle;
-        }
-
-        .list-group-item {
-            border-left: none;
-            border-right: none;
-            transition: all 0.2s ease;
-        }
-
-        .list-group-item:hover {
-            background-color: #f8f9fa;
-        }
-
-        .list-group-item:first-child {
-            border-top: none;
-        }
-
-        .list-group-item:last-child {
-            border-bottom: none;
-        }
-
-        .form-select-lg {
-            padding: 0.75rem 1rem;
-            font-size: 1rem;
-        }
-
-        .badge.bg-light {
-            padding: 0.35em 0.65em;
-            background-color: #f1f5f9;
-        }
-
-        .badge.text-white {
-            padding: 0.35em 0.65em;
-            font-weight: 500;
-        }
-
-        .btn-primary {
-            background-color: #4f46e5;
-            border-color: #4f46e5;
-        }
-
-        .btn-primary:hover {
-            background-color: #4338ca;
-            border-color: #4338ca;
-        }
-
-        .btn-outline-secondary {
-            border-color: #6c757d;
-            color: #6c757d;
-        }
-
-        .btn-outline-secondary:hover {
-            background-color: #6c757d;
-            color: #fff;
-        }
-
-        .vr {
-            border-left: 2px solid #dee2e6;
-            height: 100%;
-        }
-    </style>
-@endsection

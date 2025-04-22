@@ -44,7 +44,7 @@
         }
 
         .input-icon {
-            color: var(--light-text);
+            color: var(--sidenavbar-text-color);
             transition: color 0.3s ease;
         }
 
@@ -79,16 +79,16 @@
             transition: all 0.3s ease;
         }
 
-        .btn-primary {
-            background-color: var(--primary-color);
-            border-color: var(--primary-color);
-        }
+        /*.btn-primary {*/
+        /*    background-color: var(--primary-color);*/
+        /*    border-color: var(--primary-color);*/
+        /*}*/
 
-        .btn-primary:hover {
-            background-color: var(--primary-hover);
-            border-color: var(--primary-hover);
-            transform: translateY(-2px);
-        }
+        /*.btn-primary:hover {*/
+        /*    background-color: var(--primary-hover);*/
+        /*    border-color: var(--primary-hover);*/
+        /*    transform: translateY(-2px);*/
+        /*}*/
 
         .btn-secondary {
             background-color: white;
@@ -112,7 +112,7 @@
 
         /* Section headers */
         .section-header {
-            color: var(--primary-color);
+            color: var(--main-text-color);
             font-weight: 500;
             margin-bottom: 20px;
             display: flex;
