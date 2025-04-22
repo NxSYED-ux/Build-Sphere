@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Stripe\Customer;
+use Stripe\Stripe;
 
 class UsersController extends Controller
 {
@@ -85,6 +86,9 @@ class UsersController extends Controller
 
         DB::beginTransaction();
         try {
+
+            Stripe::setApiKey(config('services.stripe.secret'));
+
             $stripeCustomer = Customer::create([
                 'name' => $request->name,
                 'email' => $request->email,
