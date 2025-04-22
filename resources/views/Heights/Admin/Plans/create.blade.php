@@ -21,7 +21,7 @@
             background-color: var(--body-card-bg);
             border-radius: 15px;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-            padding: 2rem;
+            padding: 1.6rem;
             margin-bottom: 1.6rem;
         }
 
@@ -200,8 +200,7 @@
                                         <div class="form-section">
                                             <h3 class="section-title">Plan Information</h3>
 
-                                            <div class="row">
-                                                <div class="col-md-6 mb-2">
+                                            <div class="mb-3">
                                                     <label for="plan_name" class="form-label">Plan Name *</label>
                                                     <input type="text" name="plan_name" class="form-control  @error('plan_name') is-invalid @enderror" id="plan_name"
                                                            placeholder="e.g., Enterprise Plan" required>
@@ -210,7 +209,19 @@
                                                         <strong>{{ $message }}</strong>
                                                     </span>
                                                     @enderror
-                                                </div>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="plan_description" class="form-label">Description</label>
+                                                <textarea class="form-control  @error('plan_description') is-invalid @enderror" name="plan_description" id="plan_description"
+                                                          rows="3" placeholder="Brief description of what this plan offers"></textarea>
+                                                @error('plan_description')
+                                                <span class="invalid-feedback" role="alert">
+                                                    <strong>{{ $message }}</strong>
+                                                </span>
+                                                @enderror
+                                            </div>
+
+                                            <div class="row">
                                                 <div class="col-md-6 mb-3">
                                                     <label for="currency" class="form-label">Currency *</label>
                                                     <select class="form-select" name="currency" id="currency" required>
@@ -224,16 +235,19 @@
                                                 </span>
                                                     @enderror
                                                 </div>
-                                            </div>
-                                            <div class="mb-2">
-                                                <label for="plan_description" class="form-label">Description</label>
-                                                <textarea class="form-control  @error('plan_description') is-invalid @enderror" name="plan_description" id="plan_description"
-                                                          rows="3" placeholder="Brief description of what this plan offers"></textarea>
-                                                @error('plan_description')
-                                                <span class="invalid-feedback" role="alert">
+                                                <div class="col-md-6 mb-3">
+                                                    <label for="status" class="form-label">Status *</label>
+                                                    <select class="form-select" name="status" id="status" required>
+                                                        @foreach($status as $status)
+                                                            <option value="{{ $status }}">{{ $status }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                    @error('status')
+                                                    <span class="invalid-feedback" role="alert">
                                                     <strong>{{ $message }}</strong>
                                                 </span>
-                                                @enderror
+                                                    @enderror
+                                                </div>
                                             </div>
                                         </div>
 

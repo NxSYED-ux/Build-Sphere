@@ -413,11 +413,11 @@
 
                                     <div class="col-lg-2">
                                         <div class="image-upload-frame">
-                                            <img id="org_avatar" src="{{ old('organization_picture') ? asset(old('organization_picture')) : asset('img/organization_placeholder.png') }}"
+                                            <img id="org_avatar" src="{{ old('org_picture') ? asset(old('org_picture')) : asset('img/organization_placeholder.png') }}"
                                                  alt="Organization Picture">
                                             <label class="upload-btn" for="organization_picture">
                                                 <i class="fas fa-camera"></i>
-                                                <input type="file" name="organization_picture" id="organization_picture"
+                                                <input type="file" name="org_picture" id="organization_picture"
                                                        accept="image/*" onchange="previewImage(event, 'org_avatar')">
                                             </label>
                                         </div>

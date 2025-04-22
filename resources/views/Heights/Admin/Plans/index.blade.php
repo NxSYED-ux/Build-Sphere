@@ -34,6 +34,20 @@
             color: var(--sidenavbar-text-color) !important;
             opacity: 0.5 !important;
         }
+
+        .delete-btn-wrapper .btn {
+            opacity: 0.5;
+            transform: translate(5px, -5px);
+            transition: all 0.2s ease;
+        }
+        .delete-btn-wrapper:hover .btn,
+        .card:hover .delete-btn-wrapper .btn {
+            opacity: 1;
+            transform: translate(0, 0);
+        }
+        .swal2-popup {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        }
     </style>
 @endsection
 
@@ -94,19 +108,35 @@
                                 @foreach($plans as $plan)
                                     <div class="col-lg-4 col-md-6 col-sm-12">
                                         <div class="card h-100 border-0 shadow shadow-hover overflow-hidden transition-all">
+
+                                            <div class="position-absolute end-0 top-0 p-3 delete-btn-wrapper">
+                                                <button type="button"
+                                                        class="btn btn-sm btn-icon-only btn-danger rounded-circle shadow-sm transition-all delete-plan-btn"
+                                                        data-plan-id="{{ $plan['id'] }}"
+                                                        data-plan-name="{{ $plan['plan_name'] }}"
+                                                        title="Delete Plan">
+                                                    <i class="fas fa-trash-alt"></i>
+                                                </button>
+                                            </div>
+
                                             <div class="card-body p-4 flex-grow-1 d-flex flex-column justify-content-between">
                                                 <div class="mb-2">
                                                     <h3 class="h4 fw-bold text-primary plan-name">{{ $plan['plan_name'] }}</h3>
                                                     <p class="mb-0 plan-description" style="color: var(--sidenavbar-text-color);">{{ $plan['plan_description'] }}</p>
                                                 </div>
 
-                                                <div class="mt-auto">
-                                                    <div class="d-flex align-items-end">
-                                                        <span class="display-5 fw-bold text-dark total-price">{{ number_format($plan['total_price'], 0) }}</span>
-                                                        <span class="text-muted ms-2 mb-2 currency">{{ $plan['currency'] }}</span>
+                                                <div class="mt-auto text-center">
+                                                    <div class="d-flex flex-column align-items-center">
+                                                        <div class="d-flex align-items-end justify-content-center">
+                                                            <span class="display-5 fw-bold text-dark total-price">{{ number_format($plan['total_price'], 0) }}</span>
+                                                            <span class="text-muted ms-2 mb-2 currency">{{ $plan['currency'] }}</span>
+                                                        </div>
+                                                        <small style="color: var(--sidenavbar-text-color);">
+                                                            per {{ $selected_cycle->duration_months }} month{{ $selected_cycle->duration_months > 1 ? 's' : '' }}
+                                                        </small>
                                                     </div>
-                                                    <small class=" "  style="color: var(--sidenavbar-text-color);">per {{ $selected_cycle->duration_months }} month{{ $selected_cycle->duration_months > 1 ? 's' : '' }}</small>
                                                 </div>
+
 
                                                 <hr class="my-3" style="border-color: var(--topnavbar-border-color) !important;">
 
@@ -154,3 +184,72 @@
     </div>
 @endsection
 
+@push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Create a route template with a placeholder
+            const routeTemplate = @json(route('plans.destroy', ['id' => '__ID__']));
+
+            document.querySelectorAll('.delete-plan-btn').forEach(button => {
+                button.addEventListener('click', function () {
+                    const planId = this.getAttribute('data-plan-id');
+                    const planName = this.getAttribute('data-plan-name');
+
+                    Swal.fire({
+                        title: `Delete ${planName}?`,
+                        text: "You won't be able to revert this!",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#d33',
+                        cancelButtonColor: '#3085d6',
+                        confirmButtonText: 'Yes, delete it!',
+                        cancelButtonText: 'Cancel',
+                        backdrop: `
+                        rgba(0,0,0,0.7)
+                        url("/images/trash-icon.png")
+                        center top
+                        no-repeat
+                    `,
+                        showClass: {
+                            popup: 'animate__animated animate__fadeInDown'
+                        },
+                        hideClass: {
+                            popup: 'animate__animated animate__fadeOutUp'
+                        }
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            // Replace placeholder with actual ID
+                            const actionUrl = routeTemplate.replace('__ID__', planId);
+
+                            const form = document.createElement('form');
+                            form.method = 'POST';
+                            form.action = actionUrl;
+
+                            const csrfToken = document.createElement('input');
+                            csrfToken.type = 'hidden';
+                            csrfToken.name = '_token';
+                            csrfToken.value = '{{ csrf_token() }}';
+
+                            const methodInput = document.createElement('input');
+                            methodInput.type = 'hidden';
+                            methodInput.name = '_method';
+                            methodInput.value = 'DELETE';
+
+                            form.appendChild(csrfToken);
+                            form.appendChild(methodInput);
+                            document.body.appendChild(form);
+                            form.submit();
+
+                            Swal.fire(
+                                'Deleted!',
+                                'Your plan has been deleted.',
+                                'success'
+                            );
+                        }
+                    });
+                });
+            });
+        });
+    </script>
+
+@endpush

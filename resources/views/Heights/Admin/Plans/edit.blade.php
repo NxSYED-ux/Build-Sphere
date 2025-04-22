@@ -21,7 +21,7 @@
             background-color: var(--body-card-bg);
             border-radius: 15px;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-            padding: 2rem;
+            padding: 1.6rem;
             margin-bottom: 1.6rem;
         }
 
@@ -221,17 +221,27 @@
                                                 <span class="last-updated">Last updated: {{ \Carbon\Carbon::parse($planDetails['updated_at'])->format('M d, Y H:i') }}</span>
                                             </div>
 
+                                            <div class="mb-3">
+                                                <label for="plan_name" class="form-label">Plan Name *</label>
+                                                <input type="text" name="plan_name" class="form-control @error('plan_name') is-invalid @enderror" id="plan_name"
+                                                       placeholder="e.g., Enterprise Plan" value="{{ $planDetails['plan_name'] }}" required>
+                                                @error('plan_name')
+                                                <span class="invalid-feedback" role="alert">
+                                                    <strong>{{ $message }}</strong>
+                                                </span>
+                                                @enderror
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="plan_description" class="form-label">Description</label>
+                                                <textarea class="form-control @error('plan_description') is-invalid @enderror" name="plan_description" id="plan_description"
+                                                          rows="3" placeholder="Brief description of what this plan offers">{{ $planDetails['plan_description'] }}</textarea>
+                                                @error('plan_description')
+                                                <span class="invalid-feedback" role="alert">
+                                                    <strong>{{ $message }}</strong>
+                                                </span>
+                                                @enderror
+                                            </div>
                                             <div class="row">
-                                                <div class="col-md-6 mb-2">
-                                                    <label for="plan_name" class="form-label">Plan Name *</label>
-                                                    <input type="text" name="plan_name" class="form-control @error('plan_name') is-invalid @enderror" id="plan_name"
-                                                           placeholder="e.g., Enterprise Plan" value="{{ $planDetails['plan_name'] }}" required>
-                                                    @error('plan_name')
-                                                    <span class="invalid-feedback" role="alert">
-                                                        <strong>{{ $message }}</strong>
-                                                    </span>
-                                                    @enderror
-                                                </div>
                                                 <div class="col-md-6 mb-3">
                                                     <label for="currency" class="form-label">Currency *</label>
                                                     <select class="form-select" name="currency" id="currency" required>
@@ -245,16 +255,19 @@
                                                     </span>
                                                     @enderror
                                                 </div>
-                                            </div>
-                                            <div class="mb-2">
-                                                <label for="plan_description" class="form-label">Description</label>
-                                                <textarea class="form-control @error('plan_description') is-invalid @enderror" name="plan_description" id="plan_description"
-                                                          rows="3" placeholder="Brief description of what this plan offers">{{ $planDetails['plan_description'] }}</textarea>
-                                                @error('plan_description')
-                                                <span class="invalid-feedback" role="alert">
-                                                    <strong>{{ $message }}</strong>
-                                                </span>
-                                                @enderror
+                                                <div class="col-md-6 mb-3">
+                                                    <label for="status" class="form-label">Status *</label>
+                                                    <select class="form-select" name="status" id="status" required>
+                                                        @foreach($status as $status)
+                                                            <option value="{{ $status }}" {{ $planDetails['status'] == $status ? 'selected' : '' }}>{{ $status }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                    @error('status')
+                                                    <span class="invalid-feedback" role="alert">
+                                                        <strong>{{ $message }}</strong>
+                                                    </span>
+                                                    @enderror
+                                                </div>
                                             </div>
                                         </div>
 

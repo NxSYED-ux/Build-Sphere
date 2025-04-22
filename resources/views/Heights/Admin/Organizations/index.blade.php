@@ -11,13 +11,14 @@
         }
 
         .nav-tabs .nav-link {
-            background-color: var(--nav-tabs-inactive-bg-color) !important; /* Change to your desired color */
+            background-color: var(--body-background-color) !important; /* Change to your desired color */
             color: var(--nav-tabs-inactive-text-color) !important;
             border-bottom: 1px solid var(--nav-tabs-inactive-border-color) !important; /* Corrected */
         }
         .nav-tabs .nav-link.active {
             background-color: var(--nav-tabs-active-bg-color) !important; /* Change to your desired color */
             color: var(--nav-tabs-active-text-color) !important;
+            border-bottom: 2px solid #008CFF !important; /* Corrected */
         }
 
         /* DataTables Entries Dropdown */
@@ -51,90 +52,221 @@
             color: var(--dataTable-search-placeholder-color); /* Internet Explorer 10+ */
         }
 
-        /* Center the input and preview */
-        .image-input-container {
-            text-align: center;
-            max-width: 600px;
-            margin: 0 auto;
+        /* Card Styles */
+        .detail-card {
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border: none;
+            transition: all 0.3s ease;
+        }
+        .detail-card:hover {
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
         }
 
-        /* Style the label button */
-        .image-input-container .custom-file-label {
-            display: inline-block;
-            background-color: #6c63ff;
-            color: #fff;
-            padding: 10px 20px;
-            border-radius: 5px;
+        /* Form Styles */
+        .form-section {
+            background: var(--body-background-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .form-section h5 {
+            color: var(--sidenavbar-text-color);
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+            border-bottom: 1px solid #e5e7eb;
+            padding-bottom: 0.75rem;
+        }
+
+        /* Plan Selection Styles */
+        .plan-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+        @media (max-width: 992px) {
+            .plan-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .plan-card {
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 1.5rem;
             cursor: pointer;
-            font-size: 16px;
-            font-weight: bold;
-            margin-bottom: 10px;
-            transition: background-color 0.3s ease;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        .plan-card:hover {
+            border-color: #008CFF;
+            background-color: var(--body-background-color);
+            transform: translateY(-2px);
+        }
+        .plan-card.selected {
+            border: 2px solid #008CFF;
+            background-color: var(--sidenavbar-body-color);
+        }
+        .plan-card h4 {
+            color: var(--sidenavbar-text-color);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        .plan-price {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--sidenavbar-text-color);
+        }
+        .plan-cycle {
+            color: var(--sidenavbar-text-color);
+            font-size: 0.875rem;
+        }
+        .plan-features {
+            margin-top: 1rem;
+            flex-grow: 1;
+        }
+        .plan-feature {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.5rem;
+            color: #4b5563;
+        }
+        .plan-feature svg {
+            color: #008CFF;
+            margin-right: 0.5rem;
         }
 
-        .image-input-container .custom-file-label:hover {
-            background-color: #5752d3;
+        /* Image Upload Styles */
+        .image-upload-container {
+            border: 2px dashed #d1d5db;
+            border-radius: 10px;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            background: var(--sidenavbar-body-color);
         }
-
-        /* Image preview area */
-        .image-input-container .image-preview {
+        .image-upload-container:hover {
+            border-color: #008CFF;
+        }
+        .image-upload-container.drag-over {
+            border-color: #008CFF;
+            background-color: #f5f7ff;
+        }
+        .image-preview {
             display: flex;
             flex-wrap: wrap;
-            gap: 10px;
-            justify-content: center;
-            border: 2px dashed #6c63ff;
-            border-radius: 10px;
-            padding: 15px;
-            background-color: #fff;
-            margin-top: 10px;
+            gap: 1rem;
+            margin-top: 1rem;
         }
-
-        /* No images selected message */
-        .image-input-container .image-preview p {
-            flex-basis: 100%;
-            text-align: center;
-            font-size: 16px;
-            color: #666;
-        }
-
-        /* Style each image item */
-        .image-input-container .image-item {
+        .image-item {
             position: relative;
-            width: 120px;
-            height: 120px;
-            border-radius: 10px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-            border: 1px solid #ddd;
+            width: 100px;
+            height: 100px;
+            border-radius: 8px;
             overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
-
-        .image-input-container .image-item img {
+        .image-item img {
             width: 100%;
             height: 100%;
-            object-fit: cover; /* Change to contain if the image isn't showing as expected */
+            object-fit: cover;
         }
-
-        /* Remove button for each image */
-        .image-input-container .remove-btn {
+        .remove-btn {
             position: absolute;
             top: 5px;
             right: 5px;
-            background-color: rgba(255, 0, 0, 0.8);
-            color: #fff;
+            background-color: rgba(239, 68, 68, 0.8);
+            color: white;
             border: none;
             border-radius: 50%;
-            width: 20px;
-            height: 20px;
-            font-size: 12px;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .remove-btn:hover {
+            background-color: #ef4444;
+        }
+
+        /* Selected Plan Details */
+        .selected-plan-details {
+            background-color: var(--body-card-bg);
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+            border: 1px solid #e5e7eb;
+        }
+        .selected-plan-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .selected-plan-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--sidenavbar-text-color);
+        }
+        .selected-plan-price {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--sidenavbar-text-color);
+        }
+        .selected-plan-features {
+            color: var(--sidenavbar-text-color);
+            margin-top: 1rem;
+        }
+        .selected-plan-feature {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.75rem;
+        }
+        .selected-plan-feature svg {
+            color: #008CFF;
+            margin-right: 0.75rem;
+            flex-shrink: 0;
+        }
+
+        /* Responsive Table */
+        @media (max-width: 768px) {
+            .responsive-table {
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+        }
+
+        /* Loading Overlay */
+        #loadingOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.8);
             display: flex;
             justify-content: center;
             align-items: center;
-            cursor: pointer;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            z-index: 9999;
+            display: none;
         }
-
-        .image-input-container .remove-btn:hover {
-            background-color: red;
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #e5e7eb;
+            border-top-color: #008CFF;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
     </style>
 @endpush
@@ -154,6 +286,11 @@
     @php
         $activeTab = old('activeTab', 'Tab1');
     @endphp
+
+        <!-- Loading Overlay -->
+    <div id="loadingOverlay">
+        <div class="spinner"></div>
+    </div>
 
     <div id="main">
 
@@ -197,7 +334,7 @@
                                                                 <tr>
                                                                     <td>{{ $organization->id }}</td>
                                                                     <td>
-                                                                        <img src="{{ $organization->pictures->isNotEmpty() ? asset($organization->pictures->first()->file_path) : asset('https://via.placeholder.com/150') }}" alt="Organization Picture" class="rounded-circle" width="50" height="50">
+                                                                        <img src="{{ asset(optional($organization->pictures->first())->file_path ?? 'img/organization_placeholder.png') }}" alt="Organization Picture" class="rounded-circle" width="50" height="50">
                                                                     </td>
                                                                     <td>{{ $organization->name }}</td>
                                                                     <td>{{ $organization->owner->name }}</td>
@@ -225,156 +362,204 @@
                                     </div>
                                     <!-- Add Organization Tab -->
                                     <div class="tab-pane fade {{ $activeTab === 'Tab2' ? 'show active' : '' }}" id="dropdwon-values" role="tabpanel" aria-labelledby="dropdwon-values-tab">
-                                        <div class="card shadow p-3 mb-5 bg-body rounded" style="border: none;">
+                                        <div class="card shadow py-2 px-1 mb-5 bg-body rounded" style="border: none;">
                                             <div class="card-body" style="overflow-x: auto;">
-{{--                                                <h4 class="mb-4">Add Organization</h4>--}}
-                                                    <form action="{{ route('organizations.store') }}" method="POST" enctype="multipart/form-data">
-                                                        @csrf
+                                                <form action="{{ route('organizations.store') }}" method="POST" enctype="multipart/form-data" id="organizationForm">
+                                                    @csrf
 
-                                                        <div class="row">
-                                                            <div class="col-lg-8 col-md-8 col-sm-12 col-12">
+                                                    <input type="hidden" name="plan_id" id="plan_id">
+                                                    <input type="hidden" name="plan_cycle_id"  id="plan_cycle_id">
+                                                    <input type="hidden" name="plan_cycle" id="plan_cycle">
 
-                                                                <div class="row my-0 py-0">
-                                                                    <div class="col-sm-12 col-md-6 col-lg-6">
-                                                                        <div class="form-group mb-3">
-                                                                            <label for="name">Name</label>
-                                                                            <span class="required__field">*</span><br>
-                                                                            <input type="text" name="name" id="name" class="form-control @error('name') is-invalid @enderror" value="{{ old('name') }}" maxlength="50" placeholder="Organization Name" required>
-                                                                            @error('name')
-                                                                                <span class="invalid-feedback" role="alert">
-                                                                                    <strong>{{ $message }}</strong>
-                                                                                </span>
-                                                                            @enderror
-                                                                        </div>
+                                                    <input type="hidden" id="selectedPlanId">
+                                                    <input type="hidden" id="selectedPlanCycle">
+                                                    <input type="hidden" id="selectedBillingCycleId">
+
+                                                    <div class="row">
+                                                        <!-- Left Column - Organization Details -->
+                                                        <div class="col-lg-6 col-md-12">
+                                                            <div class="form-section shadow-sm">
+                                                                <h5><i class="fas fa-info-circle me-2"></i> Basic Information</h5>
+
+                                                                <div class="row">
+                                                                    <div class="col-md-6 mb-3">
+                                                                        <label for="name" class="form-label">Organization Name</label>
+                                                                        <span class="text-danger">*</span>
+                                                                        <input type="text" name="name" id="name"
+                                                                               class="form-control @error('name') is-invalid @enderror"
+                                                                               value="{{ old('name') }}"
+                                                                               maxlength="50"
+                                                                               placeholder="Enter organization name"
+                                                                               required>
+                                                                        @error('name')
+                                                                        <div class="invalid-feedback">{{ $message }}</div>
+                                                                        @enderror
                                                                     </div>
 
-                                                                    <!-- Organization -->
-                                                                    <div class="col-sm-12 col-md-6 col-lg-6">
-                                                                        <div class="form-group mb-3">
-                                                                            <label for="owner_id">Owner</label>
-                                                                            <span class="required__field">*</span><br>
-                                                                            <select class="form-select" id="owner_id" name="owner_id" required>
-                                                                                <option value="" disabled {{ old('owner_id') === null ? 'selected' : '' }}>Select Organization</option>
-                                                                                @foreach($owners as $id => $name)
-                                                                                    <option value="{{ $id }}" {{ old('owner_id') == $id ? 'selected' : '' }}>
-                                                                                        {{ $name }}
-                                                                                    </option>
-                                                                                @endforeach
-                                                                            </select>
-                                                                            @error('owner_id')
-                                                                                <span class="invalid-feedback" role="alert">
-                                                                                    <strong>{{ $message }}</strong>
-                                                                                </span>
-                                                                            @enderror
-                                                                        </div>
-                                                                    </div>
-
-
-                                                                    <div class="col-sm-12 col-md-6 col-lg-6">
-                                                                        <div class="form-group mb-3">
-                                                                            <label for="membership_start_date" >Membership Start Date</label>
-                                                                            <span class="required__field">*</span><br>
-                                                                            <input type="date" class="form-control" id="membership_start_date" name="membership_start_date" value="{{ old('membership_start_date', date('Y-m-d')) }}" required>
-                                                                            @error('membership_start_date')
-                                                                                <div class="text-danger">{{ $message }}</div>
-                                                                            @enderror
-                                                                        </div>
-                                                                    </div>
-
-                                                                    <div class="col-sm-12 col-md-6 col-lg-6">
-                                                                        <div class="form-group mb-3">
-                                                                            <label for="membership_end_date" >Membership End Date</label>
-                                                                            <span class="required__field">*</span><br>
-                                                                            <input type="date" class="form-control" id="membership_end_date" name="membership_end_date" value="{{ old('membership_end_date') }}" required>
-                                                                            @error('membership_end_date')
-                                                                                <div class="text-danger">{{ $message }}</div>
-                                                                            @enderror
-                                                                        </div>
-                                                                    </div>
-
-                                                                    <!--  -->
-                                                                    <div class="col-sm-12 col-md-6 col-lg-6">
-                                                                        <div class="form-group mb-3">
-                                                                            <label for="country" >Country</label>
-                                                                            <select class="form-select" id="country" name="country">
-                                                                                <option value="" selected>Select Country</option>
-                                                                            </select>
-                                                                            @error('country')
-                                                                                <div class="text-danger">{{ $message }}</div>
-                                                                            @enderror
-                                                                        </div>
-                                                                    </div>
-                                                                    <!--  -->
-                                                                    <div class="col-sm-12 col-md-6 col-lg-6">
-                                                                        <div class="form-group mb-3">
-                                                                            <label for="province" >Province</label>
-                                                                            <select class="form-select" id="province" name="province">
-                                                                                <option value="" selected>Select Province</option>
-                                                                            </select>
-                                                                            @error('province')
-                                                                                <div class="text-danger">{{ $message }}</div>
-                                                                            @enderror
-                                                                        </div>
-                                                                    </div>
-
-                                                                    <!--  -->
-                                                                    <div class="col-sm-12 col-md-6 col-lg-6">
-                                                                        <div class="form-group mb-3">
-                                                                            <label for="city" >City</label>
-                                                                            <select class="form-select" id="city" name="city">
-                                                                                <option value="" selected>Select Province</option>
-                                                                            </select>
-                                                                            @error('city')
-                                                                                <div class="text-danger">{{ $message }}</div>
-                                                                            @enderror
-                                                                        </div>
-                                                                    </div>
-
-                                                                    <!--  -->
-                                                                    <div class="col-sm-12 col-md-6 col-lg-6">
-                                                                        <div class="form-group mb-3">
-                                                                            <label for="location">Location</label>
-                                                                            <input type="text" name="location" id="location" class="form-control @error('location') is-invalid @enderror" value="{{ old('location') }}" maxlength="100" placeholder="Enter Location">
-                                                                            @error('location')
-                                                                                <span class="invalid-feedback" role="alert">
-                                                                                    <strong>{{ $message }}</strong>
-                                                                                </span>
-                                                                            @enderror
-                                                                        </div>
-                                                                    </div>
-
-                                                                    <!--  -->
-                                                                    <div class="col-sm-12 col-md-6 col-lg-6">
-                                                                        <div class="form-group mb-3">
-                                                                            <label for="postal_code">Postal Code</label>
-                                                                            <input type="text" name="postal_code" id="postal_code" class="form-control @error('postal_code') is-invalid @enderror" value="{{ old('postal_code') }}" maxlength="100" placeholder="Enter Postal Code">
-                                                                            @error('postal_code')
-                                                                                <span class="invalid-feedback" role="alert">
-                                                                                    <strong>{{ $message }}</strong>
-                                                                                </span>
-                                                                            @enderror
-                                                                        </div>
+                                                                    <div class="col-md-6 mb-3">
+                                                                        <label for="owner_id" class="form-label">Owner</label>
+                                                                        <span class="text-danger">*</span>
+                                                                        <select class="form-select @error('owner_id') is-invalid @enderror"
+                                                                                id="owner_id"
+                                                                                name="owner_id"
+                                                                                required>
+                                                                            <option value="" disabled {{ old('owner_id') === null ? 'selected' : '' }}>Select Owner</option>
+                                                                            @foreach($owners as $id => $name)
+                                                                                <option value="{{ $id }}" {{ old('owner_id') == $id ? 'selected' : '' }}>
+                                                                                    {{ $name }}
+                                                                                </option>
+                                                                            @endforeach
+                                                                        </select>
+                                                                        @error('owner_id')
+                                                                        <div class="invalid-feedback">{{ $message }}</div>
+                                                                        @enderror
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                            <div class="col-lg-4 col-md-4 col-sm-12 col-12 mb-3">
-                                                                <div class="image-input-container mt-4">
-                                                                    <label for="image-input" class="custom-file-label">
-                                                                        <span>Choose Images</span>
-                                                                    </label>
-                                                                    <input type="file" id="image-input" name="organization_pictures[]" accept="image/png, image/jpeg, image/jpg, image/gif" multiple hidden>
-                                                                    <div class="image-preview" id="image-preview">
-                                                                        <p>No images selected</p>
+
+                                                            <div class="form-section shadow-sm">
+                                                                <h5><i class="fas fa-map-marker-alt me-2"></i> Location Information</h5>
+
+                                                                <div class="row">
+                                                                    <div class="col-md-6 mb-3">
+                                                                        <label for="country" class="form-label">Country</label>
+                                                                        <select class="form-select @error('country') is-invalid @enderror"
+                                                                                id="country"
+                                                                                name="country">
+                                                                            <option value="" selected>Select Country</option>
+                                                                        </select>
+                                                                        @error('country')
+                                                                        <div class="invalid-feedback">{{ $message }}</div>
+                                                                        @enderror
                                                                     </div>
-                                                                    @error('organizations_images')
-                                                                    <div class="text-danger">{{ $message }}</div>
+
+                                                                    <div class="col-md-6 mb-3">
+                                                                        <label for="province" class="form-label">Province/State</label>
+                                                                        <select class="form-select @error('province') is-invalid @enderror"
+                                                                                id="province"
+                                                                                name="province">
+                                                                            <option value="" selected>Select Province</option>
+                                                                        </select>
+                                                                        @error('province')
+                                                                        <div class="invalid-feedback">{{ $message }}</div>
+                                                                        @enderror
+                                                                    </div>
+
+                                                                    <div class="col-md-6 mb-3">
+                                                                        <label for="city" class="form-label">City</label>
+                                                                        <select class="form-select @error('city') is-invalid @enderror"
+                                                                                id="city"
+                                                                                name="city">
+                                                                            <option value="" selected>Select City</option>
+                                                                        </select>
+                                                                        @error('city')
+                                                                        <div class="invalid-feedback">{{ $message }}</div>
+                                                                        @enderror
+                                                                    </div>
+
+                                                                    <div class="col-md-6 mb-3">
+                                                                        <label for="location" class="form-label">Street Address</label>
+                                                                        <input type="text" name="location" id="location"
+                                                                               class="form-control @error('location') is-invalid @enderror"
+                                                                               value="{{ old('location') }}"
+                                                                               maxlength="100"
+                                                                               placeholder="Enter street address">
+                                                                        @error('location')
+                                                                        <div class="invalid-feedback">{{ $message }}</div>
+                                                                        @enderror
+                                                                    </div>
+
+                                                                    <div class="col-md-6 mb-3">
+                                                                        <label for="postal_code" class="form-label">Postal Code</label>
+                                                                        <input type="text" name="postal_code" id="postal_code"
+                                                                               class="form-control @error('postal_code') is-invalid @enderror"
+                                                                               value="{{ old('postal_code') }}"
+                                                                               maxlength="20"
+                                                                               placeholder="Enter postal code">
+                                                                        @error('postal_code')
+                                                                        <div class="invalid-feedback">{{ $message }}</div>
+                                                                        @enderror
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="form-section shadow-sm">
+                                                                <h5><i class="fas fa-image me-2"></i> Organization Logo</h5>
+                                                                <div class="image-upload-container" id="image-upload-container">
+                                                                    <div class="d-flex flex-column align-items-center">
+                                                                        <i class="fas fa-cloud-upload-alt fa-3x text-primary mb-3"></i>
+                                                                        <h6 class="mb-2">Drag & Drop Images Here</h6>
+                                                                        <p class="mb-3">or</p>
+                                                                        <label for="image-input" class="btn btn-primary">
+                                                                            <i class="fas fa-folder-open me-2"></i> Browse Files
+                                                                        </label>
+                                                                        <input type="file" id="image-input" name="organization_pictures[]"
+                                                                               accept="image/png, image/jpeg, image/jpg, image/gif"
+                                                                               multiple hidden>
+                                                                    </div>
+                                                                    <div class="image-preview mt-3 text-center" id="image-preview">
+                                                                    </div>
+                                                                    @error('organization_pictures')
+                                                                    <div class="text-danger small mt-2">{{ $message }}</div>
                                                                     @enderror
                                                                 </div>
                                                             </div>
                                                         </div>
 
-                                                        <button type="submit" class="btn btn-primary">Create Organizations</button>
-                                                    </form>
+                                                        <!-- Right Column - Plan Selection -->
+                                                        <div class="col-lg-6 col-md-12">
+                                                            <div class="form-section shadow-sm">
+                                                                <h5><i class="fas fa-cubes me-2"></i> Membership Plan</h5>
+
+                                                                <div class="mb-4">
+                                                                    <label for="billing-cycle" class="form-label mb-2">Billing Cycle</label>
+                                                                    <div class="input-group">
+                                                                        <select id="billing-cycle" name="billing-cycle" class="form-select">
+                                                                            @forelse($planCycles as $planCycle)
+                                                                                <option value="{{ $planCycle }}" {{ old('billing-cycle') == $planCycle ? 'selected' : '' }}>
+                                                                                    {{ $planCycle }} Month
+                                                                                </option>
+                                                                            @empty
+                                                                                <option value="">No Plans Available</option>
+                                                                            @endforelse
+                                                                        </select>
+                                                                        <span class="input-group-text" style="background-color: var(--sidenavbar-body-color);">
+                                                                            <i class="fas fa-calendar-alt"></i>
+                                                                        </span>
+                                                                    </div>
+                                                                </div>
+
+                                                                <div class="mb-4">
+                                                                    <label class="form-label mb-2">Available Plans</label>
+                                                                    <div class="row g-3 plans-container" id="plans-container">
+                                                                        <!-- Plans will be loaded here via JavaScript -->
+                                                                        <div class="col-12 text-center py-4">
+                                                                            <div class="spinner-border text-primary" role="status">
+                                                                                <span class="visually-hidden">Loading...</span>
+                                                                            </div>
+                                                                            <p class="mt-2">Loading plans...</p>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+
+                                                                <div class="selected-plan-details shadow-sm" id="selected-plan-details">
+                                                                    <div class="text-center py-4">
+                                                                        <i class="fas fa-cube fa-3x text-muted mb-3"></i>
+                                                                        <h5 class="text-muted">No Plan Selected</h5>
+                                                                        <p class="text-muted">Please select a plan from above</p>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="d-flex justify-content-center justify-content-md-end mt-4">
+                                                        <button type="submit" class="btn btn-primary px-4 py-2">
+                                                            <i class="fas fa-save me-2"></i> Create Organization
+                                                        </button>
+                                                    </div>
+
+                                                </form>
                                             </div>
                                         </div>
                                     </div>
@@ -415,7 +600,8 @@
             }
         });
     </script>
-    <!-- DataTables script -->
+
+    <!-- Data Tables Script -->
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             new DataTable("#organizationTable", {
@@ -434,60 +620,39 @@
         });
     </script>
 
-    <!-- Dates valdations  -->
     <script>
-        document.getElementById('membership_start_date').addEventListener('change', validateDates);
-        document.getElementById('membership_end_date').addEventListener('change', validateDates);
 
-        function validateDates() {
-            const membership_start_date = new Date(document.getElementById('membership_start_date').value);
-            const membership_end_date = new Date(document.getElementById('membership_end_date').value);
-
-            if (membership_start_date && membership_end_date && membership_end_date <= membership_start_date) {
-                document.getElementById('membership_end_date').value = '';
-                Swal.fire({
-                    title: 'Invalid End Date',
-                    text: 'Membership End Date must be after or equal the Start Date.',
-                    icon: 'error',
-                    confirmButtonText: 'OK'
-                });
-            }
-        }
-    </script>
-
-    <!-- Country/Province/City dropdowns  -->
-    <script>
+        // Location Dropdowns
         document.addEventListener('DOMContentLoaded', () => {
             const countrySelect = document.getElementById('country');
             const provinceSelect = document.getElementById('province');
             const citySelect = document.getElementById('city');
 
-            // Dropdown data passed from the controller
             const dropdownData = @json($dropdownData);
 
-            // Populate Country Dropdown
+            // Populate Countries
             dropdownData.forEach(country => {
                 const option = document.createElement('option');
                 option.value = country.values[0]?.value_name || 'Unnamed Country';
-                option.dataset.id = country.id; // Store ID in a data attribute
+                option.dataset.id = country.id;
                 option.textContent = country.values[0]?.value_name || 'Unnamed Country';
                 countrySelect.appendChild(option);
             });
 
-            // Handle Country Change
+            // Country Change Handler
             countrySelect.addEventListener('change', function () {
                 provinceSelect.innerHTML = '<option value="" selected>Select Province</option>';
                 citySelect.innerHTML = '<option value="" selected>Select City</option>';
 
-                const selectedCountryId = this.options[this.selectedIndex]?.dataset.id; // Retrieve ID from data attribute
+                const selectedCountryId = this.options[this.selectedIndex]?.dataset.id;
                 const selectedCountry = dropdownData.find(c => c.id == selectedCountryId);
 
                 if (selectedCountry) {
                     selectedCountry.values.forEach(province => {
                         province.childs.forEach(childProvince => {
                             const option = document.createElement('option');
-                            option.value = childProvince.value_name; // Use value_name for option value
-                            option.dataset.id = childProvince.id; // Store ID in a data attribute
+                            option.value = childProvince.value_name;
+                            option.dataset.id = childProvince.id;
                             option.textContent = childProvince.value_name;
                             provinceSelect.appendChild(option);
                         });
@@ -495,15 +660,15 @@
                 }
             });
 
-            // Handle Province Change
+            // Province Change Handler
             provinceSelect.addEventListener('change', function () {
                 citySelect.innerHTML = '<option value="" selected>Select City</option>';
 
-                const selectedCountryId = countrySelect.options[countrySelect.selectedIndex]?.dataset.id; // Retrieve ID from data attribute
+                const selectedCountryId = countrySelect.options[countrySelect.selectedIndex]?.dataset.id;
                 const selectedCountry = dropdownData.find(c => c.id == selectedCountryId);
 
                 if (selectedCountry) {
-                    const selectedProvinceId = this.options[this.selectedIndex]?.dataset.id; // Retrieve ID from data attribute
+                    const selectedProvinceId = this.options[this.selectedIndex]?.dataset.id;
                     const selectedProvince = selectedCountry.values
                         .flatMap(province => province.childs)
                         .find(p => p.id == selectedProvinceId);
@@ -511,8 +676,8 @@
                     if (selectedProvince) {
                         selectedProvince.childs.forEach(city => {
                             const option = document.createElement('option');
-                            option.value = city.value_name; // Use value_name for option value
-                            option.dataset.id = city.id; // Store ID in a data attribute
+                            option.value = city.value_name;
+                            option.dataset.id = city.id;
                             option.textContent = city.value_name;
                             citySelect.appendChild(option);
                         });
@@ -520,25 +685,64 @@
                 }
             });
         });
-    </script>
 
-    <!-- Image script -->
-    <script>
+        // Image Upload Handling
         const imageInput = document.getElementById('image-input');
         const imagePreview = document.getElementById('image-preview');
+        const uploadContainer = document.getElementById('image-upload-container');
 
+        // Drag and Drop Events
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            uploadContainer.addEventListener(eventName, preventDefaults, false);
+        });
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            uploadContainer.addEventListener(eventName, highlight, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            uploadContainer.addEventListener(eventName, unhighlight, false);
+        });
+
+        function highlight() {
+            uploadContainer.classList.add('drag-over');
+        }
+
+        function unhighlight() {
+            uploadContainer.classList.remove('drag-over');
+        }
+
+        // Handle dropped files
+        uploadContainer.addEventListener('drop', handleDrop, false);
+
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            imageInput.files = files;
+            handleFiles(files);
+        }
+
+        // Handle selected files
         imageInput.addEventListener('change', () => {
-            const files = imageInput.files;
-            imagePreview.innerHTML = ''; // Clear any previous content
+            handleFiles(imageInput.files);
+        });
+
+        function handleFiles(files) {
+            imagePreview.innerHTML = '';
 
             if (files.length > 0) {
                 Array.from(files).forEach((file, index) => {
-                    const reader = new FileReader();
+                    if (!file.type.match('image.*')) return;
 
+                    const reader = new FileReader();
                     reader.onload = (e) => {
                         const imageItem = document.createElement('div');
                         imageItem.classList.add('image-item');
-                        imageItem.setAttribute('data-index', index);
 
                         const img = document.createElement('img');
                         img.src = e.target.result;
@@ -546,12 +750,10 @@
                         const removeBtn = document.createElement('button');
                         removeBtn.classList.add('remove-btn');
                         removeBtn.innerHTML = '×';
-
-                        // Remove image on click
                         removeBtn.addEventListener('click', () => {
                             imageItem.remove();
                             if (imagePreview.children.length === 0) {
-                                imagePreview.innerHTML = '<p>No images selected</p>';
+                                imagePreview.innerHTML = '<p class="">No images selected</p>';
                             }
                         });
 
@@ -559,12 +761,208 @@
                         imageItem.appendChild(removeBtn);
                         imagePreview.appendChild(imageItem);
                     };
-
                     reader.readAsDataURL(file);
                 });
             } else {
-                imagePreview.innerHTML = '<p>No images selected</p>';
+                imagePreview.innerHTML = '<p class="text-muted">No images selected</p>';
             }
+        }
+
+        // Plan Selection Logic
+        document.addEventListener("DOMContentLoaded", function () {
+            const planCycleSelect = document.getElementById("billing-cycle");
+            const plansContainer = document.getElementById("plans-container");
+            const selectedPlanDetails = document.getElementById("selected-plan-details");
+            const loadingOverlay = document.getElementById("loadingOverlay");
+
+            let selectedPlan = null;
+
+            function showLoading() {
+                loadingOverlay.style.display = 'flex';
+            }
+
+            function hideLoading() {
+                loadingOverlay.style.display = 'none';
+            }
+
+            function updatePriceDisplays(plan, cycleId) {
+                if (!plan) return;
+
+                // Update hidden form fields if needed
+                const selectedPlanId = document.getElementById('selectedPlanId');
+                const selectedPlanCycle = document.getElementById('selectedPlanCycle');
+                const selectedBillingCycleId = document.getElementById('selectedBillingCycleId');
+
+                const plan_id = document.getElementById('plan_id');
+                const plan_cycle = document.getElementById('plan_cycle');
+                const plan_cycle_id = document.getElementById('plan_cycle_id');
+
+
+                selectedPlanId.value = plan.plan_id;
+                selectedPlanCycle.value = cycleId;
+                selectedBillingCycleId.value = plan.billing_cycle_id;
+
+                plan_id.value = plan.plan_id;
+                plan_cycle.value = cycleId;
+                plan_cycle_id.value = plan.billing_cycle_id;
+            }
+
+            function fetchPlans(cycleId) {
+                if (!cycleId) return;
+
+                showLoading();
+                const url = `{{ route('plans', ':planCycle') }}`.replace(':planCycle', cycleId);
+
+                fetch(url, {
+                    method: "GET",
+                    headers: {
+                        "Accept": "application/json"
+                    }
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        const plans = data.plans || [];
+                        renderPlans(plans);
+
+                        if (selectedPlan) {
+                            const selectedPlanObj = plans.find(p => p.plan_name === selectedPlan);
+                            if (selectedPlanObj) {
+                                updatePriceDisplays(selectedPlanObj, cycleId);
+                            }
+                        }
+                    })
+                    .catch(error => console.error("Error fetching plans:", error))
+                    .finally(() => hideLoading());
+            }
+
+            function renderPlans(plans) {
+                plansContainer.innerHTML = '';
+                const cycleId = planCycleSelect.value;
+
+                if (plans.length === 0) {
+                    plansContainer.innerHTML = `
+                        <div class="col-12 text-center py-4">
+                            <i class="fas fa-exclamation-circle fa-2x text-muted mb-3"></i>
+                            <p class="">No plans available for this billing cycle</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                plans.forEach(plan => {
+                    const monthlyPrice = (plan.total_price / cycleId).toFixed(2);
+                    const currency = plan.currency === 'PKR' ? 'Rs.' : '$';
+
+                    const planCol = document.createElement('div');
+                    planCol.className = 'col-md-6';
+
+                    const planCard = document.createElement('div');
+                    planCard.className = 'plan-card';
+                    if (selectedPlan === plan.plan_name) {
+                        planCard.classList.add('selected');
+                    }
+                    planCard.dataset.planId = plan.plan_name;
+
+                    planCard.innerHTML = `
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h4 class="mb-0">${plan.plan_name}</h4>
+                        </div>
+                        <div class="plan-price">${currency}${monthlyPrice}<span class="plan-cycle">/month</span></div>
+
+                    `;
+
+                    planCard.addEventListener('click', () => {
+                        selectedPlan = plan.plan_name;
+                        document.querySelectorAll('.plan-card').forEach(c => c.classList.remove('selected'));
+                        planCard.classList.add('selected');
+                        renderSelectedPlanDetails(plan);
+                    });
+
+                    planCol.appendChild(planCard);
+                    plansContainer.appendChild(planCol);
+                });
+
+                // If no plan is selected, select the first one by default
+                if (!selectedPlan && plans.length > 0) {
+                    selectedPlan = plans[0].plan_name;
+                    const firstCard = plansContainer.querySelector(`[data-plan-id="${selectedPlan}"]`);
+                    if (firstCard) {
+                        firstCard.classList.add('selected');
+                        renderSelectedPlanDetails(plans[0]);
+                    }
+                }
+            }
+
+            function renderSelectedPlanDetails(plan) {
+                const cycleId = planCycleSelect.value;
+                const monthlyPrice = (plan.total_price / cycleId).toFixed(2);
+                const totalPrice = plan.total_price.toFixed(2);
+                const currency = plan.currency === 'PKR' ? 'Rs.' : '$';
+
+                selectedPlanDetails.innerHTML = `
+                    <div class="selected-plan-header d-flex flex-column flex-sm-row align-items-sm-center justify-content-between">
+                        <div class="selected-plan-title">${plan.plan_name} Plan</div>
+                        <div class="selected-plan-price mt-2 mt-sm-0">${currency}${monthlyPrice}<span class="text-muted fs-6">/month</span></div>
+                    </div>
+
+                    <div class="selected-plan-features">
+                        <h6 class="fw-bold mb-3">Included Features:</h6>
+                        ${plan.services.map(service => `
+                            <div class="selected-plan-feature">
+                                <svg class="bi" width="20" height="20" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z" clip-rule="evenodd" />
+                                </svg>
+                                <div>
+                                    <div class="fw-medium">${service.service_quantity}x ${service.service_name}</div>
+                                    <small class="small">${service.service_description || 'No description available'}</small>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                    <div class="selected-plan-summary mt-4 pt-3 border-top">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Billing Cycle:</span>
+                            <span class="fw-medium">${cycleId} Months</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Monthly Price:</span>
+                            <span class="fw-medium">${currency}${monthlyPrice}</span>
+                        </div>
+                        <div class="d-flex justify-content-between fw-bold fs-5 mt-3 pt-2 border-top">
+                            <span>Total:</span>
+                            <span>${currency}${totalPrice}</span>
+                        </div>
+                    </div>
+                `;
+
+                updatePriceDisplays(plan, cycleId);
+            }
+
+            // Event listener for plan cycle change
+            planCycleSelect.addEventListener("change", function () {
+                fetchPlans(this.value);
+            });
+
+            // Initial fetch
+            if (planCycleSelect.value) {
+                fetchPlans(planCycleSelect.value);
+            } else if (planCycleSelect.options.length > 0) {
+                planCycleSelect.selectedIndex = 0;
+                fetchPlans(planCycleSelect.value);
+            }
+
+            // Form submission handler
+            document.getElementById('organizationForm').addEventListener('submit', function(e) {
+                if (!selectedPlan) {
+                    e.preventDefault();
+                    Swal.fire({
+                        title: 'Plan Not Selected',
+                        text: 'Please select a membership plan before submitting.',
+                        icon: 'warning',
+                        confirmButtonText: 'OK'
+                    });
+                }
+            });
         });
     </script>
 
