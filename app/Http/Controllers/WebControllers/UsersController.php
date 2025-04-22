@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
+use Stripe\Customer;
 
 class UsersController extends Controller
 {
@@ -84,6 +85,19 @@ class UsersController extends Controller
 
         DB::beginTransaction();
         try {
+            $stripeCustomer = Customer::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'phone' => $request->phone_no,
+                'address' => [
+                    'line1' => $request->location,
+                    'city' => $request->city,
+                    'state' => $request->province,
+                    'postal_code' => $request->postal_code,
+                    'country' => $request->country,
+                ],
+            ]);
+
             $address = Address::create([
                 'location' => $request->location,
                 'country' => $request->country,
@@ -103,6 +117,7 @@ class UsersController extends Controller
                 'role_id' => $request->role_id,
                 'address_id' => $address->id,
                 'date_of_birth' => $request->date_of_birth,
+                'customer_payment_id' => $stripeCustomer->id,
             ]);
 
             DB::commit();
