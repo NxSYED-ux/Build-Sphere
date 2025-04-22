@@ -23,8 +23,9 @@ return new class extends Migration
             $table->string('source_name');
 
             $table->string('billing_cycle');
-            $table->string('subscription_status'); // e.g., "active", "canceled"
+            $table->string('subscription_status'); // e.g., "Active", "Canceled"
             $table->decimal('price_at_subscription', 10, 2);
+            $table->string('currency_at_subscription');
 
             $table->timestamp('trial_ends_at')->nullable();
             $table->timestamp('ends_at')->nullable(); // Actual subscription end date

@@ -12,6 +12,7 @@ use App\Models\Subscription;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\Rule;
 
 class PlanController extends Controller
 {
@@ -116,7 +117,14 @@ class PlanController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'plan_name' => 'required|string|max:255|unique:plans,name',
+            'plan_name' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('plans', 'name')->where(function ($query) {
+                    return $query->where('status', '!=', 'Deleted');
+                }),
+            ],
             'plan_description' => 'nullable|string',
             'currency' => 'required|string|size:3',
             'status' => 'required|in:Active,Inactive,Custom',
@@ -177,6 +185,7 @@ class PlanController extends Controller
             }
 
             $plan = Plan::where('id', $id)
+                ->where('status', '!=', 'Deleted')
                 ->whereHas('services', function ($query) use ($billing_cycle) {
                     $query->with('serviceCatalog')
                         ->whereHas('prices', function ($priceQuery) use ($billing_cycle) {
@@ -325,7 +334,14 @@ class PlanController extends Controller
     {
         $validated = $request->validate([
             'plan_id' => 'required|exists:plans,id',
-            'plan_name' => 'required|string|max:255|unique:plans,name,' . $request->plan_id . ',id',
+            'plan_name' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('plans', 'name')->where(function ($query) {
+                    return $query->where('status', '!=', 'Deleted');
+                })->ignore($request->plan_id),
+            ],
             'plan_description' => 'nullable|string',
             'currency' => 'required|string|size:3',
             'status' => 'required|in:Active,Inactive,Custom',
@@ -354,8 +370,9 @@ class PlanController extends Controller
             }
 
             if (in_array($plan->status, ['Active', 'Custom']) && $request->status === 'Inactive') {
-                $hasActiveSubscriptions = $plan->subscriptions()
-                    ->where('subscription_status', 'Active')
+                $hasActiveSubscriptions = Subscription::where('subscription_status', 'Active')
+                    ->where('source_id', $plan->id)
+                    ->where('source_name', 'plan')
                     ->exists();
 
                 if ($hasActiveSubscriptions) {
@@ -405,7 +422,7 @@ class PlanController extends Controller
         }
     }
 
-    public function delete($id)
+    public function destroy($id)
     {
         $plan = Plan::find($id);
 
@@ -413,8 +430,9 @@ class PlanController extends Controller
             return redirect()->back()->with('error', 'Plan not found');
         }
 
-        $hasActiveSubscriptions = $plan->subscriptions()
-            ->where('subscription_status', 'Active')
+        $hasActiveSubscriptions = Subscription::where('subscription_status', 'Active')
+            ->where('source_id', $plan->id)
+            ->where('source_name', 'plan')
             ->exists();
 
         if ($hasActiveSubscriptions) {

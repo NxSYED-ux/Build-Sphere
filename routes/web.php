@@ -90,7 +90,7 @@ Route::prefix('admin')->middleware(['auth.jwt'])->group(function () {
         Route::get('/{id}/show', [PlanController::class, 'show'])->name('plans.show');
         Route::get('/{id}/edit', [PlanController::class, 'edit'])->name('plans.edit');
         Route::put('/', [PlanController::class, 'update'])->name('plans.update');
-
+        Route::delete('/{id}', [PlanController::class, 'destroy'])->name('plans.destroy');
 
     });
 

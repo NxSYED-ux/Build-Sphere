@@ -168,6 +168,19 @@ class CheckOutController extends Controller
                 DB::beginTransaction();
 
                 try {
+                    $subscription = Subscription::create([
+                        'customer_payment_id' => $user->customer_payment_id,
+                        'user_id' => $user->id,
+                        'organization_id' => $request->organization_id,
+                        'source_id' => $plan->id,
+                        'source_name' => 'plan',
+                        'billing_cycle' => $request->plan_cycle,
+                        'subscription_status' => 'Active',
+                        'price_at_subscription' => $planDetails['total_price'],
+                        'currency_at_subscription' => $plan->currency,
+                        'ends_at' => now()->addMonths((int) $request->plan_cycle),
+                    ]);
+
                     $transaction = Transaction::create([
                         'transaction_title' => "{$plan->name} ({$request->plan_cycle} Months)",
                         'transaction_category' => 'New',
@@ -183,20 +196,8 @@ class CheckOutController extends Controller
                         'billing_cycle' => $request->plan_cycle . ' Months',
                         'subscription_start_date' => now(),
                         'subscription_end_date' => now()->addMonths((int) $request->plan_cycle),
-                        'source_id' => $plan->id,
-                        'source_name' => 'plan',
-                    ]);
-
-                    $subscription = Subscription::create([
-                        'customer_payment_id' => $user->customer_payment_id,
-                        'user_id' => $user->id,
-                        'organization_id' => $request->organization_id,
-                        'source_id' => $plan->id,
-                        'source_name' => 'plan',
-                        'billing_cycle' => $request->plan_cycle,
-                        'subscription_status' => 'Active',
-                        'price_at_subscription' => $planDetails['total_price'],
-                        'ends_at' => now()->addMonths((int) $request->plan_cycle),
+                        'source_id' => $subscription->id,
+                        'source_name' => 'subscription',
                     ]);
 
                     foreach ($planDetails['services'] as $service) {

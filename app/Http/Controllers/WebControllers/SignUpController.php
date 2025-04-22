@@ -138,13 +138,11 @@ class SignUpController extends Controller
 
             $profileImage = null;
             if($request->hasFile('picture')){
-                DB::rollBack();
                 $profileImage = $this->handleFileUpload($request, 'picture', 'users');
             }
 
             $organizationImage = null;
             if($request->hasFile('org_picture')){
-                DB::rollBack();
                 $organizationImage = $this->handleFileUpload($request, 'org_picture','organizations');
             }
 
