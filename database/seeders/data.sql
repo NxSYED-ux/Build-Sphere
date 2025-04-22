@@ -49,10 +49,10 @@ INSERT INTO `users` (`id`, `name`, `email`, `password`, `phone_no`, `cnic`, `dat
 (15, 'Minahil Pathan', 'minahil@gmail.com', '$2y$12$yk.kQEOK1BYrrYEW1yG1Z.FmvVDAKFXMD.TWmsOsMy9Pmwh4HDcnS', '0300-0000015', '35202-0000001-5', '2002-07-29', 'Female', 'uploads/users/images/1740824789_User_15.jpg', 5, 22, 1, NULL, 1, 1, '2025-03-20 12:00:17', '2025-03-20 12:01:49');
 
 
-INSERT INTO `organizations` (`id`, `name`, `address_id`, `status`, `membership_start_date`, `membership_end_date`, `owner_id`, `created_by`, `updated_by`, `created_at`, `updated_at`) VALUES
-(1, 'Bahria Town', 1, 'Enable', '2025-03-01', '2025-03-01', 2, 1, 1, '2025-02-28 14:50:35', '2025-02-28 14:50:35'),
-(2, 'Etihad Town', 2, 'Enable', '2025-05-31', '2025-05-31', 3, 1, 1, '2025-02-28 14:50:35', '2025-02-28 14:50:35'),
-(3, 'AL Noor', 3, 'Enable', '2025-03-20', '2026-12-20', 4, 1, 1, '2025-03-20 04:28:27', '2025-03-20 13:46:41');
+INSERT INTO heights.organizations (id, name, address_id, status, owner_id, created_by, updated_by, created_at, updated_at, payment_gateway_name, payment_gateway_merchant_id, is_online_payment_enabled) VALUES (1, 'Bahria Town', 1, 'Enable', 2, 1, 1, '2025-02-28 14:50:35', '2025-02-28 14:50:35', 'Stripe', null, 0);
+INSERT INTO heights.organizations (id, name, address_id, status, owner_id, created_by, updated_by, created_at, updated_at, payment_gateway_name, payment_gateway_merchant_id, is_online_payment_enabled) VALUES (2, 'Etihad Town', 2, 'Enable', 3, 1, 1, '2025-02-28 14:50:35', '2025-02-28 14:50:35', 'Stripe', null, 0);
+INSERT INTO heights.organizations (id, name, address_id, status, owner_id, created_by, updated_by, created_at, updated_at, payment_gateway_name, payment_gateway_merchant_id, is_online_payment_enabled) VALUES (3, 'AL Noor', 3, 'Enable', 4, 1, 1, '2025-03-20 04:28:27', '2025-03-20 13:46:41', 'Stripe', null, 0);
+
 
 INSERT INTO `organizationpictures` (`id`, `organization_id`, `file_path`, `file_name`, `created_at`, `updated_at`) VALUES
 (1, 1, 'uploads/organizations/images/1734415026_Organization_1.jpeg', '1734415026_Organization_1.jpeg', '2025-02-28 14:53:27', '2025-02-28 14:53:27'),

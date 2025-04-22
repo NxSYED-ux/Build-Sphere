@@ -18,18 +18,14 @@ class Organization extends Model
         'owner_id',
         'address_id',
         'status',
-        'membership_start_date',
-        'membership_end_date',
+        'payment_gateway_name',
+        'payment_gateway_merchant_id',
+        'is_online_payment_enabled',
         'created_by',
         'updated_by',
     ];
 
     public $timestamps = true;
-
-    protected $casts = [
-        'membership_start_date' => 'date',
-        'membership_end_date' => 'date',
-    ];
 
     // Belongs to Relations
     public function address()
