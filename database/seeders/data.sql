@@ -514,7 +514,9 @@ INSERT INTO `rolepermissions` (`id`, `role_id`, `permission_id`, `status`, `gran
 (144, 5, 51, 1, 1, '2025-03-29 11:46:36', '2025-03-29 11:46:36'),
 (145, 5, 52, 1, 1, '2025-03-29 11:46:36', '2025-03-29 11:46:36'),
 (146, 5, 53, 1, 1, '2025-03-29 11:46:36', '2025-03-29 11:46:36'),
-(147, 5, 54, 1, 1, '2025-03-29 11:46:36', '2025-03-29 11:46:36');
+(147, 5, 54, 1, 1, '2025-03-29 11:46:36', '2025-03-29 11:46:36'),
+(148, 5, 55, 1, 1, '2025-03-29 11:46:36', '2025-03-29 11:46:36'),
+(149, 5, 56, 1, 1, '2025-03-29 11:46:36', '2025-03-29 11:46:36');
 
 
 INSERT INTO heights.plans (id, name, description, currency, status, created_at, updated_at) VALUES (1, 'Basic', 'Essential tools for managing a single building and handling daily operations with ease.', 'PKR', 'Active', '2025-04-09 18:26:50', '2025-04-22 14:09:43');
