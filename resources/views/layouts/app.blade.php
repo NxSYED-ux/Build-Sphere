@@ -123,21 +123,24 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            text-decoration: none;
+            cursor: pointer;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
         }
 
         .add_button:hover {
-            width: 45px;
-            height: 45px;
             opacity: 0.9;
-            margin-right: 10px;
             background-color: #adadad;
             color: black;
-            border: 1px solid grey;
-            font-size: 25px;
-            font-weight: bold;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        }
+
+        .add_button:focus,
+        .add_button:active,
+        .add_button:focus-visible {
+            outline: none !important;
+            box-shadow: none !important;
+            background-color: #adadad !important;
         }
 
         .hidden {

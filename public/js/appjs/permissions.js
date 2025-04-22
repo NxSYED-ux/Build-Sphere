@@ -204,12 +204,10 @@ function showAllPermissionBlocks() {
 
     allSelectors.forEach(selector => {
         if (selector.startsWith('.')) {
-            // Handle class selectors
             document.querySelectorAll(selector).forEach(el => {
                 el.classList.remove('hidden');
             });
         } else {
-            // Handle ID selectors
             const el = document.querySelector(selector);
             if (el) el.classList.remove('hidden');
         }

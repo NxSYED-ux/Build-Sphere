@@ -273,6 +273,12 @@
             background-color: var(--breadcrumb-text2-color); /* Bootstrap 'success' green */
             border-color: #198754;
         }
+
+        #menu-icon {
+            position: relative;
+            z-index: 10; /* Adjust as needed */
+        }
+
     </style>
 @endpush
 
@@ -316,48 +322,63 @@
                                 <div class="tab-content mt-0" id="myTabContent">
                                     <!-- Organization Tab -->
                                     <div class="tab-pane fade {{ $activeTab === 'Tab1' ? 'show active' : '' }}" id="dropdwon-types" role="tabpanel" aria-labelledby="dropdwon-types-tab">
-                                        <div class="card shadow p-3 mb-5 bg-body rounded" style="border: none;">
-                                            <div class="card-body" style="overflow-x: auto;">
-{{--                                                <h4 class="mb-4">Organizations</h4>--}}
-                                                <div style="overflow-x: auto;">
-                                                    <table id="organizationTable" class="table shadow-sm table-hover table-striped">
-                                                        <thead class="shadow">
-                                                            <tr>
-                                                                <th>ID</th>
-                                                                <th>Picture</th>
-                                                                <th>Name</th>
-                                                                <th>Owner</th>
-                                                                <th>City</th>
-                                                                <th>Status</th>
-                                                                <th class="text-center" style="width: 70px;">Actions</th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                            @forelse ($organizations ?? [] as $organization)
-                                                                <tr>
-                                                                    <td>{{ $organization->id }}</td>
-                                                                    <td>
-                                                                        <img src="{{ asset(optional($organization->pictures->first())->file_path ?? 'img/organization_placeholder.png') }}" alt="Organization Picture" class="rounded-circle" width="50" height="50">
-                                                                    </td>
-                                                                    <td>{{ $organization->name }}</td>
-                                                                    <td>{{ $organization->owner->name }}</td>
-                                                                    <td>{{ $organization->address->city ?? 'N/A' }}</td>
-                                                                    <td>{{ $organization->status }}</td>
-                                                                    <td class="text-center" style="width: 70px;">
-                                                                        <a href="{{ route('organizations.edit', $organization->id) }}" class="text-warning" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit">
-                                                                            <x-icon name="edit" type="icon" class="" size="20px" />
-                                                                        </a>
+                                        <div class="card shadow px-3 pb-3 pt-0 mb-5 mt-0 bg-body rounded" style="border: none;">
+                                            <div class="card-body" style="position: relative; overflow-x: auto;">
+                                                <div class="d-flex align-items-center position-absolute" style="top: 30px; left: 30px;">
+                                                    <button class="btn btn-light" type="button" id="menu-icon" data-bs-toggle="dropdown" aria-expanded="false">
+                                                        <x-icon name="export" type="icon" class="" size="20px" />
+                                                    </button>
 
-                                                                    </td>
-                                                                </tr>
-                                                                @empty
-                                                                    <tr>
-                                                                        <td colspan="9" class="text-center">No organizations found.</td>
-                                                                    </tr>
-                                                                @endforelse
-                                                        </tbody>
-                                                    </table>
+                                                    <ul id="button-list" class="dropdown-menu dropdown-menu-end" style="position: absolute; top: 100%; left: 0;">
+                                                        <li><button class="dropdown-item" type="button" id="copyButton">Copy</button></li>
+                                                        <li><button class="dropdown-item" type="button" id="csvButton">CSV</button></li>
+                                                        <li><button class="dropdown-item" type="button" id="excelButton">Excel</button></li>
+                                                        <li><button class="dropdown-item" type="button" id="pdfButton">PDF</button></li>
+                                                        <li><button class="dropdown-item" type="button" id="printButton">Print</button></li>
+                                                    </ul>
                                                 </div>
+                                                <table id="organizationTable" class="table shadow-sm table-hover table-striped">
+                                                    <thead class="shadow">
+                                                        <tr>
+                                                            <th>ID</th>
+                                                            <th>Picture</th>
+                                                            <th>Name</th>
+                                                            <th>Owner</th>
+                                                            <th>City</th>
+                                                            <th>Status</th>
+                                                            <th class="text-center" style="width: 70px;">Actions</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @forelse ($organizations ?? [] as $organization)
+                                                            <tr>
+                                                                <td>{{ $organization->id }}</td>
+                                                                <td>
+                                                                    <img src="{{ asset(optional($organization->pictures->first())->file_path ?? 'img/organization_placeholder.png') }}" alt="Organization Picture" class="rounded-circle" width="50" height="50">
+                                                                </td>
+                                                                <td>{{ $organization->name }}</td>
+                                                                <td>{{ $organization->owner->name }}</td>
+                                                                <td>{{ $organization->address->city ?? 'N/A' }}</td>
+                                                                <td>{{ $organization->status }}</td>
+                                                                <td class="text-center" style="width: 70px;">
+                                                                    <a href="{{ route('organizations.edit', $organization->id) }}" class="text-warning" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit">
+                                                                        <x-icon name="edit" type="icon" class="" size="20px" />
+                                                                    </a>
+
+                                                                </td>
+                                                            </tr>
+                                                            @empty
+                                                                <tr>
+                                                                    <td colspan="9" class="text-center">No organizations found.</td>
+                                                                </tr>
+                                                            @endforelse
+                                                    </tbody>
+                                                    @if ($organizations)
+                                                        <div class="mt-3 custom-pagination-wrapper">
+                                                            {{ $organizations->links('pagination::bootstrap-5') }}
+                                                        </div>
+                                                    @endif
+                                                </table>
                                             </div>
                                         </div>
                                     </div>
@@ -637,6 +658,68 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
 
+    <!-- Data Tables Script -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var table = new DataTable("#organizationTable", {
+                paging: false,
+                info: false,
+                dom: "Bfrtip",
+                lengthChange: false,
+                language: {
+                    searchPlaceholder: "Search users..."
+                },
+                buttons: [
+                    {
+                        extend: "csv",
+                        text: "CSV",
+                        className: "btn btn-secondary d-none"
+                    },
+                    {
+                        extend: "excel",
+                        text: "Excel",
+                        className: "btn btn-secondary d-none"
+                    },
+                    {
+                        extend: "pdf",
+                        text: "PDF",
+                        className: "btn btn-secondary d-none"
+                    },
+                    {
+                        extend: "print",
+                        text: "Print",
+                        className: "btn btn-secondary d-none"
+                    }
+                ]
+            });
+
+            function triggerButton(buttonClass, logMessage) {
+                console.log(logMessage);
+                table.buttons(buttonClass).trigger();
+            }
+
+            document.getElementById("csvButton")?.addEventListener("click", function () {
+                triggerButton(".buttons-csv", "CSV Button clicked");
+            });
+
+            document.getElementById("excelButton")?.addEventListener("click", function () {
+                triggerButton(".buttons-excel", "Excel Button clicked");
+            });
+
+            document.getElementById("pdfButton")?.addEventListener("click", function () {
+                triggerButton(".buttons-pdf", "PDF Button clicked");
+            });
+
+            document.getElementById("printButton")?.addEventListener("click", function () {
+                triggerButton(".buttons-print", "Print Button clicked");
+            });
+
+            document.getElementById("colvisButton")?.addEventListener("click", function () {
+                triggerButton(".buttons-colvis", "Column Visibility Button clicked");
+            });
+        });
+    </script>
+
     <!-- Tab Active -->
     <script>
         document.addEventListener('DOMContentLoaded', function () {
@@ -645,25 +728,6 @@
                 const tabTrigger = new bootstrap.Tab(document.querySelector('#tab_2'));
                 tabTrigger.show();
             }
-        });
-    </script>
-
-    <!-- Data Tables Script -->
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            new DataTable("#organizationTable", {
-                pageLength: 10,
-                lengthMenu: [10, 20, 50, 100],
-                language: {
-                    paginate: {
-                        first: "First",
-                        last: "Last",
-                        next: "Next",
-                        previous: "Previous"
-                    },
-                    searchPlaceholder: "Search users..."
-                }
-            });
         });
     </script>
 

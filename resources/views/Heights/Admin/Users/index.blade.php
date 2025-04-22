@@ -227,7 +227,7 @@
                                         </table>
 
                                         @if($users)
-                                            <div class="mt-3">
+                                            <div class="mt-3 custom-pagination-wrapper">
                                                 {{ $users->links('pagination::bootstrap-5') }}
                                             </div>
                                         @endif

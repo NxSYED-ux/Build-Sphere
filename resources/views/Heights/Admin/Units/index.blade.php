@@ -231,7 +231,7 @@
                                         </table>
 
                                         @if ($units)
-                                            <div class="mt-3">
+                                            <div class="mt-3 custom-pagination-wrapper">
                                                 {{ $units->links('pagination::bootstrap-5') }}
                                             </div>
                                         @endif

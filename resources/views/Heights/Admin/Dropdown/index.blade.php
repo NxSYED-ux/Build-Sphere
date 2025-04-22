@@ -11,13 +11,14 @@
         }
 
         .nav-tabs .nav-link {
-            background-color: var(--nav-tabs-inactive-bg-color) !important; /* Change to your desired color */
+            background-color: var(--body-background-color) !important; /* Change to your desired color */
             color: var(--nav-tabs-inactive-text-color) !important;
             border-bottom: 1px solid var(--nav-tabs-inactive-border-color) !important; /* Corrected */
         }
         .nav-tabs .nav-link.active {
             background-color: var(--nav-tabs-active-bg-color) !important; /* Change to your desired color */
             color: var(--nav-tabs-active-text-color) !important;
+            border-bottom: 2px solid #008CFF !important; /* Corrected */
         }
 
 

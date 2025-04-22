@@ -24,7 +24,7 @@ class OrganizationController extends Controller
     {
         try {
             $activeTab = 'Tab1';
-            $organizations = Organization::with('address', 'pictures', 'owner')->get();
+            $organizations = Organization::with('address', 'pictures', 'owner')->paginate(10);
             $dropdownData = DropdownType::with(['values.childs.childs'])->where('type_name', 'Country')->get(); // Country -> Province -> City
             $owners = User::where('role_id', 2)
                 ->whereNotIn('id', Organization::pluck('owner_id'))
