@@ -2843,90 +2843,6 @@
           <option name="workspaceId" value="drafts" />
         </requestHistoryState>
         <requestHistoryState>
-          <option name="dateTime" value="1745234663197" />
-          <option name="id" value="ccf4cbda-9428-4aed-ae87-b24539315f00" />
-          <option name="request">
-            <requestState>
-              <option name="auth">
-                <authState>
-                  <option name="bearer">
-                    <pE>
-                      <option name="token" value="eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwMDAvYXBpL2F1dGgvdXNlci1sb2dpbiIsImlhdCI6MTc0NTIzNDE4OCwiZXhwIjoxNzQ3ODI2MTg4LCJuYmYiOjE3NDUyMzQxODgsImp0aSI6IjlneXZhRzBKRnVZU2lXd3oiLCJzdWIiOiIyNiIsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjciLCJ1c2VyIjp7ImlkIjoyNiwicm9sZV9pZCI6Miwicm9sZV9uYW1lIjoiT3duZXIiLCJvcmdhbml6YXRpb25faWQiOjR9fQ.5o9BKkQdVdbToOaomkEywqWkMe0mzE4D-mdI9s36epo" />
-                    </pE>
-                  </option>
-                  <option name="type" value="BEARER" />
-                </authState>
-              </option>
-              <option name="body">
-                <bodyState>
-                  <option name="raw" value="{&#10;  &#10;}" />
-                  <option name="type" value="JSON" />
-                </bodyState>
-              </option>
-              <option name="headers">
-                <list>
-                  <headerState>
-                    <option name="key" value="Accept" />
-                    <option name="value" value="application/json" />
-                  </headerState>
-                </list>
-              </option>
-              <option name="id" value="024d89b6-773b-4518-9343-d3ffdb21c254" />
-              <option name="method" value="GET" />
-              <option name="name" value="Add Card" />
-              <option name="url" value="http://localhost:8000/api/user/cards" />
-            </requestState>
-          </option>
-          <option name="response">
-            <responseState>
-              <option name="bodyBytesBase64" value="eyJjYXJkcyI6W3siaWQiOiJwbV8xUkdIalVHYWllMDdHVVNZZ2xvRU9lM2ciLCJicmFuZCI6Im1hc3RlcmNhcmQiLCJsYXN0NCI6IjU0NTQiLCJleHBfbW9udGgiOjUsImV4cF95ZWFyIjoyMDI5LCJpc19kZWZhdWx0Ijp0cnVlfSx7ImlkIjoicG1fMVJHSGdzR2FpZTA3R1VTWUNMZ21UeE9SIiwiYnJhbmQiOiJtYXN0ZXJjYXJkIiwibGFzdDQiOiI1NDU0IiwiZXhwX21vbnRoIjo5LCJleHBfeWVhciI6MjAyOSwiaXNfZGVmYXVsdCI6ZmFsc2V9XX0=" />
-              <option name="bodyString" value="{&#10;  &quot;cards&quot;: [&#10;    {&#10;      &quot;id&quot;: &quot;pm_1RGHjUGaie07GUSYgloEOe3g&quot;,&#10;      &quot;brand&quot;: &quot;mastercard&quot;,&#10;      &quot;last4&quot;: &quot;5454&quot;,&#10;      &quot;exp_month&quot;: 5,&#10;      &quot;exp_year&quot;: 2029,&#10;      &quot;is_default&quot;: true&#10;    },&#10;    {&#10;      &quot;id&quot;: &quot;pm_1RGHgsGaie07GUSYCLgmTxOR&quot;,&#10;      &quot;brand&quot;: &quot;mastercard&quot;,&#10;      &quot;last4&quot;: &quot;5454&quot;,&#10;      &quot;exp_month&quot;: 9,&#10;      &quot;exp_year&quot;: 2029,&#10;      &quot;is_default&quot;: false&#10;    }&#10;  ]&#10;}" />
-              <option name="code" value="200" />
-              <option name="connectionEstablishingTime" value="1" />
-              <option name="contentType" value="application/json" />
-              <option name="headers">
-                <list>
-                  <headerState>
-                    <option name="key" value="Host" />
-                    <option name="value" value="localhost:8000" />
-                  </headerState>
-                  <headerState>
-                    <option name="key" value="Connection" />
-                    <option name="value" value="close" />
-                  </headerState>
-                  <headerState>
-                    <option name="key" value="X-Powered-By" />
-                    <option name="value" value="PHP/8.2.12" />
-                  </headerState>
-                  <headerState>
-                    <option name="key" value="Cache-Control" />
-                    <option name="value" value="no-cache, private" />
-                  </headerState>
-                  <headerState>
-                    <option name="key" value="Date" />
-                    <option name="value" value="Mon, 21 Apr 2025 11:24:23 GMT" />
-                  </headerState>
-                  <headerState>
-                    <option name="key" value="Content-Type" />
-                    <option name="value" value="application/json" />
-                  </headerState>
-                  <headerState>
-                    <option name="key" value="Access-Control-Allow-Origin" />
-                    <option name="value" value="*" />
-                  </headerState>
-                </list>
-              </option>
-              <option name="id" value="ccf4cbda-9428-4aed-ae87-b24539315f00" />
-              <option name="message" value="OK" />
-              <option name="prettyResponseType" value="JSON" />
-              <option name="rawBodyString" value="{&quot;cards&quot;:[{&quot;id&quot;:&quot;pm_1RGHjUGaie07GUSYgloEOe3g&quot;,&quot;brand&quot;:&quot;mastercard&quot;,&quot;last4&quot;:&quot;5454&quot;,&quot;exp_month&quot;:5,&quot;exp_year&quot;:2029,&quot;is_default&quot;:true},{&quot;id&quot;:&quot;pm_1RGHgsGaie07GUSYCLgmTxOR&quot;,&quot;brand&quot;:&quot;mastercard&quot;,&quot;last4&quot;:&quot;5454&quot;,&quot;exp_month&quot;:9,&quot;exp_year&quot;:2029,&quot;is_default&quot;:false}]}" />
-              <option name="size" value="254" />
-              <option name="time" value="1672" />
-            </responseState>
-          </option>
-          <option name="workspaceId" value="drafts" />
-        </requestHistoryState>
-        <requestHistoryState>
           <option name="dateTime" value="1745234764509" />
           <option name="id" value="afd1128a-aa7a-4268-bdf9-ddbe52101eea" />
           <option name="request">
@@ -3257,84 +3173,6 @@
           <option name="workspaceId" value="drafts" />
         </requestHistoryState>
         <requestHistoryState>
-          <option name="dateTime" value="1745234855124" />
-          <option name="id" value="7971441c-12fc-450e-96d2-07e196e41301" />
-          <option name="request">
-            <requestState>
-              <option name="auth">
-                <authState>
-                  <option name="bearer">
-                    <pE>
-                      <option name="token" value="eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwMDAvYXBpL2F1dGgvdXNlci1sb2dpbiIsImlhdCI6MTc0NTIzNDE4OCwiZXhwIjoxNzQ3ODI2MTg4LCJuYmYiOjE3NDUyMzQxODgsImp0aSI6IjlneXZhRzBKRnVZU2lXd3oiLCJzdWIiOiIyNiIsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjciLCJ1c2VyIjp7ImlkIjoyNiwicm9sZV9pZCI6Miwicm9sZV9uYW1lIjoiT3duZXIiLCJvcmdhbml6YXRpb25faWQiOjR9fQ.5o9BKkQdVdbToOaomkEywqWkMe0mzE4D-mdI9s36epo" />
-                    </pE>
-                  </option>
-                  <option name="type" value="BEARER" />
-                </authState>
-              </option>
-              <option name="headers">
-                <list>
-                  <headerState>
-                    <option name="key" value="Accept" />
-                    <option name="value" value="application/json" />
-                  </headerState>
-                </list>
-              </option>
-              <option name="id" value="e26c28fe-7c95-4f65-b1e3-ba6bf3b66088" />
-              <option name="method" value="GET" />
-              <option name="name" value="Card" />
-              <option name="url" value="http://localhost:8000/api/user/cards" />
-            </requestState>
-          </option>
-          <option name="response">
-            <responseState>
-              <option name="bodyBytesBase64" value="eyJjYXJkcyI6W3siaWQiOiJwbV8xUkdIalVHYWllMDdHVVNZZ2xvRU9lM2ciLCJicmFuZCI6Im1hc3RlcmNhcmQiLCJsYXN0NCI6IjU0NTQiLCJleHBfbW9udGgiOjUsImV4cF95ZWFyIjoyMDI5LCJpc19kZWZhdWx0IjpmYWxzZX0seyJpZCI6InBtXzFSR0hnc0dhaWUwN0dVU1lDTGdtVHhPUiIsImJyYW5kIjoibWFzdGVyY2FyZCIsImxhc3Q0IjoiNTQ1NCIsImV4cF9tb250aCI6OSwiZXhwX3llYXIiOjIwMjksImlzX2RlZmF1bHQiOnRydWV9XX0=" />
-              <option name="bodyString" value="{&#10;  &quot;cards&quot;: [&#10;    {&#10;      &quot;id&quot;: &quot;pm_1RGHjUGaie07GUSYgloEOe3g&quot;,&#10;      &quot;brand&quot;: &quot;mastercard&quot;,&#10;      &quot;last4&quot;: &quot;5454&quot;,&#10;      &quot;exp_month&quot;: 5,&#10;      &quot;exp_year&quot;: 2029,&#10;      &quot;is_default&quot;: false&#10;    },&#10;    {&#10;      &quot;id&quot;: &quot;pm_1RGHgsGaie07GUSYCLgmTxOR&quot;,&#10;      &quot;brand&quot;: &quot;mastercard&quot;,&#10;      &quot;last4&quot;: &quot;5454&quot;,&#10;      &quot;exp_month&quot;: 9,&#10;      &quot;exp_year&quot;: 2029,&#10;      &quot;is_default&quot;: true&#10;    }&#10;  ]&#10;}" />
-              <option name="code" value="200" />
-              <option name="connectionEstablishingTime" value="4" />
-              <option name="contentType" value="application/json" />
-              <option name="headers">
-                <list>
-                  <headerState>
-                    <option name="key" value="Host" />
-                    <option name="value" value="localhost:8000" />
-                  </headerState>
-                  <headerState>
-                    <option name="key" value="Connection" />
-                    <option name="value" value="close" />
-                  </headerState>
-                  <headerState>
-                    <option name="key" value="X-Powered-By" />
-                    <option name="value" value="PHP/8.2.12" />
-                  </headerState>
-                  <headerState>
-                    <option name="key" value="Cache-Control" />
-                    <option name="value" value="no-cache, private" />
-                  </headerState>
-                  <headerState>
-                    <option name="key" value="Date" />
-                    <option name="value" value="Mon, 21 Apr 2025 11:27:35 GMT" />
-                  </headerState>
-                  <headerState>
-                    <option name="key" value="Content-Type" />
-                    <option name="value" value="application/json" />
-                  </headerState>
-                  <headerState>
-                    <option name="key" value="Access-Control-Allow-Origin" />
-                    <option name="value" value="*" />
-                  </headerState>
-                </list>
-              </option>
-              <option name="id" value="7971441c-12fc-450e-96d2-07e196e41301" />
-              <option name="message" value="OK" />
-              <option name="prettyResponseType" value="JSON" />
-              <option name="rawBodyString" value="{&quot;cards&quot;:[{&quot;id&quot;:&quot;pm_1RGHjUGaie07GUSYgloEOe3g&quot;,&quot;brand&quot;:&quot;mastercard&quot;,&quot;last4&quot;:&quot;5454&quot;,&quot;exp_month&quot;:5,&quot;exp_year&quot;:2029,&quot;is_default&quot;:false},{&quot;id&quot;:&quot;pm_1RGHgsGaie07GUSYCLgmTxOR&quot;,&quot;brand&quot;:&quot;mastercard&quot;,&quot;last4&quot;:&quot;5454&quot;,&quot;exp_month&quot;:9,&quot;exp_year&quot;:2029,&quot;is_default&quot;:true}]}" />
-              <option name="size" value="254" />
-              <option name="time" value="1503" />
-            </responseState>
-          </option>
-          <option name="workspaceId" value="drafts" />
-        </requestHistoryState>
-        <requestHistoryState>
           <option name="dateTime" value="1745234877497" />
           <option name="id" value="ba091988-88a7-40e1-8876-07ba3064b25c" />
           <option name="request">
@@ -3498,84 +3336,6 @@
               <option name="rawBodyString" value="{&quot;message&quot;:&quot;Card removed successfully.&quot;}" />
               <option name="size" value="40" />
               <option name="time" value="3387" />
-            </responseState>
-          </option>
-          <option name="workspaceId" value="drafts" />
-        </requestHistoryState>
-        <requestHistoryState>
-          <option name="dateTime" value="1745234983673" />
-          <option name="id" value="1c6e8050-e0a7-4714-8728-6460e96f6d52" />
-          <option name="request">
-            <requestState>
-              <option name="auth">
-                <authState>
-                  <option name="bearer">
-                    <pE>
-                      <option name="token" value="eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwMDAvYXBpL2F1dGgvdXNlci1sb2dpbiIsImlhdCI6MTc0NTIzNDE4OCwiZXhwIjoxNzQ3ODI2MTg4LCJuYmYiOjE3NDUyMzQxODgsImp0aSI6IjlneXZhRzBKRnVZU2lXd3oiLCJzdWIiOiIyNiIsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjciLCJ1c2VyIjp7ImlkIjoyNiwicm9sZV9pZCI6Miwicm9sZV9uYW1lIjoiT3duZXIiLCJvcmdhbml6YXRpb25faWQiOjR9fQ.5o9BKkQdVdbToOaomkEywqWkMe0mzE4D-mdI9s36epo" />
-                    </pE>
-                  </option>
-                  <option name="type" value="BEARER" />
-                </authState>
-              </option>
-              <option name="headers">
-                <list>
-                  <headerState>
-                    <option name="key" value="Accept" />
-                    <option name="value" value="application/json" />
-                  </headerState>
-                </list>
-              </option>
-              <option name="id" value="e26c28fe-7c95-4f65-b1e3-ba6bf3b66088" />
-              <option name="method" value="GET" />
-              <option name="name" value="Card" />
-              <option name="url" value="http://localhost:8000/api/user/cards" />
-            </requestState>
-          </option>
-          <option name="response">
-            <responseState>
-              <option name="bodyBytesBase64" value="eyJjYXJkcyI6W3siaWQiOiJwbV8xUkdIalVHYWllMDdHVVNZZ2xvRU9lM2ciLCJicmFuZCI6Im1hc3RlcmNhcmQiLCJsYXN0NCI6IjU0NTQiLCJleHBfbW9udGgiOjUsImV4cF95ZWFyIjoyMDI5LCJpc19kZWZhdWx0Ijp0cnVlfV19" />
-              <option name="bodyString" value="{&#10;  &quot;cards&quot;: [&#10;    {&#10;      &quot;id&quot;: &quot;pm_1RGHjUGaie07GUSYgloEOe3g&quot;,&#10;      &quot;brand&quot;: &quot;mastercard&quot;,&#10;      &quot;last4&quot;: &quot;5454&quot;,&#10;      &quot;exp_month&quot;: 5,&#10;      &quot;exp_year&quot;: 2029,&#10;      &quot;is_default&quot;: true&#10;    }&#10;  ]&#10;}" />
-              <option name="code" value="200" />
-              <option name="connectionEstablishingTime" value="2" />
-              <option name="contentType" value="application/json" />
-              <option name="headers">
-                <list>
-                  <headerState>
-                    <option name="key" value="Host" />
-                    <option name="value" value="localhost:8000" />
-                  </headerState>
-                  <headerState>
-                    <option name="key" value="Connection" />
-                    <option name="value" value="close" />
-                  </headerState>
-                  <headerState>
-                    <option name="key" value="X-Powered-By" />
-                    <option name="value" value="PHP/8.2.12" />
-                  </headerState>
-                  <headerState>
-                    <option name="key" value="Cache-Control" />
-                    <option name="value" value="no-cache, private" />
-                  </headerState>
-                  <headerState>
-                    <option name="key" value="Date" />
-                    <option name="value" value="Mon, 21 Apr 2025 11:29:43 GMT" />
-                  </headerState>
-                  <headerState>
-                    <option name="key" value="Content-Type" />
-                    <option name="value" value="application/json" />
-                  </headerState>
-                  <headerState>
-                    <option name="key" value="Access-Control-Allow-Origin" />
-                    <option name="value" value="*" />
-                  </headerState>
-                </list>
-              </option>
-              <option name="id" value="1c6e8050-e0a7-4714-8728-6460e96f6d52" />
-              <option name="message" value="OK" />
-              <option name="prettyResponseType" value="JSON" />
-              <option name="rawBodyString" value="{&quot;cards&quot;:[{&quot;id&quot;:&quot;pm_1RGHjUGaie07GUSYgloEOe3g&quot;,&quot;brand&quot;:&quot;mastercard&quot;,&quot;last4&quot;:&quot;5454&quot;,&quot;exp_month&quot;:5,&quot;exp_year&quot;:2029,&quot;is_default&quot;:true}]}" />
-              <option name="size" value="132" />
-              <option name="time" value="1518" />
             </responseState>
           </option>
           <option name="workspaceId" value="drafts" />
@@ -3749,252 +3509,6 @@
           <option name="workspaceId" value="drafts" />
         </requestHistoryState>
         <requestHistoryState>
-          <option name="dateTime" value="1745235019968" />
-          <option name="id" value="d6af5519-aced-4738-9d5f-866385494c99" />
-          <option name="request">
-            <requestState>
-              <option name="auth">
-                <authState>
-                  <option name="bearer">
-                    <pE>
-                      <option name="token" value="eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwMDAvYXBpL2F1dGgvdXNlci1sb2dpbiIsImlhdCI6MTc0NTIzNDE4OCwiZXhwIjoxNzQ3ODI2MTg4LCJuYmYiOjE3NDUyMzQxODgsImp0aSI6IjlneXZhRzBKRnVZU2lXd3oiLCJzdWIiOiIyNiIsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjciLCJ1c2VyIjp7ImlkIjoyNiwicm9sZV9pZCI6Miwicm9sZV9uYW1lIjoiT3duZXIiLCJvcmdhbml6YXRpb25faWQiOjR9fQ.5o9BKkQdVdbToOaomkEywqWkMe0mzE4D-mdI9s36epo" />
-                    </pE>
-                  </option>
-                  <option name="type" value="BEARER" />
-                </authState>
-              </option>
-              <option name="headers">
-                <list>
-                  <headerState>
-                    <option name="key" value="Accept" />
-                    <option name="value" value="application/json" />
-                  </headerState>
-                </list>
-              </option>
-              <option name="id" value="e26c28fe-7c95-4f65-b1e3-ba6bf3b66088" />
-              <option name="method" value="GET" />
-              <option name="name" value="Card" />
-              <option name="url" value="http://localhost:8000/api/user/cards" />
-            </requestState>
-          </option>
-          <option name="response">
-            <responseState>
-              <option name="bodyBytesBase64" value="eyJjYXJkcyI6W3siaWQiOiJwbV8xUkdIalVHYWllMDdHVVNZZ2xvRU9lM2ciLCJicmFuZCI6Im1hc3RlcmNhcmQiLCJsYXN0NCI6IjU0NTQiLCJleHBfbW9udGgiOjUsImV4cF95ZWFyIjoyMDI5LCJpc19kZWZhdWx0Ijp0cnVlfV19" />
-              <option name="bodyString" value="{&#10;  &quot;cards&quot;: [&#10;    {&#10;      &quot;id&quot;: &quot;pm_1RGHjUGaie07GUSYgloEOe3g&quot;,&#10;      &quot;brand&quot;: &quot;mastercard&quot;,&#10;      &quot;last4&quot;: &quot;5454&quot;,&#10;      &quot;exp_month&quot;: 5,&#10;      &quot;exp_year&quot;: 2029,&#10;      &quot;is_default&quot;: true&#10;    }&#10;  ]&#10;}" />
-              <option name="code" value="200" />
-              <option name="connectionEstablishingTime" value="2" />
-              <option name="contentType" value="application/json" />
-              <option name="headers">
-                <list>
-                  <headerState>
-                    <option name="key" value="Host" />
-                    <option name="value" value="localhost:8000" />
-                  </headerState>
-                  <headerState>
-                    <option name="key" value="Connection" />
-                    <option name="value" value="close" />
-                  </headerState>
-                  <headerState>
-                    <option name="key" value="X-Powered-By" />
-                    <option name="value" value="PHP/8.2.12" />
-                  </headerState>
-                  <headerState>
-                    <option name="key" value="Cache-Control" />
-                    <option name="value" value="no-cache, private" />
-                  </headerState>
-                  <headerState>
-                    <option name="key" value="Date" />
-                    <option name="value" value="Mon, 21 Apr 2025 11:30:19 GMT" />
-                  </headerState>
-                  <headerState>
-                    <option name="key" value="Content-Type" />
-                    <option name="value" value="application/json" />
-                  </headerState>
-                  <headerState>
-                    <option name="key" value="Access-Control-Allow-Origin" />
-                    <option name="value" value="*" />
-                  </headerState>
-                </list>
-              </option>
-              <option name="id" value="d6af5519-aced-4738-9d5f-866385494c99" />
-              <option name="message" value="OK" />
-              <option name="prettyResponseType" value="JSON" />
-              <option name="rawBodyString" value="{&quot;cards&quot;:[{&quot;id&quot;:&quot;pm_1RGHjUGaie07GUSYgloEOe3g&quot;,&quot;brand&quot;:&quot;mastercard&quot;,&quot;last4&quot;:&quot;5454&quot;,&quot;exp_month&quot;:5,&quot;exp_year&quot;:2029,&quot;is_default&quot;:true}]}" />
-              <option name="size" value="132" />
-              <option name="time" value="1531" />
-            </responseState>
-          </option>
-          <option name="workspaceId" value="drafts" />
-        </requestHistoryState>
-        <requestHistoryState>
-          <option name="dateTime" value="1745235032144" />
-          <option name="id" value="f9db984e-abd1-43e3-99bc-d48680b4cd91" />
-          <option name="request">
-            <requestState>
-              <option name="auth">
-                <authState>
-                  <option name="bearer">
-                    <pE>
-                      <option name="token" value="eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwMDAvYXBpL2F1dGgvdXNlci1sb2dpbiIsImlhdCI6MTc0NTIzNDE4OCwiZXhwIjoxNzQ3ODI2MTg4LCJuYmYiOjE3NDUyMzQxODgsImp0aSI6IjlneXZhRzBKRnVZU2lXd3oiLCJzdWIiOiIyNiIsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjciLCJ1c2VyIjp7ImlkIjoyNiwicm9sZV9pZCI6Miwicm9sZV9uYW1lIjoiT3duZXIiLCJvcmdhbml6YXRpb25faWQiOjR9fQ.5o9BKkQdVdbToOaomkEywqWkMe0mzE4D-mdI9s36epo" />
-                    </pE>
-                  </option>
-                  <option name="type" value="BEARER" />
-                </authState>
-              </option>
-              <option name="body">
-                <bodyState>
-                  <option name="raw" value="{&#10;  &quot;email&quot;: &quot;syedmu729@gmail.com&quot;,&#10;  &quot;password&quot;: &quot;Syed@123&quot;&#10;}" />
-                  <option name="type" value="JSON" />
-                </bodyState>
-              </option>
-              <option name="headers">
-                <list>
-                  <headerState>
-                    <option name="key" value="Accept" />
-                    <option name="value" value="application/json" />
-                  </headerState>
-                </list>
-              </option>
-              <option name="id" value="024d89b6-773b-4518-9343-d3ffdb21c254" />
-              <option name="method" value="POST" />
-              <option name="name" value="Add Card" />
-              <option name="url" value="http://localhost:8000/api/user/cards" />
-            </requestState>
-          </option>
-          <option name="response">
-            <responseState>
-              <option name="bodyBytesBase64" value="eyJtZXNzYWdlIjoiVGhlIHBheW1lbnQgbWV0aG9kIGlkIGZpZWxkIGlzIHJlcXVpcmVkLiIsImVycm9ycyI6eyJwYXltZW50X21ldGhvZF9pZCI6WyJUaGUgcGF5bWVudCBtZXRob2QgaWQgZmllbGQgaXMgcmVxdWlyZWQuIl19fQ==" />
-              <option name="bodyString" value="{&#10;  &quot;message&quot;: &quot;The payment method id field is required.&quot;,&#10;  &quot;errors&quot;: {&#10;    &quot;payment_method_id&quot;: [&#10;      &quot;The payment method id field is required.&quot;&#10;    ]&#10;  }&#10;}" />
-              <option name="code" value="422" />
-              <option name="connectionEstablishingTime" value="2" />
-              <option name="contentType" value="application/json" />
-              <option name="headers">
-                <list>
-                  <headerState>
-                    <option name="key" value="Host" />
-                    <option name="value" value="localhost:8000" />
-                  </headerState>
-                  <headerState>
-                    <option name="key" value="Connection" />
-                    <option name="value" value="close" />
-                  </headerState>
-                  <headerState>
-                    <option name="key" value="X-Powered-By" />
-                    <option name="value" value="PHP/8.2.12" />
-                  </headerState>
-                  <headerState>
-                    <option name="key" value="Cache-Control" />
-                    <option name="value" value="no-cache, private" />
-                  </headerState>
-                  <headerState>
-                    <option name="key" value="Date" />
-                    <option name="value" value="Mon, 21 Apr 2025 11:30:32 GMT" />
-                  </headerState>
-                  <headerState>
-                    <option name="key" value="Content-Type" />
-                    <option name="value" value="application/json" />
-                  </headerState>
-                  <headerState>
-                    <option name="key" value="Access-Control-Allow-Origin" />
-                    <option name="value" value="*" />
-                  </headerState>
-                </list>
-              </option>
-              <option name="id" value="f9db984e-abd1-43e3-99bc-d48680b4cd91" />
-              <option name="message" value="Unprocessable Content" />
-              <option name="prettyResponseType" value="JSON" />
-              <option name="rawBodyString" value="{&quot;message&quot;:&quot;The payment method id field is required.&quot;,&quot;errors&quot;:{&quot;payment_method_id&quot;:[&quot;The payment method id field is required.&quot;]}}" />
-              <option name="size" value="130" />
-              <option name="time" value="244" />
-            </responseState>
-          </option>
-          <option name="workspaceId" value="drafts" />
-        </requestHistoryState>
-        <requestHistoryState>
-          <option name="dateTime" value="1745235060783" />
-          <option name="id" value="5242b3f7-ff87-49d9-9bb2-df7b502f3ac5" />
-          <option name="request">
-            <requestState>
-              <option name="auth">
-                <authState>
-                  <option name="bearer">
-                    <pE>
-                      <option name="token" value="eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwMDAvYXBpL2F1dGgvdXNlci1sb2dpbiIsImlhdCI6MTc0NTIzNDE4OCwiZXhwIjoxNzQ3ODI2MTg4LCJuYmYiOjE3NDUyMzQxODgsImp0aSI6IjlneXZhRzBKRnVZU2lXd3oiLCJzdWIiOiIyNiIsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjciLCJ1c2VyIjp7ImlkIjoyNiwicm9sZV9pZCI6Miwicm9sZV9uYW1lIjoiT3duZXIiLCJvcmdhbml6YXRpb25faWQiOjR9fQ.5o9BKkQdVdbToOaomkEywqWkMe0mzE4D-mdI9s36epo" />
-                    </pE>
-                  </option>
-                  <option name="type" value="BEARER" />
-                </authState>
-              </option>
-              <option name="body">
-                <bodyState>
-                  <option name="raw" value="{&#10;  &quot;payment_method_id&quot; : &quot;pm_1RGHgsGaie07GUSYCLgmTxOR&quot;&#10;}" />
-                  <option name="type" value="JSON" />
-                </bodyState>
-              </option>
-              <option name="headers">
-                <list>
-                  <headerState>
-                    <option name="key" value="Accept" />
-                    <option name="value" value="application/json" />
-                  </headerState>
-                </list>
-              </option>
-              <option name="id" value="024d89b6-773b-4518-9343-d3ffdb21c254" />
-              <option name="method" value="POST" />
-              <option name="name" value="Add Card" />
-              <option name="url" value="http://localhost:8000/api/user/cards" />
-            </requestState>
-          </option>
-          <option name="response">
-            <responseState>
-              <option name="bodyBytesBase64" value="eyJlcnJvciI6IkZhaWxlZCB0byBhZGQgY2FyZC4ifQ==" />
-              <option name="bodyString" value="{&#10;  &quot;error&quot;: &quot;Failed to add card.&quot;&#10;}" />
-              <option name="code" value="500" />
-              <option name="connectionEstablishingTime" value="2" />
-              <option name="contentType" value="application/json" />
-              <option name="headers">
-                <list>
-                  <headerState>
-                    <option name="key" value="Host" />
-                    <option name="value" value="localhost:8000" />
-                  </headerState>
-                  <headerState>
-                    <option name="key" value="Connection" />
-                    <option name="value" value="close" />
-                  </headerState>
-                  <headerState>
-                    <option name="key" value="X-Powered-By" />
-                    <option name="value" value="PHP/8.2.12" />
-                  </headerState>
-                  <headerState>
-                    <option name="key" value="Cache-Control" />
-                    <option name="value" value="no-cache, private" />
-                  </headerState>
-                  <headerState>
-                    <option name="key" value="Date" />
-                    <option name="value" value="Mon, 21 Apr 2025 11:31:00 GMT" />
-                  </headerState>
-                  <headerState>
-                    <option name="key" value="Content-Type" />
-                    <option name="value" value="application/json" />
-                  </headerState>
-                  <headerState>
-                    <option name="key" value="Access-Control-Allow-Origin" />
-                    <option name="value" value="*" />
-                  </headerState>
-                </list>
-              </option>
-              <option name="id" value="5242b3f7-ff87-49d9-9bb2-df7b502f3ac5" />
-              <option name="message" value="Internal Server Error" />
-              <option name="prettyResponseType" value="JSON" />
-              <option name="rawBodyString" value="{&quot;error&quot;:&quot;Failed to add card.&quot;}" />
-              <option name="size" value="31" />
-              <option name="time" value="2362" />
-            </responseState>
-          </option>
-          <option name="workspaceId" value="drafts" />
-        </requestHistoryState>
-        <requestHistoryState>
           <option name="dateTime" value="1745235188061" />
           <option name="id" value="d4e47170-89de-46c0-b19e-dac47d661b1c" />
           <option name="request">
@@ -4074,84 +3588,6 @@
               <option name="rawBodyString" value="{&quot;message&quot;:&quot;Card added successfully.&quot;,&quot;set_as_default&quot;:false}" />
               <option name="size" value="61" />
               <option name="time" value="2859" />
-            </responseState>
-          </option>
-          <option name="workspaceId" value="drafts" />
-        </requestHistoryState>
-        <requestHistoryState>
-          <option name="dateTime" value="1745235197097" />
-          <option name="id" value="d89c7571-07e0-4be7-840d-bd36be6637f3" />
-          <option name="request">
-            <requestState>
-              <option name="auth">
-                <authState>
-                  <option name="bearer">
-                    <pE>
-                      <option name="token" value="eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwMDAvYXBpL2F1dGgvdXNlci1sb2dpbiIsImlhdCI6MTc0NTIzNDE4OCwiZXhwIjoxNzQ3ODI2MTg4LCJuYmYiOjE3NDUyMzQxODgsImp0aSI6IjlneXZhRzBKRnVZU2lXd3oiLCJzdWIiOiIyNiIsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjciLCJ1c2VyIjp7ImlkIjoyNiwicm9sZV9pZCI6Miwicm9sZV9uYW1lIjoiT3duZXIiLCJvcmdhbml6YXRpb25faWQiOjR9fQ.5o9BKkQdVdbToOaomkEywqWkMe0mzE4D-mdI9s36epo" />
-                    </pE>
-                  </option>
-                  <option name="type" value="BEARER" />
-                </authState>
-              </option>
-              <option name="headers">
-                <list>
-                  <headerState>
-                    <option name="key" value="Accept" />
-                    <option name="value" value="application/json" />
-                  </headerState>
-                </list>
-              </option>
-              <option name="id" value="e26c28fe-7c95-4f65-b1e3-ba6bf3b66088" />
-              <option name="method" value="GET" />
-              <option name="name" value="Card" />
-              <option name="url" value="http://localhost:8000/api/user/cards" />
-            </requestState>
-          </option>
-          <option name="response">
-            <responseState>
-              <option name="bodyBytesBase64" value="eyJjYXJkcyI6W3siaWQiOiJwbV8xUkdJYjFHYWllMDdHVVNZSnZtVVdWWloiLCJicmFuZCI6InZpc2EiLCJsYXN0NCI6IjQyNDIiLCJleHBfbW9udGgiOjQsImV4cF95ZWFyIjoyMDI2LCJpc19kZWZhdWx0IjpmYWxzZX0seyJpZCI6InBtXzFSR0hqVUdhaWUwN0dVU1lnbG9FT2UzZyIsImJyYW5kIjoibWFzdGVyY2FyZCIsImxhc3Q0IjoiNTQ1NCIsImV4cF9tb250aCI6NSwiZXhwX3llYXIiOjIwMjksImlzX2RlZmF1bHQiOnRydWV9XX0=" />
-              <option name="bodyString" value="{&#10;  &quot;cards&quot;: [&#10;    {&#10;      &quot;id&quot;: &quot;pm_1RGIb1Gaie07GUSYJvmUWVZZ&quot;,&#10;      &quot;brand&quot;: &quot;visa&quot;,&#10;      &quot;last4&quot;: &quot;4242&quot;,&#10;      &quot;exp_month&quot;: 4,&#10;      &quot;exp_year&quot;: 2026,&#10;      &quot;is_default&quot;: false&#10;    },&#10;    {&#10;      &quot;id&quot;: &quot;pm_1RGHjUGaie07GUSYgloEOe3g&quot;,&#10;      &quot;brand&quot;: &quot;mastercard&quot;,&#10;      &quot;last4&quot;: &quot;5454&quot;,&#10;      &quot;exp_month&quot;: 5,&#10;      &quot;exp_year&quot;: 2029,&#10;      &quot;is_default&quot;: true&#10;    }&#10;  ]&#10;}" />
-              <option name="code" value="200" />
-              <option name="connectionEstablishingTime" value="2" />
-              <option name="contentType" value="application/json" />
-              <option name="headers">
-                <list>
-                  <headerState>
-                    <option name="key" value="Host" />
-                    <option name="value" value="localhost:8000" />
-                  </headerState>
-                  <headerState>
-                    <option name="key" value="Connection" />
-                    <option name="value" value="close" />
-                  </headerState>
-                  <headerState>
-                    <option name="key" value="X-Powered-By" />
-                    <option name="value" value="PHP/8.2.12" />
-                  </headerState>
-                  <headerState>
-                    <option name="key" value="Cache-Control" />
-                    <option name="value" value="no-cache, private" />
-                  </headerState>
-                  <headerState>
-                    <option name="key" value="Date" />
-                    <option name="value" value="Mon, 21 Apr 2025 11:33:17 GMT" />
-                  </headerState>
-                  <headerState>
-                    <option name="key" value="Content-Type" />
-                    <option name="value" value="application/json" />
-                  </headerState>
-                  <headerState>
-                    <option name="key" value="Access-Control-Allow-Origin" />
-                    <option name="value" value="*" />
-                  </headerState>
-                </list>
-              </option>
-              <option name="id" value="d89c7571-07e0-4be7-840d-bd36be6637f3" />
-              <option name="message" value="OK" />
-              <option name="prettyResponseType" value="JSON" />
-              <option name="rawBodyString" value="{&quot;cards&quot;:[{&quot;id&quot;:&quot;pm_1RGIb1Gaie07GUSYJvmUWVZZ&quot;,&quot;brand&quot;:&quot;visa&quot;,&quot;last4&quot;:&quot;4242&quot;,&quot;exp_month&quot;:4,&quot;exp_year&quot;:2026,&quot;is_default&quot;:false},{&quot;id&quot;:&quot;pm_1RGHjUGaie07GUSYgloEOe3g&quot;,&quot;brand&quot;:&quot;mastercard&quot;,&quot;last4&quot;:&quot;5454&quot;,&quot;exp_month&quot;:5,&quot;exp_year&quot;:2029,&quot;is_default&quot;:true}]}" />
-              <option name="size" value="248" />
-              <option name="time" value="1552" />
             </responseState>
           </option>
           <option name="workspaceId" value="drafts" />
@@ -5313,6 +4749,906 @@
               <option name="rawBodyString" value="{&quot;error&quot;:&quot;Invalid session ID&quot;}" />
               <option name="size" value="30" />
               <option name="time" value="456" />
+            </responseState>
+          </option>
+          <option name="workspaceId" value="drafts" />
+        </requestHistoryState>
+        <requestHistoryState>
+          <option name="dateTime" value="1745317110236" />
+          <option name="id" value="232f2e24-5d12-4bf9-9106-9b2f6acec510" />
+          <option name="request">
+            <requestState>
+              <option name="auth">
+                <authState>
+                  <option name="bearer">
+                    <pE>
+                      <option name="token" value="eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwMDAvbG9naW4iLCJpYXQiOjE3NDUzMTcwMzMsImV4cCI6MTc0NTMzODYzMywibmJmIjoxNzQ1MzE3MDMzLCJqdGkiOiJEV3pKaEJoNlBvWlFwVmkyIiwic3ViIjoiMTYiLCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3IiwidXNlciI6eyJpZCI6MTYsInJvbGVfaWQiOjIsInJvbGVfbmFtZSI6Ik93bmVyIiwib3JnYW5pemF0aW9uX2lkIjo0fX0.KNxK5utLSvohIqNKL6ZT7wQC3QFvk7C7AJ-Nv6BUDy4" />
+                    </pE>
+                  </option>
+                  <option name="type" value="BEARER" />
+                </authState>
+              </option>
+              <option name="headers">
+                <list>
+                  <headerState>
+                    <option name="key" value="Accept" />
+                    <option name="value" value="application/json" />
+                  </headerState>
+                </list>
+              </option>
+              <option name="id" value="e26c28fe-7c95-4f65-b1e3-ba6bf3b66088" />
+              <option name="method" value="GET" />
+              <option name="name" value="Card" />
+              <option name="url" value="http://localhost:8000/api/user/cards" />
+            </requestState>
+          </option>
+          <option name="response">
+            <responseState>
+              <option name="bodyBytesBase64" value="eyJjYXJkcyI6W3siaWQiOiJwbV8xUkdkcnVHYWllMDdHVVNZd2dWYzJtcDkiLCJicmFuZCI6InZpc2EiLCJsYXN0NCI6IjQyNDIiLCJleHBfbW9udGgiOjQsImV4cF95ZWFyIjoyMDI5LCJpc19kZWZhdWx0Ijp0cnVlfSx7ImlkIjoicG1fMVJHZHBiR2FpZTA3R1VTWWp5SGt2empBIiwiYnJhbmQiOiJ2aXNhIiwibGFzdDQiOiI0MjQyIiwiZXhwX21vbnRoIjo0LCJleHBfeWVhciI6MjAyOSwiaXNfZGVmYXVsdCI6ZmFsc2V9XX0=" />
+              <option name="bodyString" value="{&#10;  &quot;cards&quot;: [&#10;    {&#10;      &quot;id&quot;: &quot;pm_1RGdruGaie07GUSYwgVc2mp9&quot;,&#10;      &quot;brand&quot;: &quot;visa&quot;,&#10;      &quot;last4&quot;: &quot;4242&quot;,&#10;      &quot;exp_month&quot;: 4,&#10;      &quot;exp_year&quot;: 2029,&#10;      &quot;is_default&quot;: true&#10;    },&#10;    {&#10;      &quot;id&quot;: &quot;pm_1RGdpbGaie07GUSYjyHkvzjA&quot;,&#10;      &quot;brand&quot;: &quot;visa&quot;,&#10;      &quot;last4&quot;: &quot;4242&quot;,&#10;      &quot;exp_month&quot;: 4,&#10;      &quot;exp_year&quot;: 2029,&#10;      &quot;is_default&quot;: false&#10;    }&#10;  ]&#10;}" />
+              <option name="code" value="200" />
+              <option name="connectionEstablishingTime" value="123" />
+              <option name="contentType" value="application/json" />
+              <option name="headers">
+                <list>
+                  <headerState>
+                    <option name="key" value="Host" />
+                    <option name="value" value="localhost:8000" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Connection" />
+                    <option name="value" value="close" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="X-Powered-By" />
+                    <option name="value" value="PHP/8.2.12" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Cache-Control" />
+                    <option name="value" value="no-cache, private" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Date" />
+                    <option name="value" value="Tue, 22 Apr 2025 10:18:30 GMT" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Content-Type" />
+                    <option name="value" value="application/json" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Access-Control-Allow-Origin" />
+                    <option name="value" value="*" />
+                  </headerState>
+                </list>
+              </option>
+              <option name="id" value="232f2e24-5d12-4bf9-9106-9b2f6acec510" />
+              <option name="message" value="OK" />
+              <option name="prettyResponseType" value="JSON" />
+              <option name="rawBodyString" value="{&quot;cards&quot;:[{&quot;id&quot;:&quot;pm_1RGdruGaie07GUSYwgVc2mp9&quot;,&quot;brand&quot;:&quot;visa&quot;,&quot;last4&quot;:&quot;4242&quot;,&quot;exp_month&quot;:4,&quot;exp_year&quot;:2029,&quot;is_default&quot;:true},{&quot;id&quot;:&quot;pm_1RGdpbGaie07GUSYjyHkvzjA&quot;,&quot;brand&quot;:&quot;visa&quot;,&quot;last4&quot;:&quot;4242&quot;,&quot;exp_month&quot;:4,&quot;exp_year&quot;:2029,&quot;is_default&quot;:false}]}" />
+              <option name="size" value="242" />
+              <option name="time" value="2220" />
+            </responseState>
+          </option>
+          <option name="workspaceId" value="drafts" />
+        </requestHistoryState>
+        <requestHistoryState>
+          <option name="dateTime" value="1745317164572" />
+          <option name="id" value="2c579355-f21c-4b1a-b994-7835b7cfca48" />
+          <option name="request">
+            <requestState>
+              <option name="auth">
+                <authState>
+                  <option name="bearer">
+                    <pE>
+                      <option name="token" value="eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwMDAvbG9naW4iLCJpYXQiOjE3NDUzMTcwMzMsImV4cCI6MTc0NTMzODYzMywibmJmIjoxNzQ1MzE3MDMzLCJqdGkiOiJEV3pKaEJoNlBvWlFwVmkyIiwic3ViIjoiMTYiLCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3IiwidXNlciI6eyJpZCI6MTYsInJvbGVfaWQiOjIsInJvbGVfbmFtZSI6Ik93bmVyIiwib3JnYW5pemF0aW9uX2lkIjo0fX0.KNxK5utLSvohIqNKL6ZT7wQC3QFvk7C7AJ-Nv6BUDy4" />
+                    </pE>
+                  </option>
+                  <option name="type" value="BEARER" />
+                </authState>
+              </option>
+              <option name="body">
+                <bodyState>
+                  <option name="raw" value="{&#10;  &quot;payment_method_id&quot;: &quot;pm_1RGdruGaie07GUSYwgVc2mp9&quot;&#10;}&#10;" />
+                  <option name="type" value="JSON" />
+                </bodyState>
+              </option>
+              <option name="headers">
+                <list>
+                  <headerState>
+                    <option name="key" value="Accept" />
+                    <option name="value" value="application/json" />
+                  </headerState>
+                </list>
+              </option>
+              <option name="id" value="024d89b6-773b-4518-9343-d3ffdb21c254" />
+              <option name="method" value="POST" />
+              <option name="name" value="Add Card" />
+              <option name="url" value="http://localhost:8000/api/user/cards" />
+            </requestState>
+          </option>
+          <option name="response">
+            <responseState>
+              <option name="bodyBytesBase64" value="eyJtZXNzYWdlIjoiQ2FyZCBhZGRlZCBzdWNjZXNzZnVsbHkuIiwic2V0X2FzX2RlZmF1bHQiOmZhbHNlfQ==" />
+              <option name="bodyString" value="{&#10;  &quot;message&quot;: &quot;Card added successfully.&quot;,&#10;  &quot;set_as_default&quot;: false&#10;}" />
+              <option name="code" value="200" />
+              <option name="connectionEstablishingTime" value="4" />
+              <option name="contentType" value="application/json" />
+              <option name="headers">
+                <list>
+                  <headerState>
+                    <option name="key" value="Host" />
+                    <option name="value" value="localhost:8000" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Connection" />
+                    <option name="value" value="close" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="X-Powered-By" />
+                    <option name="value" value="PHP/8.2.12" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Cache-Control" />
+                    <option name="value" value="no-cache, private" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Date" />
+                    <option name="value" value="Tue, 22 Apr 2025 10:19:24 GMT" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Content-Type" />
+                    <option name="value" value="application/json" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Access-Control-Allow-Origin" />
+                    <option name="value" value="*" />
+                  </headerState>
+                </list>
+              </option>
+              <option name="id" value="2c579355-f21c-4b1a-b994-7835b7cfca48" />
+              <option name="message" value="OK" />
+              <option name="prettyResponseType" value="JSON" />
+              <option name="rawBodyString" value="{&quot;message&quot;:&quot;Card added successfully.&quot;,&quot;set_as_default&quot;:false}" />
+              <option name="size" value="61" />
+              <option name="time" value="2745" />
+            </responseState>
+          </option>
+          <option name="workspaceId" value="drafts" />
+        </requestHistoryState>
+        <requestHistoryState>
+          <option name="dateTime" value="1745317172047" />
+          <option name="id" value="95f0de50-3adc-4a73-a2e6-2213ac9eadac" />
+          <option name="request">
+            <requestState>
+              <option name="auth">
+                <authState>
+                  <option name="bearer">
+                    <pE>
+                      <option name="token" value="eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwMDAvbG9naW4iLCJpYXQiOjE3NDUzMTcwMzMsImV4cCI6MTc0NTMzODYzMywibmJmIjoxNzQ1MzE3MDMzLCJqdGkiOiJEV3pKaEJoNlBvWlFwVmkyIiwic3ViIjoiMTYiLCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3IiwidXNlciI6eyJpZCI6MTYsInJvbGVfaWQiOjIsInJvbGVfbmFtZSI6Ik93bmVyIiwib3JnYW5pemF0aW9uX2lkIjo0fX0.KNxK5utLSvohIqNKL6ZT7wQC3QFvk7C7AJ-Nv6BUDy4" />
+                    </pE>
+                  </option>
+                  <option name="type" value="BEARER" />
+                </authState>
+              </option>
+              <option name="headers">
+                <list>
+                  <headerState>
+                    <option name="key" value="Accept" />
+                    <option name="value" value="application/json" />
+                  </headerState>
+                </list>
+              </option>
+              <option name="id" value="e26c28fe-7c95-4f65-b1e3-ba6bf3b66088" />
+              <option name="method" value="GET" />
+              <option name="name" value="Card" />
+              <option name="url" value="http://localhost:8000/api/user/cards" />
+            </requestState>
+          </option>
+          <option name="response">
+            <responseState>
+              <option name="bodyBytesBase64" value="eyJjYXJkcyI6W3siaWQiOiJwbV8xUkdkcnVHYWllMDdHVVNZd2dWYzJtcDkiLCJicmFuZCI6InZpc2EiLCJsYXN0NCI6IjQyNDIiLCJleHBfbW9udGgiOjQsImV4cF95ZWFyIjoyMDI5LCJpc19kZWZhdWx0Ijp0cnVlfSx7ImlkIjoicG1fMVJHZHBiR2FpZTA3R1VTWWp5SGt2empBIiwiYnJhbmQiOiJ2aXNhIiwibGFzdDQiOiI0MjQyIiwiZXhwX21vbnRoIjo0LCJleHBfeWVhciI6MjAyOSwiaXNfZGVmYXVsdCI6ZmFsc2V9XX0=" />
+              <option name="bodyString" value="{&#10;  &quot;cards&quot;: [&#10;    {&#10;      &quot;id&quot;: &quot;pm_1RGdruGaie07GUSYwgVc2mp9&quot;,&#10;      &quot;brand&quot;: &quot;visa&quot;,&#10;      &quot;last4&quot;: &quot;4242&quot;,&#10;      &quot;exp_month&quot;: 4,&#10;      &quot;exp_year&quot;: 2029,&#10;      &quot;is_default&quot;: true&#10;    },&#10;    {&#10;      &quot;id&quot;: &quot;pm_1RGdpbGaie07GUSYjyHkvzjA&quot;,&#10;      &quot;brand&quot;: &quot;visa&quot;,&#10;      &quot;last4&quot;: &quot;4242&quot;,&#10;      &quot;exp_month&quot;: 4,&#10;      &quot;exp_year&quot;: 2029,&#10;      &quot;is_default&quot;: false&#10;    }&#10;  ]&#10;}" />
+              <option name="code" value="200" />
+              <option name="connectionEstablishingTime" value="2" />
+              <option name="contentType" value="application/json" />
+              <option name="headers">
+                <list>
+                  <headerState>
+                    <option name="key" value="Host" />
+                    <option name="value" value="localhost:8000" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Connection" />
+                    <option name="value" value="close" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="X-Powered-By" />
+                    <option name="value" value="PHP/8.2.12" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Cache-Control" />
+                    <option name="value" value="no-cache, private" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Date" />
+                    <option name="value" value="Tue, 22 Apr 2025 10:19:32 GMT" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Content-Type" />
+                    <option name="value" value="application/json" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Access-Control-Allow-Origin" />
+                    <option name="value" value="*" />
+                  </headerState>
+                </list>
+              </option>
+              <option name="id" value="95f0de50-3adc-4a73-a2e6-2213ac9eadac" />
+              <option name="message" value="OK" />
+              <option name="prettyResponseType" value="JSON" />
+              <option name="rawBodyString" value="{&quot;cards&quot;:[{&quot;id&quot;:&quot;pm_1RGdruGaie07GUSYwgVc2mp9&quot;,&quot;brand&quot;:&quot;visa&quot;,&quot;last4&quot;:&quot;4242&quot;,&quot;exp_month&quot;:4,&quot;exp_year&quot;:2029,&quot;is_default&quot;:true},{&quot;id&quot;:&quot;pm_1RGdpbGaie07GUSYjyHkvzjA&quot;,&quot;brand&quot;:&quot;visa&quot;,&quot;last4&quot;:&quot;4242&quot;,&quot;exp_month&quot;:4,&quot;exp_year&quot;:2029,&quot;is_default&quot;:false}]}" />
+              <option name="size" value="242" />
+              <option name="time" value="1748" />
+            </responseState>
+          </option>
+          <option name="workspaceId" value="drafts" />
+        </requestHistoryState>
+        <requestHistoryState>
+          <option name="dateTime" value="1745318054461" />
+          <option name="id" value="2590af91-145f-4246-bd3e-f3e14ff4ed4c" />
+          <option name="request">
+            <requestState>
+              <option name="auth">
+                <authState>
+                  <option name="bearer">
+                    <pE>
+                      <option name="token" value="eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwMDAvbG9naW4iLCJpYXQiOjE3NDUzMTcwMzMsImV4cCI6MTc0NTMzODYzMywibmJmIjoxNzQ1MzE3MDMzLCJqdGkiOiJEV3pKaEJoNlBvWlFwVmkyIiwic3ViIjoiMTYiLCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3IiwidXNlciI6eyJpZCI6MTYsInJvbGVfaWQiOjIsInJvbGVfbmFtZSI6Ik93bmVyIiwib3JnYW5pemF0aW9uX2lkIjo0fX0.KNxK5utLSvohIqNKL6ZT7wQC3QFvk7C7AJ-Nv6BUDy4" />
+                    </pE>
+                  </option>
+                  <option name="type" value="BEARER" />
+                </authState>
+              </option>
+              <option name="headers">
+                <list>
+                  <headerState>
+                    <option name="key" value="Accept" />
+                    <option name="value" value="application/json" />
+                  </headerState>
+                </list>
+              </option>
+              <option name="id" value="e26c28fe-7c95-4f65-b1e3-ba6bf3b66088" />
+              <option name="method" value="GET" />
+              <option name="name" value="Card" />
+              <option name="url" value="http://localhost:8000/api/user/cards" />
+            </requestState>
+          </option>
+          <option name="response">
+            <responseState>
+              <option name="bodyBytesBase64" value="eyJjYXJkcyI6W3siaWQiOiJwbV8xUkdkcnVHYWllMDdHVVNZd2dWYzJtcDkiLCJicmFuZCI6InZpc2EiLCJsYXN0NCI6IjQyNDIiLCJleHBfbW9udGgiOjQsImV4cF95ZWFyIjoyMDI5LCJpc19kZWZhdWx0Ijp0cnVlfSx7ImlkIjoicG1fMVJHZHBiR2FpZTA3R1VTWWp5SGt2empBIiwiYnJhbmQiOiJ2aXNhIiwibGFzdDQiOiI0MjQyIiwiZXhwX21vbnRoIjo0LCJleHBfeWVhciI6MjAyOSwiaXNfZGVmYXVsdCI6ZmFsc2V9XX0=" />
+              <option name="bodyString" value="{&#10;  &quot;cards&quot;: [&#10;    {&#10;      &quot;id&quot;: &quot;pm_1RGdruGaie07GUSYwgVc2mp9&quot;,&#10;      &quot;brand&quot;: &quot;visa&quot;,&#10;      &quot;last4&quot;: &quot;4242&quot;,&#10;      &quot;exp_month&quot;: 4,&#10;      &quot;exp_year&quot;: 2029,&#10;      &quot;is_default&quot;: true&#10;    },&#10;    {&#10;      &quot;id&quot;: &quot;pm_1RGdpbGaie07GUSYjyHkvzjA&quot;,&#10;      &quot;brand&quot;: &quot;visa&quot;,&#10;      &quot;last4&quot;: &quot;4242&quot;,&#10;      &quot;exp_month&quot;: 4,&#10;      &quot;exp_year&quot;: 2029,&#10;      &quot;is_default&quot;: false&#10;    }&#10;  ]&#10;}" />
+              <option name="code" value="200" />
+              <option name="connectionEstablishingTime" value="3" />
+              <option name="contentType" value="application/json" />
+              <option name="headers">
+                <list>
+                  <headerState>
+                    <option name="key" value="Host" />
+                    <option name="value" value="localhost:8000" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Connection" />
+                    <option name="value" value="close" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="X-Powered-By" />
+                    <option name="value" value="PHP/8.2.12" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Cache-Control" />
+                    <option name="value" value="no-cache, private" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Date" />
+                    <option name="value" value="Tue, 22 Apr 2025 10:34:14 GMT" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Content-Type" />
+                    <option name="value" value="application/json" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Access-Control-Allow-Origin" />
+                    <option name="value" value="*" />
+                  </headerState>
+                </list>
+              </option>
+              <option name="id" value="2590af91-145f-4246-bd3e-f3e14ff4ed4c" />
+              <option name="message" value="OK" />
+              <option name="prettyResponseType" value="JSON" />
+              <option name="rawBodyString" value="{&quot;cards&quot;:[{&quot;id&quot;:&quot;pm_1RGdruGaie07GUSYwgVc2mp9&quot;,&quot;brand&quot;:&quot;visa&quot;,&quot;last4&quot;:&quot;4242&quot;,&quot;exp_month&quot;:4,&quot;exp_year&quot;:2029,&quot;is_default&quot;:true},{&quot;id&quot;:&quot;pm_1RGdpbGaie07GUSYjyHkvzjA&quot;,&quot;brand&quot;:&quot;visa&quot;,&quot;last4&quot;:&quot;4242&quot;,&quot;exp_month&quot;:4,&quot;exp_year&quot;:2029,&quot;is_default&quot;:false}]}" />
+              <option name="size" value="242" />
+              <option name="time" value="2432" />
+            </responseState>
+          </option>
+          <option name="workspaceId" value="drafts" />
+        </requestHistoryState>
+        <requestHistoryState>
+          <option name="dateTime" value="1745318060255" />
+          <option name="id" value="ddb62b4b-3602-43df-8502-3fe24b64b49a" />
+          <option name="request">
+            <requestState>
+              <option name="auth">
+                <authState>
+                  <option name="bearer">
+                    <pE>
+                      <option name="token" value="eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwMDAvbG9naW4iLCJpYXQiOjE3NDUzMTcwMzMsImV4cCI6MTc0NTMzODYzMywibmJmIjoxNzQ1MzE3MDMzLCJqdGkiOiJEV3pKaEJoNlBvWlFwVmkyIiwic3ViIjoiMTYiLCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3IiwidXNlciI6eyJpZCI6MTYsInJvbGVfaWQiOjIsInJvbGVfbmFtZSI6Ik93bmVyIiwib3JnYW5pemF0aW9uX2lkIjo0fX0.KNxK5utLSvohIqNKL6ZT7wQC3QFvk7C7AJ-Nv6BUDy4" />
+                    </pE>
+                  </option>
+                  <option name="type" value="BEARER" />
+                </authState>
+              </option>
+              <option name="headers">
+                <list>
+                  <headerState>
+                    <option name="key" value="Accept" />
+                    <option name="value" value="application/json" />
+                  </headerState>
+                </list>
+              </option>
+              <option name="id" value="e26c28fe-7c95-4f65-b1e3-ba6bf3b66088" />
+              <option name="method" value="GET" />
+              <option name="name" value="Card" />
+              <option name="url" value="http://localhost:8000/api/user/cards" />
+            </requestState>
+          </option>
+          <option name="response">
+            <responseState>
+              <option name="bodyBytesBase64" value="eyJjYXJkcyI6W3siaWQiOiJwbV8xUkdkcnVHYWllMDdHVVNZd2dWYzJtcDkiLCJicmFuZCI6InZpc2EiLCJsYXN0NCI6IjQyNDIiLCJleHBfbW9udGgiOjQsImV4cF95ZWFyIjoyMDI5LCJpc19kZWZhdWx0Ijp0cnVlfSx7ImlkIjoicG1fMVJHZHBiR2FpZTA3R1VTWWp5SGt2empBIiwiYnJhbmQiOiJ2aXNhIiwibGFzdDQiOiI0MjQyIiwiZXhwX21vbnRoIjo0LCJleHBfeWVhciI6MjAyOSwiaXNfZGVmYXVsdCI6ZmFsc2V9XX0=" />
+              <option name="bodyString" value="{&#10;  &quot;cards&quot;: [&#10;    {&#10;      &quot;id&quot;: &quot;pm_1RGdruGaie07GUSYwgVc2mp9&quot;,&#10;      &quot;brand&quot;: &quot;visa&quot;,&#10;      &quot;last4&quot;: &quot;4242&quot;,&#10;      &quot;exp_month&quot;: 4,&#10;      &quot;exp_year&quot;: 2029,&#10;      &quot;is_default&quot;: true&#10;    },&#10;    {&#10;      &quot;id&quot;: &quot;pm_1RGdpbGaie07GUSYjyHkvzjA&quot;,&#10;      &quot;brand&quot;: &quot;visa&quot;,&#10;      &quot;last4&quot;: &quot;4242&quot;,&#10;      &quot;exp_month&quot;: 4,&#10;      &quot;exp_year&quot;: 2029,&#10;      &quot;is_default&quot;: false&#10;    }&#10;  ]&#10;}" />
+              <option name="code" value="200" />
+              <option name="connectionEstablishingTime" value="2" />
+              <option name="contentType" value="application/json" />
+              <option name="headers">
+                <list>
+                  <headerState>
+                    <option name="key" value="Host" />
+                    <option name="value" value="localhost:8000" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Connection" />
+                    <option name="value" value="close" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="X-Powered-By" />
+                    <option name="value" value="PHP/8.2.12" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Cache-Control" />
+                    <option name="value" value="no-cache, private" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Date" />
+                    <option name="value" value="Tue, 22 Apr 2025 10:34:20 GMT" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Content-Type" />
+                    <option name="value" value="application/json" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Access-Control-Allow-Origin" />
+                    <option name="value" value="*" />
+                  </headerState>
+                </list>
+              </option>
+              <option name="id" value="ddb62b4b-3602-43df-8502-3fe24b64b49a" />
+              <option name="message" value="OK" />
+              <option name="prettyResponseType" value="JSON" />
+              <option name="rawBodyString" value="{&quot;cards&quot;:[{&quot;id&quot;:&quot;pm_1RGdruGaie07GUSYwgVc2mp9&quot;,&quot;brand&quot;:&quot;visa&quot;,&quot;last4&quot;:&quot;4242&quot;,&quot;exp_month&quot;:4,&quot;exp_year&quot;:2029,&quot;is_default&quot;:true},{&quot;id&quot;:&quot;pm_1RGdpbGaie07GUSYjyHkvzjA&quot;,&quot;brand&quot;:&quot;visa&quot;,&quot;last4&quot;:&quot;4242&quot;,&quot;exp_month&quot;:4,&quot;exp_year&quot;:2029,&quot;is_default&quot;:false}]}" />
+              <option name="size" value="242" />
+              <option name="time" value="2616" />
+            </responseState>
+          </option>
+          <option name="workspaceId" value="drafts" />
+        </requestHistoryState>
+        <requestHistoryState>
+          <option name="dateTime" value="1745318074410" />
+          <option name="id" value="ac419797-bec9-404b-bccc-4ac3ada6f440" />
+          <option name="request">
+            <requestState>
+              <option name="auth">
+                <authState>
+                  <option name="bearer">
+                    <pE>
+                      <option name="token" value="eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwMDAvbG9naW4iLCJpYXQiOjE3NDUzMTcwMzMsImV4cCI6MTc0NTMzODYzMywibmJmIjoxNzQ1MzE3MDMzLCJqdGkiOiJEV3pKaEJoNlBvWlFwVmkyIiwic3ViIjoiMTYiLCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3IiwidXNlciI6eyJpZCI6MTYsInJvbGVfaWQiOjIsInJvbGVfbmFtZSI6Ik93bmVyIiwib3JnYW5pemF0aW9uX2lkIjo0fX0.KNxK5utLSvohIqNKL6ZT7wQC3QFvk7C7AJ-Nv6BUDy4" />
+                    </pE>
+                  </option>
+                  <option name="type" value="BEARER" />
+                </authState>
+              </option>
+              <option name="body">
+                <bodyState>
+                  <option name="raw" value="{&#10;  &quot;payment_method_id&quot;: &quot;pm_1RGdruGaie07GUSYwgVc2mp9&quot;&#10;}&#10;" />
+                  <option name="type" value="JSON" />
+                </bodyState>
+              </option>
+              <option name="headers">
+                <list>
+                  <headerState>
+                    <option name="key" value="Accept" />
+                    <option name="value" value="application/json" />
+                  </headerState>
+                </list>
+              </option>
+              <option name="id" value="024d89b6-773b-4518-9343-d3ffdb21c254" />
+              <option name="method" value="POST" />
+              <option name="name" value="Add Card" />
+              <option name="url" value="http://localhost:8000/api/user/cards" />
+            </requestState>
+          </option>
+          <option name="response">
+            <responseState>
+              <option name="bodyBytesBase64" value="eyJlcnJvciI6IlRoaXMgY2FyZCBpcyBhbHJlYWR5IGFkZGVkLiJ9" />
+              <option name="bodyString" value="{&#10;  &quot;error&quot;: &quot;This card is already added.&quot;&#10;}" />
+              <option name="code" value="400" />
+              <option name="connectionEstablishingTime" value="2" />
+              <option name="contentType" value="application/json" />
+              <option name="headers">
+                <list>
+                  <headerState>
+                    <option name="key" value="Host" />
+                    <option name="value" value="localhost:8000" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Connection" />
+                    <option name="value" value="close" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="X-Powered-By" />
+                    <option name="value" value="PHP/8.2.12" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Cache-Control" />
+                    <option name="value" value="no-cache, private" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Date" />
+                    <option name="value" value="Tue, 22 Apr 2025 10:34:34 GMT" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Content-Type" />
+                    <option name="value" value="application/json" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Access-Control-Allow-Origin" />
+                    <option name="value" value="*" />
+                  </headerState>
+                </list>
+              </option>
+              <option name="id" value="ac419797-bec9-404b-bccc-4ac3ada6f440" />
+              <option name="message" value="Bad Request" />
+              <option name="prettyResponseType" value="JSON" />
+              <option name="rawBodyString" value="{&quot;error&quot;:&quot;This card is already added.&quot;}" />
+              <option name="size" value="39" />
+              <option name="time" value="2002" />
+            </responseState>
+          </option>
+          <option name="workspaceId" value="drafts" />
+        </requestHistoryState>
+        <requestHistoryState>
+          <option name="dateTime" value="1745318085545" />
+          <option name="id" value="0fdcaddb-44bc-4ec1-80bc-1fd9e0fa0423" />
+          <option name="request">
+            <requestState>
+              <option name="auth">
+                <authState>
+                  <option name="bearer">
+                    <pE>
+                      <option name="token" value="eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwMDAvbG9naW4iLCJpYXQiOjE3NDUzMTcwMzMsImV4cCI6MTc0NTMzODYzMywibmJmIjoxNzQ1MzE3MDMzLCJqdGkiOiJEV3pKaEJoNlBvWlFwVmkyIiwic3ViIjoiMTYiLCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3IiwidXNlciI6eyJpZCI6MTYsInJvbGVfaWQiOjIsInJvbGVfbmFtZSI6Ik93bmVyIiwib3JnYW5pemF0aW9uX2lkIjo0fX0.KNxK5utLSvohIqNKL6ZT7wQC3QFvk7C7AJ-Nv6BUDy4" />
+                    </pE>
+                  </option>
+                  <option name="type" value="BEARER" />
+                </authState>
+              </option>
+              <option name="body">
+                <bodyState>
+                  <option name="raw" value="{&#10;  &quot;payment_method_id&quot;: &quot;pm_1RGdruGaie07GUSYwgVc2mp9&quot;&#10;}&#10;" />
+                  <option name="type" value="JSON" />
+                </bodyState>
+              </option>
+              <option name="headers">
+                <list>
+                  <headerState>
+                    <option name="key" value="Accept" />
+                    <option name="value" value="application/json" />
+                  </headerState>
+                </list>
+              </option>
+              <option name="id" value="024d89b6-773b-4518-9343-d3ffdb21c254" />
+              <option name="method" value="POST" />
+              <option name="name" value="Add Card" />
+              <option name="url" value="http://localhost:8000/api/user/cards" />
+            </requestState>
+          </option>
+          <option name="response">
+            <responseState>
+              <option name="bodyBytesBase64" value="eyJlcnJvciI6IlRoaXMgY2FyZCBpcyBhbHJlYWR5IGFkZGVkLiJ9" />
+              <option name="bodyString" value="{&#10;  &quot;error&quot;: &quot;This card is already added.&quot;&#10;}" />
+              <option name="code" value="400" />
+              <option name="connectionEstablishingTime" value="4" />
+              <option name="contentType" value="application/json" />
+              <option name="headers">
+                <list>
+                  <headerState>
+                    <option name="key" value="Host" />
+                    <option name="value" value="localhost:8000" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Connection" />
+                    <option name="value" value="close" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="X-Powered-By" />
+                    <option name="value" value="PHP/8.2.12" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Cache-Control" />
+                    <option name="value" value="no-cache, private" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Date" />
+                    <option name="value" value="Tue, 22 Apr 2025 10:34:45 GMT" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Content-Type" />
+                    <option name="value" value="application/json" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Access-Control-Allow-Origin" />
+                    <option name="value" value="*" />
+                  </headerState>
+                </list>
+              </option>
+              <option name="id" value="0fdcaddb-44bc-4ec1-80bc-1fd9e0fa0423" />
+              <option name="message" value="Bad Request" />
+              <option name="prettyResponseType" value="JSON" />
+              <option name="rawBodyString" value="{&quot;error&quot;:&quot;This card is already added.&quot;}" />
+              <option name="size" value="39" />
+              <option name="time" value="1921" />
+            </responseState>
+          </option>
+          <option name="workspaceId" value="drafts" />
+        </requestHistoryState>
+        <requestHistoryState>
+          <option name="dateTime" value="1745318101775" />
+          <option name="id" value="eda48e6a-2e53-48a0-85d9-ceb61be1bba0" />
+          <option name="request">
+            <requestState>
+              <option name="auth">
+                <authState>
+                  <option name="bearer">
+                    <pE>
+                      <option name="token" value="eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwMDAvbG9naW4iLCJpYXQiOjE3NDUzMTcwMzMsImV4cCI6MTc0NTMzODYzMywibmJmIjoxNzQ1MzE3MDMzLCJqdGkiOiJEV3pKaEJoNlBvWlFwVmkyIiwic3ViIjoiMTYiLCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3IiwidXNlciI6eyJpZCI6MTYsInJvbGVfaWQiOjIsInJvbGVfbmFtZSI6Ik93bmVyIiwib3JnYW5pemF0aW9uX2lkIjo0fX0.KNxK5utLSvohIqNKL6ZT7wQC3QFvk7C7AJ-Nv6BUDy4" />
+                    </pE>
+                  </option>
+                  <option name="type" value="BEARER" />
+                </authState>
+              </option>
+              <option name="body">
+                <bodyState>
+                  <option name="raw" value="{&#10;  &quot;payment_method_id&quot;: &quot;pm_card_visa&quot;&#10;}&#10;" />
+                  <option name="type" value="JSON" />
+                </bodyState>
+              </option>
+              <option name="headers">
+                <list>
+                  <headerState>
+                    <option name="key" value="Accept" />
+                    <option name="value" value="application/json" />
+                  </headerState>
+                </list>
+              </option>
+              <option name="id" value="024d89b6-773b-4518-9343-d3ffdb21c254" />
+              <option name="method" value="POST" />
+              <option name="name" value="Add Card" />
+              <option name="url" value="http://localhost:8000/api/user/cards" />
+            </requestState>
+          </option>
+          <option name="response">
+            <responseState>
+              <option name="bodyBytesBase64" value="eyJtZXNzYWdlIjoiQ2FyZCBhZGRlZCBzdWNjZXNzZnVsbHkuIiwic2V0X2FzX2RlZmF1bHQiOmZhbHNlfQ==" />
+              <option name="bodyString" value="{&#10;  &quot;message&quot;: &quot;Card added successfully.&quot;,&#10;  &quot;set_as_default&quot;: false&#10;}" />
+              <option name="code" value="200" />
+              <option name="connectionEstablishingTime" value="1" />
+              <option name="contentType" value="application/json" />
+              <option name="headers">
+                <list>
+                  <headerState>
+                    <option name="key" value="Host" />
+                    <option name="value" value="localhost:8000" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Connection" />
+                    <option name="value" value="close" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="X-Powered-By" />
+                    <option name="value" value="PHP/8.2.12" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Cache-Control" />
+                    <option name="value" value="no-cache, private" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Date" />
+                    <option name="value" value="Tue, 22 Apr 2025 10:35:01 GMT" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Content-Type" />
+                    <option name="value" value="application/json" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Access-Control-Allow-Origin" />
+                    <option name="value" value="*" />
+                  </headerState>
+                </list>
+              </option>
+              <option name="id" value="eda48e6a-2e53-48a0-85d9-ceb61be1bba0" />
+              <option name="message" value="OK" />
+              <option name="prettyResponseType" value="JSON" />
+              <option name="rawBodyString" value="{&quot;message&quot;:&quot;Card added successfully.&quot;,&quot;set_as_default&quot;:false}" />
+              <option name="size" value="61" />
+              <option name="time" value="2905" />
+            </responseState>
+          </option>
+          <option name="workspaceId" value="drafts" />
+        </requestHistoryState>
+        <requestHistoryState>
+          <option name="dateTime" value="1745318106501" />
+          <option name="id" value="29eb88fd-a7cf-463c-8957-1ff1b7c87168" />
+          <option name="request">
+            <requestState>
+              <option name="auth">
+                <authState>
+                  <option name="bearer">
+                    <pE>
+                      <option name="token" value="eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwMDAvbG9naW4iLCJpYXQiOjE3NDUzMTcwMzMsImV4cCI6MTc0NTMzODYzMywibmJmIjoxNzQ1MzE3MDMzLCJqdGkiOiJEV3pKaEJoNlBvWlFwVmkyIiwic3ViIjoiMTYiLCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3IiwidXNlciI6eyJpZCI6MTYsInJvbGVfaWQiOjIsInJvbGVfbmFtZSI6Ik93bmVyIiwib3JnYW5pemF0aW9uX2lkIjo0fX0.KNxK5utLSvohIqNKL6ZT7wQC3QFvk7C7AJ-Nv6BUDy4" />
+                    </pE>
+                  </option>
+                  <option name="type" value="BEARER" />
+                </authState>
+              </option>
+              <option name="body">
+                <bodyState>
+                  <option name="raw" value="{&#10;  &quot;payment_method_id&quot;: &quot;pm_card_visa&quot;&#10;}&#10;" />
+                  <option name="type" value="JSON" />
+                </bodyState>
+              </option>
+              <option name="headers">
+                <list>
+                  <headerState>
+                    <option name="key" value="Accept" />
+                    <option name="value" value="application/json" />
+                  </headerState>
+                </list>
+              </option>
+              <option name="id" value="024d89b6-773b-4518-9343-d3ffdb21c254" />
+              <option name="method" value="POST" />
+              <option name="name" value="Add Card" />
+              <option name="url" value="http://localhost:8000/api/user/cards" />
+            </requestState>
+          </option>
+          <option name="response">
+            <responseState>
+              <option name="bodyBytesBase64" value="eyJlcnJvciI6IlRoaXMgY2FyZCBpcyBhbHJlYWR5IGFkZGVkLiJ9" />
+              <option name="bodyString" value="{&#10;  &quot;error&quot;: &quot;This card is already added.&quot;&#10;}" />
+              <option name="code" value="400" />
+              <option name="connectionEstablishingTime" value="2" />
+              <option name="contentType" value="application/json" />
+              <option name="headers">
+                <list>
+                  <headerState>
+                    <option name="key" value="Host" />
+                    <option name="value" value="localhost:8000" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Connection" />
+                    <option name="value" value="close" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="X-Powered-By" />
+                    <option name="value" value="PHP/8.2.12" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Cache-Control" />
+                    <option name="value" value="no-cache, private" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Date" />
+                    <option name="value" value="Tue, 22 Apr 2025 10:35:06 GMT" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Content-Type" />
+                    <option name="value" value="application/json" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Access-Control-Allow-Origin" />
+                    <option name="value" value="*" />
+                  </headerState>
+                </list>
+              </option>
+              <option name="id" value="29eb88fd-a7cf-463c-8957-1ff1b7c87168" />
+              <option name="message" value="Bad Request" />
+              <option name="prettyResponseType" value="JSON" />
+              <option name="rawBodyString" value="{&quot;error&quot;:&quot;This card is already added.&quot;}" />
+              <option name="size" value="39" />
+              <option name="time" value="2075" />
+            </responseState>
+          </option>
+          <option name="workspaceId" value="drafts" />
+        </requestHistoryState>
+        <requestHistoryState>
+          <option name="dateTime" value="1745318111540" />
+          <option name="id" value="62acc525-e7bd-4c84-a468-ab283a3b98be" />
+          <option name="request">
+            <requestState>
+              <option name="auth">
+                <authState>
+                  <option name="bearer">
+                    <pE>
+                      <option name="token" value="eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwMDAvbG9naW4iLCJpYXQiOjE3NDUzMTcwMzMsImV4cCI6MTc0NTMzODYzMywibmJmIjoxNzQ1MzE3MDMzLCJqdGkiOiJEV3pKaEJoNlBvWlFwVmkyIiwic3ViIjoiMTYiLCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3IiwidXNlciI6eyJpZCI6MTYsInJvbGVfaWQiOjIsInJvbGVfbmFtZSI6Ik93bmVyIiwib3JnYW5pemF0aW9uX2lkIjo0fX0.KNxK5utLSvohIqNKL6ZT7wQC3QFvk7C7AJ-Nv6BUDy4" />
+                    </pE>
+                  </option>
+                  <option name="type" value="BEARER" />
+                </authState>
+              </option>
+              <option name="body">
+                <bodyState>
+                  <option name="raw" value="{&#10;  &quot;payment_method_id&quot;: &quot;pm_card_visa&quot;&#10;}&#10;" />
+                  <option name="type" value="JSON" />
+                </bodyState>
+              </option>
+              <option name="headers">
+                <list>
+                  <headerState>
+                    <option name="key" value="Accept" />
+                    <option name="value" value="application/json" />
+                  </headerState>
+                </list>
+              </option>
+              <option name="id" value="024d89b6-773b-4518-9343-d3ffdb21c254" />
+              <option name="method" value="POST" />
+              <option name="name" value="Add Card" />
+              <option name="url" value="http://localhost:8000/api/user/cards" />
+            </requestState>
+          </option>
+          <option name="response">
+            <responseState>
+              <option name="bodyBytesBase64" value="eyJlcnJvciI6IlRoaXMgY2FyZCBpcyBhbHJlYWR5IGFkZGVkLiJ9" />
+              <option name="bodyString" value="{&#10;  &quot;error&quot;: &quot;This card is already added.&quot;&#10;}" />
+              <option name="code" value="400" />
+              <option name="connectionEstablishingTime" value="2" />
+              <option name="contentType" value="application/json" />
+              <option name="headers">
+                <list>
+                  <headerState>
+                    <option name="key" value="Host" />
+                    <option name="value" value="localhost:8000" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Connection" />
+                    <option name="value" value="close" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="X-Powered-By" />
+                    <option name="value" value="PHP/8.2.12" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Cache-Control" />
+                    <option name="value" value="no-cache, private" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Date" />
+                    <option name="value" value="Tue, 22 Apr 2025 10:35:11 GMT" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Content-Type" />
+                    <option name="value" value="application/json" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Access-Control-Allow-Origin" />
+                    <option name="value" value="*" />
+                  </headerState>
+                </list>
+              </option>
+              <option name="id" value="62acc525-e7bd-4c84-a468-ab283a3b98be" />
+              <option name="message" value="Bad Request" />
+              <option name="prettyResponseType" value="JSON" />
+              <option name="rawBodyString" value="{&quot;error&quot;:&quot;This card is already added.&quot;}" />
+              <option name="size" value="39" />
+              <option name="time" value="2115" />
+            </responseState>
+          </option>
+          <option name="workspaceId" value="drafts" />
+        </requestHistoryState>
+        <requestHistoryState>
+          <option name="dateTime" value="1745318114606" />
+          <option name="id" value="0bdb866c-4e81-446d-bca2-2fb683e7bd43" />
+          <option name="request">
+            <requestState>
+              <option name="auth">
+                <authState>
+                  <option name="bearer">
+                    <pE>
+                      <option name="token" value="eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwMDAvbG9naW4iLCJpYXQiOjE3NDUzMTcwMzMsImV4cCI6MTc0NTMzODYzMywibmJmIjoxNzQ1MzE3MDMzLCJqdGkiOiJEV3pKaEJoNlBvWlFwVmkyIiwic3ViIjoiMTYiLCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3IiwidXNlciI6eyJpZCI6MTYsInJvbGVfaWQiOjIsInJvbGVfbmFtZSI6Ik93bmVyIiwib3JnYW5pemF0aW9uX2lkIjo0fX0.KNxK5utLSvohIqNKL6ZT7wQC3QFvk7C7AJ-Nv6BUDy4" />
+                    </pE>
+                  </option>
+                  <option name="type" value="BEARER" />
+                </authState>
+              </option>
+              <option name="body">
+                <bodyState>
+                  <option name="raw" value="{&#10;  &quot;payment_method_id&quot;: &quot;pm_card_visa&quot;&#10;}&#10;" />
+                  <option name="type" value="JSON" />
+                </bodyState>
+              </option>
+              <option name="headers">
+                <list>
+                  <headerState>
+                    <option name="key" value="Accept" />
+                    <option name="value" value="application/json" />
+                  </headerState>
+                </list>
+              </option>
+              <option name="id" value="024d89b6-773b-4518-9343-d3ffdb21c254" />
+              <option name="method" value="POST" />
+              <option name="name" value="Add Card" />
+              <option name="url" value="http://localhost:8000/api/user/cards" />
+            </requestState>
+          </option>
+          <option name="response">
+            <responseState>
+              <option name="bodyBytesBase64" value="eyJlcnJvciI6IlRoaXMgY2FyZCBpcyBhbHJlYWR5IGFkZGVkLiJ9" />
+              <option name="bodyString" value="{&#10;  &quot;error&quot;: &quot;This card is already added.&quot;&#10;}" />
+              <option name="code" value="400" />
+              <option name="connectionEstablishingTime" value="2" />
+              <option name="contentType" value="application/json" />
+              <option name="headers">
+                <list>
+                  <headerState>
+                    <option name="key" value="Host" />
+                    <option name="value" value="localhost:8000" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Connection" />
+                    <option name="value" value="close" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="X-Powered-By" />
+                    <option name="value" value="PHP/8.2.12" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Cache-Control" />
+                    <option name="value" value="no-cache, private" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Date" />
+                    <option name="value" value="Tue, 22 Apr 2025 10:35:14 GMT" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Content-Type" />
+                    <option name="value" value="application/json" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Access-Control-Allow-Origin" />
+                    <option name="value" value="*" />
+                  </headerState>
+                </list>
+              </option>
+              <option name="id" value="0bdb866c-4e81-446d-bca2-2fb683e7bd43" />
+              <option name="message" value="Bad Request" />
+              <option name="prettyResponseType" value="JSON" />
+              <option name="rawBodyString" value="{&quot;error&quot;:&quot;This card is already added.&quot;}" />
+              <option name="size" value="39" />
+              <option name="time" value="2024" />
             </responseState>
           </option>
           <option name="workspaceId" value="drafts" />

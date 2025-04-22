@@ -3,11 +3,14 @@
 namespace App\Http\Controllers\WebControllers;
 
 use App\Http\Controllers\Controller;
+use App\Jobs\ProcessSuccessfulCheckout;
 use App\Models\Address;
+use App\Models\BillingCycle;
 use App\Models\Building;
 use App\Models\DropdownType;
 use App\Models\Organization;
 use App\Models\OrganizationPicture;
+use App\Models\Plan;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -27,7 +30,9 @@ class OrganizationController extends Controller
                 ->whereNotIn('id', Organization::pluck('owner_id'))
                 ->pluck('name', 'id');
 
-            return view('Heights.Admin.Organizations.index', compact('organizations', 'activeTab', 'dropdownData', 'owners'));
+            $planCycles = BillingCycle::pluck('duration_months');
+
+            return view('Heights.Admin.Organizations.index', compact('organizations', 'activeTab', 'dropdownData', 'owners', 'planCycles'));
         } catch (\Exception $e) {
             Log::error("Error in index method: " . $e->getMessage());
             return back()->with('error', 'An error occurred while fetching data.');
@@ -44,10 +49,62 @@ class OrganizationController extends Controller
             'province' => ['nullable', 'string', 'max:50'],
             'city' => ['nullable', 'string', 'max:50'],
             'postal_code' => ['nullable', 'string', 'max:50'],
-            'membership_start_date' => ['required', 'date'],
-            'membership_end_date' => ['required', 'date'],
+            'plan_id' => 'required|exists:plans,id',
+            'plan_cycle_id' => 'required|exists:billing_cycles,id',
+            'plan_cycle' => 'required|integer',
             'organization_pictures.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
+
+        $billing_cycle_id = $request->plan_cycle_id;
+
+        $plan = Plan::where('id', $request->plan_id)
+            ->where('status', '!=', 'Deleted')
+            ->whereHas('services', function ($query) use ($billing_cycle_id) {
+                $query->with('serviceCatalog')
+                    ->whereHas('prices', function ($priceQuery) use ($billing_cycle_id) {
+                        $priceQuery->where('billing_cycle_id', $billing_cycle_id);
+                    });
+            })
+            ->with(['services' => function ($query) use ($billing_cycle_id) {
+                $query->with('serviceCatalog')
+                    ->whereHas('prices', function ($q) use ($billing_cycle_id) {
+                        $q->where('billing_cycle_id', $billing_cycle_id);
+                    })
+                    ->with(['prices' => function ($priceQuery) use ($billing_cycle_id) {
+                        $priceQuery->where('billing_cycle_id', $billing_cycle_id);
+                    }]);
+            }])
+            ->first();
+
+        if (!$plan) {
+            return response()->json(['error' => 'The requested plan is currently unavailable due to administrative changes.'], 404);
+        }
+
+        $totalPrice = 0;
+
+        $services = $plan->services->map(function ($service) use (&$totalPrice) {
+            $price = $service->prices->first();
+
+            if ($price) {
+                $totalPrice += $price->price;
+            }
+
+            return [
+                'service_id' => $service->id,
+                'service_catalog_id' => $service->serviceCatalog->id,
+                'service_name' => $service->serviceCatalog->title ?? '',
+                'service_description' => $service->serviceCatalog->description ?? '',
+                'service_quantity' => $service->quantity,
+            ];
+        });
+
+        $planDetails = [
+            'plan_name' => $plan->name,
+            'plan_description' => $plan->description,
+            'currency' => $plan->currency,
+            'total_price' => $totalPrice,
+            'services' => $services,
+        ];
 
         DB::beginTransaction();
 
@@ -82,6 +139,17 @@ class OrganizationController extends Controller
                     ]);
                 }
             }
+
+            ProcessSuccessfulCheckout::dispatch(
+                $request->owner_id,
+                $request->organization_id,
+                $plan->id,
+                $planDetails,
+                $request->plan_cycle,
+                'null',
+                now(),
+                'Card',
+            );
 
             DB::commit();
 

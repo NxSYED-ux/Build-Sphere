@@ -3,11 +3,10 @@
 namespace App\Http\Controllers\WebControllers;
 
 use App\Http\Controllers\Controller;
+use App\Jobs\ProcessSuccessfulCheckout;
 use App\Models\BillingCycle;
 use App\Models\Organization;
 use App\Models\Plan;
-use App\Models\PlanSubscriptionItem;
-use App\Models\Subscription;
 use App\Models\Transaction;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -67,12 +66,20 @@ class CheckOutController extends Controller
             'payment_method_id' => 'required|string',
         ]);
 
+        $paymentMethod = null;
 
         try {
-            Log::info($request);
             $user = User::find($request->owner_id);
             if (!$user) {
                 return response()->json(['error' => 'User not found.'], 404);
+            }
+
+            $organization = Organization::where('id', $request->organization_id)
+                ->where('status', 'Enable')
+            ->first();
+
+            if($organization) {
+                return response()->json(['error' => 'An active subscription already exists for your organization.'], 409);
             }
 
             $billing_cycle_id = $request->plan_cycle_id;
@@ -130,7 +137,7 @@ class CheckOutController extends Controller
 
             $customer = Customer::retrieve($user->customer_payment_id);
 
-            PaymentMethod::retrieve($request->payment_method_id)->attach([
+            $paymentMethod = PaymentMethod::retrieve($request->payment_method_id)->attach([
                 'customer' => $customer->id,
             ]);
 
@@ -165,65 +172,32 @@ class CheckOutController extends Controller
             }
 
             if ($paymentIntent->status === 'succeeded') {
-                DB::beginTransaction();
-
                 try {
-                    $subscription = Subscription::create([
-                        'customer_payment_id' => $user->customer_payment_id,
-                        'user_id' => $user->id,
-                        'organization_id' => $request->organization_id,
-                        'source_id' => $plan->id,
-                        'source_name' => 'plan',
-                        'billing_cycle' => $request->plan_cycle,
-                        'subscription_status' => 'Active',
-                        'price_at_subscription' => $planDetails['total_price'],
-                        'currency_at_subscription' => $plan->currency,
-                        'ends_at' => now()->addMonths((int) $request->plan_cycle),
-                    ]);
-
-                    $transaction = Transaction::create([
-                        'transaction_title' => "{$plan->name} ({$request->plan_cycle} Months)",
-                        'transaction_category' => 'New',
-                        'buyer_id' => $request->organization_id,
-                        'buyer_type' => 'organization',
-                        'seller_type' => 'platform',
-                        'payment_method' => 'Card',
-                        'gateway_payment_id' => $paymentIntent->id,
-                        'price' => $planDetails['total_price'],
-                        'currency' => $planDetails['currency'],
-                        'status' => 'Completed',
-                        'is_subscription' => true,
-                        'billing_cycle' => $request->plan_cycle . ' Months',
-                        'subscription_start_date' => now(),
-                        'subscription_end_date' => now()->addMonths((int) $request->plan_cycle),
-                        'source_id' => $subscription->id,
-                        'source_name' => 'subscription',
-                    ]);
-
-                    foreach ($planDetails['services'] as $service) {
-                        PlanSubscriptionItem::create([
-                            'organization_id' => $request->organization_id,
-                            'subscription_id' => $subscription->id,
-                            'service_catalog_id' => $service['service_catalog_id'],
-                            'quantity' => $service['service_quantity'],
-                        ]);
-                    }
 
                     Organization::where('id', $request->organization_id)->update(['status' => 'Enable']);
 
-                    DB::commit();
+                    ProcessSuccessfulCheckout::dispatch(
+                        $user->id,
+                        $request->organization_id,
+                        $plan->id,
+                        $planDetails,
+                        $request->plan_cycle,
+                        $paymentIntent->id,
+                        now(),
+                        'Card',
+                    );
 
-                    return response()->json(['success' => true, 'transaction_id' => $transaction->id]);
+                    return response()->json(['success' => true]);
+
                 } catch (\Exception $e) {
                     DB::rollBack();
                     Log::error('DB Transaction Failed during checkout: ' . $e->getMessage());
+
                     return response()->json([
                         'error' => 'Payment succeeded, but something went wrong while saving data. Please contact support.',
                     ], 500);
                 }
             }
-
-            Log::warning('Stripe payment not succeeded', ['status' => $paymentIntent->status]);
 
              Transaction::create([
                 'transaction_title' => "{$plan->name} ({$request->plan_cycle} Months)",
@@ -240,11 +214,17 @@ class CheckOutController extends Controller
                 'source_name' => 'plan',
             ]);
 
+            $paymentMethod->detach();
+
             return response()->json([
                 'error' => 'Payment failed.',
                 'status' => $paymentIntent->status,
-            ]);
+            ], 402);
+
         } catch (\Exception $e) {
+            if($paymentMethod){
+                $paymentMethod->detach();
+            }
             Log::error('Error while Checkout Plan: ' . $e->getMessage());
 
             return response()->json([

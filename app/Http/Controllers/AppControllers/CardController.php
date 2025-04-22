@@ -75,7 +75,17 @@ class CardController extends Controller
 
             $customer = Customer::retrieve($user->customer_payment_id);
 
-            PaymentMethod::retrieve($request->payment_method_id)->attach([
+            $newPaymentMethod = PaymentMethod::retrieve($request->payment_method_id);
+
+            foreach ($paymentMethods->data as $existingPaymentMethod) {
+                if ($existingPaymentMethod->card->last4 === $newPaymentMethod->card->last4 &&
+                    $existingPaymentMethod->card->exp_month === $newPaymentMethod->card->exp_month &&
+                    $existingPaymentMethod->card->exp_year === $newPaymentMethod->card->exp_year) {
+                    return response()->json(['error' => 'This card is already added.'], 400);
+                }
+            }
+
+            $newPaymentMethod->attach([
                 'customer' => $customer->id,
             ]);
 

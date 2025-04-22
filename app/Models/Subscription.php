@@ -20,6 +20,7 @@ class Subscription extends Model
         'billing_cycle',
         'subscription_status',
         'price_at_subscription',
+        'currency_at_subscription',
         'trial_ends_at',
         'ends_at',
     ];
