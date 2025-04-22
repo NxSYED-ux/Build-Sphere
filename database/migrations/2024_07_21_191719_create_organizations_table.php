@@ -13,8 +13,9 @@ return new class extends Migration
             $table->string('name',50)->unique();
             $table->unsignedBigInteger('address_id')->unique();
             $table->enum('status', ['Enable', 'Disable', 'Block'])->default('Enable');
-            $table->date('membership_start_date')->nullable();
-            $table->date('membership_end_date')->nullable();
+            $table->string('payment_gateway_name')->default('Stripe'); // Name of the payment gateway (e.g., Stripe, PayPal)
+            $table->string('payment_gateway_merchant_id')->nullable(); // Merchant ID issued by the payment gateway
+            $table->boolean('is_online_payment_enabled')->default(false);
             $table->unsignedBigInteger('owner_id')->unique();
             $table->unsignedBigInteger('created_by');
             $table->unsignedBigInteger('updated_by');

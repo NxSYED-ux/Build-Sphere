@@ -49,10 +49,14 @@ class OrganizationController extends Controller
             'province' => ['nullable', 'string', 'max:50'],
             'city' => ['nullable', 'string', 'max:50'],
             'postal_code' => ['nullable', 'string', 'max:50'],
+            'is_online_payment_enabled' => ['required', 'in:0,1'],
+            'merchant_id' => ['required_if:is_online_payment_enabled,1', 'string', 'max:50'],
             'plan_id' => 'required|exists:plans,id',
             'plan_cycle_id' => 'required|exists:billing_cycles,id',
             'plan_cycle' => 'required|integer',
             'organization_pictures.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ] , [
+            'merchant_id.required_if' => 'The merchant ID is required when online payments are enabled.',
         ]);
 
         $billing_cycle_id = $request->plan_cycle_id;
@@ -122,8 +126,8 @@ class OrganizationController extends Controller
                 'name' => $request->name,
                 'owner_id' => $request->owner_id,
                 'address_id' => $address->id,
-                'membership_start_date' => $request->membership_start_date,
-                'membership_end_date' => $request->membership_end_date,
+                'payment_gateway_merchant_id' => $request->merchant_id,
+                'is_online_payment_enabled' => $request->is_online_payment_enabled,
             ]);
 
             if ($request->hasFile('organization_pictures')) {
@@ -157,7 +161,8 @@ class OrganizationController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
-            return redirect()->back()->withInput()->with('error', 'An error occurred while creating the organization.');
+            Log::error('An error occurred while creating the organization: ' . $e->getMessage());
+            return redirect()->back()->withInput()->with('error', 'Something went wrong. Try again later.');
         }
     }
 
@@ -234,7 +239,7 @@ class OrganizationController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
-            return redirect()->back()->withInput()->with('error', 'An error occurred while updating the organization.');
+            return redirect()->back()->withInput()->with('error', 'Something went wrong. Try again later.');
         }
     }
 
