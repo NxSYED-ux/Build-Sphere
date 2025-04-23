@@ -7,12 +7,14 @@ use App\Models\Subscription;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Stripe\Customer;
+use Stripe\Exception\ApiErrorException;
+use Stripe\Exception\CardException;
 use Stripe\PaymentMethod;
 use Stripe\Stripe;
 
 class CardController extends Controller
 {
-    public function getSavedCards(Request $request)
+    public function index(Request $request)
     {
         $user = $request->user() ?? null;
         if (!$user) {
@@ -44,19 +46,28 @@ class CardController extends Controller
             return response()->json([
                 'cards' => $cards,
             ], 200);
+
+        } catch (CardException $e) {
+            Log::error('Stripe Card Error (getSavedCards): ' . $e->getMessage());
+            return response()->json(['error' => 'Unable to retrieve cards due to a card-related issue.'], 402);
+
+        } catch (ApiErrorException $e) {
+            Log::error('Stripe API Error (getSavedCards): ' . $e->getMessage());
+            return response()->json(['error' => 'Stripe API error. Please try again later.'], 500);
+
         } catch (\Exception $e) {
-            Log::error('Failed to retrieve saved cards: ' . $e->getMessage());
+            Log::error('Unexpected Error (getSavedCards): ' . $e->getMessage());
             return response()->json(['error' => 'Failed to retrieve saved cards.'], 500);
         }
     }
 
-    public function addCard(Request $request)
+    public function store(Request $request)
     {
         $request->validate([
             'payment_method_id' => 'required|string',
         ]);
 
-        $user = $request->user() ?? null;
+        $user = $request->user();
         if (!$user) {
             return response()->json(['error' => 'User not authenticated.'], 401);
         }
@@ -74,20 +85,19 @@ class CardController extends Controller
             }
 
             $customer = Customer::retrieve($user->customer_payment_id);
-
             $newPaymentMethod = PaymentMethod::retrieve($request->payment_method_id);
 
             foreach ($paymentMethods->data as $existingPaymentMethod) {
-                if ($existingPaymentMethod->card->last4 === $newPaymentMethod->card->last4 &&
+                if (
+                    $existingPaymentMethod->card->last4 === $newPaymentMethod->card->last4 &&
                     $existingPaymentMethod->card->exp_month === $newPaymentMethod->card->exp_month &&
-                    $existingPaymentMethod->card->exp_year === $newPaymentMethod->card->exp_year) {
+                    $existingPaymentMethod->card->exp_year === $newPaymentMethod->card->exp_year
+                ) {
                     return response()->json(['error' => 'This card is already added.'], 400);
                 }
             }
 
-            $newPaymentMethod->attach([
-                'customer' => $customer->id,
-            ]);
+            $newPaymentMethod->attach(['customer' => $customer->id]);
 
             $currentDefault = $customer->invoice_settings->default_payment_method;
 
@@ -104,13 +114,21 @@ class CardController extends Controller
                 'set_as_default' => !$currentDefault ? true : false,
             ], 200);
 
+        } catch (CardException $e) {
+            Log::error('Stripe Card Error: ' . $e->getMessage());
+            return response()->json(['error' => $e->getMessage()], 402);
+
+        } catch (ApiErrorException $e) {
+            Log::error('Stripe API Error: ' . $e->getMessage());
+            return response()->json(['error' => 'There was an issue with Stripe. Please try again.'], 500);
+
         } catch (\Exception $e) {
             Log::error('Failed to add card: ' . $e->getMessage());
-            return response()->json(['error' => $e->getMessage()], 500);
+            return response()->json(['error' => 'An unexpected error occurred.'], 500);
         }
     }
 
-    public function setDefaultCard(Request $request)
+    public function update(Request $request)
     {
         $request->validate([
             'payment_method_id' => 'required|string',
@@ -132,14 +150,23 @@ class CardController extends Controller
 
             return response()->json([
                 'message' => 'Default card updated successfully.',
-            ]);
+            ], 200);
+
+        } catch (CardException $e) {
+            Log::error('Stripe Card Error (set default): ' . $e->getMessage());
+            return response()->json(['error' => $e->getMessage()], 402);
+
+        } catch (ApiErrorException $e) {
+            Log::error('Stripe API Error (set default): ' . $e->getMessage());
+            return response()->json(['error' => 'Stripe encountered an error. Please try again.'], 500);
+
         } catch (\Exception $e) {
-            Log::error('Failed to update default card: ' . $e->getMessage());
+            Log::error('Unexpected Error (set default): ' . $e->getMessage());
             return response()->json(['error' => 'Failed to update default card.'], 500);
         }
     }
 
-    public function removeCard(Request $request)
+    public function destroy(Request $request)
     {
         $request->validate([
             'payment_method_id' => 'required|string',
@@ -171,7 +198,9 @@ class CardController extends Controller
             ]);
 
             if (count($attachedCards->data) <= 1 && $activeSubscription) {
-                return response()->json(['error' => 'You cannot delete your only card while having an active subscription.'], 403);
+                return response()->json([
+                    'error' => 'You cannot delete your only card while having an active subscription.',
+                ], 403);
             }
 
             $customer = Customer::retrieve($user->customer_payment_id);
@@ -197,8 +226,17 @@ class CardController extends Controller
             return response()->json([
                 'message' => 'Card removed successfully.',
             ]);
+
+        } catch (CardException $e) {
+            Log::error('Stripe Card Error (remove): ' . $e->getMessage());
+            return response()->json(['error' => $e->getMessage()], 402);
+
+        } catch (ApiErrorException $e) {
+            Log::error('Stripe API Error (remove): ' . $e->getMessage());
+            return response()->json(['error' => 'Stripe API error. Please try again later.'], 500);
+
         } catch (\Exception $e) {
-            Log::error('Failed to remove card: ' . $e->getMessage());
+            Log::error('Unexpected Error (remove card): ' . $e->getMessage());
             return response()->json(['error' => 'Failed to remove card.'], 500);
         }
     }

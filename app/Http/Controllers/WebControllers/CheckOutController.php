@@ -14,9 +14,7 @@ use Illuminate\Support\Facades\Log;
 use Stripe\Customer;
 use Stripe\Exception\CardException;
 use Stripe\PaymentIntent;
-use Stripe\PaymentMethod;
 use Stripe\Stripe;
-use Illuminate\Support\Facades\DB;
 
 
 class CheckOutController extends Controller
@@ -196,9 +194,11 @@ class CheckOutController extends Controller
                 return $this->handleStripePaymentFailure($paymentIntent, $plan, $request->plan_cycle, $request, $planDetails);
             }
 
+            $paymentMethodId = $paymentIntent->payment_method;
+
             Customer::update($user->customer_payment_id, [
                 'invoice_settings' => [
-                    'default_payment_method' => $request->payment_method_id,
+                    'default_payment_method' => $paymentMethodId,
                 ],
             ]);
 
@@ -225,32 +225,6 @@ class CheckOutController extends Controller
                 'message' => $e->getMessage(),
             ], 500);
         }
-    }
-
-    private function handleStripePaymentFailure($e, $plan, $planCycle, $request, $planDetails)
-    {
-        $error = method_exists($e, 'getError') ? $e->getError() : null;
-
-        Transaction::create([
-            'transaction_title' => "{$plan->name} ({$planCycle} Months)",
-            'transaction_category' => 'New',
-            'buyer_id' => $request->organization_id,
-            'buyer_type' => 'organization',
-            'seller_type' => 'platform',
-            'payment_method' => 'Card',
-            'gateway_payment_id' => $e->id ?? null,
-            'price' => $planDetails['total_price'],
-            'currency' => $planDetails['currency'],
-            'status' => 'Failed',
-            'source_id' => $plan->id,
-            'source_name' => 'plan',
-        ]);
-
-        return response()->json([
-            'error' => $error->message ?? 'Payment failed.',
-            'code' => $error->code ?? 'unknown_error',
-            'type' => $error->type ?? 'card_error',
-        ], 402);
     }
 
 
@@ -299,6 +273,32 @@ class CheckOutController extends Controller
             'total_price' => $totalPrice,
             'services' => $services,
         ];
+    }
+
+    private function handleStripePaymentFailure($e, $plan, $planCycle, $request, $planDetails)
+    {
+        $error = method_exists($e, 'getError') ? $e->getError() : null;
+
+        Transaction::create([
+            'transaction_title' => "{$plan->name} ({$planCycle} Months)",
+            'transaction_category' => 'New',
+            'buyer_id' => $request->organization_id,
+            'buyer_type' => 'organization',
+            'seller_type' => 'platform',
+            'payment_method' => 'Card',
+            'gateway_payment_id' => $e->id ?? null,
+            'price' => $planDetails['total_price'],
+            'currency' => $planDetails['currency'],
+            'status' => 'Failed',
+            'source_id' => $plan->id,
+            'source_name' => 'plan',
+        ]);
+
+        return response()->json([
+            'error' => $error->message ?? 'Payment failed.',
+            'code' => $error->code ?? 'unknown_error',
+            'type' => $error->type ?? 'card_error',
+        ], 402);
     }
 
 }

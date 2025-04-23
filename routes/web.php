@@ -23,17 +23,24 @@ use App\Http\Controllers\WebControllers\SignUpController;
 use App\Http\Controllers\WebControllers\UsersController;
 use Illuminate\Support\Facades\Route;
 
+// Route for Pusher Authentication
+Route::post('/pusher/auth', [AuthController::class, 'authenticatePusher'])->name('pusher.auth');
+
+// Wrong Route
 Route::fallback(function () {
     abort(404, 'Page Not Found');
 });
 
-// Route for Pusher Authentication
-Route::post('/pusher/auth', [AuthController::class, 'authenticatePusher'])->name('pusher.auth');
+// Website Home Screen
+Route::prefix('')->group(function () {
 
-Route::get('/', [landingController::class, 'index'])->name('index');
-Route::get('/index', [landingController::class, 'index']);
-Route::get('/plans/{planCycle}', [landingController::class, 'plans'])->name('plans');
+    Route::get('/', [landingController::class, 'index'])->name('index');
+    Route::get('/index', [landingController::class, 'index']);
+    Route::get('/plans/{planCycle}', [landingController::class, 'plans'])->name('plans');
 
+});
+
+// Checkout
 Route::prefix('checkout')->group(function () {
 
     Route::get('/', [CheckOutController::class, 'index'])->name('checkout');
@@ -42,8 +49,12 @@ Route::prefix('checkout')->group(function () {
 
 });
 
-Route::get('/login', [AuthController::class, 'index'])->name('login');
-Route::post('/login', [AuthController::class, 'login'])->name('login');
+Route::prefix('login')->group(function () {
+
+    Route::get('/login', [AuthController::class, 'index'])->name('login');
+    Route::post('/login', [AuthController::class, 'login'])->name('login');
+
+});
 
 Route::get('/signUp', [SignUpController::class, 'index'])->name('signUp');
 Route::post('/signUp', [SignUpController::class, 'register'])->name('signUp');
@@ -62,7 +73,7 @@ Route::prefix('auth')->group(function () {
 
 Route::middleware(['auth.jwt'])->group(function () {
 
-    Route::get('/plans', function () { return view('Heights.Admin.Plans.create'); });
+    Route::get('/org', function () { return view('Heights.Owner.Profile.organization_profile'); });
 
     Route::post('/logout', [AuthController::class, 'logOut'])->name('logout');
     Route::delete('/buildings/{id}/remove-picture', [BuildingController::class, 'destroyImage'])->name('buildings.remove_picture');
@@ -280,10 +291,10 @@ Route::prefix('owner')->middleware(['auth.jwt'])->group(function () {
 
     Route::prefix('cards')->group(function () {
 
-        Route::get('/', [CardController::class, 'getSavedCards'])->name('owner.cards.index');
-        Route::post('/', [CardController::class, 'addCard'])->name('owner.cards.store');
-        Route::put('/', [CardController::class, 'setDefaultCard'])->name('owner.cards.update.default');
-        Route::delete('/', [CardController::class, 'removeCard'])->name('owner.cards.delete');
+        Route::get('/', [CardController::class, 'index'])->name('owner.cards.index');
+        Route::post('/', [CardController::class, 'store'])->name('owner.cards.store');
+        Route::put('/', [CardController::class, 'update'])->name('owner.cards.update.default');
+        Route::delete('/', [CardController::class, 'destroy'])->name('owner.cards.delete');
 
     });
 
