@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\GeneralControllers\AuthController;
+use App\Http\Controllers\GeneralControllers\CardController;
 use App\Http\Controllers\GeneralControllers\ForgotPasswordController;
 use App\Http\Controllers\GeneralControllers\ProfileController;
 use App\Http\Controllers\WebControllers\AdminDashboardController;
@@ -274,6 +275,15 @@ Route::prefix('owner')->middleware(['auth.jwt'])->group(function () {
 
         Route::get('/', [AssignUnitController::class, 'index'])->name('owner.assignunits.index');
         Route::post('/', [AssignUnitController::class, 'create'])->name('owner.assignunits.store');
+
+    });
+
+    Route::prefix('cards')->group(function () {
+
+        Route::get('/', [CardController::class, 'getSavedCards'])->name('owner.cards.index');
+        Route::post('/', [CardController::class, 'addCard'])->name('owner.cards.store');
+        Route::put('/', [CardController::class, 'setDefaultCard'])->name('owner.cards.update.default');
+        Route::delete('/', [CardController::class, 'removeCard'])->name('owner.cards.delete');
 
     });
 
