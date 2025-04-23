@@ -223,6 +223,36 @@
                                 if (confirmResult.error) {
                                     showResponseMessage("Payment failed: " + confirmResult.error.message, 'error');
                                 } else if (confirmResult.paymentIntent.status === "succeeded") {
+
+                                    const dataForComplete = {
+                                        plan_id: selectedPlanId.value,
+                                        plan_cycle: selectedPlanCycle.value,
+                                        plan_cycle_id: selectedBillingCycleId.value,
+                                        owner_id: ownerId.value,
+                                        organization_id: organizationId.value,
+                                        payment_intend_id: confirmResult.paymentIntent.id
+                                    };
+
+                                    const completeResponse = await fetch("{{ route('checkout.processing.complete') }}", {
+                                        method: 'POST',
+                                        headers: {
+                                            'Content-Type': 'application/json',
+                                            'Accept': 'application/json',
+                                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                                        },
+                                        body: JSON.stringify(dataForComplete)
+                                    });
+
+                                    const result2 = await completeResponse.json();
+
+                                    if (completeResponse.ok) {
+                                        if (result2.success) {
+                                            showResponseMessage(result2.message || "Payment successful!", 'success');
+                                            redirectToLogin();
+                                        } else {
+                                            showResponseMessage(result2.message || result2.error || "Payment failed. Please try again.", 'error');
+                                        }
+                                    }
                                     showResponseMessage("Payment successful!", 'success');
                                     redirectToLogin();
                                 }
@@ -258,6 +288,7 @@
                     window.location.href = "{{ route('login') }}";
                 }, 1500);
             }
+
 
             function showResponseMessage(message, type = 'success') {
                 const isSuccess = type === 'success';

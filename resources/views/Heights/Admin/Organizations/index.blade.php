@@ -295,8 +295,9 @@
     <x-error-success-model />
 
     @php
-        $activeTab = old('activeTab', 'Tab1');
+        $activeTab = old('activeTab', $activeTab ?? 'Tab1');
     @endphp
+
 
         <!-- Loading Overlay -->
     <div id="loadingOverlay">
@@ -388,6 +389,8 @@
                                             <div class="card-body" style="overflow-x: auto;">
                                                 <form action="{{ route('organizations.store') }}" method="POST" enctype="multipart/form-data" id="organizationForm">
                                                     @csrf
+
+                                                    <input type="hidden" name="activeTab" value="Tab2">
 
                                                     <input type="hidden" name="plan_id" id="plan_id">
                                                     <input type="hidden" name="plan_cycle_id"  id="plan_cycle_id">

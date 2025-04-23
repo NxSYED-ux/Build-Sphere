@@ -1,141 +1,176 @@
 :root {
-        /* Top Navbar */
-        --topnavbar-text-color: #F1F1F1;
-        --topnavbar-background-color: #333333;
-        --topnavbar-border-color: #ffff;
-        --topnavbar-icon-color: white;
-        --topnavbar-notification-icon-color: #f39c12;
-        --topnavbar-seperator-color: #ffff;
+    /* Base Colors */
+    --color-white: #ffffff;
+    --color-black: #000000;
+    --color-blue: #43AAFF;
+    --color-light-blue: #B0C3CC;
+    --color-light-blue-2: #B9CCDD;
+    --color-orange: #f39c12;
+    --color-dark-gray: #252525;
+    --color-darker-gray: #1e1e1e;
+    --color-gray: #333333;
+    --color-gray-2: #343a40;
+    --color-gray-3: #444;
+    --color-gray-4: #495057;
+    --color-gray-5: #555;
+    --color-gray-6: #666;
+    --color-gray-7: #888;
+    --color-gray-8: #aaa;
+    --color-light-gray: #F1F1F1;
+    --color-lighter-gray: #e0e0e0;
+    --color-green: #198754;
+    --color-green-2: #28a745;
+    --color-red: #dc3545;
+    --color-red-2: #EC5252;
+    --color-pink: #ff5b6b;
+    --color-pink-2: #ff5b61;
+    --color-blue-2: #007bff;
+    --color-blue-3: #0056b3;
+    --color-blue-4: #008CFF;
 
-        /* Side Navbar */
-        --sidenavbar-body-color: #252525;
-        --sidenavbar-text-color: #F1F1F1;
-        --sidenavbar-text-hover-color: #43AAFF;
-        --sidenavbar-hover-background-color: #252525;
-        --sidenavbar-border-color: #43AAFF;
-        --sidenavbar-seperator-color: #fff;
+    /* Top Navbar */
+    --topnavbar-text-color: var(--color-light-gray);
+    --topnavbar-background-color: var(--color-gray);
+    --topnavbar-border-color: var(--color-white);
+    --topnavbar-icon-color: var(--color-white);
+    --topnavbar-notification-icon-color: var(--color-orange);
+    --topnavbar-seperator-color: var(--color-white);
 
-        /* Application Logo */
-        --fill1-color: #252525;
-        --fill2-color: #43AAFF;
-        --fill3-color: #B9CCDD;
-        --fill4-color: #43AAFF;
-        --fill5-color: #43AAFF;
-        --fill1-top-nav-color: #333333;
+    /* Side Navbar */
+    --sidenavbar-body-color: var(--color-dark-gray);
+    --sidenavbar-text-color: var(--color-light-gray);
+    --sidenavbar-text-hover-color: var(--color-blue);
+    --sidenavbar-hover-background-color: var(--color-dark-gray);
+    --sidenavbar-border-color: var(--color-blue);
+    --sidenavbar-seperator-color: var(--color-white);
 
-        /* Body */
-            /* breadcrumb */
-            --breadcrumb-text1-color: #ffff;
-            --breadcrumb-text2-color: #43AAFF;
-            --breadcrumb-separator-color: white;
-            /* content-top-border */
-            --content-top-border-color: #43AAFF;
+    /* Application Logo */
+    --fill1-color: var(--color-dark-gray);
+    --fill2-color: var(--color-blue);
+    --fill3-color: var(--color-light-blue-2);
+    --fill4-color: var(--color-blue);
+    --fill5-color: var(--color-blue);
+    --fill1-top-nav-color: var(--color-gray);
 
-            --body-background-color: #333333;
-            --main-background-color: #333333;
-            --main-text-color: #ffff;
+    /* Body */
+    /* breadcrumb */
+    --breadcrumb-text1-color: var(--color-white);
+    --breadcrumb-text2-color: var(--color-blue);
+    --breadcrumb-separator-color: var(--color-white);
+    /* content-top-border */
+    --content-top-border-color: var(--color-blue);
 
-            --body-card-bg: #252525;
-            --body-card-label-color: #fff;
-            --body-card-span-color: #fff;
-            --th-bg: black;
-            --th-color: #ffff;
-            --td-bg: #333333;
-            --td-color: #ffff;
+    --body-background-color: var(--color-gray);
+    --main-background-color: var(--color-gray);
+    --main-text-color: var(--color-white);
 
-            /* Models */
-            --modal-bg: #333333;
-            --modal-header-bg: #333333;
-            --modal-text: #ffffff;
-            --modal-border: #333;
-            --modal-btn-bg: #43AAFF;
-            --modal-btn-text: #43AAFF;
-            --modal-btn-text-hover: #ffff;
-            --status-active: #198754;
-            --status-inactive: #dc3545;
-            --invert: 1;
+    --body-card-bg: var(--color-dark-gray);
+    --body-card-label-color: var(--color-white);
+    --body-card-span-color: var(--color-white);
+    --th-bg: var(--color-black);
+    --th-color: var(--color-white);
+    --td-bg: var(--color-gray);
+    --td-color: var(--color-white);
 
-            /* DataTables Paginate Menu */
-            --dataTable-paginate-menu-bg-color: #333;
-            --dataTable-paginate-menu-text-color: #fff;
-            --dataTable-paginate-menu-border-color: #555;
-            --dataTable-paginate-menu-label-color: #fff;
+    /* Models */
+    --modal-bg: var(--color-gray);
+    --modal-header-bg: var(--color-gray);
+    --modal-text: var(--color-white);
+    --modal-border: var(--color-gray);
+    --modal-btn-bg: var(--color-blue);
+    --modal-btn-text: var(--color-blue);
+    --modal-btn-text-hover: var(--color-white);
+    --status-active: var(--color-green);
+    --status-inactive: var(--color-red);
+    --invert: 1;
 
-            /* DataTables Search Box */
-            --dataTable-search-input-bg-color: #333;
-            --dataTable-search-input-text-color: #fff;
-            --dataTable-search-input-border-color: #555;
-            --dataTable-search-label-color: #fff;
-            --dataTable-search-placeholder-color: #888;
+    /* DataTables Paginate Menu */
+    --dataTable-paginate-menu-bg-color: var(--color-gray);
+    --dataTable-paginate-menu-text-color: var(--color-white);
+    --dataTable-paginate-menu-border-color: var(--color-gray-5);
+    --dataTable-paginate-menu-label-color: var(--color-white);
 
-            /* Sweet Alert */
-            --swal-bg-color: #222;
-            --swal-text-color: #fff;
-            --swal-icon-success-color: #28a745;
-            --swal-icon-error-color: #ff5b61;
-            --swal-border-color: #444;
-            --swal-button-bg: #444;
-            --swal-button-text: #fff;
-            --swal-button-border: white;
-            --swal-timer-progress-bar-color: #007bff;
+    /* DataTables Search Box */
+    --dataTable-search-input-bg-color: var(--color-gray);
+    --dataTable-search-input-text-color: var(--color-white);
+    --dataTable-search-input-border-color: var(--color-gray-5);
+    --dataTable-search-label-color: var(--color-white);
+    --dataTable-search-placeholder-color: var(--color-gray-7);
 
-            /* Nav Tabs */
-            --nav-tabs-inactive-bg-color: #252525;
-            --nav-tabs-inactive-text-color: #fff;
-            --nav-tabs-inactive-border-color: #ffff;
-            --nav-tabs-active-bg-color: #252525;
-            --nav-tabs-active-text-color: #fff;
+    /* Sweet Alert */
+    --swal-bg-color: #222;
+    --swal-text-color: var(--color-white);
+    --swal-icon-success-color: var(--color-green-2);
+    --swal-icon-error-color: var(--color-pink-2);
+    --swal-border-color: var(--color-gray-3);
+    --swal-button-bg: var(--color-gray-3);
+    --swal-button-text: var(--color-white);
+    --swal-button-border: var(--color-white);
+    --swal-timer-progress-bar-color: var(--color-blue-2);
 
-            /* Notifications */
-            --notification-bg-color: #1e1e1e;
-            --notification-text-color: #e0e0e0;
-            --notification-border-color: #444;
-            --notification-muted-text-color: #aaa;
-            --notification-dropdown-bg: #2a2a2a;
-            --notification-dropdown-hover-bg: #333;
-            --notification-icon-color: #B0C3CC;
-            --notification-badge-color: #EC5252;
-            --notification-button-primary-bg: #007bff;
-            --notification-button-primary-hover-bg: #0056b3;
-            --notification-button-outline-text: #e0e0e0;
-            --notification-button-outline-border: #666;
-            --notification-button-outline-hover-bg: #444;
+    /* Nav Tabs */
+    --nav-tabs-inactive-bg-color: var(--color-dark-gray);
+    --nav-tabs-inactive-text-color: var(--color-white);
+    --nav-tabs-inactive-border-color: var(--color-white);
+    --nav-tabs-active-bg-color: var(--color-dark-gray);
+    --nav-tabs-active-text-color: var(--color-white);
 
-            --permission-header-bg: #252525;
-            --permission-header-color: #fff;
-            --permission-card-bg-color: #252525;
+    /* Notifications */
+    --notification-bg-color: var(--color-darker-gray);
+    --notification-text-color: var(--color-lighter-gray);
+    --notification-border-color: var(--color-gray-3);
+    --notification-muted-text-color: var(--color-gray-8);
+    --notification-dropdown-bg: #2a2a2a;
+    --notification-dropdown-hover-bg: var(--color-gray);
+    --notification-icon-color: var(--color-light-blue);
+    --notification-badge-color: var(--color-red-2);
+    --notification-button-primary-bg: var(--color-blue-2);
+    --notification-button-primary-hover-bg: var(--color-blue-3);
+    --notification-button-outline-text: var(--color-lighter-gray);
+    --notification-button-outline-border: var(--color-gray-6);
+    --notification-button-outline-hover-bg: var(--color-gray-3);
 
-            /* Profile */
-            --profile-card-bg-color: #252525;
+    --permission-header-bg: var(--color-dark-gray);
+    --permission-header-color: var(--color-white);
+    --permission-card-bg-color: var(--color-dark-gray);
 
-            /* Form */
-            --label-color: #F1F1F1;
-            --input-bg-color: #333333;
-            --input-text-color: #F1F1F1;
-            --input-border-color: #F1F1F1;
-            --input-icon-color: #F1F1F1;
-            --placeholder-color: #F1F1F1;
+    /* Profile */
+    --profile-card-bg-color: var(--color-dark-gray);
 
+    /* Form */
+    --label-color: var(--color-light-gray);
+    --input-bg-color: var(--color-gray);
+    --input-text-color: var(--color-light-gray);
+    --input-border-color: var(--color-light-gray);
+    --input-icon-color: var(--color-light-gray);
+    --placeholder-color: var(--color-light-gray);
 
-            .form-select {
-                --bs-form-select-bg-img: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23ffffff' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
-            }
+    .form-select {
+        --bs-form-select-bg-img: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23ffffff' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+    }
 
-            /* Documents Container */
-            --bg-color: #343a40;
-            --text-color: #ffffff;
-            --border-color: #495057;
-            --btn-bg: #ff6b6b;
-            --btn-text: #ffff;
+    /* Documents Container */
+    --bg-color: var(--color-gray-2);
+    --text-color: var(--color-white);
+    --border-color: var(--color-gray-4);
+    --btn-bg: var(--color-pink);
+    --btn-text: var(--color-white);
 
-        /* Buttons */
-        --btn-outline-primary: #fff;
-        --btn-outline-bg-primary: #008CFF;
-        --btn-outline-border-primary: #008CFF;
+    /* Buttons */
+    --btn-outline-primary: var(--color-white);
+    --btn-outline-bg-primary: var(--color-blue-4);
+    --btn-outline-border-primary: var(--color-blue-4);
 
-        --btn-hover-outline-primary: #fff;
-        --btn-hover-outline-bg-primary: #008CFF;
-        --btn-hover-outline-border-primary: #008CFF;
+    --btn-hover-outline-primary: var(--color-white);
+    --btn-hover-outline-bg-primary: var(--color-blue-4);
+    --btn-hover-outline-border-primary: var(--color-blue-4);
 
-
+    /* Subscription meter */
+    --gauge-axis-label-color: #4fc3f7;
+    --gauge-axis-tick-color: #ff8a65;
+    --gauge-label-color: #ff7043;
+    --gauge-hand-fill: #81c784;
+    --gauge-hand-stroke: #66bb6a;
+    --gauge-range-0: #ff5252;
+    --gauge-range-1: #69f0ae;
 }

@@ -1,142 +1,170 @@
 :root {
-        /* Top Navbar */
-        --topnavbar-text-color: black;
-        --topnavbar-background-color: #ffff;
-        --topnavbar-border-color: #808080;
-        --topnavbar-icon-color: black;
-        --topnavbar-notification-icon-color: #5f5f5f;
-        --topnavbar-seperator-color: grey;
+    /* Base Colors */
+    --color-white: #ffffff;
+    --color-black: #000000;
+    --color-blue: #008CFF;
+    --color-light-blue: #B0C3CC;
+    --color-light-blue-2: #B9CCDD;
+    --color-light-gray: #F1F2F7;
+    --color-gray: #5F5F5F;
+    --color-dark-gray: #333333;
+    --color-gray-2: #6c757d;
+    --color-gray-3: #808080;
+    --color-gray-4: #dee2e6;
+    --color-gray-5: #f8f9fa;
+    --color-gray-6: #e9ecef;
+    --color-gray-7: #aaa;
+    --color-gray-8: #212529;
+    --color-green: #28a745;
+    --color-red: #dc3545;
+    --color-red-2: #EC5252;
+    --color-pink: #ff5b61;
 
-        /* Side Navbar */
-        --sidenavbar-body-color: #F1F2F7;
-        --sidenavbar-text-color: #5f5f5f;
-        --sidenavbar-text-hover-color: #008CFF;
-        --sidenavbar-hpver-background-color: rgb(0 140 255 / 5%);
-        --sidenavbar-border-color: #008CFF;
-        --sidenavbar-seperator-color: grey;
+    /* Top Navbar */
+    --topnavbar-text-color: var(--color-black);
+    --topnavbar-background-color: var(--color-white);
+    --topnavbar-border-color: var(--color-gray-3);
+    --topnavbar-icon-color: var(--color-black);
+    --topnavbar-notification-icon-color: var(--color-gray);
+    --topnavbar-seperator-color: grey;
 
-        /* Application Logo */
-        --fill1-color: #F1F2F7;
-        --fill2-color: #008CFF;
-        --fill3-color: #B9CCDD;
-        --fill4-color: #008CFF;
-        --fill5-color: #008CFF;
-        --fill1-top-nav-color: white;
+    /* Side Navbar */
+    --sidenavbar-body-color: var(--color-light-gray);
+    --sidenavbar-text-color: var(--color-gray);
+    --sidenavbar-text-hover-color: var(--color-blue);
+    --sidenavbar-hpver-background-color: rgb(0 140 255 / 5%);
+    --sidenavbar-border-color: var(--color-blue);
+    --sidenavbar-seperator-color: grey;
 
-        /* Body */
-            /* breadcrumb */
-            --breadcrumb-text1-color: black;
-            --breadcrumb-text2-color: #008CFF;
-            --breadcrumb-separator-color: #008CFF;
-            /* content-top-border */
-            --content-top-border-color: #008CFF;
+    /* Application Logo */
+    --fill1-color: var(--color-light-gray);
+    --fill2-color: var(--color-blue);
+    --fill3-color: var(--color-light-blue-2);
+    --fill4-color: var(--color-blue);
+    --fill5-color: var(--color-blue);
+    --fill1-top-nav-color: var(--color-white);
 
-            --body-background-color: #ffff;
-            --main-background-color: #ffff;
-            --main-text-color: black;
+    /* Body */
+    /* breadcrumb */
+    --breadcrumb-text1-color: var(--color-black);
+    --breadcrumb-text2-color: var(--color-blue);
+    --breadcrumb-separator-color: var(--color-blue);
+    /* content-top-border */
+    --content-top-border-color: var(--color-blue);
 
-            --body-card-bg: #ffff;
-            --body-card-label-color: initial;
-            --body-card-span-color: initial;
-            --th-bg: initial;
-            --th-color: black;
-            --td-bg: initial;
-            --td-color: black;
+    --body-background-color: var(--color-white);
+    --main-background-color: var(--color-white);
+    --main-text-color: var(--color-black);
 
-            /* Models */
-            --modal-bg: #ffffff;
-            --modal-header-bg: #f8f9fa;
-            --modal-text: #5F5F5F;
-            --modal-border: #dee2e6;
-            --modal-btn-bg: #008CFF;
-            --modal-btn-text: #008CFF;
-            --modal-btn-text-hover: #ffff;
-            --status-active: #28a745;
-            --status-inactive: #dc3545;
-            --invert: 0;
+    --body-card-bg: var(--color-white);
+    --body-card-label-color: initial;
+    --body-card-span-color: initial;
+    --th-bg: initial;
+    --th-color: var(--color-black);
+    --td-bg: initial;
+    --td-color: var(--color-black);
 
-            /* DataTables Paginate Menu */
-            --dataTable-paginate-menu-bg-color: initial;
-            --dataTable-paginate-menu-text-color: black;
-            --dataTable-paginate-menu-border-color: #5f5f5f;
-            --dataTable-paginate-menu-label-color: black;
+    /* Models */
+    --modal-bg: var(--color-white);
+    --modal-header-bg: var(--color-gray-5);
+    --modal-text: var(--color-gray);
+    --modal-border: var(--color-gray-4);
+    --modal-btn-bg: var(--color-blue);
+    --modal-btn-text: var(--color-blue);
+    --modal-btn-text-hover: var(--color-white);
+    --status-active: var(--color-green);
+    --status-inactive: var(--color-red);
+    --invert: 0;
 
-            /* DataTables Search Box */
-            --dataTable-search-input-bg-color: initial;
-            --dataTable-search-input-text-color: black;
-            --dataTable-search-input-border-color: #5f5f5f;
-            --dataTable-search-label-color: black;
-            --dataTable-search-placeholder-color: initial;
+    /* DataTables Paginate Menu */
+    --dataTable-paginate-menu-bg-color: initial;
+    --dataTable-paginate-menu-text-color: var(--color-black);
+    --dataTable-paginate-menu-border-color: var(--color-gray);
+    --dataTable-paginate-menu-label-color: var(--color-black);
 
-            /* Sweet Alert */
-            --swal-bg-color: #fff;
-            --swal-text-color: #000;
-            --swal-icon-success-color: #28a745;
-            --swal-icon-error-color: #ff5b61;
-            --swal-border-color: #ddd;
-            --swal-button-bg: #007bff;
-            --swal-button-text: #fff;
-            --swal-button-border: white;
-            --swal-timer-progress-bar-color: grey;
+    /* DataTables Search Box */
+    --dataTable-search-input-bg-color: initial;
+    --dataTable-search-input-text-color: var(--color-black);
+    --dataTable-search-input-border-color: var(--color-gray);
+    --dataTable-search-label-color: var(--color-black);
+    --dataTable-search-placeholder-color: initial;
 
-            /* Nav Tabs */
-            --nav-tabs-inactive-bg-color: initial;
-            --nav-tabs-inactive-text-color: black;
-            --nav-tabs-inactive-border-color: initial;
-            --nav-tabs-active-bg-color: #ffff;
-            --nav-tabs-active-text-color: black;
+    /* Sweet Alert */
+    --swal-bg-color: var(--color-white);
+    --swal-text-color: var(--color-black);
+    --swal-icon-success-color: var(--color-green);
+    --swal-icon-error-color: var(--color-pink);
+    --swal-border-color: #ddd;
+    --swal-button-bg: #007bff;
+    --swal-button-text: var(--color-white);
+    --swal-button-border: var(--color-white);
+    --swal-timer-progress-bar-color: grey;
 
-            /* Notifications */
-            --notification-bg-color: #ffffff;
-            --notification-text-color: #333333;
-            --notification-border-color: #ddd;
-            --notification-muted-text-color: #6c757d;
-            --notification-dropdown-bg: #f8f9fa;
-            --notification-dropdown-hover-bg: #e9ecef;
-            --notification-icon-color: #B0C3CC;
-            --notification-badge-color: #EC5252;
-            --notification-button-primary-bg: #007bff;
-            --notification-button-primary-hover-bg: #0056b3;
-            --notification-button-outline-text: #333;
-            --notification-button-outline-border: #aaa;
-            --notification-button-outline-hover-bg: #e9ecef;
+    /* Nav Tabs */
+    --nav-tabs-inactive-bg-color: initial;
+    --nav-tabs-inactive-text-color: var(--color-black);
+    --nav-tabs-inactive-border-color: initial;
+    --nav-tabs-active-bg-color: var(--color-white);
+    --nav-tabs-active-text-color: var(--color-black);
 
-            --permission-header-bg: #f8f9fa;
-            --permission-header-color: #6c757d;
-            --permission-card-bg-color: #f8f9fa;
+    /* Notifications */
+    --notification-bg-color: var(--color-white);
+    --notification-text-color: var(--color-dark-gray);
+    --notification-border-color: #ddd;
+    --notification-muted-text-color: var(--color-gray-2);
+    --notification-dropdown-bg: var(--color-gray-5);
+    --notification-dropdown-hover-bg: var(--color-gray-6);
+    --notification-icon-color: var(--color-light-blue);
+    --notification-badge-color: var(--color-red-2);
+    --notification-button-primary-bg: #007bff;
+    --notification-button-primary-hover-bg: #0056b3;
+    --notification-button-outline-text: var(--color-dark-gray);
+    --notification-button-outline-border: var(--color-gray-7);
+    --notification-button-outline-hover-bg: var(--color-gray-6);
 
-            /* Profile */
-            --profile-card-bg-color: #ffff;
+    --permission-header-bg: var(--color-gray-5);
+    --permission-header-color: var(--color-gray-2);
+    --permission-card-bg-color: var(--color-gray-5);
 
-            /* Form */
-            --label-color: #5F5F5F;
-            --input-bg-color: #ffff;
-            --input-text-color: #5F5F5F;
-            --input-border-color: #dee2e6;
-            --input-icon-color: #5F5F5F;
-            --placeholder-color: #6c757d;
+    /* Profile */
+    --profile-card-bg-color: var(--color-white);
 
-            .form-select {
-                --bs-form-select-bg-img: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='black' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
-            }
+    /* Form */
+    --label-color: var(--color-gray);
+    --input-bg-color: var(--color-white);
+    --input-text-color: var(--color-gray);
+    --input-border-color: var(--color-gray-4);
+    --input-icon-color: var(--color-gray);
+    --placeholder-color: var(--color-gray-2);
 
-
-            /* Documents Container */
-            --bg-color: #f8f9fa;
-            --text-color: #212529;
-            --border-color: #dee2e6;
-            --btn-bg: #dc3545;
-            --btn-text: #ffffff;
-
-
-        /* Buttons */
-        --btn-outline-primary: #008CFF;
-        --btn-outline-bg-primary: #fff;
-        --btn-outline-border-primary: #008CFF;
-
-        --btn-hover-outline-primary: #fff;
-        --btn-hover-outline-bg-primary: #008CFF;
-        --btn-hover-outline-border-primary: #008CFF;
-
+    .form-select {
+        --bs-form-select-bg-img: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='black' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
     }
+
+    /* Documents Container */
+    --bg-color: var(--color-gray-5);
+    --text-color: var(--color-gray-8);
+    --border-color: var(--color-gray-4);
+    --btn-bg: var(--color-red);
+    --btn-text: var(--color-white);
+
+    /* Buttons */
+    --btn-outline-primary: var(--color-blue);
+    --btn-outline-bg-primary: var(--color-white);
+    --btn-outline-border-primary: var(--color-blue);
+
+    --btn-hover-outline-primary: var(--color-white);
+    --btn-hover-outline-bg-primary: var(--color-blue);
+    --btn-hover-outline-border-primary: var(--color-blue);
+
+    /* Subscription meter */
+    --gauge-axis-label-color: #00BFFF;
+    --gauge-axis-tick-color: #FF6347;
+    --gauge-label-color: #FF4500;
+    --gauge-hand-fill: #008000;
+    --gauge-hand-stroke: #006400;
+    --gauge-range-0: #00BFFF;
+    --gauge-range-1: blue;
+}
+
 

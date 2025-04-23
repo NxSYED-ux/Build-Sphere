@@ -49,7 +49,7 @@
                 }
 
                 if ('serviceWorker' in navigator) {
-                    const registration = await navigator.serviceWorker.getRegistration('/js/appjs/firebase-messaging-sw.js');
+                    const registration = await navigator.serviceWorker.getRegistration('/firebase-messaging-sw.js');
                     if (registration) {
                         await registration.unregister();
                         console.log('Firebase messaging service worker unregistered.');
