@@ -2,6 +2,7 @@
 
 use App\Events\UserPermissionUpdated;
 use App\Http\Controllers\AppControllers\CardController;
+use App\Http\Controllers\AppControllers\CheckOutController;
 use App\Http\Controllers\GeneralControllers\AuthController;
 use App\Http\Controllers\GeneralControllers\ForgotPasswordController;
 use App\Http\Controllers\GeneralControllers\NotificationController;
@@ -119,6 +120,9 @@ Route::middleware(['auth.jwt'])->group(function () {
             Route::delete('/', [CardController::class, 'removeCard']);
 
         });
+
+        Route::post('/unit-checkout', [CheckOutController::class, 'unitsOnlinePayment']);
+        Route::post('/unit-complete-checkout', [CheckOutController::class, 'completeUnitPayment']);
 
     });
 

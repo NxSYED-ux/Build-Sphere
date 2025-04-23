@@ -13,6 +13,7 @@ return new class extends Migration
 
             $table->string('title', 255);
             $table->string('description')->nullable();
+            $table->tinyInteger('weight')->default(0);
         });
 
         Schema::create('planservices', function (Blueprint $table) {

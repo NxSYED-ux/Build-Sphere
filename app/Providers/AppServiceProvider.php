@@ -37,6 +37,8 @@ class AppServiceProvider extends ServiceProvider
     {
         Relation::morphMap([
             'plan' => \App\Models\Plan::class,
+            'user_building_unit' => \App\Models\UserBuildingUnit::class,
+            'subscription' => \App\Models\Subscription::class,
         ]);
     }
 }

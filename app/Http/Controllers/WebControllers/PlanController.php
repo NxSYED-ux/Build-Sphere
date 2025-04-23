@@ -376,6 +376,7 @@ class PlanController extends Controller
                     ->exists();
 
                 if ($hasActiveSubscriptions) {
+                    DB::rollBack();
                     return redirect()->back()->with('error', "Plan '{$plan->name}' cannot be marked as inactive because it has active subscriptions.");
                 }
             }

@@ -106,7 +106,7 @@ class CardController extends Controller
 
         } catch (\Exception $e) {
             Log::error('Failed to add card: ' . $e->getMessage());
-            return response()->json(['error' => 'Failed to add card.'], 500);
+            return response()->json(['error' => $e->getMessage()], 500);
         }
     }
 
