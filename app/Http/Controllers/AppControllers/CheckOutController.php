@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Stripe\Exception\ApiErrorException;
+use Stripe\Exception\CardException;
 use Stripe\PaymentIntent;
 use Stripe\Stripe;
 
@@ -48,48 +49,57 @@ class CheckOutController extends Controller
             }
 
             $organization = $unit->organization;
-
             $currency = 'PKR';
 
-            Stripe::setApiKey(config('services.stripe.secret'));
+            try{
+                Stripe::setApiKey(config('services.stripe.secret'));
 
-            $paymentIntent = PaymentIntent::create([
-                'amount' => $unit->price * 100,
-                'currency' => $currency,
-                'customer' => $user->customer_payment_id,
-                'payment_method' => $request->payment_method_id,
-                'confirm' => true,
-                'description' => "{$unit->name} - {$unit->price}",
-                'automatic_payment_methods' => [
-                    'enabled' => true,
-                    'allow_redirects' => 'never',
-                ],
-                'transfer_data' => [
-                    'destination' => $organization->payment_gateway_merchant_id,
+                $paymentIntent = PaymentIntent::create([
                     'amount' => $unit->price * 100,
-                ],
-            ]);
-
-            if (
-                $paymentIntent->status === 'requires_action' &&
-                $paymentIntent->next_action->type === 'use_stripe_sdk'
-            ) {
-                DB::rollBack();
-                return response()->json([
-                    'requires_action' => true,
-                    'payment_intent_id' => $paymentIntent->id,
-                    'client_secret' => $paymentIntent->client_secret,
+                    'currency' => $currency,
+                    'customer' => $user->customer_payment_id,
+                    'payment_method' => $request->payment_method_id,
+                    'confirm' => true,
+                    'description' => "{$unit->name} - {$unit->price}",
+                    'automatic_payment_methods' => [
+                        'enabled' => true,
+                        'allow_redirects' => 'never',
+                    ],
+                    'transfer_data' => [
+                        'destination' => $organization->payment_gateway_merchant_id,
+                        'amount' => $unit->price * 100,
+                    ],
                 ]);
-            }
 
-            if ($paymentIntent->status !== 'succeeded') {
+                if (
+                    $paymentIntent->status === 'requires_action' &&
+                    $paymentIntent->next_action->type === 'use_stripe_sdk'
+                ) {
+                    DB::rollBack();
+                    return response()->json([
+                        'requires_action' => true,
+                        'payment_intent_id' => $paymentIntent->id,
+                        'client_secret' => $paymentIntent->client_secret,
+                    ]);
+                }
+
+            } catch (CardException $e) {
                 DB::rollBack();
-                $errorMessage = $this->getStripeErrorMessage($paymentIntent);
+                Log::error('Stripe Error: ' . $e->getMessage());
 
                 return response()->json([
                     'success' => false,
-                    'error' => $errorMessage,
-                    'status' => $paymentIntent->status,
+                    'error' => $e->getMessage(),
+                ], 402);
+            }
+
+
+            if ($paymentIntent->status !== 'succeeded') {
+                DB::rollBack();
+
+                return response()->json([
+                    'success' => false,
+                    'error' => 'Payment Failed. Please try again.',
                 ], 402);
             }
 
@@ -117,7 +127,6 @@ class CheckOutController extends Controller
         }
     }
 
-
     public function completeUnitPayment(Request $request)
     {
         $request->validate([
@@ -129,18 +138,24 @@ class CheckOutController extends Controller
         $user = $request->user();
 
         try {
-            Stripe::setApiKey(config('services.stripe.secret'));
+            try{
+                Stripe::setApiKey(config('services.stripe.secret'));
+                $paymentIntent = PaymentIntent::retrieve($request->payment_intent_id);
 
-            $paymentIntent = PaymentIntent::retrieve($request->payment_intent_id);
-
-            if ($paymentIntent->status !== 'succeeded') {
-
-                $errorMessage = $this->getStripeErrorMessage($paymentIntent);
+            } catch (CardException $e) {
+                Log::error('Stripe Error: ' . $e->getMessage());
 
                 return response()->json([
                     'success' => false,
-                    'error' => $errorMessage,
-                    'status' => $paymentIntent->status,
+                    'error' => $e->getMessage(),
+                ], 402);
+            }
+
+
+            if ($paymentIntent->status !== 'succeeded') {
+                return response()->json([
+                    'success' => false,
+                    'error' => 'Payment Failed. Please try again.',
                 ], 402);
             }
 
@@ -172,31 +187,6 @@ class CheckOutController extends Controller
             Log::error("Payment Finalization Error: " . $e->getMessage());
             return response()->json(['error' => 'Something went wrong after payment.'], 500);
         }
-    }
-
-    private function getStripeErrorMessage($paymentIntent)
-    {
-        $errorMessage = 'Payment failed.';
-
-        if (isset($paymentIntent->last_payment_error)) {
-            $errorCode = $paymentIntent->last_payment_error->code ?? null;
-
-            if ($errorCode === 'card_declined') {
-                $declineCode = $paymentIntent->last_payment_error->decline_code ?? null;
-
-                if ($declineCode === 'insufficient_funds') {
-                    $errorMessage = 'Your card has insufficient funds.';
-                } elseif ($declineCode === 'generic_decline') {
-                    $errorMessage = 'Your card was declined by the bank.';
-                } else {
-                    $errorMessage = 'Card declined: ' . str_replace('_', ' ', $declineCode);
-                }
-            } else {
-                $errorMessage = $paymentIntent->last_payment_error->message ?? $errorMessage;
-            }
-        }
-
-        return $errorMessage;
     }
 
     private function assignUnitToUser($user, BuildingUnit $unit, $price)
