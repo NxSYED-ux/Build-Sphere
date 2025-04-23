@@ -31,11 +31,15 @@ Route::post('/pusher/auth', [AuthController::class, 'authenticatePusher'])->name
 
 Route::get('/', [landingController::class, 'index'])->name('index');
 Route::get('/index', [landingController::class, 'index']);
-
-Route::get('/checkout', [CheckOutController::class, 'index'])->name('checkout');
-Route::post('/checkout/success', [CheckOutController::class, 'index'])->name('checkout.success');
-Route::post('/checkout', [CheckOutController::class, 'checkout'])->name('checkout.processing');
 Route::get('/plans/{planCycle}', [landingController::class, 'plans'])->name('plans');
+
+Route::prefix('checkout')->group(function () {
+
+    Route::get('/', [CheckOutController::class, 'index'])->name('checkout');
+    Route::post('/', [CheckOutController::class, 'checkout'])->name('checkout.processing');
+    Route::post('/Complete', [CheckOutController::class, 'checkoutComplete'])->name('checkout.processing.complete');
+
+});
 
 Route::get('/login', [AuthController::class, 'index'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('login');

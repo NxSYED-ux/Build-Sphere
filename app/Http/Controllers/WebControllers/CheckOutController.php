@@ -82,61 +82,15 @@ class CheckOutController extends Controller
                 return response()->json(['error' => 'An active subscription already exists for your organization.'], 409);
             }
 
-            $billing_cycle_id = $request->plan_cycle_id;
-
-            $plan = Plan::where('id', $request->plan_id)
-                ->where('status', '!=', 'Deleted')
-                ->whereHas('services', function ($query) use ($billing_cycle_id) {
-                    $query->with('serviceCatalog')
-                        ->whereHas('prices', function ($priceQuery) use ($billing_cycle_id) {
-                            $priceQuery->where('billing_cycle_id', $billing_cycle_id);
-                        });
-                })
-                ->with(['services' => function ($query) use ($billing_cycle_id) {
-                    $query->with('serviceCatalog')
-                        ->whereHas('prices', function ($q) use ($billing_cycle_id) {
-                            $q->where('billing_cycle_id', $billing_cycle_id);
-                        })
-                        ->with(['prices' => function ($priceQuery) use ($billing_cycle_id) {
-                            $priceQuery->where('billing_cycle_id', $billing_cycle_id);
-                        }]);
-                }])
-                ->first();
-
+            $plan = $this->getValidatedPlanWithBillingCycle($request->plan_id, $request->plan_cycle_id);
             if (!$plan) {
                 return response()->json(['error' => 'The requested plan is currently unavailable due to administrative changes.'], 404);
             }
 
-            $totalPrice = 0;
-
-            $services = $plan->services->map(function ($service) use (&$totalPrice) {
-                $price = $service->prices->first();
-
-                if ($price) {
-                    $totalPrice += $price->price;
-                }
-
-                return [
-                    'service_id' => $service->id,
-                    'service_catalog_id' => $service->serviceCatalog->id,
-                    'service_name' => $service->serviceCatalog->title ?? '',
-                    'service_description' => $service->serviceCatalog->description ?? '',
-                    'service_quantity' => $service->quantity,
-                ];
-            });
-
-            $planDetails = [
-                'plan_name' => $plan->name,
-                'plan_description' => $plan->description,
-                'currency' => $plan->currency,
-                'total_price' => $totalPrice,
-                'services' => $services,
-            ];
+            $planDetails = $this->getPlanDetailsWithTotalPrice($plan);
 
             Stripe::setApiKey(config('services.stripe.secret'));
-
             $customer = Customer::retrieve($user->customer_payment_id);
-
             $paymentMethod = PaymentMethod::retrieve($request->payment_method_id)->attach([
                 'customer' => $customer->id,
             ]);
@@ -173,7 +127,6 @@ class CheckOutController extends Controller
 
             if ($paymentIntent->status === 'succeeded') {
                 try {
-
                     Organization::where('id', $request->organization_id)->update(['status' => 'Enable']);
 
                     ProcessSuccessfulCheckout::dispatch(
@@ -233,4 +186,113 @@ class CheckOutController extends Controller
             ], 500);
         }
     }
+
+    public function checkoutComplete(Request $request)
+    {
+        $request->validate([
+            'payment_intent_id' => 'required|string',
+            'owner_id' => 'required|exists:users,id',
+            'organization_id' => 'required|exists:organizations,id',
+            'plan_id' => 'required|exists:plans,id',
+            'plan_cycle' => 'required|integer',
+            'plan_cycle_id' => 'required|exists:billing_cycles,id',
+        ]);
+
+        try {
+            $user = User::find($request->owner_id);
+            $plan = $this->getValidatedPlanWithBillingCycle($request->plan_id, $request->plan_cycle_id);
+            if (!$plan) {
+                return response()->json(['error' => 'The requested plan is currently unavailable due to administrative changes.'], 404);
+            }
+
+            Stripe::setApiKey(config('services.stripe.secret'));
+            $customer = Customer::retrieve($user->customer_payment_id);
+            $paymentMethod = PaymentMethod::retrieve($request->payment_method_id)->attach([
+                'customer' => $customer->id,
+            ]);
+
+            $paymentIntent = PaymentIntent::retrieve($request->payment_intent_id);
+            if ($paymentIntent->status !== 'succeeded') {
+                $paymentMethod->detach();
+                return response()->json([
+                    'error' => 'Payment failed.',
+                    'status' => $paymentIntent->status,
+                ], 402);
+            }
+
+            $planDetails = $this->getPlanDetailsWithTotalPrice($plan);
+            Organization::where('id', $request->organization_id)->update(['status' => 'Enable']);
+
+            ProcessSuccessfulCheckout::dispatch(
+                $user->id,
+                $request->organization_id,
+                $plan->id,
+                $planDetails,
+                $request->plan_cycle,
+                $paymentIntent->id,
+                now(),
+                'Card'
+            );
+
+            return response()->json(['success' => true]);
+
+        } catch (\Exception $e) {
+            Log::error('Error while Completing Checkout Plan: ' . $e->getMessage());
+
+            return response()->json([
+                'error' => 'Something went wrong during the final confirmation.',
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+
+    // Helper functions
+    private function getValidatedPlanWithBillingCycle($planId, $billingCycleId)
+    {
+        return Plan::where('id', $planId)
+            ->where('status', '!=', 'Deleted')
+            ->whereHas('services', function ($query) use ($billingCycleId) {
+                $query->whereHas('prices', function ($priceQuery) use ($billingCycleId) {
+                    $priceQuery->where('billing_cycle_id', $billingCycleId);
+                });
+            })
+            ->with(['services' => function ($query) use ($billingCycleId) {
+                $query->with('serviceCatalog')
+                    ->whereHas('prices', function ($q) use ($billingCycleId) {
+                        $q->where('billing_cycle_id', $billingCycleId);
+                    })
+                    ->with(['prices' => function ($priceQuery) use ($billingCycleId) {
+                        $priceQuery->where('billing_cycle_id', $billingCycleId);
+                    }]);
+            }])
+            ->first();
+    }
+
+    private function getPlanDetailsWithTotalPrice($plan)
+    {
+        $totalPrice = 0;
+        $services = $plan->services->map(function ($service) use (&$totalPrice) {
+            $price = $service->prices->first();
+            if ($price) $totalPrice += $price->price;
+
+            return [
+                'service_id' => $service->id,
+                'service_catalog_id' => $service->serviceCatalog->id,
+                'service_name' => $service->serviceCatalog->title ?? '',
+                'service_description' => $service->serviceCatalog->description ?? '',
+                'service_quantity' => $service->quantity,
+            ];
+        });
+
+        return [
+            'plan_name' => $plan->name,
+            'plan_description' => $plan->description,
+            'currency' => $plan->currency,
+            'total_price' => $totalPrice,
+            'services' => $services,
+        ];
+    }
+
+
 }

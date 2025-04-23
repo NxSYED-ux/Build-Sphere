@@ -1,20 +1,19 @@
 <?php
 
 use App\Events\UserPermissionUpdated;
-use App\Http\Controllers\AppControllers\CardController;
 use App\Http\Controllers\AppControllers\CheckOutController;
-use App\Http\Controllers\GeneralControllers\AuthController;
-use App\Http\Controllers\GeneralControllers\ForgotPasswordController;
-use App\Http\Controllers\GeneralControllers\NotificationController;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Route;
-
-use App\Http\Controllers\GeneralControllers\ProfileController;
-use App\Http\Controllers\AppControllers\ListingController;
+use App\Http\Controllers\AppControllers\DropdownController;
 use App\Http\Controllers\AppControllers\FavouritesController;
+use App\Http\Controllers\AppControllers\ListingController;
 use App\Http\Controllers\AppControllers\MyPropertiesController;
 use App\Http\Controllers\AppControllers\QueryController;
-use App\Http\Controllers\AppControllers\DropdownController;
+use App\Http\Controllers\GeneralControllers\AuthController;
+use App\Http\Controllers\GeneralControllers\CardController;
+use App\Http\Controllers\GeneralControllers\ForgotPasswordController;
+use App\Http\Controllers\GeneralControllers\NotificationController;
+use App\Http\Controllers\GeneralControllers\ProfileController;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Route;
 
 
 Route::get('/test-permissions', function () {

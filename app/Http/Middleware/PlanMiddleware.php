@@ -74,10 +74,15 @@ class PlanMiddleware
     }
 
 
-    private function handleResponse(Request $request, string $heading, string $message, int $statusCode = 403)
+    private function handleResponse(Request $request, string $heading, string $message, int $statusCode = 403, bool $logout = false)
     {
-        return $request->wantsJson()
-            ? response()->json(['error' => $message], $statusCode)
-            : redirect()->back()->with($heading, $message);
+        if($request->wantsJson()){
+            return response()->json(['error' => $message], $statusCode);
+        }
+        elseif ($logout){
+            return redirect()->route('login')->with($heading, $message);
+        }else{
+            return redirect()->route('owner_manager_dashboard')->with($heading, $message);
+        }
     }
 }

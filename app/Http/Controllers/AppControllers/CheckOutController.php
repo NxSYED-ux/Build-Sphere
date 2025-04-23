@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Stripe\Exception\ApiErrorException;
 use Stripe\PaymentIntent;
+use Stripe\Stripe;
 
 
 class CheckOutController extends Controller
@@ -46,8 +47,11 @@ class CheckOutController extends Controller
                 ], 404);
             }
 
+            $organization = $unit->organization;
+
             $currency = 'PKR';
-            $type = $unit->sale_or_rent === 'Sale' ? 'Sold' : 'Rented';
+
+            Stripe::setApiKey(config('services.stripe.secret'));
 
             $paymentIntent = PaymentIntent::create([
                 'amount' => $unit->price * 100,
@@ -59,6 +63,10 @@ class CheckOutController extends Controller
                 'automatic_payment_methods' => [
                     'enabled' => true,
                     'allow_redirects' => 'never',
+                ],
+                'transfer_data' => [
+                    'destination' => $organization->payment_gateway_merchant_id,
+                    'amount' => $unit->price * 100,
                 ],
             ]);
 
@@ -74,65 +82,27 @@ class CheckOutController extends Controller
                 ]);
             }
 
-            if ($paymentIntent->status === 'succeeded') {
-                $assignedUnit = UserBuildingUnit::create([
-                    'user_id' => $user->id,
-                    'unit_id' => $request->unit_id,
-                    'type' => $type,
-                    'price' => $request->price,
-                    'rent_start_date' => $type === 'Rented' ? now() : null,
-                    'rent_end_date' => $type === 'Rented' ? now()->addMonths(1) : null,
-                    'purchase_date' => $type === 'Sold' ? now() : null,
-                ]);
+            if ($paymentIntent->status !== 'succeeded') {
+                DB::rollBack();
+                $errorMessage = $this->getStripeErrorMessage($paymentIntent);
 
-                $unit->update([
-                    'availability_status' => $type,
-                ]);
-
-                if ($type === 'Rented') {
-                    Subscription::create([
-                        'customer_payment_id' => $user->customer_payment_id,
-                        'user_id' => $user->id,
-                        'organization_id' => $unit->organization_id,
-                        'source_id' => $assignedUnit->id,
-                        'source_name' => 'user_building_unit',
-                        'billing_cycle' => 1,
-                        'subscription_status' => 'Active',
-                        'price_at_subscription' => $unit->price,
-                        'currency_at_subscription' => $currency,
-                        'ends_at' => now()->addMonths(1),
-                    ]);
-                }
-
-                Transaction::create([
-                    'transaction_title' => "{$unit->unit_name} ({$type})",
-                    'transaction_category' => 'New',
-                    'buyer_id' => $user->id,
-                    'buyer_type' => 'user',
-                    'seller_type' => 'organization',
-                    'payment_method' => 'Card',
-                    'gateway_payment_id' => $paymentIntent->id,
-                    'price' => $unit->price,
-                    'currency' => $currency,
-                    'status' => 'Completed',
-                    'is_subscription' => $type === 'Rented',
-                    'billing_cycle' => $type === 'Rented' ? '1 Months' : null,
-                    'subscription_start_date' => $assignedUnit->rent_start_date,
-                    'subscription_end_date' => $assignedUnit->rent_end_date,
-                    'source_id' => $assignedUnit->id,
-                    'source_name' => 'user_building_unit',
-                ]);
-
-                DB::commit();
-
-                return response()->json(['success' => 'Online payment successful.'], 200);
+                return response()->json([
+                    'success' => false,
+                    'error' => $errorMessage,
+                    'status' => $paymentIntent->status,
+                ], 402);
             }
 
-            DB::rollBack();
+            [$assignedUnit, $type] = $this->assignUnitToUser($user, $unit, $request->price);
+            $transaction = $this->createTransaction($user, $unit, $type, $paymentIntent->id, $assignedUnit);
+
+            DB::commit();
+
             return response()->json([
-                'error' => 'Payment failed.',
-                'status' => $paymentIntent->status,
-            ], 402);
+                'success' => true,
+                'message' => 'Payment successful.',
+                'transaction' => $transaction,
+            ], 200);
 
         } catch (ApiErrorException $e) {
             DB::rollBack();
@@ -159,10 +129,18 @@ class CheckOutController extends Controller
         $user = $request->user();
 
         try {
+            Stripe::setApiKey(config('services.stripe.secret'));
+
             $paymentIntent = PaymentIntent::retrieve($request->payment_intent_id);
 
             if ($paymentIntent->status !== 'succeeded') {
-                return response()->json(['error' => 'Payment not completed.'], 400);
+                $errorMessage = $this->getStripeErrorMessage($paymentIntent);
+
+                return response()->json([
+                    'success' => true,
+                    'error' => $errorMessage,
+                    'status' => $paymentIntent->status,
+                ], 402);
             }
 
             DB::beginTransaction();
@@ -177,60 +155,17 @@ class CheckOutController extends Controller
                 return response()->json(['error' => 'Unit not available.'], 404);
             }
 
-            $currency = 'PKR';
-            $type = $unit->sale_or_rent === 'Sale' ? 'Sold' : 'Rented';
-
-            $assignedUnit = UserBuildingUnit::create([
-                'user_id' => $user->id,
-                'unit_id' => $request->unit_id,
-                'type' => $type,
-                'price' => $request->price,
-                'rent_start_date' => $type === 'Rented' ? now() : null,
-                'rent_end_date' => $type === 'Rented' ? now()->addMonths(1) : null,
-                'purchase_date' => $type === 'Sold' ? now() : null,
-            ]);
-
-            $unit->update([
-                'availability_status' => $type,
-            ]);
-
-            if ($type === 'Rented') {
-                Subscription::create([
-                    'customer_payment_id' => $user->customer_payment_id,
-                    'user_id' => $user->id,
-                    'organization_id' => $unit->organization_id,
-                    'source_id' => $assignedUnit->id,
-                    'source_name' => 'user_building_unit',
-                    'billing_cycle' => 1,
-                    'subscription_status' => 'Active',
-                    'price_at_subscription' => $unit->price,
-                    'currency_at_subscription' => $currency,
-                    'ends_at' => now()->addMonths(1),
-                ]);
-            }
-
-            Transaction::create([
-                'transaction_title' => "{$unit->unit_name} ({$type})",
-                'transaction_category' => 'New',
-                'buyer_id' => $user->id,
-                'buyer_type' => 'user',
-                'seller_type' => 'organization',
-                'payment_method' => 'Card',
-                'gateway_payment_id' => $paymentIntent->id,
-                'price' => $unit->price,
-                'currency' => $currency,
-                'status' => 'Completed',
-                'is_subscription' => $type === 'Rented',
-                'billing_cycle' => $type === 'Rented' ? '1 Months' : null,
-                'subscription_start_date' => $assignedUnit->rent_start_date,
-                'subscription_end_date' => $assignedUnit->rent_end_date,
-                'source_id' => $assignedUnit->id,
-                'source_name' => 'user_building_unit',
-            ]);
+            [$assignedUnit, $type] = $this->assignUnitToUser($user, $unit, $request->price);
+            $transaction = $this->createTransaction($user, $unit, $type, $paymentIntent->id, $assignedUnit);
 
             DB::commit();
 
-            return response()->json(['success' => 'Payment completed and unit assigned.']);
+            return response()->json([
+                'success' => true,
+                'message' => 'Payment successful.',
+                'transaction' => $transaction,
+            ], 200);
+
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error("Payment Finalization Error: " . $e->getMessage());
@@ -238,10 +173,94 @@ class CheckOutController extends Controller
         }
     }
 
+    private function getStripeErrorMessage($paymentIntent)
+    {
+        $errorMessage = 'Payment failed.';
 
+        if (isset($paymentIntent->last_payment_error)) {
+            $errorCode = $paymentIntent->last_payment_error->code ?? null;
+
+            if ($errorCode === 'card_declined') {
+                $declineCode = $paymentIntent->last_payment_error->decline_code ?? null;
+
+                if ($declineCode === 'insufficient_funds') {
+                    $errorMessage = 'Your card has insufficient funds.';
+                } elseif ($declineCode === 'generic_decline') {
+                    $errorMessage = 'Your card was declined by the bank.';
+                } else {
+                    $errorMessage = 'Card declined: ' . str_replace('_', ' ', $declineCode);
+                }
+            } else {
+                $errorMessage = $paymentIntent->last_payment_error->message ?? $errorMessage;
+            }
+        }
+
+        return $errorMessage;
+    }
+
+    private function assignUnitToUser($user, BuildingUnit $unit, $price)
+    {
+        $type = $unit->sale_or_rent === 'Sale' ? 'Sold' : 'Rented';
+
+        $assignedUnit = UserBuildingUnit::create([
+            'user_id' => $user->id,
+            'unit_id' => $unit->id,
+            'type' => $type,
+            'price' => $price,
+            'rent_start_date' => $type === 'Rented' ? now() : null,
+            'rent_end_date' => $type === 'Rented' ? now()->addMonths(1) : null,
+            'purchase_date' => $type === 'Sold' ? now() : null,
+        ]);
+
+        $unit->update(['availability_status' => $type]);
+
+        return [$assignedUnit, $type];
+    }
+
+    private function createTransaction($user, $unit, $type, $paymentIntentId, $assignedUnit, $currency = 'PKR')
+    {
+        $source_id = $assignedUnit->id;
+        $source_name = 'user_building_unit';
+
+        if ($type === 'Rented') {
+            $subscription = Subscription::create([
+                'customer_payment_id' => $user->customer_payment_id,
+                'user_id' => $user->id,
+                'organization_id' => $unit->organization_id,
+                'source_id' => $assignedUnit->id,
+                'source_name' => 'user_building_unit',
+                'billing_cycle' => 1,
+                'subscription_status' => 'Active',
+                'price_at_subscription' => $unit->price,
+                'currency_at_subscription' => $currency,
+                'ends_at' => now()->addMonths(1),
+            ]);
+
+            $source_id = $subscription->id;
+            $source_name = 'subscription';
+        }
+
+        return Transaction::create([
+            'transaction_title' => "{$unit->unit_name} ({$type})",
+            'transaction_category' => 'New',
+            'buyer_id' => $user->id,
+            'buyer_type' => 'user',
+            'seller_type' => 'organization',
+            'payment_method' => 'Card',
+            'gateway_payment_id' => $paymentIntentId,
+            'price' => $unit->price,
+            'currency' => $currency,
+            'status' => 'Completed',
+            'is_subscription' => $type === 'Rented',
+            'billing_cycle' => $type === 'Rented' ? '1 Months' : null,
+            'subscription_start_date' => $assignedUnit->rent_start_date,
+            'subscription_end_date' => $assignedUnit->rent_end_date,
+            'source_id' => $source_id,
+            'source_name' => $source_name,
+        ]);
+    }
 
     public function membershipsOnlinePayment(Request $request){
 
     }
-
 }
