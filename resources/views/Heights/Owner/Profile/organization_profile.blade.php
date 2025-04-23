@@ -34,8 +34,9 @@
         }
 
         .org-logo {
-            width: 120px;
-            height: 120px;
+            width: 100%;
+            margin: auto;
+            height: 150px;
             object-fit: cover;
             border: 5px solid white;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
@@ -99,6 +100,30 @@
         .amcharts-export-menu {
             display: none !important;
         }
+
+        /* Add this to your stylesheet */
+        .StripeElement {
+            box-sizing: border-box;
+            height: 40px;
+            padding: 10px 12px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            background-color: white;
+        }
+
+        .StripeElement--focus {
+            border-color: #80bdff;
+            outline: 0;
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+        }
+
+        .StripeElement--invalid {
+            border-color: #dc3545;
+        }
+
+        .StripeElement--webkit-autofill {
+            background-color: #fefde5 !important;
+        }
     </style>
 @endpush
 
@@ -121,13 +146,10 @@
             <div class="row">
                 <!-- Left Column - Organization Details -->
                 <div class="col-lg-4 mb-4">
-                    <div class="profile-card p-4 text-center shadow-sm rounded-3 border-0">
+                    <div class="profile-card p-4 text-center shadow border-0">
                         <div class="d-flex justify-content-center mb-3">
                             <div class="org-logo-container position-relative">
-                                <img src="{{ asset('img/organization_placeholder.png') }}" alt="Bahria Town Logo" class="org-logo rounded-circle border border-3 border-primary" width="100" height="100">
-                                <span class="verified-badge position-absolute bottom-0 end-0 bg-success text-white rounded-circle p-1">
-                                    <i class="fas fa-check"></i>
-                                </span>
+                                <img src="{{ asset('img/organization_placeholder.png') }}" alt="Bahria Town Logo" class="org-logo  border border-3">
                             </div>
                         </div>
 
@@ -196,7 +218,12 @@
                         </div>
 
                         <div class="text-start mb-3">
-                            <h5 class="section-title mb-3 fw-semibold">Primary Contact</h5>
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h5 class="section-title mb-0 fw-semibold">Owner Details</h5>
+                                <a href="" class="rounded-pill py-2 fw-medium">
+                                    <i class="fas fa-edit me-2 text-warning fs-5"></i>
+                                </a>
+                            </div>
 
                             <div class="d-flex align-items-center mb-3 p-2 rounded-3 bg-light">
                                 <img src="{{ asset('img/placeholder-profile.png') }}" alt="John Smith" class="rounded-circle me-3" width="50" height="50">
@@ -209,7 +236,7 @@
                             </div>
 
                             <div class="detail-list">
-                                <div class="detail-item py-2">
+                                <div class="detail-item py-1">
                                     <div class="detail-label small">Contact Email</div>
                                     <div class="detail-value fw-medium d-flex align-items-center">
                                         <i class="fas fa-envelope me-2 text-primary"></i>
@@ -217,7 +244,7 @@
                                     </div>
                                 </div>
 
-                                <div class="detail-item py-2">
+                                <div class="detail-item py-1">
                                     <div class="detail-label small">Mobile</div>
                                     <div class="detail-value fw-medium d-flex align-items-center">
                                         <i class="fas fa-mobile-alt me-2 text-primary"></i>
@@ -226,18 +253,12 @@
                                 </div>
                             </div>
                         </div>
-
-                        <div class="d-grid gap-2 mt-4">
-                            <button class="btn btn-primary rounded-pill py-2 fw-medium">
-                                <i class="fas fa-edit me-2"></i> Edit Profile
-                            </button>
-                        </div>
                     </div>
                 </div>
 
                 <!-- Right Column - Plan & Payment Details -->
                 <div class="col-lg-8">
-                    <div class="profile-card p-4 mb-4">
+                    <div class="profile-card p-4 mb-4 shadow">
                         <h4 class="section-title">Current Plan</h4>
 
                         <div class="row">
@@ -251,7 +272,7 @@
                                         <div class="text-primary fw-bold">$99<small>/mo</small></div>
                                     </div>
 
-                                    <table class="table table-borderless">
+                                    <table class="table table-borderless" style="background-color: var(--sidenavbar-body-color);">
                                         <thead>
                                         <tr class="border-bottom">
                                             <th class="text-start">Service</th>
@@ -321,7 +342,7 @@
                     </div>
 
                     <!-- Payment Methods -->
-                    <div class="profile-card p-4 mb-4">
+                    <div class="profile-card p-4 mb-4 shadow">
                         <div class="d-flex justify-content-between align-items-center mb-4">
                             <h4 class="section-title mb-0">Payment Methods</h4>
                             <button class="btn btn-sm btn-primary">
@@ -329,28 +350,37 @@
                             </button>
                         </div>
 
-                        <div class="row">
-                            <!-- Visa Card -->
-                            <x-payment-card
-                                    cardNumber="4242 4242 4242 4242"
-                                    expiry="12/25"
-                                    cvv="123"
-                                    cardType="visa"
-                                    isPrimary="true"
-                            />
-
-                            <!-- Mastercard -->
-                            <x-payment-card
-                                    cardNumber="5555 5555 5555 4444"
-                                    expiry="06/24"
-                                    cvv="456"
-                                    cardType="mastercard"
-                            />
+                        <div class="row" id="cards-container">
+                            <!-- Loading state -->
+                            <div class="col-12 text-center py-4">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                            </div>
                         </div>
+
+{{--                        <div class="row">--}}
+{{--                            <!-- Visa Card -->--}}
+{{--                            <x-payment-card--}}
+{{--                                    cardNumber="4242 4242 4242 4242"--}}
+{{--                                    expiry="12/25"--}}
+{{--                                    cvv="123"--}}
+{{--                                    cardType="visa"--}}
+{{--                                    isPrimary="true"--}}
+{{--                            />--}}
+
+{{--                            <!-- Mastercard -->--}}
+{{--                            <x-payment-card--}}
+{{--                                    cardNumber="5555 5555 5555 4444"--}}
+{{--                                    expiry="06/24"--}}
+{{--                                    cvv="456"--}}
+{{--                                    cardType="mastercard"--}}
+{{--                            />--}}
+{{--                        </div>--}}
                     </div>
 
                     <!-- Billing History -->
-                    <div class="profile-card p-4">
+                    <div class="profile-card p-4 shadow">
                         <ul class="nav nav-pills mb-4" id="billing-tab" role="tablist">
                             <li class="nav-item" role="presentation">
                                 <button class="nav-link active" id="invoices-tab" data-bs-toggle="pill" data-bs-target="#invoices" type="button" role="tab">Invoices</button>
@@ -456,9 +486,40 @@
             </div>
         </div>
     </div>
+
+    <!-- Add this right after the Payment Methods card div -->
+    <div class="modal fade" id="paymentMethodModal" tabindex="-1" aria-labelledby="paymentMethodModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="paymentMethodModalLabel">Add Payment Method</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="payment-form">
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email (optional)</label>
+                            <input type="email" class="form-control" id="email" placeholder="email@example.com">
+                        </div>
+
+                        <!-- Stripe Elements will be injected here -->
+                        <div id="card-element" class="border border-gray-200 rounded-lg p-4 mb-4"></div>
+                        <div id="card-errors" role="alert" class="text-red-500 text-sm mb-4"></div>
+
+                        <button type="submit" class="btn btn-primary w-100" id="submit-button">
+                            <span id="button-text">Add Payment Method</span>
+                            <span id="button-spinner" class="spinner-border spinner-border-sm d-none" role="status"></span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @push('scripts')
+
+    <script src="https://js.stripe.com/v3/"></script>
     <script>
         // Initialize tooltips
         document.addEventListener('DOMContentLoaded', function() {
@@ -604,8 +665,6 @@
         });
     </script>
 
-
-
     <!-- Example of how to use with backend data -->
     <script>
         // This is just for demonstration - in real use, you would call this
@@ -624,5 +683,255 @@
             var value = Math.round(Math.random() * 100);
             updateGaugeValue(value);
         }, 2000);
+    </script>
+
+    <!-- Cards -->
+    <script>
+        document.addEventListener('DOMContentLoaded', async function () {
+            // Initialize Stripe
+            const stripe = Stripe("{{ config('services.stripe.public') }}");
+            const elements = stripe.elements({ disableLink: true });
+            let card;
+
+            // Modal elements
+            const paymentMethodModal = new bootstrap.Modal(document.getElementById('paymentMethodModal'));
+            const form = document.getElementById('payment-form');
+            const emailInput = document.getElementById('email');
+            const submitButton = document.getElementById('submit-button');
+            const buttonText = document.getElementById('button-text');
+            const buttonSpinner = document.getElementById('button-spinner');
+
+            // Add click handler to the "Add Payment Method" button
+            document.querySelector('.btn-primary .fa-plus').closest('button').addEventListener('click', function() {
+                // Initialize or reinitialize Stripe elements when modal opens
+                if (card) {
+                    card.unmount();
+                }
+
+                card = elements.create("card");
+                card.mount("#card-element");
+
+                // Clear any previous errors
+                document.getElementById('card-errors').textContent = '';
+
+                // Show the modal
+                paymentMethodModal.show();
+            });
+
+            // Card input error display
+            card?.on('change', function (event) {
+                const errorDiv = document.getElementById('card-errors');
+                errorDiv.textContent = event.error ? event.error.message : '';
+            });
+
+            // Form submission
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+
+                // Disable button and show spinner
+                submitButton.disabled = true;
+                buttonText.textContent = 'Processing...';
+                buttonSpinner.classList.remove('d-none');
+
+                try {
+                    const { paymentMethod, error } = await stripe.createPaymentMethod({
+                        type: 'card',
+                        card: card,
+                        billing_details: emailInput.value ? { email: emailInput.value } : {}
+                    });
+
+                    if (error) {
+                        document.getElementById("card-errors").textContent = error.message;
+                        submitButton.disabled = false;
+                        buttonText.textContent = 'Add Payment Method';
+                        buttonSpinner.classList.add('d-none');
+                        return;
+                    }
+
+                    // Send paymentMethod.id to your server
+                    const response = await fetch("{{ route('owner.cards.store') }}", {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': "{{ csrf_token() }}"
+                        },
+                        body: JSON.stringify({ payment_method_id: paymentMethod.id })
+                    });
+
+                    const result = await response.json();
+
+                    if (response.ok) {
+                        // Success - close modal and refresh payment methods
+                        paymentMethodModal.hide();
+                        window.location.reload();
+                    } else {
+                        // Show error from server
+                        document.getElementById("card-errors").textContent = result.message || 'Failed to add payment method';
+                        submitButton.disabled = false;
+                        buttonText.textContent = 'Add Payment Method';
+                        buttonSpinner.classList.add('d-none');
+                    }
+                } catch (err) {
+                    console.error('Error:', err);
+                    document.getElementById("card-errors").textContent = 'An unexpected error occurred';
+                    submitButton.disabled = false;
+                    buttonText.textContent = 'Add Payment Method';
+                    buttonSpinner.classList.add('d-none');
+                }
+            });
+
+            async function loadCards() {
+                try {
+                    const response = await fetch("{{ route('owner.cards.index') }}", {
+                        headers: {
+                            'Accept': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Failed to load payment methods');
+                    }
+
+                    const data = await response.json();
+                    console.log("Card details", data);
+                    renderCards(data.cards);
+                } catch (error) {
+                    console.error('Error loading cards:', error);
+                    document.getElementById('cards-container').innerHTML = `
+            <div class="col-12 text-center py-4 text-danger">
+                Failed to load payment methods. Please try again.
+            </div>
+        `;
+                }
+            }
+
+            function renderCards(cards) {
+                const container = document.getElementById('cards-container');
+                container.innerHTML = '';
+
+                if (!cards || cards.length === 0) {
+                    container.innerHTML = `
+            <div class="col-12 text-center py-4 text-muted">
+                No payment methods found. Add one to get started.
+            </div>
+        `;
+                    return;
+                }
+
+                // Create a row div to contain all cards
+                const rowDiv = document.createElement('div');
+                rowDiv.className = 'row';
+                container.appendChild(rowDiv);
+
+                cards.forEach(card => {
+                    const cardHTML = renderPaymentCard(card);
+                    rowDiv.insertAdjacentHTML('beforeend', cardHTML);
+                });
+            }
+
+            function renderPaymentCard(card) {
+                const cardStyles = {
+                    'visa': {
+                        background: 'linear-gradient(135deg, #1a1f71 0%, #0065a3 100%)',
+                        icon: 'bxl-visa',
+                        accent: 'linear-gradient(to right, #f9a61a, #f8d568)',
+                        textColor: '#1a1f71'
+                    },
+                    'mastercard': {
+                        background: 'linear-gradient(135deg, #EB001B 0%, #F79E1B 100%)',
+                        icon: 'bxl-mastercard',
+                        accent: 'rgba(255,255,255,0.9)',
+                        textColor: '#EB001B'
+                    },
+                    'amex': {
+                        background: 'linear-gradient(135deg, #016FD0 0%, #00A3E0 100%)',
+                        icon: 'fa-cc-amex',
+                        accent: 'rgba(255,255,255,0.9)',
+                        textColor: '#016FD0'
+                    },
+                    'discover': {
+                        background: 'linear-gradient(135deg, #FF6000 0%, #FFA000 100%)',
+                        icon: 'fa-cc-discover',
+                        accent: 'rgba(255,255,255,0.9)',
+                        textColor: '#FF6000'
+                    },
+                    'diners': {
+                        background: 'linear-gradient(135deg, #0079BE 0%, #00A3E0 100%)',
+                        icon: 'fa-cc-diners-club',
+                        accent: 'rgba(255,255,255,0.9)',
+                        textColor: '#0079BE'
+                    },
+                    'unionpay': {
+                        background: 'linear-gradient(135deg, #04517A 0%, #0588C9 100%)',
+                        icon: 'bx-credit-card',
+                        accent: 'rgba(255,255,255,0.9)',
+                        textColor: '#04517A'
+                    },
+                    'default': {
+                        background: 'linear-gradient(135deg, #4a5568 0%, #0E131DFF 100%)',
+                        icon: 'bx-credit-card',
+                        accent: 'rgba(255,255,255,0.9)',
+                        textColor: '#4a5568'
+                    }
+                };
+
+                // Normalize card type (e.g., "VISA" → "visa")
+                const normalizedCardType = card.brand.toLowerCase();
+                const style = cardStyles[normalizedCardType] || cardStyles['default'];
+                const isFontAwesome = style.icon.includes('fa-');
+
+                // Format expiry (e.g., "02/24")
+                const expMonth = String(card.exp_month).padStart(2, '0');
+                const expYear = String(card.exp_year).slice(-2);
+                const expiry = `${expMonth}/${expYear}`;
+
+                // Generate the HTML string
+                return `
+        <div class="col-md-6 mb-3">
+            <div class="payment-card p-3" style="background: ${style.background}; border-radius: 10px; color: white; box-shadow: 0 4px 8px rgba(0,0,0,0.1); position: relative; overflow: hidden;">
+                <div style="position: absolute; top: -20px; right: -20px; width: 80px; height: 80px; background: rgba(255,255,255,0.1); border-radius: 50%;"></div>
+
+                <div class="d-flex justify-content-between align-items-center mb-1" style="position: relative; z-index: 2;">
+                    ${isFontAwesome
+                    ? `<i class="fab ${style.icon}" style="font-size: 40px; color: white;"></i>`
+                    : `<i class='bx ${style.icon}' style="font-size: 40px; color: white;"></i>`
+                }
+
+                    ${card.is_default
+                    ? `<span class="badge" style="background: ${style.accent}; color: ${style.textColor}; font-weight: bold;">Primary</span>`
+                    : ''
+                }
+                </div>
+
+                <div class="mb-1" style="position: relative; z-index: 2;">
+                    <span class="text-white-50" style="font-size: 0.8rem;">Card Number</span>
+                    <h5 class="mb-0" style="letter-spacing: 1px;">•••• •••• •••• ${card.last4}</h5>
+                </div>
+
+                <div class="row" style="position: relative; z-index: 2;">
+                    <div class="col-6">
+                        <span class="text-white-50" style="font-size: 0.8rem;">Expires</span>
+                        <h6 class="mb-0">${expiry}</h6>
+                    </div>
+                    <div class="col-6">
+                        <span class="text-white-50" style="font-size: 0.8rem;">CVV</span>
+                        <h6 class="mb-0">•••</h6>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-end gap-2 mt-1" style="position: relative; z-index: 2;">
+                    <button class="btn btn-sm" style="background: rgba(255,255,255,0.2); color: white; border: none;">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+            }
+
+// Load cards when the page loads
+             loadCards();
+        });
     </script>
 @endpush
