@@ -134,10 +134,11 @@ class CheckOutController extends Controller
             $paymentIntent = PaymentIntent::retrieve($request->payment_intent_id);
 
             if ($paymentIntent->status !== 'succeeded') {
+
                 $errorMessage = $this->getStripeErrorMessage($paymentIntent);
 
                 return response()->json([
-                    'success' => true,
+                    'success' => false,
                     'error' => $errorMessage,
                     'status' => $paymentIntent->status,
                 ], 402);

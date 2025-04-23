@@ -12,6 +12,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Stripe\Customer;
+use Stripe\Exception\CardException;
 use Stripe\PaymentIntent;
 use Stripe\PaymentMethod;
 use Stripe\Stripe;
@@ -66,9 +67,8 @@ class CheckOutController extends Controller
             'payment_method_id' => 'required|string',
         ]);
 
-        $paymentMethod = null;
-
         try {
+
             $user = User::find($request->owner_id);
             if (!$user) {
                 return response()->json(['error' => 'User not found.'], 404);
@@ -76,9 +76,9 @@ class CheckOutController extends Controller
 
             $organization = Organization::where('id', $request->organization_id)
                 ->where('status', 'Enable')
-            ->first();
+                ->first();
 
-            if($organization) {
+            if ($organization) {
                 return response()->json(['error' => 'An active subscription already exists for your organization.'], 409);
             }
 
@@ -89,95 +89,72 @@ class CheckOutController extends Controller
 
             $planDetails = $this->getPlanDetailsWithTotalPrice($plan);
 
-            Stripe::setApiKey(config('services.stripe.secret'));
-            $customer = Customer::retrieve($user->customer_payment_id);
-            $paymentMethod = PaymentMethod::retrieve($request->payment_method_id)->attach([
-                'customer' => $customer->id,
-            ]);
+            try{
+                Stripe::setApiKey(config('services.stripe.secret'));
 
-            Customer::update($customer->id, [
+                $paymentIntent = PaymentIntent::create([
+                    'amount' => $planDetails['total_price'] * 100,
+                    'currency' => $planDetails['currency'],
+                    'customer' => $user->customer_payment_id,
+                    'payment_method' => $request->payment_method_id,
+                    'confirm' => true,
+                    'description' => $planDetails['plan_name'] . ': ' . $planDetails['plan_description'],
+                    'setup_future_usage' => 'off_session',
+                    'automatic_payment_methods' => [
+                        'enabled' => true,
+                        'allow_redirects' => 'never',
+                    ],
+                ]);
+
+                if (
+                    $paymentIntent->status === 'requires_action' &&
+                    $paymentIntent->next_action->type === 'use_stripe_sdk'
+                ) {
+                    return response()->json([
+                        'requires_action' => true,
+                        'payment_intent_id' => $paymentIntent->id,
+                        'client_secret' => $paymentIntent->client_secret,
+                    ]);
+                }
+
+            } catch (CardException $e) {
+                Log::error('Stripe Error: ' . $e->getMessage());
+                return $this->handleStripePaymentFailure($e, $plan, $request->plan_cycle, $request, $planDetails);
+            }
+
+            if ($paymentIntent->status !== 'succeeded') {
+                return $this->handleStripePaymentFailure($paymentIntent, $plan, $request->plan_cycle, $request, $planDetails);
+            }
+
+            Customer::update($user->customer_payment_id, [
                 'invoice_settings' => [
                     'default_payment_method' => $request->payment_method_id,
                 ],
             ]);
 
-            $paymentIntent = PaymentIntent::create([
-                'amount' => $planDetails['total_price'] * 100,
-                'currency' => $planDetails['currency'],
-                'customer' => $user->customer_payment_id,
-                'payment_method' => $request->payment_method_id,
-                'confirm' => true,
-                'description' => $planDetails['plan_name'] . ': ' . $planDetails['plan_description'],
-                'automatic_payment_methods' => [
-                    'enabled' => true,
-                    'allow_redirects' => 'never',
-                ],
-            ]);
+            try {
+                Organization::where('id', $request->organization_id)->update(['status' => 'Enable']);
 
-            if (
-                $paymentIntent->status === 'requires_action' &&
-                $paymentIntent->next_action->type === 'use_stripe_sdk'
-            ) {
+                ProcessSuccessfulCheckout::dispatch(
+                    $user->id,
+                    $request->organization_id,
+                    $plan->id,
+                    $planDetails,
+                    $request->plan_cycle,
+                    $paymentIntent->id,
+                    now(),
+                    'Card'
+                );
+
+                return response()->json(['success' => true]);
+            } catch (\Exception $e) {
+                Log::error('DB Transaction Failed during checkout: ' . $e->getMessage());
+
                 return response()->json([
-                    'requires_action' => true,
-                    'payment_intent_id' => $paymentIntent->id,
-                    'client_secret' => $paymentIntent->client_secret,
-                ]);
+                    'error' => 'Payment succeeded, but something went wrong while saving data. Please contact support.',
+                ], 500);
             }
-
-            if ($paymentIntent->status === 'succeeded') {
-                try {
-                    Organization::where('id', $request->organization_id)->update(['status' => 'Enable']);
-
-                    ProcessSuccessfulCheckout::dispatch(
-                        $user->id,
-                        $request->organization_id,
-                        $plan->id,
-                        $planDetails,
-                        $request->plan_cycle,
-                        $paymentIntent->id,
-                        now(),
-                        'Card',
-                    );
-
-                    return response()->json(['success' => true]);
-
-                } catch (\Exception $e) {
-                    DB::rollBack();
-                    Log::error('DB Transaction Failed during checkout: ' . $e->getMessage());
-
-                    return response()->json([
-                        'error' => 'Payment succeeded, but something went wrong while saving data. Please contact support.',
-                    ], 500);
-                }
-            }
-
-             Transaction::create([
-                'transaction_title' => "{$plan->name} ({$request->plan_cycle} Months)",
-                'transaction_category' => 'New',
-                'buyer_id' => $request->organization_id,
-                'buyer_type' => 'organization',
-                'seller_type' => 'platform',
-                'payment_method' => 'Card',
-                'gateway_payment_id' => $paymentIntent->id,
-                'price' => $planDetails['total_price'],
-                'currency' => $planDetails['currency'],
-                'status' => 'Failed',
-                'source_id' => $plan->id,
-                'source_name' => 'plan',
-            ]);
-
-            $paymentMethod->detach();
-
-            return response()->json([
-                'error' => 'Payment failed.',
-                'status' => $paymentIntent->status,
-            ], 402);
-
         } catch (\Exception $e) {
-            if($paymentMethod){
-                $paymentMethod->detach();
-            }
             Log::error('Error while Checkout Plan: ' . $e->getMessage());
 
             return response()->json([
@@ -205,20 +182,25 @@ class CheckOutController extends Controller
                 return response()->json(['error' => 'The requested plan is currently unavailable due to administrative changes.'], 404);
             }
 
-            Stripe::setApiKey(config('services.stripe.secret'));
-            $customer = Customer::retrieve($user->customer_payment_id);
-            $paymentMethod = PaymentMethod::retrieve($request->payment_method_id)->attach([
-                'customer' => $customer->id,
-            ]);
+            $planDetails = $this->getPlanDetailsWithTotalPrice($plan);
 
-            $paymentIntent = PaymentIntent::retrieve($request->payment_intent_id);
-            if ($paymentIntent->status !== 'succeeded') {
-                $paymentMethod->detach();
-                return response()->json([
-                    'error' => 'Payment failed.',
-                    'status' => $paymentIntent->status,
-                ], 402);
+            try{
+                Stripe::setApiKey(config('services.stripe.secret'));
+                $paymentIntent = PaymentIntent::retrieve($request->payment_intent_id);
+            } catch (CardException $e) {
+                Log::error('Stripe Error: ' . $e->getMessage());
+                return $this->handleStripePaymentFailure($e, $plan, $request->plan_cycle, $request, $planDetails);
             }
+
+            if ($paymentIntent->status !== 'succeeded') {
+                return $this->handleStripePaymentFailure($paymentIntent, $plan, $request->plan_cycle, $request, $planDetails);
+            }
+
+            Customer::update($user->customer_payment_id, [
+                'invoice_settings' => [
+                    'default_payment_method' => $request->payment_method_id,
+                ],
+            ]);
 
             $planDetails = $this->getPlanDetailsWithTotalPrice($plan);
             Organization::where('id', $request->organization_id)->update(['status' => 'Enable']);
@@ -235,7 +217,6 @@ class CheckOutController extends Controller
             );
 
             return response()->json(['success' => true]);
-
         } catch (\Exception $e) {
             Log::error('Error while Completing Checkout Plan: ' . $e->getMessage());
 
@@ -244,6 +225,32 @@ class CheckOutController extends Controller
                 'message' => $e->getMessage(),
             ], 500);
         }
+    }
+
+    private function handleStripePaymentFailure($e, $plan, $planCycle, $request, $planDetails)
+    {
+        $error = method_exists($e, 'getError') ? $e->getError() : null;
+
+        Transaction::create([
+            'transaction_title' => "{$plan->name} ({$planCycle} Months)",
+            'transaction_category' => 'New',
+            'buyer_id' => $request->organization_id,
+            'buyer_type' => 'organization',
+            'seller_type' => 'platform',
+            'payment_method' => 'Card',
+            'gateway_payment_id' => $e->id ?? null,
+            'price' => $planDetails['total_price'],
+            'currency' => $planDetails['currency'],
+            'status' => 'Failed',
+            'source_id' => $plan->id,
+            'source_name' => 'plan',
+        ]);
+
+        return response()->json([
+            'error' => $error->message ?? 'Payment failed.',
+            'code' => $error->code ?? 'unknown_error',
+            'type' => $error->type ?? 'card_error',
+        ], 402);
     }
 
 
@@ -293,6 +300,5 @@ class CheckOutController extends Controller
             'services' => $services,
         ];
     }
-
 
 }

@@ -221,7 +221,7 @@
                                 const confirmResult = await stripe.confirmCardPayment(result.client_secret);
 
                                 if (confirmResult.error) {
-                                    showResponseMessage("Payment failed: " + confirmResult.error.message, 'error');
+                                    showResponseMessage(confirmResult.error.message, 'error');
                                 } else if (confirmResult.paymentIntent.status === "succeeded") {
 
                                     const dataForComplete = {
@@ -252,6 +252,8 @@
                                         } else {
                                             showResponseMessage(result2.message || result2.error || "Payment failed. Please try again.", 'error');
                                         }
+                                    }else{
+                                        showResponseMessage(result2.message || result2.error || "Server error occurred.", 'error');
                                     }
                                     showResponseMessage("Payment successful!", 'success');
                                     redirectToLogin();
@@ -260,10 +262,10 @@
                                 showResponseMessage(result.message || "Payment successful!", 'success');
                                 redirectToLogin();
                             } else {
-                                showResponseMessage(result.message || "Payment failed. Please try again.", 'error');
+                                showResponseMessage(result.message || result.error || "Payment failed. Please try again.", 'error');
                             }
                         } else {
-                            showResponseMessage(result.message || "Server error occurred.", 'error');
+                            showResponseMessage(result.message || result.error || "Server error occurred.", 'error');
                         }
 
                     } catch (err) {
