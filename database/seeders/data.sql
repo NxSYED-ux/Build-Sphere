@@ -524,12 +524,13 @@ INSERT INTO heights.plans (id, name, description, currency, status, created_at, 
 INSERT INTO heights.plans (id, name, description, currency, status, created_at, updated_at) VALUES (3, 'Pro', 'Advanced features for professionals managing multiple properties with automation and insights.', 'PKR', 'Active', '2025-04-09 18:26:51', '2025-04-22 14:09:43');
 
 
-INSERT INTO heights.planservicecatalog (title, description, weight) VALUES ('Building Management', 'Oversee and organize all registered buildings in one place. Includes configuration, status updates, and essential building data.', 5);
-INSERT INTO heights.planservicecatalog (title, description, weight) VALUES ('Manager Accounts', 'Create and manage accounts for building managers. Assign responsibilities and control access to their respective buildings.', 4);
-INSERT INTO heights.planservicecatalog (title, description, weight) VALUES ('Staff Members per Building', 'Assign staff members to individual buildings. Manage queries, and responsibilities per building.', 3);
-INSERT INTO heights.planservicecatalog (title, description, weight) VALUES ('Levels per Building', 'Define and manage the number of floors or levels for each building. Useful for unit mapping and navigation purposes.', 2);
-INSERT INTO heights.planservicecatalog (title, description, weight) VALUES ('Units per Building', 'Add and track all residential or commercial units within a building. Enables easy management of occupancy and availability.', 4);
-INSERT INTO heights.planservicecatalog (title, description, weight) VALUES ('Featured Memberships', 'Highlight premium membership options for users. Offers additional visibility and benefits over standard plans.', 1);
+INSERT INTO heights.planservicecatalog (title, description, weight, icon) VALUES ('Building Management', 'Oversee and organize all registered buildings in one place. Includes configuration, status updates, and essential building data.', 5, 'fas fa-building');
+INSERT INTO heights.planservicecatalog (title, description, weight, icon) VALUES ('Manager Accounts', 'Create and manage accounts for building managers. Assign responsibilities and control access to their respective buildings.', 4, 'fas fa-user-tie');
+INSERT INTO heights.planservicecatalog (title, description, weight, icon) VALUES ('Staff Members per Building', 'Assign staff members to individual buildings. Manage queries, and responsibilities per building.', 3, 'fas fa-users');
+INSERT INTO heights.planservicecatalog (title, description, weight, icon) VALUES ('Levels per Building', 'Define and manage the number of floors or levels for each building. Useful for unit mapping and navigation purposes.', 2, 'fas fa-layer-group');
+INSERT INTO heights.planservicecatalog (title, description, weight, icon) VALUES ('Units per Building', 'Add and track all residential or commercial units within a building. Enables easy management of occupancy and availability.', 4, 'fas fa-door-open');
+INSERT INTO heights.planservicecatalog (title, description, weight, icon) VALUES ('Featured Memberships', 'Highlight premium membership options for users. Offers additional visibility and benefits over standard plans.', 1, 'fas fa-crown');
+
 
 
 INSERT INTO `planservices` (`id`, `plan_id`, `service_catalog_id`, `quantity`, `created_at`, `updated_at`) VALUES
