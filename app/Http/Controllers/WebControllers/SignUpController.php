@@ -117,6 +117,8 @@ class SignUpController extends Controller
             'postal_code' => ['bail', 'nullable', 'string', 'max:50'],
 
             'org_name' => ['bail', 'required', 'string', 'max:255', 'unique:organizations,name'],
+            'org_email' => 'required|string|email|max:255|unique:organizations,email',
+            'org_phone' => 'required|string|max:255|unique:organizations,phone',
             'org_picture' => ['bail', 'nullable', 'file', 'mimes:png,jpg,jpeg', 'max:5120'],
             'org_country' => ['bail', 'nullable', 'string', 'max:50'],
             'org_province' => ['bail', 'nullable', 'string', 'max:50'],
@@ -192,6 +194,8 @@ class SignUpController extends Controller
 
             $organization = Organization::create([
                 'name' => $request->org_name,
+                'email' => $request->org_email,
+                'phone' => $request->org_phone,
                 'owner_id' => $user->id,
                 'address_id' => $org_address->id,
                 'status' => 'Disable',

@@ -51,6 +51,10 @@ class Subscription extends Model
         return $this->belongsTo(BuildingUnit::class, 'unit_id', 'id');
     }
 
+    public function planSubscriptionItems(){
+        return $this->hasMany(PlanSubscriptionItem::class, 'subscription_id', 'id');
+    }
+
     // Polymorphic relationship to source (e.g., Plan, Rental, etc.)
     public function source(): MorphTo
     {

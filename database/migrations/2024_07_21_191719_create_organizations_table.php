@@ -11,6 +11,8 @@ return new class extends Migration
         Schema::create('organizations', function (Blueprint $table) {
             $table->id();
             $table->string('name',50)->unique();
+            $table->string('email',255)->unique();
+            $table->string('phone',20)->unique();
             $table->unsignedBigInteger('address_id')->unique();
             $table->enum('status', ['Enable', 'Disable', 'Block'])->default('Enable');
             $table->string('payment_gateway_name')->default('Stripe'); // Name of the payment gateway (e.g., Stripe, PayPal)

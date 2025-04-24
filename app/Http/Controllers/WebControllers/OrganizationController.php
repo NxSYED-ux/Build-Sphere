@@ -11,6 +11,7 @@ use App\Models\DropdownType;
 use App\Models\Organization;
 use App\Models\OrganizationPicture;
 use App\Models\Plan;
+use App\Models\Subscription;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -30,6 +31,8 @@ class OrganizationController extends Controller
                 ->whereNotIn('id', Organization::pluck('owner_id'))
                 ->pluck('name', 'id');
 
+            $this->current_plan(1);
+
             $planCycles = BillingCycle::pluck('duration_months');
 
             return view('Heights.Admin.Organizations.index', compact('organizations', 'activeTab', 'dropdownData', 'owners', 'planCycles'));
@@ -43,6 +46,8 @@ class OrganizationController extends Controller
     {
         $request->validate([
             'name' => ['required', 'string', 'max:255', 'unique:organizations,name'],
+            'email' => 'required|string|email|max:255|unique:organizations,email',
+            'phone' => 'required|string|max:255|unique:organizations,phone',
             'owner_id' => ['required', 'integer','unique:organizations,owner_id'],
             'location' => ['nullable', 'string', 'max:255'],
             'country' => ['nullable', 'string', 'max:50'],
@@ -124,6 +129,8 @@ class OrganizationController extends Controller
 
             $organization = Organization::create([
                 'name' => $request->name,
+                'email' => $request->email,
+                'phone' => $request->phone,
                 'owner_id' => $request->owner_id,
                 'address_id' => $address->id,
                 'payment_gateway_merchant_id' => $request->merchant_id,
@@ -168,17 +175,23 @@ class OrganizationController extends Controller
 
     public function show(string $id)
     {
-        //
+        $this->current_plan($id);
     }
+
+
 
     public function edit(string $id)
     {
         $organization = Organization::with('address','pictures')->findOrFail($id);
         $dropdownData = DropdownType::with(['values.childs.childs'])->where('type_name', 'Country')->get(); // Country -> Province -> City
         $owners = User::where('role_id',2)->pluck('name', 'id');
+
+
+
         return view('Heights.Admin.Organizations.edit',compact('organization','dropdownData', 'owners'));
     }
 
+    // add email & phone no
     public function update(Request $request, string $id)
     {
          $request->validate([
@@ -274,4 +287,58 @@ class OrganizationController extends Controller
 
         return response()->json(['success' => true]);
     }
+
+    private function current_plan(string $organization_id){
+
+        $subscription = Subscription::where('organization_id', $organization_id)
+            ->where('source_name', 'plan')
+            ->with([
+                'source',
+                'planSubscriptionItems:id,subscription_id,service_catalog_id,quantity,used',
+                'planSubscriptionItems.serviceCatalog:id,title,icon'
+            ])
+            ->first();
+
+        $totalUsed = 0;
+        $totalQuantity = 0;
+
+        if ($subscription) {
+            $formatted = [
+                'id' => $subscription->id,
+                'name' => $subscription->source->name,
+                'billing_cycle' => $subscription->billing_cycle,
+                'status' => $subscription->subscription_status,
+                'price' => $subscription->price_at_subscription,
+                'currency' => $subscription->currency_at_subscription,
+                'starts_at' => $subscription->created_at,
+                'ends_at' => $subscription->ends_at,
+                'services' => $subscription->planSubscriptionItems->map(function ($item) use (&$totalUsed, &$totalQuantity) {
+                    $totalUsed += $item->used;
+                    $totalQuantity += $item->quantity;
+
+                    return [
+                        'service_id' => $item->id,
+                        'service_catalog_id' => $item->serviceCatalog->id,
+                        'title' => $item->serviceCatalog->title ?? null,
+                        'icon' => $item->serviceCatalog->icon ?? null,
+                        'quantity' => $item->quantity,
+                        'used' => $item->used,
+                        'used_percentage' => ($item->quantity > 0) ? number_format(($item->used / $item->quantity) * 100, 2) : 0,
+                    ];
+                })->toArray(),
+            ];
+        } else {
+            $formatted = null;
+        }
+
+        $overallUsedPercentage = ($totalQuantity > 0) ? number_format(($totalUsed / $totalQuantity) * 100, 2) : 0;
+
+        Log::info('Current plan: ' , $formatted);
+
+        return [
+            'subscription' => $formatted,
+            'overall_used_percentage' => $overallUsedPercentage,
+        ];
+    }
+
 }

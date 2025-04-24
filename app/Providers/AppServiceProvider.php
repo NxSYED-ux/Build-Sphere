@@ -3,6 +3,10 @@
 namespace App\Providers;
 
 use App\Broadcasting\FCMChannel;
+use App\Models\Plan;
+use App\Models\Subscription;
+use App\Models\User;
+use App\Models\UserBuildingUnit;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Notifications\ChannelManager;
 use Illuminate\Support\ServiceProvider;
@@ -36,9 +40,10 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {
         Relation::morphMap([
-            'plan' => \App\Models\Plan::class,
-            'user_building_unit' => \App\Models\UserBuildingUnit::class,
-            'subscription' => \App\Models\Subscription::class,
+            'plan' => Plan::class,
+            'user_building_unit' => UserBuildingUnit::class,
+            'subscription' => Subscription::class,
+            'user' => User::class,
         ]);
     }
 }
