@@ -161,7 +161,7 @@
                             <span class="badge bg-success bg-opacity-10 text-success py-2 px-3 rounded-pill">
                                 <i class="fas fa-check-circle me-1"></i> Active
                             </span>
-                                            <span class="badge bg-info bg-opacity-10 text-info py-2 px-3 rounded-pill">
+                            <span class="badge bg-info bg-opacity-10 text-info py-2 px-3 rounded-pill">
                                 <i class="fas fa-shield-alt me-1"></i> Verified
                             </span>
                         </div>
@@ -177,15 +177,15 @@
                             <div class="detail-list">
 
                                 <div class="row">
-                                <div class="col-6 detail-item py-1">
-                                    <div class="detail-label">Membership ID</div>
-                                    <div class="detail-value fw-medium">ORG-789456</div>
-                                </div>
+                                    <div class="col-6 detail-item py-1">
+                                        <div class="detail-label">Membership ID</div>
+                                        <div class="detail-value fw-medium">ORG-789456</div>
+                                    </div>
 
-                                <div class="col-6 detail-item pb-1">
-                                    <div class="detail-label">Registration Date</div>
-                                    <div class="detail-value fw-medium">15 Jan 2023</div>
-                                </div>
+                                    <div class="col-6 detail-item pb-1">
+                                        <div class="detail-label">Registration Date</div>
+                                        <div class="detail-value fw-medium">15 Jan 2023</div>
+                                    </div>
                                 </div>
 
                                 <div class="detail-item py-1">
@@ -346,7 +346,7 @@
                     <div class="profile-card p-4 mb-4 shadow">
                         <div class="d-flex justify-content-between align-items-center mb-4">
                             <h4 class="section-title mb-0">Payment Methods</h4>
-                            <button class="btn btn-sm btn-primary add-payment-method-btn" id="add-payment-method-btn">
+                            <button type="button" class="btn btn-sm btn-primary add-payment-method-btn" id="add-payment-method-btn"  data-bs-toggle="modal" data-bs-target="#paymentMethodModal">
                                 <i class="fas fa-plus me-1"></i> Add Payment Method
                             </button>
                         </div>
@@ -360,24 +360,24 @@
                             </div>
                         </div>
 
-{{--                        <div class="row">--}}
-{{--                            <!-- Visa Card -->--}}
-{{--                            <x-payment-card--}}
-{{--                                    cardNumber="4242 4242 4242 4242"--}}
-{{--                                    expiry="12/25"--}}
-{{--                                    cvv="123"--}}
-{{--                                    cardType="visa"--}}
-{{--                                    isPrimary="true"--}}
-{{--                            />--}}
+                        {{--                        <div class="row">--}}
+                        {{--                            <!-- Visa Card -->--}}
+                        {{--                            <x-payment-card--}}
+                        {{--                                    cardNumber="4242 4242 4242 4242"--}}
+                        {{--                                    expiry="12/25"--}}
+                        {{--                                    cvv="123"--}}
+                        {{--                                    cardType="visa"--}}
+                        {{--                                    isPrimary="true"--}}
+                        {{--                            />--}}
 
-{{--                            <!-- Mastercard -->--}}
-{{--                            <x-payment-card--}}
-{{--                                    cardNumber="5555 5555 5555 4444"--}}
-{{--                                    expiry="06/24"--}}
-{{--                                    cvv="456"--}}
-{{--                                    cardType="mastercard"--}}
-{{--                            />--}}
-{{--                        </div>--}}
+                        {{--                            <!-- Mastercard -->--}}
+                        {{--                            <x-payment-card--}}
+                        {{--                                    cardNumber="5555 5555 5555 4444"--}}
+                        {{--                                    expiry="06/24"--}}
+                        {{--                                    cvv="456"--}}
+                        {{--                                    cardType="mastercard"--}}
+                        {{--                            />--}}
+                        {{--                        </div>--}}
                     </div>
 
                     <!-- Billing History -->
@@ -488,39 +488,25 @@
         </div>
     </div>
 
-    <!-- Add this right after the Payment Methods card div -->
-    <div class="modal fade" id="paymentMethodModal" tabindex="-1" aria-labelledby="paymentMethodModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="paymentMethodModalLabel">Add Payment Method</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="payment-form">
-                        <div class="mb-3">
-                            <label for="email" class="form-label">Email (optional)</label>
-                            <input type="email" class="form-control" id="email" placeholder="email@example.com">
-                        </div>
-
-                        <!-- Stripe Elements will be injected here -->
-                        <div id="card-element" class="border border-gray-200 rounded-lg p-4 mb-4"></div>
-                        <div id="card-errors" role="alert" class="text-red-500 text-sm mb-4"></div>
-
-                        <button type="submit" class="btn btn-primary w-100" id="submit-button">
-                            <span id="button-text">Add Payment Method</span>
-                            <span id="button-spinner" class="spinner-border spinner-border-sm d-none" role="status"></span>
-                        </button>
-                    </form>
+    <div class="modal fade" id="paymentMethodModal" tabindex="-1" aria-labelledby="paymentMethodLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered bg-transparent">
+            <div class="modal-content p-0 m-0 border-0 rounded-3  bg-transparent">
+                <div class="modal-body p-0 m-0">
+                    <x-stripe-card-form
+                        :stripeKey="config('services.stripe.key')"
+                        formAction="#"
+                        buttonText="Save Card"
+                        title=""
+                    />
                 </div>
             </div>
         </div>
     </div>
+
 @endsection
 
 @push('scripts')
 
-    <script src="https://js.stripe.com/v3/"></script>
     <script>
         // Initialize tooltips
         document.addEventListener('DOMContentLoaded', function() {
@@ -689,125 +675,26 @@
     <!-- Cards -->
     <script>
         document.addEventListener('DOMContentLoaded', async function () {
-            // Configuration and Initialization
-            const config = {
-                stripe: {
-                    publicKey: "{{ config('services.stripe.public') }}",
-                    elementsOptions: { disableLink: true }
-                },
-                routes: {
-                    store: "{{ route('owner.cards.store') }}",
-                    index: "{{ route('owner.cards.index') }}",
-                    updateDefault: "{{ route('owner.cards.update.default') }}",
-                    delete: "{{ route('owner.cards.delete') }}"
-                },
-                csrfToken: "{{ csrf_token() }}"
-            };
-
-            // Initialize Stripe
-            const stripe = Stripe(config.stripe.publicKey);
-            const elements = stripe.elements(config.stripe.elementsOptions);
-            let card;
-
             // DOM Elements
             const dom = {
-                paymentMethodModal: new bootstrap.Modal(document.getElementById('paymentMethodModal')),
-                form: document.getElementById('payment-form'),
-                emailInput: document.getElementById('email'),
-                submitButton: document.getElementById('submit-button'),
-                buttonText: document.getElementById('button-text'),
-                buttonSpinner: document.getElementById('button-spinner'),
-                cardErrors: document.getElementById('card-errors'),
                 cardsContainer: document.getElementById('cards-container')
             };
 
-            // Event Listeners
-            function setupEventListeners() {
-                // Add Payment Method Button add-payment-method-btn
-                document.querySelectorAll('.add-payment-method-btn').forEach(btn => {
-                    btn.addEventListener('click', initializeCardElement);
-                });
+            // Event delegation for card actions
+            document.addEventListener('click', handleCardActions);
 
+            // Load cards on page load
+            window.submitaddedCard = submitaddedCard;
+            loadCards();
 
-                // Form Submission
-                dom.form.addEventListener('submit', handleFormSubmit);
-
-                // Card Element Events
-                if (card) {
-                    card.on('change', handleCardChange);
-                }
-
-                // Delegated event listeners for dynamic elements
-                document.addEventListener('click', handleCardActions);
-            }
-            // Card Element Management
-            function initializeCardElement() {
-                // Create the card element only once
-                if (!card) {
-                    card = elements.create("card");
-                    card.on('change', handleCardChange);
-                }
-
-                // Always unmount and remount when reopening the modal
-                card.unmount(); // optional: only if it may be mounted already
-                card.mount("#card-element");
-
-                dom.cardErrors.textContent = '';
-                dom.paymentMethodModal.show();
-            }
-
-
-            function handleCardChange(event) {
-                dom.cardErrors.textContent = event.error ? event.error.message : '';
-            }
-
-            // Form Handling
-            async function handleFormSubmit(e) {
-                e.preventDefault();
-                setFormLoadingState(true);
-
-                try {
-                    const { paymentMethod, error } = await stripe.createPaymentMethod({
-                        type: 'card',
-                        card: card,
-                        billing_details: dom.emailInput.value ? { email: dom.emailInput.value } : {}
-                    });
-
-                    if (error) {
-                        showCardError(error.message);
-                        return;
-                    }
-
-                    await savePaymentMethod(paymentMethod.id);
-                    dom.paymentMethodModal.hide();
-                    await loadCards();
-                } catch (err) {
-                    console.error('Error:', err);
-                    showCardError('An unexpected error occurred');
-                } finally {
-                    setFormLoadingState(false);
-                }
-            }
-
-            function setFormLoadingState(isLoading) {
-                dom.submitButton.disabled = isLoading;
-                dom.buttonText.textContent = isLoading ? 'Processing...' : 'Add Payment Method';
-                dom.buttonSpinner.classList.toggle('d-none', !isLoading);
-            }
-
-            function showCardError(message) {
-                dom.cardErrors.textContent = message;
-            }
-
-            // API Interactions
-            async function savePaymentMethod(paymentMethodId) {
-                const response = await fetch(config.routes.store, {
+            async function submitaddedCard(){
+                const methodId = document.getElementById('payment_method_id').value;
+                const response = await fetch('{{ route('owner.cards.store') }}', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': config.csrfToken
                     },
-                    body: JSON.stringify({ payment_method_id: paymentMethodId })
+                    body: JSON.stringify({ payment_method_id: methodId })
                 });
 
                 const result = await response.json();
@@ -815,22 +702,26 @@
                 if (!response.ok) {
                     throw new Error(result.message || 'Failed to add payment method');
                 }
+
+                const modal = bootstrap.Modal.getInstance(document.getElementById('paymentMethodModal'));
+                if (modal) modal.hide();
+
+                loadCards();
             }
 
+            // API Interactions
             async function loadCards() {
-                const container = document.getElementById('cards-container');
-
                 // Show loading spinner
-                container.innerHTML = `
-        <div class="col-12 text-center py-4">
-            <div class="spinner-border text-primary" role="status">
-                <span class="visually-hidden">Loading...</span>
-            </div>
-        </div>
-    `;
+                dom.cardsContainer.innerHTML = `
+                <div class="col-12 text-center py-4">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+            `;
 
                 try {
-                    const response = await fetch(config.routes.index, {
+                    const response = await fetch('{{ route('owner.cards.index') }}', {
                         headers: {
                             'Accept': 'application/json',
                             'X-Requested-With': 'XMLHttpRequest'
@@ -849,7 +740,6 @@
                 }
             }
 
-
             function showCardsError() {
                 dom.cardsContainer.innerHTML = `
                 <div class="col-12 text-center py-4 text-danger">
@@ -865,7 +755,7 @@
                 if (!cards || cards.length === 0) {
                     dom.cardsContainer.innerHTML = `
                     <div class="col-12 text-center py-4 text-muted">
-                        No payment methods found. Add one to get started.
+                        No payment methods found.
                     </div>
                 `;
                     return;
@@ -908,18 +798,6 @@
                         accent: 'rgba(255,255,255,0.9)',
                         textColor: '#FF6000'
                     },
-                    'diners': {
-                        background: 'linear-gradient(135deg, #0079BE 0%, #00A3E0 100%)',
-                        icon: 'fa-cc-diners-club',
-                        accent: 'rgba(255,255,255,0.9)',
-                        textColor: '#0079BE'
-                    },
-                    'unionpay': {
-                        background: 'linear-gradient(135deg, #04517A 0%, #0588C9 100%)',
-                        icon: 'bx-credit-card',
-                        accent: 'rgba(255,255,255,0.9)',
-                        textColor: '#04517A'
-                    },
                     'default': {
                         background: 'linear-gradient(135deg, #4a5568 0%, #0E131DFF 100%)',
                         icon: 'bx-credit-card',
@@ -953,9 +831,9 @@
                                     <button class="btn btn-sm p-0" style="background: transparent; color: white; border: none;" type="button" id="${dropdownId}" data-bs-toggle="dropdown" aria-expanded="false">
                                         <i class="fas fa-ellipsis-h"></i>
                                     </button>
-                                    <ul class="dropdown-menu dropdown-menu-end" style="background-color: var(--body-background-color);" aria-labelledby="${dropdownId}">
-                                        <li><a class="dropdown-item set-primary-btn d-flex align-items-center" href="#" data-card-id="${card.id}">Set as primary</a></li>
-                                        <li><a class="dropdown-item delete-card-btn d-flex align-items-center" href="#" data-card-id="${card.id}">Delete card</a></li>
+                                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="${dropdownId}">
+                                        <li><a class="dropdown-item set-primary-btn" href="#" data-card-id="${card.id}">Set as primary</a></li>
+                                        <li><a class="dropdown-item delete-card-btn" href="#" data-card-id="${card.id}">Delete card</a></li>
                                     </ul>
                                 </div>`
                 }
@@ -975,12 +853,6 @@
                                 <span class="text-white-50" style="font-size: 0.8rem;">CVV</span>
                                 <h6 class="mb-0">•••</h6>
                             </div>
-                        </div>
-
-                        <div class="d-flex justify-content-end gap-2 mt-1" style="position: relative; z-index: 2;">
-                            <button class="btn btn-sm delete-card-btn" style="background: rgba(255,255,255,0.2); color: white; border: none;" data-card-id="${card.id}">
-                                <i class="fas fa-trash"></i>
-                            </button>
                         </div>
                     </div>
                 </div>
@@ -1032,12 +904,12 @@
             }
 
             async function updatePrimaryCard(cardId) {
-                const response = await fetch(config.routes.updateDefault, {
+                const response = await fetch('{{ route('owner.cards.update.default') }}', {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': config.csrfToken,
-                        'Accept': 'application/json'
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                     },
                     body: JSON.stringify({ payment_method_id: cardId })
                 });
@@ -1080,12 +952,12 @@
             }
 
             async function deleteCard(cardId) {
-                const response = await fetch(config.routes.delete, {
+                const response = await fetch('{{ route('owner.cards.delete') }}', {
                     method: 'DELETE',
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': config.csrfToken,
-                        'Accept': 'application/json'
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                     },
                     body: JSON.stringify({ payment_method_id: cardId })
                 });
@@ -1106,10 +978,6 @@
                 });
                 console.error('Error:', error);
             }
-
-            // Initialize the application
-            setupEventListeners();
-            loadCards();
         });
     </script>
 @endpush
