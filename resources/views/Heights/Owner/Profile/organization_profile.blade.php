@@ -346,7 +346,7 @@
                     <div class="profile-card p-4 mb-4 shadow">
                         <div class="d-flex justify-content-between align-items-center mb-4">
                             <h4 class="section-title mb-0">Payment Methods</h4>
-                            <button class="btn btn-sm btn-primary">
+                            <button class="btn btn-sm btn-primary add-payment-method-btn" id="add-payment-method-btn">
                                 <i class="fas fa-plus me-1"></i> Add Payment Method
                             </button>
                         </div>
@@ -723,9 +723,11 @@
 
             // Event Listeners
             function setupEventListeners() {
-                // Add Payment Method Button
-                document.querySelector('.btn-primary .fa-plus').closest('button')
-                    .addEventListener('click', initializeCardElement);
+                // Add Payment Method Button add-payment-method-btn
+                document.querySelectorAll('.add-payment-method-btn').forEach(btn => {
+                    btn.addEventListener('click', initializeCardElement);
+                });
+
 
                 // Form Submission
                 dom.form.addEventListener('submit', handleFormSubmit);
@@ -738,18 +740,22 @@
                 // Delegated event listeners for dynamic elements
                 document.addEventListener('click', handleCardActions);
             }
-
             // Card Element Management
             function initializeCardElement() {
-                if (card) {
-                    card.unmount();
+                // Create the card element only once
+                if (!card) {
+                    card = elements.create("card");
+                    card.on('change', handleCardChange);
                 }
 
-                card = elements.create("card");
+                // Always unmount and remount when reopening the modal
+                card.unmount(); // optional: only if it may be mounted already
                 card.mount("#card-element");
+
                 dom.cardErrors.textContent = '';
                 dom.paymentMethodModal.show();
             }
+
 
             function handleCardChange(event) {
                 dom.cardErrors.textContent = event.error ? event.error.message : '';
@@ -812,6 +818,17 @@
             }
 
             async function loadCards() {
+                const container = document.getElementById('cards-container');
+
+                // Show loading spinner
+                container.innerHTML = `
+        <div class="col-12 text-center py-4">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+    `;
+
                 try {
                     const response = await fetch(config.routes.index, {
                         headers: {
@@ -821,7 +838,7 @@
                     });
 
                     if (!response.ok) {
-                        throw new Error('Failed to load payment methods');
+                        throw new Error('Failed to load cards');
                     }
 
                     const data = await response.json();
@@ -831,6 +848,7 @@
                     showCardsError();
                 }
             }
+
 
             function showCardsError() {
                 dom.cardsContainer.innerHTML = `
