@@ -35,6 +35,7 @@ class CardController extends Controller
             $cards = collect($paymentMethods->data)->map(function ($method) use ($defaultPaymentMethodId) {
                 return [
                     'id' => $method->id,
+                    'cardholder_name' => $method->billing_details->name,
                     'brand' => $method->card->brand,
                     'last4' => $method->card->last4,
                     'exp_month' => $method->card->exp_month,
