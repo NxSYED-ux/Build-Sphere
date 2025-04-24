@@ -179,12 +179,12 @@ class OrganizationController extends Controller
                 $firstImage ?? 'uploads/Notification/Light-theme-Logo.svg',
                 "{$organization->name} Added Successfully by {$user->name}",
                 "{$organization->name} has been successfully added to our platform by {$user->name}. The organization is now active with the {$plan->name} plan, which includes all the amazing features and benefits.",
-                ['web' => "/admin/organizations/{$organization->id}/show"],
+                ['web' => "admin/organizations/{$organization->id}/show"],
 
                 $user->id,
                 "{$organization->name} Added Successfully",
                 "{$organization->name} has been successfully added to the platform with the {$plan->name} plan by {$user->email}. The organization is now live and fully operational.",
-                ['web' => "/admin/organizations/{$organization->id}/show"],
+                ['web' => "admin/organizations/{$organization->id}/show"],
             ));
 
             return redirect()->route('organizations.index')->with('success', 'Organization created successfully.');
@@ -288,13 +288,13 @@ class OrganizationController extends Controller
             'merchant_id.required_if' => 'The merchant ID is required when online payments are enabled.',
         ]);
 
-        DB::beginTransaction();
-
         $organization = Organization::find($id);
         if (!$organization) return $this->respond($portal, 'error', 'Organization not found.');
 
         $address = Address::find($organization->address_id);
         if (!$address) return $this->respond($portal, 'error', 'Address for the organization not found.');
+
+        DB::beginTransaction();
 
         try {
             $address->update([
@@ -336,13 +336,13 @@ class OrganizationController extends Controller
                     null,
                     "Organization Updated by Admin",
                     "Your organization's details have been successfully updated by the admin. You can review the changes by clicking this notification.",
-                    ['web' => "/profile/organization"],
+                    ['web' => "profile/organization"],
 
                     false,
                     $user->id,
                     'Organization Updated Successfully',
                     "The details of {$organization->name} has been successfully updated. Click the notification to review the updated details.",
-                    ['web' => "/admin/organizations/{$organization->id}/show"],
+                    ['web' => "admin/organizations/{$organization->id}/show"],
                 ));
             }else{
                 dispatch(new OrganizationOwnerNotifications(
@@ -350,7 +350,7 @@ class OrganizationController extends Controller
                     null,
                     'Organization Details Updated',
                     'The details of your organization have been successfully updated. You can review the updated information by clicking the notification.',
-                    ['web' => "/profile/organization"],
+                    ['web' => "profile/organization"],
                 ));
             }
 

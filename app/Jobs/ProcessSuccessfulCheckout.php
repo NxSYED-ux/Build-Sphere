@@ -97,15 +97,15 @@ class ProcessSuccessfulCheckout implements ShouldQueue
             $user->notify(new EmailNotification(
                 'uploads/Notification/Light-theme-Logo.svg',
                 'Welcome to Our Platform',
-                "🎉 Welcome aboard, {$user->name}! We’re thrilled to have you with us and can't wait for you to explore all the exciting features we offer.",
-                ['web' => '/owner/dashboard']
+                "🎉 Welcome {$user->name}! We’re thrilled to have you with us and can't wait for you to explore all the exciting features we offer.",
+                ['web' => 'owner/dashboard']
             ));
 
             $user->notify(new DatabaseOnlyNotification(
                 'uploads/Notification/Transaction.jpg',
                 'Transaction Successful',
                 "🎉 Your payment for the {$plan->name} plan was successfully processed! Welcome, {$user->name}! You now have access to all the amazing features and benefits that come with your plan. If you need any help or have questions, we’re here for you!",
-                ['web' => "/owner/finance/{$transaction->id}/show"]
+                ['web' => "owner/finance/{$transaction->id}/show"]
             ));
 
         } catch (\Exception $e) {
