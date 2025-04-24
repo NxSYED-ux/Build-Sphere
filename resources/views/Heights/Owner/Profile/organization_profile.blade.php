@@ -124,6 +124,7 @@
         .StripeElement--webkit-autofill {
             background-color: #fefde5 !important;
         }
+
     </style>
 @endpush
 
@@ -688,101 +689,131 @@
     <!-- Cards -->
     <script>
         document.addEventListener('DOMContentLoaded', async function () {
+            // Configuration and Initialization
+            const config = {
+                stripe: {
+                    publicKey: "{{ config('services.stripe.public') }}",
+                    elementsOptions: { disableLink: true }
+                },
+                routes: {
+                    store: "{{ route('owner.cards.store') }}",
+                    index: "{{ route('owner.cards.index') }}",
+                    updateDefault: "{{ route('owner.cards.update.default') }}",
+                    delete: "{{ route('owner.cards.delete') }}"
+                },
+                csrfToken: "{{ csrf_token() }}"
+            };
+
             // Initialize Stripe
-            const stripe = Stripe("{{ config('services.stripe.public') }}");
-            const elements = stripe.elements({ disableLink: true });
+            const stripe = Stripe(config.stripe.publicKey);
+            const elements = stripe.elements(config.stripe.elementsOptions);
             let card;
 
-            // Modal elements
-            const paymentMethodModal = new bootstrap.Modal(document.getElementById('paymentMethodModal'));
-            const form = document.getElementById('payment-form');
-            const emailInput = document.getElementById('email');
-            const submitButton = document.getElementById('submit-button');
-            const buttonText = document.getElementById('button-text');
-            const buttonSpinner = document.getElementById('button-spinner');
+            // DOM Elements
+            const dom = {
+                paymentMethodModal: new bootstrap.Modal(document.getElementById('paymentMethodModal')),
+                form: document.getElementById('payment-form'),
+                emailInput: document.getElementById('email'),
+                submitButton: document.getElementById('submit-button'),
+                buttonText: document.getElementById('button-text'),
+                buttonSpinner: document.getElementById('button-spinner'),
+                cardErrors: document.getElementById('card-errors'),
+                cardsContainer: document.getElementById('cards-container')
+            };
 
-            // Add click handler to the "Add Payment Method" button
-            document.querySelector('.btn-primary .fa-plus').closest('button').addEventListener('click', function() {
-                // Initialize or reinitialize Stripe elements when modal opens
+            // Event Listeners
+            function setupEventListeners() {
+                // Add Payment Method Button
+                document.querySelector('.btn-primary .fa-plus').closest('button')
+                    .addEventListener('click', initializeCardElement);
+
+                // Form Submission
+                dom.form.addEventListener('submit', handleFormSubmit);
+
+                // Card Element Events
+                if (card) {
+                    card.on('change', handleCardChange);
+                }
+
+                // Delegated event listeners for dynamic elements
+                document.addEventListener('click', handleCardActions);
+            }
+
+            // Card Element Management
+            function initializeCardElement() {
                 if (card) {
                     card.unmount();
                 }
 
                 card = elements.create("card");
                 card.mount("#card-element");
+                dom.cardErrors.textContent = '';
+                dom.paymentMethodModal.show();
+            }
 
-                // Clear any previous errors
-                document.getElementById('card-errors').textContent = '';
+            function handleCardChange(event) {
+                dom.cardErrors.textContent = event.error ? event.error.message : '';
+            }
 
-                // Show the modal
-                paymentMethodModal.show();
-            });
-
-            // Card input error display
-            card?.on('change', function (event) {
-                const errorDiv = document.getElementById('card-errors');
-                errorDiv.textContent = event.error ? event.error.message : '';
-            });
-
-            // Form submission
-            form.addEventListener('submit', async (e) => {
+            // Form Handling
+            async function handleFormSubmit(e) {
                 e.preventDefault();
-
-                // Disable button and show spinner
-                submitButton.disabled = true;
-                buttonText.textContent = 'Processing...';
-                buttonSpinner.classList.remove('d-none');
+                setFormLoadingState(true);
 
                 try {
                     const { paymentMethod, error } = await stripe.createPaymentMethod({
                         type: 'card',
                         card: card,
-                        billing_details: emailInput.value ? { email: emailInput.value } : {}
+                        billing_details: dom.emailInput.value ? { email: dom.emailInput.value } : {}
                     });
 
                     if (error) {
-                        document.getElementById("card-errors").textContent = error.message;
-                        submitButton.disabled = false;
-                        buttonText.textContent = 'Add Payment Method';
-                        buttonSpinner.classList.add('d-none');
+                        showCardError(error.message);
                         return;
                     }
 
-                    // Send paymentMethod.id to your server
-                    const response = await fetch("{{ route('owner.cards.store') }}", {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': "{{ csrf_token() }}"
-                        },
-                        body: JSON.stringify({ payment_method_id: paymentMethod.id })
-                    });
-
-                    const result = await response.json();
-
-                    if (response.ok) {
-                        // Success - close modal and refresh payment methods
-                        paymentMethodModal.hide();
-                        window.location.reload();
-                    } else {
-                        // Show error from server
-                        document.getElementById("card-errors").textContent = result.message || 'Failed to add payment method';
-                        submitButton.disabled = false;
-                        buttonText.textContent = 'Add Payment Method';
-                        buttonSpinner.classList.add('d-none');
-                    }
+                    await savePaymentMethod(paymentMethod.id);
+                    dom.paymentMethodModal.hide();
+                    await loadCards();
                 } catch (err) {
                     console.error('Error:', err);
-                    document.getElementById("card-errors").textContent = 'An unexpected error occurred';
-                    submitButton.disabled = false;
-                    buttonText.textContent = 'Add Payment Method';
-                    buttonSpinner.classList.add('d-none');
+                    showCardError('An unexpected error occurred');
+                } finally {
+                    setFormLoadingState(false);
                 }
-            });
+            }
+
+            function setFormLoadingState(isLoading) {
+                dom.submitButton.disabled = isLoading;
+                dom.buttonText.textContent = isLoading ? 'Processing...' : 'Add Payment Method';
+                dom.buttonSpinner.classList.toggle('d-none', !isLoading);
+            }
+
+            function showCardError(message) {
+                dom.cardErrors.textContent = message;
+            }
+
+            // API Interactions
+            async function savePaymentMethod(paymentMethodId) {
+                const response = await fetch(config.routes.store, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': config.csrfToken
+                    },
+                    body: JSON.stringify({ payment_method_id: paymentMethodId })
+                });
+
+                const result = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(result.message || 'Failed to add payment method');
+                }
+            }
 
             async function loadCards() {
                 try {
-                    const response = await fetch("{{ route('owner.cards.index') }}", {
+                    const response = await fetch(config.routes.index, {
                         headers: {
                             'Accept': 'application/json',
                             'X-Requested-With': 'XMLHttpRequest'
@@ -794,40 +825,43 @@
                     }
 
                     const data = await response.json();
-                    console.log("Card details", data);
                     renderCards(data.cards);
                 } catch (error) {
                     console.error('Error loading cards:', error);
-                    document.getElementById('cards-container').innerHTML = `
-            <div class="col-12 text-center py-4 text-danger">
-                Failed to load payment methods. Please try again.
-            </div>
-        `;
+                    showCardsError();
                 }
             }
 
+            function showCardsError() {
+                dom.cardsContainer.innerHTML = `
+                <div class="col-12 text-center py-4 text-danger">
+                    Failed to load payment methods. Please try again.
+                </div>
+            `;
+            }
+
+            // Card Rendering
             function renderCards(cards) {
-                const container = document.getElementById('cards-container');
-                container.innerHTML = '';
+                dom.cardsContainer.innerHTML = '';
 
                 if (!cards || cards.length === 0) {
-                    container.innerHTML = `
-            <div class="col-12 text-center py-4 text-muted">
-                No payment methods found. Add one to get started.
-            </div>
-        `;
+                    dom.cardsContainer.innerHTML = `
+                    <div class="col-12 text-center py-4 text-muted">
+                        No payment methods found. Add one to get started.
+                    </div>
+                `;
                     return;
                 }
 
-                // Create a row div to contain all cards
                 const rowDiv = document.createElement('div');
                 rowDiv.className = 'row';
-                container.appendChild(rowDiv);
+                dom.cardsContainer.appendChild(rowDiv);
 
-                cards.forEach(card => {
-                    const cardHTML = renderPaymentCard(card);
-                    rowDiv.insertAdjacentHTML('beforeend', cardHTML);
-                });
+                // Sort cards to put primary card first
+                [...cards].sort((a, b) => b.is_default - a.is_default)
+                    .forEach(card => {
+                        rowDiv.insertAdjacentHTML('beforeend', renderPaymentCard(card));
+                    });
             }
 
             function renderPaymentCard(card) {
@@ -876,62 +910,188 @@
                     }
                 };
 
-                // Normalize card type (e.g., "VISA" → "visa")
                 const normalizedCardType = card.brand.toLowerCase();
                 const style = cardStyles[normalizedCardType] || cardStyles['default'];
                 const isFontAwesome = style.icon.includes('fa-');
-
-                // Format expiry (e.g., "02/24")
                 const expMonth = String(card.exp_month).padStart(2, '0');
                 const expYear = String(card.exp_year).slice(-2);
                 const expiry = `${expMonth}/${expYear}`;
+                const dropdownId = `cardMenu${card.id.replace(/\D/g, '')}`;
 
-                // Generate the HTML string
                 return `
-        <div class="col-md-6 mb-3">
-            <div class="payment-card p-3" style="background: ${style.background}; border-radius: 10px; color: white; box-shadow: 0 4px 8px rgba(0,0,0,0.1); position: relative; overflow: hidden;">
-                <div style="position: absolute; top: -20px; right: -20px; width: 80px; height: 80px; background: rgba(255,255,255,0.1); border-radius: 50%;"></div>
+                <div class="col-md-6 mb-3">
+                    <div class="payment-card p-3" style="background: ${style.background}; border-radius: 10px; color: white; box-shadow: 0 4px 8px rgba(0,0,0,0.1); position: relative; overflow: hidden;">
+                        <div style="position: absolute; top: -20px; right: -20px; width: 80px; height: 80px; background: rgba(255,255,255,0.1); border-radius: 50%;"></div>
 
-                <div class="d-flex justify-content-between align-items-center mb-1" style="position: relative; z-index: 2;">
-                    ${isFontAwesome
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            ${isFontAwesome
                     ? `<i class="fab ${style.icon}" style="font-size: 40px; color: white;"></i>`
                     : `<i class='bx ${style.icon}' style="font-size: 40px; color: white;"></i>`
                 }
 
-                    ${card.is_default
+                            ${card.is_default
                     ? `<span class="badge" style="background: ${style.accent}; color: ${style.textColor}; font-weight: bold;">Primary</span>`
-                    : ''
+                    : `<div class="dropdown">
+                                    <button class="btn btn-sm p-0" style="background: transparent; color: white; border: none;" type="button" id="${dropdownId}" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i class="fas fa-ellipsis-h"></i>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-end" style="background-color: var(--body-background-color);" aria-labelledby="${dropdownId}">
+                                        <li><a class="dropdown-item set-primary-btn d-flex align-items-center" href="#" data-card-id="${card.id}">Set as primary</a></li>
+                                        <li><a class="dropdown-item delete-card-btn d-flex align-items-center" href="#" data-card-id="${card.id}">Delete card</a></li>
+                                    </ul>
+                                </div>`
                 }
-                </div>
+                        </div>
 
-                <div class="mb-1" style="position: relative; z-index: 2;">
-                    <span class="text-white-50" style="font-size: 0.8rem;">Card Number</span>
-                    <h5 class="mb-0" style="letter-spacing: 1px;">•••• •••• •••• ${card.last4}</h5>
-                </div>
+                        <div class="mb-1" style="position: relative; z-index: 2;">
+                            <span class="text-white-50" style="font-size: 0.8rem;">Card Number</span>
+                            <h5 class="mb-0" style="letter-spacing: 1px;">•••• •••• •••• ${card.last4}</h5>
+                        </div>
 
-                <div class="row" style="position: relative; z-index: 2;">
-                    <div class="col-6">
-                        <span class="text-white-50" style="font-size: 0.8rem;">Expires</span>
-                        <h6 class="mb-0">${expiry}</h6>
+                        <div class="row" style="position: relative; z-index: 2;">
+                            <div class="col-6">
+                                <span class="text-white-50" style="font-size: 0.8rem;">Expires</span>
+                                <h6 class="mb-0">${expiry}</h6>
+                            </div>
+                            <div class="col-6">
+                                <span class="text-white-50" style="font-size: 0.8rem;">CVV</span>
+                                <h6 class="mb-0">•••</h6>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-end gap-2 mt-1" style="position: relative; z-index: 2;">
+                            <button class="btn btn-sm delete-card-btn" style="background: rgba(255,255,255,0.2); color: white; border: none;" data-card-id="${card.id}">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
                     </div>
-                    <div class="col-6">
-                        <span class="text-white-50" style="font-size: 0.8rem;">CVV</span>
-                        <h6 class="mb-0">•••</h6>
-                    </div>
                 </div>
-
-                <div class="d-flex justify-content-end gap-2 mt-1" style="position: relative; z-index: 2;">
-                    <button class="btn btn-sm" style="background: rgba(255,255,255,0.2); color: white; border: none;">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                </div>
-            </div>
-        </div>
-    `;
+            `;
             }
 
-// Load cards when the page loads
-             loadCards();
+            // Card Actions
+            async function handleCardActions(e) {
+                // Set primary button handler
+                if (e.target.classList.contains('set-primary-btn') || e.target.closest('.set-primary-btn')) {
+                    e.preventDefault();
+                    await handleSetPrimary(e);
+                }
+
+                // Delete button handler
+                if (e.target.classList.contains('delete-card-btn') || e.target.closest('.delete-card-btn')) {
+                    e.preventDefault();
+                    await handleDeleteCard(e);
+                }
+            }
+
+            async function handleSetPrimary(e) {
+                const cardId = e.target.dataset.cardId || e.target.closest('[data-card-id]').dataset.cardId;
+
+                try {
+                    const result = await Swal.fire({
+                        title: 'Set as Primary?',
+                        text: 'Do you want to set this card as your primary payment method?',
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Yes, set as primary'
+                    });
+
+                    if (result.isConfirmed) {
+                        await updatePrimaryCard(cardId);
+                        await Swal.fire({
+                            title: 'Success!',
+                            text: 'Primary card updated successfully',
+                            icon: 'success',
+                            confirmButtonText: 'OK'
+                        });
+                        await loadCards();
+                    }
+                } catch (error) {
+                    await showErrorAlert(error);
+                }
+            }
+
+            async function updatePrimaryCard(cardId) {
+                const response = await fetch(config.routes.updateDefault, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': config.csrfToken,
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({ payment_method_id: cardId })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.message || 'Failed to set card as primary');
+                }
+            }
+
+            async function handleDeleteCard(e) {
+                const cardId = e.target.dataset.cardId || e.target.closest('[data-card-id]').dataset.cardId;
+
+                try {
+                    const result = await Swal.fire({
+                        title: 'Delete Card?',
+                        text: 'Are you sure you want to delete this payment method?',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Yes, delete it!',
+                        dangerMode: true
+                    });
+
+                    if (result.isConfirmed) {
+                        await deleteCard(cardId);
+                        await Swal.fire({
+                            title: 'Deleted!',
+                            text: 'Your payment method has been deleted.',
+                            icon: 'success',
+                            confirmButtonText: 'OK'
+                        });
+                        await loadCards();
+                    }
+                } catch (error) {
+                    await showErrorAlert(error);
+                }
+            }
+
+            async function deleteCard(cardId) {
+                const response = await fetch(config.routes.delete, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': config.csrfToken,
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({ payment_method_id: cardId })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error || 'Failed to delete card');
+                }
+            }
+
+            async function showErrorAlert(error) {
+                await Swal.fire({
+                    title: 'Error!',
+                    text: error.message,
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+                console.error('Error:', error);
+            }
+
+            // Initialize the application
+            setupEventListeners();
+            loadCards();
         });
     </script>
 @endpush
