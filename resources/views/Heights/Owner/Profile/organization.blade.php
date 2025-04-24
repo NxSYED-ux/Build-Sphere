@@ -163,13 +163,20 @@
                 <!-- Left Column - Organization Details -->
                 <div class="col-lg-4 mb-4">
                     <div class="profile-card p-4 text-center shadow border-0">
-                        <div class="d-flex justify-content-center mb-3">
-                            <div class="org-logo-container position-relative">
-                                <img src="{{ asset('img/organization_placeholder.png') }}" alt="Bahria Town Logo" class="org-logo  border border-3">
+
+                        <div id="unitCarousel{{ $organization->id }}" class="carousel slide" data-bs-ride="carousel">
+                            <div class="carousel-inner">
+                                @forelse($organization->pictures ?? [] as $key => $picture)
+                                    <div class="carousel-item {{ $key == 0 ? 'active' : '' }}">
+                                        <img src="{{ asset($picture->file_path) }}" class="d-block" alt="Unit Picture" style="border-radius: 5px; width:100%; height:200px;">
+                                    </div>
+                                @empty
+                                    <img src="{{ asset('img/placeholder-img.jfif') }}" class="d-block" alt="Unit Picture" style="border-radius: 5px; width:90%; height:200px;">
+                                @endforelse
                             </div>
                         </div>
 
-                        <h3 class="mb-1 fw-bold">Bahria Town</h3>
+                        <h3 class="mb-1 fw-bold">{{ $organization->name }}</h3>
                         <p class="small mb-3">Heights Management System</p>
 
                         <div class="d-flex justify-content-center gap-2 mb-4 flex-wrap">
@@ -194,12 +201,12 @@
                                 <div class="row">
                                     <div class="col-6 detail-item py-1">
                                         <div class="detail-label">Membership ID</div>
-                                        <div class="detail-value fw-medium">ORG-789456</div>
+                                        <div class="detail-value fw-medium">{{ $organization->payment_gateway_merchant_id }}</div>
                                     </div>
 
                                     <div class="col-6 detail-item pb-1">
                                         <div class="detail-label">Registration Date</div>
-                                        <div class="detail-value fw-medium">15 Jan 2023</div>
+                                        <div class="detail-value fw-medium">{{ $organization->created_at }}</div>
                                     </div>
                                 </div>
 
@@ -207,7 +214,7 @@
                                     <div class="detail-label">Contact Email</div>
                                     <div class="detail-value fw-medium d-flex align-items-center">
                                         <i class="fas fa-envelope me-2 text-primary"></i>
-                                        <a href="" class="text-decoration-none">contact@techsolutions.com</a>
+                                        <a href="" class="text-decoration-none">{{ $organization->email }}</a>
                                     </div>
                                 </div>
 
@@ -215,7 +222,7 @@
                                     <div class="detail-label">Phone Number</div>
                                     <div class="detail-value fw-medium d-flex align-items-center">
                                         <i class="fas fa-phone me-2 text-primary"></i>
-                                        <a href="" class="text-decoration-none">+1 (555) 123-4567</a>
+                                        <a href="" class="text-decoration-none">{{ $organization->phone }}</a>
                                     </div>
                                 </div>
 
@@ -224,10 +231,16 @@
                                     <div class="detail-value fw-medium d-flex">
                                         <i class="fas fa-map-marker-alt me-2 mt-1 text-primary"></i>
                                         <div>
-                                            123 Tech Park, Silicon Valley<br>
-                                            San Francisco, CA 94107<br>
-                                            United States
+                                            @if ($organization->address)
+                                                {{ $organization->address->location ?? '' }},
+                                                {{ $organization->address->city ?? '' }},
+                                                {{ $organization->address->province ?? '' }},
+                                                {{ $organization->address->country ?? '' }}
+                                            @else
+                                                N/A
+                                            @endif
                                         </div>
+
                                     </div>
                                 </div>
                             </div>
@@ -242,9 +255,9 @@
                             </div>
 
                             <div class="d-flex align-items-center mb-3 p-2 rounded-3 bg-light">
-                                <img src="{{ asset('img/placeholder-profile.png') }}" alt="John Smith" class="rounded-circle me-3" width="50" height="50">
+                                <img src="{{ $organization->owner->picture ? asset($organization->owner->picture) : asset('uploads/users/images/Placeholder.jpg') }}" alt="John Smith" class="rounded-circle me-3" width="50" height="50">
                                 <div>
-                                    <h6 class="mb-0 fw-medium text-dark">John Smith</h6>
+                                    <h6 class="mb-0 fw-medium text-dark">{{ $organization->owner->name }}</h6>
                                     <small class="d-flex align-items-center text-dark">
                                         <i class="fas fa-briefcase me-1 small text-dark"></i> Owner & CEO
                                     </small>
@@ -256,7 +269,7 @@
                                     <div class="detail-label small">Contact Email</div>
                                     <div class="detail-value fw-medium d-flex align-items-center">
                                         <i class="fas fa-envelope me-2 text-primary"></i>
-                                        <a href="" class="text-decoration-none">john.smith@techsolutions.com</a>
+                                        <a href="" class="text-decoration-none">{{ $organization->owner->email }}</a>
                                     </div>
                                 </div>
 
@@ -264,7 +277,7 @@
                                     <div class="detail-label small">Mobile</div>
                                     <div class="detail-value fw-medium d-flex align-items-center">
                                         <i class="fas fa-mobile-alt me-2 text-primary"></i>
-                                        <a href="" class="text-decoration-none">+1 (555) 987-6543</a>
+                                        <a href="" class="text-decoration-none">{{ $organization->owner->phone_no }}</a>
                                     </div>
                                 </div>
                             </div>
@@ -281,57 +294,54 @@
                             <div class="col-md-6 mb-4">
                                 <div class="plan-card p-4 h-100">
                                     <div class="d-flex justify-content-between align-items-start mb-3">
-                                        <div>
-                                            <h5 class="mb-1">Premium Plan</h5>
-                                            <span class="badge bg-success">Active</span>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <h5 class="mb-1">{{ $subscription['name'] ?? 'N/A' }}</h5>
+                                            <span class="badge bg-success mx-3">Active</span>
                                         </div>
-                                        <div class="text-primary fw-bold">$99<small>/mo</small></div>
+                                        <div class="text-primary fw-bold">{{ $subscription['billing_cycle'] ?? 'N/A' }}<small>/Month</small></div>
                                     </div>
 
                                     <table class="table table-borderless" style="background-color: var(--sidenavbar-body-color);">
                                         <thead>
                                         <tr class="border-bottom">
+                                            <th class="text-center">Icon</th>
                                             <th class="text-start">Service</th>
-                                            <th class="text-end">Qty</th>
-                                            <th class="text-end">Used</th>
+                                            <th class="text-center">Qty</th>
+                                            <th class="text-center">Used</th>
                                         </tr>
                                         </thead>
                                         <tbody>
-                                        <tr>
-                                            <td>Team Members</td>
-                                            <td class="text-end">50</td>
-                                            <td class="text-end">30</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Storage</td>
-                                            <td class="text-end">500GB</td>
-                                            <td class="text-end">250GB</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Premium Support</td>
-                                            <td class="text-end">10</td>
-                                            <td class="text-end">6</td>
-                                        </tr>
-                                        <tr>
-                                            <td>API Access</td>
-                                            <td class="text-end">25</td>
-                                            <td class="text-end">15</td>
-                                        </tr>
+                                        @forelse($subscription['services'] ?? [] as $service)
+                                            <tr>
+                                                <td class="text-center"><i class="{{ $service['icon'] ?? '' }}" style="font-size: 20px;"></i></td>
+                                                <td class="text-start">{{ $service['title'] ?? '' }}</td>
+                                                <td class="text-center">{{ $service['quantity'] ?? 0 }}</td>
+                                                <td class="text-center">{{ $service['used'] ?? 0 }}</td>
+                                            </tr>
+                                        @empty
+                                            <tr>
+                                                <td colspan="4" class="text-center">No Any Service</td>
+                                            </tr>
+                                        @endforelse
+
                                         </tbody>
                                     </table>
 
                                     <div class="mt-3 pt-3 border-top">
                                         <div class="d-flex justify-content-between mb-1">
                                             <span>Billing Cycle:</span>
-                                            <span class="fw-medium">Annual</span>
+                                            <span class="fw-medium">{{ $subscription['billing_cycle'] ?? 'N/A' }}<small>/Month</small></span>
                                         </div>
                                         <div class="d-flex justify-content-between mb-1">
                                             <span>Next Billing:</span>
-                                            <span class="fw-medium">15 Jan 2024</span>
+                                            <span class="fw-medium">{{ $subscription['ends_at'] ?? 'N/A' }}</span>
                                         </div>
                                         <div class="d-flex justify-content-between fw-bold">
                                             <span>Total:</span>
-                                            <span>$1,188.00</span>
+                                            <span>  {{ isset($subscription['price'], $subscription['currency'])
+                                                    ? $subscription['price'] . ' ' . $subscription['currency']
+                                                    : 'N/A' }}
+                                            </span>
                                         </div>
                                     </div>
                                 </div>
@@ -654,7 +664,8 @@
             });
 
             // Initial animation
-            setTimeout(() => updateGaugeValue(65), 500);
+            const gaugeValue = @json($usage);
+            setTimeout(() => updateGaugeValue(gaugeValue), 500);
 
             // Expose to global scope
             window.updateGaugeValue = updateGaugeValue;

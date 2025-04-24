@@ -443,6 +443,28 @@
 
                                                                 <div class="row">
                                                                     <div class="col-md-6 mb-3">
+                                                                        <label for="email" class="form-label">Email</label>
+                                                                        <span class="text-danger">*</span>
+                                                                        <input type="email" name="email" id="email" class="form-control @error('email') is-invalid @enderror"
+                                                                               value="{{ old('email') }}" maxlength="50" placeholder="i.e. org@gmail.com" required>
+                                                                        @error('email')
+                                                                        <div class="invalid-feedback">{{ $message }}</div>
+                                                                        @enderror
+                                                                    </div>
+
+                                                                    <div class="col-md-6 mb-3">
+                                                                        <label for="phone" class="form-label">Phone</label>
+                                                                        <span class="text-danger">*</span>
+                                                                        <input type="text" name="phone" id="phone_no" class="form-control @error('phone') is-invalid @enderror"
+                                                                               value="{{ old('phone') }}" placeholder="0312-3456789" maxlength="14" required>
+                                                                        @error('phone')
+                                                                        <div class="invalid-feedback">{{ $message }}</div>
+                                                                        @enderror
+                                                                    </div>
+                                                                </div>
+
+                                                                <div class="row">
+                                                                    <div class="col-md-6 mb-3">
                                                                         <label for="stripe_merchant_id" class="form-label">
                                                                             Stripe Merchant ID <span class="text-danger" id="merchant-required-star" style="display: none;">*</span>
                                                                         </label>
@@ -720,6 +742,14 @@
             document.getElementById("colvisButton")?.addEventListener("click", function () {
                 triggerButton(".buttons-colvis", "Column Visibility Button clicked");
             });
+        });
+    </script>
+
+    <!-- Contact validation -->
+    <script>
+        document.getElementById('phone_no').addEventListener('input', function(e) {
+            let x = e.target.value.replace(/\D/g, '').match(/(\d{0,4})(\d{0,7})/);
+            e.target.value = !x[2] ? x[1] : x[1] + '-' + x[2];
         });
     </script>
 

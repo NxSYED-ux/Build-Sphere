@@ -62,6 +62,9 @@
                                         <form action="{{ route('organizations.update', $organization->id) }}" method="POST" enctype="multipart/form-data">
                                             @method('PUT')
 
+                                            <input type="hidden" name="is_online_payment_enabled" value="{{ $organization->is_online_payment_enabled }}">
+                                            <input type="hidden" name="merchant_id" value="{{ $organization->payment_gateway_merchant_id }}">
+
                                             <div class="row mb-3">
                                                 <div class="col-lg-4 col-md-6 col-sm-12">
                                                     <div class="form-group">
@@ -98,40 +101,25 @@
                                                 </div>
 
                                                 <div class="col-lg-4 col-md-6 col-sm-12">
-                                                    <div class="form-group">
-                                                        <label for="status">Status</label>
-                                                        <span class="required__field">*</span><br>
-                                                        <select name="status" id="status" class="form-select" required>
-                                                            <option value="enable" {{ old('status', $organization->status) == 'enable' ? 'selected' : '' }}>Enable</option>
-                                                            <option value="disable" {{ old('status', $organization->status) == 'disable' ? 'selected' : '' }}>Disable</option>
-                                                            <option value="block" {{ old('status', $organization->status) == 'block' ? 'selected' : '' }}>Block</option>
-                                                        </select>
-                                                        @error('status')
-                                                            <span class="invalid-feedback" role="alert">
-                                                                <strong>{{ $message }}</strong>
-                                                            </span>
+                                                    <div class="form-group mb-3">
+                                                        <label for="email" >Email</label>
+                                                        <span class="text-danger">*</span>
+                                                        <input type="email" name="email" id="email" class="form-control @error('email') is-invalid @enderror"
+                                                               value="{{ old('email', $organization->email) }}" maxlength="50" placeholder="i.e. org@gmail.com" required>
+                                                        @error('email')
+                                                        <div class="invalid-feedback">{{ $message }}</div>
                                                         @enderror
                                                     </div>
                                                 </div>
 
                                                 <div class="col-lg-4 col-md-6 col-sm-12">
-                                                    <div class="form-group">
-                                                        <label for="membership_start_date" class="form-label" >Membership Start Date</label>
-                                                        <span class="required__field">*</span><br>
-                                                        <input type="date" class="form-control" id="membership_start_date" name="membership_start_date" value="{{ old('membership_start_date', isset($organization->membership_start_date) ? \Carbon\Carbon::parse($organization->membership_start_date)->format('Y-m-d') : '') }}" required>
-                                                        @error('membership_start_date')
-                                                            <div class="text-danger">{{ $message }}</div>
-                                                        @enderror
-                                                    </div>
-                                                </div>
-
-                                                <div class="col-lg-4 col-md-6 col-sm-12">
-                                                    <div class="form-group">
-                                                        <label for="membership_end_date" class="form-label" >Membership End Date</label>
-                                                        <span class="required__field">*</span><br>
-                                                        <input type="date" class="form-control" id="membership_end_date" name="membership_end_date" value="{{ old('membership_end_date', isset($organization->membership_end_date) ? \Carbon\Carbon::parse($organization->membership_end_date)->format('Y-m-d') : '') }}" required>
-                                                        @error('membership_end_date')
-                                                            <div class="text-danger">{{ $message }}</div>
+                                                    <div class="form-group mb-3">
+                                                        <label for="phone" >Phone</label>
+                                                        <span class="text-danger">*</span>
+                                                        <input type="text" name="phone" id="phone_no" class="form-control @error('phone') is-invalid @enderror"
+                                                               value="{{ old('phone',$organization->phone) }}" placeholder="0312-3456789" maxlength="14" required>
+                                                        @error('phone')
+                                                        <div class="invalid-feedback">{{ $message }}</div>
                                                         @enderror
                                                     </div>
                                                 </div>
@@ -245,6 +233,14 @@
 @endsection
 
 @push('scripts')
+
+    <!-- Contact validation -->
+    <script>
+        document.getElementById('phone_no').addEventListener('input', function(e) {
+            let x = e.target.value.replace(/\D/g, '').match(/(\d{0,4})(\d{0,7})/);
+            e.target.value = !x[2] ? x[1] : x[1] + '-' + x[2];
+        });
+    </script>
 
 
     <!-- Password Script -->
