@@ -7,6 +7,8 @@ use App\Models\Plan;
 use App\Models\Subscription;
 use App\Models\Transaction;
 use App\Models\PlanSubscriptionItem;
+use App\Notifications\DatabaseOnlyNotification;
+use App\Notifications\EmailNotification;
 use Illuminate\Bus\Queueable;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -62,7 +64,7 @@ class ProcessSuccessfulCheckout implements ShouldQueue
                 'ends_at' => $endDate,
             ]);
 
-            Transaction::create([
+            $transaction = Transaction::create([
                 'transaction_title' => "{$plan->name} ({$this->planCycle} Months)",
                 'transaction_category' => 'New',
                 'buyer_id' => $this->organizationId,
@@ -91,6 +93,21 @@ class ProcessSuccessfulCheckout implements ShouldQueue
             }
 
             DB::commit();
+
+            $user->notify(new EmailNotification(
+                'uploads/Notification/Light-theme-Logo.svg',
+                'Welcome to Our Platform',
+                "🎉 Welcome aboard, {$user->name}! We’re thrilled to have you with us and can't wait for you to explore all the exciting features we offer.",
+                ['web' => '/owner/dashboard']
+            ));
+
+            $user->notify(new DatabaseOnlyNotification(
+                'uploads/Notification/Transaction.jpg',
+                'Transaction Successful',
+                "🎉 Your payment for the {$plan->name} plan was successfully processed! Welcome, {$user->name}! You now have access to all the amazing features and benefits that come with your plan. If you need any help or have questions, we’re here for you!",
+                ['web' => "/owner/finance/{$transaction->id}/show"]
+            ));
+
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('ProcessSuccessfulCheckout Job Failed: ' . $e->getMessage());

@@ -210,9 +210,9 @@ Route::prefix('admin')->middleware(['auth.jwt'])->group(function () {
         Route::get('/', [OrganizationController::class, 'index'])->name('organizations.index');
         Route::get('/create', [OrganizationController::class, 'create'])->name('organizations.create');
         Route::post('/', [OrganizationController::class, 'store'])->name('organizations.store');
-        Route::get('/{organization}', [OrganizationController::class, 'show'])->name('organizations.show');
+        Route::get('/{organization}/show', [OrganizationController::class, 'show'])->name('organizations.show');
         Route::get('/{organization}/edit', [OrganizationController::class, 'edit'])->name('organizations.edit');
-        Route::put('/{organization}', [OrganizationController::class, 'update'])->name('organizations.update');
+        Route::put('/{organization}', [OrganizationController::class, 'adminUpdate'])->name('organizations.update');
         Route::get('/organizations/{id}/buildings', [OrganizationController::class, 'getBuildingsAdmin'])->name('organizations.buildings');
 
     });
@@ -239,6 +239,14 @@ Route::prefix('owner')->middleware(['auth.jwt'])->group(function () {
         Route::put('/picture', [ProfileController::class, 'uploadProfilePic'])->name('owner.profile.picture.update');
         Route::delete('/picture', [ProfileController::class, 'deleteProfilePic'])->name('owner.profile.picture.delete');
         Route::put('/password', [ProfileController::class, 'changePassword'])->name('owner.profile.password.update');
+
+        Route::prefix('organization')->group(function () {
+
+            Route::get('/', [OrganizationController::class , 'organizationProfile'])->name('owner.profile.organization');
+            Route::get('/edit', [OrganizationController::class , 'ownerEdit'])->name('owner.organization.edit');
+            Route::put('/', [OrganizationController::class , 'ownerUpdate'])->name('owner.organization.update');
+
+        });
 
     });
 
@@ -278,7 +286,6 @@ Route::prefix('owner')->middleware(['auth.jwt'])->group(function () {
         Route::put('/', [BuildingUnitController::class, 'ownerUpdate'])->name('owner.units.update');
         Route::get('/details/{id}', [BuildingUnitController::class, 'unitDetails'])->name('owner.units.details');
         Route::get('/details/{id}/contract', [BuildingUnitController::class, 'getUnitDetailsWithActiveContract'])->name('owner.units.details.contract');
-
 
     });
 

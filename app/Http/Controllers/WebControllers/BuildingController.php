@@ -3,9 +3,7 @@
 namespace App\Http\Controllers\WebControllers;
 
 use App\Http\Controllers\Controller;
-use App\Jobs\OrganizationOwnerNotifications;
 use App\Jobs\BuildingNotifications;
-use App\Jobs\SendRoleNotification;
 use App\Models\Address;
 use App\Models\Building;
 use App\Models\BuildingDocument;
@@ -14,8 +12,6 @@ use App\Models\BuildingPicture;
 use App\Models\DropdownType;
 use App\Models\ManagerBuilding;
 use App\Models\Organization;
-use App\Notifications\DatabaseOnlyNotification;
-use App\Notifications\UserNotification;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;

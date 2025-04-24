@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\WebControllers;
 
 use App\Http\Controllers\Controller;
+use App\Jobs\OrganizationOwnerNotifications;
 use App\Jobs\ProcessSuccessfulCheckout;
+use App\Jobs\SendRoleNotification;
 use App\Models\Address;
 use App\Models\BillingCycle;
 use App\Models\Building;
@@ -13,6 +15,7 @@ use App\Models\OrganizationPicture;
 use App\Models\Plan;
 use App\Models\Subscription;
 use App\Models\User;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
@@ -20,7 +23,7 @@ use Illuminate\Support\Facades\Log;
 
 class OrganizationController extends Controller
 {
-
+    // Index Function
     public function index()
     {
         try {
@@ -31,8 +34,6 @@ class OrganizationController extends Controller
                 ->whereNotIn('id', Organization::pluck('owner_id'))
                 ->pluck('name', 'id');
 
-            $this->current_plan(1);
-
             $planCycles = BillingCycle::pluck('duration_months');
 
             return view('Heights.Admin.Organizations.index', compact('organizations', 'activeTab', 'dropdownData', 'owners', 'planCycles'));
@@ -42,25 +43,29 @@ class OrganizationController extends Controller
         }
     }
 
+
+    // Store Function
     public function store(Request $request)
     {
+        $user = $request->user() ?? abort(401, 'Unauthorized action.');
+
         $request->validate([
-            'name' => ['required', 'string', 'max:255', 'unique:organizations,name'],
+            'name' => 'required|string|max:255|unique:organizations,name',
             'email' => 'required|string|email|max:255|unique:organizations,email',
             'phone' => 'required|string|max:255|unique:organizations,phone',
-            'owner_id' => ['required', 'integer','unique:organizations,owner_id'],
-            'location' => ['nullable', 'string', 'max:255'],
-            'country' => ['nullable', 'string', 'max:50'],
-            'province' => ['nullable', 'string', 'max:50'],
-            'city' => ['nullable', 'string', 'max:50'],
-            'postal_code' => ['nullable', 'string', 'max:50'],
-            'is_online_payment_enabled' => ['required', 'in:0,1'],
-            'merchant_id' => ['nullable', 'required_if:is_online_payment_enabled,1', 'string', 'max:50'],
+            'owner_id' => 'required|integer|unique:organizations,owner_id',
+            'location' => 'nullable|string|max:255',
+            'country' => 'nullable|string|max:50',
+            'province' => 'nullable|string|max:50',
+            'city' => 'nullable|string|max:50',
+            'postal_code' => 'nullable|string|max:50',
+            'is_online_payment_enabled' => 'required|in:0,1',
+            'merchant_id' => 'nullable|required_if:is_online_payment_enabled,1|string|max:50',
             'plan_id' => 'required|exists:plans,id',
             'plan_cycle_id' => 'required|exists:billing_cycles,id',
             'plan_cycle' => 'required|integer',
             'organization_pictures.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-        ] , [
+        ], [
             'merchant_id.required_if' => 'The merchant ID is required when online payments are enabled.',
         ]);
 
@@ -137,8 +142,9 @@ class OrganizationController extends Controller
                 'is_online_payment_enabled' => $request->is_online_payment_enabled,
             ]);
 
+            $firstImage = null;
             if ($request->hasFile('organization_pictures')) {
-                foreach ($request->file('organization_pictures') as $image) {
+                foreach ($request->file('organization_pictures') as $index => $image) {
                     $imageName = time() . '_' . $image->getClientOriginalName();
                     $imagePath = 'uploads/organizations/images/' . $imageName;
                     $image->move(public_path('uploads/organizations/images'), $imageName);
@@ -148,6 +154,10 @@ class OrganizationController extends Controller
                         'file_path' => $imagePath,
                         'file_name' => $imageName,
                     ]);
+
+                    if ($index === 0) {
+                        $firstImage = $imagePath;
+                    }
                 }
             }
 
@@ -161,8 +171,21 @@ class OrganizationController extends Controller
                 $request->plan_cycle,
                 'null',
                 now(),
-                'Cash',
+                'Cash'
             );
+
+            dispatch( new SendRoleNotification(
+                1,
+                $firstImage ?? 'uploads/Notification/Light-theme-Logo.svg',
+                "{$organization->name} Added Successfully by {$user->name}",
+                "{$organization->name} has been successfully added to our platform by {$user->name}. The organization is now active with the {$plan->name} plan, which includes all the amazing features and benefits.",
+                ['web' => "/admin/organizations/{$organization->id}/show"],
+
+                $user->id,
+                "{$organization->name} Added Successfully",
+                "{$organization->name} has been successfully added to the platform with the {$plan->name} plan by {$user->email}. The organization is now live and fully operational.",
+                ['web' => "/admin/organizations/{$organization->id}/show"],
+            ));
 
             return redirect()->route('organizations.index')->with('success', 'Organization created successfully.');
 
@@ -173,48 +196,107 @@ class OrganizationController extends Controller
         }
     }
 
-    public function show(string $id)
+
+    // Show Function
+    public function show(string $id, String $portal = 'admin')
     {
-        $this->current_plan($id);
+        $view = $portal === 'admin' ? 'Heights.Admin.Organizations.index' : 'Heights.Owner.Profile.organization';
+        try {
+            $organization = Organization::with('address','pictures', 'owner')->findOrFail($id);
+            $planDetails = $this->current_plan($id);
+            $subscription = $planDetails['subscription'];
+            $usage = $planDetails['usage'];
+
+            return view($view, compact('organization', 'subscription', 'usage'));
+
+        } catch (ModelNotFoundException $e) {
+            return redirect()->back()->with('error', 'Organization not found.');
+        }
     }
 
 
-
-    public function edit(string $id)
+    // Edit Functions
+    public function edit(string $id, string $portal = 'admin')
     {
         $organization = Organization::with('address','pictures')->findOrFail($id);
         $dropdownData = DropdownType::with(['values.childs.childs'])->where('type_name', 'Country')->get(); // Country -> Province -> City
-        $owners = User::where('role_id',2)->pluck('name', 'id');
 
-
-
-        return view('Heights.Admin.Organizations.edit',compact('organization','dropdownData', 'owners'));
+        if($portal === 'admin'){
+            $owners = User::where('role_id',2)->pluck('name', 'id');
+            return view('Heights.Admin.Organizations.edit',compact('organization','dropdownData', 'owners'));
+        } elseif ($portal === 'owner'){
+            return response()->json([
+                'organization' => $organization,
+                'dropdownData' => $dropdownData,
+            ]);
+        }else{
+            abort(404, 'Page not found.');
+        }
     }
 
-    // add email & phone no
-    public function update(Request $request, string $id)
+    public function ownerEdit(Request $request)
     {
-         $request->validate([
-            'name' => 'required|string|max:255|unique:organizations,name,' . $id,
-            'owner_id' => 'required|integer',
-            'status' => 'required|string',
-            'location' => ['nullable', 'string', 'max:255'],
-            'country' => ['nullable', 'string', 'max:50'],
-            'province' => ['nullable', 'string', 'max:50'],
-            'city' => ['nullable', 'string', 'max:50'],
-            'postal_code' => ['nullable', 'string', 'max:50'],
-            'membership_start_date' => ['required', 'date'],
-            'membership_end_date' => ['required', 'date'],
+        $token = $request->attributes->get('token');
+
+        if (empty($token['organization_id']) || empty($token['role_name'])) {
+            return response()->redirect()->back()->with('error', "Can't access this page, unless you are an organization owner.");
+        }
+
+        return $this->edit($token['organization_id'], 'owner');
+    }
+
+
+    // Update Functions
+    public function adminUpdate(Request $request, String $id)
+    {
+        $request->validate([
+            'owner_id' => 'required|integer|unique:organizations,owner_id,' . $id . ',id',
+        ]);
+
+        return $this->update($request, $id, 'admin');
+    }
+
+    public function ownerUpdate(Request $request)
+    {
+        $token = $request->attributes->get('token');
+
+        if (empty($token['organization_id']) || empty($token['role_name'])) {
+            return response()->redirect()->back()->with('error', "Can't access this page, unless you are an organization owner.");
+        }
+
+        return $this->update($request, $token['organization_id'], 'owner');
+    }
+
+    private function update(Request $request, string $id, string $portal)
+    {
+        $user = $request->user() ?? abort(404, 'Unauthorized action.');
+
+        $request->validate([
+            'name' => 'required|string|max:255|unique:organizations,name,' . $id . ',id',
+            'email' => 'required|string|email|max:255|unique:organizations,email,' . $id . ',id',
+            'phone' => 'required|string|max:255|unique:organizations,phone,' . $id . ',id',
+            'owner_id' => 'required|integer|unique:organizations,owner_id,' . $id . ',id',
+            'location' => 'nullable|string|max:255',
+            'country' => 'nullable|string|max:50',
+            'province' => 'nullable|string|max:50',
+            'city' => 'nullable|string|max:50',
+            'postal_code' => 'nullable|string|max:50',
+            'is_online_payment_enabled' => 'required|in:0,1',
+            'merchant_id' => 'nullable|required_if:is_online_payment_enabled,1|string|max:50',
             'organization_pictures.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ], [
+            'merchant_id.required_if' => 'The merchant ID is required when online payments are enabled.',
         ]);
 
         DB::beginTransaction();
 
+        $organization = Organization::find($id);
+        if (!$organization) return $this->respond($portal, 'error', 'Organization not found.');
+
+        $address = Address::find($organization->address_id);
+        if (!$address) return $this->respond($portal, 'error', 'Address for the organization not found.');
+
         try {
-
-            $organization = Organization::findOrFail($id);
-            $address = Address::findOrFail($organization->address_id);
-
             $address->update([
                 'location' => $request->location,
                 'country' => $request->country,
@@ -225,11 +307,11 @@ class OrganizationController extends Controller
 
             $organization->update([
                 'name' => $request->name,
+                'email' => $request->email,
+                'phone' => $request->phone,
                 'owner_id' => $request->owner_id,
-                'address_id' => $address->id,
-                'status' => $request->status,
-                'membership_start_date' => $request->membership_start_date,
-                'membership_end_date' => $request->membership_end_date,
+                'payment_gateway_merchant_id' => $request->merchant_id,
+                'is_online_payment_enabled' => $request->is_online_payment_enabled,
             ]);
 
             if ($request->hasFile('organization_pictures')) {
@@ -237,6 +319,7 @@ class OrganizationController extends Controller
                     $imageName = time() . '_' . $image->getClientOriginalName();
                     $imagePath = 'uploads/organizations/images/' . $imageName;
                     $image->move(public_path('uploads/organizations/images'), $imageName);
+
                     OrganizationPicture::create([
                         'organization_id' => $organization->id,
                         'file_path' => $imagePath,
@@ -247,14 +330,132 @@ class OrganizationController extends Controller
 
             DB::commit();
 
-            return redirect()->route('organizations.index')->with('success', 'Organization updated successfully.');
+            if ($portal === 'admin') {
+                dispatch(new OrganizationOwnerNotifications(
+                    $id,
+                    null,
+                    "Organization Updated by Admin",
+                    "Your organization's details have been successfully updated by the admin. You can review the changes by clicking this notification.",
+                    ['web' => "/profile/organization"],
+
+                    false,
+                    $user->id,
+                    'Organization Updated Successfully',
+                    "The details of {$organization->name} has been successfully updated. Click the notification to review the updated details.",
+                    ['web' => "/admin/organizations/{$organization->id}/show"],
+                ));
+            }else{
+                dispatch(new OrganizationOwnerNotifications(
+                    $id,
+                    null,
+                    'Organization Details Updated',
+                    'The details of your organization have been successfully updated. You can review the updated information by clicking the notification.',
+                    ['web' => "/profile/organization"],
+                ));
+            }
+
+            return $this->respond($portal, 'success', 'Organization updated successfully.');
 
         } catch (\Exception $e) {
             DB::rollBack();
-            return redirect()->back()->withInput()->with('error', 'Something went wrong. Try again later.');
+            Log::error('An error occurred while updating the organization: ' . $e->getMessage());
+            return $this->respond($portal, 'error', 'Something went wrong. Try again later.');
         }
     }
 
+
+    // Organization Profile Function
+    public function organizationProfile(Request $request){
+
+        $token = $request->attributes->get('token');
+
+        if (empty($token['organization_id']) || empty($token['role_name'])) {
+            return response()->redirect()->back()->with('error', "Can't access this page, unless you are an organization owner.");
+        }
+        return $this->show($token['organization_id'], 'owner');
+    }
+
+
+    // Helper Functions
+    private function current_plan(string $organization_id)
+    {
+        try {
+            $subscription = Subscription::where('organization_id', $organization_id)
+                ->where('source_name', 'plan')
+                ->with([
+                    'source',
+                    'planSubscriptionItems:id,subscription_id,service_catalog_id,quantity,used',
+                    'planSubscriptionItems.serviceCatalog:id,title,icon'
+                ])
+                ->first();
+
+            $totalUsed = 0;
+            $totalQuantity = 0;
+
+            if ($subscription) {
+                $formatted = [
+                    'id' => $subscription->id,
+                    'name' => $subscription->source->name,
+                    'billing_cycle' => $subscription->billing_cycle,
+                    'status' => $subscription->subscription_status,
+                    'price' => $subscription->price_at_subscription,
+                    'currency' => $subscription->currency_at_subscription,
+                    'starts_at' => $subscription->created_at,
+                    'ends_at' => $subscription->ends_at,
+                    'services' => $subscription->planSubscriptionItems->map(function ($item) use (&$totalUsed, &$totalQuantity) {
+                        $totalUsed += $item->used;
+                        $totalQuantity += $item->quantity;
+
+                        return [
+                            'service_id' => $item->id,
+                            'service_catalog_id' => $item->serviceCatalog->id,
+                            'title' => $item->serviceCatalog->title ?? null,
+                            'icon' => $item->serviceCatalog->icon ?? null,
+                            'quantity' => $item->quantity,
+                            'used' => $item->used,
+                            'used_percentage' => ($item->quantity > 0) ? number_format(($item->used / $item->quantity) * 100, 2) : 0,
+                        ];
+                    })->toArray(),
+                ];
+            } else {
+                $formatted = null;
+            }
+
+            $overallUsedPercentage = ($totalQuantity > 0) ? number_format(($totalUsed / $totalQuantity) * 100, 2) : 0;
+
+            Log::info('Current plan: ', $formatted);
+
+            return [
+                'subscription' => $formatted,
+                'usage' => $overallUsedPercentage,
+            ];
+
+        } catch (\Exception $e) {
+            Log::error('Error occurred while fetching current plan for organization ID ' . $organization_id . ': ' . $e->getMessage());
+            return [
+                'subscription' => null,
+                'usage' => 0,
+            ];
+        }
+    }
+
+    private function respond($portal, $type, $message, $data = [])
+    {
+        if ($portal === 'admin') {
+            return $type === 'error'
+                ? redirect()->back()->withInput()->with('error', $message)
+                : redirect()->route('organizations.index')->with('success', $message);
+        }
+
+        return response()->json([
+            'success' => $type === 'success',
+            $type => $message,
+            ...$data,
+        ], $type === 'success' ? 200 : 500);
+    }
+
+
+    // Other Functions
     public function getBuildingsAdmin($id)
     {
         try {
@@ -270,75 +471,19 @@ class OrganizationController extends Controller
         }
     }
 
-
     public function destroyImage(string $id)
     {
         $image = OrganizationPicture::findOrFail($id);
 
         if ($image) {
-            $oldImagePath = public_path($image->file_path); // Corrected variable name
+            $oldImagePath = public_path($image->file_path);
             if (File::exists($oldImagePath)) {
                 File::delete($oldImagePath);
             }
 
-            // Delete the image record from the database
             $image->delete();
         }
 
         return response()->json(['success' => true]);
     }
-
-    private function current_plan(string $organization_id){
-
-        $subscription = Subscription::where('organization_id', $organization_id)
-            ->where('source_name', 'plan')
-            ->with([
-                'source',
-                'planSubscriptionItems:id,subscription_id,service_catalog_id,quantity,used',
-                'planSubscriptionItems.serviceCatalog:id,title,icon'
-            ])
-            ->first();
-
-        $totalUsed = 0;
-        $totalQuantity = 0;
-
-        if ($subscription) {
-            $formatted = [
-                'id' => $subscription->id,
-                'name' => $subscription->source->name,
-                'billing_cycle' => $subscription->billing_cycle,
-                'status' => $subscription->subscription_status,
-                'price' => $subscription->price_at_subscription,
-                'currency' => $subscription->currency_at_subscription,
-                'starts_at' => $subscription->created_at,
-                'ends_at' => $subscription->ends_at,
-                'services' => $subscription->planSubscriptionItems->map(function ($item) use (&$totalUsed, &$totalQuantity) {
-                    $totalUsed += $item->used;
-                    $totalQuantity += $item->quantity;
-
-                    return [
-                        'service_id' => $item->id,
-                        'service_catalog_id' => $item->serviceCatalog->id,
-                        'title' => $item->serviceCatalog->title ?? null,
-                        'icon' => $item->serviceCatalog->icon ?? null,
-                        'quantity' => $item->quantity,
-                        'used' => $item->used,
-                        'used_percentage' => ($item->quantity > 0) ? number_format(($item->used / $item->quantity) * 100, 2) : 0,
-                    ];
-                })->toArray(),
-            ];
-        } else {
-            $formatted = null;
-        }
-
-        $overallUsedPercentage = ($totalQuantity > 0) ? number_format(($totalUsed / $totalQuantity) * 100, 2) : 0;
-
-        Log::info('Current plan: ' , $formatted);
-
-        return [
-            'subscription' => $formatted,
-            'overall_used_percentage' => $overallUsedPercentage,
-        ];
-    }
-
 }

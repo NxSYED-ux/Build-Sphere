@@ -30,11 +30,10 @@ class OrganizationOwnerNotifications implements ShouldQueue
     protected $initiatorMessage;
     protected $initiatorLink;
 
-    public function __construct($organizationId, $buildingId, $image, $heading, $message, $link,$withManager = false, $initiatorId = null, $initiatorHeading = null, $initiatorMessage = null, $initiatorLink = null)
+    public function __construct($organizationId, $buildingId, $heading, $message, $link,$withManager = false, $initiatorId = null, $initiatorHeading = null, $initiatorMessage = null, $initiatorLink = null)
     {
         $this->organizationId = $organizationId;
         $this->buildingId = $buildingId;
-        $this->image = $image;
         $this->heading = $heading;
         $this->message = $message;
         $this->link = $link;
@@ -49,7 +48,8 @@ class OrganizationOwnerNotifications implements ShouldQueue
 
     public function handle()
     {
-        $organization = Organization::find($this->organizationId);
+        $organization = Organization::with('pictures')->find($this->organizationId);
+        $this->image = $organization->pictures->first()->file_path ?? 'uploads/Notification/Light-theme-Logo.svg';
 
         if ($organization?->owner_id && $organization->owner_id !== $this->initiatorId) {
             if ($owner = User::find($organization->owner_id)) {
@@ -57,7 +57,7 @@ class OrganizationOwnerNotifications implements ShouldQueue
                     $this->image,
                     $this->heading,
                     $this->message,
-                    $this->link
+                    ['web' => $this->link]
                 ));
             }
         }
@@ -74,7 +74,7 @@ class OrganizationOwnerNotifications implements ShouldQueue
                         $this->image,
                         $this->heading,
                         $this->message,
-                        $this->link
+                        ['web' => $this->link]
                     ));
                 }
             }
@@ -93,7 +93,7 @@ class OrganizationOwnerNotifications implements ShouldQueue
             $this->image,
             $this->initiatorHeading,
             $this->initiatorMessage,
-            $this->initiatorLink
+            ['web' => $this->initiatorLink]
         ));
 
         $heading = "{$this->initiatorHeading} by {$initiator->name}";
@@ -104,7 +104,7 @@ class OrganizationOwnerNotifications implements ShouldQueue
                 $this->image,
                 $heading,
                 $this->initiatorMessage,
-                $this->initiatorLink
+                ['web' => $this->initiatorLink]
             ));
         }
     }
