@@ -5,35 +5,6 @@
 
     <script src="https://js.stripe.com/v3/"></script>
     <style>
-        :root {
-            --payment-card-primary: var(--color-blue);
-            --payment-card-primary-hover: var(--color-blue);
-            --payment-card-error: #dc2626;
-            --payment-card-text: var(--sidenavbar-text-color);
-            --payment-card-text-light: var(--sidenavbar-text-color);
-            --payment-card-border: #e2e8f0;
-            --payment-card-border-hover: #cbd5e1;
-            --payment-card-background: var(--body-card-bg);
-            --payment-card-input-background2: var(--body-background-color);
-            --payment-card-radius: 10px;
-            --payment-card-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
-            --payment-card-transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        /*:root {*/
-        /*    --payment-card-primary: #008CFF;*/
-        /*    --payment-card-primary-hover: #008CFF;*/
-        /*    --payment-card-error: #dc2626;*/
-        /*    --payment-card-text: #1e293b;*/
-        /*    --payment-card-text-light: #64748b;*/
-        /*    --payment-card-border: #e2e8f0;*/
-        /*    --payment-card-border-hover: #cbd5e1;*/
-        /*    --payment-card-background: #ffff;*/
-        /*    --payment-card-input-background2: #ffff*/
-        /*    --payment-card-radius: 10px;*/
-        /*    --payment-card-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);*/
-        /*    --payment-card-transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);*/
-        /*}*/
 
         #payment-card {
             width: 100%;
@@ -88,12 +59,14 @@
             padding: 10px 10px;
             border: 1px solid var(--payment-card-border);
             border-radius: var(--payment-card-radius);
-            background: white ;
+            background: white;
             font-size: 15px;
-            color: #5F5F5F ;
+            color: #5F5F5F;
             transition: var(--payment-card-transition);
             box-sizing: border-box;
             appearance: none;
+            outline: none;
+            box-shadow: none;
         }
 
         #payment-card input::placeholder {
@@ -113,9 +86,9 @@
 
         #payment-card input:focus,
         #payment-card .stripe-element:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.1);
             outline: none;
+            box-shadow: none;
+            border-color: var(--payment-card-border);
         }
 
         #payment-card .security-notice {
@@ -290,7 +263,7 @@
     </style>
 <div class="container-fluid" id="payment-card">
     <div class="payment-card-form">
-        <h2>Add Payment Method</h2>
+        <h2>{{ $title }}</h2>
 
         <div class="form-group">
             <label for="card-number">Card Number</label>
@@ -340,7 +313,7 @@
         <input type="hidden" name="payment_method_id" id="payment_method_id">
 
         <button type="button" id="submit-button">
-            <span id="button-text">Add Payment Method</span>
+            <span id="button-text">{{ $buttonText }}</span>
         </button>
 
         <div id="payment-status" class="status-message"></div>
@@ -527,7 +500,7 @@
 
             document.getElementById('payment_method_id').value = paymentMethod.id;
             console.log('PaymentMethod created:', paymentMethod);
-            showStatus('Payment method successfully added!', 'success');
+            showStatus('Payment Card Verified!', 'success');
 
             // ========== Call to function that is in Current View ============= //
                 await submitaddedCard();

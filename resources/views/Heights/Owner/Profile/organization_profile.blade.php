@@ -6,9 +6,24 @@
     <style>
         :root {
             --secondary-color: #1cc88a;
+            --payment-card-primary: var(--color-blue);
+            --payment-card-primary-hover: var(--color-blue);
+            --payment-card-error: #dc2626;
+            --payment-card-text: var(--sidenavbar-text-color);
+            --payment-card-text-light: var(--sidenavbar-text-color);
+            --payment-card-border: #e2e8f0;
+            --payment-card-border-hover: #cbd5e1;
+            --payment-card-background: var(--body-card-bg);
+            --payment-card-input-background2: var(--body-background-color);
+            --payment-card-radius: 10px;
+            --payment-card-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+            --payment-card-transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         body {
+        }
+
+        #main{
             font-family: 'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
         }
 
@@ -360,24 +375,6 @@
                             </div>
                         </div>
 
-                        {{--                        <div class="row">--}}
-                        {{--                            <!-- Visa Card -->--}}
-                        {{--                            <x-payment-card--}}
-                        {{--                                    cardNumber="4242 4242 4242 4242"--}}
-                        {{--                                    expiry="12/25"--}}
-                        {{--                                    cvv="123"--}}
-                        {{--                                    cardType="visa"--}}
-                        {{--                                    isPrimary="true"--}}
-                        {{--                            />--}}
-
-                        {{--                            <!-- Mastercard -->--}}
-                        {{--                            <x-payment-card--}}
-                        {{--                                    cardNumber="5555 5555 5555 4444"--}}
-                        {{--                                    expiry="06/24"--}}
-                        {{--                                    cvv="456"--}}
-                        {{--                                    cardType="mastercard"--}}
-                        {{--                            />--}}
-                        {{--                        </div>--}}
                     </div>
 
                     <!-- Billing History -->
@@ -496,7 +493,7 @@
                         :stripeKey="config('services.stripe.key')"
                         formAction="#"
                         buttonText="Save Card"
-                        title=""
+                        title="Add Payment Method"
                     />
                 </div>
             </div>
@@ -506,16 +503,19 @@
 @endsection
 
 @push('scripts')
-
     <script>
-        // Initialize tooltips
+        /**
+         * Tooltip Initialization Script
+         * Initializes Bootstrap tooltips and handles basic payment method actions
+         */
         document.addEventListener('DOMContentLoaded', function() {
-            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-                return new bootstrap.Tooltip(tooltipTriggerEl)
+            // Initialize all tooltips
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
             });
 
-            // Sample function for payment method actions
+            // Payment method removal confirmation
             document.querySelectorAll('.payment-card .btn-outline-danger').forEach(btn => {
                 btn.addEventListener('click', function() {
                     if (confirm('Are you sure you want to remove this payment method?')) {
@@ -531,21 +531,28 @@
     <script src="https://cdn.amcharts.com/lib/4/charts.js"></script>
     <script src="https://cdn.amcharts.com/lib/4/themes/animated.js"></script>
 
-    <!-- Chart code -->
     <script>
-        // Chart references
+        /**
+         * Gauge Chart Script
+         * Creates and manages an animated gauge chart using amCharts
+         */
+            // Chart references
         let chart;
         let hand;
         let label;
 
-        // Helper: Get CSS variable value
+        /**
+         * Gets CSS variable value
+         */
         function getCssVar(name) {
             return getComputedStyle(document.documentElement)
                 .getPropertyValue(name)
                 .trim();
         }
 
-        // Update gauge value (0-100)
+        /**
+         * Updates gauge value with animation
+         */
         function updateGaugeValue(finalValue) {
             finalValue = Math.max(0, Math.min(100, finalValue));
             var to100 = new am4core.Animation(hand, {
@@ -562,16 +569,16 @@
             to100.start();
         }
 
-        // Initialize chart with CSS colors
+        // Initialize chart when amCharts is ready
         am4core.ready(function() {
             am4core.useTheme(am4themes_animated);
 
-            // Create chart
+            // Create chart instance
             chart = am4core.create("chartdiv", am4charts.GaugeChart);
             chart.innerRadius = am4core.percent(82);
             chart.logo.disabled = true;
 
-            // Normal axis
+            // Configure main axis
             var axis = chart.xAxes.push(new am4charts.ValueAxis());
             axis.min = 0;
             axis.max = 100;
@@ -588,7 +595,7 @@
             axis.renderer.labels.template.fill = am4core.color(getCssVar('--gauge-axis-label-color'));
             axis.renderer.ticks.template.stroke = am4core.color(getCssVar('--gauge-axis-tick-color'));
 
-            // Axis for ranges
+            // Configure color ranges axis
             var colorSet = new am4core.ColorSet();
             colorSet.list = [
                 am4core.color(getCssVar('--gauge-range-0')),
@@ -604,6 +611,7 @@
             axis2.renderer.ticks.template.disabled = true;
             axis2.renderer.grid.template.disabled = true;
 
+            // Create ranges
             var range0 = axis2.axisRanges.create();
             range0.value = 0;
             range0.endValue = 0;
@@ -616,7 +624,7 @@
             range1.axisFill.fillOpacity = 1;
             range1.axisFill.fill = colorSet.getIndex(2);
 
-            // Label
+            // Create center label
             label = chart.radarContainer.createChild(am4core.Label);
             label.isMeasured = false;
             label.fontSize = 18;
@@ -627,7 +635,7 @@
             label.text = "0%";
             label.fill = am4core.color(getCssVar('--gauge-label-color'));
 
-            // Hand
+            // Create gauge hand/pointer
             hand = chart.hands.push(new am4charts.ClockHand());
             hand.axis = axis2;
             hand.innerRadius = am4core.percent(30);
@@ -637,6 +645,7 @@
             hand.fill = am4core.color(getCssVar('--gauge-hand-fill'));
             hand.stroke = am4core.color(getCssVar('--gauge-hand-stroke'));
 
+            // Update ranges and label when hand moves
             hand.events.on("propertychanged", function(ev) {
                 range0.endValue = ev.target.value;
                 range1.value = ev.target.value;
@@ -652,29 +661,36 @@
         });
     </script>
 
-    <!-- Example of how to use with backend data -->
     <script>
-        // This is just for demonstration - in real use, you would call this
-        // when you receive data from your backend API
-        /*
+        /**
+         * Gauge Demo Script
+         * Demonstrates how to update gauge with backend data
+         * (This is just a demo - in production you would use real API calls)
+         */
         document.addEventListener('DOMContentLoaded', function() {
-          fetch('/api/get-gauge-value')
-            .then(response => response.json())
-            .then(data => {
-              updateGaugeValue(data.value);
-            });
-        });
-        */
+            // Example API call (commented out for reference)
+            /*
+            fetch('/api/get-gauge-value')
+                .then(response => response.json())
+                .then(data => {
+                    updateGaugeValue(data.value);
+                });
+            */
 
-        setInterval(function() {
-            var value = Math.round(Math.random() * 100);
-            updateGaugeValue(value);
-        }, 2000);
+            // Demo: Random updates every 2 seconds
+            // setInterval(function() {
+            //     var value = Math.round(Math.random() * 100);
+            //     updateGaugeValue(value);
+            // }, 2000);
+        });
     </script>
 
-    <!-- Cards -->
     <script>
-        document.addEventListener('DOMContentLoaded', async function () {
+        /**
+         * Payment Cards Management Script
+         * Handles loading, displaying, and managing payment cards
+         */
+        document.addEventListener('DOMContentLoaded', async function() {
             // DOM Elements
             const dom = {
                 cardsContainer: document.getElementById('cards-container')
@@ -683,11 +699,14 @@
             // Event delegation for card actions
             document.addEventListener('click', handleCardActions);
 
-            // Load cards on page load
+            // Initialize
             window.submitaddedCard = submitaddedCard;
             loadCards();
 
-            async function submitaddedCard(){
+            /**
+             * Submits a new card to the server
+             */
+            async function submitaddedCard() {
                 const methodId = document.getElementById('payment_method_id').value;
                 const response = await fetch('{{ route('owner.cards.store') }}', {
                     method: 'POST',
@@ -700,7 +719,7 @@
                 const result = await response.json();
 
                 if (!response.ok) {
-                    throw new Error(result.message || 'Failed to add payment method');
+                    throw new Error(result.error || result.message || 'Failed to add payment method');
                 }
 
                 const modal = bootstrap.Modal.getInstance(document.getElementById('paymentMethodModal'));
@@ -709,9 +728,11 @@
                 loadCards();
             }
 
-            // API Interactions
+            /**
+             * Loads cards from server
+             */
             async function loadCards() {
-                // Show loading spinner
+                // Show loading state
                 dom.cardsContainer.innerHTML = `
                 <div class="col-12 text-center py-4">
                     <div class="spinner-border text-primary" role="status">
@@ -740,6 +761,9 @@
                 }
             }
 
+            /**
+             * Shows error state when cards fail to load
+             */
             function showCardsError() {
                 dom.cardsContainer.innerHTML = `
                 <div class="col-12 text-center py-4 text-danger">
@@ -748,7 +772,9 @@
             `;
             }
 
-            // Card Rendering
+            /**
+             * Renders cards in the UI
+             */
             function renderCards(cards) {
                 dom.cardsContainer.innerHTML = '';
 
@@ -765,13 +791,16 @@
                 rowDiv.className = 'row';
                 dom.cardsContainer.appendChild(rowDiv);
 
-                // Sort cards to put primary card first
+                // Sort cards with primary first
                 [...cards].sort((a, b) => b.is_default - a.is_default)
                     .forEach(card => {
                         rowDiv.insertAdjacentHTML('beforeend', renderPaymentCard(card));
                     });
             }
 
+            /**
+             * Generates HTML for a payment card
+             */
             function renderPaymentCard(card) {
                 const cardStyles = {
                     'visa': {
@@ -828,14 +857,14 @@
                             ${card.is_default
                     ? `<span class="badge" style="background: ${style.accent}; color: ${style.textColor}; font-weight: bold;">Primary</span>`
                     : `<div class="dropdown">
-                                    <button class="btn btn-sm p-0" style="background: transparent; color: white; border: none;" type="button" id="${dropdownId}" data-bs-toggle="dropdown" aria-expanded="false">
-                                        <i class="fas fa-ellipsis-h"></i>
-                                    </button>
-                                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="${dropdownId}">
-                                        <li><a class="dropdown-item set-primary-btn" href="#" data-card-id="${card.id}">Set as primary</a></li>
-                                        <li><a class="dropdown-item delete-card-btn" href="#" data-card-id="${card.id}">Delete card</a></li>
-                                    </ul>
-                                </div>`
+                                        <button class="btn btn-sm p-0" style="background: transparent; color: white; border: none;" type="button" id="${dropdownId}" data-bs-toggle="dropdown" aria-expanded="false">
+                                            <i class="fas fa-ellipsis-h"></i>
+                                        </button>
+                                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="${dropdownId}">
+                                            <li><a class="dropdown-item set-primary-btn" href="#" data-card-id="${card.id}">Set as primary</a></li>
+                                            <li><a class="dropdown-item delete-card-btn" href="#" data-card-id="${card.id}">Delete card</a></li>
+                                        </ul>
+                                    </div>`
                 }
                         </div>
 
@@ -859,7 +888,9 @@
             `;
             }
 
-            // Card Actions
+            /**
+             * Handles card action events
+             */
             async function handleCardActions(e) {
                 // Set primary button handler
                 if (e.target.classList.contains('set-primary-btn') || e.target.closest('.set-primary-btn')) {
@@ -874,6 +905,9 @@
                 }
             }
 
+            /**
+             * Handles setting a card as primary
+             */
             async function handleSetPrimary(e) {
                 const cardId = e.target.dataset.cardId || e.target.closest('[data-card-id]').dataset.cardId;
 
@@ -903,6 +937,9 @@
                 }
             }
 
+            /**
+             * Updates primary card on server
+             */
             async function updatePrimaryCard(cardId) {
                 const response = await fetch('{{ route('owner.cards.update.default') }}', {
                     method: 'PUT',
@@ -921,6 +958,9 @@
                 }
             }
 
+            /**
+             * Handles card deletion
+             */
             async function handleDeleteCard(e) {
                 const cardId = e.target.dataset.cardId || e.target.closest('[data-card-id]').dataset.cardId;
 
@@ -951,6 +991,9 @@
                 }
             }
 
+            /**
+             * Deletes card from server
+             */
             async function deleteCard(cardId) {
                 const response = await fetch('{{ route('owner.cards.delete') }}', {
                     method: 'DELETE',
@@ -969,6 +1012,9 @@
                 }
             }
 
+            /**
+             * Shows error alert
+             */
             async function showErrorAlert(error) {
                 await Swal.fire({
                     title: 'Error!',

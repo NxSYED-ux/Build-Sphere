@@ -337,6 +337,39 @@
 
                                             <div class="col-md-6 col-lg-4">
                                                 <div class="form-group">
+                                                    <label for="org_email">Organization Email <span class="required__field">*</span></label>
+                                                    <div class="input-group">
+                                                        <span class="input-group-text bg-light"><i class="fas fa-envelope text-muted"></i></span>
+                                                        <input type="email" name="org_email" id="org_email"
+                                                               class="form-control @error('org_email') is-invalid @enderror"
+                                                               value="{{ old('org_email') }}" placeholder="Organization Email" maxlength="50" required>
+                                                    </div>
+                                                    @error('org_email')
+                                                    <div class="invalid-feedback d-block">
+                                                        {{ $message }}
+                                                    </div>
+                                                    @enderror
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-6 col-lg-4">
+                                                <div class="form-group">
+                                                    <label for="org_contact">Organization Contact</label>
+                                                    <div class="input-group">
+                                                        <span class="input-group-text bg-light"><i class="fas fa-phone text-muted"></i></span>
+                                                        <input type="text" name="org_phone" id="org_contact" value="{{ old('org_phone') }}"
+                                                               class="form-control contact" placeholder="0312-3456789" maxlength="14">
+                                                    </div>
+                                                    @error('org_phone')
+                                                    <div class="invalid-feedback d-block">
+                                                        {{ $message }}
+                                                    </div>
+                                                    @enderror
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-6 col-lg-4">
+                                                <div class="form-group">
                                                     <label for="org_country">Country</label>
                                                     <select class="form-select" id="org_country" name="org_country">
                                                         <option value="" selected>Select Country</option>
@@ -377,7 +410,7 @@
                                                 </div>
                                             </div>
 
-                                            <div class="col-md-6 col-lg-4">
+                                            <div class="col-md-6 col-lg-8">
                                                 <div class="form-group">
                                                     <label for="org_location">Location</label>
                                                     <div class="input-group">
@@ -678,6 +711,10 @@
 
         // Phone number formatting
         document.getElementById('contact').addEventListener('input', function(e) {
+            let x = e.target.value.replace(/\D/g, '').match(/(\d{0,4})(\d{0,7})/);
+            e.target.value = !x[2] ? x[1] : x[1] + '-' + x[2];
+        });
+        document.getElementById('org_contact').addEventListener('input', function(e) {
             let x = e.target.value.replace(/\D/g, '').match(/(\d{0,4})(\d{0,7})/);
             e.target.value = !x[2] ? x[1] : x[1] + '-' + x[2];
         });
