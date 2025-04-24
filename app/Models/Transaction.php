@@ -48,6 +48,11 @@ class Transaction extends Model
         return $this->morphTo(null, 'seller_type', 'seller_id');
     }
 
+    public function source(): MorphTo
+    {
+        return $this->morphTo(null, 'source_id', 'source_name');
+    }
+
     public function building(): BelongsTo
     {
         return $this->belongsTo(Building::class);

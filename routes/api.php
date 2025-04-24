@@ -7,6 +7,7 @@ use App\Http\Controllers\AppControllers\FavouritesController;
 use App\Http\Controllers\AppControllers\ListingController;
 use App\Http\Controllers\AppControllers\MyPropertiesController;
 use App\Http\Controllers\AppControllers\QueryController;
+use App\Http\Controllers\AppControllers\TransactionController;
 use App\Http\Controllers\GeneralControllers\AuthController;
 use App\Http\Controllers\GeneralControllers\CardController;
 use App\Http\Controllers\GeneralControllers\ForgotPasswordController;
@@ -117,6 +118,13 @@ Route::middleware(['auth.jwt'])->group(function () {
             Route::post('/', [CardController::class, 'store']);
             Route::put('/', [CardController::class, 'update']);
             Route::delete('/', [CardController::class, 'destroy']);
+
+        });
+
+        Route::prefix('transactions')->group(function () {
+
+            Route::get('/', [TransactionController::class, 'index']);
+            Route::get('/show/{id}', [TransactionController::class, 'show']);
 
         });
 
