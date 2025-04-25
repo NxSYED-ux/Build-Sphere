@@ -140,6 +140,32 @@
             background-color: #fefde5 !important;
         }
 
+        #cards-container{
+            padding-right: 0 !important;
+        }
+
+        #cards-container .col-md-6{
+            margin-right: 0 !important;
+        }
+
+        #cards-container > .row {
+            padding-right: 0 !important;
+        }
+
+        /* Force remove all spacing around the row */
+        #cards-container > .row {
+            margin-right: 0 !important;
+            margin-left: 0 !important;
+            padding-right: 0 !important;
+            padding-left: 0 !important;
+        }
+
+        /* Remove column padding if needed */
+        #cards-container > .row > [class*="col-"] {
+            padding-right: 7px !important;
+            padding-left: 7px !important;
+        }
+
     </style>
 @endpush
 
@@ -219,31 +245,31 @@
                             <div class="detail-list">
 
                                 <div class="row">
-                                    <div class="col-6 detail-item py-1">
+                                    <div class="col-md-6 detail-item py-1">
                                         <div class="detail-label">Membership ID</div>
                                         <div class="detail-value fw-medium">{{ $organization->payment_gateway_merchant_id }}</div>
                                     </div>
 
-                                    <div class="col-6 detail-item pb-1">
+                                    <div class="col-md-6 detail-item pb-1">
                                         <div class="detail-label">Registration Date</div>
-                                        <div class="detail-value fw-medium">{{ $organization->created_at }}</div>
+                                        <div class="detail-value fw-medium">{{ isset($organization->created_at) ? \Carbon\Carbon::parse($organization->created_at)->format('M d, Y') : 'N/A' }}</div>
                                     </div>
-                                </div>
 
-                                <div class="detail-item py-1">
-                                    <div class="detail-label">Contact Email</div>
-                                    <div class="detail-value fw-medium d-flex align-items-center">
-                                        <i class="fas fa-envelope me-2 text-primary"></i>
-                                        <a href="" class="text-decoration-none">{{ $organization->email }}</a>
+                                    <div class="col-12 col-md-6 col-lg-12 detail-item py-1">
+                                        <div class="detail-label">Contact Email</div>
+                                        <div class="detail-value fw-medium d-flex align-items-center">
+                                            <i class="fas fa-envelope me-2 text-primary"></i>
+                                            <a href="" class="text-decoration-none">{{ $organization->email }}</a>
+                                        </div>
                                     </div>
-                                </div>
 
-                                <div class="detail-item py-1">
+                                    <div class="col-12 col-md-6 col-lg-12 detail-item py-1">
                                     <div class="detail-label">Phone Number</div>
                                     <div class="detail-value fw-medium d-flex align-items-center">
                                         <i class="fas fa-phone me-2 text-primary"></i>
                                         <a href="" class="text-decoration-none">{{ $organization->phone }}</a>
                                     </div>
+                                </div>
                                 </div>
 
                                 <div class="detail-item py-1 pb-0">
@@ -320,8 +346,13 @@
                                                 <i class="fas fa-check-circle me-1"></i> Active
                                             </span>
                                         </div>
-                                        <div class="text-primary fw-bold" style="font-size: 12px;">{{ isset($subscription['price'], $subscription['currency']) ? $subscription['price'] . ' ' . $subscription['currency'] : '0.00 PKR' }}
-                                            <small> / {{ $subscription['billing_cycle'] ?? 'N/A' }} Month</small></div>
+                                        <div class="text-primary fw-bold" style="font-size: 12px;">
+                                            {{ isset($subscription['price'], $subscription['currency'], $subscription['billing_cycle']) && $subscription['billing_cycle'] > 0
+                                                ? number_format($subscription['price'] / $subscription['billing_cycle'], 2) . ' ' . $subscription['currency']
+                                                : '0.00 PKR' }}
+                                            <small>/ Month</small>
+                                        </div>
+
                                     </div>
 
                                     <table class="table table-borderless" style="background-color: var(--sidenavbar-body-color);">
@@ -353,11 +384,14 @@
                                     <div class="mt-3 pt-3 border-top">
                                         <div class="d-flex justify-content-between mb-1">
                                             <span>Billing Cycle:</span>
-                                            <span class="fw-medium">{{ $subscription['billing_cycle'] ?? 'N/A' }}<small> Month</small></span>
+                                            <span class="fw-medium">{{ $subscription['billing_cycle'] ?? 'N/A' }}<small> Months</small></span>
                                         </div>
                                         <div class="d-flex justify-content-between mb-1">
                                             <span>Next Billing:</span>
-                                            <span class="fw-medium">{{ $subscription['ends_at'] ?? 'N/A' }}</span>
+                                            <span class="fw-medium">
+                                                {{ isset($subscription['ends_at']) ? \Carbon\Carbon::parse($subscription['ends_at'])->format('M d, Y') : 'N/A' }}
+                                            </span>
+
                                         </div>
                                         <div class="d-flex justify-content-between fw-bold">
                                             <span>Total:</span>
@@ -879,27 +913,29 @@
 
                 return `
                 <div class="col-md-6 mb-3">
-                    <div class="payment-card p-3" style="background: ${style.background}; border-radius: 10px; color: white; box-shadow: 0 4px 8px rgba(0,0,0,0.1); position: relative; overflow: hidden;">
+                    <div class="payment-card w-100 p-3" style="background: ${style.background}; border-radius: 10px; color: white; box-shadow: 0 4px 8px rgba(0,0,0,0.1); position: relative; overflow: hidden;">
                         <div style="position: absolute; top: -20px; right: -20px; width: 80px; height: 80px; background: rgba(255,255,255,0.1); border-radius: 50%;"></div>
 
                         <div class="d-flex justify-content-between align-items-center mb-1">
                             ${isFontAwesome
-                    ? `<i class="fab ${style.icon}" style="font-size: 40px; color: white;"></i>`
-                    : `<i class='bx ${style.icon}' style="font-size: 40px; color: white;"></i>`
-                }
+                            ? `<i class="fab ${style.icon}" style="font-size: 40px; color: white;"></i>`
+                            : `<i class='bx ${style.icon}' style="font-size: 40px; color: white;"></i>`
+                        }
 
-                            ${card.is_default
-                    ? `<span class="badge" style="background: ${style.accent}; color: ${style.textColor}; font-weight: bold;">Primary</span>`
-                    : `<div class="dropdown">
+                                    ${card.is_default
+                            ? `<span class="badge" style="background: ${style.accent}; color: ${style.textColor}; font-weight: bold;">Primary</span>`
+                                : `<div class="dropdown">
                                         <button class="btn btn-sm p-0" style="background: transparent; color: white; border: none;" type="button" id="${dropdownId}" data-bs-toggle="dropdown" aria-expanded="false">
                                             <i class="fas fa-ellipsis-h"></i>
                                         </button>
-                                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="${dropdownId}">
-                                            <li><a class="dropdown-item set-primary-btn" href="#" data-card-id="${card.id}">Set as primary</a></li>
-                                            <li><a class="dropdown-item delete-card-btn" href="#" data-card-id="${card.id}">Delete card</a></li>
+                                        <ul class="dropdown-menu dropdown-menu-end" style="background-color: var(--body-background-color);" aria-labelledby="${dropdownId}">
+                                            <li style="background-color: var(--body-background-color);"><a class="dropdown-item set-primary-btn" href="#" data-card-id="${card.id}"
+                                                style="background-color: var(--body-background-color);" onmouseover="this.style.backgroundColor='var(--body-background-color)'" onmouseout="this.style.backgroundColor='var(--body-background-color)'">
+                                                Set as primary</a>
+                                            </li>
                                         </ul>
                                     </div>`
-                }
+                            }
                         </div>
 
                         <div class="mb-1" style="position: relative; z-index: 2;">
@@ -915,6 +951,15 @@
                             <div class="col-6">
                                 <span class="text-white-50" style="font-size: 0.8rem;">CVV</span>
                                 <h6 class="mb-0">•••</h6>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center mt-1" style="position: relative; z-index: 2;">
+                            <span class="text-white fw-medium">${card.cardholder_name ?? ''}</span>
+
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-sm delete-card-btn"  data-card-id="${card.id}" style="background: rgba(255,255,255,0.2); color: white; border: none;">
+                                    <i class="fas fa-trash text-white"></i>
+                                </button>
                             </div>
                         </div>
                     </div>
