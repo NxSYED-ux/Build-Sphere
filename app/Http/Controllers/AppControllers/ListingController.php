@@ -129,8 +129,7 @@ class ListingController extends Controller
                     'level.building:id,name,address_id',
                     'level.building.address:id,location,city,province,country',
                     'pictures:unit_id,file_path',
-                    'organization:id,name,phone,email,is_online_payment_enabled',
-                    'organization.pictures:organization_id,file_path'
+                    'organization:id,name,logo,phone,email,is_online_payment_enabled',
                 ])
                 ->first();
 
@@ -155,10 +154,7 @@ class ListingController extends Controller
             }
 
             $organization = Organization::where('id', $id)
-                ->select('id', 'name')
-                ->with(['pictures' => function ($query) {
-                    $query->select('organization_id', 'file_path');
-                }])
+                ->select('id', 'name', 'logo')
                 ->first();
 
             if (!$organization) {

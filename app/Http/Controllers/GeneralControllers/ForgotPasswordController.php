@@ -50,7 +50,7 @@ class ForgotPasswordController extends Controller
         } catch (\Exception $e) {
             return $this->handleResponse($request, 500, 'error', 'Failed to send email: ' . $e->getMessage());
         }
-        return $this->handleResponse($request, 200,'success', 'A password reset link has been sent to your email.', 'auth.login');
+        return $this->handleResponse($request, 200,'success', 'A password reset link has been sent to your email.', 'login' , true);
     }
 
     public function showResetForm($token)

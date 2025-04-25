@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\Address;
 use App\Models\DropdownType;
 use App\Models\Organization;
-use App\Models\OrganizationPicture;
 use App\Models\Otp;
 use App\Models\User;
 use App\Notifications\OTP_Email;
@@ -105,26 +104,26 @@ class SignUpController extends Controller
             'name' => ['bail', 'required', 'string', 'max:255'],
             'email' => ['bail', 'required', 'string', 'email', 'max:255', 'unique:users,email'],
             'password' => ['bail', 'required', 'string', 'min:8'],
-            'phone_no' => ['bail', 'nullable', 'string', 'max:20'],
-            'cnic' => ['bail', 'nullable', 'max:18', 'unique:users,cnic'],
+            'phone_no' => ['bail', 'required', 'string', 'max:20'],
+            'cnic' => ['bail', 'required', 'max:18', 'unique:users,cnic'],
             'picture' => ['bail', 'nullable', 'file', 'mimes:png,jpg,jpeg', 'max:5120'],
-            'gender' => ['bail', 'nullable', 'in:Male,Female,Other'],
-            'date_of_birth' => ['bail', 'nullable', 'date'],
-            'country' => ['bail', 'nullable', 'string', 'max:50'],
-            'province' => ['bail', 'nullable', 'string', 'max:50'],
-            'city' => ['bail', 'nullable', 'string', 'max:50'],
-            'location' => ['bail', 'nullable', 'string', 'max:255'],
-            'postal_code' => ['bail', 'nullable', 'string', 'max:50'],
+            'gender' => ['bail', 'required', 'in:Male,Female,Other'],
+            'date_of_birth' => ['bail', 'required', 'date'],
+            'country' => ['bail', 'required', 'string', 'max:50'],
+            'province' => ['bail', 'required', 'string', 'max:50'],
+            'city' => ['bail', 'required', 'string', 'max:50'],
+            'location' => ['bail', 'required', 'string', 'max:255'],
+            'postal_code' => ['bail', 'required', 'string', 'max:50'],
 
             'org_name' => ['bail', 'required', 'string', 'max:255', 'unique:organizations,name'],
-            'org_email' => 'required|string|email|max:255|unique:organizations,email',
-            'org_phone' => 'required|string|max:255|unique:organizations,phone',
-            'org_picture' => ['bail', 'nullable', 'file', 'mimes:png,jpg,jpeg', 'max:5120'],
-            'org_country' => ['bail', 'nullable', 'string', 'max:50'],
-            'org_province' => ['bail', 'nullable', 'string', 'max:50'],
-            'org_city' => ['bail', 'nullable', 'string', 'max:50'],
-            'org_location' => ['bail', 'nullable', 'string', 'max:255'],
-            'org_postal_code' => ['bail', 'nullable', 'string', 'max:50'],
+            'org_email' => ['bail', 'required', 'string', 'email', 'max:255', 'unique:organizations,email'],
+            'org_phone' => ['bail', 'required', 'string', 'max:255', 'unique:organizations,phone'],
+            'org_picture' => ['bail', 'required', 'file', 'mimes:png,jpg,jpeg', 'max:5120'],
+            'org_country' => ['bail', 'required', 'string', 'max:50'],
+            'org_province' => ['bail', 'required', 'string', 'max:50'],
+            'org_city' => ['bail', 'required', 'string', 'max:50'],
+            'org_location' => ['bail', 'required', 'string', 'max:255'],
+            'org_postal_code' => ['bail', 'required', 'string', 'max:50'],
         ]);
 
         DB::beginTransaction();
@@ -145,7 +144,7 @@ class SignUpController extends Controller
 
             $organizationImage = null;
             if($request->hasFile('org_picture')){
-                $organizationImage = $this->handleFileUpload($request, 'org_picture','organizations');
+                $organizationImage = $this->handleFileUpload($request, 'org_picture','organizations', 'logo');
             }
 
             $address = Address::create([
@@ -196,17 +195,12 @@ class SignUpController extends Controller
                 'name' => $request->org_name,
                 'email' => $request->org_email,
                 'phone' => $request->org_phone,
+                'logo' => $organizationImage ? $organizationImage['path'] : null,
                 'owner_id' => $user->id,
                 'address_id' => $org_address->id,
                 'status' => 'Disable',
                 'created_by' => $user->id,
                 'updated_by' => $user->id,
-            ]);
-
-            OrganizationPicture::create([
-                'organization_id' => $organization->id,
-                'file_path' => $organizationImage ? $organizationImage['path'] : null,
-                'file_name' => $organizationImage ? $organizationImage['name'] : null,
             ]);
 
             DB::commit();
@@ -227,7 +221,7 @@ class SignUpController extends Controller
         }
     }
 
-    private function handleFileUpload(Request $request, string $source, string $folder): ?array
+    private function handleFileUpload(Request $request, string $source, string $folder, string $insideFolder = 'images'): ?array
     {
         if (!$request->hasFile($source) || !$folder) {
             return null;
@@ -235,9 +229,9 @@ class SignUpController extends Controller
 
         $file = $request->file($source);
         $fileName = time() . '_' . $file->getClientOriginalName();
-        $filePath = 'uploads/' . $folder . '/images/' . $fileName;
+        $filePath = 'uploads/' . $folder . '/' . $insideFolder . '/' . $fileName;
 
-        $file->move(public_path('uploads/' . $folder . '/images/'), $fileName);
+        $file->move(public_path('uploads/' . $folder . '/' . $insideFolder . '/'), $fileName);
 
         return [
             'path' => $filePath,

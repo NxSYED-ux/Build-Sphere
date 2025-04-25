@@ -54,11 +54,11 @@ class OrganizationController extends Controller
             'email' => 'required|string|email|max:255|unique:organizations,email',
             'phone' => 'required|string|max:255|unique:organizations,phone',
             'owner_id' => 'required|integer|unique:organizations,owner_id',
-            'location' => 'nullable|string|max:255',
-            'country' => 'nullable|string|max:50',
-            'province' => 'nullable|string|max:50',
-            'city' => 'nullable|string|max:50',
-            'postal_code' => 'nullable|string|max:50',
+            'location' => 'required|string|max:255',
+            'country' => 'required|string|max:50',
+            'province' => 'required|string|max:50',
+            'city' => 'required|string|max:50',
+            'postal_code' => 'required|string|max:50',
             'is_online_payment_enabled' => 'required|in:0,1',
             'merchant_id' => 'nullable|required_if:is_online_payment_enabled,1|string|max:50',
             'plan_id' => 'required|exists:plans,id',
@@ -283,11 +283,11 @@ class OrganizationController extends Controller
             'email' => 'required|string|email|max:255|unique:organizations,email,' . $id . ',id',
             'phone' => 'required|string|max:255|unique:organizations,phone,' . $id . ',id',
             'owner_id' => 'required|integer|unique:organizations,owner_id,' . $id . ',id',
-            'location' => 'nullable|string|max:255',
-            'country' => 'nullable|string|max:50',
-            'province' => 'nullable|string|max:50',
-            'city' => 'nullable|string|max:50',
-            'postal_code' => 'nullable|string|max:50',
+            'location' => 'required|string|max:255',
+            'country' => 'required|string|max:50',
+            'province' => 'required|string|max:50',
+            'city' => 'required|string|max:50',
+            'postal_code' => 'required|string|max:50',
             'is_online_payment_enabled' => 'required|in:0,1',
             'merchant_id' => 'nullable|required_if:is_online_payment_enabled,1|string|max:50',
             'organization_pictures.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
@@ -455,7 +455,6 @@ class OrganizationController extends Controller
     private function updateLogo(Request $request, string $id)
     {
         $request->validate([
-            'id' => 'required',
             'logo' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 

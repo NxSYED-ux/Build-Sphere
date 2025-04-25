@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 
 abstract class Controller
 {
-    protected function handleResponse(Request $request, $statusCode, $heading, $data, $redirectTo = null)
+    protected function handleResponse(Request $request, $statusCode, $heading, $data, $redirectTo = null, $route = false)
     {
         if ($request->wantsJson()) {
             return response()->json([
@@ -16,6 +16,9 @@ abstract class Controller
             ], $statusCode);
         }
 
+        if ($redirectTo && $route) {
+            return redirect()->route($redirectTo)->with($heading, $data);
+        }
         if ($redirectTo) {
             return view($redirectTo, [$heading => $data]);
         }
