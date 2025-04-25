@@ -45,6 +45,10 @@ class AuthController extends Controller
                 return $this->handleResponse($request, 500, 'error', 'Your account is inactive. Please contact support.');
             }
 
+            if($user->is_verified === 0){
+                $user->update(['is_verified' => 1]);
+            }
+
             $permissions = $this->listOfPermissions($user);
             $route = null;
 
