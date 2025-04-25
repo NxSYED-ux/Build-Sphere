@@ -1,7 +1,8 @@
 @props([
     'profileRoute' => '#',
     'settingsRoute' => '#',
-    'logoutRoute' => '#'
+    'logoutRoute' => '#',
+    'orgProfileRoute' => '',
 ])
 
 <li class="nav-item dropdown" >
@@ -22,6 +23,13 @@
                 <i class="bx bxs-user me-2"></i> Profile
             </a>
         </li>
+        @if($orgProfileRoute)
+            <li>
+                <a class="dropdown-item d-flex align-items-center" href="{{ $orgProfileRoute }}">
+                    <i class="bx bxs-user-account me-2"></i> Org Profile
+                </a>
+            </li>
+        @endif
         <li>
             <a class="dropdown-item d-flex align-items-center" href="{{ $settingsRoute }}">
                 <i class="bx bxs-cog me-2"></i> Settings

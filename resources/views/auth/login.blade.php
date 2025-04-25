@@ -397,13 +397,13 @@
 
                 <style>
                     .theme-swal-popup {
-                        border: 1px solid var(--swal-border-color);
+                        border: 1px solid #ddd;
                         box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
                     }
                     .theme-swal-button {
-                        background-color: var(--swal-button-bg) !important;
-                        color: var(--swal-button-text) !important;
-                        border: 1px solid var(--swal-button-border) !important;
+                        background-color: #007bff !important;
+                        color: #ffff !important;
+                        border: 1px solid #ffff !important;
                     }
                     .theme-swal-button:hover {
                         opacity: 0.9;
@@ -413,7 +413,7 @@
                         outline: none !important;
                     }
                     .swal2-timer-progress-bar {
-                        background-color: var(--swal-timer-progress-bar-color) !important;
+                        background-color: grey !important;
                     }
                 </style>
 
@@ -429,12 +429,12 @@
                             title = 'Success!';
                         text = '{{ session('success') }}';
                         icon = 'success';
-                        iconColor = getComputedStyle(document.documentElement).getPropertyValue('--swal-icon-success-color').trim();
+                        iconColor = '#28a745';
                         @elseif (session('error'))
                             title = 'Error!';
                         text = '{{ session('error') }}';
                         icon = 'error';
-                        iconColor = getComputedStyle(document.documentElement).getPropertyValue('--swal-icon-error-color').trim();
+                        iconColor = '#ff5b61';
                         @endif
 
                             @if ($errors->any())
@@ -445,7 +445,7 @@
                         @endforeach
                             text += '</ul>';
                         icon = 'error';
-                        iconColor = getComputedStyle(document.documentElement).getPropertyValue('--swal-icon-error-color').trim();
+                        iconColor = '#ff5b61';
                         @endif
 
                         // Show SweetAlert
@@ -456,8 +456,8 @@
                             confirmButtonText: 'OK',
                             timer: 3000,
                             timerProgressBar: true,
-                            background: getComputedStyle(document.documentElement).getPropertyValue('--swal-bg-color').trim(),
-                            color: getComputedStyle(document.documentElement).getPropertyValue('--swal-text-color').trim(),
+                            background: '#ffffff',
+                            color: '#000000',
                             iconColor: iconColor,
                             customClass: {
                                 popup: 'theme-swal-popup',
