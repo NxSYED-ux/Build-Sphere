@@ -164,19 +164,39 @@
                 <div class="col-lg-4 mb-4">
                     <div class="profile-card p-4 text-center shadow border-0">
 
-                        <div id="unitCarousel{{ $organization->id }}" class="carousel slide" data-bs-ride="carousel">
-                            <div class="carousel-inner">
-                                @forelse($organization->pictures ?? [] as $key => $picture)
-                                    <div class="carousel-item {{ $key == 0 ? 'active' : '' }}">
-                                        <img src="{{ asset($picture->file_path) }}" class="d-block" alt="Unit Picture" style="border-radius: 5px; width:100%; height:200px;">
+                        <div class="position-relative"> <!-- This wrapper is needed for absolute positioning -->
+                            <div id="unitCarousel{{ $organization->id }}" class="carousel slide" data-bs-ride="carousel">
+                                <div class="carousel-inner">
+                                    @forelse($organization->pictures ?? [] as $key => $picture)
+                                        <div class="carousel-item {{ $key == 0 ? 'active' : '' }}">
+                                            <img src="{{ asset($picture->file_path) }}" class="d-block" alt="Unit Picture" style="border-radius: 5px; width:100%; height:200px;">
+                                        </div>
+                                    @empty
+                                        <img src="{{ asset('img/placeholder-img.jfif') }}" class="d-block" alt="Unit Picture" style="border-radius: 5px; width:90%; height:200px;">
+                                    @endforelse
+                                </div>
+                            </div>
+
+                            <!-- Circular logo image positioned at bottom left with camera icon -->
+                            <div class="position-absolute" style="bottom: 10px; left: 10px;">
+                                <div class="position-relative" style="width: 80px; height: 80px;">
+                                    <!-- Logo Image -->
+                                    <img src="{{ asset($organization->logo ?? 'img/default-logo.png') }}"
+                                         alt="Organization Logo"
+                                         class="rounded-circle border border-3 border-white w-100 h-100"
+                                         style="object-fit: cover;">
+
+                                    <!-- Camera Icon Overlay -->
+                                    <div class="position-absolute bottom-0 end-0 bg-primary rounded-circle d-flex justify-content-center align-items-center"
+                                         style="width: 24px; height: 24px; cursor: pointer;"
+                                         data-bs-toggle="modal" data-bs-target="#changeLogoModal">
+                                        <i class="fas fa-camera text-white" style="font-size: 12px;"></i>
                                     </div>
-                                @empty
-                                    <img src="{{ asset('img/placeholder-img.jfif') }}" class="d-block" alt="Unit Picture" style="border-radius: 5px; width:90%; height:200px;">
-                                @endforelse
+                                </div>
                             </div>
                         </div>
 
-                        <h3 class="mb-1 fw-bold">{{ $organization->name }}</h3>
+                        <h3 class="mb-1 fw-bold mt-2">{{ $organization->name }}</h3>
                         <p class="small mb-3">Heights Management System</p>
 
                         <div class="d-flex justify-content-center gap-2 mb-4 flex-wrap">
@@ -296,9 +316,12 @@
                                     <div class="d-flex justify-content-between align-items-start mb-3">
                                         <div class="d-flex justify-content-between align-items-center">
                                             <h5 class="mb-1">{{ $subscription['name'] ?? 'N/A' }}</h5>
-                                            <span class="badge bg-success mx-3">Active</span>
+                                            <span class="badge bg-success bg-opacity-10 text-success py-1 px-2 mx-3 rounded-pill">
+                                                <i class="fas fa-check-circle me-1"></i> Active
+                                            </span>
                                         </div>
-                                        <div class="text-primary fw-bold">{{ $subscription['billing_cycle'] ?? 'N/A' }}<small>/Month</small></div>
+                                        <div class="text-primary fw-bold" style="font-size: 12px;">{{ isset($subscription['price'], $subscription['currency']) ? $subscription['price'] . ' ' . $subscription['currency'] : '0.00 PKR' }}
+                                            <small> / {{ $subscription['billing_cycle'] ?? 'N/A' }} Month</small></div>
                                     </div>
 
                                     <table class="table table-borderless" style="background-color: var(--sidenavbar-body-color);">
@@ -330,7 +353,7 @@
                                     <div class="mt-3 pt-3 border-top">
                                         <div class="d-flex justify-content-between mb-1">
                                             <span>Billing Cycle:</span>
-                                            <span class="fw-medium">{{ $subscription['billing_cycle'] ?? 'N/A' }}<small>/Month</small></span>
+                                            <span class="fw-medium">{{ $subscription['billing_cycle'] ?? 'N/A' }}<small> Month</small></span>
                                         </div>
                                         <div class="d-flex justify-content-between mb-1">
                                             <span>Next Billing:</span>
