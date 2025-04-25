@@ -54,6 +54,7 @@
                 :profileRoute="route('owner.profile')"
                 :settingsRoute="'#'"
                 :logoutRoute="route('logout')"
+                :orgProfileRoute="route('owner.profile.organization')"
             />
 
             <!-- Notification Menu -->

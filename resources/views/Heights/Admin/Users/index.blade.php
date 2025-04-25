@@ -197,7 +197,7 @@
                                                 <tr>
                                                     <td>{{ $user->id }}</td>
                                                     <td>
-                                                        <img src="{{ $user->picture ? asset($user->picture) : asset('uploads/users/images/Placeholder.jpg') }}" alt="User Picture" class="rounded-circle" width="50" height="50">
+                                                        <img src="{{ $user->picture ? asset($user->picture) : asset('img/placeholder-profile.png') }}" alt="User Picture" class="rounded-circle" width="50" height="50">
                                                     </td>
                                                     <td>{{ $user->name }}</td>
                                                     <td>{{ $user->email }}</td>

@@ -44,13 +44,6 @@
                 </div>
             </li>
 
-            <li class="mb-1">
-                <div id="link-a">
-                    <a href="{{ route('owner.profile.organization') }}" class="link-dark collapsed {{ in_array('Organization_Profile', $openSections) ? 'Link-background-color' : '' }} px-1" id="OrganizationProfilebtn" >
-                        <i class="bx bxs-dashboard icons"></i> Org Profile </a>
-                </div>
-            </li>
-
             <!-- Buildings -->
             <li class="mb-1 hidden" id="OwnerBuildingss">
                 <div id="link-a">

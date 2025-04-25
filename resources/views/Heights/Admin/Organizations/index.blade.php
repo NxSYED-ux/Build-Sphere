@@ -193,6 +193,14 @@
             background-color: #ef4444;
         }
 
+        .logo-badge {
+            position: absolute;
+            color: #ffff !important;
+            top: 5px;
+            left: 5px;
+            font-size: 10px;
+        }
+
         /* Selected Plan Details */
         .selected-plan-details {
             background-color: var(--body-card-bg);
@@ -355,7 +363,7 @@
                                                             <tr>
                                                                 <td>{{ $organization->id }}</td>
                                                                 <td>
-                                                                    <img src="{{ asset(optional($organization->pictures->first())->file_path ?? 'img/organization_placeholder.png') }}" alt="Organization Picture" class="rounded-circle" width="50" height="50">
+                                                                    <img src="{{ $organization->logo ? asset($organization->logo) : asset('img/organization_placeholder.png') }}" alt="Organization Picture" class="rounded-circle" width="50" height="50">
                                                                 </td>
                                                                 <td>{{ $organization->name }}</td>
                                                                 <td>{{ $organization->owner->name }}</td>
@@ -516,9 +524,10 @@
                                                                 <div class="row">
                                                                     <div class="col-md-6 mb-3">
                                                                         <label for="country" class="form-label">Country</label>
+                                                                        <span class="text-danger">*</span>
                                                                         <select class="form-select @error('country') is-invalid @enderror"
                                                                                 id="country"
-                                                                                name="country">
+                                                                                name="country" required>
                                                                             <option value="" selected>Select Country</option>
                                                                         </select>
                                                                         @error('country')
@@ -528,9 +537,10 @@
 
                                                                     <div class="col-md-6 mb-3">
                                                                         <label for="province" class="form-label">Province/State</label>
+                                                                        <span class="text-danger">*</span>
                                                                         <select class="form-select @error('province') is-invalid @enderror"
                                                                                 id="province"
-                                                                                name="province">
+                                                                                name="province" required>
                                                                             <option value="" selected>Select Province</option>
                                                                         </select>
                                                                         @error('province')
@@ -540,9 +550,10 @@
 
                                                                     <div class="col-md-6 mb-3">
                                                                         <label for="city" class="form-label">City</label>
+                                                                        <span class="text-danger">*</span>
                                                                         <select class="form-select @error('city') is-invalid @enderror"
                                                                                 id="city"
-                                                                                name="city">
+                                                                                name="city" required>
                                                                             <option value="" selected>Select City</option>
                                                                         </select>
                                                                         @error('city')
@@ -551,33 +562,42 @@
                                                                     </div>
 
                                                                     <div class="col-md-6 mb-3">
+                                                                        <label for="postal_code" class="form-label">Postal Code</label>
+                                                                        <span class="text-danger">*</span>
+                                                                        <input type="text" name="postal_code" id="postal_code"
+                                                                               class="form-control @error('postal_code') is-invalid @enderror"
+                                                                               value="{{ old('postal_code') }}"
+                                                                               maxlength="20"
+                                                                               placeholder="Enter postal code" required>
+                                                                        @error('postal_code')
+                                                                        <div class="invalid-feedback">{{ $message }}</div>
+                                                                        @enderror
+                                                                    </div>
+
+                                                                    <div class="col-md-12 mb-3">
                                                                         <label for="location" class="form-label">Street Address</label>
+                                                                        <span class="text-danger">*</span>
                                                                         <input type="text" name="location" id="location"
                                                                                class="form-control @error('location') is-invalid @enderror"
                                                                                value="{{ old('location') }}"
                                                                                maxlength="100"
-                                                                               placeholder="Enter street address">
+                                                                               placeholder="Enter street address" required>
                                                                         @error('location')
                                                                         <div class="invalid-feedback">{{ $message }}</div>
                                                                         @enderror
                                                                     </div>
 
-                                                                    <div class="col-md-6 mb-3">
-                                                                        <label for="postal_code" class="form-label">Postal Code</label>
-                                                                        <input type="text" name="postal_code" id="postal_code"
-                                                                               class="form-control @error('postal_code') is-invalid @enderror"
-                                                                               value="{{ old('postal_code') }}"
-                                                                               maxlength="20"
-                                                                               placeholder="Enter postal code">
-                                                                        @error('postal_code')
-                                                                        <div class="invalid-feedback">{{ $message }}</div>
-                                                                        @enderror
-                                                                    </div>
+
                                                                 </div>
                                                             </div>
 
                                                             <div class="form-section shadow-sm">
-                                                                <h5><i class="fas fa-image me-2"></i> Organization Logo</h5>
+                                                                <h5><i class="fas fa-image me-2"></i> Organization Pictures</h5>
+                                                                <div class="alert alert-info mb-3">
+                                                                    <strong><i class="fas fa-info-circle me-2"></i>Important:</strong>
+                                                                    The first image you upload will be used as your organization's logo. Choose wisely!
+                                                                    Maximum 5 images allowed.
+                                                                </div>
                                                                 <div class="image-upload-container" id="image-upload-container">
                                                                     <div class="d-flex flex-column align-items-center">
                                                                         <i class="fas fa-cloud-upload-alt fa-3x text-primary mb-3"></i>
@@ -852,88 +872,6 @@
             });
         });
 
-        // Image Upload Handling
-        const imageInput = document.getElementById('image-input');
-        const imagePreview = document.getElementById('image-preview');
-        const uploadContainer = document.getElementById('image-upload-container');
-
-        // Drag and Drop Events
-        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-            uploadContainer.addEventListener(eventName, preventDefaults, false);
-        });
-
-        function preventDefaults(e) {
-            e.preventDefault();
-            e.stopPropagation();
-        }
-
-        ['dragenter', 'dragover'].forEach(eventName => {
-            uploadContainer.addEventListener(eventName, highlight, false);
-        });
-
-        ['dragleave', 'drop'].forEach(eventName => {
-            uploadContainer.addEventListener(eventName, unhighlight, false);
-        });
-
-        function highlight() {
-            uploadContainer.classList.add('drag-over');
-        }
-
-        function unhighlight() {
-            uploadContainer.classList.remove('drag-over');
-        }
-
-        // Handle dropped files
-        uploadContainer.addEventListener('drop', handleDrop, false);
-
-        function handleDrop(e) {
-            const dt = e.dataTransfer;
-            const files = dt.files;
-            imageInput.files = files;
-            handleFiles(files);
-        }
-
-        // Handle selected files
-        imageInput.addEventListener('change', () => {
-            handleFiles(imageInput.files);
-        });
-
-        function handleFiles(files) {
-            imagePreview.innerHTML = '';
-
-            if (files.length > 0) {
-                Array.from(files).forEach((file, index) => {
-                    if (!file.type.match('image.*')) return;
-
-                    const reader = new FileReader();
-                    reader.onload = (e) => {
-                        const imageItem = document.createElement('div');
-                        imageItem.classList.add('image-item');
-
-                        const img = document.createElement('img');
-                        img.src = e.target.result;
-
-                        const removeBtn = document.createElement('button');
-                        removeBtn.classList.add('remove-btn');
-                        removeBtn.innerHTML = '×';
-                        removeBtn.addEventListener('click', () => {
-                            imageItem.remove();
-                            if (imagePreview.children.length === 0) {
-                                imagePreview.innerHTML = '<p class="">No images selected</p>';
-                            }
-                        });
-
-                        imageItem.appendChild(img);
-                        imageItem.appendChild(removeBtn);
-                        imagePreview.appendChild(imageItem);
-                    };
-                    reader.readAsDataURL(file);
-                });
-            } else {
-                imagePreview.innerHTML = '<p class="text-muted">No images selected</p>';
-            }
-        }
-
         // Plan Selection Logic
         document.addEventListener("DOMContentLoaded", function () {
             const planCycleSelect = document.getElementById("billing-cycle");
@@ -1138,6 +1076,165 @@
                 }
             });
         });
+    </script>
+
+    <!-- Images -->
+    <script>
+        // Image Upload Handling
+        const imageInput = document.getElementById('image-input');
+        const imagePreview = document.getElementById('image-preview');
+        const uploadContainer = document.getElementById('image-upload-container');
+        const MAX_IMAGES = 5;
+
+        // This will store our actual selected files
+        let selectedFiles = [];
+
+        // Drag and Drop Events
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            uploadContainer.addEventListener(eventName, preventDefaults, false);
+        });
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            uploadContainer.addEventListener(eventName, highlight, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            uploadContainer.addEventListener(eventName, unhighlight, false);
+        });
+
+        function highlight() {
+            uploadContainer.classList.add('drag-over');
+        }
+
+        function unhighlight() {
+            uploadContainer.classList.remove('drag-over');
+        }
+
+        // Handle dropped files
+        uploadContainer.addEventListener('drop', handleDrop, false);
+
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            handleFileSelection(files);
+        }
+
+        // Handle selected files
+        imageInput.addEventListener('change', () => {
+            handleFileSelection(imageInput.files);
+        });
+
+        function handleFileSelection(files) {
+            if (!files || files.length === 0) return;
+
+            // Check total images won't exceed limit
+            const remainingSlots = MAX_IMAGES - selectedFiles.length;
+
+            if (remainingSlots <= 0) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Maximum Images Reached',
+                    text: `You've already uploaded the maximum of ${MAX_IMAGES} images. Remove some before adding more.`,
+                    confirmButtonColor: '#3085d6',
+                    confirmButtonText: 'OK'
+                });
+                return;
+            }
+
+            const filesArray = Array.from(files);
+            const filesToAdd = filesArray.slice(0, remainingSlots);
+
+            if (filesArray.length > remainingSlots) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Image Limit Exceeded',
+                    text: `You can upload a maximum of ${MAX_IMAGES} images. Only ${remainingSlots} image(s) will be added.`,
+                    confirmButtonColor: '#3085d6',
+                    confirmButtonText: 'OK'
+                });
+            }
+
+            // Add new files to our selectedFiles array
+            selectedFiles = [...selectedFiles, ...filesToAdd];
+            updateImagePreview();
+            updateFileInput();
+        }
+
+        function updateImagePreview() {
+            // Clear the preview
+            imagePreview.innerHTML = '';
+
+            if (selectedFiles.length === 0) {
+                // imagePreview.innerHTML = '<p class="text-muted">No images selected</p>';
+                return;
+            }
+
+            selectedFiles.forEach((file, index) => {
+                if (!file.type.match('image.*')) return;
+
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const imageItem = document.createElement('div');
+                    imageItem.classList.add('image-item');
+
+                    if (index === 0) {
+                        imageItem.classList.add('main-logo');
+                        const badge = document.createElement('div');
+                        badge.style.cssText = `
+                        position: absolute;
+                        top: 5px;
+                        left: 5px;
+                        z-index: 10;
+                        width: 60px;
+                        height: 20px;
+                    `;
+                        badge.innerHTML = `
+                        <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+                          <rect width="100%" height="100%" fill="#0d6efd" rx="3"/>
+                          <text x="50%" y="50%" fill="white" font-size="10"
+                                font-weight="bold" text-anchor="middle" dy=".3em">LOGO</text>
+                        </svg>`;
+                        imageItem.appendChild(badge);
+                    }
+
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+
+                    const removeBtn = document.createElement('button');
+                    removeBtn.classList.add('remove-btn');
+                    removeBtn.innerHTML = '×';
+                    removeBtn.addEventListener('click', () => {
+                        // Remove the file from our selectedFiles array
+                        selectedFiles.splice(index, 1);
+                        updateImagePreview();
+                        updateFileInput();
+                    });
+
+                    imageItem.appendChild(img);
+                    imageItem.appendChild(removeBtn);
+                    imagePreview.appendChild(imageItem);
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        function updateFileInput() {
+            // Create a new DataTransfer object to hold our files
+            const dataTransfer = new DataTransfer();
+
+            // Add all selected files to it
+            selectedFiles.forEach(file => {
+                dataTransfer.items.add(file);
+            });
+
+            // Update the file input with our DataTransfer object
+            imageInput.files = dataTransfer.files;
+        }
     </script>
 
 @endpush
