@@ -2,7 +2,6 @@
 
 use App\Http\Controllers\GeneralControllers\AuthController;
 use App\Http\Controllers\GeneralControllers\CardController;
-use App\Http\Controllers\GeneralControllers\ForgotPasswordController;
 use App\Http\Controllers\GeneralControllers\ProfileController;
 use App\Http\Controllers\WebControllers\AdminDashboardController;
 use App\Http\Controllers\WebControllers\BuildingController;
@@ -19,7 +18,6 @@ use App\Http\Controllers\WebControllers\PlanController;
 use App\Http\Controllers\WebControllers\RolePermissionController;
 use App\Http\Controllers\WebControllers\RoleController;
 use App\Http\Controllers\WebControllers\AssignUnitController;
-use App\Http\Controllers\WebControllers\SignUpController;
 use App\Http\Controllers\WebControllers\UsersController;
 use Illuminate\Support\Facades\Route;
 
@@ -49,31 +47,7 @@ Route::prefix('checkout')->group(function () {
 
 });
 
-Route::prefix('login')->group(function () {
-
-    Route::get('/', [AuthController::class, 'index'])->name('login');
-    Route::post('/', [AuthController::class, 'login'])->name('login');
-
-});
-
-Route::get('/signUp', [SignUpController::class, 'index'])->name('signUp');
-Route::post('/signUp', [SignUpController::class, 'register'])->name('signUp');
-Route::post('/send_signup_otp', [SignUpController::class, 'send_otp'])->name('send_signup_otp');
-
-Route::prefix('auth')->group(function () {
-
-    Route::post('/admin-login', [AuthController::class, 'login'])->name('admin-login');
-    Route::post('/owner-login', [AuthController::class, 'login'])->name('owner-login');
-    Route::get('/forget-password', [ForgotPasswordController::class, 'showForgetForm'])->name('password.request');
-    Route::post('/forget-password', [ForgotPasswordController::class, 'sendResetLink'])->name('password.email');
-    Route::get('/reset-password/{token}', [ForgotPasswordController::class, 'showResetForm'])->name('password.reset');
-    Route::post('/reset-password', [ForgotPasswordController::class, 'resetPassword'])->name('password.update');
-
-});
-
 Route::middleware(['auth.jwt'])->group(function () {
-
-    Route::get('/org', function () { return view('Heights.Owner.Profile.organization_profile'); });
 
     Route::post('/logout', [AuthController::class, 'logOut'])->name('logout');
     Route::delete('/buildings/{id}/remove-picture', [BuildingController::class, 'destroyImage'])->name('buildings.remove_picture');
@@ -213,6 +187,8 @@ Route::prefix('admin')->middleware(['auth.jwt'])->group(function () {
         Route::get('/{organization}/show', [OrganizationController::class, 'show'])->name('organizations.show');
         Route::get('/{organization}/edit', [OrganizationController::class, 'edit'])->name('organizations.edit');
         Route::put('/{organization}', [OrganizationController::class, 'adminUpdate'])->name('organizations.update');
+        Route::put('/logo/update', [OrganizationController::class, 'adminUpdateLogo'])->name('organizations.logo.update');
+
         Route::get('/organizations/{id}/buildings', [OrganizationController::class, 'getBuildingsAdmin'])->name('organizations.buildings');
 
     });
@@ -232,6 +208,15 @@ Route::prefix('owner')->middleware(['auth.jwt'])->group(function () {
         Route::get('/', [OwnerDashboardController::class, 'index'])->name('owner_manager_dashboard');
     });
 
+    Route::prefix('organization')->group(function () {
+
+        Route::get('/', [OrganizationController::class , 'organizationProfile'])->name('owner.profile.organization');
+        Route::get('/edit', [OrganizationController::class , 'ownerEdit'])->name('owner.organization.edit');
+        Route::put('/', [OrganizationController::class , 'ownerUpdate'])->name('owner.organization.update');
+        Route::put('/logo/update', [OrganizationController::class, 'ownerUpdateLogo'])->name('owner.organization.logo.update');
+
+    });
+
     Route::prefix('profile')->group(function () {
 
         Route::get('/', [ProfileController::class, 'ownerProfile'])->name('owner.profile');
@@ -239,14 +224,6 @@ Route::prefix('owner')->middleware(['auth.jwt'])->group(function () {
         Route::put('/picture', [ProfileController::class, 'uploadProfilePic'])->name('owner.profile.picture.update');
         Route::delete('/picture', [ProfileController::class, 'deleteProfilePic'])->name('owner.profile.picture.delete');
         Route::put('/password', [ProfileController::class, 'changePassword'])->name('owner.profile.password.update');
-
-        Route::prefix('organization')->group(function () {
-
-            Route::get('/', [OrganizationController::class , 'organizationProfile'])->name('owner.profile.organization');
-            Route::get('/edit', [OrganizationController::class , 'ownerEdit'])->name('owner.organization.edit');
-            Route::put('/', [OrganizationController::class , 'ownerUpdate'])->name('owner.organization.update');
-
-        });
 
     });
 

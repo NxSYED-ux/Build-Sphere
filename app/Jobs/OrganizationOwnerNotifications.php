@@ -49,7 +49,7 @@ class OrganizationOwnerNotifications implements ShouldQueue
     public function handle()
     {
         $organization = Organization::with('pictures')->find($this->organizationId);
-        $this->image = $organization->pictures->first()->file_path ?? 'uploads/Notification/Light-theme-Logo.svg';
+        $this->image = $organization->logo ?? 'uploads/Notification/Light-theme-Logo.svg';
 
         if ($organization?->owner_id && $organization->owner_id !== $this->initiatorId) {
             if ($owner = User::find($organization->owner_id)) {

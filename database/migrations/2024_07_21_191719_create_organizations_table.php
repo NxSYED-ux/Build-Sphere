@@ -13,6 +13,7 @@ return new class extends Migration
             $table->string('name',50)->unique();
             $table->string('email',255)->unique();
             $table->string('phone',20)->unique();
+            $table->string('logo',255)->nullable();
             $table->unsignedBigInteger('address_id')->unique();
             $table->enum('status', ['Enable', 'Disable', 'Block'])->default('Enable');
             $table->string('payment_gateway_name')->default('Stripe'); // Name of the payment gateway (e.g., Stripe, PayPal)

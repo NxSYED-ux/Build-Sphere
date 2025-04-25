@@ -17,6 +17,7 @@ class Organization extends Model
         'name',
         'email',
         'phone',
+        'logo',
         'owner_id',
         'address_id',
         'status',

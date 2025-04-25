@@ -28,7 +28,7 @@ class OrganizationController extends Controller
     {
         try {
             $activeTab = 'Tab1';
-            $organizations = Organization::with('address', 'pictures', 'owner')->paginate(10);
+            $organizations = Organization::with('address', 'owner')->paginate(10);
             $dropdownData = DropdownType::with(['values.childs.childs'])->where('type_name', 'Country')->get(); // Country -> Province -> City
             $owners = User::where('role_id', 2)
                 ->whereNotIn('id', Organization::pluck('owner_id'))
@@ -124,6 +124,18 @@ class OrganizationController extends Controller
 
         try {
 
+            $logo = null;
+            if ($request->hasFile('organization_pictures')) {
+                $firstImage = $request->file('organization_pictures')[0] ?? null;
+
+                if ($firstImage) {
+                    $imageName = time() . '_' . $firstImage->getClientOriginalName();
+                    $imagePath = 'uploads/organizations/logo/' . $imageName;
+                    $firstImage->move(public_path('uploads/organizations/logo'), $imageName);
+                    $logo = $imagePath;
+                }
+            }
+
             $address = Address::create([
                 'location' => $request->location,
                 'country' => $request->country,
@@ -136,15 +148,18 @@ class OrganizationController extends Controller
                 'name' => $request->name,
                 'email' => $request->email,
                 'phone' => $request->phone,
+                'logo' => $logo,
                 'owner_id' => $request->owner_id,
                 'address_id' => $address->id,
                 'payment_gateway_merchant_id' => $request->merchant_id,
                 'is_online_payment_enabled' => $request->is_online_payment_enabled,
             ]);
 
-            $firstImage = null;
             if ($request->hasFile('organization_pictures')) {
                 foreach ($request->file('organization_pictures') as $index => $image) {
+                    if ($index === 0) {
+                        continue;
+                    }
                     $imageName = time() . '_' . $image->getClientOriginalName();
                     $imagePath = 'uploads/organizations/images/' . $imageName;
                     $image->move(public_path('uploads/organizations/images'), $imageName);
@@ -154,10 +169,6 @@ class OrganizationController extends Controller
                         'file_path' => $imagePath,
                         'file_name' => $imageName,
                     ]);
-
-                    if ($index === 0) {
-                        $firstImage = $imagePath;
-                    }
                 }
             }
 
@@ -176,7 +187,7 @@ class OrganizationController extends Controller
 
             dispatch( new SendRoleNotification(
                 1,
-                $firstImage ?? 'uploads/Notification/Light-theme-Logo.svg',
+                $logo ?? 'uploads/Notification/Light-theme-Logo.svg',
                 "{$organization->name} Added Successfully by {$user->name}",
                 "{$organization->name} has been successfully added to our platform by {$user->name}. The organization is now active with the {$plan->name} plan, which includes all the amazing features and benefits.",
                 ['web' => "admin/organizations/{$organization->id}/show"],
@@ -249,10 +260,6 @@ class OrganizationController extends Controller
     // Update Functions
     public function adminUpdate(Request $request, String $id)
     {
-        $request->validate([
-            'owner_id' => 'required|integer|unique:organizations,owner_id,' . $id . ',id',
-        ]);
-
         return $this->update($request, $id, 'admin');
     }
 
@@ -309,7 +316,6 @@ class OrganizationController extends Controller
                 'name' => $request->name,
                 'email' => $request->email,
                 'phone' => $request->phone,
-                'owner_id' => $request->owner_id,
                 'payment_gateway_merchant_id' => $request->merchant_id,
                 'is_online_payment_enabled' => $request->is_online_payment_enabled,
             ]);
@@ -373,6 +379,112 @@ class OrganizationController extends Controller
             return response()->redirect()->back()->with('error', "Can't access this page, unless you are an organization owner.");
         }
         return $this->show($token['organization_id'], 'owner');
+    }
+
+
+    // Remove logo
+    public function adminRemoveLogo(Request $request)
+    {
+        $request->validate([
+            'id' => 'required',
+        ]);
+
+        return $this->removeLogo($request->id);
+    }
+
+    public function ownerRemoveLogo(Request $request)
+    {
+        $token = $request->attributes->get('token');
+
+        if (empty($token['organization_id']) || empty($token['role_name'])) {
+            return response()->redirect()->back()->with('error', "Can't access this page, unless you are an organization owner.");
+        }
+
+        return $this->removeLogo($token['organization_id']);
+    }
+
+    private function removeLogo(string $id)
+    {
+        try {
+            $organization = Organization::findOrFail($id);
+
+            $logoPath = $organization->logo;
+
+            if ($logoPath) {
+                $fullPath = public_path($logoPath);
+
+                if (File::exists($fullPath)) {
+                    File::delete($fullPath);
+                }
+
+                $organization->update([
+                    'logo' => null,
+                ]);
+            }
+
+            return response()->json(['success' => true, 'message' => 'Logo removed successfully.' ]);
+
+        } catch (\Exception $e) {
+            Log::error('Failed to remove logo for organization ID ' . $id . ': ' . $e->getMessage());
+            return response()->json([ 'success' => false, 'error' => 'Failed to remove logo. Please try again later.' ], 500);
+        }
+    }
+
+
+    // Update Logo
+    public function adminUpdateLogo(Request $request)
+    {
+        $request->validate([
+            'id' => 'required',
+        ]);
+
+        return $this->updateLogo($request, $request->id);
+    }
+
+    public function ownerUpdateLogo(Request $request)
+    {
+        $token = $request->attributes->get('token');
+
+        if (empty($token['organization_id']) || empty($token['role_name'])) {
+            return response()->redirect()->back()->with('error', "Can't access this page, unless you are an organization owner.");
+        }
+
+        return $this->updateLogo($request, $token['organization_id']);
+    }
+
+    private function updateLogo(Request $request, string $id)
+    {
+        $request->validate([
+            'id' => 'required',
+            'logo' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
+
+        try {
+            $organization = Organization::findOrFail($id);
+
+            $newImage = $request->file('logo');
+            $imageName = time() . '_' . $newImage->getClientOriginalName();
+            $imagePath = 'uploads/organizations/logo/' . $imageName;
+            $newImage->move(public_path('uploads/organizations/logo'), $imageName);
+
+            if ($organization->logo && File::exists(public_path($organization->logo))) {
+                File::delete(public_path($organization->logo));
+            }
+
+            $organization->update([
+                'logo' => $imagePath,
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Logo updated successfully.',
+                'logo' => $imagePath,
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Failed to update logo for organization ID ' . $id . ': ' . $e->getMessage());
+            return response()->json(['success' => false, 'error' => 'Failed to update logo. Please try again later.'], 500);
+        }
     }
 
 
