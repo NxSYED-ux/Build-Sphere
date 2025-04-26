@@ -64,7 +64,7 @@
 
                                             <input type="hidden" name="owner_id" value="{{ $organization->owner_id }}">
 
-                                            <div class="row mb-3">
+                                            <div class="row">
                                                 <div class="col-lg-4 col-md-6 col-sm-12">
                                                     <div class="form-group">
                                                         <label for="name">Name</label>

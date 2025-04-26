@@ -63,10 +63,7 @@
                                         <form action="{{ route('owner.organization.update', $organization->id) }}" method="POST" enctype="multipart/form-data">
                                             @method('PUT')
 
-                                            <input type="hidden" name="is_online_payment_enabled" value="{{ $organization->is_online_payment_enabled }}">
-                                            <input type="hidden" name="merchant_id" value="{{ $organization->payment_gateway_merchant_id }}">
-
-                                            <div class="row mb-3">
+                                            <div class="row">
                                                 <div class="col-lg-4 col-md-6 col-sm-12">
                                                     <div class="form-group">
                                                         <label for="name">Name</label>
@@ -104,6 +101,54 @@
                                                     </div>
                                                 </div>
 
+                                                <div class="col-lg-4 col-md-6 col-sm-12">
+                                                    <div class="form-group mb-3">
+                                                        <label for="stripe_merchant_id" class="form-label">
+                                                            Stripe Merchant ID <span class="text-danger" id="merchant-required-star" style="display: none;">*</span>
+                                                        </label>
+                                                        <div class="input-group">
+                                                            <span class="input-group-text" style="background-color: var(--sidenavbar-body-color);">
+                                                                <i class="fab fa-stripe text-primary"></i>
+                                                            </span>
+                                                            <input type="text"
+                                                                   name="merchant_id"
+                                                                   id="stripe_merchant_id"
+                                                                   class="form-control @error('merchant_id') is-invalid @enderror"
+                                                                   value="{{ old('merchant_id', $organization->merchant_id) }}"
+                                                                   placeholder="e.g. acct_1L9..."
+                                                                    {{ old('is_online_payments_enabled', $organization->merchant_id) ? 'required' : '' }}>
+                                                        </div>
+                                                        {{--                                                                        <small class="text-muted">Found in your Stripe Dashboard</small>--}}
+                                                        @error('merchant_id')
+                                                        <div class="invalid-feedback d-block">{{ $message }}</div>
+                                                        @enderror
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-lg-4 col-md-6 col-sm-12">
+                                                    <div class="form-group mb-3">
+                                                        <label class="form-label">
+                                                            Online Payments <span class="text-danger">*</span>
+                                                        </label>
+                                                        <div class="d-flex align-items-center mt-2">
+                                                            <label class="form-check-label me-3" for="enable_online_payments">
+                                                                Enable
+                                                            </label>
+                                                            <div class="form-check form-switch m-0">
+                                                                <input type="hidden" name="is_online_payment_enabled" value="0">
+                                                                <input class="form-check-input" type="checkbox" role="switch" id="enable_online_payments"
+                                                                       name="is_online_payment_enabled" value="{{ old('is_online_payment_enabled', $organization->is_online_payment_enabled, 1) }}" style="transform: scale(1.3);"
+                                                                        {{ old('is_online_payment_enabled', $is_online_payment_enabled ?? false) ? 'checked' : '' }}>
+                                                            </div>
+                                                        </div>
+                                                        @error('is_online_payment_enabled')
+                                                        <div class="invalid-feedback d-block">{{ $message }}</div>
+                                                        @enderror
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="row">
                                                 <!--  -->
                                                 <div class="col-lg-4 col-md-6 col-sm-12">
                                                     <div class="form-group mb-3">
@@ -297,6 +342,28 @@
             });
         }
 
+    </script>
+
+    <!-- Merchant id -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const toggle = document.getElementById('enable_online_payments');
+            const merchantInput = document.getElementById('stripe_merchant_id');
+            const merchantStar = document.getElementById('merchant-required-star');
+
+            function toggleMerchantRequirement() {
+                if (toggle.checked) {
+                    merchantInput.setAttribute('required', 'required');
+                    merchantStar.style.display = 'inline';
+                } else {
+                    merchantInput.removeAttribute('required');
+                    merchantStar.style.display = 'none';
+                }
+            }
+
+            toggle.addEventListener('change', toggleMerchantRequirement);
+            toggleMerchantRequirement(); // on page load
+        });
     </script>
 
     <!-- Organization Pictures script -->
