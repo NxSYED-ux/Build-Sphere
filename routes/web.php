@@ -292,7 +292,7 @@ Route::prefix('owner')->middleware(['auth.jwt'])->group(function () {
         Route::get('/{department}/edit', [DepartmentController::class , 'edit'])->name('owner.departments.edit');
         Route::put('/', [DepartmentController::class , 'update'])->name('owner.departments.update');
         Route::get('/{department}/show', [DepartmentController::class, 'show'])->name('owner.departments.show');
-        Route::delete('/delete', [DepartmentController::class, 'destroy'])->name('owner.departments.destroy');
+        Route::delete('/', [DepartmentController::class, 'destroy'])->name('owner.departments.destroy');
 
     });
 
