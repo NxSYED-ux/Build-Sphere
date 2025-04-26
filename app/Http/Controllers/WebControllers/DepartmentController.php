@@ -98,7 +98,9 @@ class DepartmentController extends Controller
             ->with('user')
             ->paginate(10);
 
-        return view('Heights.Owner.Departments.show', compact('department', 'staffMembers'));
+        $staffCount = $department->staffMembers()->count();
+
+        return view('Heights.Owner.Departments.show', compact('department', 'staffMembers', 'staffCount'));
     }
 
     public function edit(Request $request, Department $department)
