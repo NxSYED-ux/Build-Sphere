@@ -332,8 +332,8 @@
                                     <!-- Organization Tab -->
                                     <div class="tab-pane fade {{ $activeTab === 'Tab1' ? 'show active' : '' }}" id="dropdwon-types" role="tabpanel" aria-labelledby="dropdwon-types-tab">
                                         <div class="card shadow px-3 pb-3 pt-0 mb-5 mt-0 bg-body rounded" style="border: none;">
-                                            <div class="card-body" style="position: relative; overflow-x: auto;">
-                                                <div class="d-flex align-items-center position-absolute" style="top: 30px; left: 30px;">
+                                            <div class="card-body py-0" style="position: relative; overflow-x: auto;">
+                                                <div class="d-flex align-items-center position-absolute mt-0" style="top: 30px; left: 30px;">
                                                     <button class="btn btn-light" type="button" id="menu-icon" data-bs-toggle="dropdown" aria-expanded="false">
                                                         <x-icon name="export" type="icon" class="" size="20px" />
                                                     </button>
@@ -727,7 +727,7 @@
                 dom: "Bfrtip",
                 lengthChange: false,
                 language: {
-                    searchPlaceholder: "Search users..."
+                    searchPlaceholder: "Search organization..."
                 },
                 buttons: [
                     {

@@ -90,7 +90,10 @@
                                                     <td>{{ $department->description ?? 'N/A' }}</td>
                                                     <td class="w-170 text-center">
                                                         <div class="d-flex justify-content-center align-items-center gap-3">
-                                                            <a href="#" class="text-warning Owner-Department-Edit-Button " data-id="{{ $department->id }}" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit">
+                                                            <a href="{{ route('owner.departments.show', ['department' => $department->id]) }}" class="text-info" data-bs-toggle="tooltip" data-bs-placement="top" title="View">
+                                                                <x-icon name="view" type="icon" class="" size="20px" />
+                                                            </a>
+                                                            <a href="#" class="text-warning Owner-Department-Edit-Button" data-id="{{ $department->id }}" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit">
                                                                 <x-icon name="edit" type="icon" class="" size="20px" />
                                                             </a>
                                                         </div>
@@ -143,7 +146,7 @@
                             <div class="col-12">
                                 <div class="form-group mb-3">
                                     <label for="description">Description</label>
-                                    <input type="text" name="description" id="description" class="form-control @error('description') is-invalid @enderror" value="{{ old('description') }}" maxlength="50" placeholder="Description">
+                                    <textarea name="description" id="description" rows="3" class="form-control @error('description') is-invalid @enderror" maxlength="250" placeholder="Description">{{ old('description') }}</textarea>
                                     @error('description')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
@@ -151,6 +154,7 @@
                                     @enderror
                                 </div>
                             </div>
+
 
                         </div>
                     </div>
@@ -179,7 +183,7 @@
                     <input type="hidden" name="updated_at" id="edit_updated_at">
 
                     <div class="modal-body">
-                        <div class="row mb-4">
+                        <div class="row">
                             <div class="col-12">
                                 <div class="form-group mb-3">
                                     <label for="name">Name</label>
@@ -194,16 +198,17 @@
                             </div>
 
                             <div class="col-12">
-                                <div class="form-group mb-3">
-                                    <label for="description">Description</label>
-                                    <input type="text" name="edit_description" id="edit_department_description" class="form-control @error('edit_description') is-invalid @enderror" value="{{ old('edit_description') }}" maxlength="50" placeholder="Description">
+                                <div class="form-group mb-2">
+                                    <label for="edit_department_description">Description</label>
+                                    <textarea name="edit_description" id="edit_department_description" rows="3" class="form-control @error('edit_description') is-invalid @enderror" maxlength="250" placeholder="Description">{{ old('edit_description') }}</textarea>
                                     @error('edit_description')
                                     <span class="invalid-feedback" role="alert">
-                                    <strong>{{ $message }}</strong>
-                                </span>
+                                        <strong>{{ $message }}</strong>
+                                    </span>
                                     @enderror
                                 </div>
                             </div>
+
                         </div>
                     </div>
                     <div class="modal-footer">
