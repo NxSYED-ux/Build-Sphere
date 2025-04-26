@@ -248,7 +248,7 @@ class OrganizationController extends Controller
         $token = $request->attributes->get('token');
 
         if (empty($token['organization_id']) || empty($token['role_name'])) {
-            return response()->redirect()->back()->with('error', "Can't access this page, unless you are an organization owner.");
+            return redirect()->back()->with('error', "Can't access this page, unless you are an organization owner.");
         }
 
         return $this->edit($token['organization_id'], 'owner');
@@ -266,7 +266,7 @@ class OrganizationController extends Controller
         $token = $request->attributes->get('token');
 
         if (empty($token['organization_id']) || empty($token['role_name'])) {
-            return response()->redirect()->back()->with('error', "Can't access this page, unless you are an organization owner.");
+            return redirect()->back()->with('error', "Can't access this page, unless you are an organization owner.");
         }
 
         return $this->update($request, $token['organization_id'], 'owner');
@@ -353,7 +353,7 @@ class OrganizationController extends Controller
                     null,
                     'Organization Details Updated',
                     'The details of your organization have been successfully updated. You can review the updated information by clicking the notification.',
-                    ['web' => "profile/organization"],
+                    ['web' => "organization"],
                 ));
             }
 
@@ -379,55 +379,6 @@ class OrganizationController extends Controller
     }
 
 
-    // Remove logo
-    public function adminRemoveLogo(Request $request)
-    {
-        $request->validate([
-            'id' => 'required',
-        ]);
-
-        return $this->removeLogo($request->id);
-    }
-
-    public function ownerRemoveLogo(Request $request)
-    {
-        $token = $request->attributes->get('token');
-
-        if (empty($token['organization_id']) || empty($token['role_name'])) {
-            return response()->redirect()->back()->with('error', "Can't access this page, unless you are an organization owner.");
-        }
-
-        return $this->removeLogo($token['organization_id']);
-    }
-
-    private function removeLogo(string $id)
-    {
-        try {
-            $organization = Organization::findOrFail($id);
-
-            $logoPath = $organization->logo;
-
-            if ($logoPath) {
-                $fullPath = public_path($logoPath);
-
-                if (File::exists($fullPath)) {
-                    File::delete($fullPath);
-                }
-
-                $organization->update([
-                    'logo' => null,
-                ]);
-            }
-
-            return response()->json(['success' => true, 'message' => 'Logo removed successfully.' ]);
-
-        } catch (\Exception $e) {
-            Log::error('Failed to remove logo for organization ID ' . $id . ': ' . $e->getMessage());
-            return response()->json([ 'success' => false, 'error' => 'Failed to remove logo. Please try again later.' ], 500);
-        }
-    }
-
-
     // Update Logo
     public function adminUpdateLogo(Request $request)
     {
@@ -443,7 +394,7 @@ class OrganizationController extends Controller
         $token = $request->attributes->get('token');
 
         if (empty($token['organization_id']) || empty($token['role_name'])) {
-            return response()->redirect()->back()->with('error', "Can't access this page, unless you are an organization owner.");
+            return response()->json(['error' => "Can't access this page, unless you are an organization owner."]);
         }
 
         return $this->updateLogo($request, $token['organization_id']);
@@ -499,7 +450,7 @@ class OrganizationController extends Controller
         $token = $request->attributes->get('token');
 
         if (empty($token['organization_id'])) {
-            return redirect()->back()->with('error', 'You must be an organization owner to access this page.');
+            return response()->json(['error' => "Can't access this page, unless you are an organization owner."]);
         }
 
         return $this->updateOnlinePaymentStatus($request, $token['organization_id'], 'owner');
@@ -516,7 +467,7 @@ class OrganizationController extends Controller
         $organization = Organization::find($id);
 
         if (!$organization) {
-            return redirect()->back()->with('error', 'The organization you are trying to update was not found.');
+            return response()->json(['error' => 'The organization you are trying to update was not found.']);
         }
 
         try {
@@ -556,7 +507,6 @@ class OrganizationController extends Controller
             return redirect()->back()->with('error', 'An unexpected error occurred while updating the organization. Please try again later.');
         }
     }
-
 
 
     // Helper Functions
