@@ -42,6 +42,9 @@ class DepartmentController extends Controller
     public function store(Request $request)
     {
         $token = $request->attributes->get('token');
+        if (empty($token['organization_id'])) {
+            return redirect()->back()->with('error', "You can't perform this action.");
+        }
         $organization_id = $token['organization_id'];
 
         $request->validate([
@@ -81,46 +84,32 @@ class DepartmentController extends Controller
 
 
     // Show
-    public function show(Department $department)
+    public function show(Request $request, Department $department)
     {
-        $department->load('staffMembers', 'staffMembers.Users');
+        $token = $request->attributes->get('token');
+        if (empty($token['organization_id'])) {
+            return redirect()->back()->with('error', "You can't perform this action.");
+        }
+        $organization_id = $token['organization_id'];
+
+        if($department->organization_id ){
+
+        }
+
+        $staffMembers = $department->staffMembers()
+            ->with('Users')
+            ->paginate(10);
+
+        return view('Owner.Departments.show', compact('department', 'staffMembers'));
     }
 
 
     // Edit
-    public function adminEdit(BuildingLevel $level)
+    public function edit(Request $request,Department $department)
     {
         try {
-            $level->load(['building']);
-
-            $buildings = Building::select('id', 'name', 'organization_id')
-                ->whereNotIn('status', ['Under Processing', 'Under Review', 'Rejected'])
-                ->get();
-
             return response()->json([
-                'level' => $level,
-                'buildings' => $buildings
-            ]);
-
-        } catch (\Exception $e) {
-            Log::error('Error fetching building level data: ' . $e->getMessage());
-            return response()->json(['error' => 'An error occurred while fetching building level data.'], 500);
-        }
-    }
-
-    public function ownerEdit(Request $request,BuildingLevel $level)
-    {
-        try {
-            $level->load(['building']);
-            $buildings = $this->getOwnerBuildings($request);
-
-            if(!$buildings instanceof Building){
-                return $buildings;
-            }
-
-            return response()->json([
-                'level' => $level,
-                'buildings' => $buildings
+                'department' => $department,
             ]);
 
         } catch (\Exception $e) {

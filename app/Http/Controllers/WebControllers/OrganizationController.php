@@ -15,6 +15,7 @@ use App\Models\OrganizationPicture;
 use App\Models\Plan;
 use App\Models\Subscription;
 use App\Models\User;
+use App\Notifications\DatabaseOnlyNotification;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -279,7 +280,6 @@ class OrganizationController extends Controller
             'name' => 'required|string|max:255|unique:organizations,name,' . $id . ',id',
             'email' => 'required|string|email|max:255|unique:organizations,email,' . $id . ',id',
             'phone' => 'required|string|max:255|unique:organizations,phone,' . $id . ',id',
-            'owner_id' => 'required|integer|unique:organizations,owner_id,' . $id . ',id',
             'location' => 'required|string|max:255',
             'country' => 'required|string|max:50',
             'province' => 'required|string|max:50',
@@ -293,10 +293,10 @@ class OrganizationController extends Controller
         ]);
 
         $organization = Organization::find($id);
-        if (!$organization) return $this->respond($portal, 'error', 'Organization not found.');
+        if (!$organization) return redirect()->back()->withInput()->with('error', 'Organization not found.');
 
         $address = Address::find($organization->address_id);
-        if (!$address) return $this->respond($portal, 'error', 'Address for the organization not found.');
+        if (!$address) return redirect()->back()->withInput()->with('error', 'Address for the organization not found.');
 
         DB::beginTransaction();
 
@@ -349,8 +349,7 @@ class OrganizationController extends Controller
                 ));
 
             }else{
-                dispatch(new OrganizationOwnerNotifications(
-                    $id,
+                dispatch(new DatabaseOnlyNotification(
                     null,
                     'Organization Details Updated',
                     'The details of your organization have been successfully updated. You can review the updated information by clicking the notification.',
@@ -358,12 +357,12 @@ class OrganizationController extends Controller
                 ));
             }
 
-            return $this->respond($portal, 'success', 'Organization updated successfully.');
+            return $this->respond($portal, 'Organization updated successfully.');
 
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('An error occurred while updating the organization: ' . $e->getMessage());
-            return $this->respond($portal, 'error', 'Something went wrong. Try again later.');
+            return redirect()->back()->withInput()->with('error', 'Something went wrong. Try again later.');
         }
     }
 
@@ -485,6 +484,81 @@ class OrganizationController extends Controller
     }
 
 
+    // Online Payment Status
+    public function adminOnlinePaymentStatus(Request $request)
+    {
+        $request->validate([
+            'id' => 'required',
+        ]);
+
+        return $this->updateOnlinePaymentStatus($request, $request->id, 'admin');
+    }
+
+    public function ownerOnlinePaymentStatus(Request $request)
+    {
+        $token = $request->attributes->get('token');
+
+        if (empty($token['organization_id'])) {
+            return redirect()->back()->with('error', 'You must be an organization owner to access this page.');
+        }
+
+        return $this->updateOnlinePaymentStatus($request, $token['organization_id'], 'owner');
+    }
+
+    private function updateOnlinePaymentStatus(Request $request, string $id, string $portal)
+    {
+        $user = $request->user() ?? abort(404, 'Unauthorized action.');
+
+        $request->validate([
+            'is_online_payment_enabled' => 'required|in:0,1',
+        ]);
+
+        $organization = Organization::find($id);
+
+        if (!$organization) {
+            return redirect()->back()->with('error', 'The organization you are trying to update was not found.');
+        }
+
+        try {
+            $organization->update([
+                'is_online_payment_enabled' => $request->is_online_payment_enabled,
+            ]);
+
+            $statusText = $request->is_online_payment_enabled ? 'enabled' : 'disabled';
+
+            if ($portal === 'admin') {
+                dispatch(new OrganizationOwnerNotifications(
+                    $id,
+                    null,
+                    "Online Payment Option {$statusText} by Admin",
+                    "The admin has {$statusText} the online payment option for your organization. Click here to review the updated settings.",
+                    ['web' => "organization"],
+
+                    false,
+                    $user->id,
+                    "Online Payment Option {$statusText}",
+                    "You have successfully {$statusText} the online payment option for {$organization->name}. Click here to view the organization details.",
+                    ['web' => "admin/organizations/{$organization->id}/show"],
+                ));
+            } else {
+                dispatch(new DatabaseOnlyNotification(
+                    null,
+                    "Online Payment Option {$statusText}",
+                    "You have successfully {$statusText} the online payment option for your organization. Click here to review the changes.",
+                    ['web' => "profile/organization"],
+                ));
+            }
+
+            return $this->respond($portal, "Organization's online payment option has been {$statusText} successfully.");
+
+        } catch (\Exception $e) {
+            Log::error('Organization online payment status update Error: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'An unexpected error occurred while updating the organization. Please try again later.');
+        }
+    }
+
+
+
     // Helper Functions
     private function current_plan(string $organization_id)
     {
@@ -548,12 +622,8 @@ class OrganizationController extends Controller
         }
     }
 
-    private function respond($portal, $type, $message)
+    private function respond($portal, $message)
     {
-        if ($type === 'error') {
-            return redirect()->back()->withInput()->with('error', $message);
-        }
-
         $route = $portal === 'admin' ? 'organizations.index' : 'owner.organization.profile';
 
         return redirect()->route($route)->with('success', $message);

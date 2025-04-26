@@ -9,6 +9,7 @@ use App\Http\Controllers\WebControllers\BuildingLevelController;
 use App\Http\Controllers\WebControllers\BuildingTreeController;
 use App\Http\Controllers\WebControllers\BuildingUnitController;
 use App\Http\Controllers\WebControllers\CheckOutController;
+use App\Http\Controllers\WebControllers\DepartmentController;
 use App\Http\Controllers\WebControllers\DropdownTypeController;
 use App\Http\Controllers\WebControllers\DropdownValueController;
 use App\Http\Controllers\WebControllers\landingController;
@@ -188,6 +189,7 @@ Route::prefix('admin')->middleware(['auth.jwt'])->group(function () {
         Route::get('/{organization}/edit', [OrganizationController::class, 'edit'])->name('organizations.edit');
         Route::put('/{organization}', [OrganizationController::class, 'adminUpdate'])->name('organizations.update');
         Route::put('/logo/update', [OrganizationController::class, 'adminUpdateLogo'])->name('organizations.logo.update');
+        Route::put('/online-payment-status/update', [OrganizationController::class, 'adminOnlinePaymentStatus'])->name('organizations.onlinePaymentStatus.update');
 
         Route::get('/organizations/{id}/buildings', [OrganizationController::class, 'getBuildingsAdmin'])->name('organizations.buildings');
 
@@ -214,6 +216,7 @@ Route::prefix('owner')->middleware(['auth.jwt'])->group(function () {
         Route::get('/edit', [OrganizationController::class , 'ownerEdit'])->name('owner.organization.edit');
         Route::put('/', [OrganizationController::class , 'ownerUpdate'])->name('owner.organization.update');
         Route::put('/logo/update', [OrganizationController::class, 'ownerUpdateLogo'])->name('owner.organization.logo.update');
+        Route::put('/online-payment-status/update', [OrganizationController::class, 'ownerOnlinePaymentStatus'])->name('owner.organization.onlinePaymentStatus.update');
 
     });
 
@@ -279,6 +282,17 @@ Route::prefix('owner')->middleware(['auth.jwt'])->group(function () {
         Route::post('/', [CardController::class, 'store'])->name('owner.cards.store');
         Route::put('/', [CardController::class, 'update'])->name('owner.cards.update.default');
         Route::delete('/', [CardController::class, 'destroy'])->name('owner.cards.delete');
+
+    });
+
+    Route::prefix('departments')->group(function () {
+
+        Route::get('/', [DepartmentController::class , 'index'])->name('owner.departments.index');
+        Route::post('/', [DepartmentController::class , 'store'])->name('owner.departments.store');
+        Route::get('/edit', [DepartmentController::class , ''])->name('owner.organization.edit');
+        Route::put('/', [DepartmentController::class , ''])->name('owner.organization.update');
+        Route::get('/{department}/show', [DepartmentController::class, ''])->name('owner.organization.show');
+        Route::delete('/delete', [DepartmentController::class, ''])->name('owner.organization.destroy');
 
     });
 
