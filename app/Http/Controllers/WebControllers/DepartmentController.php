@@ -226,7 +226,7 @@ class DepartmentController extends Controller
                 ['web' => "owner/departments"]
             ));
 
-            return redirect()->back()->with('success', 'Department deleted successfully.');
+            return redirect()->route('owner.departments.index')->with('success', 'Department deleted successfully.');
         } catch (\Exception $e) {
             Log::error('Error deleting department: ' . $e->getMessage());
             return redirect()->back()->with('error', 'Something went wrong. Please try again later.');
