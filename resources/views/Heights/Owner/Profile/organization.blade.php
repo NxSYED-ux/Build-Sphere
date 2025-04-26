@@ -223,7 +223,6 @@
                         </div>
 
                         <h3 class="mb-1 fw-bold mt-2">{{ $organization->name }}</h3>
-                        <p class="small mb-3">Heights Management System</p>
 
                         <div class="d-flex justify-content-center gap-2 mb-4 flex-wrap">
                             <span class="badge bg-success bg-opacity-10 text-success py-2 px-3 rounded-pill">
@@ -247,10 +246,10 @@
                                 <div class="row">
                                     <div class="col-md-6 detail-item py-1">
                                         <div class="detail-label">Membership ID</div>
-                                        <div class="detail-value fw-medium">{{ $organization->payment_gateway_merchant_id }}</div>
+                                        <div class="detail-value fw-medium">{{ $organization->payment_gateway_merchant_id ?? 'N/A' }}</div>
                                     </div>
 
-                                    <div class="col-md-6 detail-item pb-1">
+                                    <div class="col-md-6 detail-item py-1">
                                         <div class="detail-label">Registration Date</div>
                                         <div class="detail-value fw-medium">{{ isset($organization->created_at) ? \Carbon\Carbon::parse($organization->created_at)->format('M d, Y') : 'N/A' }}</div>
                                     </div>
@@ -259,7 +258,7 @@
                                         <div class="detail-label">Contact Email</div>
                                         <div class="detail-value fw-medium d-flex align-items-center">
                                             <i class="fas fa-envelope me-2 text-primary"></i>
-                                            <a href="" class="text-decoration-none">{{ $organization->email }}</a>
+                                            <a href="" class="text-decoration-none">{{ $organization->email ?? 'N/A' }}</a>
                                         </div>
                                     </div>
 
@@ -267,7 +266,7 @@
                                         <div class="detail-label">Phone Number</div>
                                         <div class="detail-value fw-medium d-flex align-items-center">
                                             <i class="fas fa-phone me-2 text-primary"></i>
-                                            <a href="" class="text-decoration-none">{{ $organization->phone }}</a>
+                                            <a href="" class="text-decoration-none">{{ $organization->phone ?? 'N/A' }}</a>
                                         </div>
                                     </div>
                                 </div>

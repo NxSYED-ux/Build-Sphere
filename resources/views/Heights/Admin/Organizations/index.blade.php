@@ -354,6 +354,7 @@
                                                             <th>Name</th>
                                                             <th>Owner</th>
                                                             <th>City</th>
+                                                            <th>Online Payment</th>
                                                             <th>Status</th>
                                                             <th class="text-center" style="width: 70px;">Actions</th>
                                                         </tr>
@@ -368,12 +369,26 @@
                                                                 <td>{{ $organization->name }}</td>
                                                                 <td>{{ $organization->owner->name }}</td>
                                                                 <td>{{ $organization->address->city ?? 'N/A' }}</td>
+                                                                <td class="text-center" style="width: 150px !important;">
+                                                                    <div class="form-check form-switch m-0 d-flex justify-content-center">
+                                                                        <input type="hidden" name="is_online_payment_enabled" value="0">
+                                                                        <input class="form-check-input" type="checkbox" role="switch" id="enable_online_payments"
+                                                                               name="is_online_payment_enabled" value="{{ old('merchant_id', $organization->merchant_id) }}"
+                                                                               style="transform: scale(1.3);"
+                                                                               {{ old('is_online_payment_enabled', $organization->merchant_id ?? false) ? 'checked' : '' }}
+                                                                               onchange="updateOnlinePaymentStatus(this, '{{ $organization->id }}')">
+                                                                    </div>
+                                                                </td>
                                                                 <td>{{ $organization->status }}</td>
-                                                                <td class="text-center" style="width: 70px;">
-                                                                    <a href="{{ route('organizations.edit', $organization->id) }}" class="text-warning" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit">
-                                                                        <x-icon name="edit" type="icon" class="" size="20px" />
-                                                                    </a>
-
+                                                                <td class="text-center">
+                                                                    <div class="d-flex justify-content-center align-items-center gap-3">
+                                                                        <a href="{{ route('organizations.show', ['organization' => $organization->id]) }}" class="text-info" data-bs-toggle="tooltip" data-bs-placement="top" title="View">
+                                                                            <x-icon name="view" type="icon" class="" size="20px" />
+                                                                        </a>
+                                                                        <a href="{{ route('organizations.edit', $organization->id) }}" class="text-warning" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit">
+                                                                            <x-icon name="edit" type="icon" class="" size="20px" />
+                                                                        </a>
+                                                                    </div>
                                                                 </td>
                                                             </tr>
                                                             @empty
@@ -1234,6 +1249,48 @@
 
             // Update the file input with our DataTransfer object
             imageInput.files = dataTransfer.files;
+        }
+    </script>
+
+    <script>
+        function updateOnlinePaymentStatus(checkbox, organizationId) {
+            const isEnabled = checkbox.checked ? 1 : 0;
+            const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+            fetch("{{ route('organizations.onlinePaymentStatus.update') }}", {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': token,
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({
+                    id: organizationId,
+                    is_online_payment_enabled: isEnabled
+                })
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.error) {
+                        // Revert the checkbox if there was an error
+                        checkbox.checked = !checkbox.checked;
+                        alert(data.error);
+                    } else {
+                        // Success - you might want to show a toast notification here
+                        console.log(data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    // Revert the checkbox on error
+                    checkbox.checked = !checkbox.checked;
+                    alert('An error occurred while updating the online payment status.');
+                });
         }
     </script>
 

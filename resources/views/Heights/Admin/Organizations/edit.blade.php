@@ -117,7 +117,7 @@
                                                                    class="form-control @error('merchant_id') is-invalid @enderror"
                                                                    value="{{ old('merchant_id', $organization->merchant_id) }}"
                                                                    placeholder="e.g. acct_1L9..."
-                                                                {{ old('is_online_payments_enabled') ? 'required' : '' }}>
+                                                                {{ old('is_online_payments_enabled', $organization->merchant_id) ? 'required' : '' }}>
                                                         </div>
                                                         {{--                                                                        <small class="text-muted">Found in your Stripe Dashboard</small>--}}
                                                         @error('merchant_id')
@@ -147,7 +147,9 @@
                                                         @enderror
                                                     </div>
                                                 </div>
+                                            </div>
 
+                                            <div class="row">
                                                 <!--  -->
                                                 <div class="col-lg-4 col-md-6 col-sm-12">
                                                     <div class="form-group mb-3">
@@ -341,6 +343,28 @@
             });
         }
 
+    </script>
+
+    <!-- Merchant id -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const toggle = document.getElementById('enable_online_payments');
+            const merchantInput = document.getElementById('stripe_merchant_id');
+            const merchantStar = document.getElementById('merchant-required-star');
+
+            function toggleMerchantRequirement() {
+                if (toggle.checked) {
+                    merchantInput.setAttribute('required', 'required');
+                    merchantStar.style.display = 'inline';
+                } else {
+                    merchantInput.removeAttribute('required');
+                    merchantStar.style.display = 'none';
+                }
+            }
+
+            toggle.addEventListener('change', toggleMerchantRequirement);
+            toggleMerchantRequirement(); // on page load
+        });
     </script>
 
     <!-- Organization Pictures script -->
