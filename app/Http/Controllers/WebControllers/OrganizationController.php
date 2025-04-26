@@ -211,7 +211,7 @@ class OrganizationController extends Controller
     // Show Function
     public function show(string $id, String $portal = 'admin')
     {
-        $view = $portal === 'admin' ? 'Heights.Admin.Organizations.index' : 'Heights.Owner.Profile.organization';
+        $view = $portal === 'admin' ? 'Heights.Admin.Organizations.index' : 'Heights.Owner.Organizations.profile';
         try {
             $organization = Organization::with('address','pictures', 'owner')->findOrFail($id);
             $planDetails = $this->current_plan($id);
@@ -236,10 +236,7 @@ class OrganizationController extends Controller
             $owners = User::where('role_id',2)->pluck('name', 'id');
             return view('Heights.Admin.Organizations.edit',compact('organization','dropdownData', 'owners'));
         } elseif ($portal === 'owner'){
-            return response()->json([
-                'organization' => $organization,
-                'dropdownData' => $dropdownData,
-            ]);
+            return view('Heights.Owner.Organizations.edit',compact('organization','dropdownData'));
         }else{
             abort(404, 'Page not found.');
         }
@@ -342,7 +339,7 @@ class OrganizationController extends Controller
                     null,
                     "Organization Updated by Admin",
                     "Your organization's details have been successfully updated by the admin. You can review the changes by clicking this notification.",
-                    ['web' => "profile/organization"],
+                    ['web' => "organization"],
 
                     false,
                     $user->id,
@@ -350,6 +347,7 @@ class OrganizationController extends Controller
                     "The details of {$organization->name} has been successfully updated. Click the notification to review the updated details.",
                     ['web' => "admin/organizations/{$organization->id}/show"],
                 ));
+
             }else{
                 dispatch(new OrganizationOwnerNotifications(
                     $id,
@@ -550,19 +548,15 @@ class OrganizationController extends Controller
         }
     }
 
-    private function respond($portal, $type, $message, $data = [])
+    private function respond($portal, $type, $message)
     {
-        if ($portal === 'admin') {
-            return $type === 'error'
-                ? redirect()->back()->withInput()->with('error', $message)
-                : redirect()->route('organizations.index')->with('success', $message);
+        if ($type === 'error') {
+            return redirect()->back()->withInput()->with('error', $message);
         }
 
-        return response()->json([
-            'success' => $type === 'success',
-            $type => $message,
-            ...$data,
-        ], $type === 'success' ? 200 : 500);
+        $route = $portal === 'admin' ? 'organizations.index' : 'owner.organization.profile';
+
+        return redirect()->route($route)->with('success', $message);
     }
 
 

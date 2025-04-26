@@ -210,7 +210,7 @@ Route::prefix('owner')->middleware(['auth.jwt'])->group(function () {
 
     Route::prefix('organization')->group(function () {
 
-        Route::get('/', [OrganizationController::class , 'organizationProfile'])->name('owner.profile.organization');
+        Route::get('/', [OrganizationController::class , 'organizationProfile'])->name('owner.organization.profile');
         Route::get('/edit', [OrganizationController::class , 'ownerEdit'])->name('owner.organization.edit');
         Route::put('/', [OrganizationController::class , 'ownerUpdate'])->name('owner.organization.update');
         Route::put('/logo/update', [OrganizationController::class, 'ownerUpdateLogo'])->name('owner.organization.logo.update');
