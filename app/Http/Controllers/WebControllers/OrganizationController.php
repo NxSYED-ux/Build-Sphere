@@ -373,7 +373,7 @@ class OrganizationController extends Controller
         $token = $request->attributes->get('token');
 
         if (empty($token['organization_id']) || empty($token['role_name'])) {
-            return response()->redirect()->back()->with('error', "Can't access this page, unless you are an organization owner.");
+            return redirect()->back()->with('error', "Can't access this page, unless you are an organization owner.");
         }
         return $this->show($token['organization_id'], 'owner');
     }
