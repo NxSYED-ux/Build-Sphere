@@ -81,9 +81,9 @@ class DepartmentController extends Controller
 
 
     // Show
-    public function show(Department $)
+    public function show(Department $department)
     {
-
+        $department->load('staffMembers', 'staffMembers.Users');
     }
 
 

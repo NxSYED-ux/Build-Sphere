@@ -236,7 +236,7 @@ class OrganizationController extends Controller
             $owners = User::where('role_id',2)->pluck('name', 'id');
             return view('Heights.Admin.Organizations.edit',compact('organization','dropdownData', 'owners'));
         } elseif ($portal === 'owner'){
-            return view('Heights.Owner.Organizations.edit',compact('organization','dropdownData'));
+            return view('Heights.Owner.Organization.edit',compact('organization','dropdownData'));
         }else{
             abort(404, 'Page not found.');
         }
