@@ -373,10 +373,10 @@
                                                                     <div class="form-check form-switch m-0 d-flex justify-content-center">
                                                                         <input type="hidden" name="is_online_payment_enabled" value="0">
                                                                         <input class="form-check-input" type="checkbox" role="switch" id="enable_online_payments"
-                                                                               name="is_online_payment_enabled" value="{{ old('merchant_id', $organization->merchant_id) }}"
+                                                                               name="is_online_payment_enabled" value="{{ old('merchant_id', $organization->is_online_payment_enabled) }}"
                                                                                style="transform: scale(1.3);"
-                                                                               {{ old('is_online_payment_enabled', $organization->merchant_id ?? false) ? 'checked' : '' }}
-                                                                               onchange="updateOnlinePaymentStatus(this, '{{ $organization->id }}')">
+                                                                               {{ old('is_online_payment_enabled', $organization->is_online_payment_enabled ?? false) ? 'checked' : '' }}
+                                                                               onchange="updateOnlinePaymentStatus(this, '{{ $organization->id }}', '{{ $organization->payment_gateway_merchant_id }}')">
                                                                     </div>
                                                                 </td>
                                                                 <td>{{ $organization->status }}</td>
@@ -1252,8 +1252,25 @@
         }
     </script>
 
+    <!-- Update payment status -->
     <script>
-        function updateOnlinePaymentStatus(checkbox, organizationId) {
+        function updateOnlinePaymentStatus(checkbox, organizationId, merchantId) {
+            // First check if merchant ID exists
+            if (!merchantId) {
+                // Revert the checkbox
+                checkbox.checked = !checkbox.checked;
+
+                // Show SweetAlert error message
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Cannot Update',
+                    text: 'Online payment cannot be enabled because the organization is not linked to any payment gateway.',
+                    confirmButtonColor: '#3085d6',
+                    confirmButtonText: 'OK'
+                });
+                return;
+            }
+
             const isEnabled = checkbox.checked ? 1 : 0;
             const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
@@ -1279,17 +1296,35 @@
                     if (data.error) {
                         // Revert the checkbox if there was an error
                         checkbox.checked = !checkbox.checked;
-                        alert(data.error);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: data.error,
+                            confirmButtonColor: '#3085d6',
+                            confirmButtonText: 'OK'
+                        });
                     } else {
-                        // Success - you might want to show a toast notification here
-                        console.log(data.message);
+                        // Success - show success message
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success',
+                            text: data.message || 'Online payment status updated successfully',
+                            confirmButtonColor: '#3085d6',
+                            confirmButtonText: 'OK'
+                        });
                     }
                 })
                 .catch(error => {
                     console.error('Error:', error);
                     // Revert the checkbox on error
                     checkbox.checked = !checkbox.checked;
-                    alert('An error occurred while updating the online payment status.');
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'An error occurred while updating the online payment status.',
+                        confirmButtonColor: '#3085d6',
+                        confirmButtonText: 'OK'
+                    });
                 });
         }
     </script>

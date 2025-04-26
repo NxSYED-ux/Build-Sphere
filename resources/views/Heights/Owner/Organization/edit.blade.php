@@ -114,9 +114,9 @@
                                                                    name="merchant_id"
                                                                    id="stripe_merchant_id"
                                                                    class="form-control @error('merchant_id') is-invalid @enderror"
-                                                                   value="{{ old('merchant_id', $organization->merchant_id) }}"
+                                                                   value="{{ old('merchant_id', $organization->payment_gateway_merchant_id) }}"
                                                                    placeholder="e.g. acct_1L9..."
-                                                                    {{ old('is_online_payments_enabled', $organization->merchant_id) ? 'required' : '' }}>
+                                                                    {{ old('is_online_payments_enabled', $organization->payment_gateway_merchant_id) ? 'required' : '' }}>
                                                         </div>
                                                         {{--                                                                        <small class="text-muted">Found in your Stripe Dashboard</small>--}}
                                                         @error('merchant_id')
@@ -138,7 +138,7 @@
                                                                 <input type="hidden" name="is_online_payment_enabled" value="0">
                                                                 <input class="form-check-input" type="checkbox" role="switch" id="enable_online_payments"
                                                                        name="is_online_payment_enabled" value="{{ old('is_online_payment_enabled', $organization->is_online_payment_enabled, 1) }}" style="transform: scale(1.3);"
-                                                                        {{ old('is_online_payment_enabled', $is_online_payment_enabled ?? false) ? 'checked' : '' }}>
+                                                                        {{ old('is_online_payment_enabled', $organization->is_online_payment_enabled ?? false) ? 'checked' : '' }}>
                                                             </div>
                                                         </div>
                                                         @error('is_online_payment_enabled')
