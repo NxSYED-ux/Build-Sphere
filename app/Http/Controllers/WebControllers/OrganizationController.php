@@ -334,6 +334,7 @@ class OrganizationController extends Controller
             DB::commit();
 
             if ($portal === 'admin') {
+                $route = 'organizations.index';
                 dispatch(new OrganizationOwnerNotifications(
                     $id,
                     null,
@@ -349,6 +350,7 @@ class OrganizationController extends Controller
                 ));
 
             }else{
+                $route = 'owner.organization.profile';
                 $user->notify(new DatabaseOnlyNotification(
                     null,
                     'Organization Details Updated',
@@ -357,7 +359,7 @@ class OrganizationController extends Controller
                 ));
             }
 
-            return $this->respond($portal, 'Organization updated successfully.');
+            return redirect()->route($route)->with('success', 'Organization updated successfully.');
 
         } catch (\Exception $e) {
             DB::rollBack();
@@ -509,7 +511,7 @@ class OrganizationController extends Controller
 
             DB::commit();
 
-            return $this->respond($portal, "Organization's online payment option has been {$statusText} successfully.");
+            return response()->json(['message' => "Organization's online payment option has been {$statusText} successfully."], 200);
 
         } catch (\Exception $e) {
             DB::rollBack();
@@ -580,13 +582,6 @@ class OrganizationController extends Controller
                 'usage' => 0,
             ];
         }
-    }
-
-    private function respond($portal, $message)
-    {
-        $route = $portal === 'admin' ? 'organizations.index' : 'owner.organization.profile';
-
-        return redirect()->route($route)->with('success', $message);
     }
 
 
