@@ -129,9 +129,9 @@
 
         </div>
 
-        <div class="switch-portal-btn-container hidden switch-owner-portal-btn">
+        <div class="d-flex justify-content-center align-items-center text-center switch-portal-btn-container hidden switch-owner-portal-btn">
             <a href="{{ route('owner_manager_dashboard') }}" class="switch-portal-btn">
-                Switch to Owner Portal
+                <i class="fas fa-exchange-alt me-2"></i> Switch to Owner Portal
             </a>
         </div>
     </div>

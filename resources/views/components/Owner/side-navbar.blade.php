@@ -129,9 +129,9 @@
 
     </div>
 
-    <div class="switch-portal-btn-container hidden switch-admin-portal-btn">
+    <div class="d-flex justify-content-center align-items-center text-center switch-portal-btn-container hidden switch-admin-portal-btn">
         <a href="{{ route('admin_dashboard') }}" class="switch-portal-btn">
-            Switch to Admin Portal
+            <i class="fas fa-exchange-alt me-2"></i> Switch to Admin Portal
         </a>
     </div>
 </div>

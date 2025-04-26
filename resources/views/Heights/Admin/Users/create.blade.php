@@ -5,8 +5,8 @@
 @push('styles')
     <style>
         :root {
-            --primary-color: #6c63ff;
-            --primary-hover: #5752d3;
+            --primary-color: var(--color-blue);
+            --primary-hover: var(--color-blue);
             --secondary-color: #f8f9fa;
             --text-color: #2d3748;
             --light-text: #718096;
