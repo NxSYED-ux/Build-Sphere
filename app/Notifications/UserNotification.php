@@ -18,7 +18,7 @@ class UserNotification extends Notification implements ShouldQueue
 
     public function __construct($image, $heading, $message, $link)
     {
-        $this->image = $image;
+        $this->image = $image ?? 'uploads/Notification/Light-theme-Logo.svg';
         $this->heading = $heading;
         $this->message = $message;
         $this->link = $link;

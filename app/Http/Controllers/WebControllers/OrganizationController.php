@@ -211,7 +211,7 @@ class OrganizationController extends Controller
     // Show Function
     public function show(string $id, String $portal = 'admin')
     {
-        $view = $portal === 'admin' ? 'Heights.Admin.Organizations.index' : 'Heights.Owner.Organizations.profile';
+        $view = $portal === 'admin' ? 'Heights.Admin.Organizations.index' : 'Heights.Owner.Organization.profile';
         try {
             $organization = Organization::with('address','pictures', 'owner')->findOrFail($id);
             $planDetails = $this->current_plan($id);
