@@ -339,7 +339,7 @@ class OrganizationController extends Controller
                     null,
                     "Organization Updated by Admin",
                     "Your organization's details have been successfully updated by the admin. You can review the changes by clicking this notification.",
-                    "organization",
+                    "owner/organization",
 
                     false,
                     $user->id,
@@ -353,7 +353,7 @@ class OrganizationController extends Controller
                     null,
                     'Organization Details Updated',
                     'The details of your organization have been successfully updated. You can review the updated information by clicking the notification.',
-                    ['web' => "organization"],
+                    ['web' => "owner/organization"],
                 ));
             }
 
