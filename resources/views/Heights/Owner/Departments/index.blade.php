@@ -184,8 +184,8 @@
                                 <div class="form-group mb-3">
                                     <label for="name">Name</label>
                                     <span class="required__field">*</span><br>
-                                    <input type="text" name="name" id="edit_department_name" class="form-control @error('name') is-invalid @enderror" value="{{ old('name') }}" maxlength="50" placeholder="Department Name" required>
-                                    @error('name')
+                                    <input type="text" name="edit_name" id="edit_department_name" class="form-control @error('edit_name') is-invalid @enderror" value="{{ old('edit_name') }}" maxlength="50" placeholder="Department Name" required>
+                                    @error('edit_name')
                                     <span class="invalid-feedback" role="alert">
                                     <strong>{{ $message }}</strong>
                                 </span>
@@ -196,8 +196,8 @@
                             <div class="col-12">
                                 <div class="form-group mb-3">
                                     <label for="description">Description</label>
-                                    <input type="text" name="description" id="edit_department_description" class="form-control @error('description') is-invalid @enderror" value="{{ old('description') }}" maxlength="50" placeholder="Description">
-                                    @error('description')
+                                    <input type="text" name="edit_description" id="edit_department_description" class="form-control @error('edit_description') is-invalid @enderror" value="{{ old('edit_description') }}" maxlength="50" placeholder="Description">
+                                    @error('edit_description')
                                     <span class="invalid-feedback" role="alert">
                                     <strong>{{ $message }}</strong>
                                 </span>

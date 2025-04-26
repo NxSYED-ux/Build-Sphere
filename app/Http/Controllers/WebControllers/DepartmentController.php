@@ -95,7 +95,7 @@ class DepartmentController extends Controller
         }
 
         $staffMembers = $department->staffMembers()
-            ->with('Users')
+            ->with('users')
             ->paginate(10);
 
         return view('Owner.Departments.show', compact('department', 'staffMembers'));
@@ -137,18 +137,18 @@ class DepartmentController extends Controller
 
         $request->validate([
             'id' => 'required|exists:departments,id',
-            'name' => [
+            'edit_name' => [
                 'required',
                 'string',
                 'max:255',
-                Rule::unique('departments')
+                Rule::unique('departments','name')
                     ->where(fn($query) => $query->where('organization_id', $organization_id))
                     ->ignore($request->id),
             ],
-            'description' => 'nullable|string',
+            'edit_description' => 'nullable|string',
             'updated_at' => 'required'
         ], [
-            'name.unique' => 'This department name is already in use within your organization.',
+            'edit_name.unique' => 'This department name is already in use within your organization.',
         ]);
 
         try {
@@ -166,8 +166,8 @@ class DepartmentController extends Controller
             }
 
             $department->update([
-                'name' => $request->name,
-                'description' => $request->description,
+                'name' => $request->edit_name,
+                'description' => $request->edit_description,
                 'updated_at' => now(),
             ]);
 
