@@ -90,7 +90,7 @@
                                                     <td>{{ $department->description ?? 'N/A' }}</td>
                                                     <td class="w-170 text-center">
                                                         <div class="d-flex justify-content-center align-items-center gap-3">
-                                                            <a href="#" class="text-warning Admin-Level-Edit-Button hidden" data-id="{{ $department->id }}" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit">
+                                                            <a href="#" class="text-warning Owner-Department-Edit-Button " data-id="{{ $department->id }}" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit">
                                                                 <x-icon name="edit" type="icon" class="" size="20px" />
                                                             </a>
                                                         </div>
@@ -164,44 +164,31 @@
     </div>
 
     <!-- Edit Dropdown Value Modal -->
-    <div class="modal fade" id="editLevelModal" tabindex="-1" aria-labelledby="editLevelModalLabel" aria-hidden="true">
+    <div class="modal fade" id="editDepartmentModel" tabindex="-1" aria-labelledby="editDepartmentModelLabel" aria-hidden="true">
         <div class="modal-dialog modal-md modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="editLevelModalLabel">Edit Level</h5>
+                    <h5 class="modal-title" id="editDepartmentModelLabel">Edit Department</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div><!-- The edit form will be loaded here via AJAX -->
-                <form id="editLevelForm" action="" method="POST">
+                </div>
+                <form id="editDepartmentForm" action="{{ route('owner.departments.update') }}" method="POST">
+                    @csrf
                     @method('PUT')
 
+                    <input type="hidden" name="id" id="edit_department_id">
                     <input type="hidden" name="updated_at" id="edit_updated_at">
-                    <input type="hidden" name="level_id" id="edit_level_id">
-                    <input type="hidden" name="organization_id" id="edit_organization_id">
+
                     <div class="modal-body">
                         <div class="row mb-4">
                             <div class="col-12">
                                 <div class="form-group mb-3">
-                                    <label for="level_name">Level Name</label>
+                                    <label for="name">Name</label>
                                     <span class="required__field">*</span><br>
-                                    <input type="text" name="level_name" id="edit_level_name" class="form-control @error('level_name') is-invalid @enderror" value="{{ old('level_name') }}" maxlength="50" placeholder="Level Name" required>
-                                    @error('level_name')
+                                    <input type="text" name="name" id="edit_department_name" class="form-control @error('name') is-invalid @enderror" value="{{ old('name') }}" maxlength="50" placeholder="Department Name" required>
+                                    @error('name')
                                     <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                    @enderror
-                                </div>
-                            </div>
-
-                            <!--  -->
-                            <div class="col-12">
-                                <div class="form-group mb-3">
-                                    <label for="level_number">Level Number</label>
-                                    <span class="required__field">*</span><br>
-                                    <input type="number" name="level_number" id="edit_level_number" class="form-control @error('level_number') is-invalid @enderror" value="{{ old('level_number' ) }}" min="0" placeholder="Enter Level/Floor no" required>
-                                    @error('level_number')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
+                                    <strong>{{ $message }}</strong>
+                                </span>
                                     @enderror
                                 </div>
                             </div>
@@ -209,48 +196,14 @@
                             <div class="col-12">
                                 <div class="form-group mb-3">
                                     <label for="description">Description</label>
-                                    <input type="text" name="description" id="edit_description" class="form-control @error('description') is-invalid @enderror" value="{{ old('description') }}" maxlength="50" placeholder="Description">
+                                    <input type="text" name="description" id="edit_department_description" class="form-control @error('description') is-invalid @enderror" value="{{ old('description') }}" maxlength="50" placeholder="Description">
                                     @error('description')
                                     <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
+                                    <strong>{{ $message }}</strong>
+                                </span>
                                     @enderror
                                 </div>
                             </div>
-
-                            <!--  -->
-                            <div class="col-12">
-                                <div class="form-group mb-3">
-                                    <label for="building_id">Building</label>
-                                    <span class="required__field">*</span><br>
-                                    <select class="form-select" id="edit_building_id" name="building_id" required>
-                                        <option value="" disabled {{ old('building_id') === null ? 'selected' : '' }}>Select Building</option>
-
-                                    </select>
-                                    @error('building_id')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                    @enderror
-                                </div>
-                            </div>
-
-                            <div class="col-12">
-                                <div class="form-group">
-                                    <label for="status">Status</label>
-                                    <span class="required__field">*</span><br>
-                                    <select name="status" id="edit_status" class="form-select" required>
-                                        <option value="Approved" {{ old('status') == 'Approved' ? 'selected' : '' }}>Approved</option>
-                                        <option value="Rejected" {{ old('status') == 'Rejected' ? 'selected' : '' }}>Rejected</option>
-                                    </select>
-                                    @error('status')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                    @enderror
-                                </div>
-                            </div>
-
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -261,7 +214,6 @@
             </div>
         </div>
     </div>
-
 
 @endsection
 
@@ -301,68 +253,56 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-
-            const editButtons = document.querySelectorAll(".Admin-Level-Edit-Button");
+            const editButtons = document.querySelectorAll(".Owner-Department-Edit-Button");
 
             editButtons.forEach(button => {
                 button.addEventListener("click", function (e) {
                     e.preventDefault();
-                    const id = this.getAttribute("data-id"); // 'this' refers to the clicked button
+                    const id = this.getAttribute("data-id");
 
-                    fetch(`{{ route('levels.edit', ':id') }}`.replace(':id', id), {
+                    fetch(`{{ route('owner.departments.edit', ':id') }}`.replace(':id', id), {
                         method: "GET",
                         headers: {
                             "X-Requested-With": "XMLHttpRequest",
-                            "Accept": "application/json"
+                            "Accept": "application/json",
+                            "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                         }
                     })
-                        .then(response => response.json())
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Network response was not ok');
+                            }
+                            return response.json();
+                        })
                         .then(data => {
-                            if (data.message) {
-                                alert(data.message);
+                            if (data.error) {
+                                alert(data.error);
                             } else {
-                                document.getElementById("edit_level_id").value = data.level?.id || "";
-                                document.getElementById("edit_level_name").value = data.level?.level_name || "";
-                                document.getElementById("edit_description").value = data.level?.description || "";
-                                document.getElementById("edit_level_number").value = data.level.level_number !== undefined ? data.level.level_number : "";
-                                document.getElementById("edit_status").value = data.level?.status || "";
-                                document.getElementById("edit_organization_id").value = data.level?.organization_id || "";
-                                document.getElementById("edit_updated_at").value = data.level?.updated_at || "";
+                                document.getElementById("edit_department_id").value = data.department?.id || "";
+                                document.getElementById("edit_department_name").value = data.department?.name || "";
+                                document.getElementById("edit_department_description").value = data.department?.description || "";
+                                document.getElementById("edit_updated_at").value = data.department?.updated_at || "";
 
-                                const buildingSelect = document.getElementById("edit_building_id");
-                                buildingSelect.innerHTML = `<option value="" disabled>Select Building</option>`;
+                                const editForm = document.getElementById("editDepartmentForm");
+                                editForm.setAttribute("action", `{{ route('owner.departments.update') }}`);
 
-                                if (Array.isArray(data.buildings) && data.buildings.length > 0) {
-                                    data.buildings.forEach(building => {
-                                        if (building && building.id && building.name) {
-                                            const isSelected = building.id === data.level?.building_id ? 'selected' : '';
-                                            buildingSelect.innerHTML += `<option value="${building.id}" ${isSelected} data-organization-id="${building.organization_id}">${building.name}</option>`;
-                                        }
-                                    });
-                                } else {
-                                    buildingSelect.innerHTML += `<option value="" disabled>No buildings available</option>`;
+                                // Ensure the hidden department_id field exists
+                                let departmentIdInput = editForm.querySelector('input[name="department_id"]');
+                                if (!departmentIdInput) {
+                                    departmentIdInput = document.createElement("input");
+                                    departmentIdInput.type = "hidden";
+                                    departmentIdInput.name = "department_id";
+                                    editForm.appendChild(departmentIdInput);
                                 }
-
-
-                                // Set form action dynamically
-                                const editForm = document.getElementById("editLevelForm");
-                                editForm.setAttribute("action", `{{ route('levels.update', ':id') }}`.replace(':id', id));
-
-                                // Add hidden input for PUT method if not already present
-                                if (!editForm.querySelector('input[name="_method"]')) {
-                                    const methodInput = document.createElement("input");
-                                    methodInput.type = "hidden";
-                                    methodInput.name = "_method";
-                                    methodInput.value = "PUT";
-                                    editForm.appendChild(methodInput);
-                                }
+                                departmentIdInput.value = id;
 
                                 // Show the modal
-                                let editModal = new bootstrap.Modal(document.getElementById("editLevelModal"));
+                                let editModal = new bootstrap.Modal(document.getElementById("editDepartmentModel"));
                                 editModal.show();
                             }
                         })
-                        .catch(() => {
+                        .catch(error => {
+                            console.error('Error:', error);
                             alert("An error occurred while retrieving the data.");
                         });
                 });
