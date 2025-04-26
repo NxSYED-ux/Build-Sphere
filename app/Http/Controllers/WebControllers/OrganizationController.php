@@ -464,17 +464,21 @@ class OrganizationController extends Controller
             'is_online_payment_enabled' => 'required|in:0,1',
         ]);
 
-        $organization = Organization::find($id);
-
-        if (!$organization) {
-            return response()->json(['error' => 'The organization you are trying to update was not found.']);
-        }
-
-        if (empty($organization->payment_gateway_merchant_id) && (int) $request->is_online_payment_enabled === 1) {
-            return response()->json(['error' => 'Online payment cannot be enabled because the organization is not linked to any payment gateway.'], 422);
-        }
-
         try {
+            DB::beginTransaction();
+
+            $organization = Organization::where('id', $id)->sharedLock()->first();
+
+            if (!$organization) {
+                DB::rollBack();
+                return response()->json(['error' => 'The organization you are trying to update was not found.'], 404);
+            }
+
+            if (empty($organization->payment_gateway_merchant_id) && (int) $request->is_online_payment_enabled === 1) {
+                DB::rollBack();
+                return response()->json(['error' => 'Online payment cannot be enabled because the organization is not linked to any payment gateway.'], 422);
+            }
+
             $organization->update([
                 'is_online_payment_enabled' => $request->is_online_payment_enabled,
             ]);
@@ -483,12 +487,11 @@ class OrganizationController extends Controller
 
             if ($portal === 'admin') {
                 dispatch(new OrganizationOwnerNotifications(
-                    $id,
+                    $organization->id,
                     null,
                     "Online Payment Option {$statusText} by Admin",
                     "The admin has {$statusText} the online payment option for your organization. Click here to review the updated settings.",
                     "owner/organization",
-
                     false,
                     $user->id,
                     "Online Payment Option {$statusText}",
@@ -504,10 +507,13 @@ class OrganizationController extends Controller
                 ));
             }
 
+            DB::commit();
+
             return $this->respond($portal, "Organization's online payment option has been {$statusText} successfully.");
 
         } catch (\Exception $e) {
-            Log::error('Organization online payment status update Error: ' . $e->getMessage());
+            DB::rollBack();
+            Log::error('Organization online payment status update error: ' . $e->getMessage());
             return redirect()->back()->with('error', 'An unexpected error occurred while updating the organization. Please try again later.');
         }
     }
