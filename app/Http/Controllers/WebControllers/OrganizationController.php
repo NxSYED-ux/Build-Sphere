@@ -568,8 +568,6 @@ class OrganizationController extends Controller
 
             $overallUsedPercentage = ($totalQuantity > 0) ? number_format(($totalUsed / $totalQuantity) * 100, 2) : 0;
 
-            Log::info('Current plan: ', $formatted);
-
             return [
                 'subscription' => $formatted,
                 'usage' => $overallUsedPercentage,
