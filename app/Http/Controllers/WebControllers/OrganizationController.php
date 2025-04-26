@@ -470,6 +470,10 @@ class OrganizationController extends Controller
             return response()->json(['error' => 'The organization you are trying to update was not found.']);
         }
 
+        if (empty($organization->payment_gateway_merchant_id) && (int) $request->is_online_payment_enabled === 1) {
+            return response()->json(['error' => 'Online payment cannot be enabled because the organization is not linked to any payment gateway.'], 422);
+        }
+
         try {
             $organization->update([
                 'is_online_payment_enabled' => $request->is_online_payment_enabled,
@@ -483,7 +487,7 @@ class OrganizationController extends Controller
                     null,
                     "Online Payment Option {$statusText} by Admin",
                     "The admin has {$statusText} the online payment option for your organization. Click here to review the updated settings.",
-                    "organization",
+                    "owner/organization",
 
                     false,
                     $user->id,
@@ -496,7 +500,7 @@ class OrganizationController extends Controller
                     null,
                     "Online Payment Option {$statusText}",
                     "You have successfully {$statusText} the online payment option for your organization. Click here to review the changes.",
-                    ['web' => "profile/organization"],
+                    ['web' => "owner/organization"],
                 ));
             }
 
