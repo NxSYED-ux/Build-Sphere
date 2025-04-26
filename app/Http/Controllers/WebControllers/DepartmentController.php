@@ -73,7 +73,7 @@ class DepartmentController extends Controller
                 ['web' => "owner/departments/{$department->id}"]
             ));
 
-            return redirect()->back()->with('success', 'Departemnt created successfully.');
+            return redirect()->back()->with('success', 'Department created successfully.');
         } catch (\Exception $e) {
             Log::error('Error in Department store: ' . $e->getMessage());
             return redirect()->back()->with('error', 'Something went wrong! Please try again.');
@@ -174,7 +174,7 @@ class DepartmentController extends Controller
             DB::commit();
 
             $user->notify(new DatabaseOnlyNotification(
-                $user->id,
+                null,
                 "Department Updated",
                 "The department '{$department->name}' has been successfully updated.",
                 ['web' => "owner/departments/{$department->id}/show"]
@@ -187,7 +187,6 @@ class DepartmentController extends Controller
             return redirect()->back()->with('error', 'Something went wrong. Please try again later.');
         }
     }
-
 
     public function destroy(Request $request)
     {
