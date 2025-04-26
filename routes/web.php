@@ -289,10 +289,10 @@ Route::prefix('owner')->middleware(['auth.jwt'])->group(function () {
 
         Route::get('/', [DepartmentController::class , 'index'])->name('owner.departments.index');
         Route::post('/', [DepartmentController::class , 'store'])->name('owner.departments.store');
-        Route::get('/{department}/edit', [DepartmentController::class , 'edit'])->name('owner.organization.edit');
-        Route::put('/', [DepartmentController::class , ''])->name('owner.organization.update');
-        Route::get('/{department}/show', [DepartmentController::class, ''])->name('owner.organization.show');
-        Route::delete('/delete', [DepartmentController::class, ''])->name('owner.organization.destroy');
+        Route::get('/{department}/edit', [DepartmentController::class , 'edit'])->name('owner.departments.edit');
+        Route::put('/', [DepartmentController::class , 'update'])->name('owner.departments.update');
+        Route::get('/{department}/show', [DepartmentController::class, 'show'])->name('owner.departments.show');
+        Route::delete('/delete', [DepartmentController::class, 'delete'])->name('owner.departments.destroy');
 
     });
 
