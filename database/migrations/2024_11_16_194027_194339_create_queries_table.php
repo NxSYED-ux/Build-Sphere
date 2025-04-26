@@ -13,8 +13,8 @@ return new class extends Migration
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('unit_id');
             $table->unsignedBigInteger('building_id');
-            $table->unsignedBigInteger('department_id');
-            $table->unsignedBigInteger('staff_member_id');
+            $table->unsignedBigInteger('department_id')->nullable();
+            $table->unsignedBigInteger('staff_member_id')->nullable();
             $table->text('description');
             $table->enum('status', ['Open', 'In Progress', 'Closed', 'Rejected']);
             $table->dateTime('expected_closure_date')->nullable();
@@ -25,8 +25,8 @@ return new class extends Migration
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('unit_id')->references('id')->on('buildingunits')->onDelete('cascade');
             $table->foreign('building_id')->references('id')->on('buildings')->onDelete('cascade');
-            $table->foreign('department_id')->references('id')->on('departments')->onDelete('null');
-            $table->foreign('staff_member_id')->references('id')->on('staffmembers')->onDelete('null');
+            $table->foreign('department_id')->references('id')->on('departments')->onDelete('set null');
+            $table->foreign('staff_member_id')->references('id')->on('staffmembers')->onDelete('set null');
         });
     }
 

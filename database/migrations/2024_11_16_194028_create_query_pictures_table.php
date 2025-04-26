@@ -16,7 +16,7 @@ return new class extends Migration
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
 
-            $table->foreign('query_id')->references('id')->on('queries');
+            $table->foreign('query_id')->references('id')->on('queries')->onDelete('cascade');
         });
     }
 
