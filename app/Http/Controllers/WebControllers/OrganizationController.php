@@ -14,6 +14,7 @@ use App\Models\Organization;
 use App\Models\OrganizationPicture;
 use App\Models\Plan;
 use App\Models\Subscription;
+use App\Models\Transaction;
 use App\Models\User;
 use App\Notifications\DatabaseOnlyNotification;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -521,6 +522,266 @@ class OrganizationController extends Controller
     }
 
 
+    // Payment Received
+    public function planPaymentReceived(Request $request)
+    {
+        $user = $request->user() ?? abort(403, 'Unauthorized action.');
+
+        $request->validate([
+            'id' => 'required|exists:organizations,id',
+        ]);
+
+        try {
+            DB::beginTransaction();
+
+            $organization = Organization::findOrFail($request->id);
+
+            $planSubscription = Subscription::where('organization_id', $organization->id)
+                ->where('source_name', 'plan')
+                ->where('subscription_status', 'Active')
+                ->firstOrFail();
+
+            $billingCycle = BillingCycle::where('duration_months', $planSubscription->billing_cycle)
+                ->firstOrFail();
+
+            $planDetails = $this->getValidatedPlanWithTotalPrice($planSubscription->source_id, $billingCycle->id);
+
+            if (!$planDetails) {
+                throw new \Exception('Invalid plan configuration');
+            }
+
+            if ($organization->status !== 'Enable') {
+                $organization->update(['status' => 'Enable']);
+            }
+
+            $transaction = Transaction::create([
+                'transaction_title' => "{$planDetails['name']} ({$billingCycle->duration_months} Months)",
+                'transaction_category' => 'Renewal',
+                'buyer_id' => $organization->id,
+                'buyer_type' => 'organization',
+                'seller_type' => 'platform',
+                'payment_method' => 'Cash',
+                'price' => $planDetails['total_price'],
+                'currency' => $planDetails['currency'],
+                'status' => 'Completed',
+                'is_subscription' => true,
+                'billing_cycle' => $billingCycle->duration_months . ' Months',
+                'subscription_start_date' => now(),
+                'subscription_end_date' => now()->addMonths($billingCycle->duration_months),
+                'source_id' => $planSubscription->id,
+                'source_name' => 'subscription',
+            ]);
+
+            $planSubscription->update([
+                'ends_at' => now()->addMonths($billingCycle->duration_months),
+                'price_at_subscription' => $planDetails['total_price'],
+                'currency_at_subscription' => $planDetails['currency'],
+            ]);
+
+            DB::commit();
+
+            dispatch(new OrganizationOwnerNotifications(
+                $organization->id,
+                null,
+                'Payment Marked as Received by Admin',
+                "An admin has marked your subscription payment as received. Your plan has been renewed for {$billingCycle->duration_months} months. You can view the transaction details for more information.",
+                "owner/finance/{$transaction->id}/show",
+                false,
+
+                $user->id,
+                'Payment Successfully Marked as Received',
+                "Payment marked as received for {$organization->name}. Subscription renewed for {$billingCycle->duration_months} months.",
+                "admin/organizations/{$organization->id}/show",
+            ));
+
+            return redirect()->back()->with('success', 'Marked as Payment Received successfully.');
+
+        } catch (ModelNotFoundException $e) {
+            DB::rollBack();
+            $errorMessage = match (true) {
+                $e->getModel() === Organization::class => 'Organization not found',
+                $e->getModel() === Subscription::class => 'No active subscription found',
+                $e->getModel() === BillingCycle::class => 'Invalid billing cycle configuration',
+                default => 'Invalid reference data'
+            };
+            return redirect()->back()->with('error', $errorMessage);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Plan payment processing failed: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Payment processing failed: ' . $e->getMessage());
+        }
+    }
+
+
+    // Cancel Plan
+    public function adminCancelPlanSubscription(Request $request)
+    {
+        $request->validate([
+            'id' => 'required|exists:organizations,id',
+        ]);
+
+        return $this->cancelPlanSubscription($request, $request->id, 'admin');
+    }
+
+    public function ownerCancelPlanSubscription(Request $request)
+    {
+        $token = $request->attributes->get('token');
+
+        if (empty($token['organization_id'])) {
+            return redirect()->back()->with('error', "Can't access this page, unless you are an organization owner.");
+        }
+
+        return $this->cancelPlanSubscription($request, $token['organization_id'], 'owner');
+    }
+
+    private function cancelPlanSubscription(Request $request, string $id, string $portal)
+    {
+        $user = $request->user() ?? abort(403, 'Unauthorized action.');
+
+        try {
+            DB::beginTransaction();
+
+            $organization = Organization::findOrFail($id);
+
+            $planSubscription = Subscription::where('organization_id', $organization->id)
+                ->where('source_name', 'plan')
+                ->where('subscription_status', 'Active')
+                ->firstOrFail();
+
+            $planSubscription->update([
+                'subscription_status' => 'Cancelled',
+            ]);
+
+            DB::commit();
+
+            if ($portal === 'admin') {
+                dispatch(new OrganizationOwnerNotifications(
+                    $organization->id,
+                    null,
+                    "Plan Cancellation Scheduled by Admin",
+                    "An admin has scheduled the cancellation of your current plan. It will remain active until the end of the paid period. You can reactivate it anytime before the period ends if you wish to continue.",
+                    "owner/organization",
+
+                    false,
+
+                    $user->id,
+                    "Plan Cancellation Scheduled",
+                    "The plan subscription for {$organization->name} has been scheduled for cancellation after the current billing period.",
+                    "admin/organizations/{$organization->id}/show"
+                ));
+            } else {
+                dispatch(new DatabaseOnlyNotification(
+                    null,
+                    "Plan Cancellation Scheduled",
+                    "Your current plan will remain active until the end of the paid period. Renewal has been disabled, but you can reactivate it anytime before the period ends.",
+                    "owner/organization"
+                ));
+            }
+
+            return redirect()->back()->with('success', 'Plan subscription cancellation has been scheduled successfully.');
+
+        } catch (ModelNotFoundException $e) {
+            DB::rollBack();
+            $errorMessage = match (true) {
+                $e->getModel() === Organization::class => 'Organization not found',
+                $e->getModel() === Subscription::class => 'No active plan subscription found',
+                default => 'Invalid reference data'
+            };
+            return redirect()->back()->with('error', $errorMessage);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Plan subscription cancellation failed: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Plan cancellation failed: ' . $e->getMessage());
+        }
+    }
+
+
+    // Resume Plan
+    public function adminResumePlanSubscription(Request $request)
+    {
+        $request->validate([
+            'id' => 'required|exists:organizations,id',
+        ]);
+
+        return $this->resumePlanSubscription($request, $request->id, 'admin');
+    }
+
+    public function ownerResumePlanSubscription(Request $request)
+    {
+        $token = $request->attributes->get('token');
+
+        if (empty($token['organization_id'])) {
+            return redirect()->back()->with('error', "Can't access this page, unless you are an organization owner.");
+        }
+
+        return $this->resumePlanSubscription($request, $token['organization_id'], 'owner');
+    }
+
+    private function resumePlanSubscription(Request $request, string $id, string $portal)
+    {
+        $user = $request->user() ?? abort(403, 'Unauthorized action.');
+
+        try {
+            DB::beginTransaction();
+
+            $organization = Organization::findOrFail($id);
+
+            $planSubscription = Subscription::where('organization_id', $organization->id)
+                ->where('source_name', 'plan')
+                ->where('subscription_status', 'Cancelled')
+                ->firstOrFail();
+
+            $planSubscription->update([
+                'subscription_status' => 'Active',
+            ]);
+
+            DB::commit();
+
+            if ($portal === 'admin') {
+                dispatch(new OrganizationOwnerNotifications(
+                    $organization->id,
+                    null,
+                    "Plan Resumed by Admin",
+                    "An admin has resumed your plan. Your subscription will now continue normally without interruption.",
+                    "owner/organization",
+
+                    false,
+
+                    $user->id,
+                    "Plan Resumed Successfully",
+                    "The plan subscription for {$organization->name} has been resumed and is now active.",
+                    "admin/organizations/{$organization->id}/show"
+                ));
+            } else {
+                dispatch(new DatabaseOnlyNotification(
+                    null,
+                    "Plan Resumed Successfully",
+                    "Your plan subscription has been resumed. It will continue without interruption.",
+                    "owner/organization"
+                ));
+            }
+
+            return redirect()->back()->with('success', 'Plan subscription has been resumed successfully.');
+
+        } catch (ModelNotFoundException $e) {
+            DB::rollBack();
+            $errorMessage = match (true) {
+                $e->getModel() === Organization::class => 'Organization not found',
+                $e->getModel() === Subscription::class => 'No cancelled plan subscription found',
+                default => 'Invalid reference data'
+            };
+            return redirect()->back()->with('error', $errorMessage);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Plan subscription resume failed: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Plan resuming failed: ' . $e->getMessage());
+        }
+    }
+
+
     // Helper Functions
     private function current_plan(string $organization_id)
     {
@@ -580,6 +841,41 @@ class OrganizationController extends Controller
                 'usage' => 0,
             ];
         }
+    }
+
+    private function getValidatedPlanWithTotalPrice($planId, $billingCycleId)
+    {
+        $plan = Plan::where('id', $planId)
+            ->where('status', '!=', 'Deleted')
+            ->select('id', 'name', 'description')
+            ->whereHas('services.prices', function($query) use ($billingCycleId) {
+                $query->where('billing_cycle_id', $billingCycleId);
+            })
+            ->with(['services' => function($query) use ($billingCycleId) {
+                $query->whereHas('prices', function($q) use ($billingCycleId) {
+                    $q->where('billing_cycle_id', $billingCycleId);
+                })
+                    ->with(['prices' => function($priceQuery) use ($billingCycleId) {
+                        $priceQuery->where('billing_cycle_id', $billingCycleId)
+                            ->select('price', 'service_id');
+                    }]);
+            }])
+            ->first();
+
+        if (!$plan) {
+            return null;
+        }
+
+        $totalPrice = $plan->services->sum(function($service) {
+            return $service->prices->first()->price;
+        });
+
+        return [
+            'name' => $plan->name,
+            'description' => $plan->description,
+            'total_price' => $totalPrice,
+            'currency' => $plan->currency,
+        ];
     }
 
 
