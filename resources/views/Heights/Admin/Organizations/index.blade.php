@@ -1255,9 +1255,7 @@
     <!-- Update payment status -->
     <script>
         function updateOnlinePaymentStatus(checkbox, organizationId, merchantId) {
-            // First check if merchant ID exists
             if (!merchantId) {
-                // Revert the checkbox
                 checkbox.checked = !checkbox.checked;
 
                 // Show SweetAlert error message
@@ -1294,7 +1292,6 @@
                 })
                 .then(data => {
                     if (data.error) {
-                        // Revert the checkbox if there was an error
                         checkbox.checked = !checkbox.checked;
                         Swal.fire({
                             icon: 'error',
@@ -1316,7 +1313,6 @@
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    // Revert the checkbox on error
                     checkbox.checked = !checkbox.checked;
                     Swal.fire({
                         icon: 'error',

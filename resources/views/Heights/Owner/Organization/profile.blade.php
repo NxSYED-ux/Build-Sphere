@@ -253,12 +253,29 @@
                             <div class="detail-list">
 
                                 <div class="row">
-                                    <div class="col-md-6 detail-item py-1">
+                                    <div class="col-md-6 col-7 detail-item py-1">
                                         <div class="detail-label">Membership ID</div>
                                         <div class="detail-value fw-medium">{{ $organization->payment_gateway_merchant_id }}</div>
                                     </div>
 
-                                    <div class="col-md-6 detail-item pb-1">
+                                    <div class="col-md-6 col-5 detail-item pb-1">
+                                        <div class="detail-label">Online Payment</div>
+                                            <div class="d-flex align-items-center">
+                                                <label class="form-check-label me-3" for="enable_online_payments">
+                                                    Enable
+                                                </label>
+                                                <div class="form-check form-switch m-0 mx-2 mt-1">
+                                                    <input type="hidden" name="is_online_payment_enabled" value="0">
+                                                    <input class="form-check-input" type="checkbox" role="switch" id="enable_online_payments"
+                                                       name="is_online_payment_enabled" value="{{ old('merchant_id', $organization->is_online_payment_enabled) }}"
+                                                       style="transform: scale(1.3);"
+                                                       {{ old('is_online_payment_enabled', $organization->is_online_payment_enabled ?? false) ? 'checked' : '' }}
+                                                       onchange="updateOnlinePaymentStatus(this, '{{ $organization->id }}', '{{ $organization->payment_gateway_merchant_id }}')">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-12 col-md-6 col-lg-12 detail-item pb-1">
                                         <div class="detail-label">Registration Date</div>
                                         <div class="detail-value fw-medium">{{ isset($organization->created_at) ? \Carbon\Carbon::parse($organization->created_at)->format('M d, Y') : 'N/A' }}</div>
                                     </div>
@@ -1164,5 +1181,77 @@
                 });
             }
         });
+    </script>
+
+    <!-- Update payment status -->
+    <script>
+        function updateOnlinePaymentStatus(checkbox, organizationId, merchantId) {
+            if (!merchantId) {
+                checkbox.checked = !checkbox.checked;
+
+                // Show SweetAlert error message
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Cannot Update',
+                    text: 'Online payment cannot be enabled because the organization is not linked to any payment gateway.',
+                    confirmButtonColor: '#3085d6',
+                    confirmButtonText: 'OK'
+                });
+                return;
+            }
+
+            const isEnabled = checkbox.checked ? 1 : 0;
+            const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+            fetch("{{ route('owner.organization.onlinePaymentStatus.update') }}", {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': token,
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({
+                    id: organizationId,
+                    is_online_payment_enabled: isEnabled
+                })
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.error) {
+                        checkbox.checked = !checkbox.checked;
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: data.error,
+                            confirmButtonColor: '#3085d6',
+                            confirmButtonText: 'OK'
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success',
+                            text: data.message || 'Online payment status updated successfully',
+                            confirmButtonColor: '#3085d6',
+                            confirmButtonText: 'OK'
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    checkbox.checked = !checkbox.checked;
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'An error occurred while updating the online payment status.',
+                        confirmButtonColor: '#3085d6',
+                        confirmButtonText: 'OK'
+                    });
+                });
+        }
     </script>
 @endpush
