@@ -339,17 +339,17 @@ class OrganizationController extends Controller
                     null,
                     "Organization Updated by Admin",
                     "Your organization's details have been successfully updated by the admin. You can review the changes by clicking this notification.",
-                    ['web' => "organization"],
+                    "organization",
 
                     false,
                     $user->id,
                     'Organization Updated Successfully',
                     "The details of {$organization->name} has been successfully updated. Click the notification to review the updated details.",
-                    ['web' => "admin/organizations/{$organization->id}/show"],
+                    "admin/organizations/{$organization->id}/show",
                 ));
 
             }else{
-                dispatch(new DatabaseOnlyNotification(
+                $user->notify(new DatabaseOnlyNotification(
                     null,
                     'Organization Details Updated',
                     'The details of your organization have been successfully updated. You can review the updated information by clicking the notification.',
@@ -532,16 +532,16 @@ class OrganizationController extends Controller
                     null,
                     "Online Payment Option {$statusText} by Admin",
                     "The admin has {$statusText} the online payment option for your organization. Click here to review the updated settings.",
-                    ['web' => "organization"],
+                    "organization",
 
                     false,
                     $user->id,
                     "Online Payment Option {$statusText}",
                     "You have successfully {$statusText} the online payment option for {$organization->name}. Click here to view the organization details.",
-                    ['web' => "admin/organizations/{$organization->id}/show"],
+                    "admin/organizations/{$organization->id}/show"
                 ));
             } else {
-                dispatch(new DatabaseOnlyNotification(
+                $user->notify(new DatabaseOnlyNotification(
                     null,
                     "Online Payment Option {$statusText}",
                     "You have successfully {$statusText} the online payment option for your organization. Click here to review the changes.",

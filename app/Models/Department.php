@@ -18,6 +18,7 @@ class Department extends Model
         'name',
         'description',
         'organization_id',
+        'updated_at',
     ];
 
     public $timestamps = true;
@@ -43,6 +44,7 @@ class Department extends Model
     {
         return $this->hasMany(StaffMember::class, 'department_id', 'id');
     }
+
     public function queries()
     {
         return $this->hasMany(Query::class, 'department_id', 'id');

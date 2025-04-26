@@ -22,11 +22,11 @@ return new class extends Migration
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
 
-            $table->foreign('user_id')->references('id')->on('users');
-            $table->foreign('unit_id')->references('id')->on('buildingunits');
-            $table->foreign('building_id')->references('id')->on('buildings');
-            $table->foreign('department_id')->references('id')->on('departments');
-            $table->foreign('staff_member_id')->references('id')->on('staffmembers');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('unit_id')->references('id')->on('buildingunits')->onDelete('cascade');
+            $table->foreign('building_id')->references('id')->on('buildings')->onDelete('cascade');
+            $table->foreign('department_id')->references('id')->on('departments')->onDelete('null');
+            $table->foreign('staff_member_id')->references('id')->on('staffmembers')->onDelete('null');
         });
     }
 

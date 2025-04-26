@@ -18,7 +18,6 @@ use Illuminate\Validation\Rule;
 
 class DepartmentController extends Controller
 {
-    // Index
     public function index(Request $request)
     {
         try {
@@ -37,10 +36,9 @@ class DepartmentController extends Controller
         }
     }
 
-
-    // Store
     public function store(Request $request)
     {
+        $user = $request->user() ?? abort(403, 'Unauthorized action.');
         $token = $request->attributes->get('token');
         if (empty($token['organization_id'])) {
             return redirect()->back()->with('error', "You can't perform this action.");
@@ -68,7 +66,7 @@ class DepartmentController extends Controller
                 'organization_id' => $organization_id,
             ]);
 
-            dispatch( new DatabaseOnlyNotification(
+            $user->notify(new DatabaseOnlyNotification(
                 null,
                 "New Department Created",
                 "The department '{$request->level_name}' has been successfully created.",
@@ -82,18 +80,18 @@ class DepartmentController extends Controller
         }
     }
 
-
-    // Show
     public function show(Request $request, Department $department)
     {
         $token = $request->attributes->get('token');
+
         if (empty($token['organization_id'])) {
-            return redirect()->back()->with('error', "You can't perform this action.");
+            return redirect()->back()->with('error', "Access denied. Organization information is missing.");
         }
+
         $organization_id = $token['organization_id'];
 
-        if($department->organization_id ){
-
+        if ($department->organization_id != $organization_id) {
+            return redirect()->back()->with('error', "The requested department was not found.");
         }
 
         $staffMembers = $department->staffMembers()
@@ -103,10 +101,20 @@ class DepartmentController extends Controller
         return view('Owner.Departments.show', compact('department', 'staffMembers'));
     }
 
-
-    // Edit
     public function edit(Request $request,Department $department)
     {
+        $token = $request->attributes->get('token');
+
+        if (empty($token['organization_id'])) {
+            return redirect()->back()->with('error', "Access denied. Organization information is missing.");
+        }
+
+        $organization_id = $token['organization_id'];
+
+        if ($department->organization_id != $organization_id) {
+            return redirect()->back()->with('error', "The requested department was not found.");
+        }
+
         try {
             return response()->json([
                 'department' => $department,
@@ -118,162 +126,48 @@ class DepartmentController extends Controller
         }
     }
 
-
-    // Update
-    public function adminUpdate(Request $request)
-    {
-        $request->validate([
-            'status' => 'required|string|in:Approved,Rejected',
-            'organization_id' => 'required|exists:organizations,id',
-        ]);
-        return $this->update($request, 'admin', $request->organization_id);
-    }
-
-    public function ownerUpdate(Request $request)
-    {
-        $organization_id = $this->ownerBuildingAccess($request);
-        if ($organization_id instanceof RedirectResponse) {
-            return $organization_id;
-        }
-
-        return $this->update($request, 'owner', $organization_id);
-    }
-
-    private function update(Request $request, String $portal, $organization_id)
+    public function destroy(Request $request)
     {
         $user = $request->user() ?? abort(403, 'Unauthorized');
         $token = $request->attributes->get('token');
 
+        if (empty($token['organization_id'])) {
+            return redirect()->back()->with('error', "Access denied. Organization information is missing.");
+        }
+        $organization_id = $token['organization_id'];
+
         $request->validate([
-            'level_name' => [
-                'required',
-                'string',
-                'max:255',
-                Rule::unique('buildinglevels')->where(function ($query) use ($request) {
-                    return $query->where('building_id', $request->building_id);
-                })->ignore($request->level_id),
-            ],
-            'level_id' => 'required|exists:buildinglevels,id',
-            'description' => 'nullable|string',
-            'level_number' => 'required|integer',
-            'building_id' => 'required|exists:buildings,id',
-            'updated_at' => 'required'
-        ], [
-            'level_name.unique' => 'This level name is already in use for the selected building.',
+            'id' => 'required|exists:departments,id',
         ]);
 
         try {
-            DB::beginTransaction();
+            $department = Department::where([
+                ['id', '=', $request->id],
+                ['organization_id', '=', $organization_id],
+            ])->first();
 
-            $buildingLevel = BuildingLevel::where([
-                ['id', '=', $request->level_id],
-                ['updated_at', '=', $request->updated_at]
-            ])->sharedLock()->first();
-
-            if (!$buildingLevel) {
-                DB::rollBack();
-                return redirect()->back()->with('error', 'Please refresh and try again.');
+            if (!$department) {
+                return redirect()->back()->with('error', "The department you are trying to delete was not found.");
             }
 
-            if($portal === 'owner' && $token['organization_id'] !== $buildingLevel->organization_id){
-                DB::rollBack();
-                return redirect()->back()->with('error', 'The selected level id is invalid.');
+            if ($department->staffMembers()->count() > 0) {
+                return redirect()->back()->with('error', "This department cannot be deleted because it has assigned staff members.");
             }
 
-            $buildingLevel->update([
-                'level_name' => $request->level_name,
-                'description' => $request->description,
-                'level_number' => $request->level_number,
-                'status' => $request->status ?? $buildingLevel->status,
-                'building_id' => $request->building_id,
-                'organization_id' => $organization_id,
-                'updated_at' => now(),
-            ]);
+            $departmentName = $department->name;
+            $department->delete();
 
-            DB::commit();
+            $user->notify(new DatabaseOnlyNotification(
+                null,
+                "Department Deleted Successfully",
+                "The department '{$departmentName}' has been successfully deleted.",
+                ['web' => "owner/departments"]
+            ));
 
-            if($portal === 'admin'){
-                dispatch( new BuildingNotifications(
-                    $organization_id,
-                    $request->building_id,
-                    "Level Updated by Admin",
-                    "The level '{$request->level_name}' has been successfully updated by admin.",
-                    'owner/levels',
-
-                    $user->id,
-                    "Level Updated",
-                    "The level '{$request->level_name}' has been successfully updated with the applied changes.",
-                    'admin/levels',
-
-                    true,
-                ));
-            }elseif($portal === 'owner'){
-                dispatch( new BuildingNotifications(
-                    $organization_id,
-                    $request->building_id,
-                    "Level Updated by {$token['role_name']} ({$user->name})",
-                    "The level '{$request->level_name}' has been successfully updated by {$token['role_name']}.",
-                    'owner/levels',
-
-                    $user->id,
-                    "Level Updated",
-                    "The level '{$request->level_name}' has been successfully updated with the applied changes.",
-                    'owner/levels',
-                ));
-            }
-
-            return redirect()->back()->with('success', 'Building Level updated successfully.');
+            return redirect()->back()->with('success', 'Department deleted successfully.');
         } catch (\Exception $e) {
-            DB::rollBack();
-            Log::error('Error in update Building Level: ' . $e->getMessage());
-            return redirect()->back()->with('error', 'Something went wrong! Please try again.');
+            Log::error('Error deleting department: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Something went wrong. Please try again later.');
         }
     }
-
-
-    // Helper Functions
-    private function getOwnerBuildings(Request $request)
-    {
-        $user = $request->user() ?? abort(404, 'Unauthorized');
-        $token = $request->attributes->get('token');
-        $buildings = collect();
-
-        if (empty($token['organization_id']) || empty($token['role_name'])) {
-            return response()->json($buildings);
-        }
-
-        $organization_id = $token['organization_id'];
-        $role_name = $token['role_name'];
-
-        $query = Building::select('id', 'name')->where('organization_id', $organization_id);
-
-        if ($role_name === 'Manager') {
-            $managerBuildingIds = ManagerBuilding::where('user_id', $user->id)->pluck('building_id')->toArray();
-            $query->whereIn('id', $managerBuildingIds);
-        }
-
-        return $query->get();
-    }
-
-    private function ownerBuildingAccess(Request $request)
-    {
-        $user = $request->user() ?? abort(403, 'Unauthorized');
-        $token = $request->attributes->get('token');
-
-        if (!$token || !isset($token['organization_id']) || !isset($token['role_name'])) {
-            return redirect()->back()->withInput()->with('error', 'You cannot perform this action because they are not linked to any organization. Please switch to an organization account to proceed.');
-        }
-
-        $organization_id = $token['organization_id'];
-        $role_name = $token['role_name'];
-
-        if ($role_name === 'Manager' && !ManagerBuilding::where('building_id', $request->building_id)
-                ->where('user_id', $user->id)
-                ->exists()) {
-            return redirect()->back()->withInput()->with('error', 'You do not have access to add units of the selected building.');
-        }
-
-        return $organization_id;
-    }
-
 }
