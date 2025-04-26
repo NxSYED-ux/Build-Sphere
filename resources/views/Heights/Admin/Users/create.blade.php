@@ -8,7 +8,7 @@
             --primary-color: var(--color-blue);
             --primary-hover: var(--color-blue);
             --secondary-color: #f8f9fa;
-            --text-color: #2d3748;
+            --text-color: var(--sidenavbar-text-color);
             --light-text: #718096;
             --border-color: #e2e8f0;
             --error-color: #e53e3e;
@@ -29,27 +29,6 @@
         .card:hover {
             transform: translateY(-2px);
             box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
-        }
-
-        .form-control, .form-select {
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
-            padding: 5px 15px;
-            transition: border-color 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .form-control:focus, .form-select:focus {
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 2px rgba(108, 99, 255, 0.2);
-        }
-
-        .input-icon {
-            color: var(--sidenavbar-text-color);
-            transition: color 0.3s ease;
-        }
-
-        .form-control:focus + .input-icon {
-            color: var(--primary-color);
         }
 
         .required__field {
@@ -79,29 +58,6 @@
             transition: all 0.3s ease;
         }
 
-        /*.btn-primary {*/
-        /*    background-color: var(--primary-color);*/
-        /*    border-color: var(--primary-color);*/
-        /*}*/
-
-        /*.btn-primary:hover {*/
-        /*    background-color: var(--primary-hover);*/
-        /*    border-color: var(--primary-hover);*/
-        /*    transform: translateY(-2px);*/
-        /*}*/
-
-        .btn-secondary {
-            background-color: white;
-            border-color: var(--border-color);
-            color: var(--text-color);
-        }
-
-        .btn-secondary:hover {
-            background-color: #252525;
-            color: #ffff;
-            border-color: var(--border-color);
-        }
-
         /* Form labels */
         .form-label {
             font-weight: 500;
@@ -112,9 +68,9 @@
 
         /* Section headers */
         .section-header {
-            color: var(--main-text-color);
+            color: var(--sidenavbar-text-color);
             font-weight: 500;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             display: flex;
             align-items: center;
         }
@@ -171,10 +127,10 @@
                 <div class="row">
                     <div class="col-md-12">
                         <div class="box">
-                            <div class="container mt-2">
+                            <div class="container">
                                 <div class="d-flex justify-content-between align-items-center mb-3">
-                                    <h4 class="mb-0 text-primary">
-                                        <i class='bx bxs-user-plus me-2'></i>Create New User
+                                    <h4 class="mb-0">
+                                        Create New User
                                     </h4>
                                     <a href="{{ route('users.index') }}" class="btn btn-secondary">
                                         <i class='bx bx-arrow-back me-1'></i> Back to Users
@@ -386,7 +342,6 @@
                                                         <img id="avatar" class="avatar"
                                                              src="{{ old('picture') ? asset(old('picture')) : asset('img/placeholder-profile.png') }}"
                                                              alt="User Picture Preview">
-                                                        <small class="text-muted mt-2">Image Preview</small>
                                                     </div>
                                                 </div>
                                             </div>

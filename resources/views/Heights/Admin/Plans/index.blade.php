@@ -4,12 +4,6 @@
 
 @section('styles')
     <style>
-        .text-gradient-primary {
-            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-        }
 
         .shadow-hover {
             transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -45,9 +39,6 @@
             opacity: 1;
             transform: translate(0, 0);
         }
-        .swal2-popup {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-        }
     </style>
 @endsection
 
@@ -68,7 +59,7 @@
                     <div class="container pt-5 pb-3 mt-2">
                         <div class="d-flex justify-content-between align-items-center mb-2">
                             <div class="text-center text-md-start">
-                                <h2 class="h4 fw-bold mb-0 text-gradient-primary">Manage Subscription Plans</h2>
+                                <h2 class="h4 fw-bold mb-0">Manage Subscription Plans</h2>
                             </div>
                             <a href="{{ route('plans.create') }}" class="btn btn-primary rounded-pill px-4 py-2">
                                 <i class=" me-2"></i> Add Plan

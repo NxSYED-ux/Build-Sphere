@@ -108,7 +108,7 @@
             padding-top: 13px;
             overflow-y: auto;
             background-color: var(--main-background-color);
-            color: var(--main-text-color);
+            color: var(--sidenavbar-text-color);
         }
 
         .add_button {
@@ -117,7 +117,7 @@
             margin-right: 10px;
             background-color: #adadad;
             color: #333333;
-            border: 1px solid grey;
+            /*border: 1px solid var(--sidenavbar-text-color);*/
             font-size: 25px;
             font-weight: bold;
             display: flex;
@@ -160,7 +160,13 @@
 
         /*  Body Cards  */
         .card{
-            background-color: var(--body-card-bg) !important;)
+            background-color: var(--body-card-bg) !important;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
         }
 
         .card-body{
@@ -190,12 +196,24 @@
             color: var(--label-color);
         }
 
+        /*.form-section {*/
+        /*    animation: fadeIn 0.4s ease forwards;*/
+        /*}*/
+
+        /*@keyframes fadeIn {*/
+        /*    from { opacity: 0; transform: translateY(10px); }*/
+        /*    to { opacity: 1; transform: translateY(0); }*/
+        /*}*/
+
         input:not(.form-check-input):not(.is-invalid),
         select:not(.is-invalid),
         textarea:not(.is-invalid) {
             background-color: var(--input-bg-color) !important;
             color: var(--input-text-color) !important;
             border: 1px solid var(--input-border-color) !important;
+            border-radius: 8px;
+            /*padding: 5px 15px;*/
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
         }
 
         .is-invalid {
@@ -204,8 +222,17 @@
             background-color: var(--input-bg-color) !important;
         }
 
-        form input i{
+        form, input, .form-control i{
             color: var(--input-icon-color) !important;
+        }
+
+        .input-icon,i {
+            color: var(--sidenavbar-text-color);
+            transition: color 0.3s ease;
+        }
+
+        .form-control:focus + .input-icon,i {
+            color: var(--color-blue);
         }
 
         input[type="date"]::-webkit-calendar-picker-indicator {

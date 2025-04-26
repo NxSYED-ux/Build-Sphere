@@ -18,6 +18,15 @@
             margin-bottom: 1rem;
         }
 
+        .form-section {
+            animation: fadeIn 0.4s ease forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
     </style>
 @endpush
 
@@ -44,7 +53,7 @@
                 <div class="row">
                     <div class="col-md-12">
                         <div class="box" style="overflow-x: auto;">
-                            <div class="container mt-2">
+                            <div class="container">
                                 <div class="d-flex justify-content-between align-items-center mb-2">
                                     <h4 class="mb-0">Edit User</h4>
                                     <a href="{{ route('users.index') }}" class="btn btn-secondary">Go Back</a>

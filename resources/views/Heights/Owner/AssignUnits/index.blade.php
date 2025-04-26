@@ -5,8 +5,8 @@
 @push('styles')
     <style>
         :root {
-            --primary-color: #6c63ff;
-            --primary-hover: #5752d3;
+            --primary-color: var(--color-blue);
+            --primary-hover: var(--color-blue);
             --secondary-color: #f8f9fa;
             --text-color: #2d3748;
             --light-text: #718096;
@@ -47,10 +47,6 @@
             box-shadow: 0 0 0 2px rgba(108, 99, 255, 0.2);
         }
 
-        .input-icon {
-            color: var(--light-text);
-            transition: color 0.3s ease;
-        }
 
         .form-control:focus + .input-icon {
             color: var(--primary-color);

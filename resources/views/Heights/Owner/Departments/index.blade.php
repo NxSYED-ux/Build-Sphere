@@ -96,6 +96,14 @@
                                                             <a href="#" class="text-warning Owner-Department-Edit-Button" data-id="{{ $department->id }}" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit">
                                                                 <x-icon name="edit" type="icon" class="" size="20px" />
                                                             </a>
+                                                            <form action="{{ route('owner.departments.destroy', $department->id) }}" method="POST" class="d-inline" id="delete-department-form-{{ $department->id }}">
+                                                                @csrf
+                                                                @method('DELETE')
+                                                                <input type="hidden" name="id" value="{{ $department->id }}">
+                                                                <button type="button" class="text-danger bg-transparent border-0 p-0 delete-department-btn" title="Delete Department" data-id="{{ $department->id }}">
+                                                                    <x-icon name="delete" type="icon" class="" size="20px" />
+                                                                </button>
+                                                            </form>
                                                         </div>
                                                     </td>
                                                 </tr>
@@ -133,7 +141,7 @@
                                 <div class="form-group mb-3">
                                     <label for="name">Name</label>
                                     <span class="required__field">*</span><br>
-                                    <input type="text" name="name" id="name" class="form-control @error('name') is-invalid @enderror" value="{{ old('name') }}" maxlength="50" placeholder="Level Name" required>
+                                    <input type="text" name="name" id="name" class="form-control @error('name') is-invalid @enderror" value="{{ old('name') }}" maxlength="50" placeholder="Department Name" required>
                                     @error('name')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
@@ -146,7 +154,7 @@
                             <div class="col-12">
                                 <div class="form-group mb-3">
                                     <label for="description">Description</label>
-                                    <textarea name="description" id="description" rows="3" class="form-control @error('description') is-invalid @enderror" maxlength="250" placeholder="Description">{{ old('description') }}</textarea>
+                                    <textarea name="description" id="description" rows="3" class="form-control @error('description') is-invalid @enderror" maxlength="250" placeholder="Department Description">{{ old('description') }}</textarea>
                                     @error('description')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
@@ -200,7 +208,7 @@
                             <div class="col-12">
                                 <div class="form-group mb-2">
                                     <label for="edit_department_description">Description</label>
-                                    <textarea name="edit_description" id="edit_department_description" rows="3" class="form-control @error('edit_description') is-invalid @enderror" maxlength="250" placeholder="Description">{{ old('edit_description') }}</textarea>
+                                    <textarea name="edit_description" id="edit_department_description" rows="3" class="form-control @error('edit_description') is-invalid @enderror" maxlength="250" placeholder="Department Description">{{ old('edit_description') }}</textarea>
                                     @error('edit_description')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
@@ -313,7 +321,32 @@
                 });
             });
         });
+    </script>
 
+    <!-- Handle all delete buttons -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.delete-department-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const departmentId = this.getAttribute('data-id');
+
+                    Swal.fire({
+                        title: 'Are you sure?',
+                        text: "You won't be able to revert this!",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#d33',
+                        cancelButtonColor: '#3085d6',
+                        confirmButtonText: 'Yes, delete it!'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            // Submit the corresponding form
+                            document.getElementById(`delete-department-form-${departmentId}`).submit();
+                        }
+                    });
+                });
+            });
+        });
     </script>
 
 @endpush

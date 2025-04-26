@@ -16,6 +16,7 @@
     @elseif($name === 'edit')
     @elseif($name === 'search')
     @elseif($name === 'export')
+    @elseif($name === 'delete')
     @endif
 @else
     @if($name === 'view')
@@ -27,5 +28,7 @@
         <i class="bx bx-search {{ $class }}" style="font-size: {{ $size }}"></i>
     @elseif($name === 'export')
         <i class="bx bx-export {{ $class }}" style="font-size: {{ $size }}"></i>
+    @elseif($name === 'delete')
+        <i class="fas fa-trash {{ $class }}" style="font-size: {{ $size }}"></i>
     @endif
 @endif

@@ -1,3 +1,25 @@
+<style>
+    .notification-item {
+        transition: background-color 0.2s;
+    }
+
+    .notification-item:hover {
+        background-color: #f8f9fa;
+    }
+
+    .notification-item.unread {
+        background-color: #f0f7ff;
+    }
+
+    .notification-checkbox {
+        cursor: pointer;
+    }
+
+    .notification-link {
+        flex-grow: 1;
+    }
+</style>
+
 <li class="nav-item dropdown no-arrow mx-2 px-2">
     <a class="nav-link dropdown-toggle dropdown-toggle-no-arrow position-relative" href="#" id="alertsDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
         <svg width="20" height="25" viewBox="0 0 14 18" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -14,13 +36,17 @@
                 </svg>
                 Notifications
             </h5>
-            <button class="btn-close px-3" aria-label="Close"></button>
+            <div class="d-flex align-items-center">
+                <button id="deleteSelected" class="btn btn-sm btn-danger me-2" style="display: none;">
+                    <i class="fas fa-trash"></i>
+                </button>
+                <button class="btn-close px-3" aria-label="Close"></button>
+            </div>
         </div>
 
-        <div class="notification-list  px-1"  id="notificationList">
+        <div class="notification-list px-1" id="notificationList">
             <p class="text-muted text-center small" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">No new notifications</p>
         </div>
-
 
         <div class="notification-footer d-flex justify-content-between py-3 px-3">
             <button id="markAllAsRead" class="btn btn-primary btn rounded-3">Mark All as Read</button>
@@ -30,9 +56,10 @@
 </li>
 
 @push('scripts')
-
     <script>
         document.addEventListener("DOMContentLoaded", function () {
+            let selectedNotifications = [];
+
             function fetchNotifications() {
                 console.log("Notification Function is calling");
 
@@ -50,27 +77,47 @@
                                 const timeAgo = timeSince(new Date(notification.data.created_at));
 
                                 notificationList.innerHTML += `
-                           <a class="d-flex align-items-center text-decoration-none p-2 border-bottom notification-link"
-                               ${notification.data.link.web ? `href="${notification.read_at ? window.location.origin + '/' + notification.data.link.web : 'javascript:void(0);'}"` : ''}
-                               onclick="${notification.read_at ? '' : `markNotificationAsRead('${notification.id}', '${window.location.origin}/${notification.data.link.web}')`}">
-
-                                <img src="${notification.data.image ? '{{ asset('/') }}' + notification.data.image : '{{ asset('img/placeholder-img.jfif') }}'}"
-                                     class="rounded-circle me-2 notification-item-img"
-                                     style="width: 45px; height: 45px;"
-                                     alt="Notification Image">
-                                <div class="d-flex flex-column notification-item-div">
-                                    <span class="${notification.read_at ? '' : 'fw-bold'} text small notification-item-heading">${notification.data.heading}</span>
-                                    <span class="text-muted small text-wrap notification-item-message" style="font-size: 12px;">${notification.data.message}</span>
-                                    <span class="text-muted small notification-item-time" style="font-size: 10px;">${timeAgo}</span>
+                                <div class="d-flex align-items-center p-2 border-bottom notification-item ${notification.read_at ? '' : 'unread'}"
+                                    data-id="${notification.id}">
+                                    <div class="form-check me-2">
+                                        <input class="form-check-input notification-checkbox" type="checkbox"
+                                            value="${notification.id}" id="notif-${notification.id}">
+                                    </div>
+                                    <a class="d-flex align-items-center text-decoration-none flex-grow-1 notification-link"
+                                        ${notification.data.link.web ? `href="${notification.read_at ? window.location.origin + '/' + notification.data.link.web : 'javascript:void(0);'}"` : ''}
+                                        onclick="${notification.read_at ? '' : `markNotificationAsRead('${notification.id}', '${window.location.origin}/${notification.data.link.web}')`}">
+                                        <img src="${notification.data.image ? '{{ asset('/') }}' + notification.data.image : '{{ asset('img/placeholder-img.jfif') }}'}"
+                                            class="rounded-circle me-2 notification-item-img"
+                                            style="width: 45px; height: 45px;"
+                                            alt="Notification Image">
+                                        <div class="d-flex flex-column notification-item-div">
+                                            <span class="${notification.read_at ? '' : 'fw-bold'} text small notification-item-heading">${notification.data.heading}</span>
+                                            <span class="text-muted small text-wrap notification-item-message" style="font-size: 12px;">${notification.data.message}</span>
+                                            <span class="text-muted small notification-item-time" style="font-size: 10px;">${timeAgo}</span>
+                                        </div>
+                                    </a>
                                 </div>
-                            </a>
-
-
-                        `;
+                            `;
                             });
                         } else {
                             notificationList.innerHTML = '<p class="text-muted text-center small" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">No new notifications</p>';
                         }
+
+                        // Add event listeners to checkboxes
+                        document.querySelectorAll('.notification-checkbox').forEach(checkbox => {
+                            checkbox.addEventListener('change', function() {
+                                const notificationId = this.value;
+                                if (this.checked) {
+                                    selectedNotifications.push(notificationId);
+                                } else {
+                                    selectedNotifications = selectedNotifications.filter(id => id !== notificationId);
+                                }
+
+                                // Show/hide delete button based on selection
+                                const deleteBtn = document.getElementById('deleteSelected');
+                                deleteBtn.style.display = selectedNotifications.length > 0 ? 'block' : 'none';
+                            });
+                        });
                     })
                     .catch(error => console.error("Error fetching notifications:", error));
             }
@@ -92,6 +139,46 @@
 
             // Fetch notifications on dropdown click
             document.getElementById("alertsDropdown").addEventListener("click", fetchNotifications);
+
+            // Delete selected notifications
+            document.getElementById("deleteSelected").addEventListener("click", function() {
+                if (selectedNotifications.length === 0) return;
+
+                {{--if (confirm("Are you sure you want to delete the selected notifications?")) {--}}
+                {{--    fetch("{{ route('notifications.delete') }}", {--}}
+                {{--        method: "POST",--}}
+                {{--        headers: {--}}
+                {{--            "X-CSRF-TOKEN": "{{ csrf_token() }}",--}}
+                {{--            "Content-Type": "application/json"--}}
+                {{--        },--}}
+                {{--        body: JSON.stringify({ notification_ids: selectedNotifications })--}}
+                {{--    })--}}
+                {{--        .then(response => {--}}
+                {{--            if (!response.ok) {--}}
+                {{--                throw new Error("Failed to delete notifications");--}}
+                {{--            }--}}
+                {{--            return response.json();--}}
+                {{--        })--}}
+                {{--        .then(() => {--}}
+                {{--            // Remove deleted notifications from UI--}}
+                {{--            selectedNotifications.forEach(id => {--}}
+                {{--                const element = document.querySelector(`.notification-item[data-id="${id}"]`);--}}
+                {{--                if (element) element.remove();--}}
+                {{--            });--}}
+
+                {{--            // Reset selection--}}
+                {{--            selectedNotifications = [];--}}
+                {{--            document.getElementById('deleteSelected').style.display = 'none';--}}
+
+                {{--            // Check if all notifications are deleted--}}
+                {{--            if (document.querySelectorAll('.notification-item').length === 0) {--}}
+                {{--                document.getElementById('notificationList').innerHTML =--}}
+                {{--                    '<p class="text-muted text-center small" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">No new notifications</p>';--}}
+                {{--            }--}}
+                {{--        })--}}
+                {{--        .catch(error => console.error("Error:", error));--}}
+                {{--}--}}
+            });
         });
     </script>
 
@@ -114,7 +201,6 @@
                     return response.json();
                 })
                 .then(() => {
-
                     setTimeout(() => {
                         let notifications = document.querySelectorAll(".notification-item-div");
                         if (notifications.length === 0) {
@@ -125,13 +211,14 @@
                             let heading = notification.querySelector(".notification-item-heading");
                             if (heading) {
                                 heading.classList.remove("fw-bold");
-
-                                const notificationBadge = document.getElementById('notification-badge');
-                                const notificationBadge2 = document.getElementById('notification-badge2');
-                                notificationBadge.style.display = 'none';
-                                notificationBadge2.style.display = 'none';
+                                notification.closest('.notification-item').classList.remove('unread');
                             }
                         });
+
+                        const notificationBadge = document.getElementById('notification-badge');
+                        const notificationBadge2 = document.getElementById('notification-badge2');
+                        notificationBadge.style.display = 'none';
+                        notificationBadge2.style.display = 'none';
                     }, 0);
                 })
                 .catch(error => console.error("Error:", error));
@@ -164,6 +251,7 @@
                         let heading = notificationElement.querySelector(".notification-item-heading");
                         if (heading) {
                             heading.classList.remove("fw-bold");
+                            notificationElement.classList.remove('unread');
                         }
                     }
 
@@ -178,6 +266,7 @@
                 });
         }
     </script>
+@endpush
 
 {{--    <script>--}}
 {{--        document.addEventListener("DOMContentLoaded", function () {--}}
@@ -212,4 +301,4 @@
 {{--    </script>--}}
 
 
-@endpush
+

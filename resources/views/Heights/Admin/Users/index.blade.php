@@ -158,13 +158,13 @@
                                                     <x-icon name="export" type="icon" class="" size="20px" />
                                                 </button>
 
-                                                <ul id="button-list" class="dropdown-menu dropdown-menu-end" >
-                                                    <li><button class="dropdown-item" type="button" id="copyButton">Copy</button></li>
-                                                    <li><button class="dropdown-item" type="button" id="csvButton">CSV</button></li>
-                                                    <li><button class="dropdown-item" type="button" id="excelButton">Excel</button></li>
-                                                    <li><button class="dropdown-item" type="button" id="pdfButton">PDF</button></li>
-                                                    <li><button class="dropdown-item" type="button" id="printButton">Print</button></li>
-                                                    <!-- <li><button class="dropdown-item" type="button" id="colvisButton">Column Visibility</button></li> -->
+                                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="exportDropdown">
+                                                    <li><button class="dropdown-item" type="button" id="copyButton"><i class="fas fa-copy me-2"></i>Copy</button></li>
+                                                    <li><button class="dropdown-item" type="button" id="csvButton"><i class="fas fa-file-csv me-2"></i>CSV</button></li>
+                                                    <li><button class="dropdown-item" type="button" id="excelButton"><i class="fas fa-file-excel me-2"></i>Excel</button></li>
+                                                    <li><button class="dropdown-item" type="button" id="pdfButton"><i class="fas fa-file-pdf me-2"></i>PDF</button></li>
+                                                    <li><hr class="dropdown-divider"></li>
+                                                    <li><button class="dropdown-item" type="button" id="printButton"><i class="fas fa-print me-2"></i>Print</button></li>
                                                 </ul>
                                             </div>
 

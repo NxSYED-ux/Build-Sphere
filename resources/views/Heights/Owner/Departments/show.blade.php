@@ -5,10 +5,9 @@
 @push('styles')
     <style>
         :root {
-            /* Custom Elegant Color Palette */
-            --sage-green: #87bc8d;
+            --sage-green: var(--color-blue);
             --deep-teal: #0b5351;
-            --warm-taupe: #c4a381;
+            --warm-taupe: var(--color-blue);
             --soft-clay: #d7b29d;
             --mist-blue: #a5c4d4;
             --pale-blush: #e8c7c8;
@@ -17,19 +16,19 @@
             --soft-gray: #e0ddd9;
         }
 
-        /* Main Content Styling */
         #main {
             margin-top: 45px;
             transition: all 0.3s;
-            background: var(--light-ivory);
         }
+
+        a{ text-decoration: none; }
 
         /* Department Header - Hero Section */
         .department-hero {
             background: linear-gradient(135deg, var(--deep-teal) 0%, var(--sage-green) 100%);
             border-radius: 16px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-            padding: 2.5rem;
+            padding: 2rem;
             margin-bottom: 2.5rem;
             color: white;
             position: relative;
@@ -107,9 +106,7 @@
             flex-wrap: wrap;
         }
 
-        .btn-edit {
-            background: rgba(255,255,255,0.15);
-            border: 1px solid rgba(255,255,255,0.3);
+        .department-hero .btn-edit,.btn-delete,.btn-back{
             color: white;
             border-radius: 50px;
             padding: 0.6rem 1.5rem;
@@ -120,52 +117,42 @@
             backdrop-filter: blur(5px);
         }
 
-        .btn-edit:hover {
-            background: rgba(255,255,255,0.25);
+        .department-hero .btn-edit:hover,.btn-delete:hover,.btn-back:hover{
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .btn-edit {
+            background: rgba(255,255,255,0.15);
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+
+        .btn-edit:hover {
+            background: rgba(255,255,255,0.25);
         }
 
         .btn-delete {
             background: rgba(199, 84, 80, 0.15);
             border: 1px solid rgba(199, 84, 80, 0.3);
-            color: white;
-            border-radius: 50px;
-            padding: 0.6rem 1.5rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(5px);
         }
 
         .btn-delete:hover {
             background: rgba(199, 84, 80, 0.25);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
 
         .btn-back {
             background: rgba(255,255,255,0.9);
             color: var(--deep-teal);
-            border-radius: 50px;
-            padding: 0.6rem 1.5rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            transition: all 0.3s ease;
             font-weight: 500;
         }
 
         .btn-back:hover {
             background: white;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
 
         /* Staff Team Section */
         .team-section {
-            background: white;
+            background: var(--body-card-bg);
             border-radius: 16px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
             overflow: hidden;
@@ -174,17 +161,17 @@
         }
 
         .section-header {
-            padding: 1.75rem 2rem;
+            padding: 1rem 2rem;
             border-bottom: 1px solid var(--soft-gray);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: white;
+            background: var(--body-card-bg);
         }
 
         .section-title {
             font-weight: 600;
-            color: var(--dark-charcoal);
+            color: var(--sidenavbar-text-color);
             margin: 0;
             font-size: 1.5rem;
             display: flex;
@@ -208,25 +195,6 @@
             margin-left: 0.5rem;
         }
 
-        .export-btn {
-            background: var(--deep-teal);
-            color: white;
-            border: none;
-            border-radius: 50px;
-            padding: 0.65rem 1.5rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            transition: all 0.3s;
-            font-weight: 500;
-        }
-
-        .export-btn:hover {
-            background: var(--sage-green);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 16px rgba(11, 83, 81, 0.15);
-        }
-
         /* Team Members Grid */
         .team-members {
             display: grid;
@@ -236,7 +204,7 @@
         }
 
         .member-card {
-            background: white;
+            background: var(--body-background-color);
             border-radius: 12px;
             box-shadow: 0 5px 15px rgba(0,0,0,0.05);
             overflow: hidden;
@@ -309,7 +277,7 @@
 
         .detail-text {
             font-size: 0.9rem;
-            color: var(--dark-charcoal);
+            color: var(--sidenavbar-text-color);
         }
 
         /* Empty State */
@@ -375,7 +343,7 @@
         .modal-header {
             background: linear-gradient(135deg, var(--deep-teal) 0%, var(--sage-green) 100%);
             border-bottom: none;
-            padding: 1.5rem;
+            padding: 1rem 1.5rem;
             color: white;
         }
 
@@ -386,7 +354,6 @@
             align-items: center;
             gap: 0.75rem;
             justify-content: center;
-            font-family: 'Playfair Display', serif;
         }
 
         .modal-title-icon {
@@ -400,13 +367,13 @@
         }
 
         .modal-body {
-            padding: 2rem;
-            background: var(--light-ivory);
+            padding: 1.5rem;
+            background: var(--body-background-color);
         }
 
         .form-label {
             font-weight: 600;
-            color: var(--dark-charcoal);
+            color: var(--sidenavbar-text-color);
             margin-bottom: 0.5rem;
             display: flex;
             align-items: center;
@@ -422,7 +389,6 @@
             padding: 0.75rem 1rem;
             border: 1px solid var(--soft-gray);
             transition: all 0.3s;
-            background: white;
         }
 
         .form-control:focus {
@@ -432,8 +398,8 @@
 
         .modal-footer {
             border-top: 1px solid var(--soft-gray);
-            padding: 1.25rem 2rem;
-            background: white;
+            padding: 1rem 2rem;
+            background: var(--body-background-color);
         }
 
         /* Animations */
@@ -512,7 +478,7 @@
     </style>
 
     <!-- Include Playfair Display font -->
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+{{--    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">--}}
 @endpush
 
 @section('content')
@@ -531,7 +497,7 @@
     <x-error-success-model />
 
     <div id="main">
-        <section class="content mx-2 my-4">
+        <section class="content mx-2 my-3">
             <div class="container-fluid">
                 <!-- Department Hero Section -->
                 <div class="department-hero">
@@ -543,7 +509,7 @@
                     <div class="department-meta">
                         <div class="meta-item">
                             <i class="fas fa-users meta-icon"></i>
-                            <span>{{ $staffMembers->count() }} Team Members</span>
+                            <span>{{ $staffCount }} Team Members</span>
                         </div>
                         <div class="meta-item">
                             <i class="fas fa-calendar-alt meta-icon"></i>
@@ -562,6 +528,7 @@
                               id="delete-department-form-{{ $department->id }}">
                             @csrf
                             @method('DELETE')
+                            <input type="hidden" name="id" value="{{ $department->id }}">
                             <button type="button"
                                     class="btn-delete delete-department-btn"
                                     data-id="{{ $department->id }}">
@@ -581,22 +548,9 @@
                         <h2 class="section-title">
                             <i class="fas fa-users section-title-icon"></i>
                             Our Team
-                            <span class="team-count">{{ $staffMembers->count() }}</span>
+                            <span class="team-count">{{ $staffCount }}</span>
                         </h2>
 
-                        <div class="dropdown">
-                            <button class="export-btn dropdown-toggle" type="button" id="exportDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="fas fa-download"></i> Export Team
-                            </button>
-                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="exportDropdown">
-                                <li><button class="dropdown-item" type="button" id="copyButton"><i class="fas fa-copy me-2"></i>Copy</button></li>
-                                <li><button class="dropdown-item" type="button" id="csvButton"><i class="fas fa-file-csv me-2"></i>CSV</button></li>
-                                <li><button class="dropdown-item" type="button" id="excelButton"><i class="fas fa-file-excel me-2"></i>Excel</button></li>
-                                <li><button class="dropdown-item" type="button" id="pdfButton"><i class="fas fa-file-pdf me-2"></i>PDF</button></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li><button class="dropdown-item" type="button" id="printButton"><i class="fas fa-print me-2"></i>Print</button></li>
-                            </ul>
-                        </div>
                     </div>
 
                     @if($staffMembers->count() > 0)
@@ -609,13 +563,14 @@
                                              class="member-avatar"
                                              onerror="this.src='{{ asset('img/placeholder-profile.png') }}'">
                                         <h3 class="member-name">{{ $staffMember->user->name }}</h3>
-                                        <p class="member-position">Team Member</p>
+                                        <p class="member-position">{{ $staffMember->user->role_id === 3 ? 'Manager' : ($staffMember->user->role_id === 4 ? 'Team Member' : 'Team Member') }}
+                                        </p>
                                     </div>
                                     <div class="member-details">
                                         <div class="detail-item">
                                             <i class="fas fa-envelope detail-icon"></i>
                                             <div class="detail-text">
-                                                <a href="mailto:{{ $staffMember->user->email }}" style="color: var(--deep-teal);">{{ $staffMember->user->email }}</a>
+                                                <a href="" style="color: var(--sage-green);">{{ $staffMember->user->email }}</a>
                                             </div>
                                         </div>
                                         <div class="detail-item">
@@ -654,7 +609,13 @@
                             </button>
                         </div>
                     @endif
+
                 </div>
+                @if($staffMembers)
+                    <div class="mt-3 custom-pagination-wrapper">
+                        {{ $staffMembers->links('pagination::bootstrap-5') }}
+                    </div>
+                @endif
             </div>
         </section>
     </div>
@@ -678,18 +639,12 @@
                     <input type="hidden" name="updated_at" id="edit_updated_at">
 
                     <div class="modal-body">
-                        <div class="mb-4">
+                        <div class="mb-2">
                             <label for="edit_department_name" class="form-label">
                                 <i class="fas fa-tag form-label-icon"></i> Department Name
                             </label>
-                            <input type="text"
-                                   name="edit_name"
-                                   id="edit_department_name"
-                                   class="form-control @error('edit_name') is-invalid @enderror"
-                                   value="{{ old('edit_name') }}"
-                                   maxlength="50"
-                                   placeholder="Enter department name"
-                                   required>
+                            <input type="text" name="edit_name" id="edit_department_name" class="form-control @error('edit_name') is-invalid @enderror"
+                                   value="{{ old('edit_name') }}" maxlength="50" placeholder="Enter department name" required>
                             @error('edit_name')
                             <div class="invalid-feedback">
                                 {{ $message }}
@@ -697,15 +652,11 @@
                             @enderror
                         </div>
 
-                        <div class="mb-3">
+                        <div class="mb-2">
                             <label for="edit_department_description" class="form-label">
                                 <i class="fas fa-align-left form-label-icon"></i> Description
                             </label>
-                            <textarea name="edit_description"
-                                      id="edit_department_description"
-                                      rows="5"
-                                      class="form-control @error('edit_description') is-invalid @enderror"
-                                      maxlength="250"
+                            <textarea name="edit_description" id="edit_department_description" rows="4" class="form-control @error('edit_description') is-invalid @enderror" maxlength="250"
                                       placeholder="What makes this department unique?">{{ old('edit_description') }}</textarea>
                             @error('edit_description')
                             <div class="invalid-feedback">
@@ -719,7 +670,7 @@
                     </div>
 
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal" style="border-color: var(--soft-gray); color: var(--dark-charcoal);">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal" >
                             <i class="fas fa-times me-1"></i> Cancel
                         </button>
                         <button type="submit" class="btn" style="background: var(--sage-green); color: white;">
@@ -730,19 +681,10 @@
             </div>
         </div>
     </div>
+
 @endsection
 
 @push('scripts')
-    <!-- DataTables & Buttons -->
-    <script src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/1.11.3/js/dataTables.bootstrap5.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/2.3.6/js/dataTables.buttons.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.bootstrap5.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.html5.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.print.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
 
     <script>
         document.addEventListener("DOMContentLoaded", function () {
@@ -756,33 +698,6 @@
                 });
             }
 
-            // Export button handlers
-            document.getElementById('copyButton')?.addEventListener('click', function() {
-                // Implement copy functionality
-                console.log("Copy team data to clipboard");
-                showToast('Team data copied to clipboard!', 'success');
-            });
-
-            document.getElementById('csvButton')?.addEventListener('click', function() {
-                console.log("Export as CSV");
-                showToast('Exporting team data as CSV...', 'info');
-            });
-
-            document.getElementById('excelButton')?.addEventListener('click', function() {
-                console.log("Export as Excel");
-                showToast('Exporting team data as Excel...', 'info');
-            });
-
-            document.getElementById('pdfButton')?.addEventListener('click', function() {
-                console.log("Export as PDF");
-                showToast('Exporting team data as PDF...', 'info');
-            });
-
-            document.getElementById('printButton')?.addEventListener('click', function() {
-                window.print();
-                showToast('Preparing team data for printing...', 'info');
-            });
-
             // Delete department confirmation
             document.querySelectorAll('.delete-department-btn').forEach(button => {
                 button.addEventListener('click', function() {
@@ -792,13 +707,14 @@
                     Swal.fire({
                         title: 'Nurture or Let Go?',
                         html: `
-                            <div style="text-align: center;">
+                            <div style="text-align: center; color: var(--sidenavbar-text-color);">
                                 <i class="fas fa-seedling" style="font-size: 4rem; color: var(--sage-green); margin-bottom: 1rem;"></i>
                                 <p>You're about to remove the <strong>${departmentName}</strong> department.</p>
-                                <p>Like pruning a garden, this will remove the structure but the individuals will continue to grow elsewhere.</p>
                             </div>
                         `,
                         showCancelButton: true,
+                        background: 'var(--body-background-color)',
+                        color: 'var(--sidenavbar-text-color)',
                         confirmButtonColor: 'var(--sage-green)',
                         cancelButtonColor: 'var(--warm-taupe)',
                         confirmButtonText: 'Yes, remove it',
@@ -814,6 +730,8 @@
                             Swal.fire({
                                 title: 'Transforming...',
                                 html: 'Gently reorganizing our garden',
+                                background: 'var(--body-background-color)',
+                                color: 'var(--sidenavbar-text-color)',
                                 allowOutsideClick: false,
                                 didOpen: () => {
                                     Swal.showLoading();
@@ -831,16 +749,16 @@
                     e.preventDefault();
                     const id = this.getAttribute('data-id');
 
-                    // Show loading state
                     Swal.fire({
-                        title: 'Cultivating Details',
-                        html: 'Tending to department information...',
+                        html: ' ',
                         allowOutsideClick: false,
+                        showConfirmButton: false,
+                        background: 'var(--body-background-color)',
+                        color: 'var(--sidenavbar-text-color)',
+                        backdrop: false,
                         didOpen: () => {
                             Swal.showLoading();
-                        },
-                        background: 'var(--light-ivory)',
-                        color: 'var(--dark-charcoal)'
+                        }
                     });
 
                     fetch(`{{ route('owner.departments.edit', ':id') }}`.replace(':id', id), {
@@ -868,7 +786,6 @@
                                 document.getElementById("edit_department_description").value = data.department?.description || "";
                                 document.getElementById("edit_updated_at").value = data.department?.updated_at || "";
 
-                                // Update character counter
                                 if (counterElement) {
                                     counterElement.textContent = data.department?.description?.length || 0;
                                 }
@@ -876,7 +793,6 @@
                                 const editModal = new bootstrap.Modal(document.getElementById("editDepartmentModel"));
                                 editModal.show();
 
-                                // Play a subtle animation when modal appears
                                 const modalContent = document.querySelector('.modal-content');
                                 modalContent.style.animation = 'fadeInUp 0.4s ease-out';
                             }
@@ -887,8 +803,8 @@
                                 text: 'The garden path could not be found. Please try again.',
                                 icon: 'error',
                                 confirmButtonColor: 'var(--sage-green)',
-                                background: 'var(--light-ivory)',
-                                color: 'var(--dark-charcoal)'
+                                background: 'var(--body-background-color)',
+                                color: 'var(--sidenavbar-text-color)',
                             });
                             console.error('Error:', error);
                         });
@@ -903,8 +819,8 @@
                     showConfirmButton: false,
                     timer: 3000,
                     timerProgressBar: true,
-                    background: 'var(--light-ivory)',
-                    color: 'var(--dark-charcoal)',
+                    background: 'var(--body-background-color)',
+                    color: 'var(--sidenavbar-text-color)',
                     iconColor: type === 'success' ? 'var(--sage-green)' : 'var(--soft-clay)',
                     didOpen: (toast) => {
                         toast.addEventListener('mouseenter', Swal.stopTimer)

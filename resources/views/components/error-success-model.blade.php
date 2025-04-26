@@ -65,7 +65,7 @@
                 confirmButtonText: 'OK',
                 timer: 3000,
                 timerProgressBar: true,
-                background: getComputedStyle(document.documentElement).getPropertyValue('--swal-bg-color').trim(),
+                background: getComputedStyle(document.documentElement).getPropertyValue('--body-background-color').trim(),
                 color: getComputedStyle(document.documentElement).getPropertyValue('--swal-text-color').trim(),
                 iconColor: iconColor,
                 customClass: {
