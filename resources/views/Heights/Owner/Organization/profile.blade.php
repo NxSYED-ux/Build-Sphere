@@ -208,16 +208,24 @@
                                 <div class="position-relative" style="width: 80px; height: 80px;">
                                     <!-- Logo Image -->
                                     <img src="{{ asset($organization->logo ?? 'img/default-logo.png') }}"
-                                         alt="Organization Logo"
+                                         alt="Organization Logo" id="organizantion-logo"
                                          class="rounded-circle border border-3 border-white w-100 h-100"
                                          style="object-fit: cover;">
 
                                     <!-- Camera Icon Overlay -->
-                                    <div class="position-absolute bottom-0 end-0 bg-primary rounded-circle d-flex justify-content-center align-items-center"
+                                    <label for="image-upload" class="position-absolute bottom-0 end-0 bg-primary rounded-circle d-flex justify-content-center align-items-center"
                                          style="width: 24px; height: 24px; cursor: pointer;"
                                          data-bs-toggle="modal" data-bs-target="#changeLogoModal">
                                         <i class="fas fa-camera text-white" style="font-size: 12px;"></i>
-                                    </div>
+                                        <input type="file" id="image-upload" class="d-none" accept="image/*">
+                                    </label>
+
+{{--                                    <label for="image-upload"--}}
+{{--                                           class="image-upload-icon position-absolute bg-white shadow d-flex align-items-center justify-content-center rounded-circle"--}}
+{{--                                           style="width: 30px; height: 30px; bottom: 0; right: -5px;">--}}
+{{--                                        <i class='bx bxs-camera'></i>--}}
+{{--                                    </label>--}}
+
                                 </div>
                             </div>
                         </div>
@@ -237,7 +245,7 @@
                         <div class="text-start mb-4">
                             <div class="d-flex justify-content-between align-items-center mb-3">
                                 <h5 class="section-title mb-0 fw-semibold">Organization Details</h5>
-                                <a href="" class="rounded-pill py-2 fw-medium Org-Edit-Button"  data-id="{{ $organization->id }}">
+                                <a href="{{ route('owner.organization.edit') }}" class="rounded-pill py-2 fw-medium">
                                     <i class="fas fa-edit me-2 text-warning fs-5"></i>
                                 </a>
                             </div>
@@ -295,7 +303,7 @@
                         <div class="text-start mb-3">
                             <div class="d-flex justify-content-between align-items-center mb-3">
                                 <h5 class="section-title mb-0 fw-semibold">Owner Details</h5>
-                                <a href="" class="rounded-pill py-2 fw-medium">
+                                <a href="{{ route('owner.profile') }}" class="rounded-pill py-2 fw-medium">
                                     <i class="fas fa-edit me-2 text-warning fs-5"></i>
                                 </a>
                             </div>
@@ -552,7 +560,6 @@
         </div>
     </div>
 
-    <!-- Payment Card Model -->
     <div class="modal fade" id="paymentMethodModal" tabindex="-1" aria-labelledby="paymentMethodLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered bg-transparent">
             <div class="modal-content p-0 m-0 border-0 rounded-3  bg-transparent">
@@ -564,147 +571,6 @@
                         title="Add Payment Method"
                     />
                 </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Edit Organization Model -->
-    <div class="modal fade" id="editOrgModal" tabindex="-1" aria-labelledby="editOrgModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="editOrgModalLabel">Edit Level</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <form id="editOrgForm" action="" method="POST">
-                    @method('PUT')
-
-                    <input type="hidden" name="updated_at" id="edit_updated_at">
-                    <input type="hidden" name="id" id="edit_org_id">
-                    <div class="modal-body">
-                        <div class="row mb-4">
-                            <div class="col-6">
-                                <div class="form-group mb-3">
-                                    <label for="edit_org_name">Name</label>
-                                    <span class="required__field">*</span><br>
-                                    <input type="text" name="name" id="edit_org_name" class="form-control @error('name') is-invalid @enderror" value="{{ old('name') }}" maxlength="50" placeholder="Organization Name" required>
-                                    @error('name')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                    @enderror
-                                </div>
-                            </div>
-
-                            <div class="col-6">
-                                <div class="form-group mb-3">
-                                    <label for="edit_org_email">Email</label>
-                                    <span class="required__field">*</span><br>
-                                    <input type="email" name="email" id="edit_org_email" class="form-control @error('email') is-invalid @enderror" value="{{ old('email') }}" maxlength="50" placeholder="Organization Email" required>
-                                    @error('email')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                    @enderror
-                                </div>
-                            </div>
-
-                            <div class="col-md-6">
-                                <div class="form-group mb-3">
-                                    <label for="edit_org_phone" class="form-label">Phone</label>
-                                    <span class="text-danger">*</span>
-                                    <input type="text" name="phone" id="edit_org_phone_no" class="form-control @error('phone') is-invalid @enderror"
-                                           value="{{ old('phone') }}" placeholder="0312-3456789" maxlength="14" required>
-                                    @error('phone')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                            </div>
-
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group mb-3">
-                                    <label for="country" class="form-label">Country</label>
-                                    <span class="text-danger">*</span>
-                                    <select class="form-select @error('country') is-invalid @enderror"
-                                            id="country" name="country" required>
-                                        <option value="" selected>Select Country</option>
-                                    </select>
-                                    @error('country')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                            </div>
-
-                            <div class="col-md-6">
-                                <div class="form-group mb-3">
-                                    <label for="province" class="form-label">Province/State</label>
-                                    <span class="text-danger">*</span>
-                                    <select class="form-select @error('province') is-invalid @enderror"
-                                            id="province"
-                                            name="province" required>
-                                        <option value="" selected>Select Province</option>
-                                    </select>
-                                    @error('province')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                            </div>
-
-                            <div class="col-md-6">
-                                <div class="form-group mb-3">
-                                    <label for="city" class="form-label">City</label>
-                                    <span class="text-danger">*</span>
-                                    <select class="form-select @error('city') is-invalid @enderror"
-                                            id="city"
-                                            name="city" required>
-                                        <option value="" selected>Select City</option>
-                                    </select>
-                                    @error('city')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                            </div>
-
-                            <div class="col-md-6">
-                                <div class="form-group mb-3">
-                                    <label for="postal_code" class="form-label">Postal Code</label>
-                                    <span class="text-danger">*</span>
-                                    <input type="text" name="postal_code" id="postal_code"
-                                           class="form-control @error('postal_code') is-invalid @enderror"
-                                           value="{{ old('postal_code') }}"
-                                           maxlength="20"
-                                           placeholder="Enter postal code" required>
-                                    @error('postal_code')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                            </div>
-
-                            <div class="col-md-12">
-                                <div class="form-group mb-3">
-                                    <label for="location" class="form-label">Street Address</label>
-                                    <span class="text-danger">*</span>
-                                    <input type="text" name="location" id="location"
-                                           class="form-control @error('location') is-invalid @enderror"
-                                           value="{{ old('location') }}"
-                                           maxlength="100"
-                                           placeholder="Enter street address" required>
-                                    @error('location')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                            </div>
-
-
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-primary">Update</button>
-                    </div>
-                </form>
             </div>
         </div>
     </div>
@@ -1248,185 +1114,52 @@
         });
     </script>
 
-    <!-- Contact validation -->
+    <!-- Update Profile -->
     <script>
-        document.getElementById('edit_org_phone_no').addEventListener('input', function(e) {
-            let x = e.target.value.replace(/\D/g, '').match(/(\d{0,4})(\d{0,7})/);
-            e.target.value = !x[2] ? x[1] : x[1] + '-' + x[2];
-        });
-    </script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const imageUpload = document.getElementById("image-upload");
 
-    <!-- Edit Organization -->
-    <script>
-        document.addEventListener('DOMContentLoaded', async function() {
-            const editOrgButtons = document.querySelectorAll(".Org-Edit-Button");
+            if (imageUpload) {
+                imageUpload.addEventListener("change", function (event) {
+                    let file = event.target.files[0];
 
-            editOrgButtons.forEach(button => {
-                button.addEventListener("click", function(e) {
-                    e.preventDefault();
-                    const id = this.getAttribute("data-id");
+                    if (file) {
+                        let formData = new FormData();
+                        formData.append("logo", file);
+                        formData.append("_method", "PUT"); // Required for Laravel PUT request
 
-                    fetch(`/owner/organization/edit`, { // Update this URL to match your route
-                        method: "GET",
-                        headers: {
-                            "X-Requested-With": "XMLHttpRequest",
-                            "Accept": "application/json"
-                        }
-                    })
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.message) {
-                                alert(data.message);
-                            } else {
-                                // Set basic organization info
-                                document.getElementById("edit_org_id").value = data.organization?.id || "";
-                                document.getElementById("edit_org_name").value = data.organization?.name || "";
-                                document.getElementById("edit_org_email").value = data.organization?.email || "";
-                                document.getElementById("edit_org_phone_no").value = data.organization?.phone || "";
-
-                                // Set address info
-                                const address = data.organization?.address;
-                                if (address) {
-                                    document.getElementById("postal_code").value = address.postal_code || "";
-                                    document.getElementById("location").value = address.location || "";
-                                }
-
-                                // Get dropdown elements
-                                const countrySelect = document.getElementById("country");
-                                const provinceSelect = document.getElementById("province");
-                                const citySelect = document.getElementById("city");
-
-                                // Clear existing options
-                                countrySelect.innerHTML = '<option value="" selected>Select Country</option>';
-                                provinceSelect.innerHTML = '<option value="" selected>Select Province</option>';
-                                citySelect.innerHTML = '<option value="" selected>Select City</option>';
-
-                                // Populate countries
-                                data.dropdownData.forEach(country => {
-                                    const option = document.createElement('option');
-                                    const countryName = country.values[0]?.value_name || 'Unnamed Country';
-                                    option.value = countryName;
-                                    option.dataset.id = country.id;
-                                    option.textContent = countryName;
-                                    countrySelect.appendChild(option);
-
-                                    // Set selected country if it matches the address
-                                    if (address && address.country === countryName) {
-                                        option.selected = true;
-
-                                        // Populate provinces for the selected country
-                                        country.values.forEach(province => {
-                                            province.childs.forEach(childProvince => {
-                                                const provinceOption = document.createElement('option');
-                                                provinceOption.value = childProvince.value_name;
-                                                provinceOption.dataset.id = childProvince.id;
-                                                provinceOption.textContent = childProvince.value_name;
-                                                provinceSelect.appendChild(provinceOption);
-
-                                                // Set selected province if it matches the address
-                                                if (address && address.province === childProvince.value_name) {
-                                                    provinceOption.selected = true;
-
-                                                    // Populate cities for the selected province
-                                                    childProvince.childs.forEach(city => {
-                                                        const cityOption = document.createElement('option');
-                                                        cityOption.value = city.value_name;
-                                                        cityOption.dataset.id = city.id;
-                                                        cityOption.textContent = city.value_name;
-                                                        citySelect.appendChild(cityOption);
-
-                                                        // Set selected city if it matches the address
-                                                        if (address && address.city === city.value_name) {
-                                                            cityOption.selected = true;
-                                                        }
-                                                    });
-                                                }
-                                            });
-                                        });
-                                    }
-                                });
-
-                                // Set form action dynamically
-                                const editForm = document.getElementById("editOrgForm");
-                                editForm.setAttribute("action", `{{ route('owner.organization.update', ':id') }}`.replace(':id', id));
-
-                                // Add hidden input for PUT method if not already present
-                                if (!editForm.querySelector('input[name="_method"]')) {
-                                    const methodInput = document.createElement("input");
-                                    methodInput.type = "hidden";
-                                    methodInput.name = "_method";
-                                    methodInput.value = "PUT";
-                                    editForm.appendChild(methodInput);
-                                }
-
-                                // Show the modal
-                                let editOrgModal = new bootstrap.Modal(document.getElementById("editOrgModal"));
-                                editOrgModal.show();
+                        fetch("{{ route('owner.organization.logo.update') }}", {
+                            method: "POST",
+                            body: formData,
+                            headers: {
+                                "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                                "Accept": "application/json"
                             }
                         })
-                        .catch(() => {
-                            alert("An error occurred while retrieving the data.");
-                        });
-                });
-            });
-
-            // Add event listeners for dropdown changes (same as in your create form)
-            const countrySelect = document.getElementById('country');
-            const provinceSelect = document.getElementById('province');
-            const citySelect = document.getElementById('city');
-
-            if (countrySelect && provinceSelect && citySelect) {
-                // Country Change Handler
-                countrySelect.addEventListener('change', function() {
-                    provinceSelect.innerHTML = '<option value="" selected>Select Province</option>';
-                    citySelect.innerHTML = '<option value="" selected>Select City</option>';
-
-                    const selectedCountryId = this.options[this.selectedIndex]?.dataset.id;
-                    const dropdownData = JSON.parse(this.dataset.dropdown || '[]');
-
-                    if (selectedCountryId && dropdownData.length) {
-                        const selectedCountry = dropdownData.find(c => c.id == selectedCountryId);
-
-                        if (selectedCountry) {
-                            selectedCountry.values.forEach(province => {
-                                province.childs.forEach(childProvince => {
-                                    const option = document.createElement('option');
-                                    option.value = childProvince.value_name;
-                                    option.dataset.id = childProvince.id;
-                                    option.textContent = childProvince.value_name;
-                                    provinceSelect.appendChild(option);
-                                });
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    let reader = new FileReader();
+                                    reader.onload = function (e) {
+                                        document.getElementById("organizantion-logo").src = e.target.result;
+                                        document.querySelectorAll(".remove_picture_button").forEach(button => {
+                                            button.style.display = "block";
+                                        });
+                                    };
+                                    reader.readAsDataURL(file);
+                                } else if (data.error) {
+                                    alert(data.error);
+                                }
+                            })
+                            .catch(error => {
+                                console.error("Error:", error);
+                                alert("Error updating profile picture. Please try again.");
+                            })
+                            .finally(() => {
+                                imageUpload.disabled = false; // Re-enable input after upload
                             });
-                        }
-                    }
-                });
 
-                // Province Change Handler
-                provinceSelect.addEventListener('change', function() {
-                    citySelect.innerHTML = '<option value="" selected>Select City</option>';
-
-                    const selectedCountryId = countrySelect.options[countrySelect.selectedIndex]?.dataset.id;
-                    const dropdownData = JSON.parse(countrySelect.dataset.dropdown || '[]');
-
-                    if (selectedCountryId && dropdownData.length) {
-                        const selectedCountry = dropdownData.find(c => c.id == selectedCountryId);
-
-                        if (selectedCountry) {
-                            const selectedProvinceId = this.options[this.selectedIndex]?.dataset.id;
-                            const selectedProvince = selectedCountry.values
-                                .flatMap(province => province.childs)
-                                .find(p => p.id == selectedProvinceId);
-
-                            if (selectedProvince) {
-                                selectedProvince.childs.forEach(city => {
-                                    const option = document.createElement('option');
-                                    option.value = city.value_name;
-                                    option.dataset.id = city.id;
-                                    option.textContent = city.value_name;
-                                    citySelect.appendChild(option);
-                                });
-                            }
-                        }
+                        imageUpload.disabled = true; // Disable input during upload
                     }
                 });
             }

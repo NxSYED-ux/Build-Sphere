@@ -274,7 +274,7 @@
         }
 
         .btn-secondary {
-            border-radius: 10px;
+            /*border-radius: 10px;*/
             font-size: 14px;
             font-weight: bold;
             background-color: #6c757d;

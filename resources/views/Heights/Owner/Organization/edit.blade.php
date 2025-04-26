@@ -34,15 +34,16 @@
 
 @section('content')
 
-    <!--  -->
-    <x-Admin.top-navbar :searchVisible="false" :breadcrumbLinks="[
-            ['url' => route('admin_dashboard'), 'label' => 'Dashboard'],
-            ['url' => route('organizations.index'), 'label' => 'Organizations'],
-            ['url' => '', 'label' => 'Edit Organization']
+    <!-- Top Navbar -->
+    <x-Owner.top-navbar :searchVisible="false" :breadcrumbLinks="[
+            ['url' => url('owner_manager_dashboard'), 'label' => 'Dashboard'],
+            ['url' => route('owner.organization.profile'), 'label' => 'Organizations'],
+            ['url' => '', 'label' => 'Edit Org Profile']
         ]"
     />
-    <!--  -->
-    <x-Admin.side-navbar :openSections="['Organizations']" />
+
+    <!-- Side Navbar -->
+    <x-Owner.side-navbar :openSections="['']" />
     <x-error-success-model />
 
     <div id="main">
@@ -55,14 +56,15 @@
                             <div class="container mt-2">
                                 <div class="d-flex justify-content-between align-items-center mb-2">
                                     <h4 class="mb-0">Edit Organization</h4>
-                                    <a href="{{ route('organizations.index') }}" class="btn btn-secondary">Go Back</a>
+                                    <a href="{{ route('owner.organization.profile') }}" class="btn btn-secondary">Go Back</a>
                                 </div>
                                 <div class="card shadow p-3 mb-5 bg-body rounded" style="border: none;">
                                     <div class="card-body">
-                                        <form action="{{ route('organizations.update', $organization->id) }}" method="POST" enctype="multipart/form-data">
+                                        <form action="{{ route('owner.organization.update', $organization->id) }}" method="POST" enctype="multipart/form-data">
                                             @method('PUT')
 
-                                            <input type="hidden" name="owner_id" value="{{ $organization->owner_id }}">
+                                            <input type="hidden" name="is_online_payment_enabled" value="{{ $organization->is_online_payment_enabled }}">
+                                            <input type="hidden" name="merchant_id" value="{{ $organization->payment_gateway_merchant_id }}">
 
                                             <div class="row mb-3">
                                                 <div class="col-lg-4 col-md-6 col-sm-12">
@@ -71,7 +73,7 @@
                                                         <span class="required__field">*</span><br>
                                                         <input type="text" name="name" id="name" class="form-control @error('name') is-invalid @enderror" value="{{ old('name', $organization->name) }}" maxlength="50" placeholder="Organization Name" required>
                                                         @error('name')
-                                                            <span class="invalid-feedback" role="alert">
+                                                        <span class="invalid-feedback" role="alert">
                                                                 <strong>{{ $message }}</strong>
                                                             </span>
                                                         @enderror
@@ -102,52 +104,6 @@
                                                     </div>
                                                 </div>
 
-                                                <div class="col-lg-4 col-md-6 col-sm-12">
-                                                    <div class="form-group mb-3">
-                                                        <label for="stripe_merchant_id" class="form-label">
-                                                            Stripe Merchant ID <span class="text-danger" id="merchant-required-star" style="display: none;">*</span>
-                                                        </label>
-                                                        <div class="input-group">
-                                                            <span class="input-group-text" style="background-color: var(--sidenavbar-body-color);">
-                                                                <i class="fab fa-stripe text-primary"></i>
-                                                            </span>
-                                                            <input type="text"
-                                                                   name="merchant_id"
-                                                                   id="stripe_merchant_id"
-                                                                   class="form-control @error('merchant_id') is-invalid @enderror"
-                                                                   value="{{ old('merchant_id', $organization->merchant_id) }}"
-                                                                   placeholder="e.g. acct_1L9..."
-                                                                {{ old('is_online_payments_enabled') ? 'required' : '' }}>
-                                                        </div>
-                                                        {{--                                                                        <small class="text-muted">Found in your Stripe Dashboard</small>--}}
-                                                        @error('merchant_id')
-                                                        <div class="invalid-feedback d-block">{{ $message }}</div>
-                                                        @enderror
-                                                    </div>
-                                                </div>
-
-                                                <div class="col-lg-4 col-md-6 col-sm-12">
-                                                    <div class="form-group mb-3">
-                                                        <label class="form-label">
-                                                            Online Payments <span class="text-danger">*</span>
-                                                        </label>
-                                                        <div class="d-flex align-items-center mt-2">
-                                                            <label class="form-check-label me-3" for="enable_online_payments">
-                                                                Enable
-                                                            </label>
-                                                            <div class="form-check form-switch m-0">
-                                                                <input type="hidden" name="is_online_payment_enabled" value="0">
-                                                                <input class="form-check-input" type="checkbox" role="switch" id="enable_online_payments"
-                                                                       name="is_online_payment_enabled" value="{{ old('is_online_payment_enabled', $organization->is_online_payment_enabled, 1) }}" style="transform: scale(1.3);"
-                                                                    {{ old('is_online_payment_enabled', $is_online_payment_enabled ?? false) ? 'checked' : '' }}>
-                                                            </div>
-                                                        </div>
-                                                        @error('is_online_payment_enabled')
-                                                        <div class="invalid-feedback d-block">{{ $message }}</div>
-                                                        @enderror
-                                                    </div>
-                                                </div>
-
                                                 <!--  -->
                                                 <div class="col-lg-4 col-md-6 col-sm-12">
                                                     <div class="form-group mb-3">
@@ -156,7 +112,7 @@
                                                             <option value="" selected>Select Country</option>
                                                         </select>
                                                         @error('country')
-                                                            <div class="text-danger">{{ $message }}</div>
+                                                        <div class="text-danger">{{ $message }}</div>
                                                         @enderror
                                                     </div>
                                                 </div>
@@ -168,7 +124,7 @@
                                                             <option value="" selected>Select Province</option>
                                                         </select>
                                                         @error('province')
-                                                            <div class="text-danger">{{ $message }}</div>
+                                                        <div class="text-danger">{{ $message }}</div>
                                                         @enderror
                                                     </div>
                                                 </div>
@@ -181,7 +137,7 @@
                                                             <option value="" selected>Select Province</option>
                                                         </select>
                                                         @error('customer_city')
-                                                            <div class="text-danger">{{ $message }}</div>
+                                                        <div class="text-danger">{{ $message }}</div>
                                                         @enderror
                                                     </div>
                                                 </div>
@@ -192,7 +148,7 @@
                                                         <label for="location">Location</label>
                                                         <input type="text" name="location" id="location" class="form-control @error('location') is-invalid @enderror" value="{{ old('location', $organization->address->location ) }}" maxlength="100" placeholder="Enter Location">
                                                         @error('location')
-                                                            <span class="invalid-feedback" role="alert">
+                                                        <span class="invalid-feedback" role="alert">
                                                                 <strong>{{ $message }}</strong>
                                                             </span>
                                                         @enderror
@@ -205,7 +161,7 @@
                                                         <label for="postal_code">Postal Code</label>
                                                         <input type="text" name="postal_code" id="postal_code" class="form-control @error('postal_code') is-invalid @enderror" value="{{ old('postal_code', $organization->address->postal_code ) }}" maxlength="100" placeholder="Enter Postal Code">
                                                         @error('postal_code')
-                                                            <span class="invalid-feedback" role="alert">
+                                                        <span class="invalid-feedback" role="alert">
                                                                 <strong>{{ $message }}</strong>
                                                             </span>
                                                         @enderror
@@ -219,7 +175,7 @@
                                                     <label for="imageInput" class="form-label">Organization Pictures</label>
                                                     <input type="file" id="imageInput" name="organization_pictures[]" class="form-control" multiple>
                                                     @error('organization_pictures.*')
-                                                        <div class="text-danger">{{ $message }}</div>
+                                                    <div class="text-danger">{{ $message }}</div>
                                                     @enderror
                                                 </div>
                                                 <div class="col-lg-8 col-md-8 col-sm-12">
@@ -281,7 +237,7 @@
                 passwordField.classList.add('is-invalid');
                 passwordHelp.textContent = 'Password must be at least 8 characters long.';
             }
-             else {
+            else {
                 passwordField.classList.remove('is-invalid');
                 passwordHelp.textContent = '';
             }
@@ -316,27 +272,27 @@
                             'Content-Type': 'application/json',
                         },
                     })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            // Remove the image from the DOM
-                            document.querySelector(`button[data-image-id="${imageId}"]`).parentElement.remove();
-                            Swal.fire({
-                                title: 'Success!',
-                                text: 'Deleted successfully',
-                                icon: 'success',
-                                confirmButtonText: 'OK'
-                            });
-                        } else {
-                            Swal.fire({
-                                title: 'Error!',
-                                text: 'Failed to remove image.',
-                                icon: 'error',
-                                confirmButtonText: 'OK'
-                            });
-                        }
-                    })
-                    .catch(error => console.error('Error:', error));
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                // Remove the image from the DOM
+                                document.querySelector(`button[data-image-id="${imageId}"]`).parentElement.remove();
+                                Swal.fire({
+                                    title: 'Success!',
+                                    text: 'Deleted successfully',
+                                    icon: 'success',
+                                    confirmButtonText: 'OK'
+                                });
+                            } else {
+                                Swal.fire({
+                                    title: 'Error!',
+                                    text: 'Failed to remove image.',
+                                    icon: 'error',
+                                    confirmButtonText: 'OK'
+                                });
+                            }
+                        })
+                        .catch(error => console.error('Error:', error));
                 }
             });
         }

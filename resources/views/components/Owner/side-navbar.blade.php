@@ -104,7 +104,7 @@
             <!-- Department -->
             <li class="mb-1 hidden" id="OwnerDepartments">
                 <div id="link-a">
-                    <a href="#" class="link-dark collapsed {{ in_array('Departments', $openSections) ? 'Link-background-color' : '' }} px-1" id="Departmentsbtn" >
+                    <a href="{{ route('owner.departments.index') }}" class="link-dark collapsed {{ in_array('Departments', $openSections) ? 'Link-background-color' : '' }} px-1" id="Departmentsbtn" >
                     <i class='bx bx-git-repo-forked icons'></i> Departments </a>
                 </div>
             </li>
