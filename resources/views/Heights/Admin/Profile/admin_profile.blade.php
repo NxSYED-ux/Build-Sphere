@@ -404,8 +404,7 @@
             });
         });
     </script>
-
-
+    
     <!-- Remove Profile -->
     <script>
         document.querySelectorAll('.remove_picture_button').forEach(button => {
