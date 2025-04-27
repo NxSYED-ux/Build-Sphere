@@ -16,7 +16,7 @@ return new class extends Migration
             $table->unsignedBigInteger('department_id')->nullable();
             $table->unsignedBigInteger('staff_member_id')->nullable();
             $table->text('description');
-            $table->enum('status', ['Open', 'In Progress', 'Closed', 'Rejected']);
+            $table->enum('status', ['Open', 'In Progress', 'Closed', 'Rejected', 'Closed Late']);
             $table->dateTime('expected_closure_date')->nullable();
             $table->text('remarks')->nullable();
             $table->timestamp('created_at')->useCurrent();
