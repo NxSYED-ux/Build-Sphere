@@ -50,7 +50,6 @@ Route::prefix('checkout')->group(function () {
 
 Route::middleware(['auth.jwt'])->group(function () {
 
-    Route::post('/logout', [AuthController::class, 'logOut'])->name('logout');
     Route::delete('/buildings/{id}/remove-picture', [BuildingController::class, 'destroyImage'])->name('buildings.remove_picture');
     Route::delete('/building_documents/{id}', [BuildingController::class, 'removeDocument'])->name('building_documents.removeDocument');
     Route::put('/building_document/{id}', [BuildingController::class, 'updateDocument'])->name('building_document.update');
@@ -217,7 +216,7 @@ Route::prefix('owner')->middleware(['auth.jwt'])->group(function () {
 
     Route::prefix('plans')->group(function () {
 
-        Route::get('/organization/{planCycle}', [landingController::class, 'orgPlans'])->name('plans.organization');
+        Route::get('/organization/{planCycle}', [landingController::class, 'organizationPlans'])->name('plans.organization');
 
     });
 

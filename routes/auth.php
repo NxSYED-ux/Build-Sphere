@@ -5,6 +5,8 @@ use App\Http\Controllers\GeneralControllers\ForgotPasswordController;
 use App\Http\Controllers\WebControllers\SignUpController;
 use Illuminate\Support\Facades\Route;
 
+Route::post('/logout', [AuthController::class, 'logOut'])->name('logout');
+
 Route::prefix('auth')->group(function () {
 
     // App login Routes

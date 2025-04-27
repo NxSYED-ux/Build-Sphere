@@ -37,7 +37,7 @@ class landingController extends Controller
         return $this->plans($planCycle, ['Active', 'Custom']);
     }
 
-    public function orgPlans(string $planCycle, Request $request)
+    public function organizationPlans(string $planCycle, Request $request)
     {
         $token = $request->attributes->get('token');
 
