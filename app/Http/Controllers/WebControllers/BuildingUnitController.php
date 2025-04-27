@@ -10,6 +10,7 @@ use App\Models\BuildingUnit;
 use App\Models\DropdownType;
 use App\Models\ManagerBuilding;
 use App\Models\Organization;
+use App\Models\PlanSubscriptionItem;
 use App\Models\UnitPicture;
 use App\Models\UserBuildingUnit;
 use Illuminate\Http\RedirectResponse;
@@ -178,112 +179,128 @@ class BuildingUnitController extends Controller
         return $this->store($request, 'owner',$organization_id,'Rejected');
     }
 
-    private function store(Request $request, String $portal, $organization_id, $status)
+    private function store(Request $request, string $portal, $organization_id, $status)
     {
         $user = $request->user() ?? abort(403, 'Unauthorized');
         $token = $request->attributes->get('token');
 
-        $request->validate([
-             'unit_name' => [
-                 'required',
-                 'string',
-                 'max:255',
-                 Rule::unique('buildingunits')->where(function ($query) use ($request) {
-                     return $query->where('building_id', $request->building_id);
-                 }),
-             ],
+        $validated = $request->validate([
+            'unit_name' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('buildingunits')->where(function ($query) use ($request) {
+                    return $query->where('building_id', $request->building_id);
+                }),
+            ],
             'unit_type' => 'required|string',
             'price' => 'required|numeric',
             'description' => 'nullable|string',
             'sale_or_rent' => 'required|string',
             'area' => 'nullable|numeric',
-            'level_id' => 'required|integer',
-            'building_id' => 'required|integer',
+            'level_id' => 'required|integer|exists:buildinglevels,id',
+            'building_id' => 'required|integer|exists:buildings,id',
             'unit_pictures.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-        ],[
-            'unit_name.unique' => 'This level name is already in use for the selected building.',
+        ], [
+            'unit_name.unique' => 'This unit name is already in use for the selected building.',
         ]);
 
-        DB::beginTransaction();
+        if ($portal === 'owner' && $token['organization_id'] !== $organization_id) {
+            return redirect()->back()->withInput()->with('error', 'You cannot perform this action.');
+        }
 
         try {
+            return DB::transaction(function () use ($request, $portal, $organization_id, $user, $token, $validated, $status) {
 
-            $unit = BuildingUnit::create([
-                'unit_name' => $request->unit_name,
-                'unit_type' => $request->unit_type,
-                'price' => $request->price,
-                'description' => $request->description,
-                'sale_or_rent' => $request->sale_or_rent,
-                'area' => $request->area,
-                'level_id' => $request->level_id,
-                'building_id' => $request->building_id,
-                'organization_id' => $organization_id,
-                'status' => $status,
-            ]);
+                $unit = BuildingUnit::create([
+                    'unit_name' => $validated['unit_name'],
+                    'unit_type' => $validated['unit_type'],
+                    'price' => $validated['price'],
+                    'description' => $validated['description'],
+                    'sale_or_rent' => $validated['sale_or_rent'],
+                    'area' => $validated['area'],
+                    'level_id' => $validated['level_id'],
+                    'building_id' => $validated['building_id'],
+                    'organization_id' => $organization_id,
+                    'status' => $status,
+                ]);
 
-            if ($request->hasFile('unit_pictures')) {
-                foreach ($request->file('unit_pictures') as $image) {
-                    $imageName = time() . '_' . $image->getClientOriginalName();
-                    $imagePath = 'uploads/units/images/' . $imageName;
-                    $image->move(public_path('uploads/units/images'), $imageName);
+                if ($request->hasFile('unit_pictures')) {
+                    foreach ($request->file('unit_pictures') as $image) {
+                        $imageName = time() . '_' . $image->getClientOriginalName();
+                        $imagePath = 'uploads/units/images/' . $imageName;
+                        $image->move(public_path('uploads/units/images'), $imageName);
 
-                    UnitPicture::create([
-                        'unit_id' => $unit->id,
-                        'file_path' => $imagePath,
-                        'file_name' => $imageName,
-                    ]);
+                        UnitPicture::create([
+                            'unit_id' => $unit->id,
+                            'file_path' => $imagePath,
+                            'file_name' => $imageName,
+                        ]);
+                    }
                 }
-            }
 
-            DB::commit();
+                $subscriptionItem = PlanSubscriptionItem::where('organization_id', $organization_id)
+                    ->where('service_catalog_id', 5)
+                    ->lockForUpdate()
+                    ->first();
 
-            if($portal === 'admin'){
+                if (!$subscriptionItem) {
+                    throw new \Exception('The current plan doesn\'t include unit management.');
+                }
 
-                $route = 'units.index';
+                $meta = $subscriptionItem->meta ?? ['quantity' => 0];
 
-                dispatch( new BuildingNotifications(
+                if ($subscriptionItem->quantity <= 0 || $meta['quantity'] <= 0) {
+                    throw new \Exception('The current plan doesn\'t include unit management. Please upgrade the plan.');
+                }
+
+                $currentBuildingUnits = $meta[$unit->building_id]['used'] ?? 0;
+                if ($currentBuildingUnits >= $subscriptionItem->quantity) {
+                    throw new \Exception('This building has reached its unit limit (max ' . $subscriptionItem->quantity .' units).');
+                }
+
+                if (!isset($meta[$unit->building_id])) {
+                    $buildingCount = count(array_filter(array_keys($meta), 'is_int'));
+                    if ($buildingCount >= $meta['quantity']) {
+                        throw new \Exception('Building limit reached for units. Upgrade the organization plan to add more buildings.');
+                    }
+                }
+
+                $meta[$unit->building_id] = [
+                    'used' => ($meta[$unit->building_id]['used'] ?? 0) + 1
+                ];
+
+                $newHighest = max(array_column(array_filter($meta, 'is_array'), 'used')) ?? 0;
+                $subscriptionItem->update([
+                    'used' => $newHighest,
+                    'meta' => $meta
+                ]);
+
+                $route = $portal === 'admin' ? 'units.index' : 'owner.units.index';
+                $detailPath = "{$portal}/units/{$unit->id}/show";
+
+                dispatch(new BuildingNotifications(
                     $organization_id,
-                    $request->building_id,
-                    "New Unit Created by Admin",
-                    "The Unit '{$request->unit_name}' has been successfully created by admin and is now available.",
+                    $validated['building_id'],
+                    "New Unit Created by " . ($portal === 'admin' ? 'Admin' : "{$token['role_name']} ({$user->name})"),
+                    "The Unit '{$validated['unit_name']}' has been successfully created" . ($portal === 'admin' ? ' by admin' : ''),
                     "owner/units/{$unit->id}/show",
 
                     $user->id,
                     "New Unit Created",
-                    "The Unit '{$request->unit_name}' has been successfully created and is now available.",
-                    "admin/units/{$unit->id}/show",
-
-                    true,
+                    "The Unit '{$validated['unit_name']}' has been successfully created.",
+                    $detailPath,
+                    $portal === 'admin'
                 ));
 
-            }
-            elseif ($portal === 'owner'){
-
-                $route = 'owner.units.index';
-
-                dispatch( new BuildingNotifications(
-                    $organization_id,
-                    $request->building_id,
-                    "New Unit Created by {$token['role_name']} ({$user->name})",
-                    "The Unit '{$request->unit_name}' has been successfully created by {$token['role_name']}.",
-                    "owner/units/{$unit->id}/show",
-
-                    $user->id,
-                    "New Unit Created",
-                    "The Unit '{$request->unit_name}' has been successfully created.",
-                    "owner/units/{$unit->id}/show",
-                ));
-            }
-            else{
-                abort(404, 'Page Not Found.');
-            }
-
-            return redirect()->route($route)->with('success', 'Unit created successfully.');
-
+                return redirect()->route($route)->with('success', 'Unit created successfully.');
+            });
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Error in unit store: ' . $e->getMessage());
-            return redirect()->back()->withInput()->with('error', 'Something went wrong. Please try again.');
+            Log::error('Unit Creation Failed: ' . $e->getMessage());
+
+            $errorType = $user->role_id === 2 ? 'plan_upgrade_error' : 'error';
+            return redirect()->back()->with($errorType, $e->getMessage())->withInput();
         }
     }
 
@@ -426,12 +443,12 @@ class BuildingUnitController extends Controller
         return $this->update($request, 'owner', $organization_id,'Rejected');
     }
 
-    private function update(Request $request, String $portal, $organization_id, $status)
+    private function update(Request $request, string $portal, $organization_id, $status)
     {
         $user = $request->user() ?? abort(403, 'Unauthorized');
         $token = $request->attributes->get('token');
 
-        $request->validate([
+        $validated = $request->validate([
             'unit_id' => 'required|exists:buildingunits,id',
             'unit_name' => [
                 'required',
@@ -446,109 +463,121 @@ class BuildingUnitController extends Controller
             'description' => 'nullable|string',
             'sale_or_rent' => 'required|string',
             'area' => 'nullable|numeric',
-            'level_id' => 'required|integer',
-            'building_id' => 'required|integer',
+            'level_id' => 'required|integer|exists:buildinglevels,id',
+            'building_id' => 'required|integer|exists:buildings,id',
             'updated_at' => 'required',
             'unit_pictures.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-        ],[
+        ], [
             'unit_name.unique' => 'This unit name is already in use for the selected building.',
         ]);
 
-        DB::beginTransaction();
-
         try {
-            $unit = BuildingUnit::where([
-                ['id', '=', $request->unit_id],
-                ['updated_at', '=', $request->updated_at]
-            ])->sharedLock()->first();
+            return DB::transaction(function () use ($request, $portal, $organization_id, $user, $token, $validated, $status) {
+                $unit = BuildingUnit::where([
+                    ['id', '=', $validated['unit_id']],
+                    ['updated_at', '=', $validated['updated_at']]
+                ])->lockForUpdate()->first();
 
-            if (!$unit) {
-                DB::rollBack();
-                return redirect()->back()->with('error', 'Please refresh the page and try again.');
-            }
+                if (!$unit) {
+                    throw new \Exception('Please refresh the page and try again.');
+                }
 
-            if($portal === 'owner' && $token['organization_id'] !== $unit->organization_id){
-                DB::rollBack();
-                return redirect()->back()->with('error', 'The selected unit id is invalid.');
-            }
+                if ($portal === 'owner' && $token['organization_id'] !== $unit->organization_id) {
+                    throw new \Exception('The selected unit id is invalid.');
+                }
 
-            $unit->update([
-                'unit_name' => $request->unit_name,
-                'unit_type' => $request->unit_type,
-                'price' => $request->price,
-                'description' => $request->description,
-                'sale_or_rent' => $request->sale_or_rent,
-                'area' => $request->area,
-                'level_id' => $request->level_id,
-                'building_id' => $request->building_id,
-                'organization_id' => $organization_id,
-                'status' => $status,
-                'updated_at' => now(),
-            ]);
+                $oldBuildingId = $unit->building_id;
+                $buildingChanged = ($oldBuildingId != $validated['building_id']);
 
-            if ($request->hasFile('unit_pictures')) {
-                foreach ($request->file('unit_pictures') as $image) {
-                    $imageName = time() . '_' . $image->getClientOriginalName();
-                    $imagePath = 'uploads/units/images/' . $imageName;
-                    $image->move(public_path('uploads/units/images'), $imageName);
+                if ($buildingChanged) {
+                    $subscriptionItem = PlanSubscriptionItem::where('organization_id', $organization_id)
+                        ->where('service_catalog_id', 5)
+                        ->lockForUpdate()
+                        ->firstOrFail();
 
-                    UnitPicture::create([
-                        'unit_id' => $unit->id,
-                        'file_path' => $imagePath,
-                        'file_name' => $imageName,
+                    $meta = $subscriptionItem->meta ?? ['quantity' => 0];
+
+
+                    if (isset($meta[$oldBuildingId])) {
+                        $meta[$oldBuildingId]['used'] = max(0, $meta[$oldBuildingId]['used'] - 1);
+                        if ($meta[$oldBuildingId]['used'] <= 0) {
+                            unset($meta[$oldBuildingId]);
+                        }
+                    }
+
+                    $buildingCount = count(array_filter(array_keys($meta), 'is_int'));
+                    if (!isset($meta[$validated['building_id']]) && $buildingCount >= $meta['quantity']) {
+                        throw new \Exception('Building limit reached. Cannot move unit to new building.');
+                    }
+
+                    $newBuildingUnits = $meta[$validated['building_id']]['used'] ?? 0;
+                    if ($newBuildingUnits >= $subscriptionItem->quantity) {
+                        throw new \Exception('Target building has reached its unit limit (max ' . $subscriptionItem->quantity . ' units).');
+                    }
+
+                    $meta[$validated['building_id']] = [
+                        'used' => $newBuildingUnits + 1
+                    ];
+
+                    $newHighest = max(array_column(array_filter($meta, 'is_array'), 'used')) ?? 0;
+                    $subscriptionItem->update([
+                        'used' => $newHighest,
+                        'meta' => $meta
                     ]);
                 }
-            }
 
-            DB::commit();
+                $unit->update([
+                    'unit_name' => $validated['unit_name'],
+                    'unit_type' => $validated['unit_type'],
+                    'price' => $validated['price'],
+                    'description' => $validated['description'],
+                    'sale_or_rent' => $validated['sale_or_rent'],
+                    'area' => $validated['area'],
+                    'level_id' => $validated['level_id'],
+                    'building_id' => $validated['building_id'],
+                    'status' => $status,
+                    'updated_at' => now(),
+                ]);
 
-            if($portal === 'admin'){
+                if ($request->hasFile('unit_pictures')) {
+                    foreach ($request->file('unit_pictures') as $image) {
+                        $imageName = time() . '_' . $image->getClientOriginalName();
+                        $imagePath = 'uploads/units/images/' . $imageName;
+                        $image->move(public_path('uploads/units/images'), $imageName);
 
-                $route = 'units.index';
+                        UnitPicture::create([
+                            'unit_id' => $unit->id,
+                            'file_path' => $imagePath,
+                            'file_name' => $imageName,
+                        ]);
+                    }
+                }
 
-                dispatch( new BuildingNotifications(
+                $route = $portal === 'admin' ? 'units.index' : 'owner.units.index';
+                $detailPath = "{$portal}/units/{$unit->id}/show";
+
+                dispatch(new BuildingNotifications(
                     $organization_id,
-                    $request->building_id,
-                    "Unit Updated by Admin",
-                    "The Unit '{$request->unit_name}' has been successfully updated by admin.",
+                    $validated['building_id'],
+                    "Unit Updated by " . ($portal === 'admin' ? 'Admin' : "{$token['role_name']} ({$user->name})"),
+                    "The Unit '{$validated['unit_name']}' has been updated" . ($portal === 'admin' ? ' by admin' : ''),
                     "owner/units/{$unit->id}/show",
 
                     $user->id,
                     "Unit Updated",
-                    "The Unit '{$request->unit_name}' has been successfully updated with the applied changes.",
-                    "admin/units/{$unit->id}/show",
-
-                    true,
+                    "The Unit '{$validated['unit_name']}' has been updated with your changes.",
+                    $detailPath,
+                    $portal === 'admin'
                 ));
 
-            }
-            elseif ($portal === 'owner'){
-
-                $route = 'owner.units.index';
-
-                dispatch( new BuildingNotifications(
-                    $organization_id,
-                    $request->building_id,
-                    "Unit Updated by {$token['role_name']} ({$user->name})",
-                    "The Unit '{$request->unit_name}' has been successfully updated by {$token['role_name']}.",
-                    "owner/units/{$unit->id}/show",
-
-                    $user->id,
-                    "Unit Updated",
-                    "The Unit '{$request->unit_name}' has been successfully updated with the applied changes.",
-                    "owner/units/{$unit->id}/show",
-                ));
-            }
-            else{
-                abort(404, 'Page Not Found.');
-            }
-
-            return redirect()->route($route)->with('success', 'Unit updated successfully.');
-
+                return redirect()->route($route)->with('success', 'Unit updated successfully.');
+            });
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error("Error creating unit: " . $e->getMessage());
-            return redirect()->back()->withInput()->with('error', 'An error occurred while updating the building unit.');
+            Log::error("Unit Update Failed: " . $e->getMessage());
+
+            $errorType = $user->role_id === 2 ? 'plan_upgrade_error' : 'error';
+            return redirect()->back()->with($errorType, $e->getMessage())->withInput();
         }
     }
 

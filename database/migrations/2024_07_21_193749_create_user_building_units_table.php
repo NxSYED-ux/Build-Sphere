@@ -17,6 +17,7 @@ return new class extends Migration
             $table->date('purchase_date')->nullable();
             $table->tinyInteger('contract_status')->default(1);
             $table->enum('type', ['Rented', 'Sold']);
+            $table->integer('billing_cycle')->nullable()->comment('In Months only');
             $table->decimal('price', 10, 2)->default(0);
             $table->unsignedBigInteger('created_by');
             $table->unsignedBigInteger('updated_by');

@@ -122,7 +122,6 @@ class BuildingLevelController extends Controller
         $user = $request->user() ?? abort(403, 'Unauthorized');
         $token = $request->attributes->get('token');
 
-        // Validate request
         $validated = $request->validate([
             'level_name' => [
                 'required',
@@ -164,14 +163,15 @@ class BuildingLevelController extends Controller
                     throw new \Exception('The current plan doesn\'t include level management.');
                 }
 
-                $meta = $subscriptionItem->meta ? json_decode($subscriptionItem->meta, true) : ['quantity' => 0];
+                $meta = $subscriptionItem->meta ?? ['quantity' => 0];
 
                 if ($subscriptionItem->quantity <= 0 || $meta['quantity'] <= 0) {
                     throw new \Exception('The current plan doesn\'t include level management. Please upgrade the plan.');
                 }
 
-                if ($subscriptionItem->used >= $subscriptionItem->quantity) {
-                    throw new \Exception('Level limit reached. Upgrade the organization plan to add more levels.');
+                $currentBuildingLevel = $meta[$level->building_id]['units_used'] ?? 0;
+                if ($currentBuildingLevel >= $subscriptionItem->quantity) {
+                    throw new \Exception('This building has reached its level limit (max ' . $subscriptionItem->quantity .' levels).');
                 }
 
                 $buildingCount = count(array_filter(array_keys($meta), 'is_int'));
@@ -183,9 +183,10 @@ class BuildingLevelController extends Controller
                     'used' => ($meta[$level->building_id]['used'] ?? 0) + 1
                 ];
 
+                $newHighest = max(array_column(array_filter($meta, 'is_array'), 'used')) ?? 0;
                 $subscriptionItem->update([
-                    'used' => $subscriptionItem->used + 1,
-                    'meta' => json_encode($meta)
+                    'used' => $newHighest,
+                    'meta' => $meta
                 ]);
 
                 $notificationData = [
@@ -310,12 +311,12 @@ class BuildingLevelController extends Controller
         return $this->update($request, 'owner', $organization_id);
     }
 
-    private function update(Request $request, String $portal, $organization_id)
+    private function update(Request $request, string $portal, $organization_id)
     {
         $user = $request->user() ?? abort(403, 'Unauthorized');
         $token = $request->attributes->get('token');
 
-        $request->validate([
+        $validated = $request->validate([
             'level_name' => [
                 'required',
                 'string',
@@ -334,70 +335,118 @@ class BuildingLevelController extends Controller
         ]);
 
         try {
-            DB::beginTransaction();
+            return DB::transaction(function () use ($request, $portal, $organization_id, $user, $token, $validated) {
+                $buildingLevel = BuildingLevel::where([
+                    ['id', '=', $validated['level_id']],
+                    ['updated_at', '=', $validated['updated_at']]
+                ])->lockForUpdate()->first();
 
-            $buildingLevel = BuildingLevel::where([
-                ['id', '=', $request->level_id],
-                ['updated_at', '=', $request->updated_at]
-            ])->sharedLock()->first();
+                if (!$buildingLevel) {
+                    throw new \Exception('Please refresh and try again.');
+                }
 
-            if (!$buildingLevel) {
-                DB::rollBack();
-                return redirect()->back()->with('error', 'Please refresh and try again.');
-            }
+                if ($portal === 'owner' && $token['organization_id'] !== $buildingLevel->organization_id) {
+                    throw new \Exception('The selected level id is invalid.');
+                }
 
-            if($portal === 'owner' && $token['organization_id'] !== $buildingLevel->organization_id){
-                DB::rollBack();
-                return redirect()->back()->with('error', 'The selected level id is invalid.');
-            }
+                $oldBuildingId = $buildingLevel->building_id;
+                $buildingChanged = $oldBuildingId != $validated['building_id'];
 
-            $buildingLevel->update([
-                'level_name' => $request->level_name,
-                'description' => $request->description,
-                'level_number' => $request->level_number,
-                'status' => $request->status ?? $buildingLevel->status,
-                'building_id' => $request->building_id,
-                'organization_id' => $organization_id,
-                'updated_at' => now(),
-            ]);
+                if ($buildingChanged) {
+                    $subscriptionItem = PlanSubscriptionItem::where('organization_id', $organization_id)
+                        ->where('service_catalog_id', 4)
+                        ->lockForUpdate()
+                        ->first();
 
-            DB::commit();
+                    if (!$subscriptionItem) {
+                        throw new \Exception('The current plan doesn\'t include level management.');
+                    }
 
-            if($portal === 'admin'){
-                dispatch( new BuildingNotifications(
-                    $organization_id,
-                    $request->building_id,
-                    "Level Updated by Admin",
-                    "The level '{$request->level_name}' has been successfully updated by admin.",
-                    'owner/levels',
+                    $meta = $subscriptionItem->meta ?? ['quantity' => 0];
 
-                    $user->id,
-                    "Level Updated",
-                    "The level '{$request->level_name}' has been successfully updated with the applied changes.",
-                    'admin/levels',
 
-                    true,
-                ));
-            }elseif($portal === 'owner'){
-                dispatch( new BuildingNotifications(
-                    $organization_id,
-                    $request->building_id,
-                    "Level Updated by {$token['role_name']} ({$user->name})",
-                    "The level '{$request->level_name}' has been successfully updated by {$token['role_name']}.",
-                    'owner/levels',
+                    if (isset($meta[$oldBuildingId])) {
+                        $meta[$oldBuildingId]['used'] = max(0, $meta[$oldBuildingId]['used'] - 1);
+                        if ($meta[$oldBuildingId]['used'] <= 0) {
+                            unset($meta[$oldBuildingId]);
+                        }
+                    }
 
-                    $user->id,
-                    "Level Updated",
-                    "The level '{$request->level_name}' has been successfully updated with the applied changes.",
-                    'owner/levels',
-                ));
-            }
+                    $buildingCount = count(array_filter(array_keys($meta), 'is_int'));
+                    if (!isset($meta[$validated['building_id']]) && $buildingCount >= $meta['quantity']) {
+                        throw new \Exception('Building limit reached. Cannot move level to new building.');
+                    }
 
-            return redirect()->back()->with('success', 'Building Level updated successfully.');
+                    $newBuildingLevels = $meta[$validated['building_id']]['used'] ?? 0;
+                    if ($newBuildingLevels >= $subscriptionItem->quantity) {
+                        throw new \Exception('Target building has reached its level limit (max ' . $subscriptionItem->quantity . ' levels).');
+                    }
+
+                    $meta[$validated['building_id']] = [
+                        'used' => $newBuildingLevels + 1
+                    ];
+
+                    $newHighest = max(array_column(array_filter($meta, 'is_array'), 'used')) ?? 0;
+                    $subscriptionItem->update([
+                        'used' => $newHighest,
+                        'meta' => $meta
+                    ]);
+                }
+
+                $buildingLevel->update([
+                    'level_name' => $validated['level_name'],
+                    'description' => $validated['description'] ?? null,
+                    'level_number' => $validated['level_number'],
+                    'status' => $request->status ?? $buildingLevel->status,
+                    'building_id' => $validated['building_id'],
+                    'organization_id' => $organization_id,
+                    'updated_at' => now(),
+                ]);
+
+                $notificationData = [
+                    'organization_id' => $organization_id,
+                    'building_id' => $validated['building_id'],
+                    'level_name' => $validated['level_name'],
+                    'user_id' => $user->id,
+                    'user_name' => $user->name,
+                    'role_name' => $token['role_name'] ?? null,
+                ];
+
+                if ($portal === 'admin') {
+                    dispatch(new BuildingNotifications(
+                        $notificationData['organization_id'],
+                        $notificationData['building_id'],
+                        "Level Updated by Admin",
+                        "The level '{$notificationData['level_name']}' has been updated by admin.",
+                        'owner/levels',
+                        $notificationData['user_id'],
+                        "Level Updated",
+                        "The level '{$notificationData['level_name']}' has been updated.",
+                        'admin/levels',
+                        true
+                    ));
+                } elseif ($portal === 'owner') {
+                    dispatch(new BuildingNotifications(
+                        $notificationData['organization_id'],
+                        $notificationData['building_id'],
+                        "Level Updated by {$notificationData['role_name']} ({$notificationData['user_name']})",
+                        "The level '{$notificationData['level_name']}' has been updated by {$notificationData['role_name']}.",
+                        'owner/levels',
+                        $notificationData['user_id'],
+                        "Level Updated",
+                        "The level '{$notificationData['level_name']}' has been updated.",
+                        'owner/levels'
+                    ));
+                }
+
+                return redirect()->back()->with('success', 'Building Level updated successfully.');
+            });
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Error in update Building Level: ' . $e->getMessage());
-            return redirect()->back()->with('error', 'Something went wrong! Please try again.');
+            Log::error("Building Level Update Failed: " . $e->getMessage());
+
+            $errorType = $user->role_id === 2 ? 'plan_upgrade_error' : 'error';
+            return redirect()->back()->with($errorType, $e->getMessage())->withInput();
         }
     }
 

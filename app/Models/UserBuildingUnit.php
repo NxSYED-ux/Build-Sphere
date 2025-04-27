@@ -18,6 +18,7 @@ class UserBuildingUnit extends Model
         'unit_id',
         'type',
         'price',
+        'billing_cycle',
         'rent_start_date',
         'rent_end_date',
         'purchase_date',
