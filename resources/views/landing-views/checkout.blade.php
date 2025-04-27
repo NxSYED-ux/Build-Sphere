@@ -264,7 +264,7 @@
                     plan_cycle_id: selectedBillingCycleId.value,
                     owner_id: ownerId.value,
                     organization_id: organizationId.value,
-                    payment_intend_id: confirmResult.payment_intend_id
+                    payment_intent_id: confirmResult.paymentIntent.id
                 };
 
                 const completeResponse = await fetch("{{ route('checkout.processing.complete') }}", {
