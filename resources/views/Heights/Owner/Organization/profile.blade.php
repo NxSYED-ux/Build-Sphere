@@ -428,9 +428,9 @@
                                     <div id="chartdiv" class="flex-grow-1 my-1"></div>
 
                                     <div class="mt-auto pt-2">
-                                        <button class="btn btn-success w-100 mb-3 py-2 rounded-1">
+                                        <a href="{{ route('owner.plan.upgrade.index') }}" class="btn btn-success w-100 mb-3 py-2 rounded-1">
                                             <i class="fas fa-arrow-up me-2"></i> Upgrade Plan
-                                        </button>
+                                        </a>
                                         @if($subscription['status'] === 'Active')
                                             <form id="cancelSubscriptionForm" action="{{ route('owner.organization.planSubscription.cancel') }}" method="POST" class="d-inline">
                                                 @csrf
@@ -962,8 +962,8 @@
                                             <i class="fas fa-ellipsis-h"></i>
                                         </button>
                                         <ul class="dropdown-menu dropdown-menu-end" style="background-color: var(--body-background-color);" aria-labelledby="${dropdownId}">
-                                            <li style="background-color: var(--body-background-color);"><a class="dropdown-item set-primary-btn" href="#" data-card-id="${card.id}"
-                                                style="background-color: var(--body-background-color);" onmouseover="this.style.backgroundColor='var(--body-background-color)'" onmouseout="this.style.backgroundColor='var(--body-background-color)'">
+                                            <li><a class="dropdown-item set-primary-btn" href="#" data-card-id="${card.id}"
+                                                style="background-color: var(--body-background-color); color: var(--sidenavbar-text-color) !important;" onmouseover="this.style.backgroundColor='var(--body-background-color)'" onmouseout="this.style.backgroundColor='var(--body-background-color)'">
                                                 Set as primary</a>
                                             </li>
                                         </ul>
@@ -1029,6 +1029,8 @@
                         text: 'Do you want to set this card as your primary payment method?',
                         icon: 'question',
                         showCancelButton: true,
+                        background: 'var(--body-background-color)',
+                        color: 'var(--sidenavbar-text-color)',
                         confirmButtonColor: '#3085d6',
                         cancelButtonColor: '#d33',
                         confirmButtonText: 'Yes, set as primary'
@@ -1040,7 +1042,9 @@
                             title: 'Success!',
                             text: 'Primary card updated successfully',
                             icon: 'success',
-                            confirmButtonText: 'OK'
+                            confirmButtonText: 'OK',
+                            background: 'var(--body-background-color)',
+                            color: 'var(--sidenavbar-text-color)'
                         });
                         await loadCards();
                     }
@@ -1082,6 +1086,8 @@
                         text: 'Are you sure you want to delete this payment method?',
                         icon: 'warning',
                         showCancelButton: true,
+                        background: 'var(--body-background-color)',
+                        color: 'var(--sidenavbar-text-color)',
                         confirmButtonColor: '#3085d6',
                         cancelButtonColor: '#d33',
                         confirmButtonText: 'Yes, delete it!',
@@ -1094,7 +1100,9 @@
                             title: 'Deleted!',
                             text: 'Your payment method has been deleted.',
                             icon: 'success',
-                            confirmButtonText: 'OK'
+                            confirmButtonText: 'OK',
+                            background: 'var(--body-background-color)',
+                            color: 'var(--sidenavbar-text-color)'
                         });
                         await loadCards();
                     }
