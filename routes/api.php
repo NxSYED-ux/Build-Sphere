@@ -131,7 +131,7 @@ Route::middleware(['auth.jwt'])->group(function () {
 
     });
 
-    Route::prefix('staff')->group(function () {
+    Route::prefix('staff')->middleware(['plan'])->group(function () {
 
         Route::get('/profile', [ProfileController::class, 'getProfile']);
         Route::put('/profile', [ProfileController::class, 'updateProfileData']);

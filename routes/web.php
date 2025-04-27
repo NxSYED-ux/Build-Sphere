@@ -19,11 +19,9 @@ use App\Http\Controllers\WebControllers\PlanController;
 use App\Http\Controllers\WebControllers\RolePermissionController;
 use App\Http\Controllers\WebControllers\RoleController;
 use App\Http\Controllers\WebControllers\AssignUnitController;
+use App\Http\Controllers\WebControllers\UpgradePlanController;
 use App\Http\Controllers\WebControllers\UsersController;
 use Illuminate\Support\Facades\Route;
-
-// Route for Pusher Authentication
-Route::post('/pusher/auth', [AuthController::class, 'authenticatePusher'])->name('pusher.auth');
 
 // Wrong Route
 Route::fallback(function () {
@@ -35,7 +33,7 @@ Route::prefix('')->group(function () {
 
     Route::get('/', [landingController::class, 'index'])->name('index');
     Route::get('/index', [landingController::class, 'index']);
-    Route::get('/plans/active/{planCycle}', [landingController::class, 'activePlans'])->name('plans');
+    Route::get('/plans/active/{planCycle}', [PlanController::class, 'activePlans'])->name('plans');
 
 });
 
@@ -82,8 +80,8 @@ Route::prefix('admin')->middleware(['auth.jwt'])->group(function () {
         Route::put('/', [PlanController::class, 'update'])->name('plans.update');
         Route::delete('/{id}', [PlanController::class, 'destroy'])->name('plans.destroy');
 
-        Route::get('/custom/{planCycle}', [landingController::class, 'activeAndCustomPlans'])->name('plans.custom');
-
+        Route::get('/custom/{planCycle}', [PlanController::class, 'activeAndCustomPlans'])->name('plans.custom');
+        Route::get('/organization/{planCycle}', [PlanController::class, 'organizationPlans'])->name('plans.organization');
     });
 
     Route::prefix('profile')->group(function () {
@@ -214,97 +212,102 @@ Route::prefix('owner')->middleware(['auth.jwt'])->group(function () {
         Route::get('/', [OwnerDashboardController::class, 'index'])->name('owner_manager_dashboard');
     });
 
-    Route::prefix('plans')->group(function () {
+    Route::prefix('plan/upgrade')->group(function () {
 
-        Route::get('/organization/{planCycle}', [landingController::class, 'organizationPlans'])->name('plans.organization');
-
-    });
-
-    Route::prefix('organization')->group(function () {
-
-        Route::get('/', [OrganizationController::class , 'organizationProfile'])->name('owner.organization.profile');
-        Route::get('/edit', [OrganizationController::class , 'ownerEdit'])->name('owner.organization.edit');
-        Route::put('/', [OrganizationController::class , 'ownerUpdate'])->name('owner.organization.update');
-        Route::put('/logo/update', [OrganizationController::class, 'ownerUpdateLogo'])->name('owner.organization.logo.update');
-        Route::put('/online-payment-status/update', [OrganizationController::class, 'ownerOnlinePaymentStatus'])->name('owner.organization.onlinePaymentStatus.update');
-        Route::put('/plan/cancel', [OrganizationController::class, 'ownerCancelPlanSubscription'])->name('owner.organization.planSubscription.cancel');
-        Route::put('/plan/resume', [OrganizationController::class, 'ownerResumePlanSubscription'])->name('owner.organization.planSubscription.resume');
+        Route::get('/', [UpgradePlanController::class, 'index'])->name('owner.plan.upgrade.index');
+        Route::post('/', [UpgradePlanController::class, 'create'])->name('owner.plan.upgrade.store');
 
     });
 
-    Route::prefix('profile')->group(function () {
+    Route::middleware(['plan'])->group(function () {
 
-        Route::get('/', [ProfileController::class, 'ownerProfile'])->name('owner.profile');
-        Route::put('/', [ProfileController::class, 'updateProfileData'])->name('owner.profile.update');
-        Route::put('/picture', [ProfileController::class, 'uploadProfilePic'])->name('owner.profile.picture.update');
-        Route::delete('/picture', [ProfileController::class, 'deleteProfilePic'])->name('owner.profile.picture.delete');
-        Route::put('/password', [ProfileController::class, 'changePassword'])->name('owner.profile.password.update');
+        Route::prefix('organization')->group(function () {
 
-    });
+            Route::get('/', [OrganizationController::class , 'organizationProfile'])->name('owner.organization.profile');
+            Route::get('/edit', [OrganizationController::class , 'ownerEdit'])->name('owner.organization.edit');
+            Route::put('/', [OrganizationController::class , 'ownerUpdate'])->name('owner.organization.update');
+            Route::put('/logo/update', [OrganizationController::class, 'ownerUpdateLogo'])->name('owner.organization.logo.update');
+            Route::put('/online-payment-status/update', [OrganizationController::class, 'ownerOnlinePaymentStatus'])->name('owner.organization.onlinePaymentStatus.update');
+            Route::put('/plan/cancel', [OrganizationController::class, 'ownerCancelPlanSubscription'])->name('owner.organization.planSubscription.cancel');
+            Route::put('/plan/resume', [OrganizationController::class, 'ownerResumePlanSubscription'])->name('owner.organization.planSubscription.resume');
 
-    Route::prefix('buildings')->group(function () {
+        });
 
-        Route::get('/', [BuildingController::class, 'ownerIndex'])->name('owner.buildings.index');
-        Route::get('/create', [BuildingController::class, 'ownerCreate'])->name('owner.buildings.create');
-        Route::post('/', [BuildingController::class, 'ownerStore'])->name('owner.buildings.store');
-        Route::get('/tree', [BuildingTreeController::class, 'tree'])->name('owner.buildings.tree');
-        Route::get('/{building}/show', [BuildingController::class, 'ownerShow'])->name('owner.buildings.show');
-        Route::get('/{building}/edit', [BuildingController::class, 'ownerEdit'])->name('owner.buildings.edit');
-        Route::put('/', [BuildingController::class, 'ownerUpdate'])->name('owner.buildings.update');
-        Route::post('/submit', [BuildingController::class, 'submitBuilding'])->name('owner.buildings.submit');
-        Route::post('/reminder', [BuildingController::class, 'approvalReminder'])->name('owner.buildings.reminder');
-        Route::get('/{building}/available', [BuildingUnitController::class, 'getAvailableBuildingUnits'])->name('owner.buildings.units.available');
+        Route::prefix('profile')->group(function () {
 
-    });
+            Route::get('/', [ProfileController::class, 'ownerProfile'])->name('owner.profile');
+            Route::put('/', [ProfileController::class, 'updateProfileData'])->name('owner.profile.update');
+            Route::put('/picture', [ProfileController::class, 'uploadProfilePic'])->name('owner.profile.picture.update');
+            Route::delete('/picture', [ProfileController::class, 'deleteProfilePic'])->name('owner.profile.picture.delete');
+            Route::put('/password', [ProfileController::class, 'changePassword'])->name('owner.profile.password.update');
 
-    Route::prefix('levels')->group(function () {
+        });
 
-        Route::get('/', [BuildingLevelController::class, 'ownerIndex'])->name('owner.levels.index');
-        Route::get('/create', [BuildingLevelController::class, 'ownerCreate'])->name('owner.levels.create');
-        Route::post('/', [BuildingLevelController::class, 'ownerStore'])->name('owner.levels.store');
-        Route::get('/{level}/show', [BuildingLevelController::class, 'show'])->name('owner.levels.show');
-        Route::get('/{level}/edit', [BuildingLevelController::class, 'ownerEdit'])->name('owner.levels.edit');
-        Route::put('/', [BuildingLevelController::class, 'ownerUpdate'])->name('owner.levels.update');
+        Route::prefix('buildings')->group(function () {
 
-    });
+            Route::get('/', [BuildingController::class, 'ownerIndex'])->name('owner.buildings.index');
+            Route::get('/create', [BuildingController::class, 'ownerCreate'])->name('owner.buildings.create');
+            Route::post('/', [BuildingController::class, 'ownerStore'])->name('owner.buildings.store');
+            Route::get('/tree', [BuildingTreeController::class, 'tree'])->name('owner.buildings.tree');
+            Route::get('/{building}/show', [BuildingController::class, 'ownerShow'])->name('owner.buildings.show');
+            Route::get('/{building}/edit', [BuildingController::class, 'ownerEdit'])->name('owner.buildings.edit');
+            Route::put('/', [BuildingController::class, 'ownerUpdate'])->name('owner.buildings.update');
+            Route::post('/submit', [BuildingController::class, 'submitBuilding'])->name('owner.buildings.submit');
+            Route::post('/reminder', [BuildingController::class, 'approvalReminder'])->name('owner.buildings.reminder');
+            Route::get('/{building}/available', [BuildingUnitController::class, 'getAvailableBuildingUnits'])->name('owner.buildings.units.available');
 
-    Route::prefix('units')->group(function () {
+        });
 
-        Route::get('/', [BuildingUnitController::class, 'ownerIndex'])->name('owner.units.index');
-        Route::get('/create', [BuildingUnitController::class, 'ownerCreate'])->name('owner.units.create');
-        Route::post('/', [BuildingUnitController::class, 'ownerStore'])->name('owner.units.store');
-        Route::get('/{unit}/show', [BuildingUnitController::class, 'ownerShow'])->name('owner.units.show');
-        Route::get('/{unit}/edit', [BuildingUnitController::class, 'ownerEdit'])->name('owner.units.edit');
-        Route::put('/', [BuildingUnitController::class, 'ownerUpdate'])->name('owner.units.update');
-        Route::get('/details/{id}', [BuildingUnitController::class, 'unitDetails'])->name('owner.units.details');
-        Route::get('/details/{id}/contract', [BuildingUnitController::class, 'getUnitDetailsWithActiveContract'])->name('owner.units.details.contract');
+        Route::prefix('levels')->group(function () {
 
-    });
+            Route::get('/', [BuildingLevelController::class, 'ownerIndex'])->name('owner.levels.index');
+            Route::get('/create', [BuildingLevelController::class, 'ownerCreate'])->name('owner.levels.create');
+            Route::post('/', [BuildingLevelController::class, 'ownerStore'])->name('owner.levels.store');
+            Route::get('/{level}/show', [BuildingLevelController::class, 'show'])->name('owner.levels.show');
+            Route::get('/{level}/edit', [BuildingLevelController::class, 'ownerEdit'])->name('owner.levels.edit');
+            Route::put('/', [BuildingLevelController::class, 'ownerUpdate'])->name('owner.levels.update');
 
-    Route::prefix('assign-units')->group(function () {
+        });
 
-        Route::get('/', [AssignUnitController::class, 'index'])->name('owner.assignunits.index');
-        Route::post('/', [AssignUnitController::class, 'create'])->name('owner.assignunits.store');
+        Route::prefix('units')->group(function () {
 
-    });
+            Route::get('/', [BuildingUnitController::class, 'ownerIndex'])->name('owner.units.index');
+            Route::get('/create', [BuildingUnitController::class, 'ownerCreate'])->name('owner.units.create');
+            Route::post('/', [BuildingUnitController::class, 'ownerStore'])->name('owner.units.store');
+            Route::get('/{unit}/show', [BuildingUnitController::class, 'ownerShow'])->name('owner.units.show');
+            Route::get('/{unit}/edit', [BuildingUnitController::class, 'ownerEdit'])->name('owner.units.edit');
+            Route::put('/', [BuildingUnitController::class, 'ownerUpdate'])->name('owner.units.update');
+            Route::get('/details/{id}', [BuildingUnitController::class, 'unitDetails'])->name('owner.units.details');
+            Route::get('/details/{id}/contract', [BuildingUnitController::class, 'getUnitDetailsWithActiveContract'])->name('owner.units.details.contract');
 
-    Route::prefix('cards')->group(function () {
+        });
 
-        Route::get('/', [CardController::class, 'index'])->name('owner.cards.index');
-        Route::post('/', [CardController::class, 'store'])->name('owner.cards.store');
-        Route::put('/', [CardController::class, 'update'])->name('owner.cards.update.default');
-        Route::delete('/', [CardController::class, 'destroy'])->name('owner.cards.delete');
+        Route::prefix('assign-units')->group(function () {
 
-    });
+            Route::get('/', [AssignUnitController::class, 'index'])->name('owner.assignunits.index');
+            Route::post('/', [AssignUnitController::class, 'create'])->name('owner.assignunits.store');
 
-    Route::prefix('departments')->group(function () {
+        });
 
-        Route::get('/', [DepartmentController::class , 'index'])->name('owner.departments.index');
-        Route::post('/', [DepartmentController::class , 'store'])->name('owner.departments.store');
-        Route::get('/{department}/edit', [DepartmentController::class , 'edit'])->name('owner.departments.edit');
-        Route::put('/', [DepartmentController::class , 'update'])->name('owner.departments.update');
-        Route::get('/{department}/show', [DepartmentController::class, 'show'])->name('owner.departments.show');
-        Route::delete('/', [DepartmentController::class, 'destroy'])->name('owner.departments.destroy');
+        Route::prefix('cards')->group(function () {
+
+            Route::get('/', [CardController::class, 'index'])->name('owner.cards.index');
+            Route::post('/', [CardController::class, 'store'])->name('owner.cards.store');
+            Route::put('/', [CardController::class, 'update'])->name('owner.cards.update.default');
+            Route::delete('/', [CardController::class, 'destroy'])->name('owner.cards.delete');
+
+        });
+
+        Route::prefix('departments')->group(function () {
+
+            Route::get('/', [DepartmentController::class , 'index'])->name('owner.departments.index');
+            Route::post('/', [DepartmentController::class , 'store'])->name('owner.departments.store');
+            Route::get('/{department}/edit', [DepartmentController::class , 'edit'])->name('owner.departments.edit');
+            Route::put('/', [DepartmentController::class , 'update'])->name('owner.departments.update');
+            Route::get('/{department}/show', [DepartmentController::class, 'show'])->name('owner.departments.show');
+            Route::delete('/', [DepartmentController::class, 'destroy'])->name('owner.departments.destroy');
+
+        });
 
     });
 

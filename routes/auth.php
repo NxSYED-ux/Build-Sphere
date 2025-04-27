@@ -5,7 +5,8 @@ use App\Http\Controllers\GeneralControllers\ForgotPasswordController;
 use App\Http\Controllers\WebControllers\SignUpController;
 use Illuminate\Support\Facades\Route;
 
-Route::post('/logout', [AuthController::class, 'logOut'])->name('logout');
+// Route for Pusher Authentication
+Route::post('/pusher/auth', [AuthController::class, 'authenticatePusher'])->name('pusher.auth');
 
 Route::prefix('auth')->group(function () {
 
@@ -45,3 +46,4 @@ Route::prefix('auth')->group(function () {
 
 });
 
+Route::post('/logout', [AuthController::class, 'logOut'])->name('logout');
