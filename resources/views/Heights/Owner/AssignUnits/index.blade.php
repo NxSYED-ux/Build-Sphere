@@ -118,7 +118,7 @@
             border-radius: 12px;
             padding: 20px;
             min-height: 180px;
-            background-color: white;
+            background-color: var(--sidenavbar-body-color);
             margin-top: 15px;
             overflow-y: auto;
             text-align: center;
@@ -631,37 +631,11 @@
                                             </div>
                                         </div>
 
-                                        <!-- Rent Cycle and Duration (Only Show for "Rented") -->
-                                        <div class="col-md-6 rent-fields d-none">
+                                        <div class="col-md-12 rent-fields d-none" id="duration_field_wrapper">
                                             <div class="form-group mb-3">
-                                                <label for="rent_cycle" class="form-label">Rent Cycle <span class="required__field indicator d-none">*</span></label>
-                                                <select name="rentCycle" id="rent_cycle" class="form-select">
-                                                    <option value="">Select Cycle</option>
-                                                    <option value="Monthly" {{ old('rentCycle') == 'Monthly' ? 'selected' : '' }}>Monthly</option>
-                                                    <option value="Yearly" {{ old('rentCycle') == 'Yearly' ? 'selected' : '' }}>Yearly</option>
-                                                </select>
-                                                @error('rentCycle')
-                                                <div class="text-danger small mt-1">{{ $message }}</div>
-                                                @enderror
-                                            </div>
-                                        </div>
-
-                                        <div class="col-md-6 rent-fields d-none" id="duration_field_wrapper">
-                                            <div class="form-group mb-3">
-                                                <label for="duration_count" class="form-label">Number of <span id="duration_label">Months/Years</span> <span class="required__field indicator d-none">*</span></label>
-                                                <input type="number" min="1" class="form-control" id="duration_count" name="rentDuration" value="{{ old('rentDuration') }}">
-                                                @error('rentDuration')
-                                                <div class="text-danger small mt-1">{{ $message }}</div>
-                                                @enderror
-                                            </div>
-                                        </div>
-
-                                        <!-- Purchase Date (Only Show for "Sold") -->
-                                        <div class="col-12 purchase-field d-none">
-                                            <div class="form-group mb-3">
-                                                <label for="purchase_date" class="form-label">Purchase Date <span class="required__field indicator d-none">*</span></label>
-                                                <input type="date" class="form-control" id="purchase_date" name="purchaseDate" value="{{ old('purchaseDate', date('Y-m-d')) }}">
-                                                @error('purchaseDate')
+                                                <label for="no_of_months" class="form-label">Number of <span id="duration_label">Months</span> <span class="required__field indicator d-none">*</span></label>
+                                                <input type="number" min="1" class="form-control" id="no_of_months" name="no_of_months" placeholder="Number of Mounths" value="{{ old('no_of_months') }}">
+                                                @error('no_of_months')
                                                 <div class="text-danger small mt-1">{{ $message }}</div>
                                                 @enderror
                                             </div>
@@ -1079,9 +1053,6 @@
             const rentFields = document.querySelectorAll('.rent-fields');
             const purchaseField = document.querySelector('.purchase-field');
             const indicators = document.querySelectorAll('.required__field.indicator');
-            const rentCycle = document.getElementById('rent_cycle');
-            const durationLabel = document.getElementById('duration_label');
-            const durationFieldWrapper = document.getElementById('duration_field_wrapper');
 
             function toggleFields() {
                 const value = contractType.value;
@@ -1100,25 +1071,11 @@
                 }
             }
 
-            function updateDurationLabel() {
-                const selected = rentCycle.value;
-                if (selected === 'Monthly') {
-                    durationLabel.innerText = 'Months';
-                    durationFieldWrapper.classList.remove('d-none');
-                } else if (selected === 'Yearly') {
-                    durationLabel.innerText = 'Years';
-                    durationFieldWrapper.classList.remove('d-none');
-                } else {
-                    durationFieldWrapper.classList.add('d-none');
-                }
-            }
 
             contractType.addEventListener('change', toggleFields);
-            rentCycle.addEventListener('change', updateDurationLabel);
 
             // Initialize on page load
             toggleFields();
-            updateDurationLabel();
         });
     </script>
 @endpush
