@@ -117,12 +117,13 @@ class BuildingLevelController extends Controller
         return $this->store($request, 'owner','Rejected', $organization_id);
     }
 
-    private function store(Request $request, String $portal, $status, $organization_id)
+    private function store(Request $request, string $portal, $status, $organization_id)
     {
         $user = $request->user() ?? abort(403, 'Unauthorized');
         $token = $request->attributes->get('token');
 
-        $request->validate([
+        // Validate request
+        $validated = $request->validate([
             'level_name' => [
                 'required',
                 'string',
@@ -138,111 +139,102 @@ class BuildingLevelController extends Controller
             'level_name.unique' => 'This level name is already in use for the selected building.',
         ]);
 
+        if ($portal === 'owner' && $token['organization_id'] !== $organization_id) {
+            return redirect()->back()->withInput()->with('error', 'You cannot perform this action.');
+        }
+
         try {
+            return DB::transaction(function () use ($request, $portal, $status, $organization_id, $user, $token, $validated) {
 
-            if($portal === 'owner' && $token['organization_id'] !== $organization_id){
-                return redirect()->back()->withInput()->with('error', 'You can not perform this action.');
-            }
+                $level = BuildingLevel::create([
+                    'level_name' => $validated['level_name'],
+                    'level_number' => $validated['level_number'],
+                    'description' => $validated['description'] ?? null,
+                    'building_id' => $validated['building_id'],
+                    'organization_id' => $organization_id,
+                    'status' => $status,
+                ]);
 
-            DB::beginTransaction();
+                $subscriptionItem = PlanSubscriptionItem::where('organization_id', $organization_id)
+                    ->where('service_catalog_id', 4)
+                    ->lockForUpdate()
+                    ->first();
 
-            $level = BuildingLevel::create([
-                'level_name' => $request->level_name,
-                'level_number' => $request->level_number,
-                'description' => $request->description,
-                'building_id' => $request->building_id,
-                'organization_id' => $organization_id,
-                'status' => $status,
-            ]);
-
-            $organization_id = $token['organization_id'];
-
-            $subscriptionLimit = PlanSubscriptionItem::where('organization_id', $organization_id)
-                ->where('service_catalog_id', 4)
-                ->lockForUpdate()
-                ->first();
-
-            if(!$subscriptionLimit) {
-                DB::rollBack();
-                $errorHeading = $user->role_id === 2 ? 'plan_upgrade_error' : 'error';
-                $errorMessage = 'The current plan doesn\'t include level management. Please upgrade the plan.';
-                return redirect()->back()->with($errorHeading, $errorMessage)->withInput();
-            }
-
-            if($subscriptionLimit->quantity <= 0) {
-                DB::rollBack();
-                $errorHeading = $user->role_id === 2 ? 'plan_upgrade_error' : 'error';
-                $errorMessage = 'Level limit reached. Upgrade the organization plan to add more levels.';
-                return redirect()->back()->with($errorHeading, $errorMessage)->withInput();
-            }
-
-            $meta = $subscriptionLimit->meta ? json_decode($subscriptionLimit->meta, true) : [];
-            Log::info('Quantity' . $meta['quantity']);
-
-            if($meta['quantity'] <= 0){
-                DB::rollBack();
-                $errorHeading = $user->role_id === 2 ? 'plan_upgrade_error' : 'error';
-                $errorMessage = 'Level limit reached. Upgrade the organization plan to add more levels.';
-                return redirect()->back()->with($errorHeading, $errorMessage)->withInput();
-            }
-
-            if (isset($meta[$level->building_id])) {
-                if($meta[$level->building_id]['used'] < $subscriptionLimit->quantity){
-                    $meta[$level->building_id]['used'] += 1;
+                if (!$subscriptionItem) {
+                    throw new \Exception('The current plan doesn\'t include level management.');
                 }
-            } else {
-                if ((count($meta) - 1) >= $meta['quantity']) {
-                    DB::rollBack();
-                    $errorHeading = $user->role_id === 2 ? 'plan_upgrade_error' : 'error';
-                    $errorMessage = 'Building limit reached. Upgrade the organization plan to add more buildings.';
-                    return redirect()->back()->with($errorHeading, $errorMessage)->withInput();
+
+                $meta = $subscriptionItem->meta ? json_decode($subscriptionItem->meta, true) : ['quantity' => 0];
+
+                if ($subscriptionItem->quantity <= 0 || $meta['quantity'] <= 0) {
+                    throw new \Exception('The current plan doesn\'t include level management. Please upgrade the plan.');
                 }
-                $meta[$level->building_id] = ['used' => 1];
-            }
 
+                if ($subscriptionItem->used >= $subscriptionItem->quantity) {
+                    throw new \Exception('Level limit reached. Upgrade the organization plan to add more levels.');
+                }
 
-            $subscriptionLimit->update([
-                'used' => $subscriptionLimit->used + 1,
-                'meta' => json_encode($meta)
-            ]);
+                $buildingCount = count(array_filter(array_keys($meta), 'is_int'));
+                if (!isset($meta[$level->building_id]) && $buildingCount >= $meta['quantity']) {
+                    throw new \Exception('Building limit reached. Upgrade the organization plan to add more buildings.');
+                }
 
-            DB::commit();
+                $meta[$level->building_id] = [
+                    'used' => ($meta[$level->building_id]['used'] ?? 0) + 1
+                ];
 
-            if($portal === 'admin'){
-                dispatch( new BuildingNotifications(
-                   $organization_id,
-                   $request->building_id,
-                   "New Level Created by Admin",
-                   "The level '{$request->level_name}' has been successfully created by admin and is now available for use.",
-                   'owner/levels',
+                $subscriptionItem->update([
+                    'used' => $subscriptionItem->used + 1,
+                    'meta' => json_encode($meta)
+                ]);
 
-                   $user->id,
-                    "New Level Created",
-                    "The level '{$request->level_name}' has been successfully created and is now available for use.",
-                    'admin/levels',
+                $notificationData = [
+                    'organization_id' => $organization_id,
+                    'building_id' => $validated['building_id'],
+                    'level_name' => $validated['level_name'],
+                    'user_id' => $user->id,
+                    'user_name' => $user->name,
+                    'role_name' => $token['role_name'] ?? null,
+                ];
 
-                   true,
-                ));
-            }elseif($portal === 'owner'){
-                dispatch( new BuildingNotifications(
-                   $organization_id,
-                   $request->building_id,
-                   "New Level Created by {$token['role_name']} ({$user->name})",
-                   "The level '{$request->level_name}' has been successfully created by {$token['role_name']}.",
-                   'owner/levels',
+                if ($portal === 'admin') {
+                    dispatch(new BuildingNotifications(
+                        $notificationData['organization_id'],
+                        $notificationData['building_id'],
+                        "New Level Created by Admin",
+                        "The level '{$notificationData['level_name']}' has been successfully created by admin.",
+                        'owner/levels',
+                        $notificationData['user_id'],
+                        "New Level Created",
+                        "The level '{$notificationData['level_name']}' has been created.",
+                        'admin/levels',
+                        true
+                    ));
+                } elseif ($portal === 'owner') {
+                    dispatch(new BuildingNotifications(
+                        $notificationData['organization_id'],
+                        $notificationData['building_id'],
+                        "New Level Created by {$notificationData['role_name']} ({$notificationData['user_name']})",
+                        "The level '{$notificationData['level_name']}' has been created by {$notificationData['role_name']}.",
+                        'owner/levels',
+                        $notificationData['user_id'],
+                        "New Level Created",
+                        "The level '{$notificationData['level_name']}' has been created.",
+                        'owner/levels'
+                    ));
+                }
 
-                   $user->id,
-                    "New Level Created",
-                    "The level '{$request->level_name}' has been successfully created.",
-                    'owner/levels',
-                ));
-            }
-
-            return redirect()->back()->with('success', 'Building Level created successfully.');
+                return redirect()->back()->with('success', 'Building Level created successfully.');
+            });
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Error in create Building Level: ' . $e->getMessage());
-            return redirect()->back()->with('error', 'Something went wrong! Please try again.');
+
+            $errorType = $user->role_id === 2 ? 'plan_upgrade_error' : 'error';
+            $message = $e->getMessage();
+
+            Log::error("Building Level Creation Failed: {$message}");
+
+            return redirect()->back()->with($errorType, $message)->withInput();
         }
     }
 
