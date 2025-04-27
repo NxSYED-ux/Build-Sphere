@@ -59,7 +59,6 @@ Route::middleware(['auth.jwt'])->group(function () {
 
     Route::prefix('user')->group(function () {
 
-        Route::get('/', [ProfileController::class, 'userData']);
         Route::middleware('check.permission:User Profile')->group(function () {
             Route::get('/profile', [ProfileController::class, 'getProfile']);
         });
@@ -81,9 +80,8 @@ Route::middleware(['auth.jwt'])->group(function () {
             Route::get('/unit_details/{id}', [ListingController::class, 'unitDetails']);
             Route::get('/organization_details/{id}', [ListingController::class, 'organizationWithBuildings']);
             Route::get('/building_units/{id}', [ListingController::class, 'specificBuildingUnits']);
+            Route::get('/favorites-list', [FavouritesController::class, 'favouritesList']);
         });
-
-        Route::get('/favorites-list', [FavouritesController::class, 'favouritesList']);
 
         Route::middleware('check.permission:Favorites,json')->group(function () {
             Route::get('/favorites', [FavouritesController::class, 'showFavourites']);

@@ -15,21 +15,6 @@ use Illuminate\View\View;
 
 class ProfileController extends Controller
 {
-
-    // For App Home Screen
-    public function userData(Request $request){
-        if(!$request->user()) return response()->json(['error' => 'User not authenticated.'], 401);
-
-        $user = [
-            'name' => $request->user()->name,
-            'picture' => $request->user()->picture
-        ];
-
-        return response()->json([
-            'user' => $user,
-        ]);
-    }
-
     // View Profile:
     public function getProfile(Request $request, string $role = 'staff-user')
     {
@@ -70,19 +55,21 @@ class ProfileController extends Controller
             'admin' => 'Heights.Admin.Profile.admin_profile',
             'owner' => 'Heights.Owner.Profile.owner_profile',
             'staff-user' => null,
-            default => abort(404, 'Page not found'),
         };
 
         return $this->handleResponse($request, 200, 'user', $userData, $view);
     }
+
     public function adminProfile(Request $request): View
     {
         return $this->getProfile($request, 'admin');
     }
+
     public function ownerProfile(Request $request): View
     {
         return $this->getProfile($request, 'owner');
     }
+
 
     // Update Profile:
     public function updateProfileData(Request $request)
@@ -159,6 +146,7 @@ class ProfileController extends Controller
         }
     }
 
+
     // Upload Profile Pic
     public function uploadProfilePic(Request $request)
     {
@@ -192,6 +180,7 @@ class ProfileController extends Controller
         }
     }
 
+
     // Delete Profile Picture
     public function deleteProfilePic(Request $request){
         try {
@@ -218,6 +207,7 @@ class ProfileController extends Controller
             return response()->json(['error' => 'Internal Server Error'], 500);
         }
     }
+
 
     // Change Password
     public function changePassword(Request $request)

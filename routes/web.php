@@ -191,8 +191,8 @@ Route::prefix('admin')->middleware(['auth.jwt'])->group(function () {
         Route::put('/logo/update', [OrganizationController::class, 'adminUpdateLogo'])->name('organizations.logo.update');
         Route::put('/online-payment-status/update', [OrganizationController::class, 'adminOnlinePaymentStatus'])->name('organizations.onlinePaymentStatus.update');
         Route::post('/mark-payment-received', [OrganizationController::class, 'planPaymentReceived'])->name('organizations.planPaymentReceived');
-        Route::post('/plan/cancel', [OrganizationController::class, 'adminCancelPlanSubscription'])->name('organizations.planSubscription.cancel');
-        Route::post('/plan/resume', [OrganizationController::class, 'adminResumePlanSubscription'])->name('organizations.planSubscription.resume');
+        Route::put('/plan/cancel', [OrganizationController::class, 'adminCancelPlanSubscription'])->name('organizations.planSubscription.cancel');
+        Route::put('/plan/resume', [OrganizationController::class, 'adminResumePlanSubscription'])->name('organizations.planSubscription.resume');
 
         Route::get('/organizations/{id}/buildings', [OrganizationController::class, 'getBuildingsAdmin'])->name('organizations.buildings');
 
@@ -220,8 +220,8 @@ Route::prefix('owner')->middleware(['auth.jwt'])->group(function () {
         Route::put('/', [OrganizationController::class , 'ownerUpdate'])->name('owner.organization.update');
         Route::put('/logo/update', [OrganizationController::class, 'ownerUpdateLogo'])->name('owner.organization.logo.update');
         Route::put('/online-payment-status/update', [OrganizationController::class, 'ownerOnlinePaymentStatus'])->name('owner.organization.onlinePaymentStatus.update');
-        Route::post('/plan/cancel', [OrganizationController::class, 'ownerCancelPlanSubscription'])->name('owner.organization.planSubscription.cancel');
-        Route::post('/plan/resume', [OrganizationController::class, 'ownerResumePlanSubscription'])->name('owner.organization.planSubscription.resume');
+        Route::put('/plan/cancel', [OrganizationController::class, 'ownerCancelPlanSubscription'])->name('owner.organization.planSubscription.cancel');
+        Route::put('/plan/resume', [OrganizationController::class, 'ownerResumePlanSubscription'])->name('owner.organization.planSubscription.resume');
 
     });
 

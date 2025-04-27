@@ -8,23 +8,9 @@ use App\Models\Plan;
 use Illuminate\Support\Facades\Log;
 
 
-class landingController extends Controller
+class UpgradePlanController extends Controller
 {
-    public function index()
-    {
-        try {
-            $planCycles = BillingCycle::pluck('duration_months');
-        } catch (\Exception $e) {
-            Log::error('Error fetching billing cycles: ' . $e->getMessage());
-            $planCycles = collect();
-        }
-
-        $selectedPlanCycle = $planCycles->first();
-
-        return view('landing-views.index', compact('planCycles', 'selectedPlanCycle'));
-    }
-
-    public function plans(string $planCycle)
+    public function index($planCycle)
     {
         try {
             $billing_cycle = BillingCycle::where('duration_months', $planCycle)->first();
