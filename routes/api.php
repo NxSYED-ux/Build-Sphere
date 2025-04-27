@@ -143,6 +143,7 @@ Route::middleware(['auth.jwt'])->group(function () {
         Route::get('/query/{id}', [QueryController::class, 'getQueryDetails']);
         Route::put('/reject-query', [QueryController::class, 'rejectQuery']);
         Route::put('/accept-query', [QueryController::class, 'acceptQuery']);
+        Route::put('/close-query', [QueryController::class, 'closeQuery']);
         Route::get('/query-count', [QueryController::class, 'getYearlyQueryStats']);
         Route::get('/query-chart', [QueryController::class, 'getMonthlyQueryStats']);
 

@@ -3,7 +3,10 @@
 namespace App\Providers;
 
 use App\Broadcasting\FCMChannel;
+use App\Models\Organization;
 use App\Models\Plan;
+use App\Models\Query;
+use App\Models\StaffMember;
 use App\Models\Subscription;
 use App\Models\User;
 use App\Models\UserBuildingUnit;
@@ -15,9 +18,6 @@ use Kreait\Firebase\Factory;
 
 class AppServiceProvider extends ServiceProvider
 {
-    /**
-     * Register any application services.
-     */
     public function register()
     {
         $this->app->singleton('firebase.messaging', function ($app) {
@@ -44,6 +44,9 @@ class AppServiceProvider extends ServiceProvider
             'user_building_unit' => UserBuildingUnit::class,
             'subscription' => Subscription::class,
             'user' => User::class,
+            'organization' => Organization::class,
+            'staffMember' => StaffMember::class,
+            'query' => Query::class,
         ]);
     }
 }

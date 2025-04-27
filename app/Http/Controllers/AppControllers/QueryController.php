@@ -9,6 +9,7 @@ use App\Models\Department;
 use App\Models\Query;
 use App\Models\QueryPicture;
 use App\Models\StaffMember;
+use App\Models\Transaction;
 use App\Models\UserBuildingUnit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -235,42 +236,78 @@ class QueryController extends Controller
         return $this->acceptOrRejectQuery($request,'Rejected');
     }
 
-    private function acceptOrRejectQuery(Request $request, $status)
+    public function closeQuery(Request $request)
     {
+        $user = $request->user();
+        if (!$user) {
+            return response()->json(['error' => 'User ID is required'], 400);
+        }
+
+        $validated = $request->validate([
+            'id' => 'required|integer|exists:queries,id',
+            'remarks' => 'required|string|min:5',
+            'expense' => 'required|integer|min:0',
+        ]);
+
+        DB::beginTransaction();
+
         try {
-            $user = $request->user() ?? null;
-            if (!$user) {
-                return response()->json(['error' => 'User ID is required'], 400);
-            }
-
-            $request->validate([
-                'id' => 'required|integer|exists:queries,id',
-                'date' => 'required',
-                'remarks' => $status === 'Rejected' ? 'required|string|min:5' : 'nullable|string',
-            ]);
-
             $staffData = StaffMember::where('user_id', $user->id)->first();
             if (!$staffData) {
-                return response()->json(['error' => 'Only staff members can update queries'], 403);
+                return response()->json(['error' => 'Only staff members can close the queries'], 403);
             }
 
-            $updatedRows = Query::where('id', $request->id)
-                ->where('status', 'Open')
+            $queryRecord = Query::where('id', $validated['id'])
+                ->where('status', 'In Progress')
                 ->where('staff_member_id', $staffData->id)
-                ->update([
-                    'status' => $status === 'Rejected' ? 'Rejected' : 'In Progress',
-                    'remarks' => $status === 'Rejected' ? $request->remarks : null,
-                    'expected_closure_date' => $request->date,
-                ]);
+                ->lockForUpdate()
+                ->first();
 
-            if ($updatedRows === 0) {
-                return response()->json(['error' => 'Unable to update status: The query ID may be invalid or the status is already changed'], 400);
+            if (!$queryRecord) {
+                DB::rollBack();
+                return response()->json([
+                    'error' => 'Unable to update status: The query ID may be invalid or the status is already changed'
+                ], 400);
             }
 
-            return response()->json(['message' => 'Status changed successfully'], 200);
+            $queryStatus = now() > $queryRecord->expected_closure_date ? 'Closed Late' : 'Closed';
+
+            $queryRecord->update([
+                'status' => $queryStatus,
+                'remarks' => $validated['remarks'],
+                'expense' => $validated['expense'],
+                'closure_date' => now(),
+            ]);
+
+            if ($validated['expense'] > 0) {
+                Transaction::create([
+                    'transaction_title' => "Query {$queryRecord->id}",
+                    'transaction_category' => 'New',
+                    'buyer_id' => $staffData->organization_id,
+                    'buyer_type' => 'organization',
+                    'seller_type' => 'staffMember',
+                    'seller_id' => $staffData->id,
+                    'payment_method' => 'Cash',
+                    'gateway_payment_id' => null,
+                    'price' => $validated['expense'],
+                    'currency' => 'PKR',
+                    'status' => 'Completed',
+                    'is_subscription' => false,
+                    'billing_cycle' => null,
+                    'subscription_start_date' => null,
+                    'subscription_end_date' => null,
+                    'source_id' => $queryRecord->id,
+                    'source_name' => 'query',
+                ]);
+            }
+
+            DB::commit();
+
+            return response()->json(['message' => 'Query Closed Successfully'], 200);
         } catch (\Exception $e) {
-            Log::error("Error in acceptOrRejectQuery: " . $e->getMessage());
-            return response()->json(['error' => 'Failed to update query status'], 500);
+            DB::rollBack();
+            Log::error("Error in Close Query: " . $e->getMessage());
+            return response()->json(['error' => 'Failed to close query status'], 500);
         }
     }
 
@@ -391,6 +428,47 @@ class QueryController extends Controller
         } catch (\Exception $e) {
             Log::error('Error in getMonthlyQueryStats: ' . $e->getMessage());
             return response()->json(['success' => false, 'message' => 'Internal Server Error'], 500);
+        }
+    }
+
+
+    // Helper Function
+    private function acceptOrRejectQuery(Request $request, $status)
+    {
+        try {
+            $user = $request->user() ?? null;
+            if (!$user) {
+                return response()->json(['error' => 'User ID is required'], 400);
+            }
+
+            $request->validate([
+                'id' => 'required|integer|exists:queries,id',
+                'date' => 'required',
+                'remarks' => $status === 'Rejected' ? 'required|string|min:5' : 'nullable|string',
+            ]);
+
+            $staffData = StaffMember::where('user_id', $user->id)->first();
+            if (!$staffData) {
+                return response()->json(['error' => 'Only staff members can update queries'], 403);
+            }
+
+            $updatedRows = Query::where('id', $request->id)
+                ->where('status', 'Open')
+                ->where('staff_member_id', $staffData->id)
+                ->update([
+                    'status' => $status === 'Rejected' ? 'Rejected' : 'In Progress',
+                    'remarks' => $status === 'Rejected' ? $request->remarks : null,
+                    'expected_closure_date' => $request->date,
+                ]);
+
+            if ($updatedRows === 0) {
+                return response()->json(['error' => 'Unable to update status: The query ID may be invalid or the status is already changed'], 400);
+            }
+
+            return response()->json(['message' => 'Status changed successfully'], 200);
+        } catch (\Exception $e) {
+            Log::error("Error in acceptOrRejectQuery: " . $e->getMessage());
+            return response()->json(['error' => 'Failed to update query status'], 500);
         }
     }
 
