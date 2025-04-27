@@ -146,11 +146,21 @@ class PlanController extends Controller
 
             foreach ($validated['services'] as $serviceId => $serviceData) {
                 $serviceCatalog = PlanServiceCatalog::findOrFail($serviceId);
+                $parentId = $serviceCatalog?->parent_id;
+
+                $parent_plan_service = null;
+                if ($parentId) {
+                    $parent_plan_service = PlanService::where('service_catalog_id', $parentId)
+                        ->where('plan_id', $plan->id)
+                        ->select('quantity')
+                        ->first();
+                }
 
                 $service = PlanService::create([
                     'plan_id' => $plan->id,
                     'service_catalog_id' => $serviceCatalog->id,
                     'quantity' => $serviceData['quantity'],
+                    'meta' => ['quantity' => $parent_plan_service?->quantity],
                 ]);
 
                 foreach ($serviceData['prices'] as $billingCycleId => $price) {
@@ -392,7 +402,21 @@ class PlanController extends Controller
 
             foreach ($validated['services'] as $serviceData) {
                 $service = $plan->services()->findOrFail($serviceData['id']);
-                $service->update(['quantity' => $serviceData['quantity']]);
+                $serviceCatalog = PlanServiceCatalog::findOrFail($service->service_catalog_id);
+                $parentId = $serviceCatalog?->parent_id;
+
+                $parent_plan_service = null;
+                if ($parentId) {
+                    $parent_plan_service = PlanService::where('service_catalog_id', $parentId)
+                        ->where('plan_id', $plan->id)
+                        ->select('quantity')
+                        ->first();
+                }
+
+                $service->update([
+                    'quantity' => $serviceData['quantity'],
+                    'meta' => ['quantity' => $parent_plan_service?->quantity],
+                ]);
 
                 if (!empty($unselectedCycles)) {
                     PlanServicePrice::where('service_id', $service->id)

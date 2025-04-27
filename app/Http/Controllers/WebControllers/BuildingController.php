@@ -12,6 +12,7 @@ use App\Models\BuildingPicture;
 use App\Models\DropdownType;
 use App\Models\ManagerBuilding;
 use App\Models\Organization;
+use App\Models\PlanSubscriptionItem;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -99,8 +100,33 @@ class BuildingController extends Controller
         return $this->create('admin');
     }
 
-    public function ownerCreate()
+    public function ownerCreate(Request $request)
     {
+        $user = $request->user() ?? abort(403, 'Unauthorized');
+        $token = $request->attributes->get('token');
+
+        if (empty($token['organization_id']) || empty($token['role_name'])) {
+            return redirect()->back()->with('error', 'Invalid Building Id.');
+        }
+
+        $organization_id = $token['organization_id'];
+
+        $subscriptionLimit = PlanSubscriptionItem::where('organization_id', $organization_id)
+            ->where('service_catalog_id', 1)
+            ->first();
+
+        if(!$subscriptionLimit) {
+            $errorHeading = $user->role_id === 2 ? 'plan_upgrade_error' : 'error';
+            $errorMessage = 'The current plan doesn\'t include building management. Please upgrade the plan.';
+            return redirect()->back()->with($errorHeading, $errorMessage);
+        }
+
+        if($subscriptionLimit->used >= $subscriptionLimit->quantity) {
+            $errorHeading = $user->role_id === 2 ? 'plan_upgrade_error' : 'error';
+            $errorMessage = 'Building limit reached. Upgrade the organization plan to add more buildings.';
+            return redirect()->back()->with($errorHeading, $errorMessage);
+        }
+
         return $this->create('owner');
     }
 
@@ -242,6 +268,27 @@ class BuildingController extends Controller
                     ]);
                 }
             }
+
+            $subscriptionLimit = PlanSubscriptionItem::where('organization_id', $organization_id)
+                ->where('service_catalog_id', 1)
+                ->lockForUpdate()
+                ->first();
+
+            if(!$subscriptionLimit) {
+                DB::rollBack();
+                $errorHeading = $user->role_id === 2 ? 'plan_upgrade_error' : 'error';
+                $errorMessage = 'The current plan doesn\'t include building management. Please upgrade the plan.';
+                return redirect()->back()->with($errorHeading, $errorMessage)->withInput();
+            }
+
+            if($subscriptionLimit->used >= $subscriptionLimit->quantity) {
+                DB::rollBack();
+                $errorHeading = $user->role_id === 2 ? 'plan_upgrade_error' : 'error';
+                $errorMessage = 'Building limit reached. Upgrade the organization plan to add more buildings.';
+                return redirect()->back()->with($errorHeading, $errorMessage)->withInput();
+            }
+
+            $subscriptionLimit->increment('used');
 
             DB::commit();
 

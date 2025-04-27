@@ -142,7 +142,7 @@ class AuthController extends Controller
             return $this->handleResponse($request, 200, 'success', 'Logout successful', 'login');
         } catch (JWTException $e) {
             Log::error("Logout error: " . $e->getMessage());
-            return $this->handleResponse($request, 500, 'error', 'Something went wrong.', '/');
+            return $this->handleResponse($request, 500, 'error', 'Something went wrong.', 'login');
         }
     }
 

@@ -14,6 +14,9 @@ return new class extends Migration
             $table->string('title', 255);
             $table->string('description')->nullable();
             $table->string('icon')->nullable();
+            $table->unsignedBigInteger('parent_id')->nullable();
+
+            $table->foreign('parent_id')->references('id')->on('planservicecatalog');
         });
 
         Schema::create('planservices', function (Blueprint $table) {
@@ -22,6 +25,7 @@ return new class extends Migration
             $table->foreignId('service_catalog_id')->constrained('planservicecatalog')->onDelete('cascade');
 
             $table->integer('quantity')->default(0);
+            $table->json('meta')->nullable();
 
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();

@@ -263,6 +263,7 @@ class CheckOutController extends Controller
                 'service_name' => $service->serviceCatalog->title ?? '',
                 'service_description' => $service->serviceCatalog->description ?? '',
                 'service_quantity' => $service->quantity,
+                'service_meta' => $service->meta,
             ];
         });
 

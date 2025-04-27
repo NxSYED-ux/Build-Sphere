@@ -525,33 +525,32 @@ INSERT INTO heights.plans (id, name, description, currency, status, created_at, 
 INSERT INTO heights.plans (id, name, description, currency, status, created_at, updated_at) VALUES (3, 'Pro', 'Advanced features for professionals managing multiple properties with automation and insights.', 'PKR', 'Active', '2025-04-09 18:26:51', '2025-04-22 14:09:43');
 
 
-INSERT INTO heights.planservicecatalog (title, description, icon) VALUES ('Building Management', 'Oversee and organize all registered buildings in one place. Includes configuration, status updates, and essential building data.', 'fas fa-building');
-INSERT INTO heights.planservicecatalog (title, description, icon) VALUES ('Manager Accounts', 'Create and manage accounts for building managers. Assign responsibilities and control access to their respective buildings.', 'fas fa-user-tie');
-INSERT INTO heights.planservicecatalog (title, description, icon) VALUES ('Staff Members per Building', 'Assign staff members to individual buildings. Manage queries, and responsibilities per building.', 'fas fa-users');
-INSERT INTO heights.planservicecatalog (title, description, icon) VALUES ('Levels per Building', 'Define and manage the number of floors or levels for each building. Useful for unit mapping and navigation purposes.', 'fas fa-layer-group');
-INSERT INTO heights.planservicecatalog (title, description, icon) VALUES ('Units per Building', 'Add and track all residential or commercial units within a building. Enables easy management of occupancy and availability.', 'fas fa-door-open');
-INSERT INTO heights.planservicecatalog (title, description, icon) VALUES ('Featured Memberships', 'Highlight premium membership options for users. Offers additional visibility and benefits over standard plans.', 'fas fa-crown');
+INSERT INTO heights.planservicecatalog (title, description, icon, parent_id) VALUES ('Building Management', 'Oversee and organize all registered buildings in one place. Includes configuration, status updates, and essential building data.', 'fas fa-building', null);
+INSERT INTO heights.planservicecatalog (title, description, icon, parent_id) VALUES ('Manager Accounts', 'Create and manage accounts for building managers. Assign responsibilities and control access to their respective buildings.', 'fas fa-user-tie', null);
+INSERT INTO heights.planservicecatalog (title, description, icon, parent_id) VALUES ('Staff Members per Building', 'Assign staff members to individual buildings. Manage queries, and responsibilities per building.', 'fas fa-users', 1);
+INSERT INTO heights.planservicecatalog (title, description, icon, parent_id) VALUES ('Levels per Building', 'Define and manage the number of floors or levels for each building. Useful for unit mapping and navigation purposes.', 'fas fa-layer-group', 1);
+INSERT INTO heights.planservicecatalog (title, description, icon, parent_id) VALUES ('Units per Building', 'Add and track all residential or commercial units within a building. Enables easy management of occupancy and availability.', 'fas fa-door-open', 1);
+INSERT INTO heights.planservicecatalog (title, description, icon, parent_id) VALUES ('Featured Memberships', 'Highlight premium membership options for users. Offers additional visibility and benefits over standard plans.', 'fas fa-crown', null);
 
 
-INSERT INTO `planservices` (`id`, `plan_id`, `service_catalog_id`, `quantity`, `created_at`, `updated_at`) VALUES
-(1, 1, 1, 3, '2025-04-10 14:03:17', '2025-04-10 14:03:17'),
-(2, 1, 2, 2, '2025-04-10 14:03:17', '2025-04-10 14:03:17'),
-(3, 1, 3, 20, '2025-04-10 14:03:17', '2025-04-10 14:03:17'),
-(4, 1, 4, 5, '2025-04-10 14:03:17', '2025-04-10 14:03:17'),
-(5, 1, 5, 25,'2025-04-10 14:03:17', '2025-04-10 14:03:17'),
-(6, 1, 6, 2, '2025-04-10 14:03:17', '2025-04-10 14:03:17'),
-(7, 2, 1, 5, '2025-04-10 14:03:17', '2025-04-10 14:03:17'),
-(8, 2, 2, 3, '2025-04-10 14:03:17', '2025-04-10 14:03:17'),
-(9, 2, 3, 30, '2025-04-10 14:03:17', '2025-04-10 14:03:17'),
-(10, 2, 4, 8, '2025-04-10 14:03:17', '2025-04-10 14:03:17'),
-(11, 2, 5, 40, '2025-04-10 14:03:17', '2025-04-10 14:03:17'),
-(12, 2, 6, 5,'2025-04-10 14:03:17', '2025-04-10 14:03:17'),
-(13, 3, 1, 7,'2025-04-10 14:03:17', '2025-04-10 14:03:17'),
-(14, 3, 2, 5, '2025-04-10 14:03:17', '2025-04-10 14:03:17'),
-(15, 3, 3, 50, '2025-04-10 14:03:17', '2025-04-10 14:03:17'),
-(16, 3, 4, 10, '2025-04-10 14:03:17', '2025-04-10 14:03:17'),
-(17, 3, 5, 60, '2025-04-10 14:03:17', '2025-04-10 14:03:17'),
-(18, 3, 6, 5, '2025-04-10 14:03:17', '2025-04-10 14:03:17');
+INSERT INTO heights.planservices (plan_id, service_catalog_id, quantity, meta, created_at, updated_at) VALUES (1, 1, 3, '{"quantity":null}', '2025-04-10 14:03:17', '2025-04-27 14:00:37');
+INSERT INTO heights.planservices (plan_id, service_catalog_id, quantity, meta, created_at, updated_at) VALUES (1, 2, 2, '{"quantity":null}', '2025-04-10 14:03:17', '2025-04-27 13:58:12');
+INSERT INTO heights.planservices (plan_id, service_catalog_id, quantity, meta, created_at, updated_at) VALUES (1, 3, 20, '{"quantity":3}', '2025-04-10 14:03:17', '2025-04-27 14:00:37');
+INSERT INTO heights.planservices (plan_id, service_catalog_id, quantity, meta, created_at, updated_at) VALUES (1, 4, 5, '{"quantity":3}', '2025-04-10 14:03:17', '2025-04-27 14:00:37');
+INSERT INTO heights.planservices (plan_id, service_catalog_id, quantity, meta, created_at, updated_at) VALUES (1, 5, 25, '{"quantity":3}', '2025-04-10 14:03:17', '2025-04-27 14:00:37');
+INSERT INTO heights.planservices (plan_id, service_catalog_id, quantity, meta, created_at, updated_at) VALUES (1, 6, 2, '{"quantity":null}', '2025-04-10 14:03:17', '2025-04-27 13:58:12');
+INSERT INTO heights.planservices (plan_id, service_catalog_id, quantity, meta, created_at, updated_at) VALUES (2, 1, 5, '{"quantity":null}', '2025-04-10 14:03:17', '2025-04-27 13:58:21');
+INSERT INTO heights.planservices (plan_id, service_catalog_id, quantity, meta, created_at, updated_at) VALUES (2, 2, 3, '{"quantity":null}', '2025-04-10 14:03:17', '2025-04-27 13:58:21');
+INSERT INTO heights.planservices (plan_id, service_catalog_id, quantity, meta, created_at, updated_at) VALUES (2, 3, 30, '{"quantity":5}', '2025-04-10 14:03:17', '2025-04-27 13:58:21');
+INSERT INTO heights.planservices (plan_id, service_catalog_id, quantity, meta, created_at, updated_at) VALUES (2, 4, 8, '{"quantity":5}', '2025-04-10 14:03:17', '2025-04-27 13:58:21');
+INSERT INTO heights.planservices (plan_id, service_catalog_id, quantity, meta, created_at, updated_at) VALUES (2, 5, 40, '{"quantity":5}', '2025-04-10 14:03:17', '2025-04-27 13:58:21');
+INSERT INTO heights.planservices (plan_id, service_catalog_id, quantity, meta, created_at, updated_at) VALUES (2, 6, 5, '{"quantity":null}', '2025-04-10 14:03:17', '2025-04-27 13:58:21');
+INSERT INTO heights.planservices (plan_id, service_catalog_id, quantity, meta, created_at, updated_at) VALUES (3, 1, 7, '{"quantity":null}', '2025-04-10 14:03:17', '2025-04-27 13:58:31');
+INSERT INTO heights.planservices (plan_id, service_catalog_id, quantity, meta, created_at, updated_at) VALUES (3, 2, 5, '{"quantity":null}', '2025-04-10 14:03:17', '2025-04-27 13:58:31');
+INSERT INTO heights.planservices (plan_id, service_catalog_id, quantity, meta, created_at, updated_at) VALUES (3, 3, 50, '{"quantity":7}', '2025-04-10 14:03:17', '2025-04-27 13:58:31');
+INSERT INTO heights.planservices (plan_id, service_catalog_id, quantity, meta, created_at, updated_at) VALUES (3, 4, 10, '{"quantity":7}', '2025-04-10 14:03:17', '2025-04-27 13:58:31');
+INSERT INTO heights.planservices (plan_id, service_catalog_id, quantity, meta, created_at, updated_at) VALUES (3, 5, 60, '{"quantity":7}', '2025-04-10 14:03:17', '2025-04-27 13:58:31');
+INSERT INTO heights.planservices (plan_id, service_catalog_id, quantity, meta, created_at, updated_at) VALUES (3, 6, 5, '{"quantity":null}', '2025-04-10 14:03:17', '2025-04-27 13:58:31');
 
 
 INSERT INTO `billing_cycles` (`id`, `duration_months`, `description`) VALUES
@@ -627,21 +626,21 @@ INSERT INTO heights.transactions (transaction_title, transaction_category, buyer
 INSERT INTO heights.transactions (transaction_title, transaction_category, buyer_id, buyer_type, buyer_transaction_type, seller_id, seller_type, seller_transaction_type, building_id, unit_id, payment_method, gateway_payment_id, price, currency, status, is_subscription, billing_cycle, subscription_start_date, subscription_end_date, source_id, source_name, created_at, updated_at) VALUES ('Pro (12 Months)', 'New', 3, 'organization', 'Debit', null, 'platform', 'Credit', null, null, 'Cash', 'pi_3RGm7HGaie07GUSY0VOzkfot', 33660.00, 'PKR', 'Completed', 1, '12 Months', '2025-04-22 19:04:24', '2026-04-22 19:04:24', 3, 'subscription', '2025-04-22 19:04:27', '2025-04-22 19:04:27');
 
 
-INSERT INTO heights.plansubscriptionitems (organization_id, subscription_id, service_catalog_id, quantity, used, meta, created_at, updated_at) VALUES (1, 1, 1, 7, 0, null, '2025-04-22 19:04:27', '2025-04-22 19:04:27');
-INSERT INTO heights.plansubscriptionitems (organization_id, subscription_id, service_catalog_id, quantity, used, meta, created_at, updated_at) VALUES (1, 1, 2, 5, 0, null, '2025-04-22 19:04:27', '2025-04-22 19:04:27');
-INSERT INTO heights.plansubscriptionitems (organization_id, subscription_id, service_catalog_id, quantity, used, meta, created_at, updated_at) VALUES (1, 1, 3, 50, 0, null, '2025-04-22 19:04:27', '2025-04-22 19:04:27');
-INSERT INTO heights.plansubscriptionitems (organization_id, subscription_id, service_catalog_id, quantity, used, meta, created_at, updated_at) VALUES (1, 1, 4, 10, 0, null, '2025-04-22 19:04:27', '2025-04-22 19:04:27');
-INSERT INTO heights.plansubscriptionitems (organization_id, subscription_id, service_catalog_id, quantity, used, meta, created_at, updated_at) VALUES (1, 1, 5, 60, 0, null, '2025-04-22 19:04:27', '2025-04-22 19:04:27');
-INSERT INTO heights.plansubscriptionitems (organization_id, subscription_id, service_catalog_id, quantity, used, meta, created_at, updated_at) VALUES (1, 1, 6, 5, 0, null, '2025-04-22 19:04:27', '2025-04-22 19:04:27');
-INSERT INTO heights.plansubscriptionitems (organization_id, subscription_id, service_catalog_id, quantity, used, meta, created_at, updated_at) VALUES (2, 2, 1, 7, 0, null, '2025-04-22 19:04:27', '2025-04-22 19:04:27');
-INSERT INTO heights.plansubscriptionitems (organization_id, subscription_id, service_catalog_id, quantity, used, meta, created_at, updated_at) VALUES (2, 2, 2, 5, 0, null, '2025-04-22 19:04:27', '2025-04-22 19:04:27');
-INSERT INTO heights.plansubscriptionitems (organization_id, subscription_id, service_catalog_id, quantity, used, meta, created_at, updated_at) VALUES (2, 2, 3, 50, 0, null, '2025-04-22 19:04:27', '2025-04-22 19:04:27');
-INSERT INTO heights.plansubscriptionitems (organization_id, subscription_id, service_catalog_id, quantity, used, meta, created_at, updated_at) VALUES (2, 2, 4, 10, 0, null, '2025-04-22 19:04:27', '2025-04-22 19:04:27');
-INSERT INTO heights.plansubscriptionitems (organization_id, subscription_id, service_catalog_id, quantity, used, meta, created_at, updated_at) VALUES (2, 2, 5, 60, 0, null, '2025-04-22 19:04:27', '2025-04-22 19:04:27');
-INSERT INTO heights.plansubscriptionitems (organization_id, subscription_id, service_catalog_id, quantity, used, meta, created_at, updated_at) VALUES (2, 2, 6, 5, 0, null, '2025-04-22 19:04:27', '2025-04-22 19:04:27');
-INSERT INTO heights.plansubscriptionitems (organization_id, subscription_id, service_catalog_id, quantity, used, meta, created_at, updated_at) VALUES (3, 3, 1, 7, 0, null, '2025-04-22 19:04:27', '2025-04-22 19:04:27');
-INSERT INTO heights.plansubscriptionitems (organization_id, subscription_id, service_catalog_id, quantity, used, meta, created_at, updated_at) VALUES (3, 3, 2, 5, 0, null, '2025-04-22 19:04:27', '2025-04-22 19:04:27');
-INSERT INTO heights.plansubscriptionitems (organization_id, subscription_id, service_catalog_id, quantity, used, meta, created_at, updated_at) VALUES (3, 3, 3, 50, 0, null, '2025-04-22 19:04:27', '2025-04-22 19:04:27');
-INSERT INTO heights.plansubscriptionitems (organization_id, subscription_id, service_catalog_id, quantity, used, meta, created_at, updated_at) VALUES (3, 3, 4, 10, 0, null, '2025-04-22 19:04:27', '2025-04-22 19:04:27');
-INSERT INTO heights.plansubscriptionitems (organization_id, subscription_id, service_catalog_id, quantity, used, meta, created_at, updated_at) VALUES (3, 3, 5, 60, 0, null, '2025-04-22 19:04:27', '2025-04-22 19:04:27');
-INSERT INTO heights.plansubscriptionitems (organization_id, subscription_id, service_catalog_id, quantity, used, meta, created_at, updated_at) VALUES (3, 3, 6, 5, 0, null, '2025-04-22 19:04:27', '2025-04-22 19:04:27');
+INSERT INTO heights.plansubscriptionitems (organization_id, subscription_id, service_catalog_id, quantity, used, meta, created_at, updated_at) VALUES (1, 1, 1, 7, 0, '{"quantity":null}', '2025-04-22 19:04:27', '2025-04-22 19:04:27');
+INSERT INTO heights.plansubscriptionitems (organization_id, subscription_id, service_catalog_id, quantity, used, meta, created_at, updated_at) VALUES (1, 1, 2, 5, 0, '{"quantity":null}', '2025-04-22 19:04:27', '2025-04-22 19:04:27');
+INSERT INTO heights.plansubscriptionitems (organization_id, subscription_id, service_catalog_id, quantity, used, meta, created_at, updated_at) VALUES (1, 1, 3, 50, 0, '{"quantity":7}', '2025-04-22 19:04:27', '2025-04-22 19:04:27');
+INSERT INTO heights.plansubscriptionitems (organization_id, subscription_id, service_catalog_id, quantity, used, meta, created_at, updated_at) VALUES (1, 1, 4, 10, 0, '{"quantity":7}', '2025-04-22 19:04:27', '2025-04-22 19:04:27');
+INSERT INTO heights.plansubscriptionitems (organization_id, subscription_id, service_catalog_id, quantity, used, meta, created_at, updated_at) VALUES (1, 1, 5, 60, 0, '{"quantity":7}', '2025-04-22 19:04:27', '2025-04-22 19:04:27');
+INSERT INTO heights.plansubscriptionitems (organization_id, subscription_id, service_catalog_id, quantity, used, meta, created_at, updated_at) VALUES (1, 1, 6, 5, 0, '{"quantity":null}', '2025-04-22 19:04:27', '2025-04-22 19:04:27');
+INSERT INTO heights.plansubscriptionitems (organization_id, subscription_id, service_catalog_id, quantity, used, meta, created_at, updated_at) VALUES (2, 2, 1, 7, 0, '{"quantity":null}', '2025-04-22 19:04:27', '2025-04-22 19:04:27');
+INSERT INTO heights.plansubscriptionitems (organization_id, subscription_id, service_catalog_id, quantity, used, meta, created_at, updated_at) VALUES (2, 2, 2, 5, 0, '{"quantity":null}', '2025-04-22 19:04:27', '2025-04-22 19:04:27');
+INSERT INTO heights.plansubscriptionitems (organization_id, subscription_id, service_catalog_id, quantity, used, meta, created_at, updated_at) VALUES (2, 2, 3, 50, 0, '{"quantity":7}', '2025-04-22 19:04:27', '2025-04-22 19:04:27');
+INSERT INTO heights.plansubscriptionitems (organization_id, subscription_id, service_catalog_id, quantity, used, meta, created_at, updated_at) VALUES (2, 2, 4, 10, 0, '{"quantity":7}', '2025-04-22 19:04:27', '2025-04-22 19:04:27');
+INSERT INTO heights.plansubscriptionitems (organization_id, subscription_id, service_catalog_id, quantity, used, meta, created_at, updated_at) VALUES (2, 2, 5, 60, 0, '{"quantity":7}', '2025-04-22 19:04:27', '2025-04-22 19:04:27');
+INSERT INTO heights.plansubscriptionitems (organization_id, subscription_id, service_catalog_id, quantity, used, meta, created_at, updated_at) VALUES (2, 2, 6, 5, 0, '{"quantity":null}', '2025-04-22 19:04:27', '2025-04-22 19:04:27');
+INSERT INTO heights.plansubscriptionitems (organization_id, subscription_id, service_catalog_id, quantity, used, meta, created_at, updated_at) VALUES (3, 3, 1, 7, 0, '{"quantity":null}', '2025-04-22 19:04:27', '2025-04-22 19:04:27');
+INSERT INTO heights.plansubscriptionitems (organization_id, subscription_id, service_catalog_id, quantity, used, meta, created_at, updated_at) VALUES (3, 3, 2, 5, 0, '{"quantity":null}', '2025-04-22 19:04:27', '2025-04-22 19:04:27');
+INSERT INTO heights.plansubscriptionitems (organization_id, subscription_id, service_catalog_id, quantity, used, meta, created_at, updated_at) VALUES (3, 3, 3, 50, 0, '{"quantity":7}', '2025-04-22 19:04:27', '2025-04-22 19:04:27');
+INSERT INTO heights.plansubscriptionitems (organization_id, subscription_id, service_catalog_id, quantity, used, meta, created_at, updated_at) VALUES (3, 3, 4, 10, 0, '{"quantity":7}', '2025-04-22 19:04:27', '2025-04-22 19:04:27');
+INSERT INTO heights.plansubscriptionitems (organization_id, subscription_id, service_catalog_id, quantity, used, meta, created_at, updated_at) VALUES (3, 3, 5, 60, 0, '{"quantity":7}', '2025-04-22 19:04:27', '2025-04-22 19:04:27');
+INSERT INTO heights.plansubscriptionitems (organization_id, subscription_id, service_catalog_id, quantity, used, meta, created_at, updated_at) VALUES (3, 3, 6, 5, 0, '{"quantity":null}', '2025-04-22 19:04:27', '2025-04-22 19:04:27');

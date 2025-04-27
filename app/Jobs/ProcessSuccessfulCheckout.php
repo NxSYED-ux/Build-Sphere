@@ -89,6 +89,7 @@ class ProcessSuccessfulCheckout implements ShouldQueue
                     'subscription_id' => $subscription->id,
                     'service_catalog_id' => $service['service_catalog_id'],
                     'quantity' => $service['service_quantity'],
+                    'meta' => $service['service_meta']
                 ]);
             }
 
