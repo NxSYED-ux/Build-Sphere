@@ -3,9 +3,12 @@
 namespace App\Http\Middleware;
 
 use App\Models\Organization;
+use App\Models\UserFcmToken;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Tymon\JWTAuth\Exceptions\JWTException;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class PlanMiddleware
 {
@@ -52,12 +55,13 @@ class PlanMiddleware
             }
 
             if ($status === 'Blocked') {
+                $logout = !($user->role_id === 2);
                 $heading = $user->role_id === 2 ? 'plan_error' : 'error';
                 $message = $user->role_id === 2
                     ? 'Account has been Blocked due to not paying the subscription on time.'
                     : 'Account has been Blocked because the owner did not pay the fees.';
 
-                return $this->handleResponse($request, $heading, $message);
+                return $this->handleResponse($request, $heading, $message, 403, $logout);
             }
 
             return $next($request);
@@ -76,12 +80,23 @@ class PlanMiddleware
 
     private function handleResponse(Request $request, string $heading, string $message, int $statusCode = 403, bool $logout = false)
     {
-        if($request->wantsJson()){
+        if ($request->wantsJson()) {
             return response()->json(['error' => $message], $statusCode);
         }
-        elseif ($logout){
+        elseif ($logout) {
+            try {
+                $token = $request->header('Authorization') ?? $request->cookie('jwt_token');
+
+                if ($token) {
+                    JWTAuth::setToken($token)->invalidate(true);
+                }
+            } catch (JWTException $e) {
+                Log::error("Logout error in Plan Middleware: " . $e->getMessage());
+            }
+
             return redirect()->route('login')->with($heading, $message);
-        }else{
+        }
+        else {
             return redirect()->route('owner_manager_dashboard')->with($heading, $message);
         }
     }

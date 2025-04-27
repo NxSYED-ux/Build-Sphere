@@ -14,6 +14,8 @@ class PlanServiceCatalog extends Model
     protected $fillable = [
         'title',
         'description',
+        'parent_id',
+        'icon'
     ];
 
     public $timestamps = false;

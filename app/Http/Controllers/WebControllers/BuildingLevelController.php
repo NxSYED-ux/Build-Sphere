@@ -7,6 +7,7 @@ use App\Jobs\BuildingNotifications;
 use App\Models\Building;
 use App\Models\BuildingLevel;
 use App\Models\ManagerBuilding;
+use App\Models\PlanSubscriptionItem;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -143,7 +144,9 @@ class BuildingLevelController extends Controller
                 return redirect()->back()->withInput()->with('error', 'You can not perform this action.');
             }
 
-            BuildingLevel::create([
+            DB::beginTransaction();
+
+            $level = BuildingLevel::create([
                 'level_name' => $request->level_name,
                 'level_number' => $request->level_number,
                 'description' => $request->description,
@@ -151,6 +154,59 @@ class BuildingLevelController extends Controller
                 'organization_id' => $organization_id,
                 'status' => $status,
             ]);
+
+            $organization_id = $token['organization_id'];
+
+            $subscriptionLimit = PlanSubscriptionItem::where('organization_id', $organization_id)
+                ->where('service_catalog_id', 4)
+                ->lockForUpdate()
+                ->first();
+
+            if(!$subscriptionLimit) {
+                DB::rollBack();
+                $errorHeading = $user->role_id === 2 ? 'plan_upgrade_error' : 'error';
+                $errorMessage = 'The current plan doesn\'t include level management. Please upgrade the plan.';
+                return redirect()->back()->with($errorHeading, $errorMessage)->withInput();
+            }
+
+            if($subscriptionLimit->quantity <= 0) {
+                DB::rollBack();
+                $errorHeading = $user->role_id === 2 ? 'plan_upgrade_error' : 'error';
+                $errorMessage = 'Level limit reached. Upgrade the organization plan to add more levels.';
+                return redirect()->back()->with($errorHeading, $errorMessage)->withInput();
+            }
+
+            $meta = $subscriptionLimit->meta ? json_decode($subscriptionLimit->meta, true) : [];
+            Log::info('Quantity' . $meta['quantity']);
+
+            if($meta['quantity'] <= 0){
+                DB::rollBack();
+                $errorHeading = $user->role_id === 2 ? 'plan_upgrade_error' : 'error';
+                $errorMessage = 'Level limit reached. Upgrade the organization plan to add more levels.';
+                return redirect()->back()->with($errorHeading, $errorMessage)->withInput();
+            }
+
+            if (isset($meta[$level->building_id])) {
+                if($meta[$level->building_id]['used'] < $subscriptionLimit->quantity){
+                    $meta[$level->building_id]['used'] += 1;
+                }
+            } else {
+                if ((count($meta) - 1) >= $meta['quantity']) {
+                    DB::rollBack();
+                    $errorHeading = $user->role_id === 2 ? 'plan_upgrade_error' : 'error';
+                    $errorMessage = 'Building limit reached. Upgrade the organization plan to add more buildings.';
+                    return redirect()->back()->with($errorHeading, $errorMessage)->withInput();
+                }
+                $meta[$level->building_id] = ['used' => 1];
+            }
+
+
+            $subscriptionLimit->update([
+                'used' => $subscriptionLimit->used + 1,
+                'meta' => json_encode($meta)
+            ]);
+
+            DB::commit();
 
             if($portal === 'admin'){
                 dispatch( new BuildingNotifications(
@@ -184,6 +240,7 @@ class BuildingLevelController extends Controller
 
             return redirect()->back()->with('success', 'Building Level created successfully.');
         } catch (\Exception $e) {
+            DB::rollBack();
             Log::error('Error in create Building Level: ' . $e->getMessage());
             return redirect()->back()->with('error', 'Something went wrong! Please try again.');
         }

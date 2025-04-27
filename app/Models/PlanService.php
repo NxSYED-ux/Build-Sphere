@@ -16,6 +16,11 @@ class PlanService extends Model
         'service_catalog_id',
         'quantity',
         'status',
+        'meta',
+    ];
+
+    protected $casts = [
+        'meta' => 'array',
     ];
 
     // Belongs to Relations
