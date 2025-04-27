@@ -113,6 +113,7 @@
     --notification-border-color: #ddd;
     --notification-muted-text-color: var(--color-gray-2);
     --notification-dropdown-bg: var(--color-gray-5);
+    --notification-unread-dropdown-bg: var(--color-light-gray);
     --notification-dropdown-hover-bg: var(--color-gray-6);
     --notification-icon-color: var(--color-light-blue);
     --notification-badge-color: var(--color-red-2);

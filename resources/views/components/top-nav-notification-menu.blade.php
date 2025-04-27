@@ -1,24 +1,3 @@
-<style>
-    .notification-item {
-        transition: background-color 0.2s;
-    }
-
-    .notification-item:hover {
-        background-color: #f8f9fa;
-    }
-
-    .notification-item.unread {
-        background-color: #f0f7ff;
-    }
-
-    .notification-checkbox {
-        cursor: pointer;
-    }
-
-    .notification-link {
-        flex-grow: 1;
-    }
-</style>
 
 <li class="nav-item dropdown no-arrow mx-2 px-2">
     <a class="nav-link dropdown-toggle dropdown-toggle-no-arrow position-relative" href="#" id="alertsDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -37,9 +16,9 @@
                 Notifications
             </h5>
             <div class="d-flex align-items-center">
-                <button id="deleteSelected" class="btn btn-sm btn-danger me-2" style="display: none;">
-                    <i class="fas fa-trash"></i>
-                </button>
+                <a href="" id="deleteSelected" class=" me-2" style="display: none;">
+                    <i class="fas fa-trash text-danger"></i>
+                </a>
                 <button class="btn-close px-3" aria-label="Close"></button>
             </div>
         </div>

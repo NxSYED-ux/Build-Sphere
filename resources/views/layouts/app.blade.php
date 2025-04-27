@@ -165,7 +165,7 @@
         }
 
         .card:hover {
-            transform: translateY(-2px);
+            /*transform: translateY(-2px);*/
             box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
         }
 
@@ -226,12 +226,12 @@
             color: var(--input-icon-color) !important;
         }
 
-        .input-icon,i {
+        .input-icon, input i {
             color: var(--sidenavbar-text-color);
             transition: color 0.3s ease;
         }
 
-        .form-control:focus + .input-icon,i {
+        .form-control:focus + .input-icon,input i {
             color: var(--color-blue);
         }
 

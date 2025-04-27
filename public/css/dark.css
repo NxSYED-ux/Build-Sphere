@@ -120,7 +120,8 @@
     --notification-text-color: var(--color-lighter-gray);
     --notification-border-color: var(--color-gray-3);
     --notification-muted-text-color: var(--color-gray-8);
-    --notification-dropdown-bg: #2a2a2a;
+    --notification-dropdown-bg: var(--color-darker-gray);
+    --notification-unread-dropdown-bg: var(--color-gray);
     --notification-dropdown-hover-bg: var(--color-gray);
     --notification-icon-color: var(--color-light-blue);
     --notification-badge-color: var(--color-red-2);

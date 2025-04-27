@@ -263,11 +263,23 @@
         border-bottom: 1px solid #dee2e6;
     }
 
+    .notification-list .notification-item{
+        background-color: var(--notification-dropdown-bg);
+    }
+
+    .notification-list .notification-item.unread {
+        background-color: var(--notification-unread-dropdown-bg);
+    }
+
+    .notification-checkbox {
+        cursor: pointer;
+    }
+
     .notification-list .dropdown-item:last-child {
         border-bottom: none;
     }
 
-    .notification-list .dropdown-item:hover {
+    .notification-list .notification-item:hover {
         background-color: var(--notification-dropdown-hover-bg);
     }
 

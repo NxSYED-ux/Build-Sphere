@@ -10,6 +10,40 @@
             margin-top: 45px;
         }
 
+        /* */
+        #imagePreview {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            align-items: center;
+            border: 2px dashed var(--sidenavbar-text-color);
+            border-radius: 10px;
+            padding: 15px;
+            height: 200px;
+            background-color: var(--main-background-color);
+            margin-top: 2px;
+            overflow-y: auto;
+            text-align: center;
+        }
+
+        #uploadImagePreview {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            align-items: center;
+            border: 2px dashed var(--sidenavbar-text-color);
+            border-radius: 10px;
+            padding: 15px;
+            height: 200px;
+            background-color: var(--main-background-color);
+            margin-top: 2px;
+            overflow-y: auto;
+            text-align: center;
+            position: relative;
+        }
+
         .image-thumbnail {
             display: inline-block;
             margin: 5px;
@@ -20,6 +54,34 @@
             height: 100px;
             object-fit: cover;
         }
+
+        .upload-btn {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background: #007bff;
+            color: white !important;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .upload-btn i {
+            font-size: 20px;
+            color: white;
+        }
+
+        @media (max-width: 575.98px) {
+            .thumbnail-image {
+                width: 80px;
+                height: 80px;
+            }
+        }
+
         .thumbnail-remove {
             position: absolute;
             top: 0;
@@ -216,35 +278,42 @@
                                             </div>
 
                                             <div class="row">
-                                                <!-- Organization Images -->
-                                                <div class="ccol-lg-4 col-md-4 col-sm-12">
-                                                    <label for="imageInput" class="form-label">Organization Pictures</label>
-                                                    <input type="file" id="imageInput" name="organization_pictures[]" class="form-control" multiple>
-                                                    @error('organization_pictures.*')
-                                                        <div class="text-danger">{{ $message }}</div>
-                                                    @enderror
-                                                </div>
-                                                <div class="col-lg-8 col-md-8 col-sm-12">
+                                                <div class="col-lg-6 col-md-6 col-sm-12">
                                                     <label class="form-label">Already Uploaded</label>
                                                     <div id="imagePreview" class="">
-                                                        @foreach ($organization->pictures as $image)
+                                                        @forelse ($organization->pictures as $image)
                                                             <div class="image-thumbnail">
                                                                 <img src="{{ asset($image->file_path) }}" class="thumbnail-image" alt="Uploaded Image">
                                                                 <button type="button" class="thumbnail-remove" data-image-id="{{ $image->id }}" onclick="removeExistingImage('{{ $image->id }}')">&times;</button>
                                                             </div>
-                                                        @endforeach
+                                                        @empty
+                                                            <p >No images selected</p>
+                                                        @endforelse
                                                     </div>
                                                 </div>
-                                                <div class="col-lg-12 col-md-12 col-sm-12">
+                                                <div class="col-lg-6 col-md-6 col-sm-12">
                                                     <label class="form-label">New Uploads</label>
-                                                    <div id="imageThumbnails" class="">
-                                                        <!-- Image thumbnails will be inserted here -->
+                                                    <div class="">
+                                                        <input type="file" id="imageInput" name="organization_pictures[]" accept="image/png, image/jpeg, image/jpg, image/gif" multiple hidden>
+                                                        @error('organization_pictures.*')
+                                                        <span class="invalid-feedback" role="alert">
+                                                                <strong>{{ $message }}</strong>
+                                                            </span>
+                                                        @enderror
+                                                        <div class="flex-grow-4" id="uploadImagePreview">
+                                                            <p id="image-message">No images selected</p>
+                                                            <div id="imageThumbnails"></div>
+                                                            <label for="imageInput" class="upload-btn">
+                                                                <i class='bx bx-upload'></i>
+                                                            </label>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
 
-                                            <button type="submit" class="btn btn-primary">Update Organization</button>
-                                            <a href="{{ route('organizations.index') }}" class="btn btn-secondary">Cancel</a>
+                                            <div class="col-12 mt-3">
+                                                <button type="submit" class="btn btn-primary w-100">Update</button>
+                                            </div>
                                         </form>
                                     </div>
                                 </div>
@@ -298,53 +367,6 @@
         });
     </script>
 
-    <!-- Remove or delete organization pictures script -->
-    <script>
-
-        function removeExistingImage(imageId) {
-            Swal.fire({
-                title: 'Are you sure?',
-                text: 'Are you sure you want to remove this image?',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'Yes, Remove',
-                cancelButtonText: 'Cancel',
-                reverseButtons: true
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    fetch(`{{ route('organizations.remove_picture', ':id') }}`.replace(':id', imageId), {
-                        method: 'DELETE',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            // Remove the image from the DOM
-                            document.querySelector(`button[data-image-id="${imageId}"]`).parentElement.remove();
-                            Swal.fire({
-                                title: 'Success!',
-                                text: 'Deleted successfully',
-                                icon: 'success',
-                                confirmButtonText: 'OK'
-                            });
-                        } else {
-                            Swal.fire({
-                                title: 'Error!',
-                                text: 'Failed to remove image.',
-                                icon: 'error',
-                                confirmButtonText: 'OK'
-                            });
-                        }
-                    })
-                    .catch(error => console.error('Error:', error));
-                }
-            });
-        }
-
-    </script>
-
     <!-- Merchant id -->
     <script>
         document.addEventListener('DOMContentLoaded', function () {
@@ -369,90 +391,153 @@
 
     <!-- Organization Pictures script -->
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            let selectedImages = [];
-            let currentIndex = 0;
+        let selectedImages = [];
+        let currentIndex = 0;
+        const maxImages = 4;
+        const imageMessage = document.getElementById('image-message');
+        let alreadyUploadedCount = document.querySelectorAll('#imagePreview .image-thumbnail').length;
 
-            const imageInput = document.getElementById('imageInput');
+        const imageInput = document.getElementById('imageInput');
 
-            imageInput.addEventListener('change', handleImageSelection);
+        imageInput.addEventListener('change', handleImageSelection);
 
-            function handleImageSelection(event) {
-                const files = Array.from(event.target.files);
-                selectedImages = [...selectedImages, ...files];
-                currentIndex = selectedImages.length - files.length;
-                renderThumbnails();
-                showImage();
+        function handleImageSelection(event) {
+            let files = Array.from(event.target.files);
+
+            let availableSlots = maxImages - (alreadyUploadedCount + selectedImages.length);
+
+            if (availableSlots <= 0) {
+                imageMessage.textContent = `You can only upload ${maxImages} images in total. You have already uploaded ${alreadyUploadedCount}.`;
+                imageMessage.style.color = 'red';
+                event.target.value = ''; // Reset input field
+                return;
             }
 
-            function renderThumbnails() {
-                const container = document.getElementById('imageThumbnails');
-                container.innerHTML = '';
+            if (files.length > availableSlots) {
+                imageMessage.textContent = `You can only add ${availableSlots} more image(s).`;
+                imageMessage.style.color = 'red';
+                files = files.slice(0, availableSlots);
+            } else {
+                imageMessage.innerHTML = '';
+            }
 
-                selectedImages.forEach((file, index) => {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        const div = document.createElement('div');
-                        div.classList.add('image-thumbnail');
+            selectedImages = [...selectedImages, ...files];
+            currentIndex = selectedImages.length - files.length;
+            renderThumbnails();
+            showImage();
+        }
 
-                        const img = document.createElement('img');
-                        img.src = e.target.result;
-                        img.classList.add('thumbnail-image');
-                        img.style.width = '100px';
-                        img.style.height = '100px';
-                        img.style.objectFit = 'cover';
 
-                        const removeButton = document.createElement('button');
-                        removeButton.innerHTML = '&#10006;';
-                        removeButton.classList.add('thumbnail-remove');
-                        removeButton.onclick = function() {
-                            removeImage(index);
-                        };
+        function renderThumbnails() {
+            const container = document.getElementById('imageThumbnails');
+            container.innerHTML = '';
 
-                        div.appendChild(img);
-                        div.appendChild(removeButton);
-                        container.appendChild(div);
+            selectedImages.forEach((file, index) => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const div = document.createElement('div');
+                    div.classList.add('image-thumbnail');
+
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.classList.add('thumbnail-image');
+                    img.style.width = '100px';
+                    img.style.height = '100px';
+                    img.style.objectFit = 'cover';
+
+                    const removeButton = document.createElement('button');
+                    removeButton.innerHTML = '&#10006;';
+                    removeButton.classList.add('thumbnail-remove');
+                    removeButton.onclick = function() {
+                        removeImage(index);
                     };
-                    reader.readAsDataURL(file);
-                });
 
-                updateImageInput();
-            }
-
-            function showImage() {
-                const img = document.getElementById('currentImage');
-                if (selectedImages.length > 0) {
-                    const file = selectedImages[currentIndex];
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        img.src = e.target.result;
-                        img.classList.add('active');
-                        document.getElementById('imageCounter').textContent = `${currentIndex + 1} / ${selectedImages.length}`;
-                    };
-                    reader.readAsDataURL(file);
-                } else {
-                    img.classList.remove('active');
-                }
-            }
-
-            function removeImage(index) {
-                selectedImages.splice(index, 1);
-                currentIndex = Math.min(currentIndex, selectedImages.length - 1);
-                renderThumbnails();
-                showImage();
-            }
-
-            function updateImageInput() {
-                const dt = new DataTransfer();
-                selectedImages.forEach(file => {
-                    dt.items.add(file);
-                });
-                imageInput.files = dt.files;
-            }
-
-            document.querySelector('form').addEventListener('submit', function(event) {
-                updateImageInput(); // Ensure the imageInput is updated with the selected images before form submission
+                    div.appendChild(img);
+                    div.appendChild(removeButton);
+                    container.appendChild(div);
+                };
+                reader.readAsDataURL(file);
             });
+
+            updateImageInput();
+        }
+
+        function showImage() {
+            const img = document.getElementById('currentImage');
+            if (selectedImages.length > 0) {
+                const file = selectedImages[currentIndex];
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    img.src = e.target.result;
+                    img.classList.add('active');
+                    document.getElementById('imageCounter').textContent = `${currentIndex + 1} / ${selectedImages.length}`;
+                };
+                reader.readAsDataURL(file);
+            } else {
+                img.classList.remove('active');
+            }
+        }
+
+        function removeImage(index) {
+            selectedImages.splice(index, 1);
+            currentIndex = Math.min(currentIndex, selectedImages.length - 1);
+            renderThumbnails();
+            showImage();
+        }
+
+        function updateImageInput() {
+            const dt = new DataTransfer();
+            selectedImages.forEach(file => {
+                dt.items.add(file);
+            });
+            imageInput.files = dt.files;
+        }
+
+        function removeExistingImage(imageId) {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: 'Are you sure you want to remove this image?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, Remove',
+                cancelButtonText: 'Cancel',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    fetch(`{{ route('organizations.remove_picture', ':id') }}`.replace(':id', imageId), {
+                        method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                // Remove the image from the DOM
+                                document.querySelector(`button[data-image-id="${imageId}"]`).parentElement.remove();
+                                alreadyUploadedCount--; // Update the uploaded image count
+                                Swal.fire({
+                                    title: 'Success!',
+                                    text: 'Deleted successfully',
+                                    icon: 'success',
+                                    confirmButtonText: 'OK'
+                                });
+                            } else {
+                                Swal.fire({
+                                    title: 'Error!',
+                                    text: 'Failed to remove image.',
+                                    icon: 'error',
+                                    confirmButtonText: 'OK'
+                                });
+                            }
+                        })
+                        .catch(error => console.error('Error:', error));
+                }
+            });
+        }
+
+        document.querySelector('form').addEventListener('submit', function(event) {
+            updateImageInput();
         });
     </script>
 
