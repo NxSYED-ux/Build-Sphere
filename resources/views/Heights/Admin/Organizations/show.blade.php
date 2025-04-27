@@ -758,11 +758,21 @@
                     let file = event.target.files[0];
 
                     if (file) {
+                        // Show loading indicator
+                        const loadingToast = Swal.fire({
+                            title: 'Uploading...',
+                            html: 'Please wait while we upload your logo',
+                            allowOutsideClick: false,
+                            didOpen: () => {
+                                Swal.showLoading();
+                            }
+                        });
+
                         let formData = new FormData();
                         const orgId = @json($organization->id);
                         formData.append("logo", file);
                         formData.append("id", orgId);
-                        formData.append("_method", "PUT"); // Required for Laravel PUT request
+                        formData.append("_method", "PUT");
 
                         fetch("{{ route('organizations.logo.update') }}", {
                             method: "POST",
@@ -783,19 +793,50 @@
                                         });
                                     };
                                     reader.readAsDataURL(file);
+
+                                    // Close loading indicator and show success toast
+                                    loadingToast.close();
+
+                                    const Toast = Swal.mixin({
+                                        toast: true,
+                                        position: 'top-end',
+                                        showConfirmButton: false,
+                                        timer: 3000,
+                                        timerProgressBar: true,
+                                        didOpen: (toast) => {
+                                            toast.addEventListener('mouseenter', Swal.stopTimer)
+                                            toast.addEventListener('mouseleave', Swal.resumeTimer)
+                                        }
+                                    });
+
+                                    Toast.fire({
+                                        icon: 'success',
+                                        title: 'Logo updated successfully!'
+                                    });
                                 } else if (data.error) {
-                                    alert(data.error);
+                                    loadingToast.close();
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Upload Failed',
+                                        text: data.error
+                                    });
                                 }
                             })
                             .catch(error => {
                                 console.error("Error:", error);
-                                alert("Error updating profile picture. Please try again.");
+                                loadingToast.close();
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Upload Error',
+                                    text: 'Error updating logo. Please try again.'
+                                });
                             })
                             .finally(() => {
-                                imageUpload.disabled = false; // Re-enable input after upload
+                                imageUpload.disabled = false;
+                                imageUpload.value = ''; // Reset the file input
                             });
 
-                        imageUpload.disabled = true; // Disable input during upload
+                        imageUpload.disabled = true;
                     }
                 });
             }

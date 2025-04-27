@@ -452,9 +452,19 @@
                     let file = event.target.files[0];
 
                     if (file) {
+                        // Show loading indicator
+                        const loadingToast = Swal.fire({
+                            title: 'Uploading Profile Picture',
+                            html: 'Please wait while we process your image',
+                            allowOutsideClick: false,
+                            didOpen: () => {
+                                Swal.showLoading();
+                            }
+                        });
+
                         let formData = new FormData();
                         formData.append("picture", file);
-                        formData.append("_method", "PUT"); // Required for Laravel PUT request
+                        formData.append("_method", "PUT");
 
                         fetch("{{ route('admin.profile.picture.update') }}", {
                             method: "POST",
@@ -475,19 +485,55 @@
                                         });
                                     };
                                     reader.readAsDataURL(file);
+
+                                    // Close loading and show success toast
+                                    loadingToast.close();
+
+                                    const Toast = Swal.mixin({
+                                        toast: true,
+                                        position: 'top-end',
+                                        showConfirmButton: false,
+                                        timer: 3000,
+                                        timerProgressBar: true,
+                                        background: '#4BB543', // Green background
+                                        iconColor: 'white',
+                                        color: 'white',
+                                        didOpen: (toast) => {
+                                            toast.addEventListener('mouseenter', Swal.stopTimer)
+                                            toast.addEventListener('mouseleave', Swal.resumeTimer)
+                                        }
+                                    });
+
+                                    Toast.fire({
+                                        icon: 'success',
+                                        title: 'Profile picture updated successfully!'
+                                    });
                                 } else if (data.error) {
-                                    alert(data.error);
+                                    loadingToast.close();
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Upload Failed',
+                                        text: data.error || 'Failed to update profile picture',
+                                        confirmButtonColor: '#3085d6'
+                                    });
                                 }
                             })
                             .catch(error => {
                                 console.error("Error:", error);
-                                alert("Error updating profile picture. Please try again.");
+                                loadingToast.close();
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Upload Error',
+                                    text: 'Error updating profile picture. Please try again.',
+                                    confirmButtonColor: '#3085d6'
+                                });
                             })
                             .finally(() => {
-                                imageUpload.disabled = false; // Re-enable input after upload
+                                imageUpload.disabled = false;
+                                imageUpload.value = ''; // Reset file input
                             });
 
-                        imageUpload.disabled = true; // Disable input during upload
+                        imageUpload.disabled = true;
                     }
                 });
             }

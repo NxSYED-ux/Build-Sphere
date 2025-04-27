@@ -1172,13 +1172,39 @@
                                         });
                                     };
                                     reader.readAsDataURL(file);
+
+                                    // Show SweetAlert toast on success
+                                    const Toast = Swal.mixin({
+                                        toast: true,
+                                        position: 'top-end',
+                                        showConfirmButton: false,
+                                        timer: 3000,
+                                        timerProgressBar: true,
+                                        didOpen: (toast) => {
+                                            toast.addEventListener('mouseenter', Swal.stopTimer)
+                                            toast.addEventListener('mouseleave', Swal.resumeTimer)
+                                        }
+                                    });
+
+                                    Toast.fire({
+                                        icon: 'success',
+                                        title: 'Logo updated successfully!'
+                                    });
                                 } else if (data.error) {
-                                    alert(data.error);
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Error',
+                                        text: data.error
+                                    });
                                 }
                             })
                             .catch(error => {
                                 console.error("Error:", error);
-                                alert("Error updating profile picture. Please try again.");
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error',
+                                    text: 'Error updating profile picture. Please try again.'
+                                });
                             })
                             .finally(() => {
                                 imageUpload.disabled = false; // Re-enable input after upload
