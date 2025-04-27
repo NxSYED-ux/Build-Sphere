@@ -23,13 +23,16 @@ class Query extends Model
         'description',
         'status',
         'expected_closure_date',
+        'closure_date',
         'remarks',
+        'expense'
     ];
 
     public $timestamps = true;
 
     protected $casts = [
         'expected_closure_date' => 'datetime',
+        'closure_date' => 'datetime',
     ];
 
     // Belongs to Relations

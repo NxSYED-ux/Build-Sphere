@@ -9,15 +9,20 @@ use App\Models\Building;
 use App\Models\BuildingUnit;
 use App\Models\DropdownType;
 use App\Models\ManagerBuilding;
+use App\Models\Subscription;
+use App\Models\Transaction;
 use App\Models\User;
 use App\Models\UserBuildingUnit;
 use App\Models\UserUnitPicture;
 use App\Notifications\CredentialsEmail;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
+use Stripe\Customer;
+use Stripe\Stripe;
 
 class AssignUnitController extends Controller
 {
@@ -106,25 +111,25 @@ class AssignUnitController extends Controller
             'buildingId' => ['required', 'integer', 'exists:buildings,id'],
             'type' => ['required', 'in:Rented,Sold'],
             'price' => ['required', 'numeric', 'min:0'],
-            'rentStartDate' => ['required_if:type,Rented', 'date', 'nullable'],
-            'rentEndDate' => ['required_if:type,Rented', 'date', 'after_or_equal:rentStartDate', 'nullable'],
-            'purchaseDate' => ['required_if:type,Sold', 'date', 'nullable'],
+            'no_of_months' => ['required_if:type,Rented', 'integer', 'min:1', 'nullable'],
             'pictures.*' => ['nullable', 'file', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
         ]);
 
         DB::beginTransaction();
 
         try {
-            $user = null;
-
             if ($roleName === 'Manager' && !ManagerBuilding::where('building_id', $request->buildingId)
                     ->where('user_id', $loggedUser->id)
                     ->exists()) {
+                DB::rollBack();
                 return redirect()->back()->withInput()->with('error', 'You do not have access to assign units of the selected building.');
             }
 
-            if(!$request->userId){
-                $user = $this->createUser($request);
+            try {
+                $user = $request->userId ? User::findOrFail($request->userId) : $this->createUser($request);
+            } catch (ModelNotFoundException $e) {
+                DB::rollBack();
+                return redirect()->back()->withInput()->with('error', 'User not found.');
             }
 
             $existingUnit = UserBuildingUnit::where([
@@ -138,19 +143,9 @@ class AssignUnitController extends Controller
             }
 
             $unit = BuildingUnit::find($request->unitId);
-            $unit->update([
-                'availability_status' => $request->type,
-            ]);
 
-            $assignedUnit = UserBuildingUnit::create([
-                'user_id' => $request->userId ?? $user->id,
-                'unit_id' => $request->unitId,
-                'type' => $request->type,
-                'price' => $request->price,
-                'rent_start_date' => $request->type === 'Rented' ? $request->rentStartDate : null,
-                'rent_end_date' => $request->type === 'Rented' ? $request->rentEndDate : null,
-                'purchase_date' => $request->type === 'Sold' ? $request->purchaseDate : null,
-            ]);
+            [$assignedUnit, $type] = $this->assignUnitToUser($user, $unit, $request->price, $request->no_of_months);
+            $transaction = $this->createTransaction($user, $unit, $type, null, $assignedUnit, 'PKR', $request->no_of_months);
 
             if ($request->hasFile('pictures')) {
                 foreach ($request->file('pictures') as $image) {
@@ -193,6 +188,25 @@ class AssignUnitController extends Controller
                 "",
             ));
 
+
+            dispatch(new UnitNotifications(
+                $organizationId,
+                $unit->id,
+                "Transaction Completed Successfully by {$roleName}",
+                "A payment of {$request->price} PKR has been successfully recorded for your {$request->type} of {$unit->unit_name}.",
+                "/owner/finance/{$transaction->id}/show",
+
+                $loggedUser->id,
+                "Transaction Completed Successfully",
+                "A payment of {$request->price} PKR has been recorded for {$unit->unit_name}.",
+                "/owner/finance/{$transaction->id}/show",
+
+                $request->userId ?? $user->id,
+                "Transaction Successful!",
+                "You have successfully made a payment of {$request->price} PKR for {$unit->unit_name}.",
+                "",
+            ));
+
             return redirect()->back()->with('success', 'Unit assigned successfully.');
 
         } catch (\Exception $e) {
@@ -213,6 +227,21 @@ class AssignUnitController extends Controller
             $profileImage->move(public_path('uploads/users/images'), $profileImageName);
         }
 
+        Stripe::setApiKey(config('services.stripe.secret'));
+
+        $stripeCustomer = Customer::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'phone' => $request->phone_no,
+            'address' => [
+                'line1' => $request->location,
+                'city' => $request->city,
+                'state' => $request->province,
+                'postal_code' => $request->postal_code,
+                'country' => $request->country,
+            ],
+        ]);
+
         $address = Address::create([
             'location' => $request->user_location,
             'country' => $request->user_country,
@@ -232,6 +261,7 @@ class AssignUnitController extends Controller
             'role_id' => 5,
             'address_id' => $address->id,
             'date_of_birth' => $request->user_date_of_birth,
+            'customer_payment_id' => $stripeCustomer->id,
         ]);
 
         $user->notify( new CredentialsEmail(
@@ -242,4 +272,67 @@ class AssignUnitController extends Controller
 
         return $user;
     }
+
+    private function assignUnitToUser($user, BuildingUnit $unit, $price, int $no_of_months = 1 )
+    {
+        $type = $unit->sale_or_rent === 'Sale' ? 'Sold' : 'Rented';
+
+        $assignedUnit = UserBuildingUnit::create([
+            'user_id' => $user->id,
+            'unit_id' => $unit->id,
+            'type' => $type,
+            'price' => $price,
+            'rent_start_date' => $type === 'Rented' ? now() : null,
+            'rent_end_date' => $type === 'Rented' ? now()->addMonths($no_of_months) : null,
+            'purchase_date' => $type === 'Sold' ? now() : null,
+        ]);
+
+        $unit->update(['availability_status' => $type]);
+
+        return [$assignedUnit, $type];
+    }
+
+    private function createTransaction($user, $unit, $type, $paymentIntentId, $assignedUnit, $currency = 'PKR', int $no_of_months = 1)
+    {
+        $source_id = $assignedUnit->id;
+        $source_name = 'user_building_unit';
+
+        if ($type === 'Rented') {
+            $subscription = Subscription::create([
+                'customer_payment_id' => $user->customer_payment_id,
+                'user_id' => $user->id,
+                'organization_id' => $unit->organization_id,
+                'source_id' => $assignedUnit->id,
+                'source_name' => 'user_building_unit',
+                'billing_cycle' => 1,
+                'subscription_status' => 'Active',
+                'price_at_subscription' => $unit->price,
+                'currency_at_subscription' => $currency,
+                'ends_at' => now()->addMonths($no_of_months),
+            ]);
+
+            $source_id = $subscription->id;
+            $source_name = 'subscription';
+        }
+
+        return Transaction::create([
+            'transaction_title' => "{$unit->unit_name} ({$type})",
+            'transaction_category' => 'New',
+            'buyer_id' => $user->id,
+            'buyer_type' => 'user',
+            'seller_type' => 'organization',
+            'payment_method' => 'Card',
+            'gateway_payment_id' => $paymentIntentId,
+            'price' => $unit->price,
+            'currency' => $currency,
+            'status' => 'Completed',
+            'is_subscription' => $type === 'Rented',
+            'billing_cycle' => $type === 'Rented' ? $no_of_months . ' Months' : null,
+            'subscription_start_date' => $assignedUnit->rent_start_date,
+            'subscription_end_date' => $assignedUnit->rent_end_date,
+            'source_id' => $source_id,
+            'source_name' => $source_name,
+        ]);
+    }
+
 }
