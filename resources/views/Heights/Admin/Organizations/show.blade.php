@@ -359,7 +359,7 @@
                                         <div class="d-flex justify-content-between align-items-center">
                                             <h5 class="mb-1">{{ $subscription['name'] ?? 'N/A' }}</h5>
                                             <span class="badge bg-success bg-opacity-10 text-success py-1 px-2 mx-3 rounded-pill">
-                                                <i class="fas fa-check-circle me-1"></i> Active
+                                                <i class="fas fa-check-circle me-1"></i> {{  $subscription['status'] }}
                                             </span>
                                         </div>
                                         <div class="text-primary fw-bold" style="font-size: 12px;">
@@ -407,7 +407,6 @@
                                             <span class="fw-medium">
                                                 {{ isset($subscription['ends_at']) ? \Carbon\Carbon::parse($subscription['ends_at'])->format('M d, Y') : 'N/A' }}
                                             </span>
-
                                         </div>
                                         <div class="d-flex justify-content-between fw-bold">
                                             <span>Total:</span>
@@ -430,9 +429,25 @@
                                         <button class="btn btn-success w-100 mb-3 py-2 rounded-1">
                                             <i class="fas fa-arrow-up me-2"></i> Upgrade Plan
                                         </button>
-                                        <button class="btn btn-outline-danger w-100 py-2 rounded-1">
-                                            <i class="fas fa-times me-2"></i> Cancel Subscription
-                                        </button>
+                                        @if($subscription['status'] === 'Active')
+                                            <form id="cancelSubscriptionForm" action="{{ route('organizations.planSubscription.cancel') }}" method="POST" class="d-inline">
+                                                @csrf
+                                                @method('PUT')
+                                                <input type="hidden" name="id" value="{{ $organization->id }}">
+                                                <button type="button" onclick="confirmCancellation()" class="btn btn-outline-danger w-100 py-2 rounded-1">
+                                                    <i class="fas fa-ban me-2"></i> Cancel Subscription
+                                                </button>
+                                            </form>
+                                        @elseif($subscription['status'] === 'Cancelled')
+                                            <form id="resumeSubscriptionForm" action="{{ route('organizations.planSubscription.resume') }}" method="POST" class="d-inline">
+                                                @csrf
+                                                @method('PUT')
+                                                <input type="hidden" name="id" value="{{ $organization->id }}">
+                                                <button type="button" onclick="confirmResume()" class="btn btn-outline-success w-100 py-2 rounded-1">
+                                                    <i class="fas fa-play me-2"></i> Resume Subscription
+                                                </button>
+                                            </form>
+                                        @endif
                                     </div>
                                 </div>
                             </div>
@@ -857,6 +872,45 @@
                         confirmButtonText: 'OK'
                     });
                 });
+        }
+    </script>
+
+    <!-- Plans Cancel and Resume -->
+    <script>
+        function confirmCancellation() {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "This will cancel your subscription at the end of the current billing period!",
+                icon: 'warning',
+                showCancelButton: true,
+                background: 'var(--body-background-color)',
+                color: 'var(--sidenavbar-text-color)',
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, cancel it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('cancelSubscriptionForm').submit();
+                }
+            });
+        }
+
+        function confirmResume() {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "This will resume your subscription immediately!",
+                icon: 'question',
+                background: 'var(--body-background-color)',
+                color: 'var(--sidenavbar-text-color)',
+                showCancelButton: true,
+                confirmButtonColor: '#28a745',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, resume it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('resumeSubscriptionForm').submit();
+                }
+            });
         }
     </script>
 @endpush

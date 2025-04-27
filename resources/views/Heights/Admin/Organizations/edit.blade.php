@@ -91,6 +91,51 @@
             cursor: pointer;
         }
 
+        /*   */
+        .collapse-btn{
+            background-color: #D3D3D3;
+            color: black;
+
+        }
+
+        .collapse-btn {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            text-align: left;
+            margin-top: 1rem;
+            padding: 10px 15px;
+            font-size: 16px;
+            font-weight: 400;
+            border: 1px solid #ced4da;
+            border-radius: 5px;
+            background-color: #f8f9fa;
+            color: #212529;
+            cursor: pointer;
+            transition: background-color 0.3s ease-in-out, border-color 0.3s ease-in-out;
+        }
+
+        .collapse-btn:hover {
+            background-color: #e9ecef;
+            border-color: #adb5bd;
+        }
+
+        .collapse-btn:focus,
+        .collapse-btn:active {
+            box-shadow: none !important;
+            outline: none !important;
+            background-color: #f8f9fa !important;
+        }
+
+        .collapse-btn i {
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .collapse-btn[aria-expanded="true"] i {
+            transform: rotate(90deg);
+        }
+
     </style>
 @endpush
 
@@ -277,35 +322,42 @@
                                                 </div>
                                             </div>
 
-                                            <div class="row">
-                                                <div class="col-lg-6 col-md-6 col-sm-12">
-                                                    <label class="form-label">Already Uploaded</label>
-                                                    <div id="imagePreview" class="">
-                                                        @forelse ($organization->pictures as $image)
-                                                            <div class="image-thumbnail">
-                                                                <img src="{{ asset($image->file_path) }}" class="thumbnail-image" alt="Uploaded Image">
-                                                                <button type="button" class="thumbnail-remove" data-image-id="{{ $image->id }}" onclick="removeExistingImage('{{ $image->id }}')">&times;</button>
-                                                            </div>
-                                                        @empty
-                                                            <p >No images selected</p>
-                                                        @endforelse
+                                            <h4>
+                                                <button class="collapse-btn w-100 text-start mt-1 d-flex justify-content-between align-items-center"  type="button" data-bs-toggle="collapse" data-bs-target="#pictures" aria-expanded="false" aria-controls="pictures">
+                                                    Pictures <i class="fa fa-chevron-down"></i>
+                                                </button>
+                                            </h4>
+                                            <div id="pictures" class="collapse show collapsible-section">
+                                                <div class="row">
+                                                    <div class="col-lg-6 col-md-6 col-sm-12">
+                                                        <label class="form-label">Already Uploaded</label>
+                                                        <div id="imagePreview" class="">
+                                                            @forelse ($organization->pictures as $image)
+                                                                <div class="image-thumbnail">
+                                                                    <img src="{{ asset($image->file_path) }}" class="thumbnail-image" alt="Uploaded Image">
+                                                                    <button type="button" class="thumbnail-remove" data-image-id="{{ $image->id }}" onclick="removeExistingImage('{{ $image->id }}')">&times;</button>
+                                                                </div>
+                                                            @empty
+                                                                <p >No images selected</p>
+                                                            @endforelse
+                                                        </div>
                                                     </div>
-                                                </div>
-                                                <div class="col-lg-6 col-md-6 col-sm-12">
-                                                    <label class="form-label">New Uploads</label>
-                                                    <div class="">
-                                                        <input type="file" id="imageInput" name="organization_pictures[]" accept="image/png, image/jpeg, image/jpg, image/gif" multiple hidden>
-                                                        @error('organization_pictures.*')
-                                                        <span class="invalid-feedback" role="alert">
-                                                                <strong>{{ $message }}</strong>
-                                                            </span>
-                                                        @enderror
-                                                        <div class="flex-grow-4" id="uploadImagePreview">
-                                                            <p id="image-message">No images selected</p>
-                                                            <div id="imageThumbnails"></div>
-                                                            <label for="imageInput" class="upload-btn">
-                                                                <i class='bx bx-upload'></i>
-                                                            </label>
+                                                    <div class="col-lg-6 col-md-6 col-sm-12">
+                                                        <label class="form-label">New Uploads</label>
+                                                        <div class="">
+                                                            <input type="file" id="imageInput" name="organization_pictures[]" accept="image/png, image/jpeg, image/jpg, image/gif" multiple hidden>
+                                                            @error('organization_pictures.*')
+                                                            <span class="invalid-feedback" role="alert">
+                                                                    <strong>{{ $message }}</strong>
+                                                                </span>
+                                                            @enderror
+                                                            <div class="flex-grow-4" id="uploadImagePreview">
+                                                                <p id="image-message">No images selected</p>
+                                                                <div id="imageThumbnails"></div>
+                                                                <label for="imageInput" class="upload-btn">
+                                                                    <i class='bx bx-upload'></i>
+                                                                </label>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -337,6 +389,25 @@
         });
     </script>
 
+    <!-- Collapse Script -->
+    <script>
+        function toggleIcon(collapseElement) {
+            collapseElement.addEventListener('show.bs.collapse', function () {
+                this.previousElementSibling.querySelector('i').classList.remove('fa-chevron-right');
+                this.previousElementSibling.querySelector('i').classList.add('fa-chevron-down');
+            });
+
+            collapseElement.addEventListener('hide.bs.collapse', function () {
+                this.previousElementSibling.querySelector('i').classList.remove('fa-chevron-down');
+                this.previousElementSibling.querySelector('i').classList.add('fa-chevron-right');
+            });
+        }
+
+        // Select all collapsible elements with a common class
+        document.querySelectorAll('.collapsible-section').forEach(function (element) {
+            toggleIcon(element);
+        });
+    </script>
 
     <!-- Password Script -->
     <script>

@@ -486,7 +486,7 @@
     <x-Owner.top-navbar
         :searchVisible="false"
         :breadcrumbLinks="[
-            ['url' => url('owner_manager_dashboard'), 'label' => 'Dashboard'],
+            ['url' => route('owner_manager_dashboard'), 'label' => 'Dashboard'],
             ['url' => route('owner.departments.index'), 'label' => 'Departments'],
             ['url' => '', 'label' => $department->name]
         ]"

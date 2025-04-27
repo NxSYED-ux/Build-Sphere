@@ -173,7 +173,7 @@
 
     <!-- Top Navbar -->
     <x-Owner.top-navbar :searchVisible="false" :breadcrumbLinks="[
-            ['url' => url('owner_manager_dashboard'), 'label' => 'Dashboard'],
+            ['url' => route('owner_manager_dashboard'), 'label' => 'Dashboard'],
             ['url' => '', 'label' => 'Organization Profile']
         ]"
     />
@@ -181,7 +181,6 @@
     <!-- Side Navbar -->
     <x-Owner.side-navbar :openSections="['']" />
     <x-error-success-model />
-
 
     <div id="main">
         <div class="container py-5 mt-3">
@@ -219,13 +218,6 @@
                                         <i class="fas fa-camera text-white" style="font-size: 12px;"></i>
                                         <input type="file" id="image-upload" class="d-none" accept="image/*">
                                     </label>
-
-{{--                                    <label for="image-upload"--}}
-{{--                                           class="image-upload-icon position-absolute bg-white shadow d-flex align-items-center justify-content-center rounded-circle"--}}
-{{--                                           style="width: 30px; height: 30px; bottom: 0; right: -5px;">--}}
-{{--                                        <i class='bx bxs-camera'></i>--}}
-{{--                                    </label>--}}
-
                                 </div>
                             </div>
                         </div>
@@ -368,7 +360,7 @@
                                         <div class="d-flex justify-content-between align-items-center">
                                             <h5 class="mb-1">{{ $subscription['name'] ?? 'N/A' }}</h5>
                                             <span class="badge bg-success bg-opacity-10 text-success py-1 px-2 mx-3 rounded-pill">
-                                                <i class="fas fa-check-circle me-1"></i> Active
+                                                <i class="fas fa-check-circle me-1"></i> {{ $subscription['status'] }}
                                             </span>
                                         </div>
                                         <div class="text-primary fw-bold" style="font-size: 12px;">
@@ -439,9 +431,25 @@
                                         <button class="btn btn-success w-100 mb-3 py-2 rounded-1">
                                             <i class="fas fa-arrow-up me-2"></i> Upgrade Plan
                                         </button>
-                                        <button class="btn btn-outline-danger w-100 py-2 rounded-1">
-                                            <i class="fas fa-times me-2"></i> Cancel Subscription
-                                        </button>
+                                        @if($subscription['status'] === 'Active')
+                                            <form id="cancelSubscriptionForm" action="{{ route('owner.organization.planSubscription.cancel') }}" method="POST" class="d-inline">
+                                                @csrf
+                                                @method('PUT')
+                                                <input type="hidden" name="id" value="{{ $organization->id }}">
+                                                <button type="button" onclick="confirmCancellation()" class="btn btn-outline-danger w-100 py-2 rounded-1">
+                                                    <i class="fas fa-ban me-2"></i> Cancel Subscription
+                                                </button>
+                                            </form>
+                                        @elseif($subscription['status'] === 'Cancelled')
+                                            <form id="resumeSubscriptionForm" action="{{ route('owner.organization.planSubscription.resume') }}" method="POST" class="d-inline">
+                                                @csrf
+                                                @method('PUT')
+                                                <input type="hidden" name="id" value="{{ $organization->id }}">
+                                                <button type="button" onclick="confirmResume()" class="btn btn-outline-success w-100 py-2 rounded-1">
+                                                    <i class="fas fa-play me-2"></i> Resume Subscription
+                                                </button>
+                                            </form>
+                                        @endif
                                     </div>
                                 </div>
                             </div>
@@ -1252,6 +1260,45 @@
                         confirmButtonText: 'OK'
                     });
                 });
+        }
+    </script>
+
+    <!-- Plans Cancel and Resume -->
+    <script>
+        function confirmCancellation() {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "This will cancel your subscription at the end of the current billing period!",
+                icon: 'warning',
+                showCancelButton: true,
+                background: 'var(--body-background-color)',
+                color: 'var(--sidenavbar-text-color)',
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, cancel it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('cancelSubscriptionForm').submit();
+                }
+            });
+        }
+
+        function confirmResume() {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "This will resume your subscription immediately!",
+                icon: 'question',
+                background: 'var(--body-background-color)',
+                color: 'var(--sidenavbar-text-color)',
+                showCancelButton: true,
+                confirmButtonColor: '#28a745',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, resume it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('resumeSubscriptionForm').submit();
+                }
+            });
         }
     </script>
 @endpush

@@ -821,9 +821,8 @@
         });
     </script>
 
+    <!-- Location Dropdowns -->
     <script>
-
-        // Location Dropdowns
         document.addEventListener('DOMContentLoaded', () => {
             const countrySelect = document.getElementById('country');
             const provinceSelect = document.getElementById('province');
@@ -886,8 +885,10 @@
                 }
             });
         });
+    </script>
 
-        // Plan Selection Logic
+    <!-- Plan Selection Logic -->
+    <script>
         document.addEventListener("DOMContentLoaded", function () {
             const planCycleSelect = document.getElementById("billing-cycle");
             const plansContainer = document.getElementById("plans-container");
@@ -933,7 +934,7 @@
                     showLoading();
                 }
 
-                const url = `{{ route('plans', ':planCycle') }}`.replace(':planCycle', cycleId);
+                const url = `{{ route('plans.custom', ':planCycle') }}`.replace(':planCycle', cycleId);
 
                 fetch(url, {
                     method: "GET",
