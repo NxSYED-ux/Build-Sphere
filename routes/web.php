@@ -35,7 +35,7 @@ Route::prefix('')->group(function () {
 
     Route::get('/', [landingController::class, 'index'])->name('index');
     Route::get('/index', [landingController::class, 'index']);
-    Route::get('/plans/{planCycle}', [landingController::class, 'plans'])->name('plans');
+    Route::get('/plans/active/{planCycle}', [landingController::class, 'activePlans'])->name('plans');
 
 });
 
@@ -82,6 +82,8 @@ Route::prefix('admin')->middleware(['auth.jwt'])->group(function () {
         Route::get('/{id}/edit', [PlanController::class, 'edit'])->name('plans.edit');
         Route::put('/', [PlanController::class, 'update'])->name('plans.update');
         Route::delete('/{id}', [PlanController::class, 'destroy'])->name('plans.destroy');
+
+        Route::get('/custom/{planCycle}', [landingController::class, 'activeAndCustomPlans'])->name('plans.custom');
 
     });
 
@@ -211,6 +213,12 @@ Route::prefix('owner')->middleware(['auth.jwt'])->group(function () {
 
     Route::prefix('dashboard')->group(function () {
         Route::get('/', [OwnerDashboardController::class, 'index'])->name('owner_manager_dashboard');
+    });
+
+    Route::prefix('plans')->group(function () {
+
+        Route::get('/organization/{planCycle}', [landingController::class, 'orgPlans'])->name('plans.organization');
+
     });
 
     Route::prefix('organization')->group(function () {

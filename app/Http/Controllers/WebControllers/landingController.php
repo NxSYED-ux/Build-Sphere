@@ -5,6 +5,8 @@ namespace App\Http\Controllers\WebControllers;
 use App\Http\Controllers\Controller;
 use App\Models\BillingCycle;
 use App\Models\Plan;
+use App\Models\Subscription;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
 
@@ -24,7 +26,38 @@ class landingController extends Controller
         return view('landing-views.index', compact('planCycles', 'selectedPlanCycle'));
     }
 
-    public function plans(string $planCycle)
+
+    public function activePlans(string $planCycle)
+    {
+        return $this->plans($planCycle, ['Active']);
+    }
+
+    public function activeAndCustomPlans(string $planCycle)
+    {
+        return $this->plans($planCycle, ['Active', 'Custom']);
+    }
+
+    public function orgPlans(string $planCycle, Request $request)
+    {
+        $token = $request->attributes->get('token');
+
+        if (empty($token['organization_id'])) {
+            return response()->json(['error' => "Can't access this page, unless you are an organization owner."]);
+        }
+
+        $organization_id = $token['organization_id'];
+
+        $subscription = Subscription::where('organization_id', $organization_id)
+            ->where('source_name', 'plan')
+            ->first();
+
+        $customPlanId = $subscription?->source_id;
+
+        return $this->plans($planCycle, ['Active'], $customPlanId);
+    }
+
+
+    private function plans(string $planCycle, $statuses, int $includeCustomPlanId = null)
     {
         try {
             $billing_cycle = BillingCycle::where('duration_months', $planCycle)->first();
@@ -33,23 +66,33 @@ class landingController extends Controller
                 return response()->json(['plans' => []]);
             }
 
-            $plans = Plan::where('status', 'Active')
-                ->whereHas('services', function ($query) use ($billing_cycle) {
-                    $query->with('serviceCatalog')
-                        ->whereHas('prices', function ($priceQuery) use ($billing_cycle) {
-                            $priceQuery->where('billing_cycle_id', $billing_cycle->id);
-                        });
-                })
-                ->with(['services' => function ($query) use ($billing_cycle) {
-                    $query->with('serviceCatalog')
-                        ->whereHas('prices', function ($q) use ($billing_cycle) {
-                            $q->where('billing_cycle_id', $billing_cycle->id);
-                        })
-                        ->with(['prices' => function ($priceQuery) use ($billing_cycle) {
-                            $priceQuery->where('billing_cycle_id', $billing_cycle->id);
-                        }]);
-                }])
-                ->get();
+            $plansQuery = Plan::where(function ($query) use ($statuses, $includeCustomPlanId) {
+                $query->whereIn('status', $statuses);
+
+                if ($includeCustomPlanId) {
+                    $query->orWhere(function ($subQuery) use ($includeCustomPlanId) {
+                        $subQuery->where('id', $includeCustomPlanId)
+                            ->where('status', 'Custom');
+                    });
+                }
+            });
+
+            $plansQuery->whereHas('services', function ($query) use ($billing_cycle) {
+                $query->with('serviceCatalog')
+                    ->whereHas('prices', function ($priceQuery) use ($billing_cycle) {
+                        $priceQuery->where('billing_cycle_id', $billing_cycle->id);
+                    });
+            });
+
+            $plans = $plansQuery->with(['services' => function ($query) use ($billing_cycle) {
+                $query->with('serviceCatalog')
+                    ->whereHas('prices', function ($q) use ($billing_cycle) {
+                        $q->where('billing_cycle_id', $billing_cycle->id);
+                    })
+                    ->with(['prices' => function ($priceQuery) use ($billing_cycle) {
+                        $priceQuery->where('billing_cycle_id', $billing_cycle->id);
+                    }]);
+            }])->get();
 
             $organizedPlans = $plans->map(function ($plan) use ($billing_cycle) {
                 $totalPrice = 0;
