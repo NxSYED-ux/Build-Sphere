@@ -189,7 +189,7 @@ class QueryController extends Controller
 
             $queries = Query::where($field, $userId)
                 ->whereIn('status', $statusArray)
-                ->select(['id', 'description', 'status', 'expected_closure_date', 'remarks', 'created_at', 'unit_id'])
+                ->select(['id', 'description', 'status', 'expected_closure_date', 'closure_date', 'remarks', 'created_at', 'unit_id'])
                 ->with([
                     'unit:id,unit_name,building_id',
                     'unit.building:id,name',
@@ -212,7 +212,7 @@ class QueryController extends Controller
                 return response()->json(['error' => 'Invalid query ID'], 400);
             }
             $query = Query::where('id', $id)
-                ->select(['id', 'description', 'status', 'expected_closure_date', 'remarks', 'created_at', 'unit_id'])
+                ->select(['id', 'description', 'status', 'expected_closure_date', 'closure_date', 'remarks', 'created_at', 'unit_id'])
                 ->with(['pictures:query_id,file_path'])
                 ->with(['unit:id,unit_name'])
                 ->first();
@@ -443,7 +443,7 @@ class QueryController extends Controller
 
             $request->validate([
                 'id' => 'required|integer|exists:queries,id',
-                'date' => 'required',
+                'date' => $status === 'Rejected' ? 'nullable' : 'required',
                 'remarks' => $status === 'Rejected' ? 'required|string|min:5' : 'nullable|string',
             ]);
 
@@ -458,7 +458,7 @@ class QueryController extends Controller
                 ->update([
                     'status' => $status === 'Rejected' ? 'Rejected' : 'In Progress',
                     'remarks' => $status === 'Rejected' ? $request->remarks : null,
-                    'expected_closure_date' => $request->date,
+                    'expected_closure_date' => $request->date ?? now(),
                 ]);
 
             if ($updatedRows === 0) {

@@ -16,7 +16,6 @@ use Stripe\Exception\CardException;
 use Stripe\PaymentIntent;
 use Stripe\Stripe;
 
-
 class CheckOutController extends Controller
 {
     public function index(Request $request)
@@ -232,7 +231,7 @@ class CheckOutController extends Controller
     private function getValidatedPlanWithBillingCycle($planId, $billingCycleId)
     {
         return Plan::where('id', $planId)
-            ->where('status', '!=', 'Deleted')
+            ->whereNotIn('status', ['Deleted', 'Inactive'])
             ->whereHas('services', function ($query) use ($billingCycleId) {
                 $query->whereHas('prices', function ($priceQuery) use ($billingCycleId) {
                     $priceQuery->where('billing_cycle_id', $billingCycleId);
