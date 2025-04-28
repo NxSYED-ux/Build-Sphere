@@ -175,12 +175,12 @@ class AssignUnitController extends Controller
                 $unit->id,
                 "{$unit->unit_name} Assigned Successfully by {$roleName}",
                 "{$unit->unit_name} has been {$request->type} successfully for Price: {$request->price} ",
-                "/owner/{$unit->id}/show",
+                "owner/{$unit->id}/show",
 
                 $loggedUser->id,
                 "{$unit->unit_name} Assigned Successfully",
                 "{$unit->unit_name} has been {$request->type} successfully for Price: {$request->price} ",
-                "/owner/{$unit->id}/show",
+                "owner/{$unit->id}/show",
 
                 $request->userId ?? $user->id,
                 $userHeading,
@@ -194,12 +194,12 @@ class AssignUnitController extends Controller
                 $unit->id,
                 "Transaction Completed Successfully by {$roleName}",
                 "A payment of {$request->price} PKR has been successfully recorded for your {$request->type} of {$unit->unit_name}.",
-                "/owner/finance/{$transaction->id}/show",
+                "owner/finance/{$transaction->id}/show",
 
                 $loggedUser->id,
                 "Transaction Completed Successfully",
                 "A payment of {$request->price} PKR has been recorded for {$unit->unit_name}.",
-                "/owner/finance/{$transaction->id}/show",
+                "owner/finance/{$transaction->id}/show",
 
                 $request->userId ?? $user->id,
                 "Transaction Successful!",
@@ -273,7 +273,7 @@ class AssignUnitController extends Controller
         return $user;
     }
 
-    private function assignUnitToUser($user, BuildingUnit $unit, $price, int $no_of_months = 1 )
+    private function assignUnitToUser($user, BuildingUnit $unit, $price, $no_of_months = 1 )
     {
         $type = $unit->sale_or_rent === 'Sale' ? 'Sold' : 'Rented';
 
@@ -292,7 +292,7 @@ class AssignUnitController extends Controller
         return [$assignedUnit, $type];
     }
 
-    private function createTransaction($user, $unit, $type, $paymentIntentId, $assignedUnit, $currency = 'PKR', int $no_of_months = 1, string $paymentMethod = 'Cash')
+    private function createTransaction($user, $unit, $type, $paymentIntentId, $assignedUnit, $currency = 'PKR', $no_of_months = 1, string $paymentMethod = 'Cash')
     {
         $source_id = $assignedUnit->id;
         $source_name = 'user_building_unit';
