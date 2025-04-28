@@ -428,15 +428,15 @@
                                     <div id="chartdiv" class="flex-grow-1 my-1"></div>
 
                                     <div class="mt-auto pt-2">
-                                        <a href="{{ route('owner.plan.upgrade.index') }}" class="btn btn-success w-100 mb-3 py-2 rounded-1">
-                                            <i class="fas fa-arrow-up me-2"></i> Upgrade Plan
+                                        <a href="{{ route('owner.plan.upgrade.index') }}" class="btn btn-success w-100 mb-3 py-2 rounded-1" style="color: #fff !important;">
+                                            <i class="fas fa-arrow-up me-2 text-white"></i> Upgrade Plan
                                         </a>
                                         @if($subscription['status'] === 'Active')
                                             <form id="cancelSubscriptionForm" action="{{ route('owner.organization.planSubscription.cancel') }}" method="POST" class="d-inline">
                                                 @csrf
                                                 @method('PUT')
                                                 <input type="hidden" name="id" value="{{ $organization->id }}">
-                                                <button type="button" onclick="confirmCancellation()" class="btn btn-outline-danger w-100 py-2 rounded-1">
+                                                <button type="button" onclick="confirmCancellation()" class="btn btn-danger w-100 py-2 rounded-1">
                                                     <i class="fas fa-ban me-2"></i> Cancel Subscription
                                                 </button>
                                             </form>
@@ -445,7 +445,7 @@
                                                 @csrf
                                                 @method('PUT')
                                                 <input type="hidden" name="id" value="{{ $organization->id }}">
-                                                <button type="button" onclick="confirmResume()" class="btn btn-outline-success w-100 py-2 rounded-1">
+                                                <button type="button" onclick="confirmResume()" class="btn btn-primary w-100 py-2 rounded-1">
                                                     <i class="fas fa-play me-2"></i> Resume Subscription
                                                 </button>
                                             </form>

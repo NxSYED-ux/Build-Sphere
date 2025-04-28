@@ -159,13 +159,13 @@
     --btn-hover-outline-border-primary: var(--color-blue);
 
     /* Subscription meter */
-    --gauge-axis-label-color: #00BFFF;
-    --gauge-axis-tick-color: #FF6347;
-    --gauge-label-color: #FF4500;
-    --gauge-hand-fill: #008000;
-    --gauge-hand-stroke: #006400;
-    --gauge-range-0: #00BFFF;
-    --gauge-range-1: blue;
+    --gauge-axis-label-color: #4fc3f7;
+    --gauge-axis-tick-color: #ff8a65;
+    --gauge-label-color: #ff7043;
+    --gauge-hand-fill: #81c784;
+    --gauge-hand-stroke: #66bb6a;
+    --gauge-range-0: #ff5252;
+    --gauge-range-1: #69f0ae;
 }
 
 
