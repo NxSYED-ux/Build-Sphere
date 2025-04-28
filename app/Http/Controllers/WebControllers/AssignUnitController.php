@@ -111,7 +111,7 @@ class AssignUnitController extends Controller
             'buildingId' => ['required', 'integer', 'exists:buildings,id'],
             'type' => ['required', 'in:Rented,Sold'],
             'price' => ['required', 'numeric', 'min:0'],
-            'no_of_months' => ['nullable', 'integer_if:type,Rented', 'min:1:type,Rented', 'required_if:type,Rented'],
+            'no_of_months' => ['nullable', 'integer', 'min:1', 'required_if:type,Rented'],
             'pictures.*' => ['nullable', 'file', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
         ]);
 
