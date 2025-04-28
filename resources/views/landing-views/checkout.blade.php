@@ -300,7 +300,7 @@
             function handlePaymentSuccess(result) {
                 showResponseMessage(result.message || "Payment successful!", 'success');
                 redirectToLogin();
-                throw new Error(result.message || 'Payment successful!');
+                showStatus('Payment successful!', 'success');
             }
 
             /**
@@ -328,7 +328,7 @@
             function redirectToLogin() {
                 setTimeout(() => {
                     window.location.href = "{{ route('login') }}";
-                }, 10500);
+                }, 1500);
             }
 
             /**

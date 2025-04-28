@@ -523,8 +523,8 @@
             showStatus(`Error: ${error.message}`, 'error');
 
             // Update button to show error
-            submitButton.style.backgroundColor = '#ef4444';
-            buttonText.textContent = 'Failed - Try Again';
+            submitButton.style.backgroundColor = '';
+            buttonText.textContent = 'Add Payment Method';
 
             // Reset button after delay
             setTimeout(() => {
