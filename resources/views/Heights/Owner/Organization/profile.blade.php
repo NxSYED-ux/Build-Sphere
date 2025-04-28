@@ -453,7 +453,6 @@
                                     </div>
                                 </div>
                             </div>
-
                         </div>
                     </div>
 
@@ -462,7 +461,7 @@
                         <div class="d-flex justify-content-between align-items-center mb-4">
                             <h4 class="section-title mb-0">Payment Methods</h4>
                             <button type="button" class="btn btn-sm btn-primary add-payment-method-btn" id="add-payment-method-btn"  data-bs-toggle="modal" data-bs-target="#paymentMethodModal">
-                                <i class="fas fa-plus me-1"></i> Add Payment Method
+                                <i class="fas fa-plus me-1"></i> Add Method
                             </button>
                         </div>
 

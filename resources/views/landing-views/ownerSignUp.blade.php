@@ -27,9 +27,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 1.5rem;
             padding-bottom: 1rem;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
         }
 
         .signup-header h4 {
@@ -291,6 +289,36 @@
 
         .form-section:nth-child(1) { animation-delay: 0.1s; }
         .form-section:nth-child(2) { animation-delay: 0.2s; }
+
+        /* New styles for same-as-org checkbox */
+        .same-as-org {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding: 0.5rem;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .same-as-org input[type="checkbox"] {
+            margin-right: 0.5rem;
+        }
+
+        .same-as-org label {
+            margin-bottom: 0;
+            font-weight: 500;
+            color: var(--dark-color);
+            cursor: pointer;
+        }
+
+        .address-fields {
+            transition: all 0.3s ease;
+        }
+
+        .disabled-address {
+            opacity: 0.6;
+            pointer-events: none;
+        }
     </style>
 @endpush
 
@@ -535,7 +563,7 @@
                                                     <div class="otp-input-group">
                                                         <input type="text" name="otp" id="email_otp" class="form-control @error('otp') is-invalid @enderror"
                                                                placeholder="Enter OTP" maxlength="6" value="{{ old('otp') }}" required>
-                                                        <button type="button" id="verifyEmailBtn" class="btn verifyBtn">Verify</button>
+                                                        <button type="button" id="verifyEmailBtn" class="btn verifyBtn">Send OTP</button>
                                                     </div>
                                                     <small class="text-muted otp-status" id="otpStatusText">OTP will be sent to your email</small>
                                                     @error('otp')
@@ -593,8 +621,16 @@
                                                 </div>
                                             </div>
 
+                                            <!-- Same as organization checkbox -->
+                                            <div class="col-12">
+                                                <div class="same-as-org">
+                                                    <input type="checkbox" id="sameAsOrg" name="same_as_org">
+                                                    <label for="sameAsOrg">Use same address as organization</label>
+                                                </div>
+                                            </div>
+
                                             <div class="col-md-6 col-lg-4">
-                                                <div class="form-group">
+                                                <div class="form-group address-fields">
                                                     <label for="country">Country <span class="required__field">*</span></label>
                                                     <select class="form-select" id="country" name="country" required>
                                                         <option value="" selected>Select Country</option>
@@ -608,7 +644,7 @@
                                             </div>
 
                                             <div class="col-md-6 col-lg-4">
-                                                <div class="form-group">
+                                                <div class="form-group address-fields">
                                                     <label for="province">Province <span class="required__field">*</span></label>
                                                     <select class="form-select" id="province" name="province" required>
                                                         <option value="" selected>Select Province</option>
@@ -622,7 +658,7 @@
                                             </div>
 
                                             <div class="col-md-6 col-lg-4">
-                                                <div class="form-group">
+                                                <div class="form-group address-fields">
                                                     <label for="city">City <span class="required__field">*</span></label>
                                                     <select class="form-select" id="city" name="city" required>
                                                         <option value="" selected>Select City</option>
@@ -636,7 +672,7 @@
                                             </div>
 
                                             <div class="col-md-6 col-lg-4">
-                                                <div class="form-group">
+                                                <div class="form-group address-fields">
                                                     <label for="postal_code">Postal Code <span class="required__field">*</span></label>
                                                     <div class="input-group">
                                                         <span class="input-group-text bg-light"><i class="fas fa-mail-bulk text-muted"></i></span>
@@ -651,8 +687,8 @@
                                                 </div>
                                             </div>
 
-                                            <div class="col-12">
-                                                <div class="form-group">
+                                            <div class="col-md-12 col-lg-8">
+                                                <div class="form-group address-fields">
                                                     <label for="location">Location <span class="required__field">*</span></label>
                                                     <div class="input-group">
                                                         <span class="input-group-text bg-light"><i class="fas fa-map-marker-alt text-muted"></i></span>
@@ -732,7 +768,18 @@
             const statusText = document.getElementById('otpStatusText');
 
             if (!email) {
-                alert('Please enter an email first.');
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Oops...',
+                    text: 'Please enter an email first.',
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 3000,
+                    timerProgressBar: true,
+                    background: '#fff',
+                    iconColor: '#ffc107',
+                });
                 return;
             }
 
@@ -746,10 +793,34 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success!',
+                            text: data.message,
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 3000,
+                            timerProgressBar: true,
+                            background: '#fff',
+                            iconColor: '#28a745',
+                        });
                         statusText.innerText = data.message;
                         statusText.classList.remove('text-muted');
                         statusText.classList.add('text-success');
                     } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: data.message || 'Failed to send OTP.',
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 3000,
+                            timerProgressBar: true,
+                            background: '#fff',
+                            iconColor: '#dc3545',
+                        });
                         statusText.innerText = data.message || 'Failed to send OTP.';
                         statusText.classList.remove('text-muted');
                         statusText.classList.add('text-danger');
@@ -757,6 +828,18 @@
                 })
                 .catch(error => {
                     console.error('Error:', error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Something went wrong.',
+                        toast: true,
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 3000,
+                        timerProgressBar: true,
+                        background: '#fff',
+                        iconColor: '#dc3545',
+                    });
                     statusText.innerText = 'Something went wrong.';
                     statusText.classList.remove('text-muted');
                     statusText.classList.add('text-danger');
@@ -778,118 +861,300 @@
             const dropdownData = @json($dropdownData);
             const org_dropdownData = @json($dropdownData);
 
-            // Populate Personal Country Dropdown
-            dropdownData.forEach(country => {
-                const option = document.createElement('option');
-                option.value = country.values[0]?.value_name || 'Unnamed Country';
-                option.dataset.id = country.id;
-                option.textContent = country.values[0]?.value_name || 'Unnamed Country';
-                countrySelect.appendChild(option);
-            });
+            // Function to populate dropdown options
+            function populateDropdown(selectElement, options, selectedValue = '') {
+                selectElement.innerHTML = '';
+                const defaultOption = document.createElement('option');
+                defaultOption.value = '';
+                defaultOption.textContent = selectElement.id.includes('org_') ? 'Select ' + selectElement.id.replace('org_', '').replace('_', ' ') :
+                    'Select ' + selectElement.id.replace('_', ' ');
+                selectElement.appendChild(defaultOption);
+
+                options.forEach(option => {
+                    const opt = document.createElement('option');
+                    opt.value = option.value;
+                    opt.textContent = option.text;
+                    opt.dataset.id = option.id || '';
+                    if (selectedValue && option.value === selectedValue) {
+                        opt.selected = true;
+                    }
+                    selectElement.appendChild(opt);
+                });
+            }
+
+            // Function to get country options
+            function getCountryOptions() {
+                return dropdownData.map(country => ({
+                    value: country.values[0]?.value_name || 'Unnamed Country',
+                    text: country.values[0]?.value_name || 'Unnamed Country',
+                    id: country.id
+                }));
+            }
+
+            // Function to get province options for a country
+            function getProvinceOptions(countryId) {
+                const country = dropdownData.find(c => c.id == countryId);
+                if (!country) return [];
+
+                return country.values.flatMap(province =>
+                    province.childs.map(childProvince => ({
+                        value: childProvince.value_name,
+                        text: childProvince.value_name,
+                        id: childProvince.id
+                    }))
+                );
+            }
+
+            // Function to get city options for a province
+            function getCityOptions(countryId, provinceId) {
+                const country = dropdownData.find(c => c.id == countryId);
+                if (!country) return [];
+
+                const province = country.values.flatMap(p => p.childs).find(p => p.id == provinceId);
+                if (!province) return [];
+
+                return province.childs.map(city => ({
+                    value: city.value_name,
+                    text: city.value_name,
+                    id: city.id
+                }));
+            }
+
+            // Initialize dropdowns with old values if they exist
+            function initializeDropdowns() {
+                const oldValues = {
+                    org_country: "{{ old('org_country') }}",
+                    org_province: "{{ old('org_province') }}",
+                    org_city: "{{ old('org_city') }}",
+                    country: "{{ old('country') }}",
+                    province: "{{ old('province') }}",
+                    city: "{{ old('city') }}"
+                };
+
+                // Populate organization dropdowns
+                populateDropdown(org_countrySelect, getCountryOptions(), oldValues.org_country);
+
+                if (oldValues.org_country) {
+                    const country = dropdownData.find(c => c.values[0]?.value_name === oldValues.org_country);
+                    if (country) {
+                        populateDropdown(org_provinceSelect, getProvinceOptions(country.id), oldValues.org_province);
+
+                        if (oldValues.org_province) {
+                            const province = country.values.flatMap(p => p.childs).find(p => p.value_name === oldValues.org_province);
+                            if (province) {
+                                populateDropdown(org_citySelect, getCityOptions(country.id, province.id), oldValues.org_city);
+                            }
+                        }
+                    }
+                }
+
+                // Populate personal dropdowns
+                populateDropdown(countrySelect, getCountryOptions(), oldValues.country);
+
+                if (oldValues.country) {
+                    const country = dropdownData.find(c => c.values[0]?.value_name === oldValues.country);
+                    if (country) {
+                        populateDropdown(provinceSelect, getProvinceOptions(country.id), oldValues.province);
+
+                        if (oldValues.province) {
+                            const province = country.values.flatMap(p => p.childs).find(p => p.value_name === oldValues.province);
+                            if (province) {
+                                populateDropdown(citySelect, getCityOptions(country.id, province.id), oldValues.city);
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Initialize dropdowns on page load
+            initializeDropdowns();
 
             // Handle Personal Country Change
             countrySelect.addEventListener('change', function () {
-                provinceSelect.innerHTML = '<option value="" selected>Select Province</option>';
-                citySelect.innerHTML = '<option value="" selected>Select City</option>';
-
-                const selectedCountryId = this.options[this.selectedIndex]?.dataset.id;
-                const selectedCountry = dropdownData.find(c => c.id == selectedCountryId);
+                const selectedCountry = dropdownData.find(c =>
+                    c.values[0]?.value_name === this.value
+                );
 
                 if (selectedCountry) {
-                    selectedCountry.values.forEach(province => {
-                        province.childs.forEach(childProvince => {
-                            const option = document.createElement('option');
-                            option.value = childProvince.value_name;
-                            option.dataset.id = childProvince.id;
-                            option.textContent = childProvince.value_name;
-                            provinceSelect.appendChild(option);
-                        });
-                    });
+                    populateDropdown(provinceSelect, getProvinceOptions(selectedCountry.id));
+                    populateDropdown(citySelect, []);
+                } else {
+                    populateDropdown(provinceSelect, []);
+                    populateDropdown(citySelect, []);
                 }
             });
 
             // Handle Personal Province Change
             provinceSelect.addEventListener('change', function () {
-                citySelect.innerHTML = '<option value="" selected>Select City</option>';
-
-                const selectedCountryId = countrySelect.options[countrySelect.selectedIndex]?.dataset.id;
-                const selectedCountry = dropdownData.find(c => c.id == selectedCountryId);
+                const selectedCountry = dropdownData.find(c =>
+                    c.values[0]?.value_name === countrySelect.value
+                );
 
                 if (selectedCountry) {
-                    const selectedProvinceId = this.options[this.selectedIndex]?.dataset.id;
                     const selectedProvince = selectedCountry.values
                         .flatMap(province => province.childs)
-                        .find(p => p.id == selectedProvinceId);
+                        .find(p => p.value_name === this.value);
 
                     if (selectedProvince) {
-                        selectedProvince.childs.forEach(city => {
-                            const option = document.createElement('option');
-                            option.value = city.value_name;
-                            option.dataset.id = city.id;
-                            option.textContent = city.value_name;
-                            citySelect.appendChild(option);
-                        });
+                        populateDropdown(citySelect, getCityOptions(selectedCountry.id, selectedProvince.id));
+                    } else {
+                        populateDropdown(citySelect, []);
                     }
+                } else {
+                    populateDropdown(citySelect, []);
                 }
-            });
-
-            // Populate Organization Country Dropdown
-            org_dropdownData.forEach(country => {
-                const option = document.createElement('option');
-                option.value = country.values[0]?.value_name || 'Unnamed Country';
-                option.dataset.id = country.id;
-                option.textContent = country.values[0]?.value_name || 'Unnamed Country';
-                org_countrySelect.appendChild(option);
             });
 
             // Handle Org Country Change
             org_countrySelect.addEventListener('change', function () {
-                org_provinceSelect.innerHTML = '<option value="" selected>Select Province</option>';
-                org_citySelect.innerHTML = '<option value="" selected>Select City</option>';
+                const selectedCountry = dropdownData.find(c =>
+                    c.values[0]?.value_name === this.value
+                );
 
-                const org_selectedCountryId = this.options[this.selectedIndex]?.dataset.id;
-                const org_selectedCountry = org_dropdownData.find(c => c.id == org_selectedCountryId);
-
-                if (org_selectedCountry) {
-                    org_selectedCountry.values.forEach(province => {
-                        province.childs.forEach(childProvince => {
-                            const option = document.createElement('option');
-                            option.value = childProvince.value_name;
-                            option.dataset.id = childProvince.id;
-                            option.textContent = childProvince.value_name;
-                            org_provinceSelect.appendChild(option);
-                        });
-                    });
+                if (selectedCountry) {
+                    populateDropdown(org_provinceSelect, getProvinceOptions(selectedCountry.id));
+                    populateDropdown(org_citySelect, []);
+                } else {
+                    populateDropdown(org_provinceSelect, []);
+                    populateDropdown(org_citySelect, []);
                 }
             });
 
             // Handle Org Province Change
             org_provinceSelect.addEventListener('change', function () {
-                org_citySelect.innerHTML = '<option value="" selected>Select City</option>';
+                const selectedCountry = dropdownData.find(c =>
+                    c.values[0]?.value_name === org_countrySelect.value
+                );
 
-                const org_selectedCountryId = org_countrySelect.options[org_countrySelect.selectedIndex]?.dataset.id;
-                const org_selectedCountry = org_dropdownData.find(c => c.id == org_selectedCountryId);
-
-                if (org_selectedCountry) {
-                    const org_selectedProvinceId = this.options[this.selectedIndex]?.dataset.id;
-                    const org_selectedProvince = org_selectedCountry.values
+                if (selectedCountry) {
+                    const selectedProvince = selectedCountry.values
                         .flatMap(province => province.childs)
-                        .find(p => p.id == org_selectedProvinceId);
+                        .find(p => p.value_name === this.value);
 
-                    if (org_selectedProvince) {
-                        org_selectedProvince.childs.forEach(city => {
-                            const option = document.createElement('option');
-                            option.value = city.value_name;
-                            option.dataset.id = city.id;
-                            option.textContent = city.value_name;
-                            org_citySelect.appendChild(option);
-                        });
+                    if (selectedProvince) {
+                        populateDropdown(org_citySelect, getCityOptions(selectedCountry.id, selectedProvince.id));
+                    } else {
+                        populateDropdown(org_citySelect, []);
                     }
+                } else {
+                    populateDropdown(org_citySelect, []);
                 }
             });
+
+            // Same as organization functionality
+            const sameAsOrgCheckbox = document.getElementById('sameAsOrg');
+            const addressFields = document.querySelectorAll('.address-fields');
+            const orgAddressFields = {
+                country: document.getElementById('org_country'),
+                province: document.getElementById('org_province'),
+                city: document.getElementById('org_city'),
+                postal_code: document.getElementById('org_postal_code'),
+                location: document.getElementById('org_location')
+            };
+
+            const personalAddressFields = {
+                country: document.getElementById('country'),
+                province: document.getElementById('province'),
+                city: document.getElementById('city'),
+                postal_code: document.getElementById('postal_code'),
+                location: document.getElementById('location')
+            };
+
+            // Function to copy org address to personal address
+            async function copyOrgAddressToPersonal() {
+                // Copy direct values
+                personalAddressFields.postal_code.value = orgAddressFields.postal_code.value;
+                personalAddressFields.location.value = orgAddressFields.location.value;
+
+                // For dropdowns, we need to properly trigger change events
+                if (orgAddressFields.country.value) {
+                    personalAddressFields.country.value = orgAddressFields.country.value;
+                    const event = new Event('change');
+                    personalAddressFields.country.dispatchEvent(event);
+
+                    // Wait for provinces to load
+                    await new Promise(resolve => setTimeout(resolve, 100));
+
+                    if (orgAddressFields.province.value) {
+                        personalAddressFields.province.value = orgAddressFields.province.value;
+                        const provinceEvent = new Event('change');
+                        personalAddressFields.province.dispatchEvent(provinceEvent);
+
+                        // Wait for cities to load
+                        await new Promise(resolve => setTimeout(resolve, 100));
+
+                        if (orgAddressFields.city.value) {
+                            personalAddressFields.city.value = orgAddressFields.city.value;
+                        }
+                    }
+                }
+
+                // Disable personal address fields
+                addressFields.forEach(field => {
+                    field.classList.add('disabled-address');
+                    const inputs = field.querySelectorAll('input, select');
+                    inputs.forEach(input => {
+                        input.setAttribute('readonly', 'readonly');
+                        input.style.backgroundColor = '#f8f9fa';
+                    });
+                });
+            }
+
+            sameAsOrgCheckbox.addEventListener('change', async function() {
+                if (this.checked) {
+                    await copyOrgAddressToPersonal();
+                } else {
+                    // Enable personal address fields
+                    addressFields.forEach(field => {
+                        field.classList.remove('disabled-address');
+                        const inputs = field.querySelectorAll('input, select');
+                        inputs.forEach(input => {
+                            input.removeAttribute('readonly');
+                            input.style.backgroundColor = '';
+                        });
+                    });
+                }
+            });
+
+            // Also update personal address when org address changes (if checkbox is checked)
+            orgAddressFields.country.addEventListener('change', async function() {
+                if (sameAsOrgCheckbox.checked) {
+                    await copyOrgAddressToPersonal();
+                }
+            });
+
+            orgAddressFields.province.addEventListener('change', async function() {
+                if (sameAsOrgCheckbox.checked) {
+                    await copyOrgAddressToPersonal();
+                }
+            });
+
+            orgAddressFields.city.addEventListener('change', function() {
+                if (sameAsOrgCheckbox.checked) {
+                    personalAddressFields.city.value = orgAddressFields.city.value;
+                }
+            });
+
+            orgAddressFields.postal_code.addEventListener('change', function() {
+                if (sameAsOrgCheckbox.checked) {
+                    personalAddressFields.postal_code.value = orgAddressFields.postal_code.value;
+                }
+            });
+
+            orgAddressFields.location.addEventListener('change', function() {
+                if (sameAsOrgCheckbox.checked) {
+                    personalAddressFields.location.value = orgAddressFields.location.value;
+                }
+            });
+
+            // Check if same as org was checked before validation error
+            @if(old('same_as_org'))
+                sameAsOrgCheckbox.checked = true;
+            setTimeout(() => {
+                copyOrgAddressToPersonal();
+            }, 300);
+            @endif
         });
     </script>
-
-
 
 @endpush

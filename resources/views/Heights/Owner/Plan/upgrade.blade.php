@@ -228,38 +228,9 @@
 
         <section class="content my-3 mx-2">
             <div class="container-fluid">
-                <input type="hidden" name="plan_id" id="plan_id">
-                <input type="hidden" name="plan_cycle_id"  id="plan_cycle_id">
-                <input type="hidden" name="plan_cycle" id="plan_cycle">
 
-                <input type="hidden" id="selectedPlanId">
-                <input type="hidden" id="selectedPlanCycle">
-                <input type="hidden" id="selectedBillingCycleId">
                 <div class="row">
-                    <!-- Left Column - Organization Details -->
-                    <div class="col-lg-6 col-md-12">
-                        <div class="form-section shadow">
-                            <div class="d-flex justify-content-between align-items-center mb-3">
-                                <h4 class="mb-0">
-                                    <i class="fas fa-info-circle me-2"></i> Payment Methods
-                                </h4>
-                                <button type="button" class="btn btn-sm btn-primary add-payment-method-btn" id="add-payment-method-btn" data-bs-toggle="modal" data-bs-target="#paymentMethodModal">
-                                    <i class="fas fa-plus me-1"></i> Add Payment Method
-                                </button>
-                            </div>
-
-                            <div class="row" id="cards-container">
-                                <!-- Loading state -->
-                                <div class="col-12 text-center py-4">
-                                    <div class="spinner-border text-primary" role="status">
-                                        <span class="visually-hidden">Loading...</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Right Column - Plan Selection -->
+                    <!-- Left Column - Plan Selection -->
                     <div class="col-lg-6 col-md-12">
                         <div class="form-section shadow">
                             <h5><i class="fas fa-cubes me-2"></i> Membership Plan</h5>
@@ -304,6 +275,49 @@
                             </div>
                         </div>
                     </div>
+
+
+                    <!-- Right Column - Organization Details -->
+                    <div class="col-lg-6 col-md-12">
+                        <div class="form-section shadow">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h4 class="mb-0">
+                                    <i class="fas fa-info-circle me-2"></i> Payment Methods
+                                </h4>
+                                <button type="button" class="btn btn-sm btn-primary add-payment-method-btn" id="add-payment-method-btn" data-bs-toggle="modal" data-bs-target="#paymentMethodModal">
+                                    <i class="fas fa-plus me-1"></i> Add Method
+                                </button>
+                            </div>
+
+                            <div class="row" id="cards-container">
+                                <!-- Loading state -->
+                                <div class="col-12 text-center py-4">
+                                    <div class="spinner-border text-primary" role="status">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-section shadow">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h4 class="mb-0">
+                                    <i class="fas fa-info-circle me-2"></i> Complete Payment
+                                </h4>
+
+                                <input type="hidden" name="plan_id" id="plan_id">
+                                <input type="hidden" name="plan_cycle_id"  id="plan_cycle_id">
+                                <input type="hidden" name="plan_cycle" id="plan_cycle">
+
+                                <input type="hidden" id="selectedPlanId">
+                                <input type="hidden" id="selectedPlanCycle">
+                                <input type="hidden" id="selectedBillingCycleId">
+
+                            </div>
+                        </div>
+                    </div>
+
+
                 </div>
 
             </div>
@@ -489,7 +503,7 @@
                 const dropdownId = `cardMenu${card.id.replace(/\D/g, '')}`;
 
                 return `
-                <div class="col-md-12 col-md-6 col-12 mb-3">
+                <div class="col-md-6 col-md-6 col-12 mb-3">
                     <div class="payment-card w-100 p-3" style="background: ${style.background}; border-radius: 10px; color: white; box-shadow: 0 4px 8px rgba(0,0,0,0.1); position: relative; overflow: hidden;">
                         <div style="position: absolute; top: -20px; right: -20px; width: 80px; height: 80px; background: rgba(255,255,255,0.1); border-radius: 50%;"></div>
 
@@ -516,28 +530,7 @@
                         </div>
 
                         <div class="mb-1" style="position: relative; z-index: 2;">
-                            <span class="text-white-50" style="font-size: 0.8rem;">Card Number</span>
                             <h5 class="mb-0 text-white" style="letter-spacing: 1px;">•••• •••• •••• ${card.last4}</h5>
-                        </div>
-
-                        <div class="row" style="position: relative; z-index: 2;">
-                            <div class="col-6">
-                                <span class="text-white-50" style="font-size: 0.8rem;">Expires</span>
-                                <h6 class="mb-0">${expiry}</h6>
-                            </div>
-                            <div class="col-6">
-                                <span class="text-white-50" style="font-size: 0.8rem;">CVV</span>
-                                <h6 class="mb-0">•••</h6>
-                            </div>
-                        </div>
-                        <div class="d-flex justify-content-between align-items-center mt-1" style="position: relative; z-index: 2;">
-                            <span class="text-white fw-medium">${card.cardholder_name ?? ''}</span>
-
-                            <div class="d-flex gap-2">
-                                <button class="btn btn-sm delete-card-btn"  data-card-id="${card.id}" style="background: rgba(255,255,255,0.2); color: white; border: none;">
-                                    <i class="fas fa-trash text-white"></i>
-                                </button>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -702,7 +695,7 @@
             const loadingOverlay = document.getElementById("loadingOverlay");
 
             let selectedPlanId = @json($activePlanId) ?? null;
-            let currentPlans = []; // Store the current plans data
+            let currentPlans = [];
             let isInitialLoad = true;
 
             function showLoading() {
