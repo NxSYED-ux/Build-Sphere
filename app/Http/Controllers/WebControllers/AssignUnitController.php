@@ -175,12 +175,12 @@ class AssignUnitController extends Controller
                 $unit->id,
                 "{$unit->unit_name} Assigned Successfully by {$roleName}",
                 "{$unit->unit_name} has been {$request->type} successfully for Price: {$request->price} ",
-                "owner/{$unit->id}/show",
+                "owner/units/{$unit->id}/show",
 
                 $loggedUser->id,
                 "{$unit->unit_name} Assigned Successfully",
                 "{$unit->unit_name} has been {$request->type} successfully for Price: {$request->price} ",
-                "owner/{$unit->id}/show",
+                "owner/units/{$unit->id}/show",
 
                 $request->userId ?? $user->id,
                 $userHeading,
