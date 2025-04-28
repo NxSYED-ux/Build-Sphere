@@ -77,3 +77,49 @@
     </script>
     @endpush
 @endif
+
+@if(session('plan_error') || session('plan_upgrade_error'))
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            @if(session('plan_error'))
+            Swal.fire({
+                title: 'Plan Error',
+                text: "{{ session('plan_error') }}",
+                icon: 'error',
+                background: 'var(--body-background-color)',
+                color: 'var(--sidenavbar-text-color)',
+                showConfirmButton: true,
+                confirmButtonText: 'Resume Plan',
+                confirmButtonColor: '#3085d6',
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                willOpen: () => {
+                    Swal.getCancelButton().style.display = 'none';
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = "{{ route('owner.plan.upgrade.index') }}";
+                }
+            });
+            @elseif(session('plan_upgrade_error'))
+            Swal.fire({
+                title: 'Upgrade Plan Error',
+                text: "{{ session('plan_upgrade_error') }}",
+                icon: 'error',
+                background: 'var(--body-background-color)',
+                color: 'var(--sidenavbar-text-color)',
+                showConfirmButton: true,
+                confirmButtonText: 'Upgrade Plan',
+                confirmButtonColor: '#3085d6',
+                showCancelButton: true,
+                allowOutsideClick: true,
+                allowEscapeKey: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = "{{ route('owner.plan.upgrade.index') }}";
+                }
+            });
+            @endif
+        });
+    </script>
+@endif

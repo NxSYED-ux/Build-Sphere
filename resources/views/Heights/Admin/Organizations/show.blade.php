@@ -429,12 +429,20 @@
                                         <button class="btn btn-success w-100 mb-3 py-2 rounded-1">
                                             <i class="fas fa-arrow-up me-2"></i> Upgrade Plan
                                         </button>
+                                        <form id="planPaymentReceivedForm" action="{{ route('organizations.planPaymentReceived') }}" method="POST" class="d-inline">
+                                            @csrf
+                                            @method('PUT')
+                                            <input type="hidden" name="id" value="{{ $organization->id }}">
+                                            <button type="button" onclick="confirmPlanPaymentReceived()" class="btn btn-primary w-100 py-2 mb-3 rounded-1">
+                                                <i class="fas fa-money me-2"></i> Marked Payment Received
+                                            </button>
+                                        </form>
                                         @if($subscription['status'] === 'Active')
                                             <form id="cancelSubscriptionForm" action="{{ route('organizations.planSubscription.cancel') }}" method="POST" class="d-inline">
                                                 @csrf
                                                 @method('PUT')
                                                 <input type="hidden" name="id" value="{{ $organization->id }}">
-                                                <button type="button" onclick="confirmCancellation()" class="btn btn-outline-danger w-100 py-2 rounded-1">
+                                                <button type="button" onclick="confirmCancellation()" class="btn btn-danger w-100 py-2 rounded-1">
                                                     <i class="fas fa-ban me-2"></i> Cancel Subscription
                                                 </button>
                                             </form>
@@ -932,6 +940,24 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                     document.getElementById('cancelSubscriptionForm').submit();
+                }
+            });
+        }
+
+        function confirmPlanPaymentReceived() {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "This will marked the plan payment received!",
+                icon: 'warning',
+                showCancelButton: true,
+                background: 'var(--body-background-color)',
+                color: 'var(--sidenavbar-text-color)',
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, received!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('planPaymentReceivedForm').submit();
                 }
             });
         }

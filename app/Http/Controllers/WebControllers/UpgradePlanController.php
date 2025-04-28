@@ -32,7 +32,7 @@ class UpgradePlanController extends Controller
             $activeCycle = $subscription?->billing_cycle;
             $planCycles = BillingCycle::pluck('duration_months');
 
-            return view('Owner.Plan.upgrade', compact(
+            return view('Heights.Owner.Plan.upgrade', compact(
                 'planCycles',
                 'activePlanId',
                 'activeCycle'

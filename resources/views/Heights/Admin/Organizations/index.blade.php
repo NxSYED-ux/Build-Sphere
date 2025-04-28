@@ -258,7 +258,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(255, 255, 255, 0.8);
+            background-color: var(--body-background-color);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -1265,7 +1265,9 @@
                     title: 'Cannot Update',
                     text: 'Online payment cannot be enabled because the organization is not linked to any payment gateway.',
                     confirmButtonColor: '#3085d6',
-                    confirmButtonText: 'OK'
+                    confirmButtonText: 'OK',
+                    background: 'var(--body-background-color)',
+                    color: 'var(--sidenavbar-text-color)'
                 });
                 return;
             }
