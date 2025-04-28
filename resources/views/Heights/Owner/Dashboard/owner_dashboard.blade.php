@@ -108,6 +108,7 @@
     <x-Owner.top-navbar :searchVisible="true"/>
     <!--  -->
     <x-Owner.side-navbar :openSections="['Dashboard']"/>
+    <x-error-success-model />
 
     <div id="main" style="margin-top: 60px;">
 

@@ -328,7 +328,7 @@
             function redirectToLogin() {
                 setTimeout(() => {
                     window.location.href = "{{ route('login') }}";
-                }, 1500);
+                }, 10500);
             }
 
             /**

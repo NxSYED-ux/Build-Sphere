@@ -218,6 +218,15 @@ Route::prefix('owner')->middleware(['auth.jwt'])->group(function () {
 
     });
 
+    Route::prefix('cards')->group(function () {
+
+        Route::get('/', [CardController::class, 'index'])->name('owner.cards.index');
+        Route::post('/', [CardController::class, 'store'])->name('owner.cards.store');
+        Route::put('/', [CardController::class, 'update'])->name('owner.cards.update.default');
+        Route::delete('/', [CardController::class, 'destroy'])->name('owner.cards.delete');
+
+    });
+
     Route::middleware(['plan'])->group(function () {
 
         Route::prefix('organization')->group(function () {
@@ -285,15 +294,6 @@ Route::prefix('owner')->middleware(['auth.jwt'])->group(function () {
 
             Route::get('/', [AssignUnitController::class, 'index'])->name('owner.assignunits.index');
             Route::post('/', [AssignUnitController::class, 'create'])->name('owner.assignunits.store');
-
-        });
-
-        Route::prefix('cards')->group(function () {
-
-            Route::get('/', [CardController::class, 'index'])->name('owner.cards.index');
-            Route::post('/', [CardController::class, 'store'])->name('owner.cards.store');
-            Route::put('/', [CardController::class, 'update'])->name('owner.cards.update.default');
-            Route::delete('/', [CardController::class, 'destroy'])->name('owner.cards.delete');
 
         });
 

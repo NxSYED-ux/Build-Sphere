@@ -609,10 +609,10 @@
                                         <div class="col-md-6">
                                             <div class="form-group mb-3">
                                                 <label for="contract_type" class="form-label">Contract Type <span class="required__field">*</span></label>
-                                                <select name="type" id="contract_type" class="form-select" required>
-                                                    <option value="">Select Type</option>
-                                                    <option value="Sold" {{ old('type') == 'Sold' ? 'selected' : '' }}>Sale</option>
+                                                <select name="type" id="contract_type" class="form-select @error('type') is-invalid @enderror" required>
+                                                    <option value="">Select Contract Type</option>
                                                     <option value="Rented" {{ old('type') == 'Rented' ? 'selected' : '' }}>Rent</option>
+                                                    <option value="Sold" {{ old('type') == 'Sold' ? 'selected' : '' }}>Sale</option>
                                                 </select>
                                                 @error('type')
                                                 <div class="text-danger small mt-1">{{ $message }}</div>
@@ -634,7 +634,7 @@
                                         <div class="col-md-12 rent-fields d-none" id="duration_field_wrapper">
                                             <div class="form-group mb-3">
                                                 <label for="no_of_months" class="form-label">Number of <span id="duration_label">Months</span> <span class="required__field indicator d-none">*</span></label>
-                                                <input type="number" min="1" class="form-control" id="no_of_months" name="no_of_months" placeholder="Number of Mounths" value="{{ old('no_of_months') }}">
+                                                <input type="number" class="form-control @error('no_of_months') is-invalid @enderror"   id="no_of_months" name="no_of_months" placeholder="Number of Months" value="{{ old('no_of_months', 1) }}">
                                                 @error('no_of_months')
                                                 <div class="text-danger small mt-1">{{ $message }}</div>
                                                 @enderror
@@ -1053,28 +1053,73 @@
             const rentFields = document.querySelectorAll('.rent-fields');
             const purchaseField = document.querySelector('.purchase-field');
             const indicators = document.querySelectorAll('.required__field.indicator');
+            const noOfMonthsField = document.getElementById('no_of_months');
+
+            // Store the original value when changing away from Rent
+            let storedMonthsValue = noOfMonthsField.value || 1;
 
             function toggleFields() {
                 const value = contractType.value;
                 if (value === 'Rented') {
+                    // Show rent fields
                     rentFields.forEach(field => field.classList.remove('d-none'));
-                    purchaseField.classList.add('d-none');
+                    if (purchaseField) purchaseField.classList.add('d-none');
                     indicators.forEach(el => el.classList.remove('d-none'));
+
+                    // Enable and restore field attributes
+                    noOfMonthsField.disabled = false;
+                    noOfMonthsField.setAttribute('name', 'no_of_months');
+
+                    // Restore the stored value if we have one
+                    if (storedMonthsValue) {
+                        noOfMonthsField.value = storedMonthsValue;
+                    }
                 } else if (value === 'Sold') {
-                    purchaseField.classList.remove('d-none');
+                    // Show purchase fields
+                    if (purchaseField) purchaseField.classList.remove('d-none');
                     rentFields.forEach(field => field.classList.add('d-none'));
                     indicators.forEach(el => el.classList.remove('d-none'));
+
+                    // Store the current value before disabling
+                    storedMonthsValue = noOfMonthsField.value;
+
+                    // Disable and prevent submission
+                    noOfMonthsField.disabled = true;
+                    noOfMonthsField.removeAttribute('name');
                 } else {
-                    purchaseField.classList.add('d-none');
+                    // Default case (no selection)
+                    if (purchaseField) purchaseField.classList.add('d-none');
                     rentFields.forEach(field => field.classList.add('d-none'));
                     indicators.forEach(el => el.classList.add('d-none'));
+
+                    // Disable and prevent submission
+                    noOfMonthsField.disabled = true;
+                    noOfMonthsField.removeAttribute('name');
                 }
             }
 
+            // Initialize based on the old value (for validation errors)
+            function initializeFields() {
+                const oldContractType = "{{ old('contract_type') }}";
+                if (oldContractType === 'Rented') {
+                    contractType.value = 'Rented';
+                    // Ensure the field is visible and enabled
+                    rentFields.forEach(field => field.classList.remove('d-none'));
+                    noOfMonthsField.disabled = false;
+                    noOfMonthsField.setAttribute('name', 'no_of_months');
+                } else if (oldContractType === 'Sold') {
+                    contractType.value = 'Sold';
+                    // Ensure the field is hidden and disabled
+                    rentFields.forEach(field => field.classList.add('d-none'));
+                    noOfMonthsField.disabled = true;
+                    noOfMonthsField.removeAttribute('name');
+                }
+            }
 
             contractType.addEventListener('change', toggleFields);
 
             // Initialize on page load
+            initializeFields();
             toggleFields();
         });
     </script>

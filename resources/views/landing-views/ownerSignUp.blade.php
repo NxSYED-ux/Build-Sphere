@@ -354,11 +354,11 @@
 
                                             <div class="col-md-6 col-lg-4">
                                                 <div class="form-group">
-                                                    <label for="org_contact">Organization Contact</label>
+                                                    <label for="org_contact">Organization Contact <span class="required__field">*</span></label>
                                                     <div class="input-group">
                                                         <span class="input-group-text bg-light"><i class="fas fa-phone text-muted"></i></span>
                                                         <input type="text" name="org_phone" id="org_contact" value="{{ old('org_phone') }}"
-                                                               class="form-control contact" placeholder="0312-3456789" maxlength="14">
+                                                               class="form-control contact" placeholder="0312-3456789" maxlength="14" required>
                                                     </div>
                                                     @error('org_phone')
                                                     <div class="invalid-feedback d-block">
@@ -370,8 +370,8 @@
 
                                             <div class="col-md-6 col-lg-4">
                                                 <div class="form-group">
-                                                    <label for="org_country">Country</label>
-                                                    <select class="form-select" id="org_country" name="org_country">
+                                                    <label for="org_country">Country <span class="required__field">*</span></label>
+                                                    <select class="form-select" id="org_country" name="org_country" required>
                                                         <option value="" selected>Select Country</option>
                                                     </select>
                                                     @error('org_country')
@@ -384,8 +384,8 @@
 
                                             <div class="col-md-6 col-lg-4">
                                                 <div class="form-group">
-                                                    <label for="org_province">Province</label>
-                                                    <select class="form-select" id="org_province" name="org_province">
+                                                    <label for="org_province">Province <span class="required__field">*</span></label>
+                                                    <select class="form-select" id="org_province" name="org_province" required>
                                                         <option value="" selected>Select Province</option>
                                                     </select>
                                                     @error('org_province')
@@ -398,8 +398,8 @@
 
                                             <div class="col-md-6 col-lg-4">
                                                 <div class="form-group">
-                                                    <label for="org_city">City</label>
-                                                    <select class="form-select" id="org_city" name="org_city">
+                                                    <label for="org_city">City <span class="required__field">*</span></label>
+                                                    <select class="form-select" id="org_city" name="org_city" required>
                                                         <option value="" selected>Select City</option>
                                                     </select>
                                                     @error('org_city')
@@ -412,11 +412,11 @@
 
                                             <div class="col-md-6 col-lg-8">
                                                 <div class="form-group">
-                                                    <label for="org_location">Location</label>
+                                                    <label for="org_location">Location <span class="required__field">*</span></label>
                                                     <div class="input-group">
                                                         <span class="input-group-text bg-light"><i class="fas fa-map-marker-alt text-muted"></i></span>
                                                         <input type="text" name="org_location" id="org_location" class="form-control @error('org_location') is-invalid @enderror"
-                                                               value="{{ old('org_location') }}" maxlength="100" placeholder="Enter Location">
+                                                               value="{{ old('org_location') }}" maxlength="100" placeholder="Enter Location" required>
                                                     </div>
                                                     @error('org_location')
                                                     <div class="invalid-feedback d-block">
@@ -428,11 +428,11 @@
 
                                             <div class="col-md-6 col-lg-4">
                                                 <div class="form-group">
-                                                    <label for="org_postal_code">Postal Code</label>
+                                                    <label for="org_postal_code">Postal Code <span class="required__field">*</span></label>
                                                     <div class="input-group">
                                                         <span class="input-group-text bg-light"><i class="fas fa-mail-bulk text-muted"></i></span>
                                                         <input type="text" name="org_postal_code" id="org_postal_code" class="form-control @error('org_postal_code') is-invalid @enderror"
-                                                               value="{{ old('org_postal_code') }}" maxlength="100" placeholder="Enter Postal Code">
+                                                               value="{{ old('org_postal_code') }}" maxlength="100" placeholder="Enter Postal Code" required>
                                                     </div>
                                                     @error('org_postal_code')
                                                     <div class="invalid-feedback d-block">
@@ -451,7 +451,7 @@
                                             <label class="upload-btn" for="organization_picture">
                                                 <i class="fas fa-camera"></i>
                                                 <input type="file" name="org_picture" id="organization_picture"
-                                                       accept="image/*" onchange="previewImage(event, 'org_avatar')">
+                                                       accept="image/*" onchange="previewImage(event, 'org_avatar')" required>
                                             </label>
                                         </div>
                                     </div>
@@ -482,11 +482,11 @@
 
                                             <div class="col-md-6 col-lg-4">
                                                 <div class="form-group">
-                                                    <label for="contact">Phone Number</label>
+                                                    <label for="contact">Phone Number <span class="required__field">*</span></label>
                                                     <div class="input-group">
                                                         <span class="input-group-text bg-light"><i class="fas fa-phone text-muted"></i></span>
                                                         <input type="text" name="phone_no" id="contact" value="{{ old('phone_no') }}"
-                                                               class="form-control contact" placeholder="0312-3456789" maxlength="14">
+                                                               class="form-control contact" placeholder="0312-3456789" maxlength="14" required>
                                                     </div>
                                                     @error('phone_no')
                                                     <div class="invalid-feedback d-block">
@@ -498,11 +498,11 @@
 
                                             <div class="col-md-6 col-lg-4">
                                                 <div class="form-group">
-                                                    <label for="cnic">CNIC <span id="cnic_status"></span></label>
+                                                    <label for="cnic">CNIC  <span class="required__field">*</span></label>
                                                     <div class="input-group">
                                                         <span class="input-group-text bg-light"><i class="fas fa-id-card text-muted"></i></span>
                                                         <input type="text" name="cnic" id="cnic" class="form-control @error('cnic') is-invalid @enderror"
-                                                               value="{{ old('cnic') }}" maxlength="15" placeholder="12345-1234567-1">
+                                                               value="{{ old('cnic') }}" maxlength="15" placeholder="12345-1234567-1" required>
                                                     </div>
                                                     @error('cnic')
                                                     <div class="invalid-feedback d-block">
@@ -531,10 +531,10 @@
 
                                             <div class="col-md-6 col-lg-4">
                                                 <div class="form-group">
-                                                    <label for="email_otp">Verify Email</label>
+                                                    <label for="email_otp">Verify Email <span class="required__field">*</span></label>
                                                     <div class="otp-input-group">
                                                         <input type="text" name="otp" id="email_otp" class="form-control @error('otp') is-invalid @enderror"
-                                                               placeholder="Enter OTP" maxlength="6" value="{{ old('otp') }}">
+                                                               placeholder="Enter OTP" maxlength="6" value="{{ old('otp') }}" required>
                                                         <button type="button" id="verifyEmailBtn" class="btn verifyBtn">Verify</button>
                                                     </div>
                                                     <small class="text-muted otp-status" id="otpStatusText">OTP will be sent to your email</small>
@@ -582,9 +582,9 @@
 
                                             <div class="col-md-6 col-lg-4">
                                                 <div class="form-group">
-                                                    <label for="date_of_birth">Date of Birth</label>
+                                                    <label for="date_of_birth">Date of Birth <span class="required__field">*</span></label>
                                                     <input type="date" class="form-control" id="date_of_birth" name="date_of_birth"
-                                                           value="{{ old('date_of_birth', date('Y-m-d')) }}">
+                                                           value="{{ old('date_of_birth', date('Y-m-d')) }}" required>
                                                     @error('date_of_birth')
                                                     <div class="invalid-feedback d-block">
                                                         {{ $message }}
@@ -595,8 +595,8 @@
 
                                             <div class="col-md-6 col-lg-4">
                                                 <div class="form-group">
-                                                    <label for="country">Country</label>
-                                                    <select class="form-select" id="country" name="country">
+                                                    <label for="country">Country <span class="required__field">*</span></label>
+                                                    <select class="form-select" id="country" name="country" required>
                                                         <option value="" selected>Select Country</option>
                                                     </select>
                                                     @error('country')
@@ -609,8 +609,8 @@
 
                                             <div class="col-md-6 col-lg-4">
                                                 <div class="form-group">
-                                                    <label for="province">Province</label>
-                                                    <select class="form-select" id="province" name="province">
+                                                    <label for="province">Province <span class="required__field">*</span></label>
+                                                    <select class="form-select" id="province" name="province" required>
                                                         <option value="" selected>Select Province</option>
                                                     </select>
                                                     @error('province')
@@ -623,8 +623,8 @@
 
                                             <div class="col-md-6 col-lg-4">
                                                 <div class="form-group">
-                                                    <label for="city">City</label>
-                                                    <select class="form-select" id="city" name="city">
+                                                    <label for="city">City <span class="required__field">*</span></label>
+                                                    <select class="form-select" id="city" name="city" required>
                                                         <option value="" selected>Select City</option>
                                                     </select>
                                                     @error('city')
@@ -637,11 +637,11 @@
 
                                             <div class="col-md-6 col-lg-4">
                                                 <div class="form-group">
-                                                    <label for="postal_code">Postal Code</label>
+                                                    <label for="postal_code">Postal Code <span class="required__field">*</span></label>
                                                     <div class="input-group">
                                                         <span class="input-group-text bg-light"><i class="fas fa-mail-bulk text-muted"></i></span>
                                                         <input type="text" name="postal_code" id="postal_code" class="form-control @error('postal_code') is-invalid @enderror"
-                                                               value="{{ old('postal_code') }}" maxlength="100" placeholder="Enter Postal Code">
+                                                               value="{{ old('postal_code') }}" maxlength="100" placeholder="Enter Postal Code" required>
                                                     </div>
                                                     @error('postal_code')
                                                     <div class="invalid-feedback d-block">
@@ -653,11 +653,11 @@
 
                                             <div class="col-12">
                                                 <div class="form-group">
-                                                    <label for="location">Location</label>
+                                                    <label for="location">Location <span class="required__field">*</span></label>
                                                     <div class="input-group">
                                                         <span class="input-group-text bg-light"><i class="fas fa-map-marker-alt text-muted"></i></span>
                                                         <input type="text" name="location" id="location" class="form-control @error('location') is-invalid @enderror"
-                                                               value="{{ old('location') }}" maxlength="100" placeholder="Enter Location">
+                                                               value="{{ old('location') }}" maxlength="100" placeholder="Enter Location" required>
                                                     </div>
                                                     @error('location')
                                                     <div class="invalid-feedback d-block">
@@ -676,7 +676,7 @@
                                             <label class="upload-btn" for="picture">
                                                 <i class="fas fa-camera"></i>
                                                 <input type="file" name="picture" id="picture"
-                                                       accept="image/*" onchange="previewImage(event, 'avatar')">
+                                                       accept="image/*" onchange="previewImage(event, 'avatar')" required>
                                             </label>
                                         </div>
                                     </div>
