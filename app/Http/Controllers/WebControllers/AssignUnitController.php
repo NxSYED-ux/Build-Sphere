@@ -283,7 +283,7 @@ class AssignUnitController extends Controller
             'type' => $type,
             'price' => $price,
             'rent_start_date' => $type === 'Rented' ? now() : null,
-            'rent_end_date' => $type === 'Rented' ? now()->addMonths($no_of_months) : null,
+            'rent_end_date' => $type === 'Rented' ? now()->addMonths((int) $no_of_months) : null,
             'purchase_date' => $type === 'Sold' ? now() : null,
         ]);
 
@@ -308,7 +308,7 @@ class AssignUnitController extends Controller
                 'subscription_status' => 'Active',
                 'price_at_subscription' => $unit->price,
                 'currency_at_subscription' => $currency,
-                'ends_at' => now()->addMonths($no_of_months),
+                'ends_at' => now()->addMonths((int)$no_of_months),
             ]);
 
             $source_id = $subscription->id;
