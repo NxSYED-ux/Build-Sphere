@@ -292,7 +292,7 @@ class AssignUnitController extends Controller
         return [$assignedUnit, $type];
     }
 
-    private function createTransaction($user, $unit, $type, $paymentIntentId, $assignedUnit, $currency = 'PKR', int $no_of_months = 1)
+    private function createTransaction($user, $unit, $type, $paymentIntentId, $assignedUnit, $currency = 'PKR', int $no_of_months = 1, string $paymentMethod = 'Cash')
     {
         $source_id = $assignedUnit->id;
         $source_name = 'user_building_unit';
@@ -321,7 +321,7 @@ class AssignUnitController extends Controller
             'buyer_id' => $user->id,
             'buyer_type' => 'user',
             'seller_type' => 'organization',
-            'payment_method' => 'Card',
+            'payment_method' => $paymentMethod,
             'gateway_payment_id' => $paymentIntentId,
             'price' => $unit->price,
             'currency' => $currency,
