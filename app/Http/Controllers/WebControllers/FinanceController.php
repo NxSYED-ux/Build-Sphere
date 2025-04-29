@@ -100,7 +100,9 @@ class FinanceController extends Controller
         $organization_id = $token['organization_id'];
 
         try {
+            Log::info('transaction Start');
             $transaction = Transaction::with('source')->findOrFail($id);
+            Log::info('transaction Details: ' . $transaction);
 
             $isOrgBuyer = $transaction->buyer_type === 'organization' && $transaction->buyer_id == $organization_id;
             $isOrgSeller = $transaction->seller_type === 'organization' && $transaction->seller_id == $organization_id;
@@ -125,7 +127,7 @@ class FinanceController extends Controller
                 ],
                 'source' => $transaction->source ? [
                     'id' => $transaction->source->id,
-                    'type' => class_basename($transaction->source_type),
+                    'type' => $transaction->source_name === 'user_building_unit' ? 'Unit Sold' : $transaction->source_name,
                     'details' => $transaction->source->toArray(),
                 ] : null,
             ];
@@ -134,7 +136,7 @@ class FinanceController extends Controller
                 'transaction' => $mappedTransaction,
             ]);
 
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             Log::error('Transaction detail fetch failed: ' . $e->getMessage());
             return redirect()->route('owner.finance.index')->with('error', 'Transaction not found.');
         }
@@ -180,56 +182,6 @@ class FinanceController extends Controller
         } catch (\Exception $e) {
             Log::error('Admin transaction detail fetch failed: ' . $e->getMessage());
             return redirect()->route('admin.finance.index')->with('error', 'Transaction not found.');
-        }
-    }
-
-
-    public function show(Request $request, $id)
-    {
-        try {
-            $user = $request->user();
-
-            if (!$user) {
-                return response()->json(['error' => 'User not authenticated.'], 401);
-            }
-
-            $transaction = Transaction::where(function ($query) use ($user) {
-                $query->where(function ($q) use ($user) {
-                    $q->where('buyer_type', 'user')->where('buyer_id', $user->id);
-                })->orWhere(function ($q) use ($user) {
-                    $q->where('seller_type', 'user')->where('seller_id', $user->id);
-                });
-            })->where('id', $id)
-                ->first();
-
-
-            if (!$transaction) {
-                return response()->json(['error' => 'Transaction not found.'], 404);
-            }
-
-            $isBuyer = $transaction->buyer_id === $user->id;
-
-            $transactionDetail = [
-                'transaction_id' => $transaction->id,
-                'title' => $transaction->transaction_title,
-                'type' => $isBuyer ? $transaction->buyer_transaction_type : $transaction->seller_transaction_type,
-                'price' => number_format($transaction->price, 2) . ' ' . $transaction->currency,
-                'status' => $transaction->status,
-                'created_at' => $transaction->created_at->diffForHumans(),
-                'payment_method' => $transaction->payment_method,
-                'is_subscription' => $transaction->is_subscription,
-                'subscription_details' => [
-                    'start_date' => $transaction->subscription_start_date ? $transaction->subscription_start_date->format('Y-m-d H:i:s') : null,
-                    'end_date' => $transaction->subscription_end_date ? $transaction->subscription_end_date->format('Y-m-d H:i:s') : null,
-                    'billing_cycle' => $transaction->billing_cycle,
-                ],
-            ];
-
-            return response()->json(['transaction' => $transactionDetail]);
-
-        } catch (\Exception $e) {
-            Log::error('Transaction details fetch failed: ' . $e->getMessage());
-            return response()->json(['error' => 'An error occurred while fetching transaction details.'], 500);
         }
     }
 

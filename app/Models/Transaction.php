@@ -50,7 +50,7 @@ class Transaction extends Model
 
     public function source(): MorphTo
     {
-        return $this->morphTo(null, 'source_id', 'source_name');
+        return $this->morphTo(null, 'source_name', 'source_id');
     }
 
     public function building(): BelongsTo
