@@ -561,13 +561,13 @@
                                             </div>
                                             <div>
                                                 <h6 class="mb-0">${transaction.title}</h6>
-                                                <small class="text-muted">${transaction.created_at}</small>
+                                                <small class="small">${transaction.created_at}</small>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="d-flex justify-content-between align-items-end mt-auto">
                                         <div>
-                                            <p class="text-muted small mb-1">Amount</p>
+                                            <p class=" small mb-1">Amount</p>
                                             <h4 class="mb-0 ${getTextColor(transaction)}">
                                                 ${isFailed ? '<span class="text-decoration-line-through">' : ''}
                                                 ${amountSign}${transaction.price}
