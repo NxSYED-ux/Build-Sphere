@@ -58,6 +58,50 @@ class FinanceController extends Controller
         }
     }
 
+    public function ownerIndex2(Request $request)
+    {
+        $token = $request->attributes->get('token');
+
+        if (!$token || empty($token['organization_id'])) {
+            return redirect()->back()->with('error', 'This info is for Organization owners');
+        }
+
+        $organization_id = $token['organization_id'];
+
+        try {
+            $transactions = Transaction::where(function ($query) use ($organization_id) {
+                $query->where(function ($q) use ($organization_id) {
+                    $q->where('buyer_type', 'organization')
+                        ->where('buyer_id', $organization_id);
+                })->orWhere(function ($q) use ($organization_id) {
+                    $q->where('seller_type', 'organization')
+                        ->where('seller_id', $organization_id);
+                });
+            })
+                ->orderBy('created_at', 'desc')
+                ->paginate(12);
+
+            $history = collect($transactions->items())->map(function ($txn) use ($organization_id) {
+                $isBuyer = $txn->buyer_type === 'organization' && $txn->buyer_id == $organization_id;
+
+                return [
+                    'id' => $txn->id,
+                    'title' => $txn->transaction_title,
+                    'type' => $isBuyer ? $txn->buyer_transaction_type : $txn->seller_transaction_type,
+                    'price' => number_format($txn->price, 2) . ' ' . $txn->currency,
+                    'status' => $txn->status,
+                    'created_at' => $txn->created_at->diffForHumans(),
+                ];
+            });
+
+            return view('Heights.Owner.Finance.index2', compact('transactions', 'history'));
+
+        } catch (\Exception $e) {
+            Log::error('Transaction history fetch failed: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'An error occurred while fetching transaction history.');
+        }
+    }
+
     public function adminIndex()
     {
         try {
