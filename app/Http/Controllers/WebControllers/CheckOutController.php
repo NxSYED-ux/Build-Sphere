@@ -673,15 +673,15 @@ class CheckOutController extends Controller
     {
         $user->notify(new EmailNotification(
             'uploads/Notification/Light-theme-Logo.svg',
-            '🎉 Plan Upgraded Successfully!',
-            "Dear {$user->name},<br><br>Your plan has been upgraded successfully! You now have access to additional features and enhanced capabilities. Start exploring your new benefits today through your dashboard.<br><br>Thank you for choosing us!",
+            'Plan Upgraded Successfully!',
+            "Dear {$user->name},<br>Your plan has been upgraded successfully! You now have access to additional features and enhanced capabilities. Start exploring your new benefits today through your dashboard.<br>Thank you for choosing us!",
             ['web' => 'owner/dashboard']
         ));
 
         $user->notify(new DatabaseOnlyNotification(
             'uploads/Notification/Transaction.jpg',
-            '🎉 Transaction Successful - Plan Upgraded',
-            "Great news, {$user->name}! Your payment for the <strong>{$plan->name}</strong> plan has been successfully processed. 🚀<br><br>Your plan is now upgraded, unlocking all the exclusive features and benefits.<br><br>If you have any questions or need assistance, our support team is just a message away.",
+            'Transaction Successful - Plan Upgraded',
+            "Great news, {$user->name}! Your payment for the <strong>{$plan->name}</strong> plan has been successfully processed. Your plan is now upgraded, unlocking all the exclusive features and benefits.",
             ['web' => "owner/finance/{$transaction->id}/show"]
         ));
     }

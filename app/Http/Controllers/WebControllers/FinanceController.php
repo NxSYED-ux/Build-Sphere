@@ -125,20 +125,13 @@ class FinanceController extends Controller
                     'end_date' => optional($transaction->subscription_end_date)->format('Y-m-d H:i:s'),
                     'billing_cycle' => $transaction->billing_cycle,
                 ],
-                'source' => $source ? [
-                    'id' => $source->id,
-                    'type' => $transaction->source_name,
-                    'details' => $source->toArray(),
-                    'nested_source' => $nestedSource ? [
-                        'id' => $nestedSource->id ?? null,
-                        'type' => $source->source_name,
-                        'details' => $nestedSource->toArray(),
-                    ] : null,
-                ] : null,
             ];
+
 
             return view('Heights.Owner.Finance.show', [
                 'transaction' => $mappedTransaction,
+                'source' => $source,
+                'nested_source' => $nestedSource,
             ]);
 
         } catch (\Throwable $e) {
