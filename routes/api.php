@@ -71,9 +71,7 @@ Route::middleware(['auth.jwt'])->group(function () {
         Route::middleware('check.permission:Remove User Profile Picture')->group(function () {
             Route::put('/remove-profile-pic', [ProfileController::class, 'deleteProfilePic']);
         });
-        Route::middleware('check.permission:Change Password')->group(function () {
-            Route::put('/change-password', [ProfileController::class, 'changePassword']);
-        });
+        Route::put('/change-password', [ProfileController::class, 'changePassword']);
 
         Route::middleware('check.permission:User Homepage,json')->group(function () {
             Route::get('/home', [ListingController::class, 'homePageListings']);
@@ -133,23 +131,38 @@ Route::middleware(['auth.jwt'])->group(function () {
 
     Route::prefix('staff')->middleware(['plan'])->group(function () {
 
-        Route::get('/profile', [ProfileController::class, 'getProfile']);
-        Route::put('/profile', [ProfileController::class, 'updateProfileData']);
-        Route::post('/update-profile-pic', [ProfileController::class, 'uploadProfilePic']);
-        Route::put('/remove-profile-pic', [ProfileController::class, 'deleteProfilePic']);
+        Route::middleware('check.permission:Staff Profile')->group(function () {
+            Route::get('/profile', [ProfileController::class, 'getProfile']);
+        });
+        Route::middleware('check.permission:Update Staff Profile')->group(function () {
+            Route::put('/profile', [ProfileController::class, 'updateProfileData']);
+        });
+        Route::middleware('check.permission:Upload Staff Profile Picture')->group(function () {
+            Route::post('/update-profile-pic', [ProfileController::class, 'uploadProfilePic']);
+        });
+        Route::middleware('check.permission:Remove Staff Profile Picture')->group(function () {
+            Route::put('/remove-profile-pic', [ProfileController::class, 'deleteProfilePic']);
+        });
+
         Route::put('/change-password', [ProfileController::class, 'changePassword']);
 
-        Route::middleware('check.permission:Staff Queries,json')->group(function () {
+        Route::middleware('check.permission:Staff Queries')->group(function () {
             Route::get('/get-queries', [QueryController::class, 'getStaffQueries']);
             Route::get('/query/{id}', [QueryController::class, 'getQueryDetails']);
         });
-        Route::get('/get-queries', [QueryController::class, 'getStaffQueries']);
-        Route::get('/query/{id}', [QueryController::class, 'getQueryDetails']);
-        Route::put('/reject-query', [QueryController::class, 'rejectQuery']);
-        Route::put('/accept-query', [QueryController::class, 'acceptQuery']);
-        Route::put('/close-query', [QueryController::class, 'closeQuery']);
-        Route::get('/query-count', [QueryController::class, 'getYearlyQueryStats']);
-        Route::get('/query-chart', [QueryController::class, 'getMonthlyQueryStats']);
+        Route::middleware('check.permission:Accept Queries')->group(function () {
+            Route::put('/accept-query', [QueryController::class, 'acceptQuery']);
+        });
+        Route::middleware('check.permission:Reject Queries')->group(function () {
+            Route::put('/reject-query', [QueryController::class, 'rejectQuery']);
+        });
+        Route::middleware('check.permission:Close Queries')->group(function () {
+            Route::put('/close-query', [QueryController::class, 'closeQuery']);
+        });
+        Route::middleware('check.permission:Queries Analytics')->group(function () {
+            Route::get('/query-count', [QueryController::class, 'getYearlyQueryStats']);
+            Route::get('/query-chart', [QueryController::class, 'getMonthlyQueryStats']);
+        });
 
     });
 });

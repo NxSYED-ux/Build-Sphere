@@ -37,6 +37,7 @@ class TransactionController extends Controller
                     'type' => $isBuyer ? $txn->buyer_transaction_type : $txn->seller_transaction_type,
                     'price' => number_format($txn->price, 2) . ' ' . $txn->currency,
                     'status' => $txn->status,
+                    'payment_method' => $txn->payment_method,
                     'created_at' => $txn->created_at->diffForHumans(),
                 ];
             });

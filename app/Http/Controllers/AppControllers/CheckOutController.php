@@ -104,7 +104,7 @@ class CheckOutController extends Controller
             }
 
             [$assignedUnit, $type] = $this->assignUnitToUser($user, $unit, $request->price);
-            $transaction = $this->createTransaction($user, $unit, $type, $paymentIntent->id, $assignedUnit);
+            $transaction = $this->createTransaction($user, $unit, $type, $paymentIntent->id, $assignedUnit, $unit->organization_id);
 
             DB::commit();
 
@@ -172,7 +172,7 @@ class CheckOutController extends Controller
             }
 
             [$assignedUnit, $type] = $this->assignUnitToUser($user, $unit, $request->price);
-            $transaction = $this->createTransaction($user, $unit, $type, $paymentIntent->id, $assignedUnit);
+            $transaction = $this->createTransaction($user, $unit, $type, $paymentIntent->id, $assignedUnit, $unit->organization_id);
 
             DB::commit();
 
@@ -208,7 +208,7 @@ class CheckOutController extends Controller
         return [$assignedUnit, $type];
     }
 
-    private function createTransaction($user, $unit, $type, $paymentIntentId, $assignedUnit, $currency = 'PKR')
+    private function createTransaction($user, $unit, $type, $paymentIntentId, $assignedUnit, $organization_id, $currency = 'PKR')
     {
         $source_id = $assignedUnit->id;
         $source_name = 'user_building_unit';
@@ -237,6 +237,7 @@ class CheckOutController extends Controller
             'buyer_id' => $user->id,
             'buyer_type' => 'user',
             'seller_type' => 'organization',
+            'seller_id' => $organization_id,
             'payment_method' => 'Card',
             'gateway_payment_id' => $paymentIntentId,
             'price' => $unit->price,
