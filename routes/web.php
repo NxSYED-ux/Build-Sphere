@@ -39,9 +39,9 @@ Route::prefix('')->group(function () {
 // Checkout
 Route::prefix('checkout')->group(function () {
 
-    Route::get('/', [CheckOutController::class, 'index'])->name('checkout');
-    Route::post('/', [CheckOutController::class, 'checkout'])->name('checkout.processing');
-    Route::post('/Complete', [CheckOutController::class, 'checkoutComplete'])->name('checkout.processing.complete');
+    Route::get('/', [CheckOutController::class, 'checkoutIndex'])->name('checkout');
+    Route::post('/', [CheckOutController::class, 'createCheckOut'])->name('checkout.processing');
+    Route::post('/complete', [CheckOutController::class, 'createCheckoutComplete'])->name('checkout.processing.complete');
 
 });
 
@@ -213,8 +213,9 @@ Route::prefix('owner')->middleware(['auth.jwt'])->group(function () {
 
     Route::prefix('plan/upgrade')->group(function () {
 
-        Route::get('/', [UpgradePlanController::class, 'index'])->name('owner.plan.upgrade.index');
-        Route::post('/', [UpgradePlanController::class, 'create'])->name('owner.plan.upgrade.store');
+        Route::get('/', [CheckOutController::class, 'updatePlanIndex'])->name('owner.plan.upgrade.index');
+        Route::post('/', [CheckOutController::class, 'updateCheckOut'])->name('owner.plan.upgrade.processing');
+        Route::post('/complete', [CheckOutController::class, 'updateCheckoutComplete'])->name('owner.plan.upgrade.processing.complete');
 
     });
 

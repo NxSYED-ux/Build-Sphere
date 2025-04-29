@@ -4,21 +4,30 @@ namespace App\Http\Controllers\WebControllers;
 
 use App\Http\Controllers\Controller;
 use App\Jobs\ProcessSuccessfulCheckout;
+use App\Jobs\SendRoleNotification;
 use App\Models\BillingCycle;
 use App\Models\Organization;
 use App\Models\Plan;
+use App\Models\PlanService;
+use App\Models\PlanServiceCatalog;
+use App\Models\PlanSubscriptionItem;
+use App\Models\Subscription;
 use App\Models\Transaction;
 use App\Models\User;
+use App\Notifications\DatabaseOnlyNotification;
+use App\Notifications\EmailNotification;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Stripe\Customer;
 use Stripe\Exception\CardException;
 use Stripe\PaymentIntent;
+use Stripe\Refund;
 use Stripe\Stripe;
 
 class CheckOutController extends Controller
 {
-    public function index(Request $request)
+    public function checkoutIndex(Request $request)
     {
         $request->validate([
             'organization_name' => 'required|string',
@@ -53,7 +62,39 @@ class CheckOutController extends Controller
         }
     }
 
-    public function checkout(Request $request)
+    public function updatePlanIndex(Request $request)
+    {
+        try {
+            $token = $request->attributes->get('token');
+
+            if (empty($token['organization_id']) || empty($token['role_name'])) {
+                return response()->json(['error' => "Can't access this page, unless you are an organization owner."]);
+            }
+
+            $organization_id = $token['organization_id'];
+
+            $subscription = Subscription::where('organization_id', $organization_id)
+                ->where('source_name', 'plan')
+                ->first();
+
+            $activePlanId = $subscription?->source_id;
+            $activeCycle = $subscription?->billing_cycle;
+            $planCycles = BillingCycle::pluck('duration_months');
+
+            return view('Heights.Owner.Plan.upgrade', compact(
+                'planCycles',
+                'activePlanId',
+                'activeCycle'
+            ));
+        } catch (\Exception $e) {
+            Log::error('Error in Upgrade Plan index: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Something went wrong. Please try again later.');
+        }
+    }
+
+
+    // Checkout
+    public function createCheckOut(Request $request)
     {
         $request->validate([
             'owner_id' => 'required',
@@ -64,21 +105,116 @@ class CheckOutController extends Controller
             'payment_method_id' => 'required|string',
         ]);
 
-        try {
-
+        try{
             $user = User::find($request->owner_id);
             if (!$user) {
                 return response()->json(['error' => 'User not found.'], 404);
             }
 
             $organization = Organization::where('id', $request->organization_id)
-                ->where('status', 'Enable')
+                ->where('status', '!=', 'Enable')
                 ->first();
 
-            if ($organization) {
+            if (!$organization) {
                 return response()->json(['error' => 'An active subscription already exists for your organization.'], 409);
             }
 
+            return $this->checkout($request, $user, 'create', $request->organization_id);
+        }catch (\Exception $e) {
+            Log::error('Error creating checkout: ' . $e->getMessage());
+            return response()->json(['error' => 'Something went wrong. Please try again later.'], 500);
+        }
+    }
+
+    public function updateCheckOut(Request $request)
+    {
+        $request->validate([
+            'plan_id' => 'required|exists:plans,id',
+            'plan_cycle_id' => 'required|exists:billing_cycles,id',
+            'plan_cycle' => 'required|integer',
+            'payment_method_id' => 'required|string',
+        ]);
+
+        try{
+            $user = $request->user() ?? abort(403, 'Unauthorized action.');
+            $token = $request->attributes->get('token');
+
+            if (empty($token['organization_id'])) {
+                return response()->json(['error' => "Can't access this page, unless you are an organization owner."]);
+            }
+
+            $organization = Organization::find($token['organization_id']);
+            if (!$organization || $organization->owner_id !== $user->id) {
+                return response()->json(['error' => 'Unauthorized action.'], 403);
+            }
+
+            return $this->checkout($request, $user, 'update', $organization->id);
+        }catch (\Exception $e) {
+            Log::error('Error creating checkout: ' . $e->getMessage());
+            return response()->json(['error' => 'Something went wrong. Please try again later.'], 500);
+        }
+    }
+
+
+    // Checkout Complete
+    public function createCheckoutComplete(Request $request)
+    {
+        $request->validate([
+            'owner_id' => 'required',
+            'payment_intent_id' => 'required|string',
+            'organization_id' => 'required',
+            'plan_id' => 'required|exists:plans,id',
+            'plan_cycle_id' => 'required|exists:billing_cycles,id',
+            'plan_cycle' => 'required|integer',
+        ]);
+
+        try{
+            $user = User::find($request->owner_id);
+            if (!$user) {
+                return response()->json(['error' => 'User not found.'], 404);
+            }
+
+            return $this->checkout($request, $user, 'create', $request->organization_id, true);
+        }catch (\Exception $e) {
+            Log::error('Error creating complete checkout: ' . $e->getMessage());
+            return response()->json(['error' => 'Something went wrong. Please try again later.'], 500);
+        }
+    }
+
+    public function updateCheckoutComplete(Request $request)
+    {
+        $request->validate([
+            'payment_intent_id' => 'required|string',
+            'plan_id' => 'required|exists:plans,id',
+            'plan_cycle_id' => 'required|exists:billing_cycles,id',
+            'plan_cycle' => 'required|integer',
+        ]);
+
+        try{
+            $user = $request->user() ?? abort(403, 'Unauthorized action.');
+            $token = $request->attributes->get('token');
+
+            if (empty($token['organization_id'])) {
+                return response()->json(['error' => "Can't access this page, unless you are an organization owner."]);
+            }
+
+            $organization = Organization::find($token['organization_id']);
+            if (!$organization || $organization->owner_id !== $user->id) {
+                return response()->json(['error' => 'Unauthorized action.'], 403);
+            }
+
+            return $this->checkout($request, $user, 'update', $organization->id, true);
+        }catch (\Exception $e) {
+            Log::error('Error creating checkout: ' . $e->getMessage());
+            return response()->json(['error' => 'Something went wrong. Please try again later.'], 500);
+        }
+    }
+
+
+    // Main Checkout Function
+    private function checkout(Request $request, $user, string $type, $organization_id, bool $complete = false)
+    {
+        try {
             $plan = $this->getValidatedPlanWithBillingCycle($request->plan_id, $request->plan_cycle_id);
             if (!$plan) {
                 return response()->json(['error' => 'The requested plan is currently unavailable due to administrative changes.'], 404);
@@ -86,65 +222,156 @@ class CheckOutController extends Controller
 
             $planDetails = $this->getPlanDetailsWithTotalPrice($plan);
 
-            try{
+            try {
                 Stripe::setApiKey(config('services.stripe.secret'));
 
-                $paymentIntent = PaymentIntent::create([
-                    'amount' => $planDetails['total_price'] * 100,
-                    'currency' => $planDetails['currency'],
-                    'customer' => $user->customer_payment_id,
-                    'payment_method' => $request->payment_method_id,
-                    'confirm' => true,
-                    'description' => $planDetails['plan_name'] . ': ' . $planDetails['plan_description'],
-                    'setup_future_usage' => 'off_session',
-                    'automatic_payment_methods' => [
-                        'enabled' => true,
-                        'allow_redirects' => 'never',
-                    ],
-                ]);
+                if (!$complete) {
+                    try {
+                        $paymentIntent = PaymentIntent::create([
+                            'amount' => $planDetails['total_price'] * 100,
+                            'currency' => $planDetails['currency'],
+                            'customer' => $user->customer_payment_id,
+                            'payment_method' => $request->payment_method_id,
+                            'confirm' => true,
+                            'description' => $planDetails['plan_name'] . ': ' . $planDetails['plan_description'],
+                            'setup_future_usage' => 'off_session',
+                            'automatic_payment_methods' => [
+                                'enabled' => true,
+                                'allow_redirects' => 'never',
+                            ],
+                        ]);
+                    } catch (\Exception $e) {
+                        Log::error('Stripe PaymentIntent creation failed: ' . $e->getMessage());
+                        return response()->json([
+                            'error' => 'Unable to process your payment. Please try again or use a different payment method.',
+                        ], 400);
+                    }
 
-                if (
-                    $paymentIntent->status === 'requires_action' &&
-                    $paymentIntent->next_action->type === 'use_stripe_sdk'
-                ) {
-                    return response()->json([
-                        'requires_action' => true,
-                        'payment_intent_id' => $paymentIntent->id,
-                        'client_secret' => $paymentIntent->client_secret,
-                    ]);
+                    if ($paymentIntent->status === 'requires_action' && $paymentIntent->next_action->type === 'use_stripe_sdk') {
+                        return response()->json([
+                            'requires_action' => true,
+                            'payment_intent_id' => $paymentIntent->id,
+                            'client_secret' => $paymentIntent->client_secret,
+                        ]);
+                    }
+                } else {
+                    $paymentIntent = PaymentIntent::retrieve($request->payment_intent_id);
+
+                    if (!$paymentIntent || $paymentIntent->status !== 'succeeded') {
+                        return response()->json(['error' => 'Payment was not successful or intent not found.'], 400);
+                    }
                 }
-
             } catch (CardException $e) {
-                Log::error('Stripe Error: ' . $e->getMessage());
+                Log::error('Stripe CardException: ' . $e->getMessage());
                 return $this->handleStripePaymentFailure($e, $plan, $request->plan_cycle, $request, $planDetails);
+            } catch (\Exception $e) {
+                Log::error('General Stripe Error: ' . $e->getMessage());
+                return response()->json([
+                    'error' => 'Something went wrong with your payment. Please try again later.',
+                ], 500);
+            }
+
+            if ($paymentIntent->status === 'requires_payment_method') {
+                return response()->json(['error' => 'Payment failed. Please try another payment method.'], 400);
             }
 
             if ($paymentIntent->status !== 'succeeded') {
                 return $this->handleStripePaymentFailure($paymentIntent, $plan, $request->plan_cycle, $request, $planDetails);
             }
 
-            Customer::update($user->customer_payment_id, [
-                'invoice_settings' => [
-                    'default_payment_method' => $request->payment_method_id,
-                ],
-            ]);
+            if ($type === 'create') {
+                Customer::update($user->customer_payment_id, [
+                    'invoice_settings' => [
+                        'default_payment_method' => $request->payment_method_id,
+                    ],
+                ]);
+            }
 
             try {
-                Organization::where('id', $request->organization_id)->update(['status' => 'Enable']);
+                if ($type === 'create') {
+                    Organization::where('id', $organization_id)->update(['status' => 'Enable']);
 
-                ProcessSuccessfulCheckout::dispatch(
-                    $user->id,
-                    $request->organization_id,
-                    $plan->id,
-                    $planDetails,
-                    $request->plan_cycle,
-                    $paymentIntent->id,
-                    now(),
-                    'Card'
-                );
+                    ProcessSuccessfulCheckout::dispatch(
+                        $user->id,
+                        $organization_id,
+                        $plan->id,
+                        $planDetails,
+                        $request->plan_cycle,
+                        $paymentIntent->id,
+                        now(),
+                        'Card'
+                    );
+                } else {
+                    $services = $planDetails['services'];
+                    $org_subscription = Subscription::where('organization_id', $organization_id)
+                        ->where('source_name', 'plan')->first();
+
+                    if(!$org_subscription){
+                        Organization::where('id', $organization_id)->update(['status' => 'Enable']);
+
+                        ProcessSuccessfulCheckout::dispatch(
+                            $user->id,
+                            $organization_id,
+                            $plan->id,
+                            $planDetails,
+                            $request->plan_cycle,
+                            $paymentIntent->id,
+                            now(),
+                            'Card'
+                        );
+
+                        return response()->json(['success' => true]);
+                    }
+
+
+                    DB::beginTransaction();
+
+
+                    $org_subscription->update([
+                        'billing_cycle' => $request->plan_cycle,
+                        'subscription_status' => 'Active',
+                        'price_at_subscription' => $planDetails['total_price'],
+                        'currency_at_subscription' => $plan->currency,
+                        'ends_at' => now()->addMonths($request->plan_cycle),
+                    ]);
+
+                    $transaction = Transaction::create([
+                        'transaction_title' => "{$plan->name} ({$request->plan_cycle} Months)",
+                        'transaction_category' => 'Renewal',
+                        'buyer_id' => $organization_id,
+                        'buyer_type' => 'organization',
+                        'seller_type' => 'platform',
+                        'payment_method' => 'Card',
+                        'gateway_payment_id' => $paymentIntent->id,
+                        'price' => $planDetails['total_price'],
+                        'currency' => $planDetails['currency'],
+                        'status' => 'Completed',
+                        'is_subscription' => true,
+                        'billing_cycle' => $request->plan_cycle . ' Months',
+                        'subscription_start_date' => now(),
+                        'subscription_end_date' => now()->addMonths($request->plan_cycle),
+                        'source_id' => $org_subscription->id,
+                        'source_name' => 'subscription',
+                    ]);
+
+                    $existingServices = PlanSubscriptionItem::where('organization_id', $organization_id)
+                        ->whereIn('service_catalog_id', array_column($services, 'service_catalog_id'))->get()->keyBy('service_catalog_id');
+
+
+                    $result = $this->updatePlanServices($services, $existingServices, $plan, $organization_id, $paymentIntent);
+                    if ($result['error']) {
+                        return response()->json(['error' => $result['message']], 400);
+                    }
+
+                    $this->sendPlanUpgradeNotifications($user, $plan, $transaction);
+
+                    DB::commit();
+                }
 
                 return response()->json(['success' => true]);
+
             } catch (\Exception $e) {
+                DB::rollBack();
                 Log::error('DB Transaction Failed during checkout: ' . $e->getMessage());
 
                 return response()->json([
@@ -161,67 +388,108 @@ class CheckOutController extends Controller
         }
     }
 
-    public function checkoutComplete(Request $request)
+
+    // Upgrade Plan Admin
+    public function adminUpgradePlan(Request $request)
     {
+        $user = $request->user() ?? abort(403, 'Unauthorized action.');
+
         $request->validate([
-            'payment_intent_id' => 'required|string',
-            'owner_id' => 'required|exists:users,id',
-            'organization_id' => 'required|exists:organizations,id',
             'plan_id' => 'required|exists:plans,id',
-            'plan_cycle' => 'required|integer',
             'plan_cycle_id' => 'required|exists:billing_cycles,id',
+            'plan_cycle' => 'required|integer',
+            'organization_id' => 'required|exists:organizations,id',
         ]);
 
         try {
-            $user = User::find($request->owner_id);
+            $organization = Organization::findOrFail($request->organization_id);
+            $owner = $organization->owner;
+
             $plan = $this->getValidatedPlanWithBillingCycle($request->plan_id, $request->plan_cycle_id);
             if (!$plan) {
-                return response()->json(['error' => 'The requested plan is currently unavailable due to administrative changes.'], 404);
+                return redirect()->back()->withInput()->with('error', 'The requested plan is currently unavailable due to administrative changes.');
             }
 
             $planDetails = $this->getPlanDetailsWithTotalPrice($plan);
+            $services = $planDetails['services'];
 
-            try{
-                Stripe::setApiKey(config('services.stripe.secret'));
-                $paymentIntent = PaymentIntent::retrieve($request->payment_intent_id);
-            } catch (CardException $e) {
-                Log::error('Stripe Error: ' . $e->getMessage());
-                return $this->handleStripePaymentFailure($e, $plan, $request->plan_cycle, $request, $planDetails);
+            $org_subscription = Subscription::where('organization_id', $organization->id)
+                ->where('source_name', 'plan')->first();
+
+            if (!$org_subscription) {
+                return redirect()->back()->withInput()->with('error', 'No organization subscription found for the selected organization.');
             }
 
-            if ($paymentIntent->status !== 'succeeded') {
-                return $this->handleStripePaymentFailure($paymentIntent, $plan, $request->plan_cycle, $request, $planDetails);
-            }
+            DB::beginTransaction();
 
-            $paymentMethodId = $paymentIntent->payment_method;
+            $startDate = now();
+            $endDate = $startDate->copy()->addMonths($request->plan_cycle);
 
-            Customer::update($user->customer_payment_id, [
-                'invoice_settings' => [
-                    'default_payment_method' => $paymentMethodId,
-                ],
+            $org_subscription->update([
+                'billing_cycle' => $request->plan_cycle,
+                'subscription_status' => 'Active',
+                'price_at_subscription' => $planDetails['total_price'],
+                'currency_at_subscription' => $plan->currency,
+                'ends_at' => $endDate,
             ]);
 
-            $planDetails = $this->getPlanDetailsWithTotalPrice($plan);
-            Organization::where('id', $request->organization_id)->update(['status' => 'Enable']);
+            $transaction = Transaction::create([
+                'transaction_title' => "{$plan->name} ({$request->plan_cycle} Months)",
+                'transaction_category' => 'Renewal',
+                'buyer_id' => $organization->id,
+                'buyer_type' => 'organization',
+                'seller_type' => 'platform',
+                'payment_method' => 'Cash',
+                'gateway_payment_id' => null,
+                'price' => $planDetails['total_price'],
+                'currency' => $planDetails['currency'],
+                'status' => 'Completed',
+                'is_subscription' => true,
+                'billing_cycle' => $request->plan_cycle . ' Months',
+                'subscription_start_date' => $startDate,
+                'subscription_end_date' => $endDate,
+                'source_id' => $org_subscription->id,
+                'source_name' => 'subscription',
+            ]);
 
-            ProcessSuccessfulCheckout::dispatch(
+            $existingServices = PlanSubscriptionItem::where('organization_id', $organization->id)
+                ->whereIn('service_catalog_id', array_column($services, 'service_catalog_id'))
+                ->get()
+                ->keyBy('service_catalog_id');
+
+            $result = $this->updatePlanServices($services, $existingServices, $plan, $organization->id, null);
+            if ($result['error']) {
+                DB::rollBack();
+                return redirect()->back()->withInput()->with('error', $result['message']);
+            }
+
+            $this->sendPlanUpgradeNotifications($owner, $plan, $transaction);
+
+            $logo = 'uploads/Notification/Light-theme-Logo.svg';
+
+            dispatch(new SendRoleNotification(
+                1,
+                $logo,
+                "Organization Plan Upgraded",
+                "{$organization->name} upgraded to {$plan->name} ({$request->plan_cycle} Months) by {$user->name}.",
+                ['web' => "admin/organizations/{$organization->id}/show"],
+
                 $user->id,
-                $request->organization_id,
-                $plan->id,
-                $planDetails,
-                $request->plan_cycle,
-                $paymentIntent->id,
-                now(),
-                'Card'
-            );
+                "Plan Upgraded for {$organization->name}",
+                "{$organization->name} has successfully upgraded to the {$plan->name} plan ({$request->plan_cycle} Months).",
+                ['web' => "admin/organizations/{$organization->id}/show"],
+            ));
+
+            DB::commit();
 
             return response()->json(['success' => true]);
+
         } catch (\Exception $e) {
-            Log::error('Error while Completing Checkout Plan: ' . $e->getMessage());
+            DB::rollBack();
+            Log::error('Error in plan Upgrade Admin: ' . $e->getMessage());
 
             return response()->json([
-                'error' => 'Something went wrong during the final confirmation.',
-                'message' => $e->getMessage(),
+                'error' => 'Something went wrong. Please try again later.',
             ], 500);
         }
     }
@@ -249,6 +517,8 @@ class CheckOutController extends Controller
             ->first();
     }
 
+
+    // Helper functions
     private function getPlanDetailsWithTotalPrice($plan)
     {
         $totalPrice = 0;
@@ -263,6 +533,7 @@ class CheckOutController extends Controller
                 'service_description' => $service->serviceCatalog->description ?? '',
                 'service_quantity' => $service->quantity,
                 'service_meta' => $service->meta,
+                'subscription_id' => $service->subscription_id,
             ];
         });
 
@@ -299,6 +570,83 @@ class CheckOutController extends Controller
             'code' => $error->code ?? 'unknown_error',
             'type' => $error->type ?? 'card_error',
         ], 402);
+    }
+
+    private function updatePlanServices($services, $existingServices, $plan, $organization_id, $paymentIntent)
+    {
+        foreach ($services as $service) {
+            $existingService = $existingServices->get($service['service_catalog_id']);
+
+            if ($existingService) {
+                $serviceCatalog = PlanServiceCatalog::find($service['service_catalog_id']);
+                $parentId = $serviceCatalog?->parent_id;
+                $meta = $existingService->meta ?? [];
+
+                if ($parentId) {
+                    $parentPlanService = PlanService::where('service_catalog_id', $parentId)
+                        ->where('plan_id', $plan->id)
+                        ->select('quantity')
+                        ->first();
+
+                    if ($parentPlanService) {
+                        $meta['quantity'] = $parentPlanService->quantity;
+                    }
+                }
+
+                if ($service['service_quantity'] >= $existingService->used) {
+                    $existingService->update([
+                        'quantity' => $service['service_quantity'],
+                        'meta' => $meta,
+                    ]);
+                } else {
+                    $errorMessage = 'Selected Plan has fewer service items than the used service items.';
+
+                    if ($paymentIntent && isset($paymentIntent->charges->data[0]->id)) {
+                        try {
+                            $chargeId = $paymentIntent->charges->data[0]->id;
+                            Refund::create(['charge' => $chargeId]);
+                            $errorMessage .= ' Your payment has been refunded automatically. If you do not see the refund within a few minutes, please check with your bank or contact support.';
+                        } catch (\Exception $e) {
+                            Log::error('Stripe refund failed: ' . $e->getMessage());
+                            $errorMessage .= ' Refund attempt failed, please contact support.';
+                        }
+                    }
+
+                    DB::rollBack();
+                    return [
+                        'error' => true,
+                        'message' => $errorMessage
+                    ];
+                }
+            } else {
+                PlanSubscriptionItem::create([
+                    'organization_id' => $organization_id,
+                    'subscription_id' => $service['subscription_id'],
+                    'service_catalog_id' => $service['service_catalog_id'],
+                    'quantity' => $service['service_quantity'],
+                    'meta' => $service['service_meta'] ?? null,
+                ]);
+            }
+        }
+
+        return ['error' => false];
+    }
+
+    private function sendPlanUpgradeNotifications($user, $plan, $transaction)
+    {
+        $user->notify(new EmailNotification(
+            'uploads/Notification/Light-theme-Logo.svg',
+            '🎉 Plan Upgraded Successfully!',
+            "Dear {$user->name},<br><br>Your plan has been upgraded successfully! You now have access to additional features and enhanced capabilities. Start exploring your new benefits today through your dashboard.<br><br>Thank you for choosing us!",
+            ['web' => 'owner/dashboard']
+        ));
+
+        $user->notify(new DatabaseOnlyNotification(
+            'uploads/Notification/Transaction.jpg',
+            '🎉 Transaction Successful - Plan Upgraded',
+            "Great news, {$user->name}! Your payment for the <strong>{$plan->name}</strong> plan has been successfully processed. 🚀<br><br>Your plan is now upgraded, unlocking all the exclusive features and benefits.<br><br>If you have any questions or need assistance, our support team is just a message away.",
+            ['web' => "owner/finance/{$transaction->id}/show"]
+        ));
     }
 
 }
