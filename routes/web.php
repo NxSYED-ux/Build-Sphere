@@ -19,7 +19,6 @@ use App\Http\Controllers\WebControllers\PlanController;
 use App\Http\Controllers\WebControllers\RolePermissionController;
 use App\Http\Controllers\WebControllers\RoleController;
 use App\Http\Controllers\WebControllers\AssignUnitController;
-use App\Http\Controllers\WebControllers\UpgradePlanController;
 use App\Http\Controllers\WebControllers\UsersController;
 use Illuminate\Support\Facades\Route;
 
@@ -199,6 +198,14 @@ Route::prefix('admin')->middleware(['auth.jwt'])->group(function () {
 
     });
 
+    Route::prefix('finance')->group(function () {
+
+        Route::get('/', [FinanceController::class , 'index'])->name('finance.index');
+        Route::get('/{department}/show', [FinanceController::class, 'show'])->name('finance.show');
+        Route::get('/latest', [FinanceController::class , 'latestPlatformOrganizationTransactions'])->name('finance.latest');
+
+    });
+
     Route::prefix('/role-Permissions')->group(function () {
 
         Route::get('/', [RolePermissionController::class, 'showRolePermissions'])->name('role.permissions');
@@ -316,8 +323,7 @@ Route::prefix('owner')->middleware(['auth.jwt'])->group(function () {
 
             Route::get('/', [FinanceController::class , 'index'])->name('owner.finance.index');
             Route::get('/{department}/show', [FinanceController::class, 'show'])->name('owner.finance.show');
-
-            Route::get('/top-6', [FinanceController::class , 'organizationTopSixTransactions'])->name('owner.finance.topSix');
+            Route::get('/latest', [FinanceController::class , 'latestOrganizationTransactions'])->name('owner.finance.latest');
 
         });
 

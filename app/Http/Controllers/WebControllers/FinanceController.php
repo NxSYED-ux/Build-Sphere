@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Log;
 
 class FinanceController extends Controller
 {
-    public function organizationTopSixTransactions(Request $request)
+    public function latestOrganizationTransactions(Request $request)
     {
         $token = $request->attributes->get('token');
 
@@ -51,6 +51,52 @@ class FinanceController extends Controller
 
         } catch (\Exception $e) {
             Log::error('Transaction history fetch failed: ' . $e->getMessage());
+            return response()->json(['error' => 'An error occurred while fetching transaction history.'], 500);
+        }
+    }
+
+    public function latestPlatformOrganizationTransactions(Request $request, string $organization_id)
+    {
+        $user = $request->user() ?? abort(403, 'Unauthorized action.');
+
+        // Only allow super admins
+        if (!$user->is_super_admin) {
+            return response()->json(['error' => 'This action is only for super admins.'], 403);
+        }
+
+        try {
+            $transactions = Transaction::where(function ($query) use ($organization_id) {
+                $query->where(function ($q) use ($organization_id) {
+                    $q->where('seller_type', 'platform')
+                        ->where('buyer_type', 'organization')
+                        ->where('buyer_id', $organization_id);
+                })->orWhere(function ($q) use ($organization_id) {
+                    $q->where('buyer_type', 'platform')
+                        ->where('seller_type', 'organization')
+                        ->where('seller_id', $organization_id);
+                });
+            })
+                ->orderBy('created_at', 'desc')
+                ->limit(6)
+                ->get();
+
+            $history = $transactions->map(function ($txn) {
+                $isPlatformBuyer = $txn->buyer_type === 'platform';
+
+                return [
+                    'id' => $txn->id,
+                    'title' => $txn->transaction_title,
+                    'type' => $isPlatformBuyer ? $txn->buyer_transaction_type : $txn->seller_transaction_type,
+                    'price' => number_format($txn->price, 2) . ' ' . $txn->currency,
+                    'status' => $txn->status,
+                    'created_at' => $txn->created_at->diffForHumans(),
+                ];
+            });
+
+            return response()->json(['history' => $history]);
+
+        } catch (\Exception $e) {
+            Log::error('Admin Transaction history fetch failed: ' . $e->getMessage());
             return response()->json(['error' => 'An error occurred while fetching transaction history.'], 500);
         }
     }
