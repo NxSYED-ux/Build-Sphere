@@ -465,6 +465,7 @@ class CheckOutController extends Controller
             $endDate = $startDate->copy()->addMonths((int) $request->plan_cycle);
 
             $org_subscription->update([
+                'source_id' => $plan->id,
                 'billing_cycle' => $request->plan_cycle,
                 'subscription_status' => 'Active',
                 'price_at_subscription' => $planDetails['total_price'],
