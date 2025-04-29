@@ -82,7 +82,7 @@ class CheckOutController extends Controller
             $activeCycle = $subscription?->billing_cycle;
             $planCycles = BillingCycle::pluck('duration_months');
 
-            return view('Heights.Admin.Plan.upgrade', compact(
+            return view('Heights.Admin.Plans.upgrade', compact(
                 'planCycles',
                 'activePlanId',
                 'activeCycle',
