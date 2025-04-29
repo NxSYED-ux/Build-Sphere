@@ -553,35 +553,37 @@
 
                         const cardHtml = `
                         <div class="col-md-6 col-xl-4">
-                            <div class="card border-0 shadow hover-shadow-lg transition-all h-100" style="background-color: var(--body-background-color) !important;">
-                                <div class="card-body p-4 d-flex flex-column">
-                                    <div class="d-flex justify-content-between align-items-start mb-3 flex-grow-1">
-                                        <div class="d-flex align-items-center">
-                                            <div class="${getBgClass(transaction)} p-3 rounded-circle me-3">
-                                                <i class="${getIconClass(transaction)} ${getTextColor(transaction)} fs-4"></i>
+                            <a href="#" class="text-white text-decoration-none" style="color: #fff !important;">
+                                <div class="card border-0 shadow hover-shadow-lg transition-all h-100" style="background-color: var(--body-background-color) !important;">
+                                    <div class="card-body p-4 d-flex flex-column">
+                                        <div class="d-flex justify-content-between align-items-start mb-3 flex-grow-1">
+                                            <div class="d-flex align-items-center">
+                                                <div class="${getBgClass(transaction)} p-3 rounded-circle me-3">
+                                                    <i class="${getIconClass(transaction)} ${getTextColor(transaction)} fs-4"></i>
+                                                </div>
+                                                <div>
+                                                    <h6 class="mb-0">${transaction.title}</h6>
+                                                    <small class="small">${transaction.created_at}</small>
+                                                </div>
                                             </div>
+                                        </div>
+                                        <div class="d-flex justify-content-between align-items-end mt-auto">
                                             <div>
-                                                <h6 class="mb-0">${transaction.title}</h6>
-                                                <small class="small">${transaction.created_at}</small>
+                                                <p class=" small mb-1">Amount</p>
+                                                <h4 class="mb-0 ${getTextColor(transaction)}">
+                                                    ${isFailed ? '<span class="text-decoration-line-through">' : ''}
+                                                    ${amountSign}${transaction.price}
+                                                    ${isFailed ? '</span>' : ''}
+                                                </h4>
                                             </div>
+                                            <span class="badge ${getStatusBadge(transaction)} px-3 py-2">
+                                                <i class="${getStatusIcon(transaction)} me-1"></i>
+                                                ${transaction.status.charAt(0).toUpperCase() + transaction.status.slice(1)}
+                                            </span>
                                         </div>
-                                    </div>
-                                    <div class="d-flex justify-content-between align-items-end mt-auto">
-                                        <div>
-                                            <p class=" small mb-1">Amount</p>
-                                            <h4 class="mb-0 ${getTextColor(transaction)}">
-                                                ${isFailed ? '<span class="text-decoration-line-through">' : ''}
-                                                ${amountSign}${transaction.price}
-                                                ${isFailed ? '</span>' : ''}
-                                            </h4>
-                                        </div>
-                                        <span class="badge ${getStatusBadge(transaction)} px-3 py-2">
-                                            <i class="${getStatusIcon(transaction)} me-1"></i>
-                                            ${transaction.status.charAt(0).toUpperCase() + transaction.status.slice(1)}
-                                        </span>
                                     </div>
                                 </div>
-                            </div>
+                            </a>
                         </div>
                     `;
                         container.append(cardHtml);
