@@ -623,12 +623,10 @@ class OrganizationController extends Controller
                 $e->getModel() === BillingCycle::class => 'Invalid billing cycle configuration',
                 default => 'Invalid reference data'
             };
-            Log::error('Model ' . $errorMessage);
             return redirect()->back()->with('error', $errorMessage);
 
         } catch (\Throwable $e) {
             DB::rollBack();
-            Log::error('Plan payment processing failed: ' . $e->getMessage());
             return redirect()->back()->with('error', 'Payment processing failed: ' . $e->getMessage());
         }
     }
