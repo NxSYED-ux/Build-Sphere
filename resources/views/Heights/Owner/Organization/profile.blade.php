@@ -485,6 +485,7 @@
                             </button>
                         </div>
                         <div class="row g-4" id="transactions-container">
+                            <!-- Loading state will appear here -->
                         </div>
                     </div>
                 </div>
@@ -511,96 +512,142 @@
 
 @push('scripts')
 
-    <script>
-        function loadTransactions() {
-            $.ajax({
-                url: '{{ route("owner.finance.latest") }}',
-                method: 'GET',
-                headers: {
-                    'Accept': 'application/json',
-                    'X-Requested-With': 'XMLHttpRequest'
-                },
-                success: function(response) {
-                    const container = $('#transactions-container');
-                    container.empty();
 
+
+    <script>
+        async function loadTransactions() {
+            const container = $('#transactions-container');
+
+            // Show loading state
+            container.html(`
+            <div class="col-12 text-center py-5">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <p class="mt-2 text-muted">Loading transactions...</p>
+            </div>
+        `);
+
+            try {
+                const response = await $.ajax({
+                    url: '{{ route("owner.finance.latest") }}',
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+
+                container.empty();
+
+                if (response.history && response.history.length > 0) {
                     response.history.forEach(function(transaction) {
+                        const amountSign = transaction.type === 'credit' ? '+' : '-';
+                        const isFailed = transaction.status.toLowerCase() === 'failed';
+                        const transactionDate = new Date(transaction.created_at);
+
                         const cardHtml = `
-                    <div class="col-md-6 col-xl-4">
-                        <div class="card border-0 shadow-sm hover-shadow-lg transition-all">
-                            <div class="card-body p-4">
-                                <div class="d-flex justify-content-between align-items-start mb-3">
-                                    <div class="d-flex align-items-center">
-                                        <div class="${getBgClass(transaction)} p-3 rounded me-3">
-                                            <i class="${getIconClass(transaction)} ${getTextColor(transaction)} fs-4"></i>
+                        <div class="col-md-6 col-xl-4">
+                            <div class="card border-0 shadow-sm hover-shadow-lg transition-all h-100" style="background-color: var(--body-background-color) !important;">
+                                <div class="card-body p-4 d-flex flex-column">
+                                    <div class="d-flex justify-content-between align-items-start mb-3 flex-grow-1">
+                                        <div class="d-flex align-items-center">
+                                            <div class="${getBgClass(transaction)} p-3 rounded-circle me-3">
+                                                <i class="${getIconClass(transaction)} ${getTextColor(transaction)} fs-4"></i>
+                                            </div>
+                                            <div>
+                                                <h6 class="mb-0">${transaction.title}</h6>
+                                                <small class="text-muted">${transaction.created_at}</small>
+                                            </div>
                                         </div>
+                                    </div>
+                                    <div class="d-flex justify-content-between align-items-end mt-auto">
                                         <div>
-                                            <h6 class="mb-0">${transaction.title}</h6>
-                                            <small class="text-muted">${transaction.created_at}</small>
+                                            <p class="text-muted small mb-1">Amount</p>
+                                            <h4 class="mb-0 ${getTextColor(transaction)}">
+                                                ${isFailed ? '<span class="text-decoration-line-through">' : ''}
+                                                ${amountSign}${transaction.price}
+                                                ${isFailed ? '</span>' : ''}
+                                            </h4>
                                         </div>
+                                        <span class="badge ${getStatusBadge(transaction)} px-3 py-2">
+                                            <i class="${getStatusIcon(transaction)} me-1"></i>
+                                            ${transaction.status.charAt(0).toUpperCase() + transaction.status.slice(1)}
+                                        </span>
                                     </div>
-                                </div>
-                                <div class="d-flex justify-content-between align-items-end mt-4">
-                                    <div>
-                                        <p class="text-muted small mb-1">Amount</p>
-                                        <h4 class="mb-0 ${getTextColor(transaction)}">
-                                            ${transaction.status.toLowerCase() === 'failed' ? '<span class="text-decoration-line-through">' : ''}
-                                            ${transaction.price}
-                                            ${transaction.status.toLowerCase() === 'failed' ? '</span>' : ''}
-                                        </h4>
-                                    </div>
-                                    <span class="badge ${getStatusBadge(transaction)}">
-                                        ${transaction.status.charAt(0).toUpperCase() + transaction.status.slice(1)}
-                                    </span>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                `;
+                    `;
                         container.append(cardHtml);
                     });
-                },
-                error: function(xhr) {
-                    console.error('Error loading transactions:', xhr.responseText);
-                    $('#transactions-container').html(`
+                } else {
+                    container.html(`
+                    <div class="col-12 text-center py-4">
+                        <i class="fas fa-wallet fa-3x text-muted mb-3"></i>
+                        <h5 class="text-muted">No transactions found</h5>
+                    </div>
+                `);
+                }
+            } catch (error) {
+                console.error('Error loading transactions:', error);
+                container.html(`
                 <div class="col-12">
                     <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
                         Failed to load transactions. Please try again later.
                     </div>
                 </div>
             `);
-                }
-            });
+            }
         }
 
         // Helper functions
         function getIconClass(transaction) {
-            if (transaction.status.toLowerCase() === 'failed') return 'fas fa-times-circle';
-            if (transaction.type === 'credit') return 'fas fa-arrow-circle-down';
-            return 'fas fa-arrow-circle-up';
+            const status = transaction.status.toLowerCase();
+            const type = transaction.type.toLowerCase();
+
+            if (status === 'failed') return 'fas fa-ban';
+            if (type === 'credit') return 'fas fa-download';
+            return 'fas fa-upload';
+        }
+
+        function getStatusIcon(transaction) {
+            const status = transaction.status.toLowerCase();
+
+            if (status === 'completed') return 'fas fa-check-circle';
+            if (status === 'pending') return 'fas fa-clock';
+            if (status === 'failed') return 'fas fa-exclamation-circle';
+            return 'fas fa-info-circle';
         }
 
         function getBgClass(transaction) {
-            if (transaction.status.toLowerCase() === 'failed') return 'bg-danger bg-opacity-10';
-            if (transaction.type === 'credit') return 'bg-success bg-opacity-10';
-            if (transaction.status.toLowerCase() === 'pending') return 'bg-warning bg-opacity-10';
-            return 'bg-danger bg-opacity-10';
+            const status = transaction.status.toLowerCase();
+            const type = transaction.type.toLowerCase();
+
+            if (status === 'failed') return 'bg-danger bg-opacity-10';
+            if (type === 'credit') return 'bg-success bg-opacity-10';
+            if (status === 'pending') return 'bg-warning bg-opacity-10';
+            return 'bg-primary bg-opacity-10';
         }
 
         function getTextColor(transaction) {
-            if (transaction.status.toLowerCase() === 'failed') return 'text-danger';
-            if (transaction.type === 'credit') return 'text-success';
-            if (transaction.status.toLowerCase() === 'pending') return 'text-warning';
-            return 'text-danger';
+            const status = transaction.status.toLowerCase();
+            const type = transaction.type.toLowerCase();
+
+            if (status === 'failed') return 'text-danger';
+            if (type === 'credit') return 'text-success';
+            if (status === 'pending') return 'text-warning';
+            return 'text-primary';
         }
 
         function getStatusBadge(transaction) {
-            switch (transaction.status.toLowerCase()) {
-                case 'completed': return 'bg-success bg-opacity-10 text-success';
-                case 'pending': return 'bg-warning bg-opacity-10 text-warning';
-                case 'failed': return 'bg-danger bg-opacity-10 text-danger';
-                default: return 'bg-secondary bg-opacity-10 text-secondary';
-            }
+            const status = transaction.status.toLowerCase();
+
+            if (status === 'completed') return 'bg-success bg-opacity-10 text-success';
+            if (status === 'pending') return 'bg-warning bg-opacity-10 text-warning';
+            if (status === 'failed') return 'bg-danger bg-opacity-10 text-danger';
+            return 'bg-secondary bg-opacity-10 text-secondary';
         }
 
         // Call on page load
