@@ -32,7 +32,7 @@ class FinanceController extends Controller
                 });
             })
                 ->orderBy('created_at', 'desc')
-                ->paginate(10);
+                ->paginate(12);
 
             $history = collect($transactions->items())->map(function ($txn) use ($organization_id) {
                 $isBuyer = $txn->buyer_type === 'organization' && $txn->buyer_id == $organization_id;
@@ -63,7 +63,7 @@ class FinanceController extends Controller
                     ->orWhere('buyer_type', 'platform');
             })
                 ->orderBy('created_at', 'desc')
-                ->paginate(10);
+                ->paginate(12);
 
             $history = collect($transactions->items())->map(function ($txn) {
                 $isPlatformBuyer = $txn->buyer_type === 'platform';
@@ -87,7 +87,103 @@ class FinanceController extends Controller
     }
 
 
+
     // Show
+    public function ownerShow($id, Request $request)
+    {
+        $token = $request->attributes->get('token');
+
+        if (!$token || empty($token['organization_id'])) {
+            return redirect()->back()->with('error', 'This info is for Organization owners');
+        }
+
+        $organization_id = $token['organization_id'];
+
+        try {
+            $transaction = Transaction::with('source')->findOrFail($id);
+
+            $isOrgBuyer = $transaction->buyer_type === 'organization' && $transaction->buyer_id == $organization_id;
+            $isOrgSeller = $transaction->seller_type === 'organization' && $transaction->seller_id == $organization_id;
+
+            if (!($isOrgBuyer || $isOrgSeller)) {
+                return redirect()->route('owner.finance.index')->with('error', 'Unauthorized access to transaction details.');
+            }
+
+            $mappedTransaction = [
+                'transaction_id' => $transaction->id,
+                'title' => $transaction->transaction_title,
+                'type' => $isOrgBuyer ? $transaction->buyer_transaction_type : $transaction->seller_transaction_type,
+                'price' => number_format($transaction->price, 2) . ' ' . $transaction->currency,
+                'status' => $transaction->status,
+                'created_at' => $transaction->created_at->diffForHumans(),
+                'payment_method' => $transaction->payment_method,
+                'is_subscription' => $transaction->is_subscription,
+                'subscription_details' => [
+                    'start_date' => optional($transaction->subscription_start_date)->format('Y-m-d H:i:s'),
+                    'end_date' => optional($transaction->subscription_end_date)->format('Y-m-d H:i:s'),
+                    'billing_cycle' => $transaction->billing_cycle,
+                ],
+                'source' => $transaction->source ? [
+                    'id' => $transaction->source->id,
+                    'type' => class_basename($transaction->source_type),
+                    'details' => $transaction->source->toArray(),
+                ] : null,
+            ];
+
+            return view('Heights.Owner.Finance.show', [
+                'transaction' => $mappedTransaction,
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Transaction detail fetch failed: ' . $e->getMessage());
+            return redirect()->route('owner.finance.index')->with('error', 'Transaction not found.');
+        }
+    }
+
+    public function adminShow($id)
+    {
+        try {
+            $transaction = Transaction::with('source')->findOrFail($id);
+
+            $isPlatformBuyer = $transaction->buyer_type === 'platform';
+            $isPlatformSeller = $transaction->seller_type === 'platform';
+
+            if (!($isPlatformBuyer || $isPlatformSeller)) {
+                return redirect()->route('admin.finance.index')->with('error', 'Unauthorized access to transaction details.');
+            }
+
+            $mappedTransaction = [
+                'transaction_id' => $transaction->id,
+                'title' => $transaction->transaction_title,
+                'type' => $isPlatformBuyer ? $transaction->buyer_transaction_type : $transaction->seller_transaction_type,
+                'price' => number_format($transaction->price, 2) . ' ' . $transaction->currency,
+                'status' => $transaction->status,
+                'created_at' => $transaction->created_at->diffForHumans(),
+                'payment_method' => $transaction->payment_method,
+                'is_subscription' => $transaction->is_subscription,
+                'subscription_details' => [
+                    'start_date' => optional($transaction->subscription_start_date)->format('Y-m-d H:i:s'),
+                    'end_date' => optional($transaction->subscription_end_date)->format('Y-m-d H:i:s'),
+                    'billing_cycle' => $transaction->billing_cycle,
+                ],
+                'source' => $transaction->source ? [
+                    'id' => $transaction->source->id,
+                    'type' => class_basename($transaction->source_type),
+                    'details' => $transaction->source->toArray(),
+                ] : null,
+            ];
+
+            return view('Heights.Admin.Finance.show', [
+                'transaction' => $mappedTransaction,
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Admin transaction detail fetch failed: ' . $e->getMessage());
+            return redirect()->route('admin.finance.index')->with('error', 'Transaction not found.');
+        }
+    }
+
+
     public function show(Request $request, $id)
     {
         try {
