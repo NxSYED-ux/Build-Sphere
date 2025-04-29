@@ -30,6 +30,11 @@ class Subscription extends Model
         'ends_at',
     ];
 
+    protected $casts = [
+        'ends_at' => 'datetime',
+        'trial_ends_at'  => 'datetime',
+    ];
+
     // Belongs to Relations
     public function user()
     {

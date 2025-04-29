@@ -573,7 +573,7 @@ class OrganizationController extends Controller
             ]);
 
             $planSubscription->update([
-                'ends_at' => now()->addMonths($billingCycle->duration_months),
+                'ends_at' => $planSubscription->ends_at->copy()->addMonths($billingCycle->duration_months),
                 'price_at_subscription' => $planDetails['total_price'],
                 'currency_at_subscription' => $planDetails['currency'],
             ]);
@@ -846,8 +846,8 @@ class OrganizationController extends Controller
     private function getValidatedPlanWithTotalPrice($planId, $billingCycleId)
     {
         $plan = Plan::where('id', $planId)
-            ->where('status', '!=', 'Deleted')
-            ->select('id', 'name', 'description')
+            ->whereNotIn('status', ['Deleted', 'Inactive'])
+            ->select('id', 'name', 'description', 'currency')
             ->whereHas('services.prices', function($query) use ($billingCycleId) {
                 $query->where('billing_cycle_id', $billingCycleId);
             })
