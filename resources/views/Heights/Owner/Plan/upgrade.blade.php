@@ -203,6 +203,28 @@
             padding-right: 7px !important;
             padding-left: 7px !important;
         }
+
+        .btn-checkout {
+            background: linear-gradient(135deg, #4e54c8, #8f94fb);
+            border: none;
+            border-radius: 30px;
+            padding: 10px 25px;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+        }
+
+        .btn-checkout:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+            background: linear-gradient(135deg, var(--color-blue), #4e54c8);
+        }
+
+        .btn-checkout:active {
+            transform: translateY(0);
+        }
     </style>
 @endpush
 
@@ -302,9 +324,10 @@
                         <div class="form-section shadow">
                             <div class="d-flex justify-content-between align-items-center mb-3">
                                 <h4 class="mb-0">
-                                    <i class="fas fa-info-circle me-2"></i> Complete Payment
+                                    <i class="fas fa-credit-card me-2"></i> Complete Payment
                                 </h4>
 
+                                <input type="hidden" id="selectedCardId">
                                 <input type="hidden" name="plan_id" id="plan_id">
                                 <input type="hidden" name="plan_cycle_id"  id="plan_cycle_id">
                                 <input type="hidden" name="plan_cycle" id="plan_cycle">
@@ -313,8 +336,14 @@
                                 <input type="hidden" id="selectedPlanCycle">
                                 <input type="hidden" id="selectedBillingCycleId">
 
+                                <!-- Beautiful Checkout Button -->
+                                <button type="submit" class="btn btn-primary btn-checkout" onclick="handleCompletePayment()">
+                                    <i class="fas fa-lock me-2"></i> Checkout
+                                </button>
                             </div>
                         </div>
+
+
                     </div>
 
 
@@ -502,40 +531,69 @@
                 const expiry = `${expMonth}/${expYear}`;
                 const dropdownId = `cardMenu${card.id.replace(/\D/g, '')}`;
 
-                return `
-                <div class="col-md-6 col-md-6 col-12 mb-3">
-                    <div class="payment-card w-100 p-3" style="background: ${style.background}; border-radius: 10px; color: white; box-shadow: 0 4px 8px rgba(0,0,0,0.1); position: relative; overflow: hidden;">
-                        <div style="position: absolute; top: -20px; right: -20px; width: 80px; height: 80px; background: rgba(255,255,255,0.1); border-radius: 50%;"></div>
+                // Set the initial value if this is the default card
+                if (card.is_default) {
+                    document.getElementById('selectedCardId').value = card.id;
+                }
 
-                        <div class="d-flex justify-content-between align-items-center mb-1">
-                            ${isFontAwesome
+                return `
+<div class="col-md-6 col-md-6 col-12 mb-3">
+    <div class="payment-card w-100 p-3"
+        style="background: ${style.background};
+               border-radius: 10px;
+               color: white;
+               box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+               position: relative;
+               overflow: hidden;
+               border: ${card.is_default ? '2px solid ' + style.accent : '2px solid transparent'};">
+        <div style="position: absolute; top: -20px; right: -20px; width: 80px; height: 80px; background: rgba(255,255,255,0.1); border-radius: 50%;"></div>
+
+        <div class="d-flex justify-content-between align-items-center mb-1">
+            <div class="form-check">
+                <input class="form-check-input card-radio"
+                       type="radio"
+                       name="selectedCard"
+                       id="card-${card.id}"
+                       value="${card.id}"
+                       ${card.is_default ? 'checked' : ''}
+                       style="cursor: pointer;"
+                       onchange="document.getElementById('selectedCardId').value = this.value;">
+            </div>
+
+            ${isFontAwesome
                     ? `<i class="fab ${style.icon}" style="font-size: 40px; color: white;"></i>`
                     : `<i class='bx ${style.icon}' style="font-size: 40px; color: white;"></i>`
                 }
 
-                                    ${card.is_default
+            ${card.is_default
                     ? `<span class="badge" style="background: ${style.accent}; color: ${style.textColor}; font-weight: bold;">Primary</span>`
                     : `<div class="dropdown">
-                                <button class="btn btn-sm p-0" style="background: transparent; color: white; border: none;" type="button" id="${dropdownId}" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <i class="fas fa-ellipsis-h"></i>
-                                </button>
-                                <ul class="dropdown-menu dropdown-menu-end" style="background-color: var(--body-background-color);" aria-labelledby="${dropdownId}">
-                                    <li><a class="dropdown-item set-primary-btn" href="#" data-card-id="${card.id}"
-                                        style="background-color: var(--body-background-color); color: var(--sidenavbar-text-color);" onmouseover="this.style.backgroundColor='var(--body-background-color)'" onmouseout="this.style.backgroundColor='var(--body-background-color)'">
-                                        Set as primary</a>
-                                    </li>
-                                </ul>
-                            </div>`
+                    <button class="btn btn-sm p-0" style="background: transparent; color: white; border: none;" type="button" id="${dropdownId}" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-ellipsis-h"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end" style="background-color: var(--body-background-color);" aria-labelledby="${dropdownId}">
+                        <li><a class="dropdown-item set-primary-btn" href="#" data-card-id="${card.id}"
+                            style="background-color: var(--body-background-color); color: var(--sidenavbar-text-color);" onmouseover="this.style.backgroundColor='var(--body-background-color)'" onmouseout="this.style.backgroundColor='var(--body-background-color)'">
+                            Set as primary</a>
+                        </li>
+                    </ul>
+                </div>`
                 }
-                        </div>
+        </div>
 
-                        <div class="mb-1" style="position: relative; z-index: 2;">
-                            <h5 class="mb-0 text-white" style="letter-spacing: 1px;">•••• •••• •••• ${card.last4}</h5>
-                        </div>
-                    </div>
-                </div>
-            `;
+        <div class="mb-1" style="position: relative; z-index: 2;">
+            <h5 class="mb-0 text-white" style="letter-spacing: 1px;">•••• •••• •••• ${card.last4}</h5>
+        </div>
+    </div>
+</div>
+`;
             }
+
+            document.querySelectorAll('.card-radio').forEach(radio => {
+                radio.addEventListener('change', function() {
+                    document.getElementById('selectedCardId').value = this.value;
+                });
+            });
 
             /**
              * Handles card action events
@@ -901,6 +959,189 @@
                 fetchPlans(planCycleSelect.value);
             }
 
+        });
+    </script>
+
+    <script>
+        /**
+         * Payment Processing Script
+         * Handles the checkout process including card payment confirmation
+         */
+        document.addEventListener('DOMContentLoaded', async function () {
+
+            console.log("Complete Payment button clicked");
+            // DOM Elements
+            const selectedPlanId = document.getElementById('selectedPlanId');
+            const selectedPlanCycle = document.getElementById('selectedPlanCycle');
+            const selectedBillingCycleId = document.getElementById('selectedBillingCycleId');
+
+            // Initialize function on window for global access
+            window.handleCompletePayment = handleCompletePayment;
+
+            /**
+             * Handles the card submission and payment processing
+             */
+            async function handleCompletePayment() {
+                const methodId = document.getElementById('selectedCardId').value;
+                const dataToSend = {
+                    payment_method_id: methodId,
+                    plan_id: selectedPlanId.value,
+                    plan_cycle: selectedPlanCycle.value,
+                    plan_cycle_id: selectedBillingCycleId.value
+                };
+
+                showLoading(true);
+
+                try {
+                    // Initial payment processing request
+                    const response = await fetch('{{ route('owner.plan.upgrade.processing') }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        },
+                        body: JSON.stringify(dataToSend)
+                    });
+
+                    const result = await response.json();
+
+                    if (!response.ok) {
+                        const errorMsg = result.message || result.error || "Server error occurred.";
+                        showResponseMessage(errorMsg, 'error');
+                    }
+
+                    // Handle 3D Secure authentication if required
+                    if (result.requires_action) {
+                        await handle3DSecureAuthentication(result);
+                    }
+                    // Handle direct success case
+                    else if (result.success) {
+                        handlePaymentSuccess(result);
+                    }
+                    // Handle other error cases
+                    else {
+                        handlePaymentError(result);
+                    }
+                } catch (err) {
+                    console.error("Error:", err);
+                    if (!err.message.includes('Payment successful')) {
+                        showResponseMessage("An error occurred. Please try again.", 'error');
+                    }
+                    throw err;
+                } finally {
+                    showLoading(false);
+                }
+            }
+
+            /**
+             * Handles 3D Secure authentication flow
+             */
+            async function handle3DSecureAuthentication(result) {
+                const confirmResult = await stripe.confirmCardPayment(result.client_secret);
+
+                if (confirmResult.error) {
+                    showResponseMessage(confirmResult.error.message, 'error');
+                }
+
+                if (confirmResult.paymentIntent.status === "succeeded") {
+                    await completePaymentAfter3DS(confirmResult);
+                }
+            }
+
+            /**
+             * Completes payment after successful 3D Secure authentication
+             */
+            async function completePaymentAfter3DS(confirmResult) {
+                const dataForComplete = {
+                    plan_id: selectedPlanId.value,
+                    plan_cycle: selectedPlanCycle.value,
+                    plan_cycle_id: selectedBillingCycleId.value,
+                    payment_intent_id: confirmResult.paymentIntent.id
+                };
+
+                const completeResponse = await fetch("{{ route('owner.plan.upgrade.processing.complete') }}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    },
+                    body: JSON.stringify(dataForComplete)
+                });
+
+                const result = await completeResponse.json();
+
+                if (!completeResponse.ok) {
+                    const errorMsg = result.message || result.error || "Server error occurred.";
+                    showResponseMessage(errorMsg, 'error');
+                }
+
+                if (!result.success) {
+                    const errorMsg = result.message || result.error || "Payment failed. Please try again.";
+                    showResponseMessage(errorMsg, 'error');
+                }
+
+                handlePaymentSuccess(result);
+            }
+
+            /**
+             * Handles successful payment case
+             */
+            function handlePaymentSuccess(result) {
+                showResponseMessage(result.message || "Payment successful!", 'success');
+                redirectToLogin();
+                showStatus('Payment successful!', 'success');
+            }
+
+            /**
+             * Handles payment error case
+             */
+            function handlePaymentError(result) {
+                const errorMsg = result.message || result.error || "Payment failed. Please try again.";
+                showResponseMessage(errorMsg, 'error');
+            }
+
+            /**
+             * Shows/hides loading overlay
+             */
+            function showLoading(show = true) {
+                const overlay = document.getElementById('loadingOverlay');
+                if (overlay) {
+                    overlay.style.display = show ? 'flex' : 'none';
+                }
+            }
+
+            /**
+             * Redirects to login page after successful payment
+             */
+            function redirectToLogin() {
+                setTimeout(() => {
+                    window.location.href = "{{ route('owner.organization.profile') }}";
+                }, 1500);
+            }
+
+            /**
+             * Shows response message using SweetAlert
+             */
+            function showResponseMessage(message, type = 'success') {
+                const isSuccess = type === 'success';
+                Swal.fire({
+                    title: isSuccess ? "Success!" : "Error!",
+                    text: message,
+                    icon: type,
+                    confirmButtonText: 'OK',
+                    timer: 3000,
+                    timerProgressBar: true,
+                    background: getComputedStyle(document.documentElement).getPropertyValue('--swal-bg-color').trim(),
+                    color: getComputedStyle(document.documentElement).getPropertyValue('--swal-text-color').trim(),
+                    iconColor: getComputedStyle(document.documentElement).getPropertyValue(`--swal-icon-${type}-color`).trim(),
+                    customClass: {
+                        popup: 'theme-swal-popup',
+                        confirmButton: 'theme-swal-button'
+                    }
+                });
+            }
         });
     </script>
 
