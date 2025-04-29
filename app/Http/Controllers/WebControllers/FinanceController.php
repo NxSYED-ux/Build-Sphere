@@ -3,7 +3,10 @@
 namespace App\Http\Controllers\WebControllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\Plan;
+use App\Models\Subscription;
 use App\Models\Transaction;
+use App\Models\UserBuildingUnit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
@@ -99,7 +102,7 @@ class FinanceController extends Controller
         $organization_id = $token['organization_id'];
 
         try {
-            $transaction = Transaction::with(['source'])->findOrFail($id);
+            $transaction = Transaction::findOrFail($id);
 
             $isOrgBuyer = $transaction->buyer_type === 'organization' && $transaction->buyer_id == $organization_id;
             $isOrgSeller = $transaction->seller_type === 'organization' && $transaction->seller_id == $organization_id;
@@ -108,8 +111,22 @@ class FinanceController extends Controller
                 return redirect()->route('owner.finance.index')->with('error', 'Unauthorized access to transaction details.');
             }
 
-            $source = $transaction->source;
-            $nestedSource = $source && method_exists($source, 'source') ? $source->source : null;
+            $source = null;
+            $nested_source = null;
+
+            if ($transaction->source_name === 'unit contract') {
+                $source = UserBuildingUnit::with(['unit', 'user:id,name,picture,email'])
+                    ->find($transaction->source_id);
+            } elseif ($transaction->source_name === 'subscription') {
+                $source = Subscription::with(['source'])->find($transaction->source_id);
+
+                if ($source && $source->source_name === 'plan') {
+                    $nested_source = Plan::find($source->source_id);
+                } elseif ($source) {
+                    $nested_source = UserBuildingUnit::with(['unit', 'user:id,name,picture,email'])
+                        ->find($source->source_id);
+                }
+            }
 
             $mappedTransaction = [
                 'transaction_id' => $transaction->id,
@@ -132,8 +149,8 @@ class FinanceController extends Controller
                 'transaction' => $mappedTransaction,
                 'source' => $source,
                 'source_name' => $transaction?->source_name,
-                'nested_source' => $nestedSource,
-                'nested_source_name' => $source?->source_name,
+                'nested_source' => $nested_source,
+                'nested_source_name' => $source->source_name ?? null,
             ]);
 
         } catch (\Throwable $e) {
