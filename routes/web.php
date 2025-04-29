@@ -11,6 +11,7 @@ use App\Http\Controllers\WebControllers\CheckOutController;
 use App\Http\Controllers\WebControllers\DepartmentController;
 use App\Http\Controllers\WebControllers\DropdownTypeController;
 use App\Http\Controllers\WebControllers\DropdownValueController;
+use App\Http\Controllers\WebControllers\FinanceController;
 use App\Http\Controllers\WebControllers\landingController;
 use App\Http\Controllers\WebControllers\OrganizationController;
 use App\Http\Controllers\WebControllers\OwnerDashboardController;
@@ -308,6 +309,15 @@ Route::prefix('owner')->middleware(['auth.jwt'])->group(function () {
             Route::put('/', [DepartmentController::class , 'update'])->name('owner.departments.update');
             Route::get('/{department}/show', [DepartmentController::class, 'show'])->name('owner.departments.show');
             Route::delete('/', [DepartmentController::class, 'destroy'])->name('owner.departments.destroy');
+
+        });
+
+        Route::prefix('finance')->group(function () {
+
+            Route::get('/', [FinanceController::class , 'index'])->name('owner.finance.index');
+            Route::get('/{department}/show', [FinanceController::class, 'show'])->name('owner.finance.show');
+
+            Route::get('/top-6', [FinanceController::class , 'organizationTopSixTransactions'])->name('owner.finance.topSix');
 
         });
 
