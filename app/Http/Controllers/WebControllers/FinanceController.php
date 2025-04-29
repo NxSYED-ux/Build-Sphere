@@ -118,7 +118,7 @@ class FinanceController extends Controller
                 $source = UserBuildingUnit::with(['unit', 'user:id,name,picture,email'])
                     ->find($transaction->source_id);
             } elseif ($transaction->source_name === 'subscription') {
-                $source = Subscription::with(['source'])->find($transaction->source_id);
+                $source = Subscription::find($transaction->source_id);
 
                 if ($source && $source->source_name === 'plan') {
                     $nested_source = Plan::find($source->source_id);
