@@ -41,11 +41,11 @@ class AppServiceProvider extends ServiceProvider
     {
         Relation::morphMap([
             'plan' => Plan::class,
-            'user_building_unit' => UserBuildingUnit::class,
+            'unit contract' => UserBuildingUnit::class,
             'subscription' => Subscription::class,
             'user' => User::class,
             'organization' => Organization::class,
-            'staffMember' => StaffMember::class,
+            'staff member' => StaffMember::class,
             'query' => Query::class,
         ]);
     }

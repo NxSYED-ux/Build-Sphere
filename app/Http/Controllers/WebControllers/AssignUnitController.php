@@ -295,7 +295,7 @@ class AssignUnitController extends Controller
     private function createTransaction($user, $unit, $type, $paymentIntentId, $assignedUnit, $currency = 'PKR', $no_of_months = 1, string $paymentMethod = 'Cash')
     {
         $source_id = $assignedUnit->id;
-        $source_name = 'user_building_unit';
+        $source_name = 'unit contract';
 
         if ($type === 'Rented') {
             $subscription = Subscription::create([
@@ -303,12 +303,12 @@ class AssignUnitController extends Controller
                 'user_id' => $user->id,
                 'organization_id' => $unit->organization_id,
                 'source_id' => $assignedUnit->id,
-                'source_name' => 'user_building_unit',
+                'source_name' => 'unit contract',
                 'billing_cycle' => 1,
                 'subscription_status' => 'Active',
                 'price_at_subscription' => $unit->price,
                 'currency_at_subscription' => $currency,
-                'ends_at' => now()->addMonths((int)$no_of_months),
+                'ends_at' => now()->addMonths((int) $no_of_months),
             ]);
 
             $source_id = $subscription->id;
@@ -320,6 +320,7 @@ class AssignUnitController extends Controller
             'transaction_category' => 'New',
             'buyer_id' => $user->id,
             'buyer_type' => 'user',
+            'seller_id' => $unit->organization_id,
             'seller_type' => 'organization',
             'payment_method' => $paymentMethod,
             'gateway_payment_id' => $paymentIntentId,

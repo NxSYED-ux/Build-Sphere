@@ -87,7 +87,6 @@ class FinanceController extends Controller
     }
 
 
-
     // Show
     public function ownerShow($id, Request $request)
     {
@@ -128,11 +127,11 @@ class FinanceController extends Controller
                 ],
                 'source' => $source ? [
                     'id' => $source->id,
-                    'type' => $transaction->source_name === 'user_building_unit' ? 'unit sold' : $transaction->source_name,
+                    'type' => $transaction->source_name,
                     'details' => $source->toArray(),
                     'nested_source' => $nestedSource ? [
                         'id' => $nestedSource->id ?? null,
-                        'type' => $source->source_name === 'user_building_unit' ? 'rental contract' : $source->source_name,
+                        'type' => $source->source_name,
                         'details' => $nestedSource->toArray(),
                     ] : null,
                 ] : null,

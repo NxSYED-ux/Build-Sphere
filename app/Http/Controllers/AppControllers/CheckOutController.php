@@ -211,7 +211,7 @@ class CheckOutController extends Controller
     private function createTransaction($user, $unit, $type, $paymentIntentId, $assignedUnit, $organization_id, $currency = 'PKR')
     {
         $source_id = $assignedUnit->id;
-        $source_name = 'user_building_unit';
+        $source_name = 'unit contract';
 
         if ($type === 'Rented') {
             $subscription = Subscription::create([
@@ -219,7 +219,7 @@ class CheckOutController extends Controller
                 'user_id' => $user->id,
                 'organization_id' => $unit->organization_id,
                 'source_id' => $assignedUnit->id,
-                'source_name' => 'user_building_unit',
+                'source_name' => 'unit contract',
                 'billing_cycle' => 1,
                 'subscription_status' => 'Active',
                 'price_at_subscription' => $unit->price,

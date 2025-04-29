@@ -285,7 +285,7 @@ class QueryController extends Controller
                     'transaction_category' => 'New',
                     'buyer_id' => $staffData->organization_id,
                     'buyer_type' => 'organization',
-                    'seller_type' => 'staffMember',
+                    'seller_type' => 'staff member',
                     'seller_id' => $staffData->id,
                     'payment_method' => 'Cash',
                     'gateway_payment_id' => null,
