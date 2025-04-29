@@ -132,9 +132,10 @@
                                     <h4 class="mb-0">
                                         Create New User
                                     </h4>
-                                    <a href="{{ route('users.index') }}" class="btn btn-secondary">
-                                        <i class='bx bx-arrow-back me-1'></i> Back to Users
-                                    </a>
+                                    <a href="{{ route('users.index') }}" class="btn btn-secondary">Go Back</a>
+{{--                                    <a href="{{ route('users.index') }}" class="btn btn-secondary">--}}
+{{--                                        <i class='bx bx-arrow-back me-1'></i> Back to Users--}}
+{{--                                    </a>--}}
                                 </div>
 
                                 <div class="card shadow py-2 px-4 mb-5 bg-body rounded">

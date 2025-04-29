@@ -366,7 +366,7 @@
                                         // Only add child permissions section if there are children
                                         if (parentPermission.children.length > 0) {
                                             permissionsHtml += `
-                                    <div class="child-permissions mt-2 row mx-2 pt-2 pb-0 mb-0 border-top" id="child-container-${parentPermission.id}">
+                                    <div class="child-permissions mt-2 row pt-2 pb-0 mb-0 border-top" id="child-container-${parentPermission.id}" style="padding-right: 8px;">
                                 `;
 
                                             parentPermission.children.forEach(child => {

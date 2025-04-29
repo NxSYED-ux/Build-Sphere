@@ -18,13 +18,71 @@
             margin-bottom: 1rem;
         }
 
+        .card {
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border: none;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .required__field {
+            color: var(--error-color);
+            font-size: 0.9em;
+        }
+
+        .btn {
+            border-radius: 8px;
+            padding: 10px 20px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        /* Section headers */
+        .section-header {
+            color: var(--sidenavbar-text-color);
+            font-weight: 500;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+
+        .section-header i {
+            margin-right: 10px;
+            font-size: 1.2em;
+        }
+
+        /* Error messages */
+        .invalid-feedback {
+            font-size: 0.85em;
+            margin-top: 5px;
+        }
+
+        /* Animation for form sections */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
         .form-section {
             animation: fadeIn 0.4s ease forwards;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .avatar {
+                width: 100px;
+                height: 100px;
+            }
+
+            .btn {
+                width: 100%;
+                margin-bottom: 10px;
+            }
         }
 
     </style>
@@ -54,20 +112,25 @@
                     <div class="col-md-12">
                         <div class="box" style="overflow-x: auto;">
                             <div class="container">
-                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
                                     <h4 class="mb-0">Edit User</h4>
                                     <a href="{{ route('users.index') }}" class="btn btn-secondary">Go Back</a>
                                 </div>
-                                <div class="card shadow p-3 mb-5 bg-body rounded" style="border: none;">
+                                <div class="card shadow p-2 px-4 mb-5 bg-body rounded" style="border: none;">
                                     <div class="card-body">
                                         <form action="{{ route('users.update')}}" method="POST" enctype="multipart/form-data">
                                             @method('PUT')
                                             <input type="hidden" name="user_id" value="{{ $user->id }}">
                                             <input type="hidden" name="updated_at" value="{{ $user->updated_at }}">
-                                            <div class="row">
+
+                                            <div class="form-section">
+                                                <h5 class="section-header">
+                                                    <i class='bx bxs-user-detail'></i> Basic Information
+                                                </h5>
+                                                <div class="row">
                                                 <div class="col-md-4">
                                                     <div class="form-group mb-3">
-                                                        <label for="name">Name</label>
+                                                        <label for="name" class="form-label">Name</label>
                                                         <span class="required__field">*</span><br>
                                                         <div class="position-relative">
                                                             <input type="text" name="name" id="name" class="form-control @error('name') is-invalid @enderror" value="{{ old('name', $user->name) }}" maxlength="50" placeholder="User Name" required>
@@ -82,7 +145,7 @@
                                                 </div>
                                                 <div class="col-md-4">
                                                     <div class="form-group mb-3">
-                                                        <label for="email">Email</label>
+                                                        <label for="email" class="form-label">Email</label>
                                                         <span class="required__field">*</span><br>
                                                         <div class="position-relative">
                                                             <input type="email" name="email" id="email" class="form-control @error('email') is-invalid @enderror" value="{{ old('email', $user->email) }}" maxlength="50" placeholder="Email" required>
@@ -98,7 +161,7 @@
 
                                                 <div class="col-md-4">
                                                     <div class="form-group mb-3">
-                                                        <label for="gender">Gender</label>
+                                                        <label for="gender" class="form-label">Gender</label>
                                                         <span class="required__field">*</span><br>
                                                         <select name="gender" id="gender" class="form-select" required>
                                                             <option value="">Select Gender</option>
@@ -116,7 +179,7 @@
 
                                                 <div class="col-md-4">
                                                     <div class="form-group mb-3">
-                                                        <label for="contact">Phone no:</label><br>
+                                                        <label for="contact" class="form-label">Phone no:</label><br>
                                                         <div class="position-relative">
                                                             <input type="text" name="phone_no" id="contact" value="{{ old('phone_no', $user->phone_no) }}" class="form-control contact" placeholder="0312-3456789" maxlength="14">
                                                             <i class='bx bxs-mobile input-icon position-absolute top-50 end-0 translate-middle-y me-3'></i>
@@ -131,7 +194,7 @@
 
                                                 <div class="col-md-4">
                                                     <div class="form-group mb-3">
-                                                        <label for="cnic">CNIC</label>
+                                                        <label for="cnic" class="form-label">CNIC</label>
                                                         <div class="position-relative">
                                                             <input type="text" name="cnic" id="cnic" class="form-control @error('cnic') is-invalid @enderror" value="{{ old('cnic', $user->cnic) }}" maxlength="18" placeholder="123-4567-1234567-1">
                                                             <i class='bx bxs-id-card input-icon position-absolute top-50 end-0 translate-middle-y me-3'></i>
@@ -147,7 +210,7 @@
                                                 <!--  -->
                                                 <div class="col-md-4">
                                                     <div class="form-group mb-3">
-                                                        <label for="date_of_birth">Date of Birth</label>
+                                                        <label for="date_of_birth" class="form-label">Date of Birth</label>
                                                         <input type="date" class="form-control" id="date_of_birth" name="date_of_birth" value="{{ old('date_of_birth', isset($user->date_of_birth) ? \Carbon\Carbon::parse($user->date_of_birth )->format('Y-m-d') : '') }}">
                                                         @error('date_of_birth')
                                                             <div class="text-danger">{{ $message }}</div>
@@ -157,7 +220,7 @@
 
                                                 <div class="col-md-4">
                                                     <div class="form-group mb-3">
-                                                        <label for="status">Status</label>
+                                                        <label for="status" class="form-label">Status</label>
                                                         <span class="required__field">*</span><br>
                                                         <select name="status" id="status" class="form-select" required>
                                                             <option value="1" {{ old('status', $user->status) == '1' ? 'selected' : '' }}>Active</option>
@@ -173,7 +236,7 @@
 
                                                 <div class="col-md-4">
                                                     <div class="form-group mb-3">
-                                                        <label for="role_id">Role</label>
+                                                        <label for="role_id" class="form-label">Role</label>
                                                         <span class="required__field">*</span><br>
                                                         <select name="role_id" id="role_id" class="form-select" required>
                                                             @foreach($roles as $role)
@@ -190,9 +253,14 @@
                                                     </div>
                                                 </div>
                                             </div>
+                                            </div>
 
                                             <!--  -->
-                                            <div class="row">
+                                            <div class="form-section mt-4">
+                                                <h5 class="section-header">
+                                                    <i class='bx bxs-map'></i> Address Information
+                                                </h5>
+                                                <div class="row">
 
                                                 <!--  -->
                                                 <div class="col-lg-4 col-md-6 col-sm-12">
@@ -235,7 +303,7 @@
                                                 <!--  -->
                                                 <div class="col-sm-12 col-md-6 col-lg-4">
                                                     <div class="form-group mb-3">
-                                                        <label for="location">Location</label>
+                                                        <label for="location" class="form-label">Location</label>
                                                         <div class="position-relative">
                                                             <input type="text" name="location" id="location" class="form-control @error('location') is-invalid @enderror" value="{{ old('location', $user->address->location ) }}" maxlength="100" placeholder="Enter Location">
                                                             <i class='bx bxs-edit-location input-icon position-absolute top-50 end-0 translate-middle-y me-3'></i>
@@ -251,7 +319,7 @@
                                                 <!--  -->
                                                 <div class="col-sm-12 col-md-6 col-lg-4">
                                                     <div class="form-group mb-3">
-                                                        <label for="postal_code">Postal Code</label>
+                                                        <label for="postal_code" class="form-label">Postal Code</label>
                                                         <div class="position-relative">
                                                             <input type="text" name="postal_code" id="postal_code" class="form-control @error('postal_code') is-invalid @enderror" value="{{ old('postal_code', $user->address->postal_code ) }}" maxlength="100" placeholder="Enter Postal Code">
                                                             <i class='bx bx-current-location input-icon position-absolute top-50 end-0 translate-middle-y me-3'></i>
@@ -264,11 +332,16 @@
                                                     </div>
                                                 </div>
                                             </div>
+                                            </div>
 
-                                            <div class="row mb-3">
+                                            <div class="form-section mt-4">
+                                                <h5 class="section-header">
+                                                    <i class='bx bxs-image'></i> Profile Picture
+                                                </h5>
+                                                <div class="row mb-3">
                                                 <div class="col-sm-12 col-md-6 col-lg-4 ">
                                                     <div class="form-group">
-                                                        <label for="picture">Picture <span style="font-size: 12px;">(Leave blank to keep current picture)</span></label>
+                                                        <label for="picture" class="form-label">Picture <span style="font-size: 12px;">(Leave blank to keep current picture)</span></label>
                                                         <input type="file" name="picture" id="picture" class="form-control" onchange="previewImage(event)">
                                                         @error('picture')
                                                             <span class="invalid-feedback" role="alert">
@@ -280,6 +353,7 @@
                                                 <div class="col-sm-12 col-md-6 col-lg-4 mt-2  d-flex justify-content-center align-items-center">
                                                     <img id="avatar" class="avatar" src="{{ asset($user->picture ??  'https://via.placeholder.com/150') }}" alt="User Picture">
                                                 </div>
+                                            </div>
                                             </div>
 
                                             <button type="submit" class="btn btn-primary">Update User</button>
