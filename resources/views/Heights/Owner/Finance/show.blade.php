@@ -101,7 +101,20 @@
                                     <h5>Source Information</h5>
                                 </div>
                                 <div class="card-body">
-                                    @if(is_object($source))
+
+                                    <h3>Source Name: {{ $source_name }}</h3>
+                                    @php
+                                        $localName = $source_name ?? 'unknown';
+                                        $localSource = $source ?? [];
+                                    @endphp
+
+                                    <x-transaction-component
+                                            :source="$source"
+                                            :source_name="$source_name"
+                                    />
+
+
+                                @if(is_object($source))
                                         <pre>{{ print_r($source->toArray(), true) }}</pre>
                                     @else
                                         <pre>{{ print_r($source, true) }}</pre>
