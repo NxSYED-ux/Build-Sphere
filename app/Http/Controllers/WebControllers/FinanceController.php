@@ -131,9 +131,9 @@ class FinanceController extends Controller
             return view('Heights.Owner.Finance.show', [
                 'transaction' => $mappedTransaction,
                 'source' => $source,
-                'source_type' => $transaction?->source_type,
+                'source_name' => $transaction?->source_name,
                 'nested_source' => $nestedSource,
-                'nested_source_type' => $source?->source_type,
+                'nested_source_name' => $source?->source_name,
             ]);
 
         } catch (\Throwable $e) {
