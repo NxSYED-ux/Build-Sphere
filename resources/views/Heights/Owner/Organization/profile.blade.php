@@ -476,6 +476,10 @@
 
                     </div>
 
+
+                </div>
+
+                <div class="col-12">
                     <!-- Billing History -->
                     <div class="profile-card p-4 shadow">
                         <div class="d-flex justify-content-between align-items-center mb-4">
@@ -542,13 +546,13 @@
 
                 if (response.history && response.history.length > 0) {
                     response.history.forEach(function(transaction) {
-                        const amountSign = transaction.type === 'credit' ? '+' : '-';
+                        const amountSign = transaction.type === 'Credit' ? '+' : '-';
                         const isFailed = transaction.status.toLowerCase() === 'failed';
-                        const transactionDate = new Date(transaction.created_at);
+
 
                         const cardHtml = `
                         <div class="col-md-6 col-xl-4">
-                            <div class="card border-0 shadow-sm hover-shadow-lg transition-all h-100" style="background-color: var(--body-background-color) !important;">
+                            <div class="card border-0 shadow hover-shadow-lg transition-all h-100" style="background-color: var(--body-background-color) !important;">
                                 <div class="card-body p-4 d-flex flex-column">
                                     <div class="d-flex justify-content-between align-items-start mb-3 flex-grow-1">
                                         <div class="d-flex align-items-center">
