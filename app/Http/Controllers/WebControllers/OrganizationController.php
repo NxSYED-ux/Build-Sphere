@@ -548,17 +548,13 @@ class OrganizationController extends Controller
             $billingCycle = BillingCycle::where('duration_months', $planSubscription->billing_cycle)
                 ->firstOrFail();
 
-            $plan = $this->getValidatedPlanWithBillingCycle($request->plan_id, $request->plan_cycle_id);
+            $plan = $this->getValidatedPlanWithBillingCycle($planSubscription->source_id, $billingCycle->id);
             if (!$plan) {
-                return redirect()->back()->withInput()->with('error', 'The requested plan is currently unavailable due to administrative changes.');
+                throw new \Exception('The requested plan is currently unavailable due to administrative changes.');
             }
 
             $planDetails = $this->getPlanDetailsWithTotalPrice($plan);
             $services = $planDetails['services'];
-
-            if (!$planDetails) {
-                throw new \Exception('Invalid plan configuration');
-            }
 
             if ($organization->status !== 'Enable') {
                 $organization->update(['status' => 'Enable']);
@@ -596,9 +592,9 @@ class OrganizationController extends Controller
                 ->keyBy('service_catalog_id');
 
             $result = $this->updatePlanServices($services, $existingServices, $plan, $organization->id, null);
+
             if ($result['error']) {
-                DB::rollBack();
-                return redirect()->back()->withInput()->with('error', $result['message']);
+                throw new \Exception($result['message']);
             }
 
             DB::commit();
@@ -627,9 +623,10 @@ class OrganizationController extends Controller
                 $e->getModel() === BillingCycle::class => 'Invalid billing cycle configuration',
                 default => 'Invalid reference data'
             };
+            Log::error('Model ' . $errorMessage);
             return redirect()->back()->with('error', $errorMessage);
 
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             DB::rollBack();
             Log::error('Plan payment processing failed: ' . $e->getMessage());
             return redirect()->back()->with('error', 'Payment processing failed: ' . $e->getMessage());

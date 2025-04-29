@@ -462,7 +462,7 @@ class CheckOutController extends Controller
             DB::beginTransaction();
 
             $startDate = now();
-            $endDate = $startDate->copy()->addMonths($request->plan_cycle);
+            $endDate = $startDate->copy()->addMonths((int) $request->plan_cycle);
 
             $org_subscription->update([
                 'billing_cycle' => $request->plan_cycle,
