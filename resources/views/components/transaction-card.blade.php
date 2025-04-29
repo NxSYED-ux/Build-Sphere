@@ -1,4 +1,4 @@
-@props(['transaction'])
+@props(['transaction', 'routeName'])
 
 @php
     $status = strtolower($transaction['status'] ?? '');
@@ -45,7 +45,7 @@
 @endphp
 
 <div class="col-md-6 col-xl-4 py-2 transaction-card-container" data-transaction-id="{{ $transaction['id'] ?? '' }}">
-    <a href="{{ route('owner.finance.show', $transaction['id']) }}" class="text-white text-decoration-none" style="color: #fff !important;">
+    <a href="{{ route($routeName, $transaction['id']) }}" class="text-white text-decoration-none" style="color: #fff !important;">
 
         <div class="card border-0 shadow hover-shadow-lg transition-all h-100 transaction-card">
         <div class="card-body p-4 d-flex flex-column">

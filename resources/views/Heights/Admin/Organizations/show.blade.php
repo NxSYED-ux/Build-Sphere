@@ -464,109 +464,24 @@
 
                         </div>
                     </div>
+
                     <!-- Billing History -->
                     <div class="profile-card p-4 shadow">
-                        <ul class="nav nav-pills mb-4" id="billing-tab" role="tablist">
-                            <li class="nav-item" role="presentation">
-                                <button class="nav-link active" id="invoices-tab" data-bs-toggle="pill" data-bs-target="#invoices" type="button" role="tab">Invoices</button>
-                            </li>
-                            <li class="nav-item" role="presentation">
-                                <button class="nav-link" id="transactions-tab" data-bs-toggle="pill" data-bs-target="#transactions" type="button" role="tab">Transactions</button>
-                            </li>
-                        </ul>
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h4 class="section-title mb-0">Transactions</h4>
+                            <a href="{{ route('finance.index') }}" class="btn btn-sm btn-primary text-white text-decoration-none" style="color: #fff !important;">
+                                All Transactions
+                            </a>
+                        </div>
 
-                        <div class="tab-content" id="billing-tabContent">
-                            <div class="tab-pane fade show active" id="invoices" role="tabpanel">
-                                <div class="table-responsive">
-                                    <table class="table table-hover">
-                                        <thead>
-                                        <tr>
-                                            <th>Invoice #</th>
-                                            <th>Date</th>
-                                            <th>Amount</th>
-                                            <th>Status</th>
-                                            <th>Action</th>
-                                        </tr>
-                                        </thead>
-                                        <tbody>
-                                        <tr>
-                                            <td>INV-2023-789</td>
-                                            <td>15 Dec 2023</td>
-                                            <td>$99.00</td>
-                                            <td><span class="badge bg-success">Paid</span></td>
-                                            <td>
-                                                <button class="btn btn-sm btn-outline-primary">
-                                                    <i class="fas fa-download"></i>
-                                                </button>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>INV-2023-788</td>
-                                            <td>15 Nov 2023</td>
-                                            <td>$99.00</td>
-                                            <td><span class="badge bg-success">Paid</span></td>
-                                            <td>
-                                                <button class="btn btn-sm btn-outline-primary">
-                                                    <i class="fas fa-download"></i>
-                                                </button>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>INV-2023-787</td>
-                                            <td>15 Oct 2023</td>
-                                            <td>$99.00</td>
-                                            <td><span class="badge bg-success">Paid</span></td>
-                                            <td>
-                                                <button class="btn btn-sm btn-outline-primary">
-                                                    <i class="fas fa-download"></i>
-                                                </button>
-                                            </td>
-                                        </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-
-                            <div class="tab-pane fade" id="transactions" role="tabpanel">
-                                <div class="table-responsive">
-                                    <table class="table table-hover">
-                                        <thead>
-                                        <tr>
-                                            <th>Transaction ID</th>
-                                            <th>Date</th>
-                                            <th>Description</th>
-                                            <th>Amount</th>
-                                            <th>Status</th>
-                                        </tr>
-                                        </thead>
-                                        <tbody>
-                                        <tr>
-                                            <td>TXN-789456</td>
-                                            <td>15 Dec 2023</td>
-                                            <td>Monthly Subscription</td>
-                                            <td>$99.00</td>
-                                            <td><span class="badge bg-success">Completed</span></td>
-                                        </tr>
-                                        <tr>
-                                            <td>TXN-789455</td>
-                                            <td>15 Nov 2023</td>
-                                            <td>Monthly Subscription</td>
-                                            <td>$99.00</td>
-                                            <td><span class="badge bg-success">Completed</span></td>
-                                        </tr>
-                                        <tr>
-                                            <td>TXN-789454</td>
-                                            <td>15 Oct 2023</td>
-                                            <td>Monthly Subscription</td>
-                                            <td>$99.00</td>
-                                            <td><span class="badge bg-success">Completed</span></td>
-                                        </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
+                        <div class="row g-1" id="transactions-container">
+                            <!-- Loading state will appear here -->
                         </div>
                     </div>
+                </div>
+
+                <div class="col-12">
+
                 </div>
             </div>
         </div>
@@ -575,6 +490,151 @@
 @endsection
 
 @push('scripts')
+
+    <script>
+        async function loadTransactions() {
+            const container = $('#transactions-container');
+
+            // Show loading state
+            container.html(`
+            <div class="col-12 text-center py-5">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <p class="mt-2 text-muted">Loading transactions...</p>
+            </div>
+        `);
+
+            try {
+                const response = await $.ajax({
+                    url: '{{ route("finance.latest", $organization->id) }}',
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+
+                container.empty();
+
+                if (response.history && response.history.length > 0) {
+                    response.history.forEach(function(transaction) {
+                        const amountSign = transaction.type === 'Credit' ? '+' : '-';
+                        const isFailed = transaction.status.toLowerCase() === 'failed';
+
+
+                        const cardHtml = `
+                        <div class="col-md-6 col-xl-4">
+                            <a href="${'{{ route('finance.show', ':id') }}'.replace(':id', transaction.id)}" class="text-white text-decoration-none" style="color: #fff !important;">
+                                <div class="card border-0 shadow hover-shadow-lg transition-all h-100" style="background-color: var(--body-background-color) !important;">
+                                    <div class="card-body p-4 d-flex flex-column">
+                                        <div class="d-flex justify-content-between align-items-start mb-3 flex-grow-1">
+                                            <div class="d-flex align-items-center">
+                                                <div class="${getBgClass(transaction)} p-3 rounded-circle me-3">
+                                                    <i class="${getIconClass(transaction)} ${getTextColor(transaction)} fs-4"></i>
+                                                </div>
+                                                <div>
+                                                    <h6 class="mb-0">${transaction.title}</h6>
+                                                    <small class="small">${transaction.created_at}</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="d-flex justify-content-between align-items-end mt-auto">
+                                            <div>
+                                                <p class=" small mb-1">Amount</p>
+                                                <h4 class="mb-0 ${getTextColor(transaction)}">
+                                                    ${isFailed ? '<span class="text-decoration-line-through">' : ''}
+                                                    ${amountSign}${transaction.price}
+                                                    ${isFailed ? '</span>' : ''}
+                                                </h4>
+                                            </div>
+                                            <span class="badge ${getStatusBadge(transaction)} px-3 py-2">
+                                                <i class="${getStatusIcon(transaction)} me-1"></i>
+                                                ${transaction.status.charAt(0).toUpperCase() + transaction.status.slice(1)}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    `;
+                        container.append(cardHtml);
+                    });
+                } else {
+                    container.html(`
+                    <div class="col-12 text-center py-4">
+                        <i class="fas fa-wallet fa-3x text-muted mb-3"></i>
+                        <h5 class="text-muted">No transactions found</h5>
+                    </div>
+                `);
+                }
+            } catch (error) {
+                console.error('Error loading transactions:', error);
+                container.html(`
+                <div class="col-12">
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        Failed to load transactions. Please try again later.
+                    </div>
+                </div>
+            `);
+            }
+        }
+
+        // Helper functions
+        function getIconClass(transaction) {
+            const status = transaction.status.toLowerCase();
+            const type = transaction.type.toLowerCase();
+
+            if (status === 'failed') return 'fas fa-ban';
+            if (type === 'credit') return 'fas fa-download';
+            return 'fas fa-upload';
+        }
+
+        function getStatusIcon(transaction) {
+            const status = transaction.status.toLowerCase();
+
+            if (status === 'completed') return 'fas fa-check-circle';
+            if (status === 'pending') return 'fas fa-clock';
+            if (status === 'failed') return 'fas fa-exclamation-circle';
+            return 'fas fa-info-circle';
+        }
+
+        function getBgClass(transaction) {
+            const status = transaction.status.toLowerCase();
+            const type = transaction.type.toLowerCase();
+
+            if (status === 'failed') return 'bg-danger bg-opacity-10';
+            if (type === 'credit') return 'bg-success bg-opacity-10';
+            if (status === 'pending') return 'bg-warning bg-opacity-10';
+            return 'bg-primary bg-opacity-10';
+        }
+
+        function getTextColor(transaction) {
+            const status = transaction.status.toLowerCase();
+            const type = transaction.type.toLowerCase();
+
+            if (status === 'failed') return 'text-danger';
+            if (type === 'credit') return 'text-success';
+            if (status === 'pending') return 'text-warning';
+            return 'text-primary';
+        }
+
+        function getStatusBadge(transaction) {
+            const status = transaction.status.toLowerCase();
+
+            if (status === 'completed') return 'bg-success bg-opacity-10 text-success';
+            if (status === 'pending') return 'bg-warning bg-opacity-10 text-warning';
+            if (status === 'failed') return 'bg-danger bg-opacity-10 text-danger';
+            return 'bg-secondary bg-opacity-10 text-secondary';
+        }
+
+        // Call on page load
+        $(document).ready(function() {
+            loadTransactions();
+        });
+    </script>
+
     <script>
         /**
          * Tooltip Initialization Script

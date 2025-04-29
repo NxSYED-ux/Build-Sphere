@@ -553,7 +553,7 @@
 
                         const cardHtml = `
                         <div class="col-md-6 col-xl-4">
-                            <a href="#" class="text-white text-decoration-none" style="color: #fff !important;">
+                            <a href="${'{{ route('owner.finance.show', ':id') }}'.replace(':id', transaction.id)}" class="text-white text-decoration-none" style="color: #fff !important;">
                                 <div class="card border-0 shadow hover-shadow-lg transition-all h-100" style="background-color: var(--body-background-color) !important;">
                                     <div class="card-body p-4 d-flex flex-column">
                                         <div class="d-flex justify-content-between align-items-start mb-3 flex-grow-1">

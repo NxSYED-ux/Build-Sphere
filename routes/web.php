@@ -202,7 +202,7 @@ Route::prefix('admin')->middleware(['auth.jwt'])->group(function () {
 
         Route::get('/', [FinanceController::class , 'adminIndex'])->name('finance.index');
         Route::get('/{transaction}/show', [FinanceController::class, 'adminShow'])->name('finance.show');
-        Route::get('/latest', [FinanceController::class , 'latestPlatformOrganizationTransactions'])->name('finance.latest');
+        Route::get('/{id}/latest', [FinanceController::class , 'latestPlatformOrganizationTransactions'])->name('finance.latest');
 
     });
 
