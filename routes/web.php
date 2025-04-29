@@ -201,7 +201,7 @@ Route::prefix('admin')->middleware(['auth.jwt'])->group(function () {
     Route::prefix('finance')->group(function () {
 
         Route::get('/', [FinanceController::class , 'adminIndex'])->name('finance.index');
-        Route::get('/{department}/show', [FinanceController::class, 'adminShow'])->name('finance.show');
+        Route::get('/{transaction}/show', [FinanceController::class, 'adminShow'])->name('finance.show');
         Route::get('/latest', [FinanceController::class , 'latestPlatformOrganizationTransactions'])->name('finance.latest');
 
     });
@@ -322,7 +322,7 @@ Route::prefix('owner')->middleware(['auth.jwt'])->group(function () {
         Route::prefix('finance')->group(function () {
 
             Route::get('/', [FinanceController::class , 'ownerIndex'])->name('owner.finance.index');
-            Route::get('/{department}/show', [FinanceController::class, 'ownerShow'])->name('owner.finance.show');
+            Route::get('/{transaction}/show', [FinanceController::class, 'ownerShow'])->name('owner.finance.show');
             Route::get('/latest', [FinanceController::class , 'latestOrganizationTransactions'])->name('owner.finance.latest');
 
         });

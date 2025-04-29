@@ -484,10 +484,11 @@
                     <div class="profile-card p-4 shadow">
                         <div class="d-flex justify-content-between align-items-center mb-4">
                             <h4 class="section-title mb-0">Transactions</h4>
-                            <button type="button" class="btn btn-sm btn-primary">
+                            <a href="{{ route('owner.finance.index') }}" class="btn btn-sm btn-primary text-white text-decoration-none" style="color: #fff !important;">
                                 All Transactions
-                            </button>
+                            </a>
                         </div>
+
                         <div class="row g-4" id="transactions-container">
                             <!-- Loading state will appear here -->
                         </div>
