@@ -100,9 +100,7 @@ class FinanceController extends Controller
         $organization_id = $token['organization_id'];
 
         try {
-            Log::info('transaction Start');
-            $transaction = Transaction::with('source')->findOrFail($id);
-            Log::info('transaction Details: ' . $transaction);
+            $transaction = Transaction::with('source', 'source.source')->findOrFail($id);
 
             $isOrgBuyer = $transaction->buyer_type === 'organization' && $transaction->buyer_id == $organization_id;
             $isOrgSeller = $transaction->seller_type === 'organization' && $transaction->seller_id == $organization_id;
@@ -110,6 +108,9 @@ class FinanceController extends Controller
             if (!($isOrgBuyer || $isOrgSeller)) {
                 return redirect()->route('owner.finance.index')->with('error', 'Unauthorized access to transaction details.');
             }
+
+            $source = $transaction->source;
+            $nestedSource = $source && method_exists($source, 'source') ? $source->source : null;
 
             $mappedTransaction = [
                 'transaction_id' => $transaction->id,
@@ -125,10 +126,15 @@ class FinanceController extends Controller
                     'end_date' => optional($transaction->subscription_end_date)->format('Y-m-d H:i:s'),
                     'billing_cycle' => $transaction->billing_cycle,
                 ],
-                'source' => $transaction->source ? [
-                    'id' => $transaction->source->id,
+                'source' => $source ? [
+                    'id' => $source->id,
                     'type' => $transaction->source_name === 'user_building_unit' ? 'Unit Sold' : $transaction->source_name,
-                    'details' => $transaction->source->toArray(),
+                    'details' => $source->toArray(),
+                    'nested_source' => $nestedSource ? [
+                        'id' => $nestedSource->id ?? null,
+                        'type' => $source->source_name ?? null,
+                        'details' => $nestedSource->toArray(),
+                    ] : null,
                 ] : null,
             ];
 
@@ -141,6 +147,7 @@ class FinanceController extends Controller
             return redirect()->route('owner.finance.index')->with('error', 'Transaction not found.');
         }
     }
+
 
     public function adminShow($id)
     {
