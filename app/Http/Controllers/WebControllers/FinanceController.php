@@ -100,7 +100,7 @@ class FinanceController extends Controller
         $organization_id = $token['organization_id'];
 
         try {
-            $transaction = Transaction::with('source', 'source.source')->findOrFail($id);
+            $transaction = Transaction::with(['source'])->findOrFail($id);
 
             $isOrgBuyer = $transaction->buyer_type === 'organization' && $transaction->buyer_id == $organization_id;
             $isOrgSeller = $transaction->seller_type === 'organization' && $transaction->seller_id == $organization_id;
@@ -128,11 +128,11 @@ class FinanceController extends Controller
                 ],
                 'source' => $source ? [
                     'id' => $source->id,
-                    'type' => $transaction->source_name === 'user_building_unit' ? 'Unit Sold' : $transaction->source_name,
+                    'type' => $transaction->source_name === 'user_building_unit' ? 'unit sold' : $transaction->source_name,
                     'details' => $source->toArray(),
                     'nested_source' => $nestedSource ? [
                         'id' => $nestedSource->id ?? null,
-                        'type' => $source->source_name ?? null,
+                        'type' => $source->source_name === 'user_building_unit' ? 'rental contract' : $source->source_name,
                         'details' => $nestedSource->toArray(),
                     ] : null,
                 ] : null,
