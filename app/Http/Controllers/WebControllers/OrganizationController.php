@@ -13,6 +13,9 @@ use App\Models\DropdownType;
 use App\Models\Organization;
 use App\Models\OrganizationPicture;
 use App\Models\Plan;
+use App\Models\PlanService;
+use App\Models\PlanServiceCatalog;
+use App\Models\PlanSubscriptionItem;
 use App\Models\Subscription;
 use App\Models\Transaction;
 use App\Models\User;
@@ -22,6 +25,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
+use Stripe\Refund;
 
 class OrganizationController extends Controller
 {
@@ -544,7 +548,13 @@ class OrganizationController extends Controller
             $billingCycle = BillingCycle::where('duration_months', $planSubscription->billing_cycle)
                 ->firstOrFail();
 
-            $planDetails = $this->getValidatedPlanWithTotalPrice($planSubscription->source_id, $billingCycle->id);
+            $plan = $this->getValidatedPlanWithBillingCycle($request->plan_id, $request->plan_cycle_id);
+            if (!$plan) {
+                return redirect()->back()->withInput()->with('error', 'The requested plan is currently unavailable due to administrative changes.');
+            }
+
+            $planDetails = $this->getPlanDetailsWithTotalPrice($plan);
+            $services = $planDetails['services'];
 
             if (!$planDetails) {
                 throw new \Exception('Invalid plan configuration');
@@ -555,7 +565,7 @@ class OrganizationController extends Controller
             }
 
             $transaction = Transaction::create([
-                'transaction_title' => "{$planDetails['name']} ({$billingCycle->duration_months} Months)",
+                'transaction_title' => "{$plan->name} ({$billingCycle->duration_months} Months)",
                 'transaction_category' => 'Renewal',
                 'buyer_id' => $organization->id,
                 'buyer_type' => 'organization',
@@ -577,6 +587,19 @@ class OrganizationController extends Controller
                 'price_at_subscription' => $planDetails['total_price'],
                 'currency_at_subscription' => $planDetails['currency'],
             ]);
+
+            $whereServiceIds = array_column($services->toArray(), 'service_catalog_id');
+
+            $existingServices = PlanSubscriptionItem::where('organization_id', $organization->id)
+                ->whereIn('service_catalog_id', $whereServiceIds)
+                ->get()
+                ->keyBy('service_catalog_id');
+
+            $result = $this->updatePlanServices($services, $existingServices, $plan, $organization->id, null);
+            if ($result['error']) {
+                DB::rollBack();
+                return redirect()->back()->withInput()->with('error', $result['message']);
+            }
 
             DB::commit();
 
@@ -843,39 +866,112 @@ class OrganizationController extends Controller
         }
     }
 
-    private function getValidatedPlanWithTotalPrice($planId, $billingCycleId)
+    private function getValidatedPlanWithBillingCycle($planId, $billingCycleId)
     {
-        $plan = Plan::where('id', $planId)
+        return Plan::where('id', $planId)
             ->whereNotIn('status', ['Deleted', 'Inactive'])
-            ->select('id', 'name', 'description', 'currency')
-            ->whereHas('services.prices', function($query) use ($billingCycleId) {
-                $query->where('billing_cycle_id', $billingCycleId);
+            ->whereHas('services', function ($query) use ($billingCycleId) {
+                $query->whereHas('prices', function ($priceQuery) use ($billingCycleId) {
+                    $priceQuery->where('billing_cycle_id', $billingCycleId);
+                });
             })
-            ->with(['services' => function($query) use ($billingCycleId) {
-                $query->whereHas('prices', function($q) use ($billingCycleId) {
-                    $q->where('billing_cycle_id', $billingCycleId);
-                })
-                    ->with(['prices' => function($priceQuery) use ($billingCycleId) {
-                        $priceQuery->where('billing_cycle_id', $billingCycleId)
-                            ->select('price', 'service_id');
+            ->with(['services' => function ($query) use ($billingCycleId) {
+                $query->with('serviceCatalog')
+                    ->whereHas('prices', function ($q) use ($billingCycleId) {
+                        $q->where('billing_cycle_id', $billingCycleId);
+                    })
+                    ->with(['prices' => function ($priceQuery) use ($billingCycleId) {
+                        $priceQuery->where('billing_cycle_id', $billingCycleId);
                     }]);
             }])
             ->first();
+    }
 
-        if (!$plan) {
-            return null;
-        }
+    private function getPlanDetailsWithTotalPrice($plan)
+    {
+        $totalPrice = 0;
+        $services = $plan->services->map(function ($service) use (&$totalPrice) {
+            $price = $service->prices->first();
+            if ($price) $totalPrice += $price->price;
 
-        $totalPrice = $plan->services->sum(function($service) {
-            return $service->prices->first()->price;
+            return [
+                'service_id' => $service->id,
+                'service_catalog_id' => $service->serviceCatalog->id,
+                'service_name' => $service->serviceCatalog->title ?? '',
+                'service_description' => $service->serviceCatalog->description ?? '',
+                'service_quantity' => $service->quantity,
+                'service_meta' => $service->meta,
+                'subscription_id' => $service->subscription_id,
+            ];
         });
 
         return [
-            'name' => $plan->name,
-            'description' => $plan->description,
-            'total_price' => $totalPrice,
+            'plan_name' => $plan->name,
+            'plan_description' => $plan->description,
             'currency' => $plan->currency,
+            'total_price' => $totalPrice,
+            'services' => $services,
         ];
+    }
+
+    private function updatePlanServices($services, $existingServices, $plan, $organization_id, $paymentIntent)
+    {
+        foreach ($services as $service) {
+            $existingService = $existingServices->get($service['service_catalog_id']);
+
+            if ($existingService) {
+                $serviceCatalog = PlanServiceCatalog::find($service['service_catalog_id']);
+                $parentId = $serviceCatalog?->parent_id;
+                $meta = $existingService->meta ?? [];
+
+                if ($parentId) {
+                    $parentPlanService = PlanService::where('service_catalog_id', $parentId)
+                        ->where('plan_id', $plan->id)
+                        ->select('quantity')
+                        ->first();
+
+                    if ($parentPlanService) {
+                        $meta['quantity'] = $parentPlanService->quantity;
+                    }
+                }
+
+                if ($service['service_quantity'] >= $existingService->used) {
+                    $existingService->update([
+                        'quantity' => $service['service_quantity'],
+                        'meta' => $meta,
+                    ]);
+                } else {
+                    $errorMessage = 'Selected Plan has fewer service items than the used service items.';
+
+                    if ($paymentIntent && isset($paymentIntent->charges->data[0]->id)) {
+                        try {
+                            $chargeId = $paymentIntent->charges->data[0]->id;
+                            Refund::create(['charge' => $chargeId]);
+                            $errorMessage .= ' Your payment has been refunded automatically. If you do not see the refund within a few minutes, please check with your bank or contact support.';
+                        } catch (\Exception $e) {
+                            Log::error('Stripe refund failed: ' . $e->getMessage());
+                            $errorMessage .= ' Refund attempt failed, please contact support.';
+                        }
+                    }
+
+                    DB::rollBack();
+                    return [
+                        'error' => true,
+                        'message' => $errorMessage
+                    ];
+                }
+            } else {
+                PlanSubscriptionItem::create([
+                    'organization_id' => $organization_id,
+                    'subscription_id' => $service['subscription_id'],
+                    'service_catalog_id' => $service['service_catalog_id'],
+                    'quantity' => $service['service_quantity'],
+                    'meta' => $service['service_meta'] ?? null,
+                ]);
+            }
+        }
+
+        return ['error' => false];
     }
 
 

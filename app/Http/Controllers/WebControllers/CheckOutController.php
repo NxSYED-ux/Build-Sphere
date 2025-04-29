@@ -555,8 +555,6 @@ class CheckOutController extends Controller
             ->first();
     }
 
-
-    // Helper functions
     private function getPlanDetailsWithTotalPrice($plan)
     {
         $totalPrice = 0;
