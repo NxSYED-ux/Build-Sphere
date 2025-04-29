@@ -205,7 +205,7 @@
         }
 
         .btn-checkout {
-            background: linear-gradient(135deg, #4e54c8, #8f94fb);
+            background: linear-gradient(135deg, var(--color-blue), var(--color-blue));
             border: none;
             border-radius: 30px;
             padding: 10px 25px;
@@ -219,7 +219,7 @@
         .btn-checkout:hover {
             transform: translateY(-2px);
             box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
-            background: linear-gradient(135deg, var(--color-blue), #4e54c8);
+            background: linear-gradient(135deg, var(--color-blue), var(--color-blue));
         }
 
         .btn-checkout:active {
@@ -270,8 +270,8 @@
                                         @endforelse
                                     </select>
                                     <span class="input-group-text" style="background-color: var(--sidenavbar-body-color);">
-                                                <i class="fas fa-calendar-alt"></i>
-                                            </span>
+                                        <i class="fas fa-calendar-alt" style="color: var(--main-text-color);"></i>
+                                    </span>
                                 </div>
                             </div>
 

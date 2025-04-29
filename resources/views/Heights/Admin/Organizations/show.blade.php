@@ -426,9 +426,12 @@
                                     <div id="chartdiv" class="flex-grow-1 my-1"></div>
 
                                     <div class="mt-auto pt-2">
-                                        <button class="btn btn-success w-100 mb-3 py-2 rounded-1">
-                                            <i class="fas fa-arrow-up me-2"></i> Upgrade Plan
-                                        </button>
+                                        <form id="organizationPlanUpgradeForm" action="{{ route('organizations.plan.upgrade.index', $organization->id ) }}" method="GET" class="d-inline">
+                                            @csrf
+                                            <button type="button" onclick="confirmOrganizationPlanUpgrade()" class="btn btn-success w-100 py-2 mb-3 rounded-1">
+                                                <i class="fas fa-arrow-up me-2"></i> Upgrade Plan
+                                            </button>
+                                        </form>
                                         <form id="planPaymentReceivedForm" action="{{ route('organizations.planPaymentReceived') }}" method="POST" class="d-inline">
                                             @csrf
                                             <input type="hidden" name="id" value="{{ $organization->id }}">
@@ -975,6 +978,24 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                     document.getElementById('resumeSubscriptionForm').submit();
+                }
+            });
+        }
+
+        function confirmOrganizationPlanUpgrade(){
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "This will upgrade organization plan!",
+                icon: 'warning',
+                showCancelButton: true,
+                background: 'var(--body-background-color)',
+                color: 'var(--sidenavbar-text-color)',
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, received!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('organizationPlanUpgradeForm').submit();
                 }
             });
         }

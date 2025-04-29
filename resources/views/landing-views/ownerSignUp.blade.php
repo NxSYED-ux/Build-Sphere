@@ -766,6 +766,7 @@
         document.getElementById('verifyEmailBtn').addEventListener('click', function () {
             const email = document.getElementById('email').value;
             const statusText = document.getElementById('otpStatusText');
+            const verifyBtn = document.getElementById('verifyEmailBtn');
 
             if (!email) {
                 Swal.fire({
@@ -783,10 +784,15 @@
                 return;
             }
 
+            // Show loading state
+            verifyBtn.disabled = true;
+            verifyBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Sending...';
+
             fetch("{{ route('send_signup_otp') }}", {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
                 },
                 body: JSON.stringify({ email: email })
             })
@@ -808,7 +814,26 @@
                         statusText.innerText = data.message;
                         statusText.classList.remove('text-muted');
                         statusText.classList.add('text-success');
+
+                        // Start countdown timer
+                        let timeLeft = 30;
+                        verifyBtn.disabled = true;
+                        verifyBtn.innerHTML = `Resend OTP (${timeLeft}s)`;
+
+                        const countdownInterval = setInterval(() => {
+                            timeLeft--;
+                            verifyBtn.innerHTML = `Resend OTP (${timeLeft}s)`;
+
+                            if (timeLeft <= 0) {
+                                clearInterval(countdownInterval);
+                                verifyBtn.disabled = false;
+                                verifyBtn.innerHTML = 'Resend OTP';
+                            }
+                        }, 1000);
                     } else {
+                        verifyBtn.disabled = false;
+                        verifyBtn.innerHTML = 'Send OTP';
+
                         Swal.fire({
                             icon: 'error',
                             title: 'Error',
@@ -828,6 +853,9 @@
                 })
                 .catch(error => {
                     console.error('Error:', error);
+                    verifyBtn.disabled = false;
+                    verifyBtn.innerHTML = 'Send OTP';
+
                     Swal.fire({
                         icon: 'error',
                         title: 'Error',

@@ -208,7 +208,7 @@
         }
 
         .btn-checkout {
-            background: linear-gradient(135deg, #4e54c8, #8f94fb);
+            background: linear-gradient(135deg, var(--color-blue), #4e54c8);
             border: none;
             border-radius: 30px;
             padding: 10px 25px;
@@ -258,7 +258,29 @@
                     <!-- Left Column - Plan Selection -->
                     <div class="col-lg-12 col-md-12">
                         <div class="form-section shadow">
-                            <h5><i class="fas fa-cubes me-2"></i> Membership Plan</h5>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h5><i class="fas fa-cubes me-2"></i> Membership Plan</h5>
+
+                                <div>
+                                    <form action="{{ route('organizations.plan.upgrade.complete') }}" method="POST" enctype="multipart/form-data">
+                                    @method('PUT')
+
+                                        <input type="hidden" name="organization_id" value="{{ $organization_id }}">
+                                        <input type="hidden" name="plan_id" id="plan_id">
+                                        <input type="hidden" name="plan_cycle_id"  id="plan_cycle_id">
+                                        <input type="hidden" name="plan_cycle" id="plan_cycle">
+
+                                        <input type="hidden" id="selectedPlanId">
+                                        <input type="hidden" id="selectedPlanCycle">
+                                        <input type="hidden" id="selectedBillingCycleId">
+                                        <button type="submit" class="btn btn-primary btn-checkout">
+                                            <i class="fas fa-lock me-2"></i> Upgrade
+                                        </button>
+                                    </form>
+                                </div>
+
+
+                            </div>
 
                             <div class="mb-4">
                                 <label for="billing-cycle" class="form-label mb-2">Billing Cycle</label>
@@ -297,25 +319,6 @@
                                     <h5 class="">No Plan Selected</h5>
                                     <p class="">Please select a plan from above</p>
                                 </div>
-                            </div>
-                            <div class="d-flex justify-content-between align-items-center mb-3">
-                                <h4 class="mb-0">
-                                    <i class="fas fa-credit-card me-2"></i> Complete Payment
-                                </h4>
-
-                                <input type="hidden" id="selectedCardId">
-                                <input type="hidden" name="plan_id" id="plan_id">
-                                <input type="hidden" name="plan_cycle_id"  id="plan_cycle_id">
-                                <input type="hidden" name="plan_cycle" id="plan_cycle">
-
-                                <input type="hidden" id="selectedPlanId">
-                                <input type="hidden" id="selectedPlanCycle">
-                                <input type="hidden" id="selectedBillingCycleId">
-
-                                <!-- Beautiful Checkout Button -->
-                                <button type="submit" class="btn btn-primary btn-checkout" onclick="handleCompletePayment()">
-                                    <i class="fas fa-lock me-2"></i> Checkout
-                                </button>
                             </div>
                         </div>
                     </div>
@@ -373,7 +376,7 @@
 
                 if (!isInitialLoad) showLoading();
 
-                const url = `{{ route('plans.organization', ':planCycle') }}`.replace(':planCycle', cycleId);
+                const url = `{{ route('plans.custom', ':planCycle') }}`.replace(':planCycle', cycleId);
 
                 fetch(url, {
                     method: "GET",
@@ -544,188 +547,6 @@
                 fetchPlans(planCycleSelect.value);
             }
 
-        });
-    </script>
-
-    <script>
-        /**
-         * Payment Processing Script
-         * Handles the checkout process including card payment confirmation
-         */
-        document.addEventListener('DOMContentLoaded', async function () {
-
-            // DOM Elements
-            const selectedPlanId = document.getElementById('selectedPlanId');
-            const selectedPlanCycle = document.getElementById('selectedPlanCycle');
-            const selectedBillingCycleId = document.getElementById('selectedBillingCycleId');
-
-            // Initialize function on window for global access
-            window.handleCompletePayment = handleCompletePayment;
-
-            /**
-             * Handles the card submission and payment processing
-             */
-            async function handleCompletePayment() {
-                const methodId = document.getElementById('selectedCardId').value;
-                const dataToSend = {
-                    payment_method_id: methodId,
-                    plan_id: selectedPlanId.value,
-                    plan_cycle: selectedPlanCycle.value,
-                    plan_cycle_id: selectedBillingCycleId.value
-                };
-
-                showLoading(true);
-
-                try {
-                    // Initial payment processing request
-                    const response = await fetch('{{ route('owner.plan.upgrade.processing') }}', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Accept': 'application/json',
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                        },
-                        body: JSON.stringify(dataToSend)
-                    });
-
-                    const result = await response.json();
-
-                    if (!response.ok) {
-                        const errorMsg = result.message || result.error || "Server error occurred.";
-                        showResponseMessage(errorMsg, 'error');
-                    }
-
-                    // Handle 3D Secure authentication if required
-                    if (result.requires_action) {
-                        await handle3DSecureAuthentication(result);
-                    }
-                    // Handle direct success case
-                    else if (result.success) {
-                        handlePaymentSuccess(result);
-                    }
-                    // Handle other error cases
-                    else {
-                        handlePaymentError(result);
-                    }
-                } catch (err) {
-                    console.error("Error:", err);
-                    if (!err.message.includes('Payment successful')) {
-                        showResponseMessage("An error occurred. Please try again.", 'error');
-                    }
-                    throw err;
-                } finally {
-                    showLoading(false);
-                }
-            }
-
-            /**
-             * Handles 3D Secure authentication flow
-             */
-            async function handle3DSecureAuthentication(result) {
-                const confirmResult = await stripe.confirmCardPayment(result.client_secret);
-
-                if (confirmResult.error) {
-                    showResponseMessage(confirmResult.error.message, 'error');
-                }
-
-                if (confirmResult.paymentIntent.status === "succeeded") {
-                    await completePaymentAfter3DS(confirmResult);
-                }
-            }
-
-            /**
-             * Completes payment after successful 3D Secure authentication
-             */
-            async function completePaymentAfter3DS(confirmResult) {
-                const dataForComplete = {
-                    plan_id: selectedPlanId.value,
-                    plan_cycle: selectedPlanCycle.value,
-                    plan_cycle_id: selectedBillingCycleId.value,
-                    payment_intent_id: confirmResult.paymentIntent.id
-                };
-
-                const completeResponse = await fetch("{{ route('owner.plan.upgrade.processing.complete') }}", {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                    },
-                    body: JSON.stringify(dataForComplete)
-                });
-
-                const result = await completeResponse.json();
-
-                if (!completeResponse.ok) {
-                    const errorMsg = result.message || result.error || "Server error occurred.";
-                    showResponseMessage(errorMsg, 'error');
-                }
-
-                if (!result.success) {
-                    const errorMsg = result.message || result.error || "Payment failed. Please try again.";
-                    showResponseMessage(errorMsg, 'error');
-                }
-
-                handlePaymentSuccess(result);
-            }
-
-            /**
-             * Handles successful payment case
-             */
-            function handlePaymentSuccess(result) {
-                showResponseMessage(result.message || "Payment successful!", 'success');
-                redirectToLogin();
-                showStatus('Payment successful!', 'success');
-            }
-
-            /**
-             * Handles payment error case
-             */
-            function handlePaymentError(result) {
-                const errorMsg = result.message || result.error || "Payment failed. Please try again.";
-                showResponseMessage(errorMsg, 'error');
-            }
-
-            /**
-             * Shows/hides loading overlay
-             */
-            function showLoading(show = true) {
-                const overlay = document.getElementById('loadingOverlay');
-                if (overlay) {
-                    overlay.style.display = show ? 'flex' : 'none';
-                }
-            }
-
-            /**
-             * Redirects to login page after successful payment
-             */
-            function redirectToLogin() {
-                setTimeout(() => {
-                    window.location.href = "{{ route('owner.organization.profile') }}";
-                }, 1500);
-            }
-
-            /**
-             * Shows response message using SweetAlert
-             */
-            function showResponseMessage(message, type = 'success') {
-                const isSuccess = type === 'success';
-                Swal.fire({
-                    title: isSuccess ? "Success!" : "Error!",
-                    text: message,
-                    icon: type,
-                    confirmButtonText: 'OK',
-                    timer: 3000,
-                    timerProgressBar: true,
-                    background: getComputedStyle(document.documentElement).getPropertyValue('--swal-bg-color').trim(),
-                    color: getComputedStyle(document.documentElement).getPropertyValue('--swal-text-color').trim(),
-                    iconColor: getComputedStyle(document.documentElement).getPropertyValue(`--swal-icon-${type}-color`).trim(),
-                    customClass: {
-                        popup: 'theme-swal-popup',
-                        confirmButton: 'theme-swal-button'
-                    }
-                });
-            }
         });
     </script>
 
