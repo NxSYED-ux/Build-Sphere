@@ -10,11 +10,6 @@ Route::post('/pusher/auth', [AuthController::class, 'authenticatePusher'])->name
 
 Route::prefix('auth')->group(function () {
 
-    // App login Routes
-    Route::post('/admin-login', [AuthController::class, 'login'])->name('admin-login');
-    Route::post('/owner-login', [AuthController::class, 'login'])->name('owner-login');
-
-
     Route::prefix('login')->group(function () {
 
         Route::get('/', [AuthController::class, 'index'])->name('login');

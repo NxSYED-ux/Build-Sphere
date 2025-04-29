@@ -354,7 +354,7 @@ INSERT INTO `permissions` (`id`, `name`, `header`, `description`, `status`, `par
 (53, 'Remove Favorites', 'User Application', 'User Application', 1, 51, '2025-03-29 11:16:44', '2025-03-29 11:29:42'),
 (54, 'Show My Properties', 'User Application', 'User Application', 1, NULL, '2025-03-29 11:16:44', '2025-03-29 11:23:05'),
 (55, 'Log Queries', 'User Application', 'User Application', 1, NULL, '2025-03-29 11:16:44', '2025-03-29 11:23:08'),
-(56, 'View User Queries', 'User Application', 'User Application', 1, 55, '2025-03-29 11:16:44', '2025-03-29 11:29:42'),
+(56, 'User Queries', 'User Application', 'User Application', 1, 55, '2025-03-29 11:16:44', '2025-03-29 11:29:42'),
 (57, 'Staff Profile', 'Staff Application', 'Staff Application', 1, NULL, '2025-03-29 11:16:44', '2025-03-29 11:29:42'),
 (58, 'Update Staff Profile', 'Staff Application', 'Staff Application', 1, 57, '2025-03-29 11:16:44', '2025-03-29 11:29:42'),
 (59, 'Remove Staff Profile Picture', 'Staff Application', 'Staff Application', 1, 57, '2025-03-29 11:16:44', '2025-03-29 11:29:42'),

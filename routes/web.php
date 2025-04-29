@@ -213,7 +213,7 @@ Route::prefix('owner')->middleware(['auth.jwt'])->group(function () {
 
     Route::prefix('plan/upgrade')->group(function () {
 
-        Route::get('/', [CheckOutController::class, 'updatePlanIndex'])->name('owner.plan.upgrade.index');
+        Route::get('/', [CheckOutController::class, 'updatePlanOwnerIndex'])->name('owner.plan.upgrade.index');
         Route::post('/', [CheckOutController::class, 'updateCheckOut'])->name('owner.plan.upgrade.processing');
         Route::post('/complete', [CheckOutController::class, 'updateCheckoutComplete'])->name('owner.plan.upgrade.processing.complete');
 

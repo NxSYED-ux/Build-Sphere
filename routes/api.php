@@ -28,17 +28,17 @@ Route::get('/test-permissions', function () {
 
 // Without Authentication
 
-    Route::get('/values-by-type/{type}', [DropdownController::class, 'getDropdownValuesByType']);
-    Route::get('/values-by-value/{value}', [DropdownController::class, 'getDropdownValuesByValue']);
+Route::get('/values-by-type/{type}', [DropdownController::class, 'getDropdownValuesByType']);
+Route::get('/values-by-value/{value}', [DropdownController::class, 'getDropdownValuesByValue']);
 
-    Route::prefix('auth')->group(function () {
+Route::prefix('auth')->group(function () {
 
-        Route::post('/user-login', [AuthController::class, 'userLogin']);
-        Route::post('/staff-login', [AuthController::class, 'staffLogin']);
-        Route::post('/forget-password', [ForgotPasswordController::class, 'sendResetLink']);
-        Route::post('/logout', [AuthController::class, 'logout']);
+    Route::post('/user-login', [AuthController::class, 'userLogin']);
+    Route::post('/staff-login', [AuthController::class, 'staffLogin']);
+    Route::post('/forget-password', [ForgotPasswordController::class, 'sendResetLink']);
+    Route::post('/logout', [AuthController::class, 'logout']);
 
-    });
+});
 
 
 // With Authentication
@@ -102,7 +102,7 @@ Route::middleware(['auth.jwt'])->group(function () {
             Route::post('/log-query', [QueryController::class, 'logQuery']);
         });
 
-        Route::middleware('check.permission:View User Queries,json')->group(function () {
+        Route::middleware('check.permission:User Queries,json')->group(function () {
             Route::get('/get-queries', [QueryController::class, 'getUserQueries']);
             Route::get('/query/{id}', [QueryController::class, 'getQueryDetails']);
         });
@@ -139,6 +139,10 @@ Route::middleware(['auth.jwt'])->group(function () {
         Route::put('/remove-profile-pic', [ProfileController::class, 'deleteProfilePic']);
         Route::put('/change-password', [ProfileController::class, 'changePassword']);
 
+        Route::middleware('check.permission:Staff Queries,json')->group(function () {
+            Route::get('/get-queries', [QueryController::class, 'getStaffQueries']);
+            Route::get('/query/{id}', [QueryController::class, 'getQueryDetails']);
+        });
         Route::get('/get-queries', [QueryController::class, 'getStaffQueries']);
         Route::get('/query/{id}', [QueryController::class, 'getQueryDetails']);
         Route::put('/reject-query', [QueryController::class, 'rejectQuery']);

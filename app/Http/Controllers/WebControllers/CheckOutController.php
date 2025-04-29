@@ -16,6 +16,7 @@ use App\Models\Transaction;
 use App\Models\User;
 use App\Notifications\DatabaseOnlyNotification;
 use App\Notifications\EmailNotification;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -62,7 +63,38 @@ class CheckOutController extends Controller
         }
     }
 
-    public function updatePlanIndex(Request $request)
+
+    public function updatePlanAdminIndex(string $id)
+    {
+        try {
+            $organization = Organization::find($id);
+
+            if(!$organization) {
+                return redirect()->back()->with('error', 'Invalid organization');
+            }
+
+            $subscription = Subscription::where('organization_id', $organization->id)
+                ->where('source_name', 'plan')
+                ->first();
+
+            $organization_id = $organization->id;
+            $activePlanId = $subscription?->source_id;
+            $activeCycle = $subscription?->billing_cycle;
+            $planCycles = BillingCycle::pluck('duration_months');
+
+            return view('Heights.Admin.Plan.upgrade', compact(
+                'planCycles',
+                'activePlanId',
+                'activeCycle',
+                'organization_id'
+            ));
+        } catch (\Exception $e) {
+            Log::error('Error in Upgrade Plan Admin index: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Something went wrong. Please try again later.');
+        }
+    }
+
+    public function updatePlanOwnerIndex(Request $request)
     {
         try {
             $token = $request->attributes->get('token');
@@ -87,7 +119,7 @@ class CheckOutController extends Controller
                 'activeCycle'
             ));
         } catch (\Exception $e) {
-            Log::error('Error in Upgrade Plan index: ' . $e->getMessage());
+            Log::error('Error in Upgrade Plan owner index: ' . $e->getMessage());
             return redirect()->back()->with('error', 'Something went wrong. Please try again later.');
         }
     }
@@ -264,7 +296,7 @@ class CheckOutController extends Controller
             } catch (CardException $e) {
                 Log::error('Stripe CardException: ' . $e->getMessage());
                 return $this->handleStripePaymentFailure($e, $plan, $request->plan_cycle, $request, $planDetails);
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 Log::error('General Stripe Error: ' . $e->getMessage());
                 return response()->json([
                     'error' => 'Something went wrong with your payment. Please try again later.',
@@ -328,11 +360,12 @@ class CheckOutController extends Controller
 
 
                     $org_subscription->update([
+                        'source_id' => $plan->id,
                         'billing_cycle' => $request->plan_cycle,
                         'subscription_status' => 'Active',
                         'price_at_subscription' => $planDetails['total_price'],
                         'currency_at_subscription' => $plan->currency,
-                        'ends_at' => now()->addMonths($request->plan_cycle),
+                        'ends_at' => now()->addMonths((int) $request->plan_cycle),
                     ]);
 
                     $transaction = Transaction::create([
@@ -349,28 +382,34 @@ class CheckOutController extends Controller
                         'is_subscription' => true,
                         'billing_cycle' => $request->plan_cycle . ' Months',
                         'subscription_start_date' => now(),
-                        'subscription_end_date' => now()->addMonths($request->plan_cycle),
+                        'subscription_end_date' => now()->addMonths((int) $request->plan_cycle),
                         'source_id' => $org_subscription->id,
                         'source_name' => 'subscription',
                     ]);
 
+                    $whereServiceIds = array_column($services->toArray(), 'service_catalog_id');
+
                     $existingServices = PlanSubscriptionItem::where('organization_id', $organization_id)
-                        ->whereIn('service_catalog_id', array_column($services, 'service_catalog_id'))->get()->keyBy('service_catalog_id');
+                        ->whereIn('service_catalog_id', $whereServiceIds)
+                        ->get()
+                        ->keyBy('service_catalog_id');
 
 
                     $result = $this->updatePlanServices($services, $existingServices, $plan, $organization_id, $paymentIntent);
                     if ($result['error']) {
+                        DB::rollBack();
+                        Log::error('Error : ' . $result['error']);
                         return response()->json(['error' => $result['message']], 400);
                     }
 
-                    $this->sendPlanUpgradeNotifications($user, $plan, $transaction);
-
                     DB::commit();
+
+                    $this->sendPlanUpgradeNotifications($user, $plan, $transaction);
                 }
 
                 return response()->json(['success' => true]);
 
-            } catch (\Exception $e) {
+            }catch (\Throwable $e) {
                 DB::rollBack();
                 Log::error('DB Transaction Failed during checkout: ' . $e->getMessage());
 
@@ -378,7 +417,7 @@ class CheckOutController extends Controller
                     'error' => 'Payment succeeded, but something went wrong while saving data. Please contact support.',
                 ], 500);
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error('Error while Checkout Plan: ' . $e->getMessage());
 
             return response()->json([
@@ -452,8 +491,10 @@ class CheckOutController extends Controller
                 'source_name' => 'subscription',
             ]);
 
+            $whereServiceIds = array_column($services->toArray(), 'service_catalog_id');
+
             $existingServices = PlanSubscriptionItem::where('organization_id', $organization->id)
-                ->whereIn('service_catalog_id', array_column($services, 'service_catalog_id'))
+                ->whereIn('service_catalog_id', $whereServiceIds)
                 ->get()
                 ->keyBy('service_catalog_id');
 
@@ -462,6 +503,8 @@ class CheckOutController extends Controller
                 DB::rollBack();
                 return redirect()->back()->withInput()->with('error', $result['message']);
             }
+
+            DB::commit();
 
             $this->sendPlanUpgradeNotifications($owner, $plan, $transaction);
 
@@ -480,17 +523,12 @@ class CheckOutController extends Controller
                 ['web' => "admin/organizations/{$organization->id}/show"],
             ));
 
-            DB::commit();
+            return redirect()->route('organizations.show', $organization->id)->with('success', 'Organization plan upgraded successfully.');
 
-            return response()->json(['success' => true]);
-
-        } catch (\Exception $e) {
+        }catch (\Throwable $e) {
             DB::rollBack();
             Log::error('Error in plan Upgrade Admin: ' . $e->getMessage());
-
-            return response()->json([
-                'error' => 'Something went wrong. Please try again later.',
-            ], 500);
+            return redirect()->back()->withInput()->with('error', 'Something went wrong. Please try again later.');
         }
     }
 
