@@ -192,7 +192,7 @@ Route::prefix('admin')->middleware(['auth.jwt'])->group(function () {
         Route::put('/plan/cancel', [OrganizationController::class, 'adminCancelPlanSubscription'])->name('organizations.planSubscription.cancel');
         Route::put('/plan/resume', [OrganizationController::class, 'adminResumePlanSubscription'])->name('organizations.planSubscription.resume');
         Route::get('/plan/{organization}/upgrade', [CheckOutController::class, 'updatePlanAdminIndex'])->name('organizations.plan.upgrade.index');
-        Route::put('/plan-upgrade', [CheckOutController::class, 'adminUpgradePlan'])->name('organizations.plan.upgrade.complete');
+        Route::put('/plan/upgrade', [CheckOutController::class, 'adminUpgradePlan'])->name('organizations.plan.upgrade.complete');
 
         Route::get('/organizations/{id}/buildings', [OrganizationController::class, 'getBuildingsAdmin'])->name('organizations.buildings');
 
