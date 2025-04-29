@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Checkout')
+@section('title', 'Upgrade Plan')
 
 @push('styles')
 
@@ -122,6 +122,9 @@
             margin-top: 1.5rem;
             border: 1px solid #e5e7eb;
         }
+        .selected-plan-details i,h5,p{
+            color: var(--sidenavbar-text-color) !important;
+        }
         .selected-plan-header {
             display: flex;
             justify-content: space-between;
@@ -231,14 +234,14 @@
 @section('content')
 
     <!-- Top Navbar -->
-    <x-Owner.top-navbar :searchVisible="false" :breadcrumbLinks="[
-            ['url' => route('owner_manager_dashboard'), 'label' => 'Dashboard'],
-            ['url' => '', 'label' => 'Checkout']
+    <x-Admin.top-navbar :searchVisible="false" :breadcrumbLinks="[
+            ['url' => route('admin_dashboard'), 'label' => 'Dashboard'],
+            ['url' => '', 'label' => 'Upgrade Plan']
         ]"
     />
 
     <!-- Side Navbar -->
-    <x-Owner.side-navbar :openSections="['Dashboard']" />
+    <x-Admin.side-navbar :openSections="['Dashboard']" />
     <x-error-success-model />
 
     <!-- Loading Overlay -->
@@ -253,7 +256,7 @@
 
                 <div class="row">
                     <!-- Left Column - Plan Selection -->
-                    <div class="col-lg-6 col-md-12">
+                    <div class="col-lg-12 col-md-12">
                         <div class="form-section shadow">
                             <h5><i class="fas fa-cubes me-2"></i> Membership Plan</h5>
 
@@ -291,37 +294,10 @@
                             <div class="selected-plan-details shadow-sm" id="selected-plan-details">
                                 <div class="text-center py-4">
                                     <i class="fas fa-cube fa-3x text-muted mb-3"></i>
-                                    <h5 class="text-muted">No Plan Selected</h5>
-                                    <p class="text-muted">Please select a plan from above</p>
+                                    <h5 class="">No Plan Selected</h5>
+                                    <p class="">Please select a plan from above</p>
                                 </div>
                             </div>
-                        </div>
-                    </div>
-
-
-                    <!-- Right Column - Organization Details -->
-                    <div class="col-lg-6 col-md-12">
-                        <div class="form-section shadow">
-                            <div class="d-flex justify-content-between align-items-center mb-3">
-                                <h4 class="mb-0">
-                                    <i class="fas fa-info-circle me-2"></i> Payment Methods
-                                </h4>
-                                <button type="button" class="btn btn-sm btn-primary add-payment-method-btn" id="add-payment-method-btn" data-bs-toggle="modal" data-bs-target="#paymentMethodModal">
-                                    <i class="fas fa-plus me-1"></i> Add Method
-                                </button>
-                            </div>
-
-                            <div class="row" id="cards-container">
-                                <!-- Loading state -->
-                                <div class="col-12 text-center py-4">
-                                    <div class="spinner-border text-primary" role="status">
-                                        <span class="visually-hidden">Loading...</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="form-section shadow">
                             <div class="d-flex justify-content-between align-items-center mb-3">
                                 <h4 class="mb-0">
                                     <i class="fas fa-credit-card me-2"></i> Complete Payment
@@ -342,407 +318,16 @@
                                 </button>
                             </div>
                         </div>
-
-
                     </div>
-
-
                 </div>
 
             </div>
         </section>
     </div>
 
-    <div class="modal fade" id="paymentMethodModal" tabindex="-1" aria-labelledby="paymentMethodLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered bg-transparent">
-            <div class="modal-content p-0 m-0 border-0 rounded-3  bg-transparent">
-                <div class="modal-body p-0 m-0">
-                    <x-stripe-card-form
-                        :stripeKey="config('services.stripe.key')"
-                        formAction="#"
-                        buttonText="Save Card"
-                        title="Add Payment Method"
-                    />
-                </div>
-            </div>
-        </div>
-    </div>
-
-
 @endsection
 
 @push('scripts')
-
-    <script>
-        /**
-         * Payment Cards Management Script
-         * Handles loading, displaying, and managing payment cards
-         */
-        document.addEventListener('DOMContentLoaded', async function() {
-            // DOM Elements
-            const dom = {
-                cardsContainer: document.getElementById('cards-container')
-            };
-
-            // Event delegation for card actions
-            document.addEventListener('click', handleCardActions);
-
-            // Initialize
-            window.submitaddedCard = submitaddedCard;
-            loadCards();
-
-            /**
-             * Submits a new card to the server
-             */
-            async function submitaddedCard() {
-                const methodId = document.getElementById('payment_method_id').value;
-                const response = await fetch('{{ route('owner.cards.store') }}', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ payment_method_id: methodId })
-                });
-
-                const result = await response.json();
-
-                if (!response.ok) {
-                    throw new Error(result.error || result.message || 'Failed to add payment method');
-                }
-
-                const modal = bootstrap.Modal.getInstance(document.getElementById('paymentMethodModal'));
-                if (modal) modal.hide();
-
-                loadCards();
-            }
-
-            /**
-             * Loads cards from server
-             */
-            async function loadCards() {
-                // Show loading state
-                dom.cardsContainer.innerHTML = `
-                <div class="col-12 text-center py-4">
-                    <div class="spinner-border text-primary" role="status">
-                        <span class="visually-hidden">Loading...</span>
-                    </div>
-                </div>
-            `;
-
-                try {
-                    const response = await fetch('{{ route('owner.cards.index') }}', {
-                        headers: {
-                            'Accept': 'application/json',
-                            'X-Requested-With': 'XMLHttpRequest'
-                        }
-                    });
-
-                    if (!response.ok) {
-                        throw new Error('Failed to load cards');
-                    }
-
-                    const data = await response.json();
-                    renderCards(data.cards);
-                } catch (error) {
-                    console.error('Error loading cards:', error);
-                    showCardsError();
-                }
-            }
-
-            /**
-             * Shows error state when cards fail to load
-             */
-            function showCardsError() {
-                dom.cardsContainer.innerHTML = `
-                <div class="col-12 text-center py-4 text-danger">
-                    Failed to load payment methods. Please try again.
-                </div>
-            `;
-            }
-
-            /**
-             * Renders cards in the UI
-             */
-            function renderCards(cards) {
-                dom.cardsContainer.innerHTML = '';
-
-                if (!cards || cards.length === 0) {
-                    dom.cardsContainer.innerHTML = `
-                    <div class="col-12 text-center py-4 text-muted">
-                        No payment methods found.
-                    </div>
-                `;
-                    return;
-                }
-
-                const rowDiv = document.createElement('div');
-                rowDiv.className = 'row';
-                dom.cardsContainer.appendChild(rowDiv);
-
-                // Sort cards with primary first
-                [...cards].sort((a, b) => b.is_default - a.is_default)
-                    .forEach(card => {
-                        rowDiv.insertAdjacentHTML('beforeend', renderPaymentCard(card));
-                    });
-            }
-
-            /**
-             * Generates HTML for a payment card
-             */
-            function renderPaymentCard(card) {
-                const cardStyles = {
-                    'visa': {
-                        background: 'linear-gradient(135deg, #1a1f71 0%, #0065a3 100%)',
-                        icon: 'bxl-visa',
-                        accent: 'linear-gradient(to right, #f9a61a, #f8d568)',
-                        textColor: '#1a1f71'
-                    },
-                    'mastercard': {
-                        background: 'linear-gradient(135deg, #EB001B 0%, #F79E1B 100%)',
-                        icon: 'bxl-mastercard',
-                        accent: 'rgba(255,255,255,0.9)',
-                        textColor: '#EB001B'
-                    },
-                    'amex': {
-                        background: 'linear-gradient(135deg, #016FD0 0%, #00A3E0 100%)',
-                        icon: 'fa-cc-amex',
-                        accent: 'rgba(255,255,255,0.9)',
-                        textColor: '#016FD0'
-                    },
-                    'discover': {
-                        background: 'linear-gradient(135deg, #FF6000 0%, #FFA000 100%)',
-                        icon: 'fa-cc-discover',
-                        accent: 'rgba(255,255,255,0.9)',
-                        textColor: '#FF6000'
-                    },
-                    'default': {
-                        background: 'linear-gradient(135deg, #4a5568 0%, #0E131DFF 100%)',
-                        icon: 'bx-credit-card',
-                        accent: 'rgba(255,255,255,0.9)',
-                        textColor: '#4a5568'
-                    }
-                };
-
-                const normalizedCardType = card.brand.toLowerCase();
-                const style = cardStyles[normalizedCardType] || cardStyles['default'];
-                const isFontAwesome = style.icon.includes('fa-');
-                const expMonth = String(card.exp_month).padStart(2, '0');
-                const expYear = String(card.exp_year).slice(-2);
-                const expiry = `${expMonth}/${expYear}`;
-                const dropdownId = `cardMenu${card.id.replace(/\D/g, '')}`;
-
-                // Set the initial value if this is the default card
-                if (card.is_default) {
-                    document.getElementById('selectedCardId').value = card.id;
-                }
-
-                return `
-<div class="col-md-6 col-md-6 col-12 mb-3">
-    <div class="payment-card w-100 p-3"
-        style="background: ${style.background};
-               border-radius: 10px;
-               color: white;
-               box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-               position: relative;
-               overflow: hidden;
-               border: ${card.is_default ? '2px solid ' + style.accent : '2px solid transparent'};">
-        <div style="position: absolute; top: -20px; right: -20px; width: 80px; height: 80px; background: rgba(255,255,255,0.1); border-radius: 50%;"></div>
-
-        <div class="d-flex justify-content-between align-items-center mb-1">
-            <div class="form-check">
-                <input class="form-check-input card-radio"
-                       type="radio"
-                       name="selectedCard"
-                       id="card-${card.id}"
-                       value="${card.id}"
-                       ${card.is_default ? 'checked' : ''}
-                       style="cursor: pointer;"
-                       onchange="document.getElementById('selectedCardId').value = this.value;">
-            </div>
-
-            ${isFontAwesome
-                    ? `<i class="fab ${style.icon}" style="font-size: 40px; color: white;"></i>`
-                    : `<i class='bx ${style.icon}' style="font-size: 40px; color: white;"></i>`
-                }
-
-            ${card.is_default
-                    ? `<span class="badge" style="background: ${style.accent}; color: ${style.textColor}; font-weight: bold;">Primary</span>`
-                    : `<div class="dropdown">
-                    <button class="btn btn-sm p-0" style="background: transparent; color: white; border: none;" type="button" id="${dropdownId}" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="fas fa-ellipsis-h"></i>
-                    </button>
-                    <ul class="dropdown-menu dropdown-menu-end" style="background-color: var(--body-background-color);" aria-labelledby="${dropdownId}">
-                        <li><a class="dropdown-item set-primary-btn" href="#" data-card-id="${card.id}"
-                            style="background-color: var(--body-background-color); color: var(--sidenavbar-text-color);" onmouseover="this.style.backgroundColor='var(--body-background-color)'" onmouseout="this.style.backgroundColor='var(--body-background-color)'">
-                            Set as primary</a>
-                        </li>
-                    </ul>
-                </div>`
-                }
-        </div>
-
-        <div class="mb-1" style="position: relative; z-index: 2;">
-            <h5 class="mb-0 text-white" style="letter-spacing: 1px;">•••• •••• •••• ${card.last4}</h5>
-        </div>
-    </div>
-</div>
-`;
-            }
-
-            document.querySelectorAll('.card-radio').forEach(radio => {
-                radio.addEventListener('change', function() {
-                    document.getElementById('selectedCardId').value = this.value;
-                });
-            });
-
-            /**
-             * Handles card action events
-             */
-            async function handleCardActions(e) {
-                // Set primary button handler
-                if (e.target.classList.contains('set-primary-btn') || e.target.closest('.set-primary-btn')) {
-                    e.preventDefault();
-                    await handleSetPrimary(e);
-                }
-
-                // Delete button handler
-                if (e.target.classList.contains('delete-card-btn') || e.target.closest('.delete-card-btn')) {
-                    e.preventDefault();
-                    await handleDeleteCard(e);
-                }
-            }
-
-            /**
-             * Handles setting a card as primary
-             */
-            async function handleSetPrimary(e) {
-                const cardId = e.target.dataset.cardId || e.target.closest('[data-card-id]').dataset.cardId;
-
-                try {
-                    const result = await Swal.fire({
-                        title: 'Set as Primary?',
-                        text: 'Do you want to set this card as your primary payment method?',
-                        icon: 'question',
-                        showCancelButton: true,
-                        background: 'var(--body-background-color)',
-                        color: 'var(--sidenavbar-text-color)',
-                        confirmButtonColor: '#3085d6',
-                        cancelButtonColor: '#d33',
-                        confirmButtonText: 'Yes, set as primary'
-                    });
-
-                    if (result.isConfirmed) {
-                        await updatePrimaryCard(cardId);
-                        await Swal.fire({
-                            title: 'Success!',
-                            text: 'Primary card updated successfully',
-                            icon: 'success',
-                            confirmButtonText: 'OK',
-                            background: 'var(--body-background-color)',
-                            color: 'var(--sidenavbar-text-color)'
-                        });
-                        await loadCards();
-                    }
-                } catch (error) {
-                    await showErrorAlert(error);
-                }
-            }
-
-            /**
-             * Updates primary card on server
-             */
-            async function updatePrimaryCard(cardId) {
-                const response = await fetch('{{ route('owner.cards.update.default') }}', {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                    },
-                    body: JSON.stringify({ payment_method_id: cardId })
-                });
-
-                const data = await response.json();
-
-                if (!response.ok) {
-                    throw new Error(data.message || 'Failed to set card as primary');
-                }
-            }
-
-            /**
-             * Handles card deletion
-             */
-            async function handleDeleteCard(e) {
-                const cardId = e.target.dataset.cardId || e.target.closest('[data-card-id]').dataset.cardId;
-
-                try {
-                    const result = await Swal.fire({
-                        title: 'Delete Card?',
-                        text: 'Are you sure you want to delete this payment method?',
-                        icon: 'warning',
-                        showCancelButton: true,
-                        background: 'var(--body-background-color)',
-                        color: 'var(--sidenavbar-text-color)',
-                        confirmButtonColor: '#3085d6',
-                        cancelButtonColor: '#d33',
-                        confirmButtonText: 'Yes, delete it!',
-                        dangerMode: true
-                    });
-
-                    if (result.isConfirmed) {
-                        await deleteCard(cardId);
-                        await Swal.fire({
-                            title: 'Deleted!',
-                            text: 'Your payment method has been deleted.',
-                            icon: 'success',
-                            confirmButtonText: 'OK',
-                            background: 'var(--body-background-color)',
-                            color: 'var(--sidenavbar-text-color)'
-                        });
-                        await loadCards();
-                    }
-                } catch (error) {
-                    await showErrorAlert(error);
-                }
-            }
-
-            /**
-             * Deletes card from server
-             */
-            async function deleteCard(cardId) {
-                const response = await fetch('{{ route('owner.cards.delete') }}', {
-                    method: 'DELETE',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                    },
-                    body: JSON.stringify({ payment_method_id: cardId })
-                });
-
-                const data = await response.json();
-
-                if (!response.ok) {
-                    throw new Error(data.error || 'Failed to delete card');
-                }
-            }
-
-            /**
-             * Shows error alert
-             */
-            async function showErrorAlert(error) {
-                await Swal.fire({
-                    title: 'Error!',
-                    text: error.message,
-                    icon: 'error',
-                    confirmButtonText: 'OK',
-                    background: 'var(--body-background-color)',
-                    color: 'var(--sidenavbar-text-color)'
-                });
-                console.error('Error:', error);
-            }
-        });
-    </script>
 
     <!-- Plan Selection Logic -->
     <script>
@@ -929,9 +514,9 @@
 
             function noPlansAvailableHTML() {
                 return `
-            <div class="col-12 text-center py-4">
-                <i class="fas fa-exclamation-circle fa-2x text-muted mb-3"></i>
-                <p class="">No plans available for this billing cycle</p>
+            <div class="col-12 text-center py-4" >
+                <i class="fas fa-exclamation-circle fa-2x mb-3" style="color: var(--sidenavbar-text-color) !important;"></i>
+                <p class="" style="color: var(--sidenavbar-text-color) !important;">No plans available for this billing cycle</p>
             </div>
         `;
             }
@@ -939,9 +524,9 @@
             function noPlanSelectedHTML() {
                 return `
             <div class="text-center py-4">
-                <i class="fas fa-cube fa-3x text-muted mb-3"></i>
-                <h5 class="text-muted">No Plan Selected</h5>
-                <p class="text-muted">Please select a plan from above</p>
+                <i class="fas fa-cube fa-3x mb-3" style="color: var(--sidenavbar-text-color) !important;"></i>
+                <h5 class="" style="color: var(--sidenavbar-text-color) !important;">No Plan Selected</h5>
+                <p class="" style="color: var(--sidenavbar-text-color) !important;">Please select a plan from above</p>
             </div>
         `;
             }
@@ -969,7 +554,6 @@
          */
         document.addEventListener('DOMContentLoaded', async function () {
 
-            console.log("Complete Payment button clicked");
             // DOM Elements
             const selectedPlanId = document.getElementById('selectedPlanId');
             const selectedPlanCycle = document.getElementById('selectedPlanCycle');
@@ -1024,8 +608,11 @@
                         handlePaymentError(result);
                     }
                 } catch (err) {
-                    console.log('Error object:', err); // Logs the entire error object
-                    showResponseMessage(err.message || err.error || 'An unexpected error occurred.', 'error');
+                    console.error("Error:", err);
+                    if (!err.message.includes('Payment successful')) {
+                        showResponseMessage("An error occurred. Please try again.", 'error');
+                    }
+                    throw err;
                 } finally {
                     showLoading(false);
                 }
@@ -1039,16 +626,12 @@
 
                 if (confirmResult.error) {
                     showResponseMessage(confirmResult.error.message, 'error');
-                    return;
                 }
 
-                if (confirmResult.paymentIntent && confirmResult.paymentIntent.status === "succeeded") {
+                if (confirmResult.paymentIntent.status === "succeeded") {
                     await completePaymentAfter3DS(confirmResult);
-                } else {
-                    showResponseMessage('Payment was not completed successfully.', 'error');
                 }
             }
-
 
             /**
              * Completes payment after successful 3D Secure authentication

@@ -431,7 +431,6 @@
                                         </button>
                                         <form id="planPaymentReceivedForm" action="{{ route('organizations.planPaymentReceived') }}" method="POST" class="d-inline">
                                             @csrf
-                                            @method('PUT')
                                             <input type="hidden" name="id" value="{{ $organization->id }}">
                                             <button type="button" onclick="confirmPlanPaymentReceived()" class="btn btn-primary w-100 py-2 mb-3 rounded-1">
                                                 <i class="fas fa-money me-2"></i> Marked Payment Received
