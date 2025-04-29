@@ -16,14 +16,14 @@
 @section('content')
 
     <!-- Top Navbar -->
-    <x-Owner.top-navbar :searchVisible="false" :breadcrumbLinks="[
-            ['url' => route('owner_manager_dashboard'), 'label' => 'Dashboard'],
+    <x-Admin.top-navbar :searchVisible="false" :breadcrumbLinks="[
+            ['url' => route('admin_dashboard'), 'label' => 'Dashboard'],
             ['url' => '', 'label' => 'Finance']
         ]"
     />
 
     <!-- Side Navbar -->
-    <x-Owner.side-navbar :openSections="['Finance']" />
+    <x-Admin.side-navbar :openSections="['Finance']" />
     <x-error-success-model />
 
 
@@ -42,7 +42,7 @@
                                     <div class="card-body " style="overflow-x: auto;">
                                         <div class="row">
                                             @foreach($history as $item)
-                                                <x-transaction-card :transaction="$item" route-name="owner.finance.show"/>
+                                                <x-transaction-card :transaction="$item" route-name="finance.show"  />
                                             @endforeach
                                         </div>
                                         @if ($transactions)
