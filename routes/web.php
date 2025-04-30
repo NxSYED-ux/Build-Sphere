@@ -322,7 +322,6 @@ Route::prefix('owner')->middleware(['auth.jwt'])->group(function () {
         Route::prefix('finance')->group(function () {
 
             Route::get('/', [FinanceController::class , 'ownerIndex'])->name('owner.finance.index');
-            Route::get('/2', [FinanceController::class , 'ownerIndex2'])->name('owner.finance.index2');
             Route::get('/{transaction}/show', [FinanceController::class, 'ownerShow'])->name('owner.finance.show');
             Route::get('/latest', [FinanceController::class , 'latestOrganizationTransactions'])->name('owner.finance.latest');
 

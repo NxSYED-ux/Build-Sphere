@@ -169,7 +169,7 @@ class BuildingLevelController extends Controller
                     throw new \Exception('The current plan doesn\'t include level management. Please upgrade the plan.');
                 }
 
-                $currentBuildingLevel = $meta[$level->building_id]['units_used'] ?? 0;
+                $currentBuildingLevel = $meta[$level->building_id]['used'] ?? 0;
                 if ($currentBuildingLevel >= $subscriptionItem->quantity) {
                     throw new \Exception('This building has reached its level limit (max ' . $subscriptionItem->quantity .' levels).');
                 }
@@ -269,7 +269,7 @@ class BuildingLevelController extends Controller
         }
     }
 
-    public function ownerEdit(Request $request,BuildingLevel $level)
+    public function ownerEdit(BuildingLevel $level, Request $request)
     {
         try {
             $level->load(['building']);
