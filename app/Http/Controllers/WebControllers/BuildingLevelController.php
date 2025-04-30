@@ -284,7 +284,7 @@ class BuildingLevelController extends Controller
                 'buildings' => $buildings
             ], 200);
 
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             Log::error('Error in ownerEdit: ' . $e->getMessage());
             return response()->json(['error' => 'An error occurred while fetching building level data.'], 500);
         }
