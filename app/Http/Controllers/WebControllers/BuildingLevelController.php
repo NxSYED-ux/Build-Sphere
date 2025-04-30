@@ -459,7 +459,7 @@ class BuildingLevelController extends Controller
         $buildings = collect();
 
         if (empty($token['organization_id']) || empty($token['role_name'])) {
-            return response()->json($buildings);
+            return response()->json(['buildings' => $buildings]);
         }
 
         $organization_id = $token['organization_id'];
