@@ -16,19 +16,18 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 2rem;
             padding: 1rem 0;
         }
 
         .finance-header h3 {
             font-weight: 700;
-            color: #1e293b;
+            color: var(--sidenavbar-text-color);
             font-size: 1.75rem;
             margin-bottom: 0.25rem;
         }
 
         .finance-header p {
-            color: #64748b;
+            color: var(--sidenavbar-text-color);
             font-size: 0.95rem;
         }
 
@@ -37,12 +36,12 @@
             border-radius: 16px;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
             transition: all 0.3s ease;
-            background: white;
+            background: var(--sidenavbar-body-color);
             overflow: hidden;
         }
 
         .finance-card:hover {
-            transform: translateY(-5px);
+            transform: translateY(-2px);
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
         }
 
@@ -54,7 +53,7 @@
         }
 
         .summary-card {
-            background: white;
+            background: var(--body-card-bg);
             border-radius: 14px;
             padding: 1.75rem;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
@@ -73,9 +72,9 @@
             position: absolute;
             top: 0;
             left: 0;
-            width: 4px;
+            width: 5px;
             height: 100%;
-            background: linear-gradient(to bottom, #3b82f6, #6366f1);
+            background: linear-gradient(to bottom, #3b82f6, var(--color-blue));
         }
 
         .summary-card:nth-child(2)::before {
@@ -92,7 +91,7 @@
 
         .summary-card h5 {
             font-size: 0.875rem;
-            color: #64748b;
+            color: var(--sidenavbar-text-color);
             margin-bottom: 0.75rem;
             font-weight: 500;
             letter-spacing: 0.2px;
@@ -121,7 +120,7 @@
         }
 
         .filter-section {
-            background: white;
+            background:  var(--sidenavbar-body-color);
             border-radius: 14px;
             padding: 1.5rem;
             margin-bottom: 2rem;
@@ -130,7 +129,7 @@
 
         .filter-section label {
             font-weight: 500;
-            color: #475569;
+            color: var(--sidenavbar-text-color) !important;
             margin-bottom: 0.5rem;
             font-size: 0.875rem;
         }
@@ -142,7 +141,7 @@
         .empty-state {
             text-align: center;
             padding: 4rem;
-            color: #64748b;
+            color: var(--sidenavbar-text-color) !important;
             background: white;
             border-radius: 14px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
@@ -157,7 +156,7 @@
         .empty-state h4 {
             font-weight: 600;
             margin-bottom: 0.75rem;
-            color: #475569;
+            color: var(--sidenavbar-text-color);
         }
 
         .empty-state p {
@@ -214,7 +213,7 @@
 
         .section-title {
             font-weight: 600;
-            color: #1e293b;
+            color: var(--sidenavbar-text-color) !important;
             margin-bottom: 1.5rem;
             font-size: 1.25rem;
             position: relative;
@@ -283,43 +282,41 @@
                                 </div>
 
                                 <!-- Summary Cards -->
-                                <div class="summary-cards">
-                                    <div class="summary-card">
-                                        <h5>Total Revenue</h5>
-                                        <div class="amount positive">PKR 0</div>
-                                        <div class="trend">
-                                            <i class="fas fa-arrow-up me-1 positive"></i>
-                                            <span class="positive">0% from last month</span>
+                                <div class="row g-2 mb-2">
+                                    <div class="col-md-4">
+                                        <div class="summary-card">
+                                            <h5>Total Revenue</h5>
+                                            <div class="amount positive">PKR 0</div>
+                                            <div class="trend">
+                                                <i class="fas fa-arrow-up me-1 positive"></i>
+                                                <span class="positive">0% from last month</span>
+                                            </div>
                                         </div>
                                     </div>
-                                    <div class="summary-card">
-                                        <h5>Total Expenses</h5>
-                                        <div class="amount negative">PKR 0</div>
-                                        <div class="trend">
-                                            <i class="fas fa-arrow-down me-1 negative"></i>
-                                            <span class="negative">0% from last month</span>
+                                    <div class="col-md-4">
+                                        <div class="summary-card">
+                                            <h5>Total Expenses</h5>
+                                            <div class="amount negative">PKR 0</div>
+                                            <div class="trend">
+                                                <i class="fas fa-arrow-down me-1 negative"></i>
+                                                <span class="negative">0% from last month</span>
+                                            </div>
                                         </div>
                                     </div>
-                                    <div class="summary-card">
-                                        <h5>Net Profit</h5>
-                                        <div class="amount positive">PKR 0</div>
-                                        <div class="trend">
-                                            <i class="fas fa-arrow-up me-1 positive"></i>
-                                            <span class="positive">0% from last month</span>
+                                    <div class="col-md-4">
+                                        <div class="summary-card">
+                                            <h5>Net Profit</h5>
+                                            <div class="amount positive">PKR 0</div>
+                                            <div class="trend">
+                                                <i class="fas fa-arrow-up me-1 positive"></i>
+                                                <span class="positive">0% from last month</span>
+                                            </div>
                                         </div>
                                     </div>
-{{--                                    <div class="summary-card">--}}
-{{--                                        <h5>Pending Transactions</h5>--}}
-{{--                                        <div class="amount">12</div>--}}
-{{--                                        <div class="trend">--}}
-{{--                                            <i class="fas fa-circle me-1" style="color: #f59e0b;"></i>--}}
-{{--                                            <span>3 new today</span>--}}
-{{--                                        </div>--}}
-{{--                                    </div>--}}
                                 </div>
 
                                 <!-- Chart Section -->
-                                <div class="finance-card p-4 mb-4">
+                                <div class="finance-card p-4 mt-3 mb-3">
                                     <div class="d-flex justify-content-between align-items-center mb-3">
                                         <h5 class="section-title mb-0">Financial Overview</h5>
                                         <select class="form-select w-25">
@@ -333,14 +330,14 @@
                                         <div class="d-flex align-items-center justify-content-center h-100">
                                             <div class="text-center">
                                                 <i class="fas fa-chart-line empty-state-icon"></i>
-                                                <p class="text-muted">Revenue and expense chart will appear here</p>
+                                                <p class="">Revenue and expense chart will appear here</p>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
 
                                 <!-- Filter Section -->
-                                <div class="filter-section">
+                                <div class="filter-section mb-3">
                                     <h5 class="section-title mb-4">Transaction Filters</h5>
                                     <div class="row g-3">
                                         <div class="col-md-3">

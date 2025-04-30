@@ -34,15 +34,14 @@
         }
 
         .card-header {
-            background-color: white;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            background-color: var(--body-card-bg);
             padding: 20px 25px;
         }
 
         .card-header h4, .card-header h5 {
             margin: 0;
             font-weight: 600;
-            color: #2c3e50;
+            color: var(--sidenavbar-text-color);
         }
 
         .card-body {
@@ -50,12 +49,12 @@
         }
 
         .detail-section {
-            margin-bottom: 30px;
+            margin-bottom: 5px;
         }
 
         .detail-section h5 {
             font-weight: 600;
-            color: #2c3e50;
+            color: var(--sidenavbar-text-color);
             margin-bottom: 15px;
             font-size: 1.1rem;
             position: relative;
@@ -81,13 +80,13 @@
 
         .detail-label {
             font-weight: 500;
-            color: #7f8c8d;
+            color: var(--sidenavbar-text-color);
             min-width: 160px;
         }
 
         .detail-value {
             font-weight: 500;
-            color: #2c3e50;
+            color: var(--sidenavbar-text-color);
             flex: 1;
         }
 
@@ -147,19 +146,17 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
         }
 
         .transaction-id {
             font-size: 0.9rem;
-            color: #7f8c8d;
+            color: var(--sidenavbar-text-color);
         }
 
         .transaction-amount {
             font-size: 1.8rem;
             font-weight: 600;
-            color: #2c3e50;
-            margin: 15px 0;
+            color: var(--sidenavbar-text-color);
         }
 
         .divider {
@@ -172,7 +169,7 @@
             font-size: 1.1rem;
             font-weight: 600;
             margin-bottom: 20px;
-            color: #2c3e50;
+            color: var(--sidenavbar-text-color);
             display: flex;
             align-items: center;
         }
@@ -210,9 +207,9 @@
     <div id="main">
         <div class="container">
             <div class="row justify-content-center">
-                <div class="col-md-10">
+                <div class="col-md-12">
                     <div class="card">
-                        <div class="card-header">
+                        <div class="card-header border-bottom">
                             <div class="transaction-header">
                                 <div>
                                     <h4>Transaction Details</h4>
@@ -225,11 +222,6 @@
                         </div>
 
                         <div class="card-body">
-                            @if (session('error'))
-                                <div class="alert alert-danger">
-                                    {{ session('error') }}
-                                </div>
-                            @endif
 
                             <div class="transaction-amount">
                                 {{ $transaction['price'] }}
@@ -299,9 +291,6 @@
                             @if($source)
                                 <div class="divider"></div>
                                 <div class="detail-section">
-                                    <h5><i class="fas fa-info-circle"></i> Source Information</h5>
-                                    <h6 class="section-title">{{ $source_name }}</h6>
-
                                     @if($source_name === 'unit contract')
                                         <div class="row">
                                             <div class="col-md-6">
@@ -359,33 +348,32 @@
 
                                     @if($source_name === 'subscription')
                                         <div class="row">
-                                            <div class="col-md-6">
+                                            <div class="col-md-12">
                                                 <div class="detail-section">
                                                     <h5><i class="fas fa-calendar-alt"></i> Subscription Info</h5>
-                                                    <div class="detail-item">
-                                                        <div class="detail-label">Source:</div>
-                                                        <div class="detail-value">{{ $source->source_name ?? 'N/A' }}</div>
-                                                    </div>
-                                                    <div class="detail-item">
-                                                        <div class="detail-label">Billing Cycle:</div>
-                                                        <div class="detail-value">{{ $source->billing_cycle ? $source->billing_cycle . ' Months' : 'N/A' }}</div>
-                                                    </div>
-                                                    <div class="detail-item">
-                                                        <div class="detail-label">Price:</div>
-                                                        <div class="detail-value">{{ $source->price_at_subscription . ' ' . $source->currency_at_subscription }}</div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="detail-section">
-                                                    <h5><i class="fas fa-info-circle"></i> Status</h5>
-                                                    <div class="detail-item">
-                                                        <div class="detail-label">Trial End:</div>
-                                                        <div class="detail-value">{{ $source->ends_at }}</div>
-                                                    </div>
-                                                    <div class="detail-item">
-                                                        <div class="detail-label">Status:</div>
-                                                        <div class="detail-value">{{ $source->subscription_status }}</div>
+                                                    <div class="row">
+                                                        <div class="detail-item col-md-6">
+                                                            <div class="detail-label">Source:</div>
+                                                            <div class="detail-value">{{ $source->source_name ?? 'N/A' }}</div>
+                                                        </div>
+                                                        <div class="detail-item col-md-6">
+                                                            <div class="detail-label">Billing Cycle:</div>
+                                                            <div class="detail-value">{{ $source->billing_cycle ? $source->billing_cycle . ' Months' : 'N/A' }}</div>
+                                                        </div>
+                                                        <div class="detail-item col-md-6">
+                                                            <div class="detail-label">Price:</div>
+                                                            <div class="detail-value">{{ $source->price_at_subscription . ' ' . $source->currency_at_subscription }}</div>
+                                                        </div>
+
+                                                        <div class="detail-item col-md-6">
+                                                            <div class="detail-label">Trial End:</div>
+                                                            <div class="detail-value">{{ $source->ends_at }}</div>
+                                                        </div>
+                                                        <div class="detail-item col-md-6">
+                                                            <div class="detail-label">Status:</div>
+                                                            <div class="detail-value">{{ $source->subscription_status }}</div>
+                                                        </div>
+
                                                     </div>
                                                 </div>
                                             </div>
@@ -393,7 +381,7 @@
 
                                         @if($nested_source_name === 'unit contract')
                                             <div class="divider"></div>
-                                            <h6 class="section-title">Related Unit Contract</h6>
+{{--                                            <h6 class="section-title">Related Unit Contract</h6>--}}
                                             <div class="row">
                                                 <div class="col-md-6">
                                                     <div class="detail-section">
@@ -406,24 +394,43 @@
                                                             <div class="detail-label">Email:</div>
                                                             <div class="detail-value">{{ $nested_source->user->email ?? 'N/A' }}</div>
                                                         </div>
-                                                    </div>
-                                                </div>
-
-                                                @if($source->type === 'Rent')
-                                                    <div class="col-md-6">
-                                                        <div class="detail-section">
-                                                            <h5><i class="fas fa-home"></i> Unit Details</h5>
-                                                            <div class="detail-item">
-                                                                <div class="detail-label">Unit Name:</div>
-                                                                <div class="detail-value">{{ $nested_source->unit->unit_name ?? 'N/A' }}</div>
-                                                            </div>
-                                                            <div class="detail-item">
-                                                                <div class="detail-label">Price:</div>
-                                                                <div class="detail-value">{{ $nested_source->price ?? 'N/A' }}</div>
+                                                        <div class="detail-item">
+                                                            <div class="detail-label">Picture:</div>
+                                                            <div class="detail-value">
+                                                                <img src="{{ $nested_source->user->picture ? asset($source->user->picture) : asset('img/placeholder-profile.png') }}"
+                                                                     alt="User Picture" class="user-avatar">
                                                             </div>
                                                         </div>
                                                     </div>
-                                                @endif
+                                                </div>
+
+                                                <div class="col-md-6">
+                                                    <div class="detail-section">
+                                                        <h5><i class="fas fa-home"></i> Unit Details</h5>
+                                                        <div class="detail-item">
+                                                            <div class="detail-label">Unit Name:</div>
+                                                            <div class="detail-value">{{ $nested_source->unit->unit_name ?? 'N/A' }}</div>
+                                                        </div>
+                                                        <div class="detail-item">
+                                                            <div class="detail-label">Unit Type:</div>
+                                                            <div class="detail-value">{{ $nested_source->unit->unit_type ?? 'N/A' }}</div>
+                                                        </div>
+                                                        <div class="detail-item">
+                                                            <div class="detail-label">Price:</div>
+                                                            <div class="detail-value">{{ $nested_source->price ?? 'N/A' }}</div>
+                                                        </div>
+                                                        <div class="detail-item">
+                                                            <div class="detail-label">Pictures:</div>
+                                                            <div class="detail-value">
+                                                                @forelse($nested_source->unit->pictures ?? [] as $picture)
+                                                                    <img src="{{ asset($picture->file_path) }}" class="unit-image" alt="Unit Picture">
+                                                                @empty
+                                                                    <img src="{{ asset('img/placeholder-img.jfif') }}" class="unit-image" alt="Unit Picture">
+                                                                @endforelse
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
                                         @endif
 
