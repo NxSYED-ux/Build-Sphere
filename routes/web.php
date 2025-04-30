@@ -283,7 +283,7 @@ Route::prefix('owner')->middleware(['auth.jwt'])->group(function () {
             Route::get('/create', [BuildingLevelController::class, 'ownerCreate'])->name('owner.levels.create');
             Route::post('/', [BuildingLevelController::class, 'ownerStore'])->name('owner.levels.store');
             Route::get('/{level}/show', [BuildingLevelController::class, 'show'])->name('owner.levels.show');
-            Route::get('/{level}/edit', [BuildingLevelController::class, 'ownerEdit'])->name('owner.levels.edit');
+            Route::get('/{level}/edit', [BuildingLevelController::class, 'adminEdit'])->name('owner.levels.edit');
             Route::put('/', [BuildingLevelController::class, 'ownerUpdate'])->name('owner.levels.update');
 
         });
