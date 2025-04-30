@@ -282,7 +282,7 @@ class BuildingLevelController extends Controller
             return response()->json([
                 'level' => $level,
                 'buildings' => $buildings
-            ]);
+            ], 200);
 
         } catch (\Exception $e) {
             Log::error('Error in ownerEdit: ' . $e->getMessage());
