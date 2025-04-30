@@ -290,9 +290,9 @@
 
                             <div class="selected-plan-details shadow-sm" id="selected-plan-details">
                                 <div class="text-center py-4">
-                                    <i class="fas fa-cube fa-3x text-muted mb-3"></i>
-                                    <h5 class="text-muted">No Plan Selected</h5>
-                                    <p class="text-muted">Please select a plan from above</p>
+                                    <i class="fas fa-cube fa-3x mb-3"></i>
+                                    <h5 class="">No Plan Selected</h5>
+                                    <p class="">Please select a plan from above</p>
                                 </div>
                             </div>
                         </div>
@@ -930,7 +930,7 @@
             function noPlansAvailableHTML() {
                 return `
             <div class="col-12 text-center py-4">
-                <i class="fas fa-exclamation-circle fa-2x text-muted mb-3"></i>
+                <i class="fas fa-exclamation-circle fa-2x mb-3"></i>
                 <p class="">No plans available for this billing cycle</p>
             </div>
         `;

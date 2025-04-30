@@ -370,12 +370,13 @@
                     e.preventDefault();
                     const id = this.getAttribute("data-id"); // 'this' refers to the clicked button
 
-                    fetch(`{{ route('owner.levels.edit', ':id') }}`.replace(':id', id), {
+                    fetch(`{{ route('owner.levels.edit', ':level') }}`.replace(':level', id), {
                         method: "GET",
                         headers: {
                             "X-Requested-With": "XMLHttpRequest",
-                            "Accept": "application/json"
-                        }
+                            "Accept": "application/json",
+                            "X-CSRF-TOKEN": getMeta('csrf-token ')
+                        },
                     })
                         .then(response => response.json())
                         .then(data => {
