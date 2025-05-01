@@ -375,18 +375,17 @@
                         headers: {
                             "X-Requested-With": "XMLHttpRequest",
                             "Accept": "application/json",
-                            "X-CSRF-TOKEN": getMeta('csrf-token ')
                         },
                     })
                         .then(response => response.json())
                         .then(data => {
-                            if (data.message) {
-                                alert(data.message);
+                            if (data.message || data.error ){
+                                alert(data.message || data.error);
                             } else {
                                 document.getElementById("edit_level_id").value = data.level?.id || "";
                                 document.getElementById("edit_level_name").value = data.level?.level_name || "";
                                 document.getElementById("edit_description").value = data.level?.description || "";
-                                document.getElementById("edit_level_number").value = data.level.level_number !== undefined ? data.level.level_number : "";
+                                document.getElementById("edit_level_number").value = data.level?.level_number !== undefined ? data.level.level_number : "";
                                 document.getElementById("edit_updated_at").value = data.level?.updated_at || "";
 
                                 const buildingSelect = document.getElementById("edit_building_id");
@@ -422,8 +421,8 @@
                                 editModal.show();
                             }
                         })
-                        .catch(() => {
-                            alert("An error occurred while retrieving the data.");
+                        .catch((e) => {
+                            alert(e);
                         });
                 });
             });

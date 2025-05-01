@@ -8,6 +8,7 @@ use App\Models\Building;
 use App\Models\BuildingLevel;
 use App\Models\ManagerBuilding;
 use App\Models\PlanSubscriptionItem;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -77,7 +78,7 @@ class BuildingLevelController extends Controller
 
 
     // Create
-    public function adminCreate()
+    public function adminCreate(): JsonResponse
     {
         $buildings = Building::select('id', 'name', 'organization_id')
             ->whereNotIn('status', ['Under Processing', 'Under Review', 'Rejected'])
@@ -86,11 +87,11 @@ class BuildingLevelController extends Controller
         return response()->json($buildings);
     }
 
-    public function ownerCreate(Request $request)
+    public function ownerCreate()
     {
-        $buildings = $this->getOwnerBuildings($request);
+        $buildings = $this->getOwnerBuildings();
 
-        if(!$buildings instanceof Building){
+        if ($buildings instanceof JsonResponse) {
             return $buildings;
         }
 
@@ -241,7 +242,7 @@ class BuildingLevelController extends Controller
 
 
     // Show
-    public function show(BuildingLevel $level)
+    public function show(BuildingLevel $level): JsonResponse
     {
         $level->load(['building']);
         return response()->json($level);
@@ -249,7 +250,7 @@ class BuildingLevelController extends Controller
 
 
     // Edit
-    public function adminEdit(BuildingLevel $level)
+    public function adminEdit(BuildingLevel $level): JsonResponse
     {
         try {
             $level->load(['building']);
@@ -269,13 +270,13 @@ class BuildingLevelController extends Controller
         }
     }
 
-    public function ownerEdit(BuildingLevel $level, Request $request)
+    public function ownerEdit(BuildingLevel $level)
     {
         try {
             $level->load(['building']);
-            $buildings = $this->getOwnerBuildings($request);
+            $buildings = $this->getOwnerBuildings();
 
-            if(!$buildings instanceof Building){
+            if ($buildings instanceof JsonResponse) {
                 return $buildings;
             }
 
@@ -452,10 +453,10 @@ class BuildingLevelController extends Controller
 
 
     // Helper Functions
-    private function getOwnerBuildings(Request $request)
+    private function getOwnerBuildings()
     {
-        $user = $request->user() ?? abort(404, 'Unauthorized');
-        $token = $request->attributes->get('token');
+        $user = request()->user() ?? abort(404, 'Unauthorized');
+        $token = request()->attributes->get('token');
         $buildings = collect();
 
         if (empty($token['organization_id']) || empty($token['role_name'])) {
