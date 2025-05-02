@@ -239,6 +239,16 @@ class BuildingUnitController extends Controller
                     }
                 }
 
+                if($portal === 'owner'){
+                    $building = Building::where('id', $unit->building_id)->first();
+
+                    if($building->status === 'Approved') {
+                        $building->update([
+                            'status' => 'For Re-Approval',
+                        ]);
+                    }
+                }
+
                 $subscriptionItem = PlanSubscriptionItem::where('organization_id', $organization_id)
                     ->where('service_catalog_id', 5)
                     ->lockForUpdate()
@@ -480,6 +490,16 @@ class BuildingUnitController extends Controller
 
                 if (!$unit) {
                     throw new \Exception('Please refresh the page and try again.');
+                }
+
+                if($portal === 'owner'){
+                    $building = Building::where('id', $unit->building_id)->first();
+
+                    if($building->status === 'Approved') {
+                        $building->update([
+                            'status' => 'For Re-Approval',
+                        ]);
+                    }
                 }
 
                 if ($portal === 'owner' && $token['organization_id'] !== $unit->organization_id) {

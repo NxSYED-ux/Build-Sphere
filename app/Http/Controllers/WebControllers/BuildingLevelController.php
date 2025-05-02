@@ -13,6 +13,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
 class BuildingLevelController extends Controller
@@ -154,6 +155,16 @@ class BuildingLevelController extends Controller
                     'organization_id' => $organization_id,
                     'status' => $status,
                 ]);
+
+                if($portal === 'owner'){
+                    $building = Building::where('id', $level->building_id)->first();
+
+                    if($building->status === 'Approved') {
+                        $building->update([
+                            'status' => 'For Re-Approval',
+                        ]);
+                    }
+                }
 
                 $subscriptionItem = PlanSubscriptionItem::where('organization_id', $organization_id)
                     ->where('service_catalog_id', 4)
@@ -346,6 +357,10 @@ class BuildingLevelController extends Controller
                     throw new \Exception('Please refresh and try again.');
                 }
 
+//                if ($buildingLevel->status === 'Approved' && $buildingLevel->building_id != $validated['building_id']) {
+//                    throw new \Exception("You cannot change the building of a level that has already been approved.");
+//                }
+
                 if ($portal === 'owner' && $token['organization_id'] !== $buildingLevel->organization_id) {
                     throw new \Exception('The selected level id is invalid.');
                 }
@@ -404,6 +419,16 @@ class BuildingLevelController extends Controller
                     'updated_at' => now(),
                 ]);
 
+                if($portal === 'owner'){
+                    $building = Building::where('id', $buildingLevel->building_id)->first();
+
+                    if($building->status === 'Approved') {
+                        $building->update([
+                            'status' => 'For Re-Approval',
+                        ]);
+                    }
+                }
+
                 $notificationData = [
                     'organization_id' => $organization_id,
                     'building_id' => $validated['building_id'],
@@ -446,9 +471,19 @@ class BuildingLevelController extends Controller
             DB::rollBack();
             Log::error("Building Level Update Failed: " . $e->getMessage());
 
-            $errorType = $user->role_id === 2 ? 'plan_upgrade_error' : 'error';
-            return redirect()->back()->with($errorType, $e->getMessage())->withInput();
+            $message = $e->getMessage();
+            $planErrors = [
+                'doesn\'t include level management',
+                'Building limit reached',
+                'level limit'
+            ];
+
+            $isPlanError = Str::contains($message, $planErrors);
+            $errorType = ($user->role_id === 2 && $isPlanError) ? 'plan_upgrade_error' : 'error';
+
+            return redirect()->back()->with($errorType, $message)->withInput();
         }
+
     }
 
 
