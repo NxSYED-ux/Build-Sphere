@@ -247,37 +247,36 @@
     </script>
 @endpush
 
-{{--    <script>--}}
-{{--        document.addEventListener("DOMContentLoaded", function () {--}}
-{{--            function fetchUnreadNotifications() {--}}
-{{--                let routeUrl = "{{ route('notifications.unread.count') }}"; // Laravel route--}}
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            function fetchUnreadNotifications() {
 
-{{--                fetch(routeUrl, {--}}
-{{--                    method: "GET",--}}
-{{--                    headers: {--}}
-{{--                        "Accept": "application/json"--}}
-{{--                    }--}}
-{{--                })--}}
-{{--                    .then(response => response.json())--}}
-{{--                    .then(data => {--}}
-{{--                        const notificationBadge = document.getElementById('notification-badge');--}}
-{{--                        const notificationBadge2 = document.getElementById('notification-badge2');--}}
-{{--                        if (data.count > 0) {--}}
-{{--                            notificationBadge.style.display = 'block';--}}
-{{--                            notificationBadge2.style.display = 'block';--}}
-{{--                        } else {--}}
-{{--                            notificationBadge.style.display = 'none';--}}
-{{--                            notificationBadge2.style.display = 'none';--}}
-{{--                        }--}}
-{{--                    })--}}
-{{--                    .catch(error => {--}}
-{{--                        console.error("Error fetching notifications:", error);--}}
-{{--                    });--}}
-{{--            }--}}
+                fetch({{ route('notifications.unread.count') }}, {
+                    method: "GET",
+                    headers: {
+                        "Accept": "application/json"
+                    }
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        const notificationBadge = document.getElementById('notification-badge');
+                        const notificationBadge2 = document.getElementById('notification-badge2');
+                        if (data.count > 0) {
+                            notificationBadge.style.display = 'block';
+                            notificationBadge2.style.display = 'block';
+                        } else {
+                            notificationBadge.style.display = 'none';
+                            notificationBadge2.style.display = 'none';
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Error fetching notifications:", error);
+                    });
+            }
 
-{{--            fetchUnreadNotifications();--}}
-{{--        });--}}
-{{--    </script>--}}
+            fetchUnreadNotifications();
+        });
+    </script>
 
 
 

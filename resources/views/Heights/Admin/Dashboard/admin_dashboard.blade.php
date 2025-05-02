@@ -102,6 +102,7 @@
     <x-Admin.top-navbar :searchVisible="false"/>
     <!--  -->
     <x-Admin.side-navbar :openSections="['Dashboard']"/>
+    <x-error-success-model />
 
     <div id="main" style="margin-top: 58px;">
 
@@ -370,47 +371,47 @@
         displayDateOrMonth("month", "currentMonth");
     </script>
 
-{{--    <script>--}}
-{{--        document.addEventListener('DOMContentLoaded', function() {--}}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
 
-{{--            function fetchTripData() {--}}
-{{--                const xhr = new XMLHttpRequest();--}}
-{{--                xhr.open('GET', '{{ route('admin_dashboard.data') }}', true);--}}
+            function fetchTripData() {
+                const xhr = new XMLHttpRequest();
+                xhr.open('GET', '{{ route('admin_dashboard.data') }}', true);
 
-{{--                xhr.onload = function() {--}}
-{{--                    if (xhr.status === 200) {--}}
-{{--                        const response = JSON.parse(xhr.responseText);--}}
-{{--                        console.log('Response Data:', response);--}}
+                xhr.onload = function() {
+                    if (xhr.status === 200) {
+                        const response = JSON.parse(xhr.responseText);
+                        console.log('Response Data:', response);
 
-{{--                        let totalBuildings = document.getElementById('totalBuildings');--}}
-{{--                        let totalOrganizations = document.getElementById('totalOrganizations');--}}
-{{--                        let totalOwners = document.getElementById('totalOwners');--}}
-{{--                        let totalBuildingsForApproval = document.getElementById('totalBuildingsForApproval');--}}
+                        let totalBuildings = document.getElementById('totalBuildings');
+                        let totalOrganizations = document.getElementById('totalOrganizations');
+                        let totalOwners = document.getElementById('totalOwners');
+                        let totalBuildingsForApproval = document.getElementById('totalBuildingsForApproval');
 
-{{--                        totalBuildings.textContent = response.counts.buildings;--}}
-{{--                        totalOrganizations.textContent = response.counts.organizations;--}}
-{{--                        totalOwners.textContent = response.counts.owners;--}}
-{{--                        totalBuildingsForApproval.textContent = response.counts.buildingsForApproval;--}}
-{{--                    } else {--}}
-{{--                        console.error('AJAX Error:', xhr.statusText);--}}
-{{--                    }--}}
-{{--                };--}}
+                        totalBuildings.textContent = response.counts.buildings;
+                        totalOrganizations.textContent = response.counts.organizations;
+                        totalOwners.textContent = response.counts.owners;
+                        totalBuildingsForApproval.textContent = response.counts.buildingsForApproval;
+                    } else {
+                        console.error('AJAX Error:', xhr.statusText);
+                    }
+                };
 
-{{--                xhr.onerror = function() {--}}
-{{--                    console.error('AJAX Error:', xhr.statusText);--}}
-{{--                };--}}
+                xhr.onerror = function() {
+                    console.error('AJAX Error:', xhr.statusText);
+                };
 
-{{--                xhr.send();--}}
-{{--            }--}}
+                xhr.send();
+            }
 
-{{--            fetchTripData();--}}
+            fetchTripData();
 
-{{--            setInterval(function() {--}}
-{{--                fetchTripData();--}}
-{{--            }, 3000);--}}
+            setInterval(function() {
+                fetchTripData();
+            }, 50000);
 
-{{--        });--}}
-{{--    </script>--}}
+        });
+    </script>
 
 @endpush
 

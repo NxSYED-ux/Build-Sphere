@@ -20,6 +20,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'check.permission' => \App\Http\Middleware\ValidatePermission::class,
             'plan' => \App\Http\Middleware\PlanMiddleware::class,
         ]);
+        $middleware->appendToGroup('web', \App\Http\Middleware\FixBackRedirect::class);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //
