@@ -68,7 +68,7 @@
                                 <div class="d-flex justify-content-between align-items-center mb-2">
                                     <h3 class="mb-1">Levels</h3>
                                     <a href="#" class="btn float-end hidden add_button" id="Admin-Level-Add-Button"  data-bs-toggle="tooltip" data-bs-placement="top" title="Add Level">
-                                        <x-icon name="add" type="svg" class="" size="25" />
+                                        <i class='bx bxs-layer-plus' style="font-size: 35px;"></i>
                                     </a>
                                 </div>
                                 <div class="card shadow p-3 mb-5 bg-body rounded" style="border: none;">

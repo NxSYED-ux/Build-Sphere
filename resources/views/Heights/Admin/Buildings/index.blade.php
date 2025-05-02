@@ -118,13 +118,13 @@
                                                     <td class="w-170 text-center">
                                                         <div class="d-flex justify-content-center align-items-center gap-3">
                                                             @if($building->status === "Under Review")
-                                                                <a href="{{ route('buildings.show', ['building' => $building->id]) }}" class="text" title="Review"><i class='bx bx-comment-edit mx-2' style="font-size: 20px;margin-right:5px; color: orange"></i></a>
+                                                                <a href="{{ route('buildings.show', ['building' => $building->id]) }}" class="text" title="Review"><i class='bx bx-comment-edit' style="font-size: 20px; color: orange"></i></a>
                                                             @else
                                                             <a href="{{ route('buildings.show', ['building' => $building->id]) }}" class="text-info" title="View">
                                                                 <x-icon name="view" type="icon" class="" size="20px" />
                                                             </a>
                                                             @endif
-                                                            <a href="{{ route('levels.index', ['building_id' => $building->id]) }}" class="text-" title="View Levels"><i class="bx bxs-city icons" style="font-size: 20px;margin-right:5px; color: grey;"></i></a>
+                                                            <a href="{{ route('levels.index', ['building_id' => $building->id]) }}" class="text-" title="View Levels"><i class="bx bxs-layer icons" style="font-size: 20px; color: grey;"></i></a>
                                                             <a href="{{ route('buildings.edit', $building->id) }}" class="text-warning Admin-Building-Edit-Button hidden"  title="Edit">
                                                                 <x-icon name="edit" type="icon" class="" size="20px" />
                                                             </a>
