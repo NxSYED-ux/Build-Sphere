@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -61,5 +62,28 @@ class Transaction extends Model
     public function unit(): BelongsTo
     {
         return $this->belongsTo(BuildingUnit::class);
+    }
+
+    public function scopeFilterTransactions(Builder $query, $request): Builder
+    {
+        if ($request->filled('status')) {
+            $query->where('status', $request->input('status'));
+        }
+
+        if ($request->filled('min_price')) {
+            $query->where('price', '>=', $request->input('min_price'));
+        }
+
+        if ($request->filled('max_price')) {
+            $query->where('price', '<=', $request->input('max_price'));
+        }
+
+        $days = is_numeric($request->input('date_range')) ? (int) $request->input('date_range') : 30;
+        $startDate = now()->subDays($days);
+        $endDate = now();
+
+        $query->whereBetween('created_at', [$startDate, $endDate]);
+
+        return $query;
     }
 }

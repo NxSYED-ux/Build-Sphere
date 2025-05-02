@@ -204,6 +204,9 @@ Route::prefix('admin')->middleware(['auth.jwt'])->group(function () {
         Route::get('/{transaction}/show', [FinanceController::class, 'adminShow'])->name('finance.show');
         Route::get('/{id}/latest', [FinanceController::class , 'latestPlatformOrganizationTransactions'])->name('finance.latest');
 
+        Route::get('/trends', [FinanceController::class, 'adminFinancialTrends'])->name('finance.trends');
+        Route::get('/chart', [FinanceController::class, 'adminFinancialChartData'])->name('finance.chart');
+
     });
 
     Route::prefix('/role-Permissions')->group(function () {
@@ -324,6 +327,9 @@ Route::prefix('owner')->middleware(['auth.jwt'])->group(function () {
             Route::get('/', [FinanceController::class , 'ownerIndex'])->name('owner.finance.index');
             Route::get('/{transaction}/show', [FinanceController::class, 'ownerShow'])->name('owner.finance.show');
             Route::get('/latest', [FinanceController::class , 'latestOrganizationTransactions'])->name('owner.finance.latest');
+
+            Route::get('/trends', [FinanceController::class, 'ownerFinancialTrends'])->name('owner.finance.trends');
+            Route::get('/chart', [FinanceController::class, 'ownerFinancialChartData'])->name('owner.finance.chart');
 
         });
 

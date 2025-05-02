@@ -302,6 +302,8 @@ class AssignUnitController extends Controller
                 'customer_payment_id' => $user->customer_payment_id,
                 'user_id' => $user->id,
                 'organization_id' => $unit->organization_id,
+                'building_id' => $unit->building_id,
+                'unit_id' => $unit->id,
                 'source_id' => $assignedUnit->id,
                 'source_name' => 'unit contract',
                 'billing_cycle' => 1,
@@ -318,6 +320,8 @@ class AssignUnitController extends Controller
         return Transaction::create([
             'transaction_title' => "{$unit->unit_name} ({$type})",
             'transaction_category' => 'New',
+            'building_id' => $unit->building_id,
+            'unit_id' => $unit->id,
             'buyer_id' => $user->id,
             'buyer_type' => 'user',
             'seller_id' => $unit->organization_id,

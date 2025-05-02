@@ -216,6 +216,8 @@ class CheckOutController extends Controller
         if ($type === 'Rented') {
             $subscription = Subscription::create([
                 'customer_payment_id' => $user->customer_payment_id,
+                'building_id' => $unit->building_id,
+                'unit_id' => $unit->id,
                 'user_id' => $user->id,
                 'organization_id' => $unit->organization_id,
                 'source_id' => $assignedUnit->id,
@@ -234,6 +236,8 @@ class CheckOutController extends Controller
         return Transaction::create([
             'transaction_title' => "{$unit->unit_name} ({$type})",
             'transaction_category' => 'New',
+            'building_id' => $unit->building_id,
+            'unit_id' => $unit->id,
             'buyer_id' => $user->id,
             'buyer_type' => 'user',
             'seller_type' => 'organization',

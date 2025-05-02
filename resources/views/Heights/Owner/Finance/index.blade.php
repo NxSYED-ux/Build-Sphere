@@ -1,13 +1,9 @@
 @extends('layouts.app')
 
-@section('title', 'Finance Dashboard')
+@section('title', 'Finance')
 
 @push('styles')
     <style>
-        body {
-            background-color: #f8fafc;
-            font-family: 'Inter', sans-serif;
-        }
         #main {
             margin-top: 45px;
         }
@@ -77,18 +73,6 @@
             background: linear-gradient(to bottom, #3b82f6, var(--color-blue));
         }
 
-        .summary-card:nth-child(2)::before {
-            background: linear-gradient(to bottom, #ef4444, #f97316);
-        }
-
-        .summary-card:nth-child(3)::before {
-            background: linear-gradient(to bottom, #10b981, #14b8a6);
-        }
-
-        .summary-card:nth-child(4)::before {
-            background: linear-gradient(to bottom, #f59e0b, #ec4899);
-        }
-
         .summary-card h5 {
             font-size: 0.875rem;
             color: var(--sidenavbar-text-color);
@@ -100,7 +84,7 @@
         .summary-card .amount {
             font-size: 1.75rem;
             font-weight: 700;
-            color: #1e293b;
+            color: var(--sidenavbar-text-color);
             margin-bottom: 0.5rem;
         }
 
@@ -142,7 +126,7 @@
             text-align: center;
             padding: 4rem;
             color: var(--sidenavbar-text-color) !important;
-            background: white;
+            background:  var(--sidenavbar-body-color) !important;
             border-radius: 14px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
         }
@@ -165,8 +149,8 @@
         }
 
         .btn-primary {
-            background-color: #4f46e5;
-            border-color: #4f46e5;
+            background-color: #2196F3;
+            border-color: #2196F3;
             padding: 0.5rem 1.25rem;
             font-weight: 500;
             letter-spacing: 0.2px;
@@ -174,8 +158,8 @@
         }
 
         .btn-primary:hover {
-            background-color: #4338ca;
-            border-color: #4338ca;
+            background-color: #2196F3;
+            border-color: #2196F3;
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
         }
@@ -227,7 +211,7 @@
             top: 0;
             height: 100%;
             width: 4px;
-            background: #4f46e5;
+            background: #2196F3;
             border-radius: 4px;
         }
 
@@ -269,131 +253,126 @@
                                 <div class="finance-header">
                                     <div>
                                         <h3>Financial Dashboard</h3>
-                                        <p>Track your transactions and financial performance</p>
                                     </div>
-                                    <div class="d-flex gap-2">
-                                        <button class="btn btn-primary d-flex align-items-center">
-                                            <i class="fas fa-file-export me-2"></i> Export Report
+                                    <form id="trendsFilterForm" method="GET" class="d-flex gap-2">
+                                        <select class="form-select form-select-sm w-auto me-2" style="min-width: 100px;" name="year" id="yearSelect">
+                                            @foreach(range(date('Y'), date('Y') - 5) as $y)
+                                                <option value="{{ $y }}">{{ $y }}</option>
+                                            @endforeach
+                                        </select>
+                                        <select class="form-select form-select-sm w-auto me-2" style="min-width: 100px;" name="month" id="monthSelect">
+                                            @foreach(range(1, 12) as $m)
+                                                <option value="{{ $m }}">
+                                                    {{ date('M', mktime(0, 0, 0, $m, 1)) }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                        <button type="submit" class="btn btn-primary btn-sm position-relative overflow-hidden me-2">
+                                            <span class="d-inline-block">Update Trends</span>
+                                            <i class="fas fa-arrow-right ms-2"></i>
                                         </button>
-                                        <button class="btn btn-outline-primary d-flex align-items-center">
-                                            <i class="fas fa-sliders-h me-2"></i> Settings
-                                        </button>
-                                    </div>
+                                    </form>
                                 </div>
 
-                                <!-- Summary Cards -->
-                                <div class="row g-2 mb-2">
-                                    <div class="col-md-4">
-                                        <div class="summary-card">
-                                            <h5>Total Revenue</h5>
-                                            <div class="amount positive">PKR 0</div>
-                                            <div class="trend">
-                                                <i class="fas fa-arrow-up me-1 positive"></i>
-                                                <span class="positive">0% from last month</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <div class="summary-card">
-                                            <h5>Total Expenses</h5>
-                                            <div class="amount negative">PKR 0</div>
-                                            <div class="trend">
-                                                <i class="fas fa-arrow-down me-1 negative"></i>
-                                                <span class="negative">0% from last month</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <div class="summary-card">
-                                            <h5>Net Profit</h5>
-                                            <div class="amount positive">PKR 0</div>
-                                            <div class="trend">
-                                                <i class="fas fa-arrow-up me-1 positive"></i>
-                                                <span class="positive">0% from last month</span>
-                                            </div>
-                                        </div>
-                                    </div>
+                                <!-- Summary Cards - Will be populated by JavaScript -->
+                                <div id="financialMetricsContainer" class="row g-2 mb-2">
+
                                 </div>
 
                                 <!-- Chart Section -->
                                 <div class="finance-card p-4 mt-3 mb-3">
                                     <div class="d-flex justify-content-between align-items-center mb-3">
                                         <h5 class="section-title mb-0">Financial Overview</h5>
-                                        <select class="form-select w-25">
-                                            <option>Last 30 Days</option>
-                                            <option>Last 90 Days</option>
-                                            <option>This Year</option>
+                                        <select class="form-select w-25" id="daysSelect">
+                                            <option value="30">Last 30 Days</option>
+                                            <option value="90">Last 90 Days</option>
+                                            <option value="custom" id="thisYearOption">This Year (Jan 1 - Today)</option>
                                         </select>
                                     </div>
                                     <div class="chart-container">
                                         <!-- Chart would be rendered here -->
                                         <div class="d-flex align-items-center justify-content-center h-100">
-                                            <div class="text-center">
-                                                <i class="fas fa-chart-line empty-state-icon"></i>
-                                                <p class="">Revenue and expense chart will appear here</p>
+                                            <div class="card-body">
+                                                <canvas id="financialChart" height="90px"></canvas>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
 
                                 <!-- Filter Section -->
-                                <div class="filter-section mb-3">
-                                    <h5 class="section-title mb-4">Transaction Filters</h5>
-                                    <div class="row g-3">
-                                        <div class="col-md-3">
-                                            <label class="form-label">Date Range</label>
-                                            <select class="form-select">
-                                                <option>Last 7 days</option>
-                                                <option selected>Last 30 days</option>
-                                                <option>Last 3 months</option>
-                                                <option>Custom range</option>
-                                            </select>
-                                        </div>
-                                        <div class="col-md-3">
-                                            <label class="form-label">Transaction Type</label>
-                                            <select class="form-select">
-                                                <option>All Transactions</option>
-                                                <option>Income</option>
-                                                <option>Expenses</option>
-                                                <option>Transfers</option>
-                                            </select>
-                                        </div>
-                                        <div class="col-md-3">
-                                            <label class="form-label">Status</label>
-                                            <select class="form-select">
-                                                <option>All Statuses</option>
-                                                <option>Completed</option>
-                                                <option>Pending</option>
-                                                <option>Failed</option>
-                                            </select>
-                                        </div>
-                                        <div class="col-md-3">
-                                            <label class="form-label">Amount Range</label>
-                                            <select class="form-select">
-                                                <option>Any Amount</option>
-                                                <option>Under PKR 10,000</option>
-                                                <option>PKR 10,000 - PKR 50,000</option>
-                                                <option>Over PKR 50,000</option>
-                                            </select>
-                                        </div>
-                                        <div class="col-md-12 d-flex justify-content-end gap-2 mt-4">
-                                            <button class="btn btn-outline-secondary">
-                                                <i class="fas fa-undo me-1"></i> Reset
-                                            </button>
-                                            <button class="btn btn-primary">
-                                                <i class="fas fa-filter me-1"></i> Apply Filters
-                                            </button>
+                                <form method="GET" action="{{ route('owner.finance.index') }}">
+                                    <div class="filter-section mb-3">
+                                        <h5 class="section-title mb-4">Transaction Filters</h5>
+                                        <div class="row g-3">
+                                            <div class="col-md-3">
+                                                <label class="form-label">Date Range</label>
+                                                <select name="date_range" class="form-select">
+                                                    <option value="7" {{ request('date_range') == 7 ? 'selected' : '' }}>Last 7 days</option>
+                                                    <option value="30" {{ request('date_range', 30) == 30 ? 'selected' : '' }}>Last 30 days</option>
+                                                    <option value="90" {{ request('date_range') == 90 ? 'selected' : '' }}>Last 3 months</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <label class="form-label">Transaction Type</label>
+                                                <select name="type" class="form-select">
+                                                    <option value="">All Transactions</option>
+                                                    <option value="Debit" {{ request('type') == 'Debit' ? 'selected' : '' }}>Debit</option>
+                                                    <option value="Credit" {{ request('type') == 'Credit' ? 'selected' : '' }}>Credit</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <label class="form-label">Status</label>
+                                                <select name="status" class="form-select">
+                                                    <option value="">All Statuses</option>
+                                                    <option value="Completed" {{ request('status') == 'Completed' ? 'selected' : '' }}>Completed</option>
+                                                    <option value="Pending" {{ request('status') == 'Pending' ? 'selected' : '' }}>Pending</option>
+                                                    <option value="Failed" {{ request('status') == 'Failed' ? 'selected' : '' }}>Failed</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <label for="buildingSelect" class="form-label">Buildings</label>
+                                                <select id="buildingSelect" name="building_id" class="form-select" {{ $buildings->isEmpty() ? 'disabled' : '' }}>
+                                                    @if($buildings->isEmpty())
+                                                        <option selected disabled>No buildings available</option>
+                                                    @else
+                                                        <option value="">All Buildings</option>
+                                                        @foreach($buildings as $building)
+                                                            <option value="{{ $building->id }}" {{ request('building_id') == $building->id ? 'selected' : '' }}>
+                                                                {{ $building->name }}
+                                                            </option>
+                                                        @endforeach
+                                                    @endif
+                                                </select>
+                                            </div>
+                                            {{--                                            <div class="col-md-3">--}}
+{{--                                                <label class="form-label">Min Amount (PKR)</label>--}}
+{{--                                                <input type="number" name="min_price" class="form-control" placeholder="0" value="{{ request('min_price') }}" >--}}
+{{--                                            </div>--}}
+{{--                                            <div class="col-md-3">--}}
+{{--                                                <label class="form-label">Max Amount (PKR)</label>--}}
+{{--                                                <input type="number" name="max_price" class="form-control" placeholder="100000" value="{{ request('max_price') }}">--}}
+{{--                                            </div>--}}
+
+
+                                            <div class="col-md-12 d-flex justify-content-end gap-2 mt-4">
+                                                <a href="{{ route('owner.finance.index') }}" class="btn btn-secondary d-flex align-items-center">
+                                                    <i class="fas fa-undo me-2"></i> Reset
+                                                </a>
+                                                <button class="btn btn-primary">
+                                                    <i class="fas fa-filter me-2"></i> Apply Filters
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
+                                </form>
 
                                 <!-- Transactions Section -->
                                 <div class="finance-card p-4">
                                     <div class="d-flex justify-content-between align-items-center mb-4">
                                         <h5 class="section-title mb-0">Recent Transactions</h5>
-{{--                                        <button class="btn btn-sm btn-outline-primary">--}}
-{{--                                            <i class="fas fa-plus me-1"></i> Add Transaction--}}
-{{--                                        </button>--}}
+                                        {{--                                        <button class="btn btn-sm btn-outline-primary">--}}
+                                        {{--                                            <i class="fas fa-plus me-1"></i> Add Transaction--}}
+                                        {{--                                        </button>--}}
                                     </div>
 
                                     @if(count($history) > 0)
@@ -412,10 +391,10 @@
                                         <div class="empty-state">
                                             <i class="fas fa-exchange-alt empty-state-icon"></i>
                                             <h4>No Transactions Found</h4>
-                                            <p>You don't have any transactions yet. Add your first transaction to get started.</p>
-                                            <button class="btn btn-primary">
-                                                <i class="fas fa-plus me-1"></i> Create Transaction
-                                            </button>
+                                            <p>You don't have any transactions yet.</p>
+                                            {{--                                            <button class="btn btn-primary">--}}
+                                            {{--                                                <i class="fas fa-plus me-1"></i> Create Transaction--}}
+                                            {{--                                            </button>--}}
                                         </div>
                                     @endif
                                 </div>
@@ -430,22 +409,297 @@
 @endsection
 
 @push('scripts')
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const summaryCards = document.querySelectorAll('.summary-card');
-            summaryCards.forEach(card => {
-                card.addEventListener('mouseenter', function() {
-                    this.style.transform = 'translateY(-5px)';
+        const ctx = document.getElementById('financialChart').getContext('2d');
+        const chartContainer = document.getElementById('financialChart').parentElement;
+
+        function showLoading() {
+            if (!document.getElementById('chartLoading')) {
+                const loadingDiv = document.createElement('div');
+                loadingDiv.id = 'chartLoading';
+                loadingDiv.innerHTML = `
+                <div style="
+                    position: absolute;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    text-align: center;
+                ">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <p class="mt-2">Loading data...</p>
+                </div>
+            `;
+                chartContainer.style.position = 'relative';
+                chartContainer.appendChild(loadingDiv);
+            }
+        }
+
+        function hideLoading() {
+            const loadingElement = document.getElementById('chartLoading');
+            if (loadingElement) loadingElement.remove();
+        }
+
+        function updateChart(days) {
+            showLoading();
+            if (window.chartInstance) {
+                window.chartInstance.destroy();
+            }
+            fetch(`{{ route('owner.finance.chart') }}?days=${days}`)
+                .then(response => response.json())
+                .then(chartData => {
+                    const gridColor = 'rgba(0, 0, 0, 0.05)';
+                    const tooltipBackground = 'rgba(0, 0, 0, 0.8)';
+                    const fontFamily = "'Inter', sans-serif";
+
+                    window.chartInstance = new Chart(ctx, {
+                        type: 'line',
+                        data: chartData,
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: true,
+                            plugins: {
+                                // title: {
+                                //     display: true,
+                                //     text: 'Daily Financial Performance',
+                                //     font: {
+                                //         family: fontFamily,
+                                //         size: 16,
+                                //         weight: '600'
+                                //     },
+                                //     color: '#333',
+                                //     padding: {
+                                //         top: 10,
+                                //         bottom: 20
+                                //     }
+                                // },
+                                legend: {
+                                    labels: {
+                                        font: {
+                                            family: fontFamily,
+                                            size: 12
+                                        },
+                                        padding: 20,
+                                        usePointStyle: true,
+                                        pointStyle: 'circle'
+                                    }
+                                },
+                                tooltip: {
+                                    mode: 'index',
+                                    intersect: false,
+                                    backgroundColor: tooltipBackground,
+                                    titleFont: {
+                                        family: fontFamily,
+                                        size: 12,
+                                        weight: 'bold'
+                                    },
+                                    bodyFont: {
+                                        family: fontFamily,
+                                        size: 12
+                                    },
+                                    padding: 10,
+                                    cornerRadius: 6,
+                                    callbacks: {
+                                        label: function(context) {
+                                            return context.dataset.label + ': PKR ' + context.raw.toLocaleString();
+                                        }
+                                    }
+                                }
+                            },
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    grid: {
+                                        color: gridColor,
+                                        drawBorder: false
+                                    },
+                                    ticks: {
+                                        font: {
+                                            family: fontFamily,
+                                            size: 11
+                                        },
+                                        callback: function(value) {
+                                            return 'PKR' + value.toLocaleString();
+                                        }
+                                    }
+                                },
+                                x: {
+                                    grid: {
+                                        color: gridColor,
+                                        drawBorder: false
+                                    },
+                                    ticks: {
+                                        font: {
+                                            family: fontFamily,
+                                            size: 11
+                                        }
+                                    }
+                                }
+                            },
+                            elements: {
+                                line: {
+                                    tension: 0.3,
+                                    borderWidth: 2,
+                                    fill: true
+                                },
+                                point: {
+                                    radius: 0,
+                                    hoverRadius: 0,
+                                    backgroundColor: 'white',
+                                    borderWidth: 2
+                                }
+                            },
+                            animation: {
+                                duration: 1000,
+                                easing: 'easeOutQuart'
+                            }
+                        }
+                    });
+                })
+                .catch(error => {
+                    console.error('Error loading chart data:', error);
+                })
+                .finally(() => {
+                    hideLoading();
                 });
-                card.addEventListener('mouseleave', function() {
-                    this.style.transform = '';
+        }
+
+        function fetchFinancialMetrics(year, month) {
+            const container = document.getElementById('financialMetricsContainer');
+            container.innerHTML = `
+                    <div class="col-12 text-center py-5">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <p class="mt-2">Loading...</p>
+                    </div>
+                `;
+
+            fetch(`{{ route('owner.finance.trends') }}?year=${year}&month=${month}`, {
+                headers: {
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    // Update the select dropdowns with the values from the API response
+                    if(data.selectedYear && data.selectedMonth) {
+                        document.getElementById('yearSelect').value = data.selectedYear;
+                        document.getElementById('monthSelect').value = data.selectedMonth;
+                        selectedYear = data.selectedYear;
+                        selectedMonth = data.selectedMonth;
+                    }
+
+                    updateFinancialMetricsUI(data.financialMetrics);
+                })
+                .catch(error => {
+                    console.error('Error fetching financial trends:', error);
+                    container.innerHTML = `
+                        <div class="col-12 text-center py-5">
+                            <i class="fas fa-exclamation-triangle fa-2x text-danger mb-3"></i>
+                            <p class="text-danger">Failed to load financial data. Please try again.</p>
+                            <button class="btn btn-sm btn-primary" onclick="fetchFinancialMetrics(${selectedYear}, ${selectedMonth})">
+                                <i class="fas fa-sync-alt me-1"></i> Retry
+                            </button>
+                        </div>
+                    `;
                 });
+        }
+
+        function updateFinancialMetricsUI(metrics) {
+            const container = document.getElementById('financialMetricsContainer');
+
+            container.innerHTML = `
+            <div class="row g-2 mb-2">
+                <div class="col-md-4">
+                    <div class="summary-card">
+                        <h5>Total Revenue</h5>
+                        <div class="amount">
+                            PKR ${metrics.total_revenue.value.toLocaleString('en-PK', {minimumFractionDigits: 2, maximumFractionDigits: 2})}
+                        </div>
+                        <div class="trend">
+                            ${metrics.total_revenue.trend === 'up' ?
+                        '<i class="fas fa-arrow-up me-1 positive"></i><span class="positive">' +
+                        Math.abs(metrics.total_revenue.change).toFixed(2) + '% from last month</span>' :
+                        '<i class="fas fa-arrow-down me-1 negative"></i><span class="negative">' +
+                        Math.abs(metrics.total_revenue.change).toFixed(2) + '% from last month</span>'}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="summary-card">
+                        <h5>Total Expenses</h5>
+                        <div class="amount">
+                            PKR ${metrics.total_expenses.value.toLocaleString('en-PK', {minimumFractionDigits: 2, maximumFractionDigits: 2})}
+                        </div>
+                        <div class="trend">
+                            ${metrics.total_expenses.trend === 'down' ?
+                        '<i class="fas fa-arrow-down me-1 positive"></i><span class="positive">' +
+                        Math.abs(metrics.total_expenses.change).toFixed(2) + '% from last month</span>' :
+                        '<i class="fas fa-arrow-up me-1 negative"></i><span class="negative">' +
+                        Math.abs(metrics.total_expenses.change).toFixed(2) + '% from last month</span>'}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="summary-card">
+                        <h5>Net Profit</h5>
+                        <div class="amount ${metrics.net_profit.value >= 0 ? 'positive' : 'negative'}">
+                            PKR ${metrics.net_profit.value.toLocaleString('en-PK', {minimumFractionDigits: 2, maximumFractionDigits: 2})}
+                        </div>
+                        <div class="trend">
+                            ${metrics.net_profit.trend === 'up' ?
+                        '<i class="fas fa-arrow-up me-1 positive"></i><span class="positive">' +
+                        Math.abs(metrics.net_profit.change).toFixed(2) + '% from last month</span>' :
+                        '<i class="fas fa-arrow-down me-1 negative"></i><span class="negative">' +
+                        Math.abs(metrics.net_profit.change).toFixed(2) + '% from last month</span>'}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            `;
+        }
+
+
+        document.addEventListener('DOMContentLoaded', async function () {
+            const daysSelect = document.getElementById('daysSelect');
+            const yearSelect = document.getElementById('yearSelect');
+            const monthSelect = document.getElementById('monthSelect');
+            const trendsForm = document.getElementById('trendsFilterForm');
+            const thisYearOption = document.getElementById('thisYearOption');
+
+            const currentDate = new Date();
+            let selectedMonth = currentDate.getMonth() + 1;
+            let selectedYear = currentDate.getFullYear();
+
+            yearSelect.value = selectedYear;
+            monthSelect.value = selectedMonth;
+
+            const defaultDays = daysSelect.value;
+
+            fetchFinancialMetrics(selectedYear, selectedMonth);
+            updateChart(defaultDays);
+
+            daysSelect.addEventListener('change', function () {
+                updateChart(this.value);
             });
 
-            // You could add chart initialization code here
-            // For example using Chart.js:
-            // const ctx = document.getElementById('financeChart').getContext('2d');
-            // new Chart(ctx, { ... });
+            trendsForm.addEventListener('submit', async function (e) {
+                e.preventDefault();
+                selectedYear = yearSelect.value;
+                selectedMonth = monthSelect.value;
+                await fetchFinancialMetrics(selectedYear, selectedMonth);
+            });
+
+            const today = new Date();
+            const firstDayOfYear = new Date(today.getFullYear(), 0, 1);
+            const diffTime = today - firstDayOfYear;
+            thisYearOption.value = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
         });
     </script>
 @endpush
