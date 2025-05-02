@@ -14,15 +14,8 @@
             --border-radius: 12px;
         }
 
-        body {
-            background-color: #f5f7fb;
-            color: #333;
-            font-family: 'Inter', sans-serif;
-        }
-
         #main {
             margin-top: 60px;
-            padding: 20px;
         }
 
         .card {
