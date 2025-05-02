@@ -45,7 +45,7 @@ class EmailNotification extends Notification implements ShouldQueue
         return (new MailMessage)
             ->subject($this->heading)
             ->line($this->message)
-            ->action('View Details', $this->link['web'] ?? $this->link);
+            ->action('View Details', url($this->link['web'] ?? $this->link));
     }
 
     public function toArray($notifiable)

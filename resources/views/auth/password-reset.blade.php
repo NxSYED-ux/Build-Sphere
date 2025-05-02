@@ -81,7 +81,7 @@
         <p>Hello,</p>
         <p>We received a request to reset your password. If this was you, please click the button below to reset your password:</p>
         <div class="button-container">
-            <a href="{{ url('reset-password/' . $token) }}">Reset Your Password</a>
+            <a href="{{ route('password.reset', ['token' => $token]) }}">Reset Your Password</a>
         </div>
         <p><strong>Note:</strong> This link will expire in {{$expirationTime}} minutes.</p>
         <p>If you did not request a password reset, please ignore this email.</p>
