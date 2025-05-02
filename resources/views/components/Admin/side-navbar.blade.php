@@ -82,7 +82,7 @@
                     <div class="collapse {{ in_array('Buildings', $openSections) ? 'show' : '' }}" id="Buildings" style="">
                         <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
                             <li id="AdminBuildings" class="hidden"><a href="{{ route('buildings.index') }}" class="link-dark {{ in_array('Building', $openSections) ? 'Link-background-color' : '' }}" data-bs-target="#Buildings "><i class="bx bx-buildings icons"></i> Buildings</a></li>
-                            <li id="AdminLevels" class="hidden"><a href="{{ route('levels.index') }}" class="link-dark {{ in_array('Levels', $openSections) ? 'Link-background-color' : '' }}" data-bs-target="#AdminControl" ><i class="bx bxs-city icons"></i> Levels</a></li>
+                            <li id="AdminLevels" class="hidden"><a href="{{ route('levels.index') }}" class="link-dark {{ in_array('Levels', $openSections) ? 'Link-background-color' : '' }}" data-bs-target="#AdminControl" ><i class="bx bxs-layer icons"></i> Levels</a></li>
                             <li id="AdminUnits" class="hidden"><a href="{{ route('units.index') }}" class="link-dark {{ in_array('Units', $openSections) ? 'Link-background-color' : '' }}" data-bs-target="#AdminControl" ><i class="bx bxs-home icons"></i> Units</a></li>
                         </ul>
                     </div>
@@ -102,6 +102,14 @@
                     <div id="link-a">
                         <a href="{{ route('plans.index') }}" class="link-dark collapsed {{ in_array('Plans', $openSections) ? 'Link-background-color' : '' }} px-1" id="Planbtn" >
                             <i class="fas fa-crown icons" style="font-size: 20px;"></i> Plans </a>
+                    </div>
+                </li>
+
+                <!-- Finance -->
+                <li class="mb-1" id="AdminFinanace">
+                    <div id="link-a">
+                        <a href="{{ route('finance.index') }}" class="link-dark collapsed {{ in_array('Finance', $openSections) ? 'Link-background-color' : '' }} px-1" id="Financebtn" >
+                            <i class="bx bx-money icons"></i> Finance </a>
                     </div>
                 </li>
 

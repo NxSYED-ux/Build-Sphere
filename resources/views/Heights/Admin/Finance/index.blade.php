@@ -190,11 +190,6 @@
             box-shadow: 0 0 0 3px rgba(199, 210, 254, 0.5);
         }
 
-        .chart-container {
-            height: 300px;
-            margin-bottom: 2rem;
-        }
-
         .section-title {
             font-weight: 600;
             color: var(--sidenavbar-text-color) !important;
@@ -224,6 +219,47 @@
 
             .summary-cards {
                 grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .chart-container {
+            position: relative;
+            width: 100%;
+            min-height: 300px;
+            margin-bottom: 2rem;
+        }
+
+        /* Ensure the canvas fills its container */
+        #financialChart {
+            width: 100% !important;
+            height: 100% !important;
+            min-height: 300px;
+            max-height: 300px;
+        }
+
+        /* For smaller screens */
+        @media (max-width: 768px) {
+            .chart-container {
+                min-height: 250px;
+            }
+            #financialChart {
+                width: 100% !important;
+                height: 100% !important;
+                min-height: 350px;
+                max-height: 350px;
+            }
+        }
+
+        .days-select {
+            width: 100%;
+            margin-top: 0.5rem;
+        }
+
+        /* Medium screens and up: Fixed width (25%) */
+        @media (min-width: 768px) {
+            .days-select {
+                width: 25%;
+                margin-top: 0;
             }
         }
     </style>
@@ -258,49 +294,70 @@
                                     <form id="trendsFilterForm" method="GET" class="d-flex gap-2">
                                         <select class="form-select form-select-sm w-auto me-2" style="min-width: 100px;" name="year" id="yearSelect">
                                             @foreach(range(date('Y'), date('Y') - 5) as $y)
-                                                <option value="{{ $y }}">{{ $y }}</option>
+                                                <option value="{{ $y }}" {{ $y == date('Y') ? 'selected' : '' }}>{{ $y }}</option>
                                             @endforeach
                                         </select>
                                         <select class="form-select form-select-sm w-auto me-2" style="min-width: 100px;" name="month" id="monthSelect">
                                             @foreach(range(1, 12) as $m)
-                                                <option value="{{ $m }}">
+                                                <option value="{{ $m }}" {{ $m == date('n') ? 'selected' : '' }}>
                                                     {{ date('M', mktime(0, 0, 0, $m, 1)) }}
                                                 </option>
                                             @endforeach
                                         </select>
-                                        <button type="submit" class="btn btn-primary btn-sm position-relative overflow-hidden me-2">
+                                        <button type="submit" class="btn btn-primary btn-sm">
                                             <span class="d-inline-block">Update Trends</span>
                                             <i class="fas fa-arrow-right ms-2"></i>
                                         </button>
                                     </form>
                                 </div>
 
-                                <!-- Summary Cards - Will be populated by JavaScript -->
+                                <!-- Fixed Summary Cards -->
                                 <div id="financialMetricsContainer" class="row g-2 mb-2">
-                                    <div class="col-12 text-center py-5">
-                                        <div class="spinner-border text-primary" role="status">
-                                            <span class="visually-hidden">Loading...</span>
+                                    <div class="col-md-4">
+                                        <div class="summary-card">
+                                            <h5>Total Revenue</h5>
+                                            <div class="amount" id="totalRevenue">PKR 0.00</div>
+                                            <div class="trend" id="totalRevenueTrend">
+                                                <i class="fas fa-arrow-up me-1 positive"></i>
+                                                <span class="positive">0.00% from last month</span>
+                                            </div>
                                         </div>
-                                        <p class="mt-2">Loading...</p>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="summary-card">
+                                            <h5>Total Expenses</h5>
+                                            <div class="amount" id="totalExpenses">PKR 0.00</div>
+                                            <div class="trend" id="totalExpensesTrend">
+                                                <i class="fas fa-arrow-down me-1 positive"></i>
+                                                <span class="positive">0.00% from last month</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="summary-card">
+                                            <h5>Net Profit</h5>
+                                            <div class="amount positive" id="netProfit">PKR 0.00</div>
+                                            <div class="trend" id="netProfitTrend">
+                                                <i class="fas fa-arrow-up me-1 positive"></i>
+                                                <span class="positive">0.00% from last month</span>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
 
                                 <!-- Chart Section -->
                                 <div class="finance-card p-4 mt-3 mb-3">
-                                    <div class="d-flex justify-content-between align-items-center mb-3">
-                                        <h5 class="section-title mb-0">Financial Overview</h5>
-                                        <select class="form-select w-25" id="daysSelect">
+                                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-3">
+                                        <h5 class="section-title mb-0 mb-md-0">Financial Overview</h5>
+                                        <select class="form-select days-select"   id="daysSelect">
                                             <option value="30">Last 30 Days</option>
                                             <option value="90">Last 90 Days</option>
                                             <option value="custom" id="thisYearOption">This Year (Jan 1 - Today)</option>
                                         </select>
                                     </div>
                                     <div class="chart-container">
-                                        <!-- Chart would be rendered here -->
-                                        <div class="d-flex align-items-center justify-content-center h-100">
-                                            <div class="card-body">
-                                                <canvas id="financialChart" height="90px"></canvas>
-                                            </div>
+                                        <div class="card-body" style="position: relative; height: 100%; width: 100%;">
+                                            <canvas id="financialChart"></canvas>
                                         </div>
                                     </div>
                                 </div>
@@ -310,7 +367,7 @@
                                     <div class="filter-section mb-3">
                                         <h5 class="section-title mb-4">Transaction Filters</h5>
                                         <div class="row g-3">
-                                            <div class="col-md-3">
+                                            <div class="col-md-4">
                                                 <label class="form-label">Date Range</label>
                                                 <select name="date_range" class="form-select">
                                                     <option value="7" {{ request('date_range') == 7 ? 'selected' : '' }}>Last 7 days</option>
@@ -318,7 +375,7 @@
                                                     <option value="90" {{ request('date_range') == 90 ? 'selected' : '' }}>Last 3 months</option>
                                                 </select>
                                             </div>
-                                            <div class="col-md-3">
+                                            <div class="col-md-4">
                                                 <label class="form-label">Transaction Type</label>
                                                 <select name="type" class="form-select">
                                                     <option value="">All Transactions</option>
@@ -326,7 +383,7 @@
                                                     <option value="Credit" {{ request('type') == 'Credit' ? 'selected' : '' }}>Credit</option>
                                                 </select>
                                             </div>
-                                            <div class="col-md-3">
+                                            <div class="col-md-4">
                                                 <label class="form-label">Status</label>
                                                 <select name="status" class="form-select">
                                                     <option value="">All Statuses</option>
@@ -335,22 +392,24 @@
                                                     <option value="Failed" {{ request('status') == 'Failed' ? 'selected' : '' }}>Failed</option>
                                                 </select>
                                             </div>
-                                            <div class="col-md-3">
+                                            <div class="col-md-4">
                                                 <label class="form-label">Min Amount (PKR)</label>
                                                 <input type="number" name="min_price" class="form-control" placeholder="0" value="{{ request('min_price') }}" >
                                             </div>
-                                            <div class="col-md-3">
+                                            <div class="col-md-4">
                                                 <label class="form-label">Max Amount (PKR)</label>
                                                 <input type="number" name="max_price" class="form-control" placeholder="100000" value="{{ request('max_price') }}">
                                             </div>
 
-                                            <div class="col-md-12 d-flex justify-content-end gap-2 mt-4">
-                                                <a href="{{ route('finance.index') }}" class="btn btn-secondary d-flex align-items-center">
-                                                    <i class="fas fa-undo me-2"></i> Reset
-                                                </a>
-                                                <button class="btn btn-primary">
-                                                    <i class="fas fa-filter me-2"></i> Apply Filters
-                                                </button>
+                                            <div class="col-md-4 d-flex align-items-end">
+                                                <div class="d-flex w-100 justify-content-between gap-2">
+                                                    <a href="{{ route('finance.index') }}" class="btn btn-secondary flex-grow-1 d-flex align-items-center justify-content-center">
+                                                        <i class="fas fa-undo me-2"></i> Reset
+                                                    </a>
+                                                    <button class="btn btn-primary flex-grow-1 d-flex align-items-center justify-content-center">
+                                                        <i class="fas fa-filter me-2"></i> Apply Filters
+                                                    </button>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -432,11 +491,20 @@
             if (loadingElement) loadingElement.remove();
         }
 
+        window.addEventListener('beforeunload', function() {
+            if (window.chartResizeObserver) {
+                window.chartResizeObserver.disconnect();
+            }
+        });
+
         function updateChart(days) {
             showLoading();
+
+            // Destroy previous chart instance if exists
             if (window.chartInstance) {
                 window.chartInstance.destroy();
             }
+
             fetch(`{{ route('finance.chart') }}?days=${days}`)
                 .then(response => response.json())
                 .then(chartData => {
@@ -444,32 +512,26 @@
                     const tooltipBackground = 'rgba(0, 0, 0, 0.8)';
                     const fontFamily = "'Inter', sans-serif";
 
+                    // Get the parent container dimensions
+                    const container = document.getElementById('financialChart').parentElement;
+                    const containerWidth = container.clientWidth;
+
+                    // Adjust font sizes based on container width
+                    const baseFontSize = containerWidth > 768 ? 12 : 10;
+                    const titleFontSize = containerWidth > 768 ? 16 : 12;
+
                     window.chartInstance = new Chart(ctx, {
                         type: 'line',
                         data: chartData,
                         options: {
                             responsive: true,
-                            maintainAspectRatio: true,
+                            maintainAspectRatio: false, // Changed to false for better control
                             plugins: {
-                                // title: {
-                                //     display: true,
-                                //     text: 'Daily Financial Performance',
-                                //     font: {
-                                //         family: fontFamily,
-                                //         size: 16,
-                                //         weight: '600'
-                                //     },
-                                //     color: '#333',
-                                //     padding: {
-                                //         top: 10,
-                                //         bottom: 20
-                                //     }
-                                // },
                                 legend: {
                                     labels: {
                                         font: {
                                             family: fontFamily,
-                                            size: 12
+                                            size: baseFontSize
                                         },
                                         padding: 20,
                                         usePointStyle: true,
@@ -482,12 +544,12 @@
                                     backgroundColor: tooltipBackground,
                                     titleFont: {
                                         family: fontFamily,
-                                        size: 12,
+                                        size: baseFontSize,
                                         weight: 'bold'
                                     },
                                     bodyFont: {
                                         family: fontFamily,
-                                        size: 12
+                                        size: baseFontSize
                                     },
                                     padding: 10,
                                     cornerRadius: 6,
@@ -508,7 +570,7 @@
                                     ticks: {
                                         font: {
                                             family: fontFamily,
-                                            size: 11
+                                            size: baseFontSize
                                         },
                                         callback: function(value) {
                                             return 'PKR' + value.toLocaleString();
@@ -523,7 +585,7 @@
                                     ticks: {
                                         font: {
                                             family: fontFamily,
-                                            size: 11
+                                            size: baseFontSize
                                         }
                                     }
                                 }
@@ -547,6 +609,16 @@
                             }
                         }
                     });
+
+                    // Add resize observer to handle window resizing
+                    if (!window.chartResizeObserver) {
+                        window.chartResizeObserver = new ResizeObserver(() => {
+                            if (window.chartInstance) {
+                                window.chartInstance.resize();
+                            }
+                        });
+                        window.chartResizeObserver.observe(container);
+                    }
                 })
                 .catch(error => {
                     console.error('Error loading chart data:', error);
@@ -557,16 +629,6 @@
         }
 
         function fetchFinancialMetrics(year, month) {
-            const container = document.getElementById('financialMetricsContainer');
-            container.innerHTML = `
-                    <div class="col-12 text-center py-5">
-                        <div class="spinner-border text-primary" role="status">
-                            <span class="visually-hidden">Loading...</span>
-                        </div>
-                        <p class="mt-2">Loading financial data...</p>
-                    </div>
-                `;
-
             fetch(`{{ route('finance.trends') }}?year=${year}&month=${month}`, {
                 headers: {
                     'Accept': 'application/json',
@@ -575,7 +637,7 @@
             })
                 .then(response => response.json())
                 .then(data => {
-                    // Update the select dropdowns with the values from the API response
+                    // Update the select dropdowns if needed
                     if(data.selectedYear && data.selectedMonth) {
                         document.getElementById('yearSelect').value = data.selectedYear;
                         document.getElementById('monthSelect').value = data.selectedMonth;
@@ -583,76 +645,37 @@
                         selectedMonth = data.selectedMonth;
                     }
 
-                    updateFinancialMetricsUI(data.financialMetrics);
+                    // Update the metric values directly
+                    updateMetricValue('totalRevenue', data.financialMetrics.total_revenue);
+                    updateMetricValue('totalExpenses', data.financialMetrics.total_expenses);
+                    updateMetricValue('netProfit', data.financialMetrics.net_profit);
                 })
                 .catch(error => {
                     console.error('Error fetching financial trends:', error);
-                    container.innerHTML = `
-                        <div class="col-12 text-center py-5">
-                            <i class="fas fa-exclamation-triangle fa-2x text-danger mb-3"></i>
-                            <p class="text-danger">Failed to load financial data. Please try again.</p>
-                            <button class="btn btn-sm btn-primary" onclick="fetchFinancialMetrics(${selectedYear}, ${selectedMonth})">
-                                <i class="fas fa-sync-alt me-1"></i> Retry
-                            </button>
-                        </div>
-                    `;
                 });
         }
 
-        function updateFinancialMetricsUI(metrics) {
-            const container = document.getElementById('financialMetricsContainer');
+        function updateMetricValue(metricId, metricData) {
+            // Update amount
+            const amountElement = document.getElementById(metricId);
+            amountElement.textContent = `PKR ${metricData.value.toLocaleString('en-PK', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
 
-            container.innerHTML = `
-            <div class="row g-2 mb-2">
-                <div class="col-md-4">
-                    <div class="summary-card">
-                        <h5>Total Revenue</h5>
-                        <div class="amount">
-                            PKR ${metrics.total_revenue.value.toLocaleString('en-PK', {minimumFractionDigits: 2, maximumFractionDigits: 2})}
-                        </div>
-                        <div class="trend">
-                            ${metrics.total_revenue.trend === 'up' ?
-                '<i class="fas fa-arrow-up me-1 positive"></i><span class="positive">' +
-                Math.abs(metrics.total_revenue.change).toFixed(2) + '% from last month</span>' :
-                '<i class="fas fa-arrow-down me-1 negative"></i><span class="negative">' +
-                Math.abs(metrics.total_revenue.change).toFixed(2) + '% from last month</span>'}
-                        </div>
-                    </div>
-                </div>
+            // Update trend
+            const trendElement = document.getElementById(`${metricId}Trend`);
+            const isPositive = metricData.trend === 'up' || (metricId === 'totalExpenses' && metricData.trend === 'down');
+            const trendClass = isPositive ? 'positive' : 'negative';
+            const trendIcon = isPositive ? 'fa-arrow-up' : 'fa-arrow-down';
 
-                <div class="col-md-4">
-                    <div class="summary-card">
-                        <h5>Total Expenses</h5>
-                        <div class="amount">
-                            PKR ${metrics.total_expenses.value.toLocaleString('en-PK', {minimumFractionDigits: 2, maximumFractionDigits: 2})}
-                        </div>
-                        <div class="trend">
-                            ${metrics.total_expenses.trend === 'down' ?
-                '<i class="fas fa-arrow-down me-1 positive"></i><span class="positive">' +
-                Math.abs(metrics.total_expenses.change).toFixed(2) + '% from last month</span>' :
-                '<i class="fas fa-arrow-up me-1 negative"></i><span class="negative">' +
-                Math.abs(metrics.total_expenses.change).toFixed(2) + '% from last month</span>'}
-                        </div>
-                    </div>
-                </div>
+            trendElement.innerHTML = `
+            <i class="fas ${trendIcon} me-1 ${trendClass}"></i>
+            <span class="${trendClass}">${Math.abs(metricData.change).toFixed(2)}% from last month</span>
+        `;
 
-                <div class="col-md-4">
-                    <div class="summary-card">
-                        <h5>Net Profit</h5>
-                        <div class="amount ${metrics.net_profit.value >= 0 ? 'positive' : 'negative'}">
-                            PKR ${metrics.net_profit.value.toLocaleString('en-PK', {minimumFractionDigits: 2, maximumFractionDigits: 2})}
-                        </div>
-                        <div class="trend">
-                            ${metrics.net_profit.trend === 'up' ?
-                '<i class="fas fa-arrow-up me-1 positive"></i><span class="positive">' +
-                Math.abs(metrics.net_profit.change).toFixed(2) + '% from last month</span>' :
-                '<i class="fas fa-arrow-down me-1 negative"></i><span class="negative">' +
-                Math.abs(metrics.net_profit.change).toFixed(2) + '% from last month</span>'}
-                        </div>
-                    </div>
-                </div>
-            </div>
-            `;
+            // Special handling for Net Profit amount color
+            if (metricId === 'netProfit') {
+                amountElement.className = 'amount';
+                amountElement.classList.add(metricData.value >= 0 ? 'positive' : 'negative');
+            }
         }
 
 

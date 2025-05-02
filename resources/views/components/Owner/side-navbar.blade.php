@@ -118,7 +118,7 @@
             </li>
 
             <!-- Finance -->
-            <li class="mb-1 hidden" id="OwnerStaff">
+            <li class="mb-1" id="OwnerFinance">
                 <div id="link-a">
                     <a href="{{ route('owner.finance.index') }}" class="link-dark collapsed {{ in_array('Finance', $openSections) ? 'Link-background-color' : '' }} px-1" id="Financebtn" >
                         <i class="bx bx-money icons"></i> Finance </a>
