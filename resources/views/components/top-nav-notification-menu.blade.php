@@ -44,6 +44,9 @@
 
                 fetch("{{ route('notifications') }}", {
                     method: "GET",
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
                 })
                     .then(response => response.json())
                     .then(data => {
@@ -254,7 +257,8 @@
                 fetch({{ route('notifications.unread.count') }}, {
                     method: "GET",
                     headers: {
-                        "Accept": "application/json"
+                        "Accept": "application/json",
+                        'X-Requested-With': 'XMLHttpRequest'
                     }
                 })
                     .then(response => response.json())

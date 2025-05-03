@@ -5,6 +5,7 @@ namespace App\Http\Controllers\WebControllers;
 use App\Http\Controllers\Controller;
 use App\Models\Building;
 use App\Models\ManagerBuilding;
+use App\Models\Organization;
 use App\Models\Plan;
 use App\Models\Subscription;
 use App\Models\Transaction;
@@ -239,7 +240,12 @@ class FinanceController extends Controller
                 $source = Subscription::find($transaction->source_id);
 
                 if ($source && $source->source_name === 'plan') {
-                    $nested_source = Plan::find($source->source_id);
+                    $plan = Plan::find($source->source_id);
+                    $organization = Organization::find($source->organization_id);
+                    $nested_source = [
+                        'plan' => $plan,
+                        'organization' => $organization,
+                    ];
                 }
             }
 

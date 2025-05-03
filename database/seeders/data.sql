@@ -58,6 +58,7 @@ INSERT INTO heights.organizationpictures (organization_id, file_path, file_name,
 INSERT INTO heights.organizationpictures (organization_id, file_path, file_name, created_at, updated_at) VALUES (2, 'uploads/organizations/images/Organization_2_1.jpg', 'Organization_2_1.jpg', '2025-03-20 04:28:27', '2025-04-25 13:13:34');
 INSERT INTO heights.organizationpictures (organization_id, file_path, file_name, created_at, updated_at) VALUES (2, 'uploads/organizations/images/Organization_2_2.jpg', 'Organization_2_2.jpg', '2025-04-25 13:13:34', '2025-04-25 13:13:34');
 INSERT INTO heights.organizationpictures (organization_id, file_path, file_name, created_at, updated_at) VALUES (3, 'uploads/organizations/images/Organization_3_1.jpg', 'Organization_3_1.jpg', '2025-04-25 13:13:34', '2025-04-25 13:13:34');
+INSERT INTO heights.organizationpictures (organization_id, file_path, file_name, created_at, updated_at) VALUES (1, 'uploads/organizations/images/Organization_1_3.jpeg', 'Organization_1_3.jpeg', '2025-05-03 12:32:15', '2025-05-03 12:32:15');
 
 
 INSERT INTO `buildings` (`id`, `organization_id`, `name`, `building_type`, `status`, `remarks`, `area`, `construction_year`, `address_id`, `created_by`, `updated_by`, `created_at`, `updated_at`) VALUES
