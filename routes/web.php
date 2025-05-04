@@ -12,6 +12,7 @@ use App\Http\Controllers\WebControllers\DepartmentController;
 use App\Http\Controllers\WebControllers\DropdownTypeController;
 use App\Http\Controllers\WebControllers\DropdownValueController;
 use App\Http\Controllers\WebControllers\FinanceController;
+use App\Http\Controllers\WebControllers\hrController;
 use App\Http\Controllers\WebControllers\landingController;
 use App\Http\Controllers\WebControllers\OrganizationController;
 use App\Http\Controllers\WebControllers\OwnerDashboardController;
@@ -330,6 +331,26 @@ Route::prefix('owner')->middleware(['auth.jwt'])->group(function () {
 
             Route::get('/trends', [FinanceController::class, 'ownerFinancialTrends'])->name('owner.finance.trends');
             Route::get('/chart', [FinanceController::class, 'ownerFinancialChartData'])->name('owner.finance.chart');
+
+        });
+
+
+        Route::prefix('staff')->group(function () {
+
+            Route::get('/', [hrController::class , 'staffIndex'])->name('owner.staff.index');
+            Route::get('/create', [hrController::class , 'staffCreate'])->name('owner.staff.create');
+            Route::post('/', [hrController::class , 'staffStore'])->name('owner.staff.store');
+            Route::get('/{staff}/show', [hrController::class , 'staffShow'])->name('owner.staff.show');
+            Route::get('/{staff}/edit', [hrController::class , 'staffEdit'])->name('owner.staff.edit');
+
+        });
+
+        Route::prefix('managers')->group(function () {
+
+            Route::get('/', [hrController::class , 'managerIndex'])->name('owner.managers.index');
+            Route::get('/create', [hrController::class , 'managerCreate'])->name('owner.managers.create');
+            Route::get('/{manager}/show', [hrController::class , 'managerShow'])->name('owner.managers.show');
+            Route::get('/{manager}/edit', [hrController::class , 'managerEdit'])->name('owner.managers.edit');
 
         });
 

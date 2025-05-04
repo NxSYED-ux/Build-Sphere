@@ -191,15 +191,14 @@ INSERT INTO `departments` (`id`, `name`, `description`, `organization_id`, `crea
 (6, 'Management', 'null', 2, 1, 1, '2025-02-28 15:58:33', '2025-02-28 15:58:33');
 
 
-INSERT INTO `staffmembers` (`id`, `user_id`, `department_id`, `building_id`, `organization_id`, `salary`, `active_load`, `accept_queries`, `status`, `created_by`, `updated_by`, `created_at`, `updated_at`) VALUES
-(1, 7, 1, 1, 1, 0.0, 2, 1, 1, 1, 1, '2025-02-28 16:02:40', '2025-03-21 12:39:17'),
-(2, 8, 1, 1, 1, 0.0, 1, 1, 1, 1, 1, '2025-02-28 16:02:40', '2025-03-21 15:42:37'),
-(3, 9, 4, 2, 1, 0.0, 0, 1, 1, 1, 1, '2025-02-28 16:02:40', '2025-03-21 12:12:16'),
-(4, 10, 4, 2, 1, 0.0, 0, 1, 1, 1, 1, '2025-02-28 16:02:40', '2025-03-21 11:54:38'),
-(5, 11, 4, 3, 2, 0.0, 0, 1, 1, 1, 1, '2025-02-28 16:02:40', '2025-03-20 12:16:57'),
-(6, 12, 4, 3, 2, 0.0, 0, 1, 1, 1, 1, '2025-03-20 12:16:45', '2025-03-20 12:16:45'),
-(8, 5, 3, NULL, 1, 0.0, 0, 0, 1, 2, 2, '2025-03-22 22:29:33', '2025-03-22 22:32:06'),
-(9, 6, 3, NULL, 1, 0.0, 0, 0, 1, 2, 2, '2025-03-22 22:40:23', '2025-03-22 22:40:23');
+INSERT INTO heights.staffmembers (user_id, department_id, building_id, organization_id, salary, active_load, accept_queries, status, created_by, updated_by, created_at, updated_at) VALUES (7, 1, 1, 1, 0.0, 2, 1, 1, 1, 1, '2025-02-28 16:02:40', '2025-03-21 12:39:17');
+INSERT INTO heights.staffmembers (user_id, department_id, building_id, organization_id, salary, active_load, accept_queries, status, created_by, updated_by, created_at, updated_at) VALUES (8, 1, 1, 1, 0.0, 1, 1, 1, 1, 1, '2025-02-28 16:02:40', '2025-03-21 15:42:37');
+INSERT INTO heights.staffmembers (user_id, department_id, building_id, organization_id, salary, active_load, accept_queries, status, created_by, updated_by, created_at, updated_at) VALUES (9, 1, 2, 1, 0.0, 0, 1, 1, 1, 1, '2025-02-28 16:02:40', '2025-05-03 17:56:23');
+INSERT INTO heights.staffmembers (user_id, department_id, building_id, organization_id, salary, active_load, accept_queries, status, created_by, updated_by, created_at, updated_at) VALUES (10, 1, 2, 1, 0.0, 0, 1, 1, 1, 1, '2025-02-28 16:02:40', '2025-05-03 17:56:23');
+INSERT INTO heights.staffmembers (user_id, department_id, building_id, organization_id, salary, active_load, accept_queries, status, created_by, updated_by, created_at, updated_at) VALUES (11, 4, 3, 2, 0.0, 0, 1, 1, 1, 1, '2025-02-28 16:02:40', '2025-03-20 12:16:57');
+INSERT INTO heights.staffmembers (user_id, department_id, building_id, organization_id, salary, active_load, accept_queries, status, created_by, updated_by, created_at, updated_at) VALUES (12, 4, 3, 2, 0.0, 0, 1, 1, 1, 1, '2025-03-20 12:16:45', '2025-03-20 12:16:45');
+INSERT INTO heights.staffmembers (user_id, department_id, building_id, organization_id, salary, active_load, accept_queries, status, created_by, updated_by, created_at, updated_at) VALUES (5, null, null, 1, 0.0, 0, 0, 1, 2, 2, '2025-03-22 22:29:33', '2025-03-22 22:32:06');
+INSERT INTO heights.staffmembers (user_id, department_id, building_id, organization_id, salary, active_load, accept_queries, status, created_by, updated_by, created_at, updated_at) VALUES (6, null, null, 1, 0.0, 0, 0, 1, 2, 2, '2025-03-22 22:40:23', '2025-03-22 22:40:23');
 
 
 INSERT INTO `managerbuildings` (`id`, `user_id`, `staff_id`, `building_id`, `created_at`, `updated_at`) VALUES

@@ -11,7 +11,7 @@ return new class extends Migration
         Schema::create('staffmembers', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id')->unique();
-            $table->unsignedBigInteger('department_id');
+            $table->unsignedBigInteger('department_id')->nullable();
             $table->unsignedBigInteger('building_id')->nullable();
             $table->unsignedBigInteger('organization_id');
             $table->decimal('salary',8,1)->default(0);

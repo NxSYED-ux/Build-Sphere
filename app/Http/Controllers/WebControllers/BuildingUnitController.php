@@ -338,7 +338,7 @@ class BuildingUnitController extends Controller
         try {
             $unit = BuildingUnit::with(['pictures', 'level', 'building', 'organization'])->find($id);
 
-            $organization_id = $this->validateOwnerAccess($request,'You do not have access to view units of the selected building.',false, $unit->building_id);
+            $organization_id = $this->validateOwnerAccess($request,'You do not have access to view units of the selected building.',false, $unit?->building_id);
             if ($organization_id instanceof RedirectResponse) {
                 return $organization_id;
             }

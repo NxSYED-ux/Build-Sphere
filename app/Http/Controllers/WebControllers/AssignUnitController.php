@@ -308,7 +308,7 @@ class AssignUnitController extends Controller
                 'source_name' => 'unit contract',
                 'billing_cycle' => 1,
                 'subscription_status' => 'Active',
-                'price_at_subscription' => $unit->price,
+                'price_at_subscription' => $assignedUnit->price,
                 'currency_at_subscription' => $currency,
                 'ends_at' => now()->addMonths((int) $no_of_months),
             ]);
@@ -328,7 +328,7 @@ class AssignUnitController extends Controller
             'seller_type' => 'organization',
             'payment_method' => $paymentMethod,
             'gateway_payment_id' => $paymentIntentId,
-            'price' => $unit->price,
+            'price' => $assignedUnit->price,
             'currency' => $currency,
             'status' => 'Completed',
             'is_subscription' => $type === 'Rented',
