@@ -486,7 +486,6 @@
                                                                                                         {{ $child->name }}
                                                                                                     </label>
                                                                                                     <div class="form-check form-switch">
-                                                                                                        <input type="hidden" name="permissions[{{ $permission->permission_id }}]" value="0">
                                                                                                         <input type="hidden" name="permissions[{{ $childPermission->permission_id }}]" value="0">
                                                                                                         <input class="form-check-input permission-toggle child-toggle"
                                                                                                                type="checkbox"
