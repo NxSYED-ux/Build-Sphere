@@ -437,7 +437,9 @@
                                                     @foreach($groupedPermissions as $header => $permissionGroup)
                                                         <div class="accordion-item mb-3">
                                                             <h6 class="accordion-header" id="heading{{ $loop->index }}">
-                                                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ $loop->index }}" aria-expanded="false" aria-controls="collapse{{ $loop->index }}">
+                                                                <button class="accordion-button collapsed" type="button"
+                                                                        data-bs-toggle="collapse" data-bs-target="#collapse{{ $loop->index }}"
+                                                                        aria-expanded="false" aria-controls="collapse{{ $loop->index }}">
                                                                     <div class="d-flex align-items-center w-100">
                                                                         <i class='bx bx-chevron-right accordion-arrow me-2'></i>
                                                                         <span class="fw-normal">{{ $header ?? 'General Permissions' }}</span>
@@ -445,10 +447,11 @@
                                                                 </button>
                                                             </h6>
 
-                                                            <div id="collapse{{ $loop->index }}" class="accordion-collapse collapse" aria-labelledby="heading{{ $loop->index }}" data-bs-parent="#permissionsAccordion">
+                                                            <div id="collapse{{ $loop->index }}" class="accordion-collapse collapse"
+                                                                 aria-labelledby="heading{{ $loop->index }}" data-bs-parent="#permissionsAccordion">
                                                                 <div class="accordion-body pt-2">
                                                                     <div class="row">
-                                                                        @foreach($permissionGroup as $permission)
+                                                                        @foreach($permissionGroup->filter(fn($permission) => $permission->permission->parent_id === null) as $permission)
                                                                             @php
                                                                                 $hasChildren = $permission->permission->children->isNotEmpty();
                                                                             @endphp
@@ -483,10 +486,11 @@
                                                                                                         {{ $child->name }}
                                                                                                     </label>
                                                                                                     <div class="form-check form-switch">
-                                                                                                        <input type="hidden" name="permissions[{{ $child->id }}]" value="0">
+                                                                                                        <input type="hidden" name="permissions[{{ $permission->permission_id }}]" value="0">
+                                                                                                        <input type="hidden" name="permissions[{{ $childPermission->permission_id }}]" value="0">
                                                                                                         <input class="form-check-input permission-toggle child-toggle"
                                                                                                                type="checkbox"
-                                                                                                               name="permissions[{{ $child->id }}]"
+                                                                                                               name="permissions[{{ $childPermission->permission_id }}]"
                                                                                                                value="1"
                                                                                                                data-parent-id="{{ $permission->permission_id }}"
                                                                                                             {{ $childPermission && $childPermission->status ? 'checked' : '' }}>
@@ -505,6 +509,7 @@
                                                     @endforeach
                                                 </div>
                                             </div>
+
 
                                             <!-- Submit Button -->
                                             <div class="d-flex justify-content-end mt-4">
