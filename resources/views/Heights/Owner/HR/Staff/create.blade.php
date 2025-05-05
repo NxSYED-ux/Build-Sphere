@@ -8,14 +8,12 @@
             --primary-color: var(--color-blue);
             --primary-hover: var(--color-blue);
             --secondary-color: #f8f9fa;
-            --text-color: var(--sidenavbar-text-color);
-            --light-text: #718096;
             --border-color: #e2e8f0;
             --error-color: #e53e3e;
             --success-color: #38a169;
-            --permission-header-bg: rgba(var(--primary-color-rgb), 0.05);
+            --permission-header-bg: rgba(var(--color-blue), 0.05);
             --permission-card-bg: var(--body-background-color);
-            --child-permission-indicator: var(--primary-color);
+            --child-permission-indicator: var(--color-blue);
         }
 
         #main {
@@ -60,17 +58,15 @@
 
         .form-label {
             font-weight: 500;
-            color: var(--text-color);
+            color: var(--sidenavbar-text-color);
             margin-bottom: 8px;
             display: block;
         }
 
         .section-header {
             color: var(--sidenavbar-text-color);
-            font-weight: 600;
-            margin-bottom: 20px;
+            margin-bottom: 10px;
             padding-bottom: 10px;
-            border-bottom: 1px solid var(--border-color);
             display: flex;
             align-items: center;
         }
@@ -98,7 +94,7 @@
 
         .accordion-item {
             background-color: transparent;
-            border: 1px solid var(--border-color);
+            border: 1px solid var(--border-color) !important;
             border-radius: 8px !important;
             margin-bottom: 12px;
             transition: all 0.3s ease;
@@ -107,33 +103,32 @@
 
         .accordion-button {
             background-color: var(--body-background-color);
-            color: var(--text-color);
-            font-weight: 500;
+            color: var(--sidenavbar-text-color);
             padding: 1rem 1.5rem;
             box-shadow: none;
         }
 
         .accordion-button:not(.collapsed) {
             background-color: var(--sidenavbar-body-color);
-            color: var(--primary-color);
+            color: var(--sidenavbar-text-color) !important;
             box-shadow: none;
         }
 
         .accordion-arrow {
             transition: transform 0.3s ease;
-            color: var(--sidenavbar-text-color);
+            color: var(--sidenavbar-text-color) !important;
             font-size: 1.1em;
         }
 
         .accordion-button:not(.collapsed) .accordion-arrow {
             transform: rotate(90deg);
-            color: var(--primary-color);
+            color: var(--sidenavbar-text-color) !important;
         }
 
         .accordion-body {
             padding: 1rem 1.5rem;
-            background-color: var(--permission-card-bg);
-            color: var(--text-color);
+            background-color: var(--sidenavbar-body-color);
+            color: var(--sidenavbar-text-color);
         }
 
         .permission-item-container {
@@ -154,9 +149,13 @@
             border-radius: 8px;
         }
 
+         .child-permission{
+            border-radius: 0 !important;
+        }
+
         .permission-label {
-            font-weight: 500;
-            color: var(--text-color);
+            font-weight: 600;
+            color: var(--sidenavbar-text-color);
             margin-bottom: 0;
             display: flex;
             align-items: center;
@@ -174,12 +173,10 @@
 
         .child-permission .permission-icon {
             color: var(--sidenavbar-text-color);
-            font-size: 0.9em;
+            font-size: 1.1em;
         }
 
         .child-permissions {
-            padding-left: 30px;
-            margin-top: 8px;
         }
 
         .child-permissions .permission-toggle-container {
@@ -193,6 +190,11 @@
             cursor: pointer;
             background-color: var(--border-color);
             border-color: var(--border-color);
+        }
+
+        .accordion-header{
+            color: var(--sidenavbar-text-color);
+            font-size: 20px;
         }
 
         .form-switch .form-check-input:checked {
@@ -221,7 +223,6 @@
             }
 
             .child-permissions {
-                padding-left: 20px;
             }
         }
     </style>
@@ -346,11 +347,8 @@
                                                     <div class="col-sm-12 col-md-6 col-lg-4">
                                                         <div class="form-group mb-3">
                                                             <label for="date_of_birth" class="form-label">Date of Birth</label>
-                                                            <div class="position-relative">
-                                                                <input type="date" class="form-control @error('date_of_birth') is-invalid @enderror"
-                                                                       id="date_of_birth" name="date_of_birth" value="{{ old('date_of_birth') }}">
-                                                                <i class='bx bxs-calendar input-icon position-absolute top-50 end-0 translate-middle-y me-3'></i>
-                                                            </div>
+                                                            <input type="date" class="form-control @error('date_of_birth') is-invalid @enderror" id="date_of_birth" name="date_of_birth"
+                                                                   value="{{ old('date_of_birth') }}">
                                                             @error('date_of_birth')
                                                             <div class="invalid-feedback">{{ $message }}</div>
                                                             @enderror
@@ -409,7 +407,7 @@
                                                                 <div class="form-check form-switch m-0">
                                                                     <input class="form-check-input" type="checkbox" role="switch" id="accept_query" name="accept_query" value="1" {{ old('accept_query', true) ? 'checked' : '' }}>
                                                                 </div>
-                                                                <span class="badge bg-{{ old('accept_query', true) ? 'success' : 'danger' }}" style="font-size: 0.85em; padding: 0.35em 0.65em;">
+                                                                <span class="badge bg-{{ old('accept_query', true) ? 'success' : 'danger' }}" style="color: #fff !important;font-size: 0.85em; padding: 0.35em 0.65em;">
                                                                     {{ old('accept_query', true) ? 'Enabled' : 'Disabled' }}
                                                                 </span>
                                                             </div>
@@ -427,6 +425,7 @@
                                                     <i class='bx bxs-key me-2'></i>Permissions
                                                 </h5>
 
+                                                @isset($permissions)
                                                 @php
                                                     $groupedPermissions = $permissions->groupBy(function($item) {
                                                         return $item->permission->header;
@@ -441,8 +440,7 @@
                                                                         data-bs-toggle="collapse" data-bs-target="#collapse{{ $loop->index }}"
                                                                         aria-expanded="false" aria-controls="collapse{{ $loop->index }}">
                                                                     <div class="d-flex align-items-center w-100">
-                                                                        <i class='bx bx-chevron-right accordion-arrow me-2'></i>
-                                                                        <span class="fw-normal">{{ $header ?? 'General Permissions' }}</span>
+                                                                        <span class="fw-bold">{{ $header ?? 'General Permissions' }}</span>
                                                                     </div>
                                                                 </button>
                                                             </h6>
@@ -458,7 +456,7 @@
 
                                                                             <div class="col-sm-12 mb-3 parent-permission">
                                                                                 <div class="permission-item-container">
-                                                                                    <div class="permission-toggle-container">
+                                                                                    <div class="permission-toggle-container border-bottom rounded-bottom-0">
                                                                                         <label class="permission-label">
                                                                                             <i class='bx bxs-check-circle permission-icon'></i>
                                                                                             {{ $permission->permission->name }}
@@ -507,6 +505,9 @@
                                                         </div>
                                                     @endforeach
                                                 </div>
+                                                @else
+                                                    <div class="text-center fw-bold">No permissions found.</div>
+                                                @endisset
                                             </div>
 
 

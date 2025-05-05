@@ -223,7 +223,7 @@
                                                     <div class="col-sm-12 col-md-6 col-lg-4">
                                                         <div class="form-group mb-3">
                                                             <label for="date_of_birth" class="form-label">Date of Birth</label>
-                                                            <input type="date" class="form-control" id="date_of_birth" name="date_of_birth"
+                                                            <input type="date" class="form-control @error('date_of_birth') is-invalid @enderror" id="date_of_birth" name="date_of_birth"
                                                                    value="{{ old('date_of_birth', date('Y-m-d')) }}">
                                                             @error('date_of_birth')
                                                             <div class="invalid-feedback">{{ $message }}</div>

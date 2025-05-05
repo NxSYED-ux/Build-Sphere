@@ -112,8 +112,16 @@
             <!-- Staff -->
             <li class="mb-1 hidden" id="OwnerStaff">
                 <div id="link-a">
-                    <a href="#" class="link-dark collapsed {{ in_array('Staff', $openSections) ? 'Link-background-color' : '' }} px-1" id="Ownerbtn" >
-                    <i class="bx bx-user icons"></i> Staff </a>
+                    <a href="{{ route('owner.staff.index') }}" class="link-dark collapsed {{ in_array('Staff', $openSections) ? 'Link-background-color' : '' }} px-1"  >
+                    <i class="bx bx-id-card icons"></i> Staff </a>
+                </div>
+            </li>
+
+            <!-- Managers -->
+            <li class="mb-1 hidden" id="OwnerStaff">
+                <div id="link-a">
+                    <a href="{{ route('owner.managers.index') }}" class="link-dark collapsed {{ in_array('Managers', $openSections) ? 'Link-background-color' : '' }} px-1" >
+                        <i class="bx bx-user-voice icons"></i> Managers </a>
                 </div>
             </li>
 
