@@ -590,14 +590,28 @@ class hrController extends Controller
         }
     }
 
+
+    // Demotion
     public function demotionGet(string $id){
         // permissions, staff basic info like name, picture etc. depending upon design, buildings, departments
         // return json
+
+        // Points to consider
+        // Subscription Limit
     }
 
     public function demotion(Request $request){
         // manager_id, permissions, building_id, department_id, accept_query
         // return redirect response or json if you want
+
+        // Points to consider
+        // Subscription Limit
+        // Subscription Increment & Decrement
+        // User Role update
+        // Staff data update
+        // Permissions Deletion
+        // Permission Creation
+        // Manager buildings deletion
     }
 
 
