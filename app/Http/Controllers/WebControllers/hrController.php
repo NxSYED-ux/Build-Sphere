@@ -6,13 +6,14 @@ use App\Http\Controllers\Controller;
 use App\Models\Address;
 use App\Models\Building;
 use App\Models\Department;
-use App\Models\DropdownType;
 use App\Models\ManagerBuilding;
+use App\Models\PlanSubscriptionItem;
 use App\Models\RolePermission;
 use App\Models\StaffMember;
 use App\Models\User;
 use App\Models\UserPermission;
 use App\Notifications\CredentialsEmail;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -24,6 +25,7 @@ use Stripe\Stripe;
 
 class hrController extends Controller
 {
+    // Index
     public function staffIndex(Request $request){
         return $this->index($request, 4);
     }
@@ -101,6 +103,7 @@ class hrController extends Controller
     }
 
 
+    // Staff Create
     public function staffCreate(Request $request)
     {
         $user = $request->user() ?? abort(403, 'Unauthorized action.');
@@ -113,6 +116,12 @@ class hrController extends Controller
 
             $organization_id = $token['organization_id'];
             $role_name = $token['role_name'];
+
+            $result = $this->checkServiceUsageLimit($organization_id, 3, 'Staff Management', $user->role_id);
+
+            if ($result instanceof RedirectResponse) {
+                return $result;
+            }
 
             $managerBuildingIds = [];
             if ($role_name === 'Manager') {
@@ -139,7 +148,6 @@ class hrController extends Controller
 
     public function staffStore(Request $request)
     {
-        Log::info('Staff store request: ' . print_r($request->all(), true));
         $loggedUser = $request->user() ?? abort(403, 'Unauthorized action.');
         $token = $request->attributes->get('token');
 
@@ -156,7 +164,7 @@ class hrController extends Controller
             'phone_no' => ['bail', 'nullable', 'string', 'max:20'],
             'cnic' => ['bail', 'nullable', 'max:18', 'unique:users,cnic'],
             'gender' => ['bail', 'nullable', 'in:Male,Female,Other'],
-            'date_of_birth' => ['bail', 'nullable', 'date'],
+            'date_of_birth' => ['bail', 'required', 'date'],
 
             'department_id' => ['bail', 'required', 'exists:departments,id'],
             'building_id' => ['bail', 'required', 'exists:buildings,id'],
@@ -179,6 +187,15 @@ class hrController extends Controller
 
         DB::beginTransaction();
         try {
+            $result = $this->checkServiceUsageLimit($organization_id, 3, 'Staff Management', $loggedUser->role_id);
+
+            if ($result instanceof RedirectResponse) {
+                DB::rollBack();
+                return $result;
+            }
+
+            $subscriptionItem = $result['subscriptionItem'];
+
             Stripe::setApiKey(config('services.stripe.secret'));
 
             $stripeCustomer = Customer::create([
@@ -228,11 +245,13 @@ class hrController extends Controller
                 );
             }
 
+            $subscriptionItem->increment('used');
+
             DB::commit();
 
             $user->notify(new CredentialsEmail(
-                $loggedUser->name,
-                $loggedUser->email,
+                $user->name,
+                $user->email,
                 $password
             ));
 
@@ -242,6 +261,176 @@ class hrController extends Controller
             Log::error('User creation failed: ' . $e->getMessage());
             return redirect()->back()->withInput()->with('error', 'Something went wrong. Please try again.');
         }
+    }
+
+
+    // Manager Create
+    public function managerCreate(Request $request)
+    {
+        $user = $request->user() ?? abort(403, 'Unauthorized action.');
+        try {
+            $token = $request->attributes->get('token');
+
+            if (empty($token['organization_id']) || empty($token['role_name'])) {
+                return redirect()->back()->with('error', 'This info is for Organization related personals');
+            }
+
+            $organization_id = $token['organization_id'];
+
+            $result = $this->checkServiceUsageLimit($organization_id, 2, 'Managers', $user->role_id);
+
+            if ($result instanceof RedirectResponse) {
+                return $result;
+            }
+
+            $buildings = Building::where('organization_id', $organization_id)
+                ->select('id', 'name')
+                ->get();
+
+            $permissions = RolePermission::where('role_id', 3)->get();
+
+            return view('Heights.Owner.HR.Manager.create', compact('buildings', 'permissions'));
+
+        } catch (\Exception $e) {
+            Log::error('Error in managerCreate: ' . $e->getMessage());
+
+            return redirect()->back()->with('error', 'Something went wrong while loading the manager creation form.');
+        }
+    }
+
+    public function managerStore(Request $request)
+    {
+        $loggedUser = $request->user() ?? abort(403, 'Unauthorized action.');
+        $token = $request->attributes->get('token');
+
+        if (empty($token['organization_id'])) {
+            return redirect()->back()->with('error', 'This action is only for Organization owners.');
+        }
+
+        $organization_id = $token['organization_id'];
+
+        $request->validate([
+            'name' => ['bail', 'required', 'string', 'max:255'],
+            'email' => ['bail', 'required', 'string', 'email', 'max:255', 'unique:users,email'],
+            'phone_no' => ['bail', 'nullable', 'string', 'max:20'],
+            'cnic' => ['bail', 'nullable', 'max:18', 'unique:users,cnic'],
+            'gender' => ['bail', 'nullable', 'in:Male,Female,Other'],
+            'date_of_birth' => ['bail', 'required', 'date'],
+
+            'permissions' => ['bail', 'nullable', 'array'],
+            'permissions.*' => ['bail', 'nullable', 'integer'],
+
+            'buildings' => ['bail', 'required', 'array'],
+            'buildings.*' => ['bail', 'required', 'integer', 'exists:buildings,id'],
+        ]);
+
+        $password = Str::random(8);
+
+        DB::beginTransaction();
+        try {
+            $result = $this->checkServiceUsageLimit($organization_id, 2, 'Managers', $loggedUser->role_id);
+
+            if ($result instanceof RedirectResponse) {
+                DB::rollBack();
+                return $result;
+            }
+
+            $subscriptionItem = $result['subscriptionItem'];
+
+            Stripe::setApiKey(config('services.stripe.secret'));
+
+            $stripeCustomer = Customer::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'phone' => $request->phone_no,
+            ]);
+
+            $address = Address::create([]);
+
+            $user = User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => Hash::make($password),
+                'phone_no' => $request->phone_no,
+                'cnic' => $request->cnic,
+                'picture' => null,
+                'gender' => $request->gender,
+                'role_id' => 3,
+                'address_id' => $address->id,
+                'date_of_birth' => $request->date_of_birth,
+                'customer_payment_id' => $stripeCustomer->id,
+            ]);
+
+            $staff = StaffMember::create([
+                'user_id' => $user->id,
+                'organization_id' => $organization_id,
+                'accept_queries' => 0,
+            ]);
+
+            foreach (request('buildings') as $buildingId) {
+                ManagerBuilding::create([
+                    'user_id' => $user->id,
+                    'staff_id' => $staff->id,
+                    'building_id' => $buildingId,
+                ]);
+            }
+
+            $original = RolePermission::where('role_id', 3)->pluck('status', 'permission_id');
+            $new = $request->permissions ?? [];
+
+            $changedPermissions = collect($new)
+                ->filter(function ($status, $permissionId) use ($original) {
+                    return isset($original[$permissionId]) && $original[$permissionId] != $status;
+                });
+
+            foreach ($changedPermissions as $permissionId => $status) {
+                UserPermission::create([
+                        'user_id' => $user->id,
+                        'permission_id' => $permissionId,
+                        'status' => $status,
+                    ]
+                );
+            }
+
+            $subscriptionItem->increment('used');
+
+            DB::commit();
+
+            $user->notify(new CredentialsEmail(
+                $user->name,
+                $user->email,
+                $password
+            ));
+
+            return redirect()->route('owner.managers.index')->with('success', 'Manager created successfully.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('User creation failed: ' . $e->getMessage());
+            return redirect()->back()->withInput()->with('error', 'Something went wrong. Please try again.');
+        }
+    }
+
+
+    // Helper Function
+    public function checkServiceUsageLimit($organization_id, $serviceId, $serviceName, $roleId)
+    {
+        $errorHeading = $roleId === 2 ? 'plan_upgrade_error' : 'error';
+
+        $subscriptionLimit = PlanSubscriptionItem::where('organization_id', $organization_id)
+            ->where('service_catalog_id', $serviceId)
+            ->first();
+
+        if (!$subscriptionLimit) {
+            $errorMessage = "The current plan doesn't include {$serviceName}. Please upgrade your plan to access this service.";
+            return redirect()->back()->with($errorHeading, $errorMessage);
+        }
+
+        if ($subscriptionLimit->used >= $subscriptionLimit->quantity) {
+            $errorMessage = "You have reached the {$serviceName} limit. Please upgrade your plan to add more.";
+            return redirect()->back()->with($errorHeading, $errorMessage);
+        }
+
+        return [ 'success' => true, 'subscriptionItem' => $subscriptionLimit ];
     }
 
 

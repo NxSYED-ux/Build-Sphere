@@ -349,6 +349,7 @@ Route::prefix('owner')->middleware(['auth.jwt'])->group(function () {
 
             Route::get('/', [hrController::class , 'managerIndex'])->name('owner.managers.index');
             Route::get('/create', [hrController::class , 'managerCreate'])->name('owner.managers.create');
+            Route::post('/', [hrController::class , 'managerStore'])->name('owner.managers.store');
             Route::get('/{manager}/show', [hrController::class , 'managerShow'])->name('owner.managers.show');
             Route::get('/{manager}/edit', [hrController::class , 'managerEdit'])->name('owner.managers.edit');
 

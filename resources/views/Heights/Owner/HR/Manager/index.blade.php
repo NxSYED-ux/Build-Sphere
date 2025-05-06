@@ -200,7 +200,7 @@
                             <div class="container mt-2">
                                 <div class="d-flex justify-content-between align-items-center mb-4">
                                     <h3 class="mb-1">Managers</h3>
-                                    <a href="#" class="btn btn-primary d-flex align-items-center justify-content-center" title="Add Manager">
+                                    <a href="{{route('owner.managers.create')}}" class="btn btn-primary d-flex align-items-center justify-content-center" title="Add Manager">
                                         <i class="fas fa-user-plus me-2"></i> Add Manager
                                     </a>
                                 </div>
