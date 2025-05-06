@@ -480,7 +480,7 @@ class hrController extends Controller
         $organization_id = $token['organization_id'];
 
         $request->validate([
-            'staff_id' => ['bail', 'required', 'exists:staff_members,id'],
+            'staff_id' => ['bail', 'required', 'exists:staffmembers,id'],
             'permissions' => ['bail', 'nullable', 'array'],
             'permissions.*' => ['bail', 'nullable', 'integer'],
             'buildings' => ['bail', 'required', 'array'],
