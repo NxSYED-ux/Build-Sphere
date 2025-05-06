@@ -451,7 +451,7 @@ class hrController extends Controller
                 ->select('id', 'name')
                 ->get();
 
-            $permissions = RolePermission::where('role_id', 3)->get();
+            $permissions = RolePermission::where('role_id', 3)->with('permission')->get();
 
             return response()->json([
                 'staffInfo' => $staffInfo,
@@ -522,6 +522,7 @@ class hrController extends Controller
             $staff->update([
                 'department_id' => null,
                 'building_id' => null,
+                'accept_queries' => 0,
             ]);
 
             foreach ($request->buildings as $buildingId) {
@@ -590,7 +591,7 @@ class hrController extends Controller
     }
 
     public function demotionGet(string $id){
-        // permissions, staff basic info like name, picture etc depending upon design, buildings, departments
+        // permissions, staff basic info like name, picture etc. depending upon design, buildings, departments
         // return json
     }
 
