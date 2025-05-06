@@ -74,7 +74,7 @@
 
         .team-members {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
             gap: 20px;
             margin-top: 20px;
         }
@@ -85,6 +85,7 @@
             overflow: hidden;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             transition: transform 0.3s ease;
+            position: relative;
         }
 
         .member-card:hover {
@@ -106,6 +107,18 @@
             margin-bottom: 15px;
         }
 
+        .delete-member-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+
+        .delete-member-btn:hover {
+            transform: scale(1.1);
+        }
+
         .member-name {
             margin: 0;
             color: var(--sidenavbar-text-color);
@@ -119,13 +132,16 @@
         }
 
         .member-details {
-            padding: 20px;
+            padding: 15px 20px 0 20px;
         }
 
         .detail-item {
             display: flex;
             align-items: center;
             margin-bottom: 12px;
+        }
+        .detail-item:last-child {
+            margin-bottom: 5px;
         }
 
         .detail-icon {
@@ -144,12 +160,12 @@
         .member-actions {
             display: flex;
             justify-content: space-between;
-            padding: 0 20px 20px;
+            padding: 10px 10px;
         }
 
         .btn-member {
             flex: 1;
-            margin: 0 5px;
+            margin: 4px;
             padding: 8px 0;
             border-radius: 5px;
             font-size: 0.85rem;
@@ -196,7 +212,56 @@
             color: #27ae60;
         }
 
+        .member-details .enable-query-toggle-btn {
+            position: relative;
+            display: inline-block;
+            width: 36px;
+            height: 18px;
+        }
 
+        .member-details .enable-query-toggle-btn input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .member-details .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #e0e0e0;
+            transition: .4s;
+            border-radius: 18px;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .member-details .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 14px;
+            width: 14px;
+            left: 2px;
+            bottom: 2px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+        }
+
+        .member-details input:checked + .toggle-slider {
+            background-color: #4CAF50;
+        }
+
+        .member-details input:checked + .toggle-slider:before {
+            transform: translateX(18px);
+        }
+
+        .member-details input:focus + .toggle-slider {
+            box-shadow: 0 0 1px #4CAF50;
+        }
 
         @media (max-width: 768px) {
             .filter-group {
@@ -301,12 +366,17 @@
                                                 <p class="member-position">
                                                     {{ $staffMember->department->name ?? 'No Department' }}
                                                 </p>
+                                                <button type="button"
+                                                        class="btn btn-sm delete-member-btn btn-danger rounded-circle shadow-sm transition-all delete-plan-btn"
+                                                        data-member-id="{{ $staffMember->id }}"  title="Delete Staff Member">
+                                                    <i class="fas fa-trash-alt"></i>
+                                                </button>
                                             </div>
                                             <div class="member-details">
                                                 <div class="detail-item">
                                                     <i class="fas fa-envelope detail-icon"></i>
                                                     <div class="detail-text">
-                                                        <a href="mailto:{{ $staffMember->user->email }}">{{ $staffMember->user->email }}</a>
+                                                        <a class="text-decoration-none" href="mailto:{{ $staffMember->user->email }}">{{ $staffMember->user->email }}</a>
                                                     </div>
                                                 </div>
                                                 <div class="detail-item">
@@ -321,12 +391,22 @@
                                                         {{ $staffMember->building ? $staffMember->building->name : 'Building not assigned' }}
                                                     </div>
                                                 </div>
+                                                <div class="detail-item" style="display: flex; align-items: center;">
+                                                    <i class="fas fa-award detail-icon" style="margin-right: 10px;"></i>
+                                                    <div class="detail-text" style="display: flex; align-items: center; gap: 8px;">
+                                                        Handle Queries
+                                                        <label class="enable-query-toggle-btn">
+                                                            <input type="checkbox" class="">
+                                                            <span class="toggle-slider"></span>
+                                                        </label>
+                                                    </div>
+                                                </div>
                                             </div>
                                             <div class="member-actions">
-                                                <a href="{{ route('owner.staff.show', $staffMember->id) }}" class="btn btn-add btn-sm btn-view btn-member" title="View Details">
+                                                <a href="{{ route('owner.staff.show', $staffMember->id) }}" class="btn btn-add btn-sm btn-view btn-member gap-1" title="View Details">
                                                     <i class="fas fa-eye"></i> View
                                                 </a>
-                                                <a href="{{ route('owner.staff.edit', $staffMember->id) }}" class="btn btn-add btn-sm btn-edit btn-member" title="Edit Manager">
+                                                <a href="{{ route('owner.staff.edit', $staffMember->id) }}" class="btn btn-add btn-sm btn-edit btn-member gap-1" title="Edit Manager">
                                                     <i class="fas fa-edit"></i> Edit
                                                 </a>
                                             </div>
@@ -362,5 +442,75 @@
         function resetFilters() {
             window.location.href = '{{ route("owner.staff.index") }}';
         }
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add click event to all delete buttons
+            document.querySelectorAll('.delete-member-btn').forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const memberId = this.getAttribute('data-member-id');
+
+                    Swal.fire({
+                        title: 'Are you sure?',
+                        text: "You won't be able to revert this!",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Yes, delete it!',
+                        cancelButtonText: 'Cancel',
+                        background: 'var(--body-background-color)',
+                        color: 'var(--sidenavbar-text-color)',
+                        backdrop: true,
+                        allowOutsideClick: false,
+                        showClass: {
+                            popup: 'animate__animated animate__fadeInDown'
+                        },
+                        hideClass: {
+                            popup: 'animate__animated animate__fadeOutUp'
+                        }
+                    }).then((result) => {
+                        {{--if (result.isConfirmed) {--}}
+                        {{--    // Submit delete request--}}
+                        {{--    fetch(`/owner/staff/${memberId}`, {--}}
+                        {{--        method: 'DELETE',--}}
+                        {{--        headers: {--}}
+                        {{--            'X-CSRF-TOKEN': '{{ csrf_token() }}',--}}
+                        {{--            'Content-Type': 'application/json',--}}
+                        {{--            'Accept': 'application/json'--}}
+                        {{--        }--}}
+                        {{--    })--}}
+                        {{--        .then(response => response.json())--}}
+                        {{--        .then(data => {--}}
+                        {{--            if (data.success) {--}}
+                        {{--                Swal.fire(--}}
+                        {{--                    'Deleted!',--}}
+                        {{--                    'Staff member has been deleted.',--}}
+                        {{--                    'success'--}}
+                        {{--                ).then(() => {--}}
+                        {{--                    window.location.reload();--}}
+                        {{--                });--}}
+                        {{--            } else {--}}
+                        {{--                Swal.fire(--}}
+                        {{--                    'Error!',--}}
+                        {{--                    data.message || 'Something went wrong.',--}}
+                        {{--                    'error'--}}
+                        {{--                );--}}
+                        {{--            }--}}
+                        {{--        })--}}
+                        {{--        .catch(error => {--}}
+                        {{--            Swal.fire(--}}
+                        {{--                'Error!',--}}
+                        {{--                'An error occurred while deleting.',--}}
+                        {{--                'error'--}}
+                        {{--            );--}}
+                        {{--        });--}}
+                        {{--}--}}
+                    });
+                });
+            });
+        });
     </script>
 @endpush

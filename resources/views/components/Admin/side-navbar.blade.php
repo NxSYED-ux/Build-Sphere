@@ -93,7 +93,7 @@
                 <li class="mb-1 hidden" id="AdminOrganizations">
                     <div id="link-a">
                         <a href="{{ route('organizations.index') }}" class="link-dark collapsed {{ in_array('Organizations', $openSections) ? 'Link-background-color' : '' }} px-1" id="Organizationbtn" >
-                        <i class="bx bxs-business icons"></i> Organizations </a>
+                        <i class="bx bxl-slack icons"></i> Organizations </a>
                     </div>
                 </li>
 

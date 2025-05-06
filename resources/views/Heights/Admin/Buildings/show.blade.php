@@ -4,6 +4,19 @@
 
 @push('styles')
     <style>
+
+        :root {
+            --sage-green: var(--color-blue);
+            --deep-teal: #0b5351;
+            --warm-taupe: var(--color-blue);
+            --soft-clay: #d7b29d;
+            --mist-blue: #a5c4d4;
+            --pale-blush: #e8c7c8;
+            --dark-charcoal: #33312e;
+            --light-ivory: #f8f5f2;
+            --soft-gray: #e0ddd9;
+        }
+
         body {
         }
         #main {
@@ -303,6 +316,180 @@
             }
         }
 
+        /* ***************************************   */
+        a{ text-decoration: none; }
+
+        /* Department Header - Hero Section */
+        .department-hero {
+            background: linear-gradient(135deg, var(--deep-teal) 0%, var(--sage-green) 100%);
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            padding: 2rem;
+            margin-bottom: 2.5rem;
+            color: white;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .department-hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 100%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            z-index: -1;
+        }
+
+        .department-title {
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            font-size: 2.2rem;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            position: relative;
+            display: inline-block;
+            font-family: 'Playfair Display', serif;
+            color: var(--light-ivory);
+        }
+
+        .department-title::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 60px;
+            height: 4px;
+            background: var(--warm-taupe);
+            border-radius: 2px;
+        }
+
+        .department-description {
+            font-size: 1.1rem;
+            line-height: 1.7;
+            max-width: 800px;
+            opacity: 0.9;
+            margin-bottom: 1.5rem;
+            color: rgba(255,255,255,0.9);
+        }
+
+        .department-meta {
+            display: flex;
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.95rem;
+            color: rgba(255,255,255,0.85);
+        }
+
+        .meta-icon {
+            font-size: 1.1rem;
+            color: var(--warm-taupe);
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .department-hero .btn-edit,.btn-delete,.btn-back{
+            color: white;
+            border-radius: 50px;
+            padding: 0.6rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+        }
+
+        .department-hero .btn-edit:hover,.btn-delete:hover,.btn-back:hover{
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .btn-edit {
+            background: rgba(255,255,255,0.15);
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+
+        .btn-edit:hover {
+            background: rgba(255,255,255,0.25);
+        }
+
+        .btn-delete {
+            background: rgba(199, 84, 80, 0.15);
+            border: 1px solid rgba(199, 84, 80, 0.3);
+        }
+
+        .btn-delete:hover {
+            background: rgba(199, 84, 80, 0.25);
+        }
+
+        .btn-back {
+            background: rgba(255,255,255,0.9);
+            color: var(--deep-teal);
+            font-weight: 500;
+        }
+
+        .btn-back:hover {
+            background: white;
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 992px) {
+            .department-hero {
+                padding: 2rem 1.5rem;
+            }
+
+            .department-title {
+                font-size: 1.8rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .department-hero {
+                text-align: center;
+            }
+
+            .department-title::after {
+                left: 50%;
+                transform: translateX(-50%);
+            }
+
+            .department-meta {
+                justify-content: center;
+            }
+
+            .action-buttons {
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .department-hero {
+                padding: 1.75rem 1.25rem;
+            }
+
+            .department-title {
+                font-size: 1.6rem;
+            }
+
+            .department-description {
+                font-size: 1rem;
+            }
+        }
+
     </style>
 
 @endpush
@@ -324,81 +511,144 @@
     <div id="main">
         <section class="content my-3 mx-2">
             <div class="container-fluid">
-                <div class="d-flex flex-wrap flex-lg-nowrap gap-3">
+{{--                <div class="d-flex flex-wrap flex-lg-nowrap gap-3">--}}
 
-                    <div class="card shadow-sm border p-3 h-100 d-flex flex-column"
-                         style="border-radius: 25px; max-width: 400px; min-width: 300px;">
-                        <h4 style="font-size: 18px; font-weight: bold">Building Detail</h4>
+                    <div class="row">
+                        <div class="col-12">
+                            <!-- Building Hero Section -->
+                            <div class="department-hero">
+                                <h1 class="department-title">{{ $building->name }}</h1>
+                                <p class="department-description">
+                                    {{ $building->remarks ?? 'A dedicated team working in harmony to achieve excellence and create meaningful impact.' }}
+                                </p>
 
-                        <!-- Image Container -->
-                        <div class="position-relative" style="width: 100%; height: 200px; overflow: hidden;">
-                            <img src="{{ asset( $building->pictures->first() ?  $building->pictures->first()->file_path : '') }}"
-                                 class="img-fluid rounded w-100 h-100 object-fit-cover"
-                                 alt="Building Image">
-                        </div>
-
-                        <div class="card-body d-flex flex-column">
-                            <h5 class="card-title text-success fw-bold text-center">{{ $building->name }}</h5>
-                            <p class="text-center mb-0 pb-0">
-                                <svg width="15" height="15" viewBox="0 0 17 20" fill="none"
-                                     xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M14.173 14.8819L13.053 16.0558C12.2275 16.9144 11.1564 18.0184 9.83928 19.3679C9.0163 20.2113 7.71058 20.2112 6.88769 19.3677L3.59355 15.9718C3.17955 15.541 2.83301 15.1777 2.55386 14.8819C-0.654672 11.4815 -0.654672 5.9683 2.55386 2.56789C5.76239 -0.832524 10.9645 -0.832524 14.173 2.56789C17.3815 5.9683 17.3815 11.4815 14.173 14.8819ZM10.7226 8.9996C10.7226 7.61875 9.66633 6.49936 8.36344 6.49936C7.06056 6.49936 6.0043 7.61875 6.0043 8.9996C6.0043 10.3804 7.06056 11.4998 8.36344 11.4998C9.66633 11.4998 10.7226 10.3804 10.7226 8.9996Z" fill="red"/>
-                                </svg>
-                                {{ $building->address->location }}, {{ $building->address->city }}, {{ $building->address->province }}, {{ $building->address->country }}
-                            </p>
-
-                            <hr class="mt-3">
-
-                            <div class="text-center flex-grow-1">
-                                <p><strong>Organization:</strong> {{ $building->organization->name }}</p>
-                                <p><strong>Type:</strong> {{ $building->building_type }}</p>
-                                <div class="row">
-                                    <div class="col-5">
-                                        <p><strong>Levels:</strong> {{ $building->levels->count() }}</p>
+                                <div class="department-meta">
+                                    <div class="meta-item">
+                                        <i class="bx bx-layer meta-icon"></i>
+                                        <span>4 Levels</span>
                                     </div>
-                                    <div class="col-7">
-                                        <p><strong>Units:</strong> {{ $building->levels->sum(fn($level) => $level->units->count()) }}</p>
+                                    <div class="meta-item">
+                                        <i class="fas fa-users meta-icon"></i>
+                                        <span>10 Units</span>
                                     </div>
-                                    <div class="col-5">
-                                        <p><strong>Area:</strong> {{ $building->area }}</p>
-                                    </div>
-                                    <div class="col-7">
-                                        <p><strong>Construction Year:</strong> {{ $building->construction_year }}</p>
-                                    </div>
+                                </div>
+
+                                <div class="action-buttons">
+                                    <a href="{{ route('buildings.edit', $building->id) }}" class="btn-edit">
+                                        <i class="fas fa-pen"></i> Edit Building
+                                    </a>
+
+                                    @if($building->status === "Under Review")
+                                    <a href="#" class="btn-edit" id="building-reject-btn" data-id="{{ $building->id }}">
+
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path id="reject-svg"  d="M17.5 12a5.5 5.5 0 1 1 0 11a5.5 5.5 0 0 1 0-11m-2.476 3.024a.5.5 0 0 0 0 .707l1.769 1.77l-1.767 1.766a.5.5 0 1 0 .707.708l1.767-1.767l1.77 1.769a.5.5 0 1 0 .707-.707l-1.769-1.77l1.771-1.77a.5.5 0 0 0-.707-.707l-1.771 1.77l-1.77-1.77a.5.5 0 0 0-.707 0M11.019 17H3l-.117.007A1 1 0 0 0 3 19h8.174a6.5 6.5 0 0 1-.155-2m.48-2H3a1 1 0 0 1-.117-1.993L3 13h9.81a6.5 6.5 0 0 0-1.312 2M3 11a1 1 0 0 1-.117-1.993L3 9h18a1 1 0 0 1 .117 1.993L21 11zm18-6H3l-.117.007A1 1 0 0 0 3 7h18l.117-.007A1 1 0 0 0 21 5"/></svg>
+                                        Reject Building
+                                    </a>
+                                    <form action="{{ route('owner.buildings.submit') }}" method="POST" >
+                                            @csrf
+                                            <input type="hidden" name="building_id" value="{{ $building->id }}">
+                                            <a href="#" class="btn-edit" id="building-approved-btn">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 20 20"><path id="approve-svg" d="M5.5 2A1.5 1.5 0 0 0 4 3.5v14a.5.5 0 0 0 .5.5H7v-3.5a.5.5 0 0 1 .5-.5h1.522c.05-.555.183-1.087.386-1.582a.75.75 0 1 1 .752-1.296A5.49 5.49 0 0 1 14.5 9c.509 0 1.002.07 1.47.199A1.5 1.5 0 0 0 14.5 8H13V3.5A1.5 1.5 0 0 0 11.5 2zm2 3.75a.75.75 0 1 1-1.5 0a.75.75 0 0 1 1.5 0M6.75 8a.75.75 0 1 1 0 1.5a.75.75 0 0 1 0-1.5m.75 3.75a.75.75 0 1 1-1.5 0a.75.75 0 0 1 1.5 0M9.75 5a.75.75 0 1 1 0 1.5a.75.75 0 0 1 0-1.5m.75 3.75a.75.75 0 1 1-1.5 0a.75.75 0 0 1 1.5 0M9.022 15a5.5 5.5 0 0 0 1.235 3H8v-3zM19 14.5a4.5 4.5 0 1 1-9 0a4.5 4.5 0 0 1 9 0m-2.146-1.854a.5.5 0 0 0-.708 0L13.5 15.293l-.646-.647a.5.5 0 0 0-.708.708l1 1a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0 0-.708"/></svg>
+                                                Approve Building
+                                            </a>
+                                        </form>
+                                    @elseif($building->status === "For Re-Approval")
+                                        <form action="{{ route('owner.buildings.submit') }}" method="POST" >
+                                            @csrf
+                                            <input type="hidden" name="building_id" value="{{ $building->id }}">
+                                            <a href="#" class="btn-edit" id="building-approved-btn">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 20 20"><path id="approve-svg" d="M5.5 2A1.5 1.5 0 0 0 4 3.5v14a.5.5 0 0 0 .5.5H7v-3.5a.5.5 0 0 1 .5-.5h1.522c.05-.555.183-1.087.386-1.582a.75.75 0 1 1 .752-1.296A5.49 5.49 0 0 1 14.5 9c.509 0 1.002.07 1.47.199A1.5 1.5 0 0 0 14.5 8H13V3.5A1.5 1.5 0 0 0 11.5 2zm2 3.75a.75.75 0 1 1-1.5 0a.75.75 0 0 1 1.5 0M6.75 8a.75.75 0 1 1 0 1.5a.75.75 0 0 1 0-1.5m.75 3.75a.75.75 0 1 1-1.5 0a.75.75 0 0 1 1.5 0M9.75 5a.75.75 0 1 1 0 1.5a.75.75 0 0 1 0-1.5m.75 3.75a.75.75 0 1 1-1.5 0a.75.75 0 0 1 1.5 0M9.022 15a5.5 5.5 0 0 0 1.235 3H8v-3zM19 14.5a4.5 4.5 0 1 1-9 0a4.5 4.5 0 0 1 9 0m-2.146-1.854a.5.5 0 0 0-.708 0L13.5 15.293l-.646-.647a.5.5 0 0 0-.708.708l1 1a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0 0-.708"/></svg>
+                                                Approve Building
+                                            </a>
+                                        </form>
+                                    @endif
+
+                                    <a href="{{ route('owner.buildings.index') }}" class="btn-back">
+                                        <i class="fas fa-arrow-left"></i> Back to Buildings
+                                    </a>
                                 </div>
                             </div>
+                        </div>
+{{--                        <div class="col-12">--}}
+{{--                            <div class="card shadow-sm border p-3 h-100 d-flex flex-column"--}}
+{{--                                 style="border-radius: 25px; max-width: 400px; min-width: 300px;">--}}
+{{--                                <h4 style="font-size: 18px; font-weight: bold">Building Detail</h4>--}}
 
-                            @if($building->status === "Under Review")
-                                <hr>
-                                <div class="d-flex justify-content-between mt-3">
-                                    <button class="btn w-50 me-2 status-button" id="reject-btn">
-                                        <img id="rejectIcon" src="{{ asset('icons/reject-icon.svg') }}" alt="">
-                                        Reject
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path id="reject-svg"  d="M17.5 12a5.5 5.5 0 1 1 0 11a5.5 5.5 0 0 1 0-11m-2.476 3.024a.5.5 0 0 0 0 .707l1.769 1.77l-1.767 1.766a.5.5 0 1 0 .707.708l1.767-1.767l1.77 1.769a.5.5 0 1 0 .707-.707l-1.769-1.77l1.771-1.77a.5.5 0 0 0-.707-.707l-1.771 1.77l-1.77-1.77a.5.5 0 0 0-.707 0M11.019 17H3l-.117.007A1 1 0 0 0 3 19h8.174a6.5 6.5 0 0 1-.155-2m.48-2H3a1 1 0 0 1-.117-1.993L3 13h9.81a6.5 6.5 0 0 0-1.312 2M3 11a1 1 0 0 1-.117-1.993L3 9h18a1 1 0 0 1 .117 1.993L21 11zm18-6H3l-.117.007A1 1 0 0 0 3 7h18l.117-.007A1 1 0 0 0 21 5"/></svg>
-                                    </button>
-                                    <form action="{{ route('owner.buildings.submit') }}" method="POST" class="w-50 mx-1">
-                                        @csrf
-                                        <input type="hidden" name="building_id" value="{{ $building->id }}">
-                                        <button type="submit" class="btn w-100 status-button" id="approved-btn">Approve
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 20 20"><path id="approve-svg" d="M5.5 2A1.5 1.5 0 0 0 4 3.5v14a.5.5 0 0 0 .5.5H7v-3.5a.5.5 0 0 1 .5-.5h1.522c.05-.555.183-1.087.386-1.582a.75.75 0 1 1 .752-1.296A5.49 5.49 0 0 1 14.5 9c.509 0 1.002.07 1.47.199A1.5 1.5 0 0 0 14.5 8H13V3.5A1.5 1.5 0 0 0 11.5 2zm2 3.75a.75.75 0 1 1-1.5 0a.75.75 0 0 1 1.5 0M6.75 8a.75.75 0 1 1 0 1.5a.75.75 0 0 1 0-1.5m.75 3.75a.75.75 0 1 1-1.5 0a.75.75 0 0 1 1.5 0M9.75 5a.75.75 0 1 1 0 1.5a.75.75 0 0 1 0-1.5m.75 3.75a.75.75 0 1 1-1.5 0a.75.75 0 0 1 1.5 0M9.022 15a5.5 5.5 0 0 0 1.235 3H8v-3zM19 14.5a4.5 4.5 0 1 1-9 0a4.5 4.5 0 0 1 9 0m-2.146-1.854a.5.5 0 0 0-.708 0L13.5 15.293l-.646-.647a.5.5 0 0 0-.708.708l1 1a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0 0-.708"/></svg>
-                                        </button>
-                                    </form>
-                                </div>
-                            @else
-                                <hr>
-                                <div class="d-flex justify-content-between mt-3">
-                                    <a href="{{ route('buildings.index') }}" class="btn btn-outline-primary w-100 me-2 status-button">Close</a>
-                                </div>
-                            @endif
+{{--                                <!-- Image Container -->--}}
+{{--                                <div class="position-relative" style="width: 100%; height: 200px; overflow: hidden;">--}}
+{{--                                    <img src="{{ asset( $building->pictures->first() ?  $building->pictures->first()->file_path : '') }}"--}}
+{{--                                         class="img-fluid rounded w-100 h-100 object-fit-cover"--}}
+{{--                                         alt="Building Image">--}}
+{{--                                </div>--}}
+
+{{--                                <div class="card-body d-flex flex-column">--}}
+{{--                                    <h5 class="card-title text-success fw-bold text-center">{{ $building->name }}</h5>--}}
+{{--                                    <p class="text-center mb-0 pb-0">--}}
+{{--                                        <svg width="15" height="15" viewBox="0 0 17 20" fill="none"--}}
+{{--                                             xmlns="http://www.w3.org/2000/svg">--}}
+{{--                                            <path d="M14.173 14.8819L13.053 16.0558C12.2275 16.9144 11.1564 18.0184 9.83928 19.3679C9.0163 20.2113 7.71058 20.2112 6.88769 19.3677L3.59355 15.9718C3.17955 15.541 2.83301 15.1777 2.55386 14.8819C-0.654672 11.4815 -0.654672 5.9683 2.55386 2.56789C5.76239 -0.832524 10.9645 -0.832524 14.173 2.56789C17.3815 5.9683 17.3815 11.4815 14.173 14.8819ZM10.7226 8.9996C10.7226 7.61875 9.66633 6.49936 8.36344 6.49936C7.06056 6.49936 6.0043 7.61875 6.0043 8.9996C6.0043 10.3804 7.06056 11.4998 8.36344 11.4998C9.66633 11.4998 10.7226 10.3804 10.7226 8.9996Z" fill="red"/>--}}
+{{--                                        </svg>--}}
+{{--                                        {{ $building->address->location }}, {{ $building->address->city }}, {{ $building->address->province }}, {{ $building->address->country }}--}}
+{{--                                    </p>--}}
+
+{{--                                    <hr class="mt-3">--}}
+
+{{--                                    <div class="text-center flex-grow-1">--}}
+{{--                                        <p><strong>Organization:</strong> {{ $building->organization->name }}</p>--}}
+{{--                                        <p><strong>Type:</strong> {{ $building->building_type }}</p>--}}
+{{--                                        <div class="row">--}}
+{{--                                            <div class="col-5">--}}
+{{--                                                <p><strong>Levels:</strong> {{ $building->levels->count() }}</p>--}}
+{{--                                            </div>--}}
+{{--                                            <div class="col-7">--}}
+{{--                                                <p><strong>Units:</strong> {{ $building->levels->sum(fn($level) => $level->units->count()) }}</p>--}}
+{{--                                            </div>--}}
+{{--                                            <div class="col-5">--}}
+{{--                                                <p><strong>Area:</strong> {{ $building->area }}</p>--}}
+{{--                                            </div>--}}
+{{--                                            <div class="col-7">--}}
+{{--                                                <p><strong>Construction Year:</strong> {{ $building->construction_year }}</p>--}}
+{{--                                            </div>--}}
+{{--                                        </div>--}}
+{{--                                    </div>--}}
+
+{{--                                    @if($building->status === "Under Review")--}}
+{{--                                        <hr>--}}
+{{--                                        <div class="d-flex justify-content-between mt-3">--}}
+{{--                                            <button class="btn w-50 me-2 status-button" id="reject-btn">--}}
+{{--                                                <img id="rejectIcon" src="{{ asset('icons/reject-icon.svg') }}" alt="">--}}
+{{--                                                Reject--}}
+{{--                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path id="reject-svg"  d="M17.5 12a5.5 5.5 0 1 1 0 11a5.5 5.5 0 0 1 0-11m-2.476 3.024a.5.5 0 0 0 0 .707l1.769 1.77l-1.767 1.766a.5.5 0 1 0 .707.708l1.767-1.767l1.77 1.769a.5.5 0 1 0 .707-.707l-1.769-1.77l1.771-1.77a.5.5 0 0 0-.707-.707l-1.771 1.77l-1.77-1.77a.5.5 0 0 0-.707 0M11.019 17H3l-.117.007A1 1 0 0 0 3 19h8.174a6.5 6.5 0 0 1-.155-2m.48-2H3a1 1 0 0 1-.117-1.993L3 13h9.81a6.5 6.5 0 0 0-1.312 2M3 11a1 1 0 0 1-.117-1.993L3 9h18a1 1 0 0 1 .117 1.993L21 11zm18-6H3l-.117.007A1 1 0 0 0 3 7h18l.117-.007A1 1 0 0 0 21 5"/></svg>--}}
+{{--                                            </button>--}}
+{{--                                            <form action="{{ route('owner.buildings.submit') }}" method="POST" class="w-50 mx-1">--}}
+{{--                                                @csrf--}}
+{{--                                                <input type="hidden" name="building_id" value="{{ $building->id }}">--}}
+{{--                                                <button type="submit" class="btn w-100 status-button" id="approved-btn">Approve--}}
+{{--                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 20 20"><path id="approve-svg" d="M5.5 2A1.5 1.5 0 0 0 4 3.5v14a.5.5 0 0 0 .5.5H7v-3.5a.5.5 0 0 1 .5-.5h1.522c.05-.555.183-1.087.386-1.582a.75.75 0 1 1 .752-1.296A5.49 5.49 0 0 1 14.5 9c.509 0 1.002.07 1.47.199A1.5 1.5 0 0 0 14.5 8H13V3.5A1.5 1.5 0 0 0 11.5 2zm2 3.75a.75.75 0 1 1-1.5 0a.75.75 0 0 1 1.5 0M6.75 8a.75.75 0 1 1 0 1.5a.75.75 0 0 1 0-1.5m.75 3.75a.75.75 0 1 1-1.5 0a.75.75 0 0 1 1.5 0M9.75 5a.75.75 0 1 1 0 1.5a.75.75 0 0 1 0-1.5m.75 3.75a.75.75 0 1 1-1.5 0a.75.75 0 0 1 1.5 0M9.022 15a5.5 5.5 0 0 0 1.235 3H8v-3zM19 14.5a4.5 4.5 0 1 1-9 0a4.5 4.5 0 0 1 9 0m-2.146-1.854a.5.5 0 0 0-.708 0L13.5 15.293l-.646-.647a.5.5 0 0 0-.708.708l1 1a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0 0-.708"/></svg>--}}
+{{--                                                </button>--}}
+{{--                                            </form>--}}
+{{--                                        </div>--}}
+{{--                                    @else--}}
+{{--                                        <hr>--}}
+{{--                                        <div class="d-flex justify-content-between mt-3">--}}
+{{--                                            <a href="{{ route('buildings.index') }}" class="btn btn-outline-primary w-100 me-2 status-button">Close</a>--}}
+{{--                                        </div>--}}
+{{--                                    @endif--}}
 
 
+{{--                                </div>--}}
+{{--                            </div>--}}
+{{--                        </div>--}}
+                    </div>
+
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card tree-card border p-1 flex-grow-1" style="border-radius: 25px;">
+                                <div id="tree" class="py-0" style="border-radius: 25px;"></div>
+                            </div>
                         </div>
                     </div>
-
-                    <div class="card tree-card border p-1 flex-grow-1" style="border-radius: 25px;">
-                        <div id="tree" class="py-0" style="border-radius: 25px;"></div>
-                    </div>
-                </div>
+{{--                </div>--}}
 
 
             </div>
@@ -684,13 +934,13 @@
 
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            document.getElementById("reject-btn").addEventListener("click", function (e) {
+            document.getElementById("building-reject-btn").addEventListener("click", function (e) {
                 e.preventDefault();
                 let rejectModal = new bootstrap.Modal(document.getElementById("RejectBuildingModal"));
                 rejectModal.show();
             });
 
-            document.getElementById("approved-btn").addEventListener("click", function (e) {
+            document.getElementById("building-approved-btn").addEventListener("click", function (e) {
                 e.preventDefault();
                 let approvedModal = new bootstrap.Modal(document.getElementById("ApprovedBuildingModal"));
                 approvedModal.show();

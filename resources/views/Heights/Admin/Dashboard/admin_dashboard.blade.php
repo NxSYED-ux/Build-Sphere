@@ -175,19 +175,19 @@
                                                 <div class="row">
                                                     <div class="col py-4">
                                                         <div class="one-third">
-                                                            <div class="h2"  >265</div>
+                                                            <div class="h2"  >000</div>
                                                             <div class="h3 mt-3">Total</div>
                                                         </div>
                                                     </div>
                                                     <div class="col py-4 border_grey">
                                                         <div class="one-third">
-                                                            <div class="h2"  >95</div>
+                                                            <div class="h2"  >000</div>
                                                             <div class="h3 mt-3">Booked</div>
                                                         </div>
                                                     </div>
                                                     <div class="col py-4 border_grey">
                                                         <div class="one-third no-border">
-                                                            <div class="h2">170</div>
+                                                            <div class="h2">000</div>
                                                             <div class="h3 mt-3">UnBooked</div>
                                                         </div>
                                                     </div>
@@ -215,19 +215,19 @@
                                                 <div class="row">
                                                     <div class="col py-4">
                                                         <div class="one-third">
-                                                            <div class="h2" >1848950 </div>
+                                                            <div class="h2" >00.0 </div>
                                                             <div class="h3 mt-3">Income</div>
                                                         </div>
                                                     </div>
                                                     <div class="col py-4 border_grey">
                                                         <div class="one-third">
-                                                            <div class="h2" >15000 </div>
+                                                            <div class="h2" >00.0 </div>
                                                             <div class="h3 mt-3">Expense</div>
                                                         </div>
                                                     </div>
                                                     <div class="col py-4 border_grey">
                                                         <div class="one-third no-border">
-                                                            <div class="h2" >1833950 </div>
+                                                            <div class="h2" >00.0 </div>
                                                             <div class="h3 mt-3">Profit</div>
                                                         </div>
                                                     </div>

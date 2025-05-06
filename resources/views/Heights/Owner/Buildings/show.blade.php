@@ -423,7 +423,7 @@
                     <button type="button" class="btn-close position-absolute top-0 end-0 m-2 p-2 bg-white rounded-circle shadow-sm" data-bs-dismiss="modal"></button>
 
                     <!-- Unit Image -->
-                    <img id="unitImage" src="default-image.jpg" class="w-100 rounded-top" style="height: 200px; object-fit: cover;" alt="Unit Image">
+                    <img id="unitImage" src="" class="w-100 rounded-top" style="height: 200px; object-fit: cover;" alt="Unit Image">
                 </div>
 
                 <!-- Unit Details -->

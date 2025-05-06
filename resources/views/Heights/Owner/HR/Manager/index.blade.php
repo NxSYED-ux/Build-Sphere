@@ -51,7 +51,7 @@
 
         .team-members {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
             gap: 20px;
             margin-top: 20px;
         }
@@ -115,12 +115,12 @@
         .member-actions {
             display: flex;
             justify-content: space-between;
-            padding: 0 20px 20px;
+            padding: 10px 10px;
         }
 
         .btn-member {
             flex: 1;
-            margin: 0 5px;
+            margin: 4px;
             padding: 8px 0;
             border-radius: 5px;
             font-size: 0.85rem;
@@ -200,7 +200,7 @@
                             <div class="container mt-2">
                                 <div class="d-flex justify-content-between align-items-center mb-4">
                                     <h3 class="mb-1">Managers</h3>
-                                    <a href="{{route('owner.managers.create')}}" class="btn btn-primary d-flex align-items-center justify-content-center" title="Add Manager">
+                                    <a href="{{ route('owner.managers.create') }}" class="btn btn-primary d-flex align-items-center justify-content-center" title="Add Manager">
                                         <i class="fas fa-user-plus me-2"></i> Add Manager
                                     </a>
                                 </div>
@@ -232,7 +232,7 @@
                                                         <i class="fas fa-envelope"></i>
                                                     </div>
                                                     <div class="detail-text">
-                                                        <a href="mailto:{{ $staffMember->user->email }}">{{ $staffMember->user->email }}</a>
+                                                        <a class="text-decoration-none" href="mailto:{{ $staffMember->user->email }}">{{ $staffMember->user->email }}</a>
                                                     </div>
                                                 </div>
                                                 <div class="detail-item">
@@ -253,10 +253,10 @@
                                                 </div>
                                             </div>
                                             <div class="member-actions">
-                                                <a href="{{ route('owner.managers.show', $staffMember->id) }}" class="btn btn-sm btn-view btn-member" title="View Details">
+                                                <a href="{{ route('owner.managers.show', $staffMember->id) }}" class="btn btn-sm btn-view btn-member gap-1" title="View Details">
                                                     <i class="fas fa-eye"></i> View
                                                 </a>
-                                                <a href="{{ route('owner.managers.edit', $staffMember->id) }}" class="btn btn-sm btn-edit btn-member" title="Edit Manager">
+                                                <a href="{{ route('owner.managers.edit', $staffMember->id) }}" class="btn btn-sm btn-edit btn-member gap-1" title="Edit Manager">
                                                     <i class="fas fa-edit"></i> Edit
                                                 </a>
                                             </div>

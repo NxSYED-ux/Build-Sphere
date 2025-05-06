@@ -406,8 +406,6 @@
                     });
             }
 
-
-
             const editButtons = document.querySelectorAll(".Admin-Level-Edit-Button");
 
             editButtons.forEach(button => {

@@ -263,7 +263,10 @@ class hrController extends Controller
         }
     }
 
-
+    public function staffShow()
+    {
+        return view('Heights.Owner.HR.Staff.show');
+    }
     // Manager Create
     public function managerCreate(Request $request)
     {

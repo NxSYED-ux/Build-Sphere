@@ -147,6 +147,7 @@
             padding: 12px 16px;
             background-color: var(--body-background-color);
             border-radius: 8px;
+            border: 1px solid var(--border-color) !important;
         }
 
          .child-permission{
@@ -367,17 +368,17 @@
                                                     <div class="col-sm-12 col-md-6 col-xl-4">
                                                         <div class="form-group mb-3">
                                                             <div class="permission-toggle-container">
-                                                            <label class="permission-label">
-                                                                <i class='bx bxs-check-circle permission-icon'></i>
-                                                                {{ $building->name }}
-                                                            </label>
-                                                            <div class="form-check form-switch">
-                                                                <input class="form-check-input permission-toggle parent-toggle"
-                                                                       type="checkbox"
-                                                                       name="buildings[{{ $building->id }}]"
-                                                                       value="1">
+                                                                <label class="permission-label">
+                                                                    <i class='bx bxs-check-circle permission-icon'></i>
+                                                                    {{ $building->name }}
+                                                                </label>
+                                                                <div class="form-check form-switch">
+                                                                    <input class="form-check-input permission-toggle parent-toggle"
+                                                                           type="checkbox"
+                                                                           name="buildings[{{ $building->id }}]"
+                                                                           value="1">
+                                                                </div>
                                                             </div>
-                                                        </div>
                                                         </div>
                                                     </div>
                                                     @endforeach
