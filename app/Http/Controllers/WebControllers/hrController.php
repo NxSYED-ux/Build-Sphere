@@ -13,6 +13,8 @@ use App\Models\StaffMember;
 use App\Models\User;
 use App\Models\UserPermission;
 use App\Notifications\CredentialsEmail;
+use App\Notifications\DatabaseOnlyNotification;
+use App\Notifications\UserNotification;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -267,6 +269,7 @@ class hrController extends Controller
     {
         return view('Heights.Owner.HR.Staff.show');
     }
+
     // Manager Create
     public function managerCreate(Request $request)
     {
@@ -463,9 +466,127 @@ class hrController extends Controller
         }
     }
 
-    public function promotion(Request $request){
-        // staff_id, permissions, buildings
-        // return redirect response or json if you want
+    public function promotion(Request $request)
+    {
+        $loggedUser = $request->user() ?? abort(403, 'Unauthorized action.');
+        $token = $request->attributes->get('token');
+
+        if (empty($token['organization_id'])) {
+            return response()->json([
+                'error' => 'This action is only for Organization owners.'
+            ], 403);
+        }
+
+        $organization_id = $token['organization_id'];
+
+        $request->validate([
+            'staff_id' => ['bail', 'required', 'exists:staff_members,id'],
+            'permissions' => ['bail', 'nullable', 'array'],
+            'permissions.*' => ['bail', 'nullable', 'integer'],
+            'buildings' => ['bail', 'required', 'array'],
+            'buildings.*' => ['bail', 'required', 'integer', 'exists:buildings,id'],
+        ]);
+
+        DB::beginTransaction();
+        try {
+            $result = $this->checkServiceUsageLimit($organization_id, 2, 'Managers', $loggedUser->role_id);
+
+            if ($result instanceof RedirectResponse) {
+                DB::rollBack();
+                return response()->json([
+                    'plan_upgrade_error' => 'Managers limit exceeded or subscribed plan does not have Managers service in it.'
+                ], 403);
+            }
+
+            $subscriptionItem = $result['subscriptionItem'];
+
+            $staff = StaffMember::where('id', $request->staff_id)
+                ->whereHas('user', function ($query) {
+                    $query->where('role_id', 4);
+                })
+                ->with('user')
+                ->first();
+
+            if (!$staff) {
+                return response()->json([
+                    'error' => 'Invalid staff ID or the staff is already promoted as the manager.'
+                ], 400);
+            }
+
+            $user = $staff->user;
+
+            $user->update([
+                'role_id' => 3,
+            ]);
+
+            $staff->update([
+                'department_id' => null,
+                'building_id' => null,
+            ]);
+
+            foreach ($request->buildings as $buildingId) {
+                ManagerBuilding::create([
+                    'user_id' => $user->id,
+                    'staff_id' => $staff->id,
+                    'building_id' => $buildingId,
+                ]);
+            }
+
+            UserPermission::where('user_id', $user->id)->delete();
+
+            $originalPermissions = RolePermission::where('role_id', 3)->pluck('status', 'permission_id');
+            $new = $request->permissions ?? [];
+
+            $changedPermissions = collect($new)
+                ->filter(function ($status, $permissionId) use ($originalPermissions) {
+                    return isset($originalPermissions[$permissionId]) && $originalPermissions[$permissionId] != $status;
+                });
+
+            foreach ($changedPermissions as $permissionId => $status) {
+                UserPermission::create([
+                    'user_id' => $user->id,
+                    'permission_id' => $permissionId,
+                    'status' => $status,
+                ]);
+            }
+
+            $subscriptionItem->increment('used');
+
+            $subscription = PlanSubscriptionItem::where('organization_id', $organization_id)
+                ->where('service_catalog_id', 3)
+                ->lockForUpdate()
+                ->first();
+
+            if ($subscription && $subscription->used > 0) {
+                $subscription->decrement('used');
+            }
+
+            DB::commit();
+
+            $loggedUser->notify(new DatabaseOnlyNotification(
+                $user->picture ?? 'uploads/Notification/Light-theme-Logo.svg',
+                'Staff Promoted Successfully',
+                "{$user->name} promoted successfully as a manager",
+                ['web' => "owner/managers/{$staff->id}/show"]
+            ));
+
+            $user->notify(new UserNotification(
+                'uploads/Notification/Light-theme-Logo.svg',
+                "You're Now a Manager",
+                'Congratulations! You have been promoted to a manager.',
+                ['web' => "owner/dashboard"]
+            ));
+
+            return response()->json([
+                'message' => 'Staff promoted successfully.'
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Staff promotion failed: ' . $e->getMessage());
+            return response()->json([
+                'error' => 'Something went wrong. Please try again.'
+            ], 500);
+        }
     }
 
     public function demotionGet(string $id){
