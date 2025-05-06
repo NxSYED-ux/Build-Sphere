@@ -265,10 +265,11 @@ class hrController extends Controller
         }
     }
 
-    public function staffShow()
+    public function staffShow(string $id)
     {
-        return view('Heights.Owner.HR.Staff.show');
+        return view('Heights.Owner.HR.Staff.show', compact('id'));
     }
+
 
     // Manager Create
     public function managerCreate(Request $request)

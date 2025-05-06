@@ -343,7 +343,7 @@ Route::prefix('owner')->middleware(['auth.jwt'])->group(function () {
             Route::get('/{staff}/show', [hrController::class , 'staffShow'])->name('owner.staff.show');
             Route::get('/{staff}/edit', [hrController::class , 'staffEdit'])->name('owner.staff.edit');
 
-            Route::get('/promote', [hrController::class , 'promotionGet'])->name('owner.staff.promote.index');
+            Route::get('/promote/{id}', [hrController::class , 'promotionGet'])->name('owner.staff.promote.index');
             Route::post('/promote', [hrController::class , 'promotion'])->name('owner.staff.promote.store');
 
         });

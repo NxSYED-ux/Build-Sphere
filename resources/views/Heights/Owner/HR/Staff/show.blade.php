@@ -4,8 +4,90 @@
 
 @push('styles')
     <style>
+        :root {
+            --primary-color: var(--color-blue);
+            --primary-hover: var(--color-blue);
+            --secondary-color: #f8f9fa;
+            --border-color: #e2e8f0;
+            --error-color: #e53e3e;
+            --success-color: #38a169;
+            --permission-header-bg: rgba(var(--color-blue), 0.05);
+            --permission-card-bg: var(--body-background-color);
+            --child-permission-indicator: var(--color-blue);
+        }
         #main {
             margin-top: 45px;
+        }
+
+        .permission-item-container {
+            background-color: var(--body-background-color);
+            border-radius: 8px;
+            padding: 0;
+            margin-bottom: 10px;
+            border: 2px solid var(--border-color);
+            transition: all 0.2s ease;
+        }
+
+        .permission-toggle-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            background-color: var(--body-background-color);
+            border-radius: 8px;
+        }
+
+        .child-permission{
+            border-radius: 0 !important;
+        }
+
+        .permission-label {
+            font-weight: 600;
+            color: var(--sidenavbar-text-color);
+            margin-bottom: 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .child-permission .permission-label {
+            font-weight: 400;
+        }
+
+        .permission-icon {
+            margin-right: 10px;
+            color: var(--sidenavbar-text-color);
+            font-size: 1.1em;
+        }
+
+        .child-permission .permission-icon {
+            color: var(--sidenavbar-text-color);
+            font-size: 1.1em;
+        }
+
+        .child-permissions {
+        }
+
+        .child-permissions .permission-toggle-container {
+            padding: 10px 16px;
+            background-color: var(--body-background-color);
+        }
+
+        .form-switch .form-check-input {
+            width: 2.8em;
+            height: 1.5em;
+            cursor: pointer;
+            background-color: var(--border-color);
+            border-color: var(--border-color);
+        }
+
+        .accordion-header{
+            color: var(--sidenavbar-text-color);
+            font-size: 20px;
+        }
+
+        .form-switch .form-check-input:checked {
+            background-color: var(--success-color);
+            border-color: var(--success-color);
         }
     </style>
 @endpush
@@ -35,9 +117,7 @@
                                     <h3 class="mb-1">Staff Members</h3>
                                 </div>
 
-                                <a href="#" class="btn btn-primary" title="Promote To Manager">
-                                    <i class="fas fa-user-plus me-2"></i> Promote staff to Manager
-                                </a>
+                                <button class="btn btn-primary promote-btn" data-staff-id="{{ $id }}">Promote to Manager</button>
                             </div>
                         </div>
                     </div>
@@ -46,7 +126,337 @@
         </section>
     </div>
 
+
+
+    <div class="modal fade" id="promotionModal" tabindex="-1" role="dialog" aria-hidden="true"></div>
+
 @endsection
 
 @push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+
+            // Handle promote button clicks
+            document.querySelectorAll('.promote-btn').forEach(button => {
+                button.addEventListener('click', handlePromoteClick);
+            });
+
+            async function handlePromoteClick(e) {
+                e.preventDefault();
+                const staffId = this.dataset.staffId;
+
+                try {
+                    const response = await fetch(`{{ route('owner.staff.promote.index', ':id') }}`.replace(':id', staffId), {
+                        method: "GET",
+                        headers: {
+                            "X-Requested-With": "XMLHttpRequest",
+                            "Accept": "application/json",
+                            "X-CSRF-TOKEN": csrfToken
+                        }
+                    });
+
+                    if (!response.ok) {
+                        const error = await response.json();
+                        throw new Error(error.error || error.plan_upgrade_error || 'Request failed');
+                    }
+
+                    const data = await response.json();
+                    const modal = createPromotionModal(data);
+                    document.body.appendChild(modal);
+
+                    const bootstrapModal = new bootstrap.Modal(modal);
+                    bootstrapModal.show();
+
+                    // Setup modal events after it's shown
+                    setupModalEvents(modal);
+
+                    modal.addEventListener('hidden.bs.modal', () => {
+                        document.body.removeChild(modal);
+                    });
+                } catch (error) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: error.message,
+                        confirmButtonColor: '#3085d6',
+                    });
+                }
+            }
+
+            function createPromotionModal(data) {
+                const modal = document.createElement('div');
+                modal.className = 'modal fade';
+                modal.id = 'promotionModal';
+                modal.tabIndex = '-1';
+                modal.setAttribute('aria-hidden', 'true');
+
+                const staff = data.staffInfo?.user || {};
+                const staffName = staff.name || 'Staff Member';
+                const staffEmail = staff.email || 'No email';
+                const staffPicture = staff.picture ? "{{ asset('/') }}" + staff.picture : "{{ asset('assets/placeholder-profile.png') }}";
+                const currentBuildingId = data.staffInfo?.building_id || '';
+
+                modal.innerHTML = `
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Promote ${staffName}</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="staff-info-section mb-4 p-3 border rounded">
+                            <div class="d-flex align-items-center">
+                                <img src="${staffPicture}" alt="${staffName}"
+                                     class="member-avatar rounded-circle me-3"
+                                     style="width: 80px; height: 80px; object-fit: cover;">
+                                <div>
+                                    <h5>${staffName}</h5>
+                                    <p class="text-muted mb-1">${staffEmail}</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <form id="promotionForm">
+                            <input type="hidden" name="_token" value="${csrfToken}">
+                            <input type="hidden" name="staff_id" value="${data.staffInfo?.id || ''}">
+
+                            <div class="mb-4">
+                                <h6 class="mb-3">Buildings to Manage</h6>
+                                ${renderBuildings(data.buildings || [], currentBuildingId)}
+                            </div>
+
+                            <div class="mb-4">
+                                <h6 class="mb-3">Manager Permissions</h6>
+                                ${renderPermissions(data.permissions || [])}
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-primary" id="submitPromotion">Promote to Manager</button>
+                    </div>
+                </div>
+            </div>
+        `;
+
+                return modal;
+            }
+
+            function renderBuildings(buildings, currentBuildingId) {
+                if (!buildings.length) return '<p>No buildings available</p>';
+
+                return buildings.map(building => `
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox"
+                       name="buildings[]"
+                       value="${building.id}"
+                       id="building-${building.id}"
+                       ${building.id == currentBuildingId ? 'checked' : ''}>
+                <label class="form-check-label" for="building-${building.id}">
+                    ${building.name || 'Unnamed Building'}
+                </label>
+            </div>
+        `).join('');
+            }
+
+            function renderPermissions(permissions) {
+                if (!permissions.length) return '<div class="text-center fw-bold">No permissions found.</div>';
+
+                const grouped = permissions.reduce((acc, perm) => {
+                    const header = perm.permission?.header || 'General Permissions';
+                    if (!acc[header]) acc[header] = [];
+                    acc[header].push(perm);
+                    return acc;
+                }, {});
+
+                return `
+            <div class="accordion" id="permissionsAccordion">
+                ${Object.entries(grouped).map(([header, perms], index) => `
+                    <div class="accordion-item mb-3">
+                        <h6 class="accordion-header" id="heading${index}">
+                            <button class="accordion-button collapsed" type="button"
+                                    data-bs-toggle="collapse" data-bs-target="#collapse${index}"
+                                    aria-expanded="false" aria-controls="collapse${index}">
+                                <div class="d-flex align-items-center w-100">
+                                    <span class="fw-bold">${header}</span>
+                                </div>
+                            </button>
+                        </h6>
+                        <div id="collapse${index}" class="accordion-collapse collapse"
+                             aria-labelledby="heading${index}" data-bs-parent="#permissionsAccordion">
+                            <div class="accordion-body pt-2">
+                                <div class="row">
+                                    ${renderPermissionGroup(perms)}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+            }
+
+            function renderPermissionGroup(permissions) {
+                const parents = permissions.filter(p => !p.permission?.parent_id);
+
+                return parents.map(permission => {
+                    const children = permissions.filter(
+                        p => p.permission?.parent_id === permission.permission_id
+                    );
+
+                    return `
+                <div class="col-sm-12 mb-3 parent-permission">
+                    <div class="permission-item-container">
+                        <div class="permission-toggle-container border-bottom rounded-bottom-0">
+                            <label class="permission-label">
+                                <i class='bx bxs-check-circle permission-icon'></i>
+                                ${permission.permission?.name || 'Permission'}
+                            </label>
+                            <div class="form-check form-switch">
+                                <input type="hidden" name="permissions[${permission.permission_id}]" value="0">
+                                <input class="form-check-input permission-toggle parent-toggle"
+                                       type="checkbox"
+                                       name="permissions[${permission.permission_id}]"
+                                       value="1"
+                                       data-permission-id="${permission.permission_id}"
+                                       ${permission.status ? 'checked' : ''}>
+                            </div>
+                        </div>
+                        ${children.length ? renderChildPermissions(children, permission) : ''}
+                    </div>
+                </div>
+            `;
+                }).join('');
+            }
+
+            function renderChildPermissions(children, parentPermission) {
+                return `
+            <div class="child-permissions">
+                ${children.map(child => `
+                    <div class="permission-toggle-container child-permission">
+                        <label class="permission-label">
+                            <i class='bx bx-radio-circle permission-icon'></i>
+                            ${child.permission?.name || 'Child Permission'}
+                        </label>
+                        <div class="form-check form-switch">
+                            <input type="hidden" name="permissions[${child.permission_id}]" value="0">
+                            <input class="form-check-input permission-toggle child-toggle"
+                                   type="checkbox"
+                                   name="permissions[${child.permission_id}]"
+                                   value="1"
+                                   data-parent-id="${parentPermission.permission_id}"
+                                   ${parentPermission.status && child.status ? 'checked' : ''}
+                                   ${!parentPermission.status ? 'disabled' : ''}>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+            }
+
+            function setupModalEvents(modal) {
+                // Parent-child permission logic
+                modal.querySelectorAll('.parent-toggle').forEach(toggle => {
+                    const permissionId = toggle.dataset.permissionId;
+                    const children = modal.querySelectorAll(`.child-toggle[data-parent-id="${permissionId}"]`);
+
+                    toggle.addEventListener('change', function() {
+                        children.forEach(child => {
+                            child.checked = this.checked;
+                            child.disabled = !this.checked;
+                        });
+                    });
+
+                    // Initialize child states
+                    children.forEach(child => {
+                        child.disabled = !toggle.checked;
+
+                        child.addEventListener('change', function() {
+                            if (this.checked && !toggle.checked) {
+                                this.checked = false;
+                                Swal.fire({
+                                    icon: 'warning',
+                                    title: 'Permission Conflict',
+                                    text: 'Please enable the parent permission first.',
+                                    confirmButtonColor: '#3085d6',
+                                });
+                            }
+                        });
+                    });
+                });
+
+                // Form submission
+                modal.querySelector('#submitPromotion').addEventListener('click', async () => {
+                    const form = modal.querySelector('#promotionForm');
+                    const submitBtn = modal.querySelector('#submitPromotion');
+
+                    try {
+                        submitBtn.disabled = true;
+                        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Processing...';
+
+                        // Validate at least one building is selected
+                        const buildingCheckboxes = form.querySelectorAll('input[name="buildings[]"]:checked');
+                        if (buildingCheckboxes.length === 0) {
+                            throw new Error('Please select at least one building');
+                        }
+
+                        const formData = new FormData(form);
+
+                        // Convert permissions object to array format expected by backend
+                        const permissions = {};
+                        form.querySelectorAll('input[name^="permissions["]').forEach(input => {
+                            if (input.type === 'checkbox') {
+                                const key = input.name.match(/\[(.*?)\]/)[1];
+                                permissions[key] = input.checked ? 1 : 0;
+                            }
+                        });
+
+                        // Add permissions to form data
+                        formData.delete('permissions');
+                        for (const [key, value] of Object.entries(permissions)) {
+                            formData.append(`permissions[${key}]`, value);
+                        }
+
+                        const response = await fetch(`{{ route('owner.staff.promote.store') }}`, {
+                            method: "POST",
+                            body: formData,
+                            headers: {
+                                "X-Requested-With": "XMLHttpRequest",
+                                "Accept": "application/json"
+                            }
+                        });
+
+                        if (!response.ok) {
+                            const error = await response.json();
+                            throw new Error(error.error || error.message || 'Failed to promote staff');
+                        }
+
+                        const result = await response.json();
+
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success',
+                            text: result.message || 'Staff promoted successfully!',
+                            confirmButtonColor: '#3085d6',
+                        }).then(() => {
+                            const bsModal = bootstrap.Modal.getInstance(modal);
+                            bsModal.hide();
+                            window.location.reload();
+                        });
+                    } catch (error) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: error.message,
+                            confirmButtonColor: '#3085d6',
+                        });
+                    } finally {
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = 'Promote to Manager';
+                    }
+                });
+            }
+        });
+    </script>
 @endpush
