@@ -411,6 +411,71 @@ class hrController extends Controller
     }
 
 
+    // Promotion
+    public function promotionGet(string $id, Request $request)
+    {
+        try {
+            $user = $request->user() ?? abort(403, 'Unauthorized action.');
+            $token = $request->attributes->get('token');
+
+            if (empty($token['organization_id'])) {
+                return response()->json([
+                    'error' => 'This action is only for Organization owners.'
+                ], 403);
+            }
+
+            $organization_id = $token['organization_id'];
+
+            $staffInfo = StaffMember::where('id', $id)->with('user')->first();
+            if (!$staffInfo || $staffInfo->organization_id != $organization_id) {
+                return response()->json([
+                    'error' => 'Invalid staff Id.'
+                ], 400);
+            }
+
+            $result = $this->checkServiceUsageLimit($organization_id, 2, 'Managers', $user->role_id);
+
+            if ($result instanceof RedirectResponse) {
+                return response()->json([
+                    'plan_upgrade_error' => 'Managers limit exceeded or subscribed plan does not have Managers service in it.'
+                ], 403);
+            }
+
+            $buildings = Building::where('organization_id', $organization_id)
+                ->select('id', 'name')
+                ->get();
+
+            $permissions = RolePermission::where('role_id', 3)->get();
+
+            return response()->json([
+                'staffInfo' => $staffInfo,
+                'buildings' => $buildings,
+                'permissions' => $permissions
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error in promotionGet: ' . $e->getMessage());
+            return response()->json([
+                'error' => 'Something went wrong while loading the manager creation data.'
+            ], 500);
+        }
+    }
+
+    public function promotion(Request $request){
+        // staff_id, permissions, buildings
+        // return redirect response or json if you want
+    }
+
+    public function demotionGet(string $id){
+        // permissions, staff basic info like name, picture etc depending upon design, buildings, departments
+        // return json
+    }
+
+    public function demotion(Request $request){
+        // manager_id, permissions, building_id, department_id, accept_query
+        // return redirect response or json if you want
+    }
+
+
     // Helper Function
     public function checkServiceUsageLimit($organization_id, $serviceId, $serviceName, $roleId)
     {
