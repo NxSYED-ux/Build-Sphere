@@ -347,8 +347,8 @@ Route::prefix('owner')->middleware(['auth.jwt'])->group(function () {
             Route::get('/promote/{id}', [hrController::class , 'promotionGet'])->name('owner.staff.promote.index');
             Route::post('/promote', [hrController::class , 'promotion'])->name('owner.staff.promote.store');
 
-            Route::get('/query/yearly-stats', [QueryController::class, 'getStaffYearlyStats'])->name('owner.staff.query.yearly');
-            Route::get('/query/monthly-stats', [QueryController::class, 'getStaffMonthlyStats'])->name('owner.staff.query.monthly');
+            Route::get('/queries/yearly-stats', [QueryController::class, 'getStaffYearlyStats'])->name('owner.staff.queries.yearly');
+            Route::get('/queries/monthly-stats', [QueryController::class, 'getStaffMonthlyStats'])->name('owner.staff.queries.monthly');
 
         });
 
