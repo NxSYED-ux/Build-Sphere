@@ -467,7 +467,7 @@ class hrController extends Controller
         } catch (\Exception $e) {
             Log::error('Error in promotionGet: ' . $e->getMessage());
             return response()->json([
-                'error' => 'Something went wrong while loading the manager creation data.'
+                'error' => 'Something went wrong. Please try again later.'
             ], 500);
         }
     }
@@ -651,7 +651,7 @@ class hrController extends Controller
         } catch (\Exception $e) {
             Log::error('Error in demotionGet: ' . $e->getMessage());
             return response()->json([
-                'error' => 'Something went wrong while loading the manager creation data.'
+                'error' => 'Something went wrong. Please try again later.'
             ], 500);
         }
     }
@@ -661,6 +661,7 @@ class hrController extends Controller
         // return redirect response or json if you want
 
         // Points to consider
+        // Manager Access
         // Subscription Limit
         // Subscription Increment & Decrement
         // User Role update
