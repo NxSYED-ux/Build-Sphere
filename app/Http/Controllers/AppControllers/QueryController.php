@@ -313,61 +313,84 @@ class QueryController extends Controller
 
     public function getYearlyQueryStats(Request $request)
     {
-        try {
-            if (!$request->user()?->id) {
-                return response()->json(['error' => 'User ID is required'], 400);
-            }
-
-            $staffData = StaffMember::where('user_id', $request->user()->id)->first();
-            if (!$staffData) {
-                return response()->json(['data' => (object) []]);
-            }
-
-            $staffMemberId = $staffData->id;
-            $year = $request->query('year');
-            $month = $request->query('month');
-
-            $statuses = DB::table('queries')->distinct()->pluck('status')->toArray();
-
-            $statusCases = collect($statuses)->map(function ($status) {
-                return "SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) AS `$status`";
-            })->implode(', ');
-
-            $selectFields = "COUNT(*) AS total_queries";
-            if (!empty($statusCases)) {
-                $selectFields .= ", " . $statusCases;
-            }
-
-            $query = DB::table('queries')
-                ->selectRaw($selectFields, $statuses)
-                ->where('staff_member_id', $staffMemberId);
-
-            if ($year) {
-                $query->whereYear('updated_at', $year);
-            }
-
-            if ($month) {
-                $query->whereMonth('updated_at', $month);
-            }
-
-            $results = $query->first();
-
-            return response()->json(['data' => $results]);
-
-        } catch (\Exception $e) {
-            Log::error('Error in getYearlyQueryStats: ' . $e->getMessage());
-            return response()->json(['message' => 'Internal Server Error'], 500);
+        if (!$request->user()?->id) {
+            return response()->json(['error' => 'User ID is required'], 400);
         }
+
+        return $this->yearlyQueryStats($request, $request->user()->id);
     }
 
     public function getMonthlyQueryStats(Request $request)
     {
+        if (!$request->user()?->id) {
+            return response()->json(['error' => 'User ID is required'], 400);
+        }
+
+        return $this->monthlyQueryStats($request, $request->user()->id);
+    }
+
+
+    // For Staff Detail Page
+    public function getStaffYearlyStats(Request $request, string $id)
+    {
+        return $this->yearlyQueryStats($request, $id, false);
+    }
+
+    public function getStaffMonthlyStats(Request $request, string $id)
+    {
+        return $this->monthlyQueryStats($request, $id, false);
+    }
+
+
+    // Helper Function
+    private function acceptOrRejectQuery(Request $request, $status)
+    {
         try {
-            if (!$request->user()?->id) {
+            $user = $request->user() ?? null;
+            if (!$user) {
                 return response()->json(['error' => 'User ID is required'], 400);
             }
 
-            $staffData = StaffMember::where('user_id', $request->user()->id)->first();
+            $request->validate([
+                'id' => 'required|integer|exists:queries,id',
+                'date' => $status === 'Rejected' ? 'nullable' : 'required',
+                'remarks' => $status === 'Rejected' ? 'required|string|min:5' : 'nullable|string',
+            ]);
+
+            $staffData = StaffMember::where('user_id', $user->id)->first();
+            if (!$staffData) {
+                return response()->json(['error' => 'Only staff members can update queries'], 403);
+            }
+
+            $updatedRows = Query::where('id', $request->id)
+                ->where('status', 'Open')
+                ->where('staff_member_id', $staffData->id)
+                ->update([
+                    'status' => $status === 'Rejected' ? 'Rejected' : 'In Progress',
+                    'remarks' => $status === 'Rejected' ? $request->remarks : null,
+                    'expected_closure_date' => $request->date ?? now(),
+                ]);
+
+            if ($updatedRows === 0) {
+                return response()->json(['error' => 'Unable to update status: The query ID may be invalid or the status is already changed'], 400);
+            }
+
+            return response()->json(['message' => 'Status changed successfully'], 200);
+        } catch (\Exception $e) {
+            Log::error("Error in acceptOrRejectQuery: " . $e->getMessage());
+            return response()->json(['error' => 'Failed to update query status'], 500);
+        }
+    }
+
+    private function monthlyQueryStats(Request $request, string $id, bool $isUserId = true)
+    {
+        try{
+            if ($isUserId) {
+                $staffData = StaffMember::where('user_id', $id)->first();
+            }else{
+                $staffData = StaffMember::find($id);
+            }
+
             if (!$staffData) {
                 return response()->json(['monthly' => (object) []]);
             }
@@ -424,51 +447,59 @@ class QueryController extends Controller
             $formattedData = ['monthly' =>  (object) $formattedData['monthly']];
 
             return response()->json($formattedData);
-
         } catch (\Exception $e) {
             Log::error('Error in getMonthlyQueryStats: ' . $e->getMessage());
             return response()->json(['success' => false, 'message' => 'Internal Server Error'], 500);
         }
     }
 
-
-    // Helper Function
-    private function acceptOrRejectQuery(Request $request, $status)
+    public function yearlyQueryStats(Request $request, string $id, bool $isUserId = true)
     {
         try {
-            $user = $request->user() ?? null;
-            if (!$user) {
-                return response()->json(['error' => 'User ID is required'], 400);
+            if ($isUserId) {
+                $staffData = StaffMember::where('user_id', $id)->first();
+            }else{
+                $staffData = StaffMember::find($id);
             }
 
-            $request->validate([
-                'id' => 'required|integer|exists:queries,id',
-                'date' => $status === 'Rejected' ? 'nullable' : 'required',
-                'remarks' => $status === 'Rejected' ? 'required|string|min:5' : 'nullable|string',
-            ]);
-
-            $staffData = StaffMember::where('user_id', $user->id)->first();
             if (!$staffData) {
-                return response()->json(['error' => 'Only staff members can update queries'], 403);
+                return response()->json(['data' => (object) []]);
             }
 
-            $updatedRows = Query::where('id', $request->id)
-                ->where('status', 'Open')
-                ->where('staff_member_id', $staffData->id)
-                ->update([
-                    'status' => $status === 'Rejected' ? 'Rejected' : 'In Progress',
-                    'remarks' => $status === 'Rejected' ? $request->remarks : null,
-                    'expected_closure_date' => $request->date ?? now(),
-                ]);
+            $staffMemberId = $staffData->id;
+            $year = $request->query('year');
+            $month = $request->query('month');
 
-            if ($updatedRows === 0) {
-                return response()->json(['error' => 'Unable to update status: The query ID may be invalid or the status is already changed'], 400);
+            $statuses = DB::table('queries')->distinct()->pluck('status')->toArray();
+
+            $statusCases = collect($statuses)->map(function ($status) {
+                return "SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) AS `$status`";
+            })->implode(', ');
+
+            $selectFields = "COUNT(*) AS total_queries";
+            if (!empty($statusCases)) {
+                $selectFields .= ", " . $statusCases;
             }
 
-            return response()->json(['message' => 'Status changed successfully'], 200);
+            $query = DB::table('queries')
+                ->selectRaw($selectFields, $statuses)
+                ->where('staff_member_id', $staffMemberId);
+
+            if ($year) {
+                $query->whereYear('updated_at', $year);
+            }
+
+            if ($month) {
+                $query->whereMonth('updated_at', $month);
+            }
+
+            $results = $query->first();
+
+            return response()->json(['data' => $results]);
+
         } catch (\Exception $e) {
-            Log::error("Error in acceptOrRejectQuery: " . $e->getMessage());
-            return response()->json(['error' => 'Failed to update query status'], 500);
+            Log::error('Error in getYearlyQueryStats: ' . $e->getMessage());
+            return response()->json(['message' => 'Internal Server Error'], 500);
         }
     }
 

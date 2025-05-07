@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AppControllers\QueryController;
 use App\Http\Controllers\GeneralControllers\CardController;
 use App\Http\Controllers\GeneralControllers\ProfileController;
 use App\Http\Controllers\WebControllers\AdminDashboardController;
@@ -345,6 +346,9 @@ Route::prefix('owner')->middleware(['auth.jwt'])->group(function () {
 
             Route::get('/promote/{id}', [hrController::class , 'promotionGet'])->name('owner.staff.promote.index');
             Route::post('/promote', [hrController::class , 'promotion'])->name('owner.staff.promote.store');
+
+            Route::get('/query/yearly-stats', [QueryController::class, 'getStaffYearlyStats'])->name('owner.staff.query.yearly');
+            Route::get('/query/monthly-stats', [QueryController::class, 'getStaffMonthlyStats'])->name('owner.staff.query.monthly');
 
         });
 
