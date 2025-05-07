@@ -598,12 +598,62 @@ class hrController extends Controller
 
 
     // Demotion
-    public function demotionGet(string $id){
-        // permissions, staff basic info like name, picture etc. depending upon design, buildings, departments
-        // return json
+    public function demotionGet(string $id, Request $request)
+    {
+        try {
+            $user = $request->user() ?? abort(403, 'Unauthorized action.');
+            $token = $request->attributes->get('token');
 
-        // Points to consider
-        // Subscription Limit
+            if (empty($token['organization_id']) || empty($token['role_name'])) {
+                return response()->json([
+                    'error' => 'This action is only related to organization personnel.'
+                ], 403);
+            }
+
+            $organization_id = $token['organization_id'];
+            $role_name = $token['role_name'];
+
+            $staffInfo = StaffMember::where('id', $id)->with('user')->first();
+            if (!$staffInfo || $staffInfo->organization_id != $organization_id) {
+                return response()->json([
+                    'error' => 'Invalid staff Id.'
+                ], 400);
+            }
+
+            $managerBuildingIds = [];
+            if ($role_name === 'Manager') {
+                $managerBuildingIds = ManagerBuilding::where('user_id', $user->id)->pluck('building_id')->toArray();
+            }
+
+            $result = $this->checkServiceUsageLimit($organization_id, 3, 'Staff Management', $user->role_id);
+
+            if ($result instanceof RedirectResponse) {
+                return response()->json([
+                    'plan_upgrade_error' => 'Staff Management limit exceeded or subscribed plan does not have Staff Management service in it.'
+                ], 403);
+            }
+
+            $departments = Department::where('organization_id', $organization_id)
+                ->pluck('name', 'id');
+
+            $buildings = Building::where('organization_id', $organization_id)
+                ->when($role_name === 'Manager', fn($q) => $q->whereIn('id', $managerBuildingIds))
+                ->pluck('name', 'id');
+
+            $permissions = RolePermission::where('role_id', 4)->with('permission')->get();
+
+            return response()->json([
+                'staffInfo' => $staffInfo,
+                'departments' => $departments,
+                'buildings' => $buildings,
+                'permissions' => $permissions
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error in demotionGet: ' . $e->getMessage());
+            return response()->json([
+                'error' => 'Something went wrong while loading the manager creation data.'
+            ], 500);
+        }
     }
 
     public function demotion(Request $request){

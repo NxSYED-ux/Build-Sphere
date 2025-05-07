@@ -356,6 +356,9 @@ Route::prefix('owner')->middleware(['auth.jwt'])->group(function () {
             Route::get('/{manager}/show', [hrController::class , 'managerShow'])->name('owner.managers.show');
             Route::get('/{manager}/edit', [hrController::class , 'managerEdit'])->name('owner.managers.edit');
 
+            Route::get('/demotion/{id}', [hrController::class , 'demotionGet'])->name('owner.managers.promote.index');
+            Route::post('/demotion', [hrController::class , 'demotion'])->name('owner.managers.promote.store');
+
         });
 
     });
