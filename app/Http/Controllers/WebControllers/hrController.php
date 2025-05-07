@@ -5,6 +5,7 @@ namespace App\Http\Controllers\WebControllers;
 use App\Http\Controllers\Controller;
 use App\Models\Address;
 use App\Models\Building;
+use App\Models\BuildingUnit;
 use App\Models\Department;
 use App\Models\ManagerBuilding;
 use App\Models\PlanSubscriptionItem;
@@ -105,7 +106,7 @@ class hrController extends Controller
     }
 
 
-    // Staff Create
+    // Create Functions & Store Functions
     public function staffCreate(Request $request)
     {
         $user = $request->user() ?? abort(403, 'Unauthorized action.');
@@ -265,18 +266,6 @@ class hrController extends Controller
         }
     }
 
-    public function staffShow(string $id)
-    {
-        return view('Heights.Owner.HR.Staff.show', compact('id'));
-    }
-
-    public function managerShow(string $id)
-    {
-        return view('Heights.Owner.HR.Manager.show', compact('id'));
-    }
-
-
-    // Manager Create
     public function managerCreate(Request $request)
     {
         $user = $request->user() ?? abort(403, 'Unauthorized action.');
@@ -419,6 +408,83 @@ class hrController extends Controller
             DB::rollBack();
             Log::error('User creation failed: ' . $e->getMessage());
             return redirect()->back()->withInput()->with('error', 'Something went wrong. Please try again.');
+        }
+    }
+
+
+    // Show Functions
+    public function staffShow(Request $request, string $id)
+    {
+        try {
+            $user = $request->user() ?? abort(403, 'Unauthorized action.');
+
+            $token = $request->attributes->get('token');
+
+            if (empty($token['organization_id']) || empty($token['role_name'])) {
+                return redirect()->back()->with('error', 'Access denied: This section is restricted to organization personnel only.');
+            }
+
+            $organization_id = $token['organization_id'];
+            $role_name = $token['role_name'];
+
+            $staffInfo = StaffMember::with('user')->find($id);
+
+            if (!$staffInfo) {
+                return redirect()->back()->with('error', 'Staff member not found.');
+            }
+
+            if ($staffInfo->organization_id != $organization_id) {
+                return redirect()->back()->with('error', 'Invalid staff id');
+            }
+
+            if ($role_name === 'Manager') {
+                $hasAccess = ManagerBuilding::where('building_id', $staffInfo->building_id)
+                    ->where('user_id', $user->id)
+                    ->exists();
+
+                if (!$hasAccess) {
+                    return redirect()->back()->with('error', 'Access denied: You do not manage this building or its staff.');
+                }
+            }
+
+            $queries = $staffInfo->queries()
+                ->when($request->filled('start_date'), function ($query) use ($request) {
+                    $query->whereDate('created_at', '>=', $request->start_date);
+                })
+                ->when($request->filled('end_date'), function ($query) use ($request) {
+                    $query->whereDate('created_at', '<=', $request->end_date);
+                })
+                ->when($request->filled('status'), function ($query) use ($request) {
+                    $query->where('status', $request->status);
+                })
+                ->when($request->filled('min_expense'), function ($query) use ($request) {
+                    $query->where('expense', '>=', $request->min_expense);
+                })
+                ->when($request->filled('max_expense'), function ($query) use ($request) {
+                    $query->where('expense', '<=', $request->max_expense);
+                })
+                ->when($request->filled('unit'), function ($query) use ($request) {
+                    $query->where('unit_id', $request->unit);
+                })
+                ->paginate(10)
+                ->appends($request->query());
+
+            $units = BuildingUnit::where('organization_id', $organization_id)->where('status', 'Approved')->select('id', 'name')->get();
+
+            return view('Heights.Owner.HR.Staff.show', compact('staffInfo', 'queries', 'units'));
+        } catch (\Exception $e) {
+            Log::error('Error in staffShow: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Something went wrong. Please try again later.');
+        }
+    }
+
+    public function managerShow(string $id)
+    {
+        try {
+            return view('Heights.Owner.HR.Manager.show', compact('id'));
+        }catch (\Exception $e) {
+            Log::error('Error in staffShow: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Something went wrong. Please try again later.');
         }
     }
 
