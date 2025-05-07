@@ -445,9 +445,9 @@ class hrController extends Controller
                 ], 400);
             }
 
-            $result = $this->checkServiceUsageLimit($organization_id, 2, 'Managers', $user->role_id);
+            $result = $this->checkServiceUsageLimit($organization_id, 2, 'Managers', $user->role_id, false);
 
-            if ($result instanceof RedirectResponse) {
+            if (!$result['success']) {
                 return response()->json([
                     'plan_upgrade_error' => 'Managers limit exceeded or subscribed plan does not have Managers service in it.'
                 ], 403);
@@ -510,9 +510,9 @@ class hrController extends Controller
 
             $user = $staff->user;
 
-            $result = $this->checkServiceUsageLimit($organization_id, 2, 'Managers', $loggedUser->role_id);
+            $result = $this->checkServiceUsageLimit($organization_id, 2, 'Managers', $loggedUser->role_id, false);
 
-            if ($result instanceof RedirectResponse) {
+            if (!$result['success']) {
                 DB::rollBack();
                 return response()->json([
                     'plan_upgrade_error' => 'Managers limit exceeded or subscribed plan does not have Managers service in it.'
@@ -619,9 +619,9 @@ class hrController extends Controller
                 ], 400);
             }
 
-            $result = $this->checkServiceUsageLimit($organization_id, 3, 'Staff Management', $user->role_id);
+            $result = $this->checkServiceUsageLimit($organization_id, 3, 'Staff Management', $user->role_id, false);
 
-            if ($result instanceof RedirectResponse) {
+            if (!$result['success']) {
                 return response()->json([
                     'plan_upgrade_error' => 'Staff Management limit exceeded or subscribed plan does not have Staff Management service in it.'
                 ], 403);
@@ -681,6 +681,7 @@ class hrController extends Controller
                 ->first();
 
             if (!$staff || $staff->organization_id != $organization_id) {
+                DB::rollBack();
                 return response()->json([
                     'error' => 'Invalid manager id or the manager is already demoted as the staff member.'
                 ], 400);
@@ -688,9 +689,9 @@ class hrController extends Controller
 
             $user = $staff->user;
 
-            $result = $this->checkServiceUsageLimit($organization_id, 3, 'Staff Management', $loggedUser->role_id);
+            $result = $this->checkServiceUsageLimit($organization_id, 3, 'Staff Management', $loggedUser->role_id, false);
 
-            if ($result instanceof RedirectResponse) {
+            if (!$result['success']) {
                 DB::rollBack();
                 return response()->json([
                     'plan_upgrade_error' => 'Staff Management limit exceeded or subscribed plan does not have Staff Management service in it.'
@@ -769,7 +770,7 @@ class hrController extends Controller
 
 
     // Helper Function
-    public function checkServiceUsageLimit($organization_id, $serviceId, $serviceName, $roleId)
+    public function checkServiceUsageLimit($organization_id, $serviceId, $serviceName, $roleId, bool $redirect = true)
     {
         $errorHeading = $roleId === 2 ? 'plan_upgrade_error' : 'error';
 
@@ -779,12 +780,12 @@ class hrController extends Controller
 
         if (!$subscriptionLimit) {
             $errorMessage = "The current plan doesn't include {$serviceName}. Please upgrade your plan to access this service.";
-            return redirect()->back()->with($errorHeading, $errorMessage);
+            return $redirect ? redirect()->back()->with($errorHeading, $errorMessage) : [ 'success' => false];
         }
 
         if ($subscriptionLimit->used >= $subscriptionLimit->quantity) {
             $errorMessage = "You have reached the {$serviceName} limit. Please upgrade your plan to add more.";
-            return redirect()->back()->with($errorHeading, $errorMessage);
+            return $redirect ? redirect()->back()->with($errorHeading, $errorMessage) : [ 'success' => false];
         }
 
         return [ 'success' => true, 'subscriptionItem' => $subscriptionLimit ];
