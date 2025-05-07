@@ -428,11 +428,7 @@ class hrController extends Controller
 
             $staffInfo = StaffMember::with('user')->find($id);
 
-            if (!$staffInfo) {
-                return redirect()->back()->with('error', 'Staff member not found.');
-            }
-
-            if ($staffInfo->organization_id != $organization_id) {
+            if (!$staffInfo || $staffInfo->organization_id != $organization_id) {
                 return redirect()->back()->with('error', 'Invalid staff id');
             }
 
