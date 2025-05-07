@@ -415,9 +415,8 @@ class hrController extends Controller
     // Show Functions
     public function staffShow(Request $request, string $id)
     {
+        $user = $request->user() ?? abort(403, 'Unauthorized action.');
         try {
-            $user = $request->user() ?? abort(403, 'Unauthorized action.');
-
             $token = $request->attributes->get('token');
 
             if (empty($token['organization_id']) || empty($token['role_name'])) {
