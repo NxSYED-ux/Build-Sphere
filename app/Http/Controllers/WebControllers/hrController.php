@@ -495,6 +495,21 @@ class hrController extends Controller
 
         DB::beginTransaction();
         try {
+            $staff = StaffMember::where('id', $request->staff_id)
+                ->whereHas('user', function ($query) {
+                    $query->where('role_id', 4);
+                })
+                ->with('user')
+                ->first();
+
+            if (!$staff || $staff->organization_id != $organization_id) {
+                return response()->json([
+                    'error' => 'Invalid staff ID or the staff is already promoted as the manager.'
+                ], 400);
+            }
+
+            $user = $staff->user;
+
             $result = $this->checkServiceUsageLimit($organization_id, 2, 'Managers', $loggedUser->role_id);
 
             if ($result instanceof RedirectResponse) {
@@ -505,21 +520,6 @@ class hrController extends Controller
             }
 
             $subscriptionItem = $result['subscriptionItem'];
-
-            $staff = StaffMember::where('id', $request->staff_id)
-                ->whereHas('user', function ($query) {
-                    $query->where('role_id', 4);
-                })
-                ->with('user')
-                ->first();
-
-            if (!$staff) {
-                return response()->json([
-                    'error' => 'Invalid staff ID or the staff is already promoted as the manager.'
-                ], 400);
-            }
-
-            $user = $staff->user;
 
             $user->update([
                 'role_id' => 3,
@@ -604,25 +604,19 @@ class hrController extends Controller
             $user = $request->user() ?? abort(403, 'Unauthorized action.');
             $token = $request->attributes->get('token');
 
-            if (empty($token['organization_id']) || empty($token['role_name'])) {
+            if (empty($token['organization_id'])) {
                 return response()->json([
-                    'error' => 'This action is only related to organization personnel.'
+                    'error' => 'This action is only for Organization owners.'
                 ], 403);
             }
 
             $organization_id = $token['organization_id'];
-            $role_name = $token['role_name'];
 
             $staffInfo = StaffMember::where('id', $id)->with('user')->first();
             if (!$staffInfo || $staffInfo->organization_id != $organization_id) {
                 return response()->json([
                     'error' => 'Invalid staff Id.'
                 ], 400);
-            }
-
-            $managerBuildingIds = [];
-            if ($role_name === 'Manager') {
-                $managerBuildingIds = ManagerBuilding::where('user_id', $user->id)->pluck('building_id')->toArray();
             }
 
             $result = $this->checkServiceUsageLimit($organization_id, 3, 'Staff Management', $user->role_id);
@@ -637,7 +631,6 @@ class hrController extends Controller
                 ->pluck('name', 'id');
 
             $buildings = Building::where('organization_id', $organization_id)
-                ->when($role_name === 'Manager', fn($q) => $q->whereIn('id', $managerBuildingIds))
                 ->pluck('name', 'id');
 
             $permissions = RolePermission::where('role_id', 4)->with('permission')->get();
@@ -656,19 +649,122 @@ class hrController extends Controller
         }
     }
 
-    public function demotion(Request $request){
-        // manager_id, permissions, building_id, department_id, accept_query
-        // return redirect response or json if you want
+    public function demotion(Request $request)
+    {
+        $loggedUser = $request->user() ?? abort(403, 'Unauthorized action.');
+        $token = $request->attributes->get('token');
 
-        // Points to consider
-        // Manager Access
-        // Subscription Limit
-        // Subscription Increment & Decrement
-        // User Role update
-        // Staff data update
-        // Permissions Deletion
-        // Permission Creation
-        // Manager buildings deletion
+        if (empty($token['organization_id'])) {
+            return response()->json([
+                'error' => 'This action is only for Organization owners.'
+            ], 403);
+        }
+
+        $organization_id = $token['organization_id'];
+
+        $request->validate([
+            'manager_id' => ['bail', 'required', 'exists:staffmembers,id'],
+            'building_id' => ['bail', 'required', 'exists:buildings,id'],
+            'department_id' => ['bail', 'required', 'exists:departments,id'],
+            'accept_query' => ['bail', 'nullable'],
+            'permissions' => ['bail', 'nullable', 'array'],
+            'permissions.*' => ['bail', 'nullable', 'integer'],
+        ]);
+
+        DB::beginTransaction();
+        try {
+            $staff = StaffMember::where('id', $request->manager_id)
+                ->whereHas('user', function ($query) {
+                    $query->where('role_id', 3);
+                })
+                ->with('user')
+                ->first();
+
+            if (!$staff || $staff->organization_id != $organization_id) {
+                return response()->json([
+                    'error' => 'Invalid manager id or the manager is already demoted as the staff member.'
+                ], 400);
+            }
+
+            $user = $staff->user;
+
+            $result = $this->checkServiceUsageLimit($organization_id, 3, 'Staff Management', $loggedUser->role_id);
+
+            if ($result instanceof RedirectResponse) {
+                DB::rollBack();
+                return response()->json([
+                    'plan_upgrade_error' => 'Staff Management limit exceeded or subscribed plan does not have Staff Management service in it.'
+                ], 403);
+            }
+
+            $subscriptionItem = $result['subscriptionItem'];
+
+            $user->update([
+                'role_id' => 4,
+            ]);
+
+            $staff->update([
+                'department_id' => $request->department_id,
+                'building_id' => $request->building_id,
+                'accept_queries' => $request->accept_query ?? 0,
+            ]);
+
+            ManagerBuilding::where('user_id', $user->id)->delete();
+            UserPermission::where('user_id', $user->id)->delete();
+
+            $originalPermissions = RolePermission::where('role_id', 4)->pluck('status', 'permission_id');
+            $new = $request->permissions ?? [];
+
+            $changedPermissions = collect($new)
+                ->filter(function ($status, $permissionId) use ($originalPermissions) {
+                    return isset($originalPermissions[$permissionId]) && $originalPermissions[$permissionId] != $status;
+                });
+
+            foreach ($changedPermissions as $permissionId => $status) {
+                UserPermission::create([
+                    'user_id' => $user->id,
+                    'permission_id' => $permissionId,
+                    'status' => $status,
+                ]);
+            }
+
+            $subscriptionItem->increment('used');
+
+            $subscription = PlanSubscriptionItem::where('organization_id', $organization_id)
+                ->where('service_catalog_id', 2)
+                ->lockForUpdate()
+                ->first();
+
+            if ($subscription && $subscription->used > 0) {
+                $subscription->decrement('used');
+            }
+
+            DB::commit();
+
+            $loggedUser->notify(new DatabaseOnlyNotification(
+                $user->picture ?? 'uploads/Notification/Light-theme-Logo.svg',
+                'Manager Demoted Successfully',
+                "{$user->name} demoted successfully as a staff member",
+                ['web' => "owner/staff/{$staff->id}/show"]
+            ));
+
+            $user->notify(new UserNotification(
+                'uploads/Notification/Light-theme-Logo.svg',
+                "You're Now a Staff Member",
+                'You have been demoted to a staff member.',
+                ['web' => ""]
+            ));
+
+            return response()->json([
+                'message' => 'Manager demoted successfully.'
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Manager demotion failed: ' . $e->getMessage());
+            return response()->json([
+                'error' => 'Something went wrong. Please try again.'
+            ], 500);
+        }
     }
 
 
