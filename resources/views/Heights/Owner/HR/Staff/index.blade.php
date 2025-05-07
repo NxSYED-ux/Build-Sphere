@@ -394,9 +394,9 @@
                                                 <div class="detail-item" style="display: flex; align-items: center;">
                                                     <i class="fas fa-award detail-icon" style="margin-right: 10px;"></i>
                                                     <div class="detail-text" style="display: flex; align-items: center; gap: 8px;">
-                                                        Handle Queries
+                                                        <span title="Assign permission to accept or handle queries">Handle Queries</span>
                                                         <label class="enable-query-toggle-btn">
-                                                            <input type="checkbox" class="">
+                                                            <input type="checkbox" class="" {{ $staffMember->accept_queries ? 'checked' : '' }}>
                                                             <span class="toggle-slider"></span>
                                                         </label>
                                                     </div>

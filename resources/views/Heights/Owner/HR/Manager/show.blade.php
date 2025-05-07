@@ -19,7 +19,7 @@
             margin-top: 45px;
         }
 
-        #promotionModal .accordion-item {
+        #demoteModel .accordion-item {
             background-color: transparent;
             border: 1px solid var(--border-color) !important;
             border-radius: 8px !important;
@@ -28,37 +28,46 @@
             overflow: hidden;
         }
 
-        #promotionModal .accordion-button {
+        #demoteModel .accordion-button {
             background-color: var(--body-background-color);
             color: var(--sidenavbar-text-color);
             padding: 1rem 1.5rem;
             box-shadow: none;
         }
 
-        #promotionModal .accordion-button:not(.collapsed) {
+        #demoteModel .accordion-button:not(.collapsed) {
             background-color: var(--sidenavbar-body-color);
             color: var(--sidenavbar-text-color) !important;
             box-shadow: none;
         }
 
-        #promotionModal .accordion-arrow {
+        #demoteModel .accordion-arrow {
             transition: transform 0.3s ease;
             color: var(--sidenavbar-text-color) !important;
             font-size: 1.1em;
         }
 
-        #promotionModal .accordion-button:not(.collapsed) .accordion-arrow {
+        #demoteModel .accordion-button:not(.collapsed) .accordion-arrow {
             transform: rotate(90deg);
             color: var(--sidenavbar-text-color) !important;
         }
 
-        #promotionModal .accordion-body {
+        #demoteModel .accordion-button::after {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%236b7280'%3E%3Cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E");
+            transition: transform var(--transition-speed) ease;
+        }
+
+        #demoteModel .accordion-button:not(.collapsed)::after {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%236b7280'%3E%3Cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E");
+        }
+
+        #demoteModel .accordion-body {
             padding: 1rem 1.5rem;
             background-color: var(--sidenavbar-body-color);
             color: var(--sidenavbar-text-color);
         }
 
-        #promotionModal .permission-item-container {
+        #demoteModel .permission-item-container {
             background-color: var(--body-background-color);
             border-radius: 8px;
             padding: 0;
@@ -67,7 +76,7 @@
             transition: all 0.2s ease;
         }
 
-        #promotionModal .permission-toggle-container {
+        #demoteModel .permission-toggle-container {
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -76,11 +85,15 @@
             border-radius: 8px;
         }
 
-        #promotionModal .child-permission{
+        #demoteModel .child-permission{
             border-radius: 0 !important;
         }
 
-        #promotionModal .permission-label {
+        #demoteModel .child-permission:last-child{
+            border-radius: 8px !important;
+        }
+
+        #demoteModel .permission-label {
             font-weight: 600;
             color: var(--sidenavbar-text-color);
             margin-bottom: 0;
@@ -88,30 +101,27 @@
             align-items: center;
         }
 
-        #promotionModal .child-permission .permission-label {
+        #demoteModel .child-permission .permission-label {
             font-weight: 400;
         }
 
-        #promotionModal .permission-icon {
+        #demoteModel .permission-icon {
             margin-right: 10px;
             color: var(--sidenavbar-text-color);
             font-size: 1.1em;
         }
 
-        #promotionModal .child-permission .permission-icon {
+        #demoteModel .child-permission .permission-icon {
             color: var(--sidenavbar-text-color);
             font-size: 1.1em;
         }
 
-        #promotionModal .child-permissions {
-        }
-
-        #promotionModal .child-permissions .permission-toggle-container {
+        #demoteModel .child-permissions .permission-toggle-container {
             padding: 10px 16px;
             background-color: var(--body-background-color);
         }
 
-        #promotionModal .form-switch .form-check-input {
+        #demoteModel .form-switch .form-check-input {
             width: 2.8em;
             height: 1.5em;
             cursor: pointer;
@@ -119,12 +129,12 @@
             border-color: var(--border-color);
         }
 
-        #promotionModal .accordion-header{
+        #demoteModel .accordion-header{
             color: var(--sidenavbar-text-color);
             font-size: 20px;
         }
 
-        #promotionModal .form-switch .form-check-input:checked {
+        #demoteModel .form-switch .form-check-input:checked {
             background-color: var(--success-color);
             border-color: var(--success-color);
         }
@@ -153,10 +163,10 @@
                         <div class="box">
                             <div class="container mt-2">
                                 <div class="d-flex justify-content-between align-items-center mb-4">
-                                    <h3 class="mb-1">Staff Members</h3>
+                                    <h3 class="mb-1">Manager</h3>
                                 </div>
 
-                                <button class="btn btn-primary promote-btn" data-staff-id="{{ $id }}">Promote to Manager</button>
+                                <button class="btn btn-primary promote-btn" data-staff-id="{{ $id }}">Demote To Staff</button>
                             </div>
                         </div>
                     </div>
@@ -167,7 +177,7 @@
 
 
 
-    <div class="modal fade" id="promotionModal" tabindex="-1" role="dialog" aria-hidden="true"></div>
+    <div class="modal fade" id="demoteModel" tabindex="-1" role="dialog" aria-hidden="true"></div>
 
 @endsection
 
@@ -186,7 +196,7 @@
                 const staffId = this.dataset.staffId;
 
                 try {
-                    const response = await fetch(`{{ route('owner.staff.promote.index', ':id') }}`.replace(':id', staffId), {
+                    const response = await fetch(`{{ route('owner.managers.promote.index', ':id') }}`.replace(':id', staffId), {
                         method: "GET",
                         headers: {
                             "X-Requested-With": "XMLHttpRequest",
@@ -201,7 +211,7 @@
                     }
 
                     const data = await response.json();
-                    const modal = createPromotionModal(data);
+                    const modal = createdemoteModel(data);
                     document.body.appendChild(modal);
 
                     const bootstrapModal = new bootstrap.Modal(modal);
@@ -219,16 +229,14 @@
                         title: 'Error',
                         text: error.message,
                         confirmButtonColor: '#3085d6',
-                        background: 'var(--body-background-color)',
-                        color: 'var(--sidenavbar-text-color)',
                     });
                 }
             }
 
-            function createPromotionModal(data) {
+            function createdemoteModel(data) {
                 const modal = document.createElement('div');
                 modal.className = 'modal fade';
-                modal.id = 'promotionModal';
+                modal.id = 'demoteModel';
                 modal.tabIndex = '-1';
                 modal.setAttribute('aria-hidden', 'true');
 
@@ -237,12 +245,13 @@
                 const staffEmail = staff.email || 'No email';
                 const staffPicture = staff.picture ? "{{ asset('/') }}" + staff.picture : "{{ asset('assets/placeholder-profile.png') }}";
                 const currentBuildingId = data.staffInfo?.building_id || '';
+                const currentDepartmentId = data.staffInfo?.department_id || '';
 
                 modal.innerHTML = `
-            <div class="modal-dialog modal-lg" >
+            <div class="modal-dialog modal-lg">
                 <div class="modal-content">
                     <div class="modal-header" style="background-color: var(--body-card-bg) !important;">
-                        <h5 class="modal-title">Promote ${staffName}</h5>
+                        <h5 class="modal-title" style="color: var(--sidenavbar-text-color);">Demotion ${staffName}</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body" style="background-color: var(--body-card-bg) !important;">
@@ -252,20 +261,33 @@
                                      class="member-avatar rounded-circle me-3"
                                      style="width: 80px; height: 80px; object-fit: cover;">
                                 <div>
-                                    <h5>${staffName}</h5>
-                                    <p class="text-muted mb-1">${staffEmail}</p>
+                                    <h5  style="color: var(--sidenavbar-text-color);">${staffName}</h5>
+                                    <p class="mb-1"  style="color: var(--sidenavbar-text-color);">${staffEmail}</p>
+                                    <span class="badge bg-primary bg-opacity-10 text-primary">
+                                        <i class='bx bx-user me-1'></i>Staff Member
+                                    </span>
                                 </div>
                             </div>
                         </div>
 
                         <form id="promotionForm">
                             <input type="hidden" name="_token" value="${csrfToken}">
-                            <input type="hidden" name="staff_id" value="${data.staffInfo?.id || ''}">
+                            <input type="hidden" name="manager_id" value="${data.staffInfo?.id || ''}">
 
-                            <div class="mb-4">
-                                <h6 class="mb-3">Buildings to Manage</h6>
-                                <div class="row">
-                                    ${renderBuildings(data.buildings || [], currentBuildingId)}
+                            <div class="row mb-1">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label">Department</label>
+                                        ${renderDepartments(data.departments || [], currentDepartmentId)}
+                                        <div class="form-text" style="color: var(--sidenavbar-text-color);">Select the department this staff will oversee</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label">Building</label>
+                                        ${renderBuildings(data.buildings || [], currentBuildingId)}
+                                        <div class="form-text" style="color: var(--sidenavbar-text-color);">Select the building this staff will oversee</div>
+                                    </div>
                                 </div>
                             </div>
 
@@ -277,7 +299,7 @@
                     </div>
                     <div class="modal-footer" style="background-color: var(--body-card-bg) !important;">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                        <button type="button" class="btn btn-primary" id="submitPromotion">Promote to Manager</button>
+                        <button type="button" class="btn btn-primary" id="submitPromotion">Demote to Staff Member</button>
                     </div>
                 </div>
             </div>
@@ -286,23 +308,38 @@
                 return modal;
             }
 
-            function renderBuildings(buildings, currentBuildingId) {
-                if (!buildings.length) return '<p class="col-12">No buildings available</p>';
+            function renderDepartments(departments, currentDepartmentId) {
+                if (!departments || Object.keys(departments).length === 0) {
+                    return '<select class="form-select" name="department_id" disabled><option>No departments available</option></select>';
+                }
 
-                return buildings.map(building => `
-        <div class="col-md-4 col-lg-3">
-            <div class="form-check">
-                <input class="form-check-input" type="checkbox"
-                       name="buildings[]"
-                       value="${building.id}"
-                       id="building-${building.id}"
-                       ${building.id == currentBuildingId ? 'checked' : ''}>
-                <label class="form-check-label" for="building-${building.id}">
-                    ${building.name || 'Unnamed Building'}
-                </label>
-            </div>
-        </div>
-    `).join('');
+                let options = Object.entries(departments).map(([id, name]) =>
+                    `<option value="${id}" ${id == currentDepartmentId ? 'selected' : ''}>${name}</option>`
+                ).join('');
+
+                return `
+            <select class="form-select" name="department_id" required>
+                <option value="">Select Department</option>
+                ${options}
+            </select>
+        `;
+            }
+
+            function renderBuildings(buildings, currentBuildingId) {
+                if (!buildings || Object.keys(buildings).length === 0) {
+                    return '<select class="form-select" name="building_id" disabled><option>No buildings available</option></select>';
+                }
+
+                let options = Object.entries(buildings).map(([id, name]) =>
+                    `<option value="${id}" ${id == currentBuildingId ? 'selected' : ''}>${name}</option>`
+                ).join('');
+
+                return `
+            <select class="form-select" name="building_id" required>
+                <option value="">Select Building</option>
+                ${options}
+            </select>
+        `;
             }
 
             function renderPermissions(permissions) {
@@ -324,7 +361,11 @@
                                     data-bs-toggle="collapse" data-bs-target="#collapse${index}"
                                     aria-expanded="false" aria-controls="collapse${index}">
                                 <div class="d-flex align-items-center w-100">
-                                    <span class="fw-bold">${header}</span>
+                                    <i class='bx bx-category-alt me-2'></i>
+                                    <span class="fw-semibold">${header}</span>
+                                    <span class="badge bg-primary bg-opacity-10 text-primary ms-auto me-2">
+                                        ${perms.length} ${perms.length === 1 ? 'permission' : 'permissions'}
+                                    </span>
                                 </div>
                             </button>
                         </h6>
@@ -353,7 +394,7 @@
                     return `
                 <div class="col-sm-12 mb-3 parent-permission">
                     <div class="permission-item-container">
-                        <div class="permission-toggle-container border-bottom rounded-bottom-0">
+                        <div class="permission-toggle-container border-bottom ${children.length > 0 ? 'rounded-bottom-0' : 'rounded-bottom'}">
                             <label class="permission-label">
                                 <i class='bx bxs-check-circle permission-icon'></i>
                                 ${permission.permission?.name || 'Permission'}
@@ -425,8 +466,6 @@
                                     title: 'Permission Conflict',
                                     text: 'Please enable the parent permission first.',
                                     confirmButtonColor: '#3085d6',
-                                    background: 'var(--body-background-color)',
-                                    color: 'var(--sidenavbar-text-color)',
                                 });
                             }
                         });
@@ -442,11 +481,6 @@
                         submitBtn.disabled = true;
                         submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Processing...';
 
-                        // Validate at least one building is selected
-                        const buildingCheckboxes = form.querySelectorAll('input[name="buildings[]"]:checked');
-                        if (buildingCheckboxes.length === 0) {
-                            throw new Error('Please select at least one building');
-                        }
 
                         const formData = new FormData(form);
 
@@ -465,7 +499,7 @@
                             formData.append(`permissions[${key}]`, value);
                         }
 
-                        const response = await fetch(`{{ route('owner.staff.promote.store') }}`, {
+                        const response = await fetch(`{{ route('owner.managers.promote.store') }}`, {
                             method: "POST",
                             body: formData,
                             headers: {
