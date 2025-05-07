@@ -270,6 +270,11 @@ class hrController extends Controller
         return view('Heights.Owner.HR.Staff.show', compact('id'));
     }
 
+    public function managerShow(string $id)
+    {
+        return view('Heights.Owner.HR.Manager.show', compact('id'));
+    }
+
 
     // Manager Create
     public function managerCreate(Request $request)
