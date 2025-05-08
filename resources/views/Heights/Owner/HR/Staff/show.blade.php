@@ -566,6 +566,7 @@
 
         /* Your existing styles... */
     </style>
+
 @endpush
 
 @section('content')
@@ -716,6 +717,306 @@
                                     </div>
                                 </div>
 
+                                <!-- Filter Section -->
+                                <form method="GET" action="{{ route('owner.staff.show', $staffInfo->id) }}">
+                                    <div class="filter-section mb-3">
+                                        <h5 class="section-title mb-4">Query Filters</h5>
+                                        <div class="row g-3 align-items-end">
+                                            <!-- Start Date -->
+                                            <div class="col-md-3">
+                                                <label class="form-label">Start Date</label>
+                                                <input type="date" name="start_date" class="form-control" value="{{ request('start_date') }}">
+                                            </div>
+
+                                            <!-- End Date -->
+                                            <div class="col-md-3">
+                                                <label class="form-label">End Date</label>
+                                                <input type="date" name="end_date" class="form-control" value="{{ request('end_date') }}">
+                                            </div>
+
+                                            <!-- Status -->
+                                            <div class="col-md-3">
+                                                <label class="form-label">Status</label>
+                                                <select name="status" class="form-select">
+                                                    <option value="">All Statuses</option>
+                                                    <option value="In Progress" {{ request('status') == 'In Progress' ? 'selected' : '' }}>In Progress</option>
+                                                    <option value="Closed" {{ request('status') == 'Closed' ? 'selected' : '' }}>Closed</option>
+                                                    <option value="Rejected" {{ request('status') == 'Rejected' ? 'selected' : '' }}>Rejected</option>
+                                                    <option value="Closed Late" {{ request('status') == 'Closed Late' ? 'selected' : '' }}>Closed Late</option>
+                                                </select>
+                                            </div>
+
+                                            <!-- Unit -->
+                                            <div class="col-md-3">
+                                                <label class="form-label">Unit</label>
+                                                <select name="unit" class="form-select" {{ $units->isEmpty() ? 'disabled' : '' }}>
+                                                    @if($units->isEmpty())
+                                                        <option selected disabled>No units available</option>
+                                                    @else
+                                                        <option value="">All Units</option>
+                                                        @foreach($units as $unit)
+                                                            <option value="{{ $unit->id }}" {{ request('unit') == $unit->id ? 'selected' : '' }}>
+                                                                {{ $unit->unit_name }}
+                                                            </option>
+                                                        @endforeach
+                                                    @endif
+                                                </select>
+                                            </div>
+
+                                            <!-- Min Expense -->
+                                            <div class="col-md-3">
+                                                <label class="form-label">Min Expense (PKR)</label>
+                                                <input type="number" name="min_expense" class="form-control" placeholder="0" value="{{ request('min_expense') }}">
+                                            </div>
+
+                                            <!-- Max Expense -->
+                                            <div class="col-md-3">
+                                                <label class="form-label">Max Expense (PKR)</label>
+                                                <input type="number" name="max_expense" class="form-control" placeholder="100000" value="{{ request('max_expense') }}">
+                                            </div>
+
+                                            <!-- Reset Button -->
+                                            <div class="col-md-3">
+                                                <a href="{{ route('owner.staff.show', $staffInfo->id) }}" class="btn btn-secondary w-100 d-flex align-items-center justify-content-center">
+                                                    <i class="fas fa-undo me-2"></i> Reset
+                                                </a>
+                                            </div>
+
+                                            <!-- Apply Filter Button -->
+                                            <div class="col-md-3">
+                                                <button type="submit" class="btn btn-primary w-100 d-flex align-items-center justify-content-center">
+                                                    <i class="fas fa-filter me-2"></i> Apply Filters
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+
+                                <style>
+                                    .query-card {
+                                        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+                                        border-radius: 10px;
+                                        border: none;
+                                        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+                                        margin-bottom: 1.25rem;
+                                        overflow: hidden;
+                                        background: white;
+                                        font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+                                    }
+
+                                    .query-card:hover {
+                                        transform: translateY(-4px);
+                                        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+                                    }
+
+                                    .query-card .card-header {
+                                        padding: 0.85rem 1rem;
+                                        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+                                        background: white;
+                                        display: flex;
+                                        justify-content: space-between;
+                                        align-items: center;
+                                    }
+
+                                    .query-card .query-id {
+                                        font-weight: 650;
+                                        font-size: 0.88rem;
+                                        color: #1a1a1a;
+                                        display: flex;
+                                        align-items: center;
+                                        letter-spacing: -0.2px;
+                                    }
+
+                                    .query-card .query-id i {
+                                        margin-right: 8px;
+                                        font-size: 1rem;
+                                    }
+
+                                    .badge-status {
+                                        font-size: 0.68rem;
+                                        padding: 0.3rem 0.6rem;
+                                        border-radius: 6px;
+                                        font-weight: 650;
+                                        letter-spacing: 0.3px;
+                                    }
+
+                                    .query-card .card-body {
+                                        padding: 1rem;
+                                    }
+
+                                    .meta-row {
+                                        display: flex;
+                                        justify-content: space-between;
+                                        margin-bottom: 0.6rem;
+                                    }
+
+                                    .meta-label {
+                                        color: #64748b;
+                                        font-size: 0.75rem;
+                                        font-weight: 500;
+                                        letter-spacing: 0.2px;
+                                    }
+
+                                    .meta-value {
+                                        font-weight: 600;
+                                        color: #1e293b;
+                                        font-size: 0.82rem;
+                                    }
+
+                                    .expense-value {
+                                        color: #2563eb;
+                                        font-weight: 650;
+                                        font-size: 0.85rem;
+                                    }
+
+                                    .description {
+                                        font-size: 0.8rem;
+                                        color: #334155;
+                                        margin-top: 0.75rem;
+                                        line-height: 1.5;
+                                        display: -webkit-box;
+                                        -webkit-line-clamp: 2;
+                                        -webkit-box-orient: vertical;
+                                        overflow: hidden;
+                                    }
+
+                                    .card-footer {
+                                        padding: 0.75rem 1rem;
+                                        background: #f8fafc;
+                                        border-top: 1px solid rgba(0, 0, 0, 0.05);
+                                    }
+
+                                    .btn-start {
+                                        font-size: 0.72rem;
+                                        padding: 0.35rem 0.7rem;
+                                        border-radius: 6px;
+                                        font-weight: 600;
+                                        letter-spacing: 0.2px;
+                                    }
+
+                                    .date-highlight {
+                                        background: #f1f5f9;
+                                        padding: 0.5rem;
+                                        border-radius: 6px;
+                                        margin-bottom: 0.75rem;
+                                    }
+                                </style>
+
+                                <div class="finance-card p-4">
+                                    <div class="d-flex justify-content-between align-items-center mb-4">
+                                        <h5 class="section-title mb-0" style="font-size: 1.15rem; font-weight: 650; color: #1e293b;">Recent Queries</h5>
+                                    </div>
+
+                                    @if(count($queries) > 0)
+                                        <div class="row">
+                                            @foreach($queries as $query)
+                                                @php
+                                                    // Default status configuration
+                                                    $statusConfig = [
+                                                        'color' => 'secondary',
+                                                        'icon' => 'question-circle'
+                                                    ];
+
+                                                    // Override defaults based on status
+                                                    switch($query->status) {
+                                                        case 'Closed':
+                                                            $statusConfig = ['color' => 'success', 'icon' => 'check-circle'];
+                                                            break;
+                                                        case 'In Progress':
+                                                            $statusConfig = ['color' => 'primary', 'icon' => 'spinner fa-spin'];
+                                                            break;
+                                                        case 'Rejected':
+                                                            $statusConfig = ['color' => 'danger', 'icon' => 'times-circle'];
+                                                            break;
+                                                        case 'Pending':
+                                                            $statusConfig = ['color' => 'warning', 'icon' => 'clock'];
+                                                            break;
+                                                    }
+
+                                                    // Handle closure dates
+                                                    $closedDate = $query->status == 'Closed' ? ($closure_date ?? $query->updated_at) : null;
+                                                    $expectedDate = $query->status == 'In Progress' ? ($expected_closure_date ?? null) : null;
+                                                @endphp
+
+                                                <div class="col-lg-4 col-md-6 mb-4">
+                                                    <div class="card query-card h-100" onclick="showQueryDetails({{ $query->id }})" style="cursor: pointer;">
+                                                        <div class="card-header">
+                                                            <div class="query-id">
+                                                                <i class="fas fa-{{ $statusConfig['icon'] }} text-{{ $statusConfig['color'] }}"></i>
+                                                                QR-{{ str_pad($query->id, 5, '0', STR_PAD_LEFT) }}
+                                                            </div>
+                                                            <span class="badge-status badge-{{ $statusConfig['color'] }}">
+                                {{ $query->status }}
+                            </span>
+                                                        </div>
+
+                                                        <div class="card-body">
+                                                            <div class="date-highlight">
+                                                                <div class="meta-row">
+                                                                    <div>
+                                                                        <span class="meta-label">Opened</span>
+                                                                        <span class="meta-value">{{ $query->created_at->format('M d, Y') }}</span>
+                                                                    </div>
+                                                                    <div>
+                                                                        @if($query->status == 'Closed' && $query->closure_date)
+                                                                            <span class="meta-label">Closed</span>
+                                                                            <span class="meta-value">{{ $query->closure_date->format('M d, Y') }}</span>
+                                                                        @elseif($query->status == 'In Progress' && $query->expected_closure_date)
+                                                                            <span class="meta-label">Expected</span>
+                                                                            <span class="meta-value">{{ $query->expected_closure_date->format('M d, Y') }}</span>
+                                                                        @endif
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="meta-row">
+                                                                <div>
+                                                                    <span class="meta-label">Unit</span>
+                                                                    <span class="meta-value">{{ $query->unit->unit_name ?? 'N/A' }}</span>
+                                                                </div>
+                                                                <div>
+                                                                    <span class="meta-label">Expense</span>
+                                                                    <span class="meta-value expense-value">${{ number_format($query->expense, 2) }}</span>
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="description">
+                                                                {{ Str::limit($query->description, 90) }}
+                                                            </div>
+                                                        </div>
+
+                                                        @if($query->status == 'Pending')
+                                                            <div class="card-footer text-center">
+                                                                <form action="{{ route('queries.update-status', $query->id) }}" method="POST" class="d-inline">
+                                                                    @csrf
+                                                                    @method('PATCH')
+                                                                    <input type="hidden" name="status" value="In Progress">
+                                                                    <button type="submit" class="btn btn-primary btn-sm btn-start">
+                                                                        <i class="fas fa-play-circle mr-1"></i> Start Progress
+                                                                    </button>
+                                                                </form>
+                                                            </div>
+                                                        @endif
+                                                    </div>
+                                                </div>
+                                            @endforeach
+                                        </div>
+
+                                        @if ($queries->hasPages())
+                                            <div class="mt-3">
+                                                {{ $queries->links('pagination::bootstrap-5') }}
+                                            </div>
+                                        @endif
+                                    @else
+                                        <div class="text-center py-3">
+                                            <i class="fas fa-exchange-alt text-muted" style="font-size: 1.75rem; opacity: 0.7;"></i>
+                                            <p class="text-muted mb-0 mt-2" style="font-size: 0.9rem; font-weight: 500;">No queries found</p>
+                                        </div>
+                                    @endif
+                                </div>
+
+
+
                             </div>
                         </div>
                     </div>
@@ -730,6 +1031,7 @@
 
 @push('scripts')
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const staffId = "{{ $staffInfo->id }}";
@@ -745,7 +1047,7 @@
                 const pieCtx = document.getElementById('pieChart').getContext('2d');
                 const lineCtx = document.getElementById('lineChart').getContext('2d');
 
-                // Enhanced Pie Chart
+                // Enhanced Pie Chart with labels
                 pieChart = new Chart(pieCtx, {
                     type: 'pie',
                     data: {
@@ -756,8 +1058,9 @@
                                 '#3B82F6', '#10B981', '#F59E0B', '#EF4444',
                                 '#8B5CF6', '#EC4899', '#14B8A6', '#F97316'
                             ],
-                            borderWidth: 1,
-                            hoverOffset: 10
+                            borderWidth: 2,
+                            borderColor: '#fff',
+                            hoverOffset: 15
                         }]
                     },
                     options: {
@@ -771,8 +1074,10 @@
                                     usePointStyle: true,
                                     pointStyle: 'circle',
                                     font: {
-                                        size: 12
-                                    }
+                                        size: 12,
+                                        family: "'Inter', sans-serif"
+                                    },
+                                    color: '#374151'
                                 }
                             },
                             tooltip: {
@@ -794,15 +1099,47 @@
                                 bodyFont: {
                                     size: 12
                                 },
-                                padding: 12
+                                padding: 12,
+                                cornerRadius: 8
+                            },
+                            datalabels: {
+                                formatter: (value, ctx) => {
+                                    const total = ctx.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
+                                    const percentage = Math.round((value / total) * 100);
+                                    return `${value}\n(${percentage}%)`;
+                                },
+                                color: '#fff',
+                                font: {
+                                    weight: 'bold',
+                                    size: 12,
+                                    family: "'Inter', sans-serif"
+                                },
+                                textAlign: 'center',
+                                anchor: 'center',
+                                offset: 0,
+                                clip: false,
+                                display: function(context) {
+                                    const dataset = context.dataset;
+                                    const value = dataset.data[context.dataIndex];
+                                    return value > 0;
+                                }
                             }
                         },
-                        cutout: '60%',
+                        cutout: '50%',
                         animation: {
                             animateScale: true,
                             animateRotate: true
+                        },
+                        layout: {
+                            padding: {
+                                top: 20,
+                                bottom: 20,
+                                left: 20,
+                                right: 20
+                            }
                         }
-                    }
+                    },
+                    plugins: [ChartDataLabels]
                 });
 
                 // Enhanced Line Chart
@@ -898,12 +1235,11 @@
                 });
             }
 
-            // Fetch data for both charts
-            function fetchChartData() {
+            // Fetch data for pie chart only
+            function fetchPieChartData() {
                 const year = yearSelect.value;
                 const month = monthSelect.value;
 
-                // Fetch pie chart data (yearly stats)
                 fetch(`${yearlyStatsRoute}?year=${year}${month ? `&month=${month}` : ''}`)
                     .then(response => response.json())
                     .then(data => {
@@ -912,8 +1248,12 @@
                     .catch(error => {
                         console.error('Error fetching yearly stats:', error);
                     });
+            }
 
-                // Fetch line chart data (monthly stats)
+            // Fetch data for line chart only
+            function fetchLineChartData() {
+                const year = yearSelect.value;
+
                 fetch(`${monthlyStatsRoute}?year=${year}`)
                     .then(response => response.json())
                     .then(data => {
@@ -926,9 +1266,10 @@
 
             // Update pie chart with new data
             function updatePieChart(data) {
-                if (!data) {
-                    pieChart.data.labels = ['No Data'];
+                if (!data || Object.keys(data).length === 0) {
+                    pieChart.data.labels = ['No Data Available'];
                     pieChart.data.datasets[0].data = [1];
+                    pieChart.data.datasets[0].backgroundColor = ['#E5E7EB'];
                     pieChart.update();
                     return;
                 }
@@ -939,13 +1280,25 @@
                 // Exclude total_queries from the pie chart
                 Object.keys(data).forEach(key => {
                     if (key !== 'total_queries' && data[key] > 0) {
-                        labels.push(key.charAt(0).toUpperCase() + key.slice(1)); // Capitalize first letter
+                        labels.push(key.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' '));
                         values.push(data[key]);
                     }
                 });
 
-                pieChart.data.labels = labels;
-                pieChart.data.datasets[0].data = values;
+                // If no data, show a placeholder
+                if (labels.length === 0) {
+                    pieChart.data.labels = ['No Data Available'];
+                    pieChart.data.datasets[0].data = [1];
+                    pieChart.data.datasets[0].backgroundColor = ['#E5E7EB'];
+                } else {
+                    pieChart.data.labels = labels;
+                    pieChart.data.datasets[0].data = values;
+                    pieChart.data.datasets[0].backgroundColor = [
+                        '#3B82F6', '#10B981', '#F59E0B', '#EF4444',
+                        '#8B5CF6', '#EC4899', '#14B8A6', '#F97316'
+                    ];
+                }
+
                 pieChart.update();
             }
 
@@ -988,7 +1341,7 @@
                     const statusData = months.map(month => data[month][status] || 0);
 
                     datasets.push({
-                        label: status.charAt(0).toUpperCase() + status.slice(1), // Capitalize first letter
+                        label: status.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' '),
                         data: statusData,
                         borderColor: colors[colorIndex % colors.length],
                         backgroundColor: 'rgba(59, 130, 246, 0.1)',
@@ -1026,11 +1379,20 @@
 
             // Initialize charts and fetch initial data
             initCharts();
-            fetchChartData();
+            fetchPieChartData();
+            fetchLineChartData();
 
             // Add event listeners for filters
-            yearSelect.addEventListener('change', fetchChartData);
-            monthSelect.addEventListener('change', fetchChartData);
+            yearSelect.addEventListener('change', function() {
+                // When year changes, update both charts
+                fetchPieChartData();
+                fetchLineChartData();
+            });
+
+            monthSelect.addEventListener('change', function() {
+                // When month changes, update only pie chart
+                fetchPieChartData();
+            });
         });
     </script>
 @endpush
