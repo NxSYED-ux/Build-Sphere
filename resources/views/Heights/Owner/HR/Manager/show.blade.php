@@ -109,19 +109,7 @@
         @media (max-width: 768px) {
         }
 
-        .chart-container {
-            position: relative;
-            width: 100%;
-            min-height: 300px;
-            margin-bottom: 2rem;
-        }
 
-        /* For smaller screens */
-        @media (max-width: 768px) {
-            .chart-container {
-                min-height: 250px;
-            }
-        }
 
         /* Staff Details Container */
         .staff-detail-container {
@@ -395,6 +383,7 @@
 
             .staff-detail-container .building-card {
                 width: 100%;
+                color: #5F5F5F !important;
             }
         }
 
@@ -463,17 +452,6 @@
                 min-width: 100%;
             }
 
-            /* New styles for small screens */
-            .d-flex.justify-content-between.align-items-center.mb-3 {
-                flex-direction: column;
-                align-items: flex-start !important;
-                gap: 1rem;
-            }
-
-            .performance-indicator {
-                width: 100%;
-                justify-content: space-between;
-            }
         }
     </style>
 @endpush
@@ -554,7 +532,7 @@
                                                     <div class="buildings-container w-100">
                                                         @if($managerBuildings->count() > 0)
                                                             @if($managerBuildings->count() === 1)
-                                                                <div class="building-card">
+                                                                <div class="building-card" style="color: #5F5F5F !important; font-weight: 600;">
                                                                     {{ $managerBuildings->first()->building->name }}
                                                                 </div>
                                                             @else
@@ -611,17 +589,6 @@
                                                     <option value="{{ $i }}" {{ $i == date('Y') ? 'selected' : '' }}>{{ $i }}</option>
                                                 @endfor
                                             </select>
-                                            <select class="form-select" id="monthSelect">
-                                                <option value="">All Months</option>
-                                                @foreach([
-                                                    '01' => 'January', '02' => 'February', '03' => 'March',
-                                                    '04' => 'April', '05' => 'May', '06' => 'June',
-                                                    '07' => 'July', '08' => 'August', '09' => 'September',
-                                                    '10' => 'October', '11' => 'November', '12' => 'December'
-                                                ] as $num => $name)
-                                                    <option value="{{ $num }}" {{ $num == date('m') ? 'selected' : '' }}>{{ $name }}</option>
-                                                @endforeach
-                                            </select>
                                             <select class="form-select" id="buildingSelect">
                                                 <option value="">All Buildings</option>
                                                 @foreach($managerBuildings as $managerBuilding)
@@ -663,7 +630,7 @@
                                             @endforeach
                                         </div>
                                     @else
-                                        <div class="empty-state">
+                                        <div class="empty-state text-center">
                                             <i class="fas fa-exchange-alt empty-state-icon"></i>
                                             <h4>No Transactions Found</h4>
                                             <p>You don't have any transactions yet.</p>
@@ -704,6 +671,7 @@
     </script>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
     <script>
         // Common functions
         function showLoading(chartId) {
@@ -744,9 +712,10 @@
             }
 
             const managerId = @json($staffInfo->id);
+            const year = document.getElementById('yearSelect').value;
             const ctx = document.getElementById('financialChart').getContext('2d');
 
-            fetch(`{{ route('owner.managers.monthlyFinancial.stats', $staffInfo->id) }}?buildingId=${buildingId}`)
+            fetch(`{{ route('owner.managers.monthlyFinancial.stats', $staffInfo->id) }}?buildingId=${buildingId}&year=${year}`)
                 .then(response => response.json())
                 .then(chartData => {
                     const gridColor = 'rgba(0, 0, 0, 0.05)';
@@ -870,9 +839,9 @@
                         datasets: [{
                             data: [data.availableUnits, data.rentedUnits, data.soldUnits],
                             backgroundColor: [
-                                'rgba(75, 192, 192, 0.7)',
-                                'rgba(54, 162, 235, 0.7)',
-                                'rgba(255, 99, 132, 0.7)'
+                                'rgba(75, 192, 192, 0.8)',
+                                'rgba(54, 162, 235, 0.8)',
+                                'rgba(255, 99, 132, 0.8)'
                             ],
                             borderColor: [
                                 'rgba(75, 192, 192, 1)',
@@ -886,6 +855,7 @@
                     window.occupancyChartInstance = new Chart(ctx, {
                         type: 'pie',
                         data: chartData,
+                        plugins: [ChartDataLabels],
                         options: {
                             responsive: true,
                             maintainAspectRatio: false,
@@ -916,6 +886,23 @@
                                             return `${label}: ${value} (${percentage}%)`;
                                         }
                                     }
+                                },
+                                datalabels: {
+                                    formatter: (value, context) => {
+                                        const total = context.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
+                                        const percentage = Math.round((value / total) * 100);
+                                        return `${value}\n(${percentage}%)`;
+                                    },
+                                    color: '#fff',
+                                    font: {
+                                        family: "'Inter', sans-serif",
+                                        size: 12,
+                                        weight: 'bold'
+                                    },
+                                    textAlign: 'center',
+                                    padding: 6,
+                                    textShadowColor: 'rgba(0,0,0,0.5)',
+                                    textShadowBlur: 3
                                 }
                             },
                             animation: {
@@ -946,6 +933,12 @@
 
             // Update charts when building selection changes
             document.getElementById('buildingSelect').addEventListener('change', updateAllCharts);
+
+            // Update financial chart only when year selection changes
+            document.getElementById('yearSelect').addEventListener('change', function() {
+                const buildingId = document.getElementById('buildingSelect').value;
+                updateFinancialChart(buildingId);
+            });
         });
 
         window.addEventListener('beforeunload', function() {
