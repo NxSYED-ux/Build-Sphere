@@ -359,11 +359,14 @@ Route::prefix('owner')->middleware(['auth.jwt'])->group(function () {
             Route::get('/', [hrController::class , 'managerIndex'])->name('owner.managers.index');
             Route::get('/create', [hrController::class , 'managerCreate'])->name('owner.managers.create');
             Route::post('/', [hrController::class , 'managerStore'])->name('owner.managers.store');
-            Route::get('/{manager}/show', [hrController::class , 'managerShow'])->name('owner.managers.show');
             Route::get('/{manager}/edit', [hrController::class , 'managerEdit'])->name('owner.managers.edit');
 
             Route::get('/demotion/{id}', [hrController::class , 'demotionGet'])->name('owner.managers.promote.index');
             Route::post('/demotion', [hrController::class , 'demotion'])->name('owner.managers.promote.store');
+
+            Route::get('/{manager}/show', [hrController::class , 'managerShow'])->name('owner.managers.show');
+            Route::get('/{manager}/occupancy-stats', [ReportsController::class , 'getOccupancyStats'])->name('owner.managers.occupancy.stats');
+            Route::get('/{manager}/monthly/financial/stats', [ReportsController::class , 'getOrgMonthlyFinancialStats'])->name('owner.managers.monthlyFinancial.stats');
 
         });
 

@@ -11,24 +11,73 @@ use Illuminate\Support\Facades\Log;
 
 class ReportsController extends Controller
 {
-    public function getOccupancyStats(Request $request)
+    public function getOccupancyStats(Request $request){
+        $user = $request->user() ?? abort(403, 'Unauthorized action.');
+        $token = $request->attributes->get('token');
+
+        if (!$token || empty($token['organization_id']) || empty($token['role_name'])) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
+        $organization_id = $token['organization_id'];
+        $role_name = $token['role_name'];
+
+        return $this->orgOccupancyStats($request, $organization_id, $role_name, $user->id, 'user_id');
+    }
+
+    public function getOrgMonthlyFinancialStats(Request $request)
     {
-        $user = $request->user() ?? abort(403, 'Unauthorized');
+        $user = $request->user() ?? abort(403, 'Unauthorized action.');
+        $token = $request->attributes->get('token');
 
+        if (!$token || empty($token['organization_id']) || empty($token['role_name'])) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
+        $organization_id = $token['organization_id'];
+        $role_name = $token['role_name'];
+
+        return $this->orgMonthlyStats($request, $organization_id, $role_name, $user->id, 'user_id');
+    }
+
+
+    // Manager Detail Page
+    public function getManagerBuildingsMonthlyStats(Request $request, string $id)
+    {
+        $token = $request->attributes->get('token');
+
+        if (!$token || empty($token['organization_id'])) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
+        $organization_id = $token['organization_id'];
+
+        return $this->orgMonthlyStats($request, $organization_id, 'Manager', $id, 'staff_id');
+    }
+
+    public function getManagerBuildingsOccupancyStats(Request $request, string $id)
+    {
+        $token = $request->attributes->get('token');
+
+        if (!$token || empty($token['organization_id'])) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
+        $organization_id = $token['organization_id'];
+
+        return $this->orgOccupancyStats($request, $organization_id, 'Manager', $id, 'staff_id');
+    }
+
+
+    // Helper function
+    private function orgOccupancyStats(Request $request, string $organization_id, string $role_name, string $id, string $trackOn)
+    {
         try {
-            $token = $request->attributes->get('token');
-
-            if (empty($token['organization_id']) || empty($token['role_name'])) {
-                return redirect()->back()->with('error', 'This info is related to organization personals only.');
-            }
-
-            $organization_id = $token['organization_id'];
-            $role_name = strtolower($token['role_name']);
             $building_id = $request->input('buildingId');
 
             $managerBuildingIds = [];
-            if ($role_name === 'manager') {
-                $managerBuildingIds = ManagerBuilding::where('user_id', $user->id)->pluck('building_id')->toArray();
+            if ($role_name === 'Manager') {
+                $managerBuildingIds = ManagerBuilding::where($trackOn, $id)->pluck('building_id')->toArray();
 
                 if ($building_id && !in_array($building_id, $managerBuildingIds)) {
                     return response()->json(['error' => 'You do not have access to this building.'], 403);
@@ -60,23 +109,14 @@ class ReportsController extends Controller
         }
     }
 
-    public function getOrgMonthlyFinancialStats(Request $request)
+    private function orgMonthlyStats(Request $request, string $organization_id, string $role_name, string $id, string $trackOn)
     {
-        $user = $request->user() ?? abort(403, 'Unauthorized action.');
-        $token = $request->attributes->get('token');
-
         try {
-            if (!$token || empty($token['organization_id']) || empty($token['role_name'])) {
-                return response()->json(['error' => 'Unauthorized'], 403);
-            }
-
-            $organization_id = $token['organization_id'];
-            $role_name = $token['role_name'];
             $managerBuildingIds = null;
             $selectedBuildingId = $request->input('buildingId');
 
             if ($role_name === 'Manager') {
-                $managerBuildingIds = ManagerBuilding::where('user_id', $user->id)
+                $managerBuildingIds = ManagerBuilding::where($trackOn, $id)
                     ->pluck('building_id')
                     ->toArray();
 
