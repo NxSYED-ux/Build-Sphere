@@ -662,12 +662,6 @@
                                                 <x-transaction-card :transaction="$item" route-name="owner.finance.show"/>
                                             @endforeach
                                         </div>
-
-                                        @if ($transactions)
-                                            <div class="mt-4 custom-pagination-wrapper">
-                                                {{ $transactions->links('pagination::bootstrap-5') }}
-                                            </div>
-                                        @endif
                                     @else
                                         <div class="empty-state">
                                             <i class="fas fa-exchange-alt empty-state-icon"></i>
