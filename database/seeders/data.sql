@@ -208,7 +208,7 @@ INSERT INTO `staffmembers` (`id`, `user_id`, `department_id`, `building_id`, `or
 
 
 INSERT INTO `managerbuildings` (`id`, `user_id`, `staff_id`, `building_id`, `created_at`, `updated_at`) VALUES
-(1, 5, 8, 1, '2025-03-22 22:41:28', '2025-03-22 22:46:05');
+(1, 5, 7, 1, '2025-03-22 22:41:28', '2025-03-22 22:46:05');
 
 
 INSERT INTO `queries` (`id`, `user_id`, `unit_id`, `building_id`, `department_id`, `staff_member_id`, `description`, `status`, `expected_closure_date`, `remarks`, `created_at`, `updated_at`) VALUES
