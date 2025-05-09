@@ -349,6 +349,7 @@ Route::prefix('owner')->middleware(['auth.jwt'])->group(function () {
 
             Route::get('/queries/{staff}/yearly-stats', [QueryController::class, 'getStaffYearlyStats'])->name('owner.staff.queries.yearly');
             Route::get('/queries/{staff}/monthly-stats', [QueryController::class, 'getStaffMonthlyStats'])->name('owner.staff.queries.monthly');
+            Route::get('/query/details/{id}', [QueryController::class, 'getQueryDetails'])->name('owner.staff.query.details');
 
         });
 

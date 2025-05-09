@@ -212,7 +212,7 @@ class QueryController extends Controller
                 return response()->json(['error' => 'Invalid query ID'], 400);
             }
             $query = Query::where('id', $id)
-                ->select(['id', 'description', 'status', 'expected_closure_date', 'closure_date', 'remarks', 'created_at', 'unit_id'])
+                ->select(['id', 'description', 'status', 'expected_closure_date', 'closure_date', 'remarks', 'expense', 'created_at', 'unit_id'])
                 ->with(['pictures:query_id,file_path'])
                 ->with(['unit:id,unit_name'])
                 ->first();
