@@ -7,6 +7,7 @@ use App\Models\BuildingUnit;
 use App\Models\ManagerBuilding;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 
 class ReportsController extends Controller
@@ -125,8 +126,10 @@ class ReportsController extends Controller
                 }
             }
 
-            $startDate = now()->startOfYear();
-            $endDate = now()->endOfYear();
+            $year = $request->input('year', now()->year);
+
+            $startDate = Carbon::createFromDate($year, 1, 1)->startOfDay();
+            $endDate = Carbon::createFromDate($year, 12, 31)->endOfDay();
 
             $chartData = [
                 'labels' => [],
