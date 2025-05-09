@@ -486,7 +486,7 @@ class hrController extends Controller
             $token = $request->attributes->get('token');
 
             if (empty($token['organization_id'])) {
-                return redirect()->back()->with('error', 'Access denied: This section is restricted to organization personnel only.');
+                return redirect()->back()->with('error', 'Access denied: This section is restricted to organization owner only.');
             }
 
             $organization_id = $token['organization_id'];
