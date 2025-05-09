@@ -73,7 +73,7 @@ class ReportsController extends Controller
             $organization_id = $token['organization_id'];
             $role_name = $token['role_name'];
             $managerBuildingIds = null;
-            $selectedBuildingId = $request->input('building_id');
+            $selectedBuildingId = $request->input('buildingId');
 
             if ($role_name === 'Manager') {
                 $managerBuildingIds = ManagerBuilding::where('user_id', $user->id)
