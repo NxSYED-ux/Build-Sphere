@@ -634,9 +634,9 @@
                                     <div class="charts-row">
                                         <!-- Pie Chart Container -->
                                         <div class="chart-container">
-                                            <div class="chart-title">Building Units</div>
+                                            <div class="chart-title">Unit Occupancy</div>
                                             <div class="chart-wrapper">
-                                                <canvas id="pieChart"></canvas>
+                                                <canvas id="occupancyChart"></canvas>
                                             </div>
                                         </div>
 
@@ -705,13 +705,12 @@
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        const ctx = document.getElementById('financialChart').getContext('2d');
-        const chartContainer = document.getElementById('financialChart').parentElement;
-
-        function showLoading() {
-            if (!document.getElementById('chartLoading')) {
+        // Common functions
+        function showLoading(chartId) {
+            const chartContainer = document.getElementById(chartId).parentElement;
+            if (!document.getElementById(`${chartId}Loading`)) {
                 const loadingDiv = document.createElement('div');
-                loadingDiv.id = 'chartLoading';
+                loadingDiv.id = `${chartId}Loading`;
                 loadingDiv.innerHTML = `
                 <div style="
                     position: absolute;
@@ -731,27 +730,21 @@
             }
         }
 
-        function hideLoading() {
-            const loadingElement = document.getElementById('chartLoading');
+        function hideLoading(chartId) {
+            const loadingElement = document.getElementById(`${chartId}Loading`);
             if (loadingElement) loadingElement.remove();
         }
 
-        window.addEventListener('beforeunload', function() {
-            if (window.chartResizeObserver) {
-                window.chartResizeObserver.disconnect();
-            }
-        });
+        // Financial Chart Logic
+        function updateFinancialChart(buildingId) {
+            showLoading('financialChart');
 
-        function updateChart() {
-            showLoading();
-
-            // Destroy previous chart instance if exists
-            if (window.chartInstance) {
-                window.chartInstance.destroy();
+            if (window.financialChartInstance) {
+                window.financialChartInstance.destroy();
             }
 
             const managerId = @json($staffInfo->id);
-            const buildingId = document.getElementById('buildingSelect').value;
+            const ctx = document.getElementById('financialChart').getContext('2d');
 
             fetch(`{{ route('owner.managers.monthlyFinancial.stats', $staffInfo->id) }}?buildingId=${buildingId}`)
                 .then(response => response.json())
@@ -760,15 +753,7 @@
                     const tooltipBackground = 'rgba(0, 0, 0, 0.8)';
                     const fontFamily = "'Inter', sans-serif";
 
-                    // Get the parent container dimensions
-                    const container = document.getElementById('financialChart').parentElement;
-                    const containerWidth = container.clientWidth;
-
-                    // Adjust font sizes based on container width
-                    const baseFontSize = containerWidth > 768 ? 12 : 10;
-                    const titleFontSize = containerWidth > 768 ? 16 : 12;
-
-                    window.chartInstance = new Chart(ctx, {
+                    window.financialChartInstance = new Chart(ctx, {
                         type: 'line',
                         data: chartData,
                         options: {
@@ -779,7 +764,7 @@
                                     labels: {
                                         font: {
                                             family: fontFamily,
-                                            size: baseFontSize
+                                            size: 12
                                         },
                                         padding: 20,
                                         usePointStyle: true,
@@ -792,12 +777,12 @@
                                     backgroundColor: tooltipBackground,
                                     titleFont: {
                                         family: fontFamily,
-                                        size: baseFontSize,
+                                        size: 12,
                                         weight: 'bold'
                                     },
                                     bodyFont: {
                                         family: fontFamily,
-                                        size: baseFontSize
+                                        size: 12
                                     },
                                     padding: 10,
                                     cornerRadius: 6,
@@ -818,7 +803,7 @@
                                     ticks: {
                                         font: {
                                             family: fontFamily,
-                                            size: baseFontSize
+                                            size: 12
                                         },
                                         callback: function(value) {
                                             return 'PKR ' + value.toLocaleString();
@@ -833,7 +818,7 @@
                                     ticks: {
                                         font: {
                                             family: fontFamily,
-                                            size: baseFontSize
+                                            size: 12
                                         }
                                     }
                                 }
@@ -857,33 +842,119 @@
                             }
                         }
                     });
-
-                    // Add resize observer to handle window resizing
-                    if (!window.chartResizeObserver) {
-                        window.chartResizeObserver = new ResizeObserver(() => {
-                            if (window.chartInstance) {
-                                window.chartInstance.resize();
-                            }
-                        });
-                        window.chartResizeObserver.observe(container);
-                    }
                 })
                 .catch(error => {
-                    console.error('Error loading chart data:', error);
+                    console.error('Error loading financial chart data:', error);
                 })
                 .finally(() => {
-                    hideLoading();
+                    hideLoading('financialChart');
                 });
         }
 
-        document.addEventListener('DOMContentLoaded', function() {
-            // Initialize the chart
-            updateChart();
+        // Occupancy Chart Logic
+        function updateOccupancyChart(buildingId) {
+            showLoading('occupancyChart');
 
-            // Add event listener for building select change
-            document.getElementById('buildingSelect').addEventListener('change', function() {
-                updateChart();
-            });
+            if (window.occupancyChartInstance) {
+                window.occupancyChartInstance.destroy();
+            }
+
+            const managerId = @json($staffInfo->id);
+            const ctx = document.getElementById('occupancyChart').getContext('2d');
+
+            fetch(`{{ route('owner.managers.occupancy.stats', $staffInfo->id) }}?buildingId=${buildingId}`)
+                .then(response => response.json())
+                .then(data => {
+                    const chartData = {
+                        labels: ['Available', 'Rented', 'Sold'],
+                        datasets: [{
+                            data: [data.availableUnits, data.rentedUnits, data.soldUnits],
+                            backgroundColor: [
+                                'rgba(75, 192, 192, 0.7)',
+                                'rgba(54, 162, 235, 0.7)',
+                                'rgba(255, 99, 132, 0.7)'
+                            ],
+                            borderColor: [
+                                'rgba(75, 192, 192, 1)',
+                                'rgba(54, 162, 235, 1)',
+                                'rgba(255, 99, 132, 1)'
+                            ],
+                            borderWidth: 1
+                        }]
+                    };
+
+                    window.occupancyChartInstance = new Chart(ctx, {
+                        type: 'pie',
+                        data: chartData,
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    position: 'bottom',
+                                    labels: {
+                                        font: {
+                                            family: "'Inter', sans-serif",
+                                            size: 12
+                                        },
+                                        padding: 20,
+                                        usePointStyle: true
+                                    }
+                                },
+                                tooltip: {
+                                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                                    bodyFont: {
+                                        family: "'Inter', sans-serif",
+                                        size: 12
+                                    },
+                                    callbacks: {
+                                        label: function(context) {
+                                            const label = context.label || '';
+                                            const value = context.raw || 0;
+                                            const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                            const percentage = Math.round((value / total) * 100);
+                                            return `${label}: ${value} (${percentage}%)`;
+                                        }
+                                    }
+                                }
+                            },
+                            animation: {
+                                animateScale: true,
+                                animateRotate: true
+                            }
+                        }
+                    });
+                })
+                .catch(error => {
+                    console.error('Error loading occupancy chart data:', error);
+                })
+                .finally(() => {
+                    hideLoading('occupancyChart');
+                });
+        }
+
+        // Initialize both charts when building selection changes
+        function updateAllCharts() {
+            const buildingId = document.getElementById('buildingSelect').value;
+            updateFinancialChart(buildingId);
+            updateOccupancyChart(buildingId);
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize both charts
+            updateAllCharts();
+
+            // Update charts when building selection changes
+            document.getElementById('buildingSelect').addEventListener('change', updateAllCharts);
+        });
+
+        window.addEventListener('beforeunload', function() {
+            if (window.financialChartInstance) {
+                window.financialChartInstance.destroy();
+            }
+            if (window.occupancyChartInstance) {
+                window.occupancyChartInstance.destroy();
+            }
         });
     </script>
 @endpush
