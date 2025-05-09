@@ -344,6 +344,10 @@ Route::prefix('owner')->middleware(['auth.jwt'])->group(function () {
             Route::post('/', [hrController::class , 'staffStore'])->name('owner.staff.store');
             Route::get('/{staff}/show', [hrController::class , 'staffShow'])->name('owner.staff.show');
             Route::get('/{staff}/edit', [hrController::class , 'staffEdit'])->name('owner.staff.edit');
+            Route::put('/', [hrController::class , 'staffUpdate'])->name('owner.staff.update');
+
+            Route::delete('/', [hrController::class , 'staffDestroy'])->name('owner.staff.destroy');
+            Route::put('/handle-Queries', [hrController::class , 'staffHandleQueries'])->name('owner.staff.handle.queries');
 
             Route::get('/promote/{id}', [hrController::class , 'promotionGet'])->name('owner.staff.promote.index');
             Route::post('/promote', [hrController::class , 'promotion'])->name('owner.staff.promote.store');
@@ -360,6 +364,8 @@ Route::prefix('owner')->middleware(['auth.jwt'])->group(function () {
             Route::get('/create', [hrController::class , 'managerCreate'])->name('owner.managers.create');
             Route::post('/', [hrController::class , 'managerStore'])->name('owner.managers.store');
             Route::get('/{manager}/edit', [hrController::class , 'managerEdit'])->name('owner.managers.edit');
+            Route::put('/', [hrController::class , 'managerUpdate'])->name('owner.managers.update');
+            Route::delete('/', [hrController::class , 'managerDestroy'])->name('owner.managers.destroy');
 
             Route::get('/demotion/{id}', [hrController::class , 'demotionGet'])->name('owner.managers.promote.index');
             Route::post('/demotion', [hrController::class , 'demotion'])->name('owner.managers.promote.store');

@@ -107,6 +107,7 @@ class hrController extends Controller
     }
 
 
+
     // Create Functions & Store Functions
     public function staffCreate(Request $request)
     {
@@ -262,7 +263,7 @@ class hrController extends Controller
             return redirect()->route('owner.staff.index')->with('success', 'Staff created successfully.');
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('User creation failed: ' . $e->getMessage());
+            Log::error('Error in Staff Create: ' . $e->getMessage());
             return redirect()->back()->withInput()->with('error', 'Something went wrong. Please try again.');
         }
     }
@@ -407,10 +408,11 @@ class hrController extends Controller
             return redirect()->route('owner.managers.index')->with('success', 'Manager created successfully.');
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('User creation failed: ' . $e->getMessage());
+            Log::error('Error in Manager create: ' . $e->getMessage());
             return redirect()->back()->withInput()->with('error', 'Something went wrong. Please try again.');
         }
     }
+
 
 
     // Show Functions
@@ -508,6 +510,308 @@ class hrController extends Controller
             return redirect()->back()->with('error', 'Something went wrong. Please try again later.');
         }
     }
+
+
+
+    // Edit Functions & Update Functions
+    public function staffEdit(Request $request, string $id){
+        $user = $request->user() ?? abort(403, 'Unauthorized action.');
+        try {
+            $token = $request->attributes->get('token');
+
+            if (empty($token['organization_id']) || empty($token['role_name'])) {
+                return redirect()->back()->with('error', 'This info is for Organization related personals');
+            }
+
+            $organization_id = $token['organization_id'];
+            $role_name = $token['role_name'];
+
+            $staffInfo = StaffMember::with('user')->find($id);
+
+            if (!$staffInfo || $staffInfo->organization_id != $organization_id) {
+                return redirect()->back()->with('error', 'Invalid staff id');
+            }
+
+            $managerBuildingIds = [];
+            if ($role_name === 'Manager') {
+                $managerBuildingIds = ManagerBuilding::where('user_id', $user->id)->pluck('building_id')->toArray();
+
+                if (!in_array($staffInfo->building_id, $managerBuildingIds)) {
+                    return redirect()->back()->with('error', 'Access denied: You do not manage this building or its staff.');
+                }
+            }
+
+            $departments = Department::where('organization_id', $organization_id)
+                ->pluck('name', 'id');
+
+            $buildings = Building::where('organization_id', $organization_id)
+                ->when($role_name === 'Manager', fn($q) => $q->whereIn('id', $managerBuildingIds))
+                ->pluck('name', 'id');
+
+
+            $userPermissionIds = UserPermission::where('user_id', $staffInfo->user_id)
+                ->select('id', 'permission_id', 'status')
+                ->get();
+
+            $excludedPermissionIds = $userPermissionIds->pluck('permission_id');
+
+            $rolePermissionIds = RolePermission::where('role_id', 4)
+                ->whereNotIn('permission_id', $excludedPermissionIds)
+                ->select('id', 'permission_id', 'status')
+                ->get();
+
+            $permissions = $userPermissionIds->concat($rolePermissionIds);
+
+            return view('Heights.Owner.HR.Staff.edit', compact('staffInfo', 'departments', 'buildings', 'permissions'));
+
+        } catch (\Exception $e) {
+            Log::error('Error in staff Edit: ' . $e->getMessage());
+
+            return redirect()->back()->with('error', 'Something went wrong. Please try again later.');
+        }
+    }
+
+    public function staffUpdate(Request $request)
+    {
+        $loggedUser = $request->user() ?? abort(403, 'Unauthorized action.');
+        $token = $request->attributes->get('token');
+
+        if (empty($token['organization_id']) || empty($token['role_name'])) {
+            return redirect()->back()->with('error', 'This info is for Organization related personals');
+        }
+
+        $organization_id = $token['organization_id'];
+        $role_name = $token['role_name'];
+
+        $request->validate([
+            'staff_id' => 'required|exists:staffmembers,id',
+
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users,email,' . $request->user_id . ',id',
+            'phone_no' => 'nullable|string|max:20',
+            'cnic' => 'nullable|string|max:18|unique:users,cnic,' . $request->user_id . ',id',
+            'gender' => 'nullable|in:Male,Female,Other',
+            'date_of_birth' => 'required|date',
+
+            'department_id' => 'required|exists:departments,id',
+            'building_id' => 'required|exists:buildings,id',
+            'accept_query' => 'nullable',
+
+            'permissions' => 'nullable|array',
+            'permissions.*' => 'nullable|integer',
+
+            'updated_at' => 'required',
+        ]);
+
+        if (
+            $role_name === 'Manager' &&
+            !ManagerBuilding::where('building_id', $request->building_id)
+                ->where('user_id', $loggedUser->id)
+                ->exists()
+        ) {
+            return redirect()->back()->withInput()->with('error', 'You do not have access to add staff members of the selected building.');
+        }
+
+        DB::beginTransaction();
+        try {
+            $staff = StaffMember::where([
+                ['id', '=', $request->staff_id],
+                ['updated_at', '=', $request->updated_at],
+                ['organization_id', '=', $organization_id],
+            ])->with('user')->first();
+
+            if (!$staff) {
+                DB::rollBack();
+                return redirect()->back()->withInput()->with('error', 'Please refresh the page and try again.');
+            }
+
+            $user = $staff->user;
+
+            $staff->update([
+                'building_id' => $request->building_id,
+                'department_id' => $request->department_id,
+                'accept_queries' => $request->accept_query ?? 0,
+            ]);
+
+            $user->update([
+                'name' => $request->name,
+                'email' => $request->email,
+                'phone_no' => $request->phone_no,
+                'cnic' => $request->cnic,
+                'gender' => $request->gender,
+                'date_of_birth' => $request->date_of_birth,
+            ]);
+
+            $original = RolePermission::where('role_id', 4)->pluck('status', 'permission_id');
+            $new = $request->permissions ?? [];
+
+            $changedPermissions = collect($new)
+                ->filter(function ($status, $permissionId) use ($original) {
+                    return isset($original[$permissionId]) && $original[$permissionId] != $status;
+                });
+
+            foreach ($changedPermissions as $permissionId => $status) {
+                UserPermission::updateOrCreate(
+                    [
+                        'user_id' => $user->id,
+                        'permission_id' => $permissionId,
+                    ],
+                    [
+                        'status' => $status,
+                    ]
+                );
+            }
+
+            DB::commit();
+
+            return redirect()->route('owner.staff.index')->with('success', 'Staff updated successfully.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Error in staff update: ' . $e->getMessage());
+            return redirect()->back()->withInput()->with('error', 'Something went wrong. Please try again.');
+        }
+    }
+
+    public function managerEdit(Request $request, string $id)
+    {
+        try {
+            $token = $request->attributes->get('token');
+
+            if (empty($token['organization_id']) || empty($token['role_name'])) {
+                return redirect()->back()->with('error', 'This info is for Organization related personals');
+            }
+
+            $organization_id = $token['organization_id'];
+
+            $staffInfo = StaffMember::with('user')->find($id);
+
+            if (!$staffInfo || $staffInfo->organization_id != $organization_id) {
+                return redirect()->back()->with('error', 'Invalid manager id');
+            }
+
+            $buildings = Building::where('organization_id', $organization_id)
+                ->select('id', 'name')
+                ->get();
+
+            $managerBuildings = ManagerBuilding::where('staff_id', $id)
+                ->with('building')
+                ->get();
+
+            $userPermissions = UserPermission::where('user_id', $staffInfo->user_id)
+                ->select('id', 'permission_id', 'status')
+                ->get();
+
+            $excludedPermissionIds = $userPermissions->pluck('permission_id');
+
+            $rolePermissions = RolePermission::where('role_id', 3)
+                ->whereNotIn('permission_id', $excludedPermissionIds)
+                ->select('id', 'permission_id', 'status')
+                ->get();
+
+            $permissions = $userPermissions->concat($rolePermissions);
+
+            return view('Heights.Owner.HR.Manager.edit', compact('staffInfo', 'buildings', 'managerBuildings', 'permissions'));
+
+        } catch (\Exception $e) {
+            Log::error('Error in manager edit: ' . $e->getMessage());
+
+            return redirect()->back()->with('error', 'Something went wrong. Please try again later.');
+        }
+    }
+
+    public function managerUpdate(Request $request)
+    {
+        $token = $request->attributes->get('token');
+
+        if (empty($token['organization_id'])) {
+            return redirect()->back()->with('error', 'This action is only for Organization owners.');
+        }
+
+        $organization_id = $token['organization_id'];
+
+        $request->validate([
+            'manager_id' => 'required|exists:staffmembers,id',
+
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users,email,' . $request->user_id . ',id',
+            'phone_no' => 'nullable|string|max:20',
+            'cnic' => 'nullable|string|max:18|unique:users,cnic,' . $request->user_id . ',id',
+            'gender' => 'nullable|in:Male,Female,Other',
+            'date_of_birth' => 'required|date',
+
+            'permissions' => 'nullable', 'array',
+            'permissions.*' => 'nullable|integer',
+
+            'buildings' => 'required|array',
+            'buildings.*' => 'required|integer|exists:buildings,id',
+
+            'updated_at' => 'required',
+        ]);
+
+        DB::beginTransaction();
+        try {
+            $staff = StaffMember::where([
+                ['id', '=', $request->manager_id],
+                ['updated_at', '=', $request->updated_at],
+                ['organization_id', '=', $organization_id],
+            ])->with('user')->first();
+
+            if (!$staff) {
+                DB::rollBack();
+                return redirect()->back()->withInput()->with('error', 'Please refresh the page and try again.');
+            }
+
+            $user = $staff->user;
+
+            $user->update([
+                'name' => $request->name,
+                'email' => $request->email,
+                'phone_no' => $request->phone_no,
+                'cnic' => $request->cnic,
+                'gender' => $request->gender,
+                'date_of_birth' => $request->date_of_birth,
+            ]);
+
+            ManagerBuilding::where('staff_id', $staff->id)->delete();
+
+            foreach (request('buildings') as $buildingId) {
+                ManagerBuilding::create([
+                    'user_id' => $user->id,
+                    'staff_id' => $staff->id,
+                    'building_id' => $buildingId,
+                ]);
+            }
+
+            $original = RolePermission::where('role_id', 3)->pluck('status', 'permission_id');
+            $new = $request->permissions ?? [];
+
+            $changedPermissions = collect($new)
+                ->filter(function ($status, $permissionId) use ($original) {
+                    return isset($original[$permissionId]) && $original[$permissionId] != $status;
+                });
+
+            foreach ($changedPermissions as $permissionId => $status) {
+                UserPermission::updateOrCreate(
+                    [
+                        'user_id' => $user->id,
+                        'permission_id' => $permissionId,
+                    ],
+                    [
+                        'status' => $status,
+                    ]
+                );
+            }
+
+            DB::commit();
+
+            return redirect()->route('owner.managers.index')->with('success', 'Manager updated successfully.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Error in Manager update: ' . $e->getMessage());
+            return redirect()->back()->withInput()->with('error', 'Something went wrong. Please try again.');
+        }
+    }
+
 
 
     // Promotion
@@ -684,6 +988,7 @@ class hrController extends Controller
     }
 
 
+
     // Demotion
     public function demotionGet(string $id, Request $request)
     {
@@ -856,6 +1161,166 @@ class hrController extends Controller
     }
 
 
+
+    // Accept Queries
+    public function staffHandleQueries(Request $request)
+    {
+        $token = $request->attributes->get('token');
+
+        if (empty($token['organization_id'])) {
+            return response()->json(['error' => 'This info is for Organization related personals'], 403);
+        }
+
+        $organization_id = $token['organization_id'];
+
+        $request->validate([
+            'staff_id' => 'required|exists:staffmembers,id',
+            'accept_query' => 'required|in:0,1',
+        ]);
+
+        try {
+            $staff = StaffMember::where('id', $request->staff_id)
+                ->where('organization_id', $organization_id)
+                ->first();
+
+            if (!$staff) {
+                return response()->json(['error' => 'Invalid staff id.'], 400);
+            }
+
+            $staff->update([
+                'accept_queries' => $request->accept_query ?? 0,
+            ]);
+
+            return response()->json(['success' => 'Query handling status updated successfully.'], 200);
+
+        }catch (\Exception $e) {
+            Log::error('Error in staffHandleQueries: ' . $e->getMessage());
+            return response()->json(['error' => 'Something went wrong. Please try again.'], 500);
+        }
+    }
+
+
+
+    // Delete Functions
+    public function staffDestroy(Request $request)
+    {
+        $token = $request->attributes->get('token');
+
+        if (empty($token['organization_id'])) {
+            return response()->json(['error' => 'This action is related to organization personals'], 403);
+        }
+
+        $organization_id = $token['organization_id'];
+
+        $request->validate([
+            'id' => 'required|exists:staffmembers,id',
+        ]);
+
+        DB::beginTransaction();
+
+        try {
+            $staff = StaffMember::where('id', $request->id)
+                ->where('organization_id', $organization_id)
+                ->with(['user', 'queries' => function($query) {
+                    $query->whereIn('status', ['Open', 'In Progress']);
+                }])
+                ->first();
+
+            if (!$staff) {
+                DB::rollBack();
+                return response()->json(['error' => 'Staff not found.'], 404);
+            }
+
+            if ($staff->queries->exists()) {
+                DB::rollBack();
+                return response()->json(['error' => 'Cannot delete staff with open or in-progress queries.'], 400);
+            }
+
+            $user = $staff->user;
+            if ($user) {
+                $user->update(['role_id' => 5]);
+            }
+
+            $staff->delete();
+
+            $subscription = PlanSubscriptionItem::where('organization_id', $organization_id)
+                ->where('service_catalog_id', 3)
+                ->lockForUpdate()
+                ->first();
+
+            if ($subscription && $subscription->used > 0) {
+                $subscription->decrement('used');
+            }
+
+            DB::commit();
+
+            return response()->json(['success' => 'Staff deleted successfully.'], 200);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Error in staff destroy: ' . $e->getMessage());
+            return response()->json(['error' => 'Something went wrong. Please try again.'], 500);
+        }
+    }
+
+    public function managerDestroy(Request $request)
+    {
+        $token = $request->attributes->get('token');
+
+        if (empty($token['organization_id'])) {
+            return response()->json(['error' => 'This action is related to organization personals'], 403);
+        }
+
+        $organization_id = $token['organization_id'];
+
+        $request->validate([
+            'id' => 'required|exists:staffmembers,id',
+        ]);
+
+        DB::beginTransaction();
+
+        try {
+            $manager = StaffMember::where('id', $request->id)
+                ->where('organization_id', $organization_id)
+                ->with('user')
+                ->first();
+
+            if (!$manager) {
+                DB::rollBack();
+                return response()->json(['error' => 'Manager not found.'], 404);
+            }
+
+            $user = $manager->user;
+
+            if ($user) {
+                $user->update(['role_id' => 5]);
+            }
+
+            ManagerBuilding::where('staff_id', $manager->id)->delete();
+            $manager->delete();
+
+            $subscription = PlanSubscriptionItem::where('organization_id', $organization_id)
+                ->where('service_catalog_id', 2)
+                ->lockForUpdate()
+                ->first();
+
+            if ($subscription && $subscription->used > 0) {
+                $subscription->decrement('used');
+            }
+
+            DB::commit();
+
+            return response()->json(['success' => 'Manager deleted successfully.'], 200);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Error in manager destroy: ' . $e->getMessage());
+            return response()->json(['error' => 'Something went wrong. Please try again.'], 500);
+        }
+    }
+
+
+
     // Helper Function
     public function checkServiceUsageLimit($organization_id, $serviceId, $serviceName, $roleId, bool $redirect = true)
     {
@@ -909,6 +1374,5 @@ class hrController extends Controller
 
         return $history;
     }
-
 
 }

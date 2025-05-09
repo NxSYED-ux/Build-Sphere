@@ -159,7 +159,7 @@ class RoleController extends Controller
 
             if (!$role) {
                 DB::rollBack();
-                return redirect()->back()->with('error', 'Please refresh the page and try again.');
+                return redirect()->back()->withInput()->with('error', 'Please refresh the page and try again.');
             }
 
             $role->update([
