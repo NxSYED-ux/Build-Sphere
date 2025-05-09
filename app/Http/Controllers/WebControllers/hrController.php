@@ -11,6 +11,7 @@ use App\Models\ManagerBuilding;
 use App\Models\PlanSubscriptionItem;
 use App\Models\RolePermission;
 use App\Models\StaffMember;
+use App\Models\Transaction;
 use App\Models\User;
 use App\Models\UserPermission;
 use App\Notifications\CredentialsEmail;
@@ -498,7 +499,10 @@ class hrController extends Controller
 
             $managerBuildings =  ManagerBuilding::where('staff_id', $id)->with('building')->get();
 
-            return view('Heights.Owner.HR.Manager.show', compact('staffInfo', 'managerBuildings'));
+            $buildingIds = $managerBuildings->pluck('building_id')->toArray();
+            $transactions = $this->managerBuildingsTransactions($organization_id, $buildingIds);
+
+            return view('Heights.Owner.HR.Manager.show', compact('staffInfo', 'managerBuildings', 'transactions'));
         }catch (\Exception $e) {
             Log::error('Error in managerShow: ' . $e->getMessage());
             return redirect()->back()->with('error', 'Something went wrong. Please try again later.');
@@ -874,6 +878,37 @@ class hrController extends Controller
         return [ 'success' => true, 'subscriptionItem' => $subscriptionLimit ];
     }
 
+    public function managerBuildingsTransactions(string $organization_id, $managerBuildings)
+    {
+        $transactions = Transaction::whereIn('building_id', $managerBuildings)
+            ->where(function ($query) use ($organization_id) {
+            $query->where(function ($q) use ($organization_id) {
+                $q->where('buyer_type', 'organization')
+                    ->where('buyer_id', $organization_id);
+            })->orWhere(function ($q) use ($organization_id) {
+                $q->where('seller_type', 'organization')
+                    ->where('seller_id', $organization_id);
+            });
+        })
+            ->orderBy('created_at', 'desc')
+            ->limit(6)
+            ->get();
+
+        $history = $transactions->map(function ($txn) use ($organization_id) {
+            $isBuyer = $txn->buyer_type === 'organization' && $txn->buyer_id == $organization_id;
+
+            return [
+                'id' => $txn->id,
+                'title' => $txn->transaction_title,
+                'type' => $isBuyer ? $txn->buyer_transaction_type : $txn->seller_transaction_type,
+                'price' => number_format($txn->price, 2) . ' ' . $txn->currency,
+                'status' => $txn->status,
+                'created_at' => $txn->created_at->diffForHumans(),
+            ];
+        });
+
+        return $history;
+    }
 
 
 }
