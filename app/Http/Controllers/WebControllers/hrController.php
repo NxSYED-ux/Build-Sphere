@@ -464,7 +464,7 @@ class hrController extends Controller
                 ->paginate(10)
                 ->appends($request->query());
 
-            $units = BuildingUnit::where('organization_id', $organization_id)->where('status', 'Approved')->select('id', 'name')->get();
+            $units = BuildingUnit::where('organization_id', $organization_id)->where('status', 'Approved')->select('id', 'unit_name')->get();
 
             return view('Heights.Owner.HR.Staff.show', compact('staffInfo', 'queries', 'units'));
         } catch (\Exception $e) {

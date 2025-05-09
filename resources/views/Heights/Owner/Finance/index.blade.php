@@ -347,20 +347,20 @@
 
                                 <!-- Chart Section -->
                                 <div class="finance-card p-4 mt-3 mb-3">
-                                <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-3">
-                                    <h5 class="section-title mb-0 mb-md-0">Financial Overview</h5>
-                                    <select class="form-select days-select"   id="daysSelect">
-                                        <option value="30">Last 30 Days</option>
-                                        <option value="90">Last 90 Days</option>
-                                        <option value="custom" id="thisYearOption">This Year (Jan 1 - Today)</option>
-                                    </select>
-                                </div>
-                                <div class="chart-container">
-                                    <div class="card-body" style="position: relative; height: 100%; width: 100%;">
-                                        <canvas id="financialChart"></canvas>
+                                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-3">
+                                        <h5 class="section-title mb-0 mb-md-0">Financial Overview</h5>
+                                        <select class="form-select days-select"   id="daysSelect">
+                                            <option value="30">Last 30 Days</option>
+                                            <option value="90">Last 90 Days</option>
+                                            <option value="custom" id="thisYearOption">This Year (Jan 1 - Today)</option>
+                                        </select>
+                                    </div>
+                                    <div class="chart-container">
+                                        <div class="card-body" style="position: relative; height: 100%; width: 100%;">
+                                            <canvas id="financialChart"></canvas>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
 
                                 <!-- Filter Section -->
                                 <form method="GET" action="{{ route('owner.finance.index') }}">
