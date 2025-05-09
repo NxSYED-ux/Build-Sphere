@@ -89,7 +89,7 @@ class ReportsController extends Controller
                 ->when($building_id, function ($query) use ($building_id) {
                     $query->where('building_id', $building_id);
                 }, function ($query) use ($role_name, $managerBuildingIds) {
-                    if ($role_name === 'manager') {
+                    if ($role_name === 'Manager') {
                         $query->whereIn('building_id', $managerBuildingIds);
                     }
                 })
