@@ -432,10 +432,10 @@ class hrController extends Controller
                 return redirect()->back()->with('error', 'Invalid staff id');
             }
 
+            $managerBuildingIds = [];
             if ($role_name === 'Manager') {
-                $hasAccess = ManagerBuilding::where('building_id', $staffInfo->building_id)
-                    ->where('user_id', $user->id)
-                    ->exists();
+                $managerBuildingIds = ManagerBuilding::where('user_id', $user->id)->pluck('building_id')->toArray();
+                $hasAccess = !in_array($staffInfo->building_id, $managerBuildingIds);
 
                 if (!$hasAccess) {
                     return redirect()->back()->with('error', 'Access denied: You do not manage this building or its staff.');
@@ -464,7 +464,13 @@ class hrController extends Controller
                 ->paginate(10)
                 ->appends($request->query());
 
-            $units = BuildingUnit::where('organization_id', $organization_id)->where('status', 'Approved')->select('id', 'unit_name')->get();
+            $units = BuildingUnit::where('organization_id', $organization_id)
+                ->where('status', 'Approved')
+                ->when($role_name === 'Manager', function ($query) use ($managerBuildingIds) {
+                    $query->whereIn('building_id', $managerBuildingIds);
+                })
+                ->select('id', 'unit_name')
+                ->get();
 
             return view('Heights.Owner.HR.Staff.show', compact('staffInfo', 'queries', 'units'));
         } catch (\Exception $e) {
@@ -473,12 +479,29 @@ class hrController extends Controller
         }
     }
 
-    public function managerShow(string $id)
+    public function managerShow(Request $request, string $id)
     {
+        $user = $request->user() ?? abort(403, 'Unauthorized action.');
         try {
-            return view('Heights.Owner.HR.Manager.show', compact('id'));
+            $token = $request->attributes->get('token');
+
+            if (empty($token['organization_id'])) {
+                return redirect()->back()->with('error', 'Access denied: This section is restricted to organization personnel only.');
+            }
+
+            $organization_id = $token['organization_id'];
+
+            $staffInfo = StaffMember::with('user')->find($id);
+
+            if (!$staffInfo || $staffInfo->organization_id != $organization_id) {
+                return redirect()->back()->with('error', 'Invalid manager id');
+            }
+
+            $managerBuildings =  ManagerBuilding::where('staff_id', $id)->with('building')->get();
+
+            return view('Heights.Owner.HR.Manager.show', compact('staffInfo', 'managerBuildings'));
         }catch (\Exception $e) {
-            Log::error('Error in staffShow: ' . $e->getMessage());
+            Log::error('Error in managerShow: ' . $e->getMessage());
             return redirect()->back()->with('error', 'Something went wrong. Please try again later.');
         }
     }
