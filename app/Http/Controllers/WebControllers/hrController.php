@@ -481,7 +481,6 @@ class hrController extends Controller
 
     public function managerShow(Request $request, string $id)
     {
-        $user = $request->user() ?? abort(403, 'Unauthorized action.');
         try {
             $token = $request->attributes->get('token');
 
