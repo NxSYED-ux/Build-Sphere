@@ -19,29 +19,6 @@
             margin-top: 45px;
         }
 
-        /* staff detail*/
-
-        /* end*/
-
-        .finance-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1rem 0;
-        }
-
-        .finance-header h3 {
-            font-weight: 700;
-            color: var(--sidenavbar-text-color);
-            font-size: 1.75rem;
-            margin-bottom: 0.25rem;
-        }
-
-        .finance-header p {
-            color: var(--sidenavbar-text-color);
-            font-size: 0.95rem;
-        }
-
         .finance-card {
             border: none;
             border-radius: 16px;
@@ -54,68 +31,6 @@
         .finance-card:hover {
             transform: translateY(-2px);
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-        }
-
-        .summary-cards {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2.5rem;
-        }
-
-        .summary-card {
-            background: var(--body-card-bg);
-            border-radius: 14px;
-            padding: 1.75rem;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-            position: relative;
-            overflow: hidden;
-            transition: all 0.3s ease;
-        }
-
-        .summary-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
-        }
-
-        .summary-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 5px;
-            height: 100%;
-            background: linear-gradient(to bottom, #3b82f6, var(--color-blue));
-        }
-
-        .summary-card h5 {
-            font-size: 0.875rem;
-            color: var(--sidenavbar-text-color);
-            margin-bottom: 0.75rem;
-            font-weight: 500;
-            letter-spacing: 0.2px;
-        }
-
-        .summary-card .amount {
-            font-size: 1.75rem;
-            font-weight: 700;
-            color: var(--sidenavbar-text-color);
-            margin-bottom: 0.5rem;
-        }
-
-        .summary-card .trend {
-            display: flex;
-            align-items: center;
-            font-size: 0.8rem;
-            color: #64748b;
-        }
-
-        .positive {
-            color: #10b981 !important;
-        }
-
-        .negative {
-            color: #ef4444 !important;
         }
 
         .filter-section {
@@ -132,26 +47,6 @@
             margin-bottom: 0.5rem;
             font-size: 0.875rem;
         }
-
-        .custom-pagination-wrapper {
-            justify-content: center;
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 4rem;
-            color: var(--sidenavbar-text-color) !important;
-            background:  var(--sidenavbar-body-color) !important;
-            border-radius: 14px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-        }
-
-        .empty-state-icon {
-            font-size: 4rem;
-            margin-bottom: 1.5rem;
-            color: #e2e8f0;
-        }
-
         .empty-state h4 {
             font-weight: 600;
             margin-bottom: 0.75rem;
@@ -177,20 +72,6 @@
             border-color: var(--color-blue);
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
-        }
-
-        .btn-outline-primary {
-            color: var(--color-blue);
-            border-color: var(--color-blue);
-            font-weight: 500;
-            transition: all 0.3s ease;
-        }
-
-        .btn-outline-primary:hover {
-            background-color: var(--color-blue);
-            border-color: var(--color-blue);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2);
         }
 
         .form-select, .form-control {
@@ -226,15 +107,6 @@
         }
 
         @media (max-width: 768px) {
-            .finance-header {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 1rem;
-            }
-
-            .summary-cards {
-                grid-template-columns: 1fr 1fr;
-            }
         }
 
         .chart-container {
@@ -244,37 +116,10 @@
             margin-bottom: 2rem;
         }
 
-        /* Ensure the canvas fills its container */
-        #financialChart {
-            width: 100% !important;
-            height: 100% !important;
-            min-height: 300px;
-            max-height: 300px;
-        }
-
         /* For smaller screens */
         @media (max-width: 768px) {
             .chart-container {
                 min-height: 250px;
-            }
-            #financialChart {
-                width: 100% !important;
-                height: 100% !important;
-                min-height: 350px;
-                max-height: 350px;
-            }
-        }
-
-        .days-select {
-            width: 100%;
-            margin-top: 0.5rem;
-        }
-
-        /* Medium screens and up: Fixed width (25%) */
-        @media (min-width: 768px) {
-            .days-select {
-                width: 25%;
-                margin-top: 0;
             }
         }
     </style>
@@ -1087,6 +932,9 @@
 
                                                     // Override defaults based on status
                                                     switch($query->status) {
+                                                        case 'Open':
+                                                            $statusConfig = ['color' => 'primary', 'icon' => 'circle-notch'];
+                                                            break;
                                                         case 'Closed':
                                                             $statusConfig = ['color' => 'success', 'icon' => 'check-circle'];
                                                             break;
@@ -1099,6 +947,9 @@
                                                         case 'Pending':
                                                             $statusConfig = ['color' => 'warning', 'icon' => 'clock'];
                                                             break;
+                                                        case 'Closed Late':
+                                                            $statusConfig = ['color' => 'success', 'icon' => 'calendar-check'];
+                                                            break;
                                                     }
 
                                                     // Handle closure dates
@@ -1107,7 +958,7 @@
                                                 @endphp
 
                                                 <div class="col-lg-4 col-md-6 mb-4">
-                                                    <div class="card query-card h-100" onclick="showQueryDetails({{ $query->id }})" style="cursor: pointer;">
+                                                    <div class="card query-card h-100" onclick="showQueryDetails({{ $query->id }}, `{{ addslashes($query->building->name ?? 'N/A') }}`, `{{ addslashes($query->department->name ?? 'N/A') }}`)" style="cursor: pointer;">
                                                         <div class="card-header border-bottom">
                                                             <div class="query-id">
                                                                 <i class="fas fa-{{ $statusConfig['icon'] }} text-{{ $statusConfig['color'] }}"></i>
@@ -1167,24 +1018,7 @@
                                                                     </div>
                                                                 </div>
                                                             </div>
-
-
-
-
                                                         </div>
-
-                                                        @if($query->status == 'Pending')
-                                                            <div class="card-footer text-center">
-                                                                <form action="{{ route('queries.update-status', $query->id) }}" method="POST" class="d-inline">
-                                                                    @csrf
-                                                                    @method('PATCH')
-                                                                    <input type="hidden" name="status" value="In Progress">
-                                                                    <button type="submit" class="btn btn-primary btn-sm btn-start">
-                                                                        <i class="fas fa-play-circle mr-1"></i> Start Progress
-                                                                    </button>
-                                                                </form>
-                                                            </div>
-                                                        @endif
                                                     </div>
                                                 </div>
                                             @endforeach
@@ -1202,9 +1036,6 @@
                                         </div>
                                     @endif
                                 </div>
-
-
-
                             </div>
                         </div>
                     </div>
@@ -1213,7 +1044,158 @@
         </section>
     </div>
 
+    <style>
+        /* Modal Styles */
+        #queryDetailsModal .modal {
+            z-index: 1050;
+            display: none;
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--sidenavbar-body-color);
+            overflow-y: auto;
+            padding: 1rem;
+        }
 
+        #queryDetailsModal .modal-content {
+            background-color: var(--sidenavbar-body-color);
+            margin: 2rem auto;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            max-width: 650px;
+            width: 100%;
+            overflow: hidden;
+            animation: modalFadeIn 0.2s ease-out;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        #queryDetailsModal .modal-header {
+            padding: 1rem 1.25rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        #queryDetailsModal .modal-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin: 0;
+            color: var(--sidenavbar-text-color);
+        }
+
+        /* Location and Date/Expense Rows */
+         #queryDetailsModal .location-row,
+          .date-expense-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        #queryDetailsModal .location-item,
+        .date-expense-item {
+            flex: 1;
+            min-width: 120px;
+            padding: 0.5rem 0;
+        }
+
+        #queryDetailsModal .location-item {
+            min-width: 150px;
+        }
+
+        #queryDetailsModal .meta-label {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--sidenavbar-text-color);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.15rem;
+        }
+
+        #queryDetailsModal .meta-value {
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--sidenavbar-text-color);
+        }
+
+        /* Description & Remarks */
+        #queryDetailsModal .section-title {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--sidenavbar-text-color);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.5rem;
+        }
+
+        #queryDetailsModal .description-content, .remarks-content {
+            background-color: var(--body-background-color);
+            padding: 0.75rem;
+            border-radius: 0.375rem;
+            line-height: 1.5;
+            color: var(--sidenavbar-text-color);
+            font-size: 0.9rem;
+        }
+
+        /* Gallery Styles */
+        #queryDetailsModal .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 0.5rem;
+        }
+
+        #queryDetailsModal .gallery-item img {
+            width: 100%;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 0.25rem;
+            transition: transform 0.2s ease;
+            cursor: pointer;
+        }
+
+        #queryDetailsModal .gallery-item img:hover {
+            transform: scale(1.05);
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            #queryDetailsModal .location-row,
+            .date-expense-row {
+                gap: 0.75rem;
+            }
+
+            #queryDetailsModal .location-item,
+            .date-expense-item {
+                min-width: calc(50% - 0.75rem);
+            }
+        }
+
+        @media (max-width: 576px) {
+            #queryDetailsModal .modal-content {
+                margin: 1rem auto;
+            }
+
+            #queryDetailsModal .location-item,
+            .date-expense-item {
+                min-width: calc(50% - 0.75rem);
+            }
+
+            #queryDetailsModal .modal-header {
+                flex-direction: row;
+                align-items: center;
+            }
+        }
+    </style>
+
+    <div id="queryDetailsModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <!-- Content will be dynamically inserted here by JavaScript -->
+        </div>
+    </div>
 
 @endsection
 
@@ -1773,4 +1755,180 @@
             });
         });
     </script>
+
+     <script>
+         // Function to handle card clicks and fetch query details
+         function showQueryDetails(queryId, buildingName, departmentName) {
+             const modal = document.getElementById('queryDetailsModal');
+             const modalContent = modal.querySelector('.modal-content');
+
+             modal.style.display = 'flex';
+             document.body.classList.add('body-no-scroll');
+
+             // Store building name in modal for later use
+             modal.dataset.buildingName = buildingName;
+             modal.dataset.departmentName = departmentName;
+
+             // Fetch query details using named route
+             fetch(`{{ route('owner.staff.query.details', ':id') }}`.replace(':id', queryId), {
+                 headers: {
+                     'Accept': 'application/json',
+                     'X-Requested-With': 'XMLHttpRequest'
+                 }
+             })
+                 .then(response => {
+                     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                     return response.json();
+                 })
+                 .then(data => {
+                     if (data.error) throw new Error(data.error);
+                     renderQueryDetails(data.query);
+                 })
+                 .catch(error => {
+                     console.error('Error fetching query details:', error);
+                     modalContent.innerHTML = `
+                        <div class="modal-error">
+                            <i class="fas fa-exclamation-circle text-danger fa-3x mb-3"></i>
+                            <h5>Error Loading Query</h5>
+                            <p>${error.message || 'Failed to load query details'}</p>
+                            <button class="btn btn-sm btn-secondary mt-3" onclick="closeModal()">Close</button>
+                        </div>
+                    `;
+                 });
+         }
+
+         // Helper function to render query details in modal
+         function renderQueryDetails(query) {
+             const modal = document.getElementById('queryDetailsModal');
+             const modalContent = modal.querySelector('.modal-content');
+
+             // Get building name from modal data or fallback to query data
+             const buildingName = modal.dataset.buildingName || query.building?.name || 'N/A';
+             const departmentName = modal.dataset.departmentName || query.department?.name || 'N/A';
+
+             // Format dates
+             const createdDate = new Date(query.created_at).toLocaleDateString('en-US', {
+                 year: 'numeric', month: 'short', day: 'numeric'
+             });
+
+             const expectedDate = query.expected_closure_date
+                 ? new Date(query.expected_closure_date).toLocaleDateString('en-US', {
+                     year: 'numeric', month: 'short', day: 'numeric'
+                 })
+                 : 'Not specified';
+
+             const closedDate = query.closure_date
+                 ? new Date(query.closure_date).toLocaleDateString('en-US', {
+                     year: 'numeric', month: 'short', day: 'numeric'
+                 })
+                 : null;
+
+             // Status configuration
+             const statusConfig = {
+                 'Open': { color: 'primary', icon: 'check-circle' },
+                 'Closed': { color: 'success', icon: 'check-circle' },
+                 'In Progress': { color: 'primary', icon: 'spinner fa-spin' },
+                 'Rejected': { color: 'danger', icon: 'times-circle' },
+                 'Pending': { color: 'warning', icon: 'clock' },
+                 'Closed Late': { color: 'success', icon: 'check' }
+             }[query.status] || { color: 'secondary', icon: 'question-circle' };
+
+             // Build pictures gallery if available
+             const picturesHTML = query.pictures && query.pictures.length > 0
+                 ? `
+            <div class="query-gallery mt-3">
+                <h6 class="section-title">Attachments</h6>
+                <div class="gallery-grid">
+                    ${query.pictures.map(pic => `
+                        <div class="gallery-item">
+                            <img src="${pic.file_path ? "{{ asset('/') }}" + pic.file_path : "{{ asset('assets/placeholder-profile.png') }}"}"
+                                 alt="Query attachment"
+                                 class="img-thumbnail"
+                                 style="max-height: 150px; object-fit: contain;">
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        `
+                 : '<p class="text-muted small">No attachments available</p>';
+
+             // Set modal content
+             modalContent.innerHTML = `
+        <div class="modal-header border-bottom">
+            <div class="d-flex align-items-center gap-2 flex-grow-1">
+                <i class="fas fa-${statusConfig.icon} text-${statusConfig.color}"></i>
+                <h5 class="modal-title mb-0">QR-${String(query.id).padStart(5, '0')}</h5>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+                <span class="badge bg-${statusConfig.color}">${query.status}</span>
+<!--                <button type="button" class="btn-close" onclick="closeModal()"></button>-->
+            </div>
+        </div>
+        <div class="modal-body">
+            <div class="location-row mb-3">
+                <div class="location-item">
+                    <span class="meta-label">Building</span>
+                    <span class="meta-value">${buildingName}</span>
+                </div>
+                <div class="location-item">
+                    <span class="meta-label">Department</span>
+                    <span class="meta-value">${departmentName}</span>
+                </div>
+                <div class="location-item">
+                    <span class="meta-label">Unit</span>
+                    <span class="meta-value">${query.unit?.unit_name || 'N/A'}</span>
+                </div>
+            </div>
+
+            <div class="date-expense-row mb-3">
+                <div class="date-expense-item">
+                    <span class="meta-label">Opened</span>
+                    <span class="meta-value">${createdDate}</span>
+                </div>
+                <div class="date-expense-item">
+                    <span class="meta-label">${closedDate ? 'Closed' : 'Expected'}</span>
+                    <span class="meta-value">${closedDate || expectedDate}</span>
+                </div>
+                <div class="date-expense-item">
+                    <span class="meta-label">Expense</span>
+                    <span class="meta-value">$${(parseFloat(query.expense) || 0).toFixed(2)}</span>
+                </div>
+            </div>
+
+            <div class="query-description mb-3">
+                <h6 class="section-title">Description</h6>
+                <div class="description-content">${query.description || 'No description provided'}</div>
+            </div>
+
+            ${query.remarks ? `
+            <div class="query-remarks mb-3">
+                <h6 class="section-title">Remarks</h6>
+                <div class="remarks-content">${query.remarks}</div>
+            </div>
+            ` : ''}
+
+            ${picturesHTML}
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" onclick="closeModal()">Close</button>
+        </div>
+    `;
+         }
+
+         // Function to close modal
+         function closeModal() {
+             const modal = document.getElementById('queryDetailsModal');
+             if (modal) {
+                 modal.style.display = 'none';
+                 document.body.classList.remove('body-no-scroll');
+             }
+         }
+
+         // Close modal when clicking outside content
+         document.getElementById('queryDetailsModal').addEventListener('click', function(e) {
+             if (e.target === this) {
+                 closeModal();
+             }
+         });
+     </script>
 @endpush
