@@ -577,19 +577,19 @@ class hrController extends Controller
         $token = $request->attributes->get('token');
 
         if (empty($token['organization_id']) || empty($token['role_name'])) {
-            return redirect()->back()->with('error', 'This info is for Organization related personals');
+            return redirect()->back()->withInput()->with('error', 'This action is related to organization personals only.');
         }
 
         $organization_id = $token['organization_id'];
         $role_name = $token['role_name'];
 
         $request->validate([
-            'staff_id' => 'required|exists:staffmembers,id',
+            'id' => 'required|exists:staffmembers,id',
 
             'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users,email,' . $request->user_id . ',id',
+            'email' => 'required|string|email|max:255|unique:users,email,' . StaffMember::find($request->id)->user_id . ',id',
             'phone_no' => 'nullable|string|max:20',
-            'cnic' => 'nullable|string|max:18|unique:users,cnic,' . $request->user_id . ',id',
+            'cnic' => 'nullable|string|max:18|unique:users,cnic,' . StaffMember::find($request->id)->user_id . ',id',
             'gender' => 'nullable|in:Male,Female,Other',
             'date_of_birth' => 'required|date',
 
@@ -615,7 +615,7 @@ class hrController extends Controller
         DB::beginTransaction();
         try {
             $staff = StaffMember::where([
-                ['id', '=', $request->staff_id],
+                ['id', '=', $request->id],
                 ['updated_at', '=', $request->updated_at],
                 ['organization_id', '=', $organization_id],
             ])->with('user')->first();
@@ -730,16 +730,16 @@ class hrController extends Controller
         $organization_id = $token['organization_id'];
 
         $request->validate([
-            'manager_id' => 'required|exists:staffmembers,id',
+            'id' => 'required|exists:staffmembers,id',
 
             'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users,email,' . $request->user_id . ',id',
+            'email' => 'required|string|email|max:255|unique:users,email,' . StaffMember::find($request->id)->user_id . ',id',
             'phone_no' => 'nullable|string|max:20',
-            'cnic' => 'nullable|string|max:18|unique:users,cnic,' . $request->user_id . ',id',
+            'cnic' => 'nullable|string|max:18|unique:users,cnic,' . StaffMember::find($request->id)->user_id . ',id',
             'gender' => 'nullable|in:Male,Female,Other',
             'date_of_birth' => 'required|date',
 
-            'permissions' => 'nullable', 'array',
+            'permissions' => 'nullable|array',
             'permissions.*' => 'nullable|integer',
 
             'buildings' => 'required|array',
@@ -751,7 +751,7 @@ class hrController extends Controller
         DB::beginTransaction();
         try {
             $staff = StaffMember::where([
-                ['id', '=', $request->manager_id],
+                ['id', '=', $request->id],
                 ['updated_at', '=', $request->updated_at],
                 ['organization_id', '=', $organization_id],
             ])->with('user')->first();
@@ -1168,18 +1168,18 @@ class hrController extends Controller
         $token = $request->attributes->get('token');
 
         if (empty($token['organization_id'])) {
-            return response()->json(['error' => 'This info is for Organization related personals'], 403);
+            return response()->json(['error' => 'This action is for organization related personals'], 403);
         }
 
         $organization_id = $token['organization_id'];
 
         $request->validate([
-            'staff_id' => 'required|exists:staffmembers,id',
+            'id' => 'required|exists:staffmembers,id',
             'accept_query' => 'required|in:0,1',
         ]);
 
         try {
-            $staff = StaffMember::where('id', $request->staff_id)
+            $staff = StaffMember::where('id', $request->id)
                 ->where('organization_id', $organization_id)
                 ->first();
 
