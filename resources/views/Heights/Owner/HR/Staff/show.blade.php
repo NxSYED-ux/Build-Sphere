@@ -19,7 +19,7 @@
             margin-top: 45px;
         }
 
-        .finance-card {
+        .chart-card {
             border: none;
             border-radius: 16px;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
@@ -28,7 +28,7 @@
             overflow: hidden;
         }
 
-        .finance-card:hover {
+        .chart-card:hover {
             transform: translateY(-2px);
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
         }
@@ -122,8 +122,8 @@
                 min-height: 250px;
             }
         }
-    </style>
-    <style>
+
+        /* Staff Details Container */
         .staff-detail-container {
             background: var(--body-card-bg);
             border-radius: 10px;
@@ -201,12 +201,6 @@
 
         .promote-item {
             align-items: flex-start;
-        }
-
-        .promote-item .btn-promote {
-            flex: 1;
-            text-align: left;
-            padding: 8px 12px;
         }
 
         .meta-icon {
@@ -305,15 +299,6 @@
             background-color: #d52a1a;
         }
 
-        .btn-promote {
-            background-color: #1cc88a;
-            color: white;
-        }
-
-        .btn-promote:hover {
-            background-color: #17a673;
-        }
-
         /* Mobile Actions */
         .staff-mobile-actions {
             display: none;
@@ -359,15 +344,9 @@
             .meta-item {
                 padding: 0.2rem 0;
             }
-
-            .promote-item .btn-promote {
-                width: 100%;
-            }
         }
-    </style>
 
-    <style>
-        /* Add these new styles for the charts layout */
+        /* Charts Styles */
         .charts-row {
             display: flex;
             flex-wrap: wrap;
@@ -464,13 +443,13 @@
             transform: translateY(5px);
             opacity: 0;
             transition: opacity 0.2s ease, transform 0.2s ease;
-            pointer-events: none; /* Initially disable pointer events */
+            pointer-events: none;
         }
 
         .custom-performance-tooltip.show {
             opacity: 1;
             transform: translateY(0);
-            pointer-events: auto; /* Enable pointer events when shown */
+            pointer-events: auto;
         }
 
         .tooltip-content {
@@ -572,8 +551,245 @@
             font-weight: 600;
             cursor: pointer;
         }
-    </style>
 
+        /* Query Cards */
+        .query-card {
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 10px;
+            border: none;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            margin-bottom: 0.2rem;
+            overflow: hidden;
+            background: white;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        .query-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+        }
+
+        .query-card .card-header {
+            padding: 0.85rem 1rem;
+            background: var(--body-background-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .query-card .query-id {
+            font-weight: 650;
+            font-size: 0.88rem;
+            color: var(--sidenavbar-text-color);
+            display: flex;
+            align-items: center;
+            letter-spacing: -0.2px;
+        }
+
+        .query-card .query-id i {
+            margin-right: 8px;
+            font-size: 1rem;
+        }
+
+        .query-card .badge-status {
+            font-size: 0.68rem;
+            padding: 0.3rem 0.6rem;
+            border-radius: 6px;
+            font-weight: 650;
+            letter-spacing: 0.3px;
+        }
+
+        .query-card .card-body {
+            padding: 1rem;
+            background-color: var(--body-background-color) !important;
+        }
+
+        .query-card .meta-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.6rem;
+        }
+
+        .query-card .meta-label {
+            color: #64748b;
+            font-size: 0.75rem;
+            font-weight: 500;
+            letter-spacing: 0.2px;
+        }
+
+        .query-card .meta-value {
+            font-weight: 600;
+            color: var(--sidenavbar-text-color);
+            font-size: 0.82rem;
+        }
+
+        .query-card .expense-value {
+            color: var(--color-blue);
+            font-weight: 650;
+            font-size: 0.85rem;
+        }
+
+        .query-card .description {
+            font-size: 0.8rem;
+            color: var(--sidenavbar-text-color);
+            margin-top: 0.75rem;
+            line-height: 1.5;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .query-card .date-highlight {
+            background: var(--sidenavbar-body-color);
+            padding: 0.5rem;
+            border-radius: 6px;
+            margin-bottom: 0.75rem;
+        }
+
+
+        /* ******************** Query Detail Model ********************* */
+        #queryDetailsModal .modal {
+            z-index: 1050;
+            display: none;
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--sidenavbar-body-color);
+            overflow-y: auto;
+            padding: 1rem;
+        }
+
+        #queryDetailsModal .modal-content {
+            background-color: var(--sidenavbar-body-color);
+            margin: 2rem auto;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            max-width: 650px;
+            width: 100%;
+            overflow: hidden;
+            animation: modalFadeIn 0.2s ease-out;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        #queryDetailsModal .modal-header {
+            padding: 1rem 1.25rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        #queryDetailsModal .modal-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin: 0;
+            color: var(--sidenavbar-text-color);
+        }
+
+        /* Location and Date/Expense Rows */
+        #queryDetailsModal .location-row,
+        .date-expense-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        #queryDetailsModal .location-item,
+        .date-expense-item {
+            flex: 1;
+            min-width: 120px;
+            padding: 0.5rem 0;
+        }
+
+        #queryDetailsModal .location-item {
+            min-width: 150px;
+        }
+
+        #queryDetailsModal .meta-label {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--sidenavbar-text-color);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.15rem;
+        }
+
+        #queryDetailsModal .meta-value {
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--sidenavbar-text-color);
+        }
+
+        #queryDetailsModal .section-title {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--sidenavbar-text-color);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.5rem;
+        }
+
+        #queryDetailsModal .description-content, .remarks-content {
+            background-color: var(--body-background-color);
+            padding: 0.75rem;
+            border-radius: 0.375rem;
+            line-height: 1.5;
+            color: var(--sidenavbar-text-color);
+            font-size: 0.9rem;
+        }
+
+        #queryDetailsModal .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 0.5rem;
+        }
+
+        #queryDetailsModal .gallery-item img {
+            width: 100%;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 0.25rem;
+            transition: transform 0.2s ease;
+            cursor: pointer;
+        }
+
+        #queryDetailsModal .gallery-item img:hover {
+            transform: scale(1.05);
+        }
+
+        @media (max-width: 768px) {
+            #queryDetailsModal .location-row,
+            .date-expense-row {
+                gap: 0.75rem;
+            }
+
+            #queryDetailsModal .location-item,
+            .date-expense-item {
+                min-width: calc(50% - 0.75rem);
+            }
+        }
+
+        @media (max-width: 576px) {
+            #queryDetailsModal .modal-content {
+                margin: 1rem auto;
+            }
+
+            #queryDetailsModal .location-item,
+            .date-expense-item {
+                min-width: calc(50% - 0.75rem);
+            }
+
+            #queryDetailsModal .modal-header {
+                flex-direction: row;
+                align-items: center;
+            }
+        }
+    </style>
 @endpush
 
 @section('content')
@@ -627,7 +843,7 @@
                                             </div>
 
                                             <p class="staff-position">
-                                                {{ $staffInfo->position ?? 'Staff Member' }} • {{ $staffInfo->department->name ?? 'No Department' }}
+                                                {{ $staffInfo->user->role->name ?? 'Staff Member' }} • {{ $staffInfo->department->name ?? 'No Department' }}
                                             </p>
 
                                             <div class="staff-meta">
@@ -682,7 +898,7 @@
                                 </div>
 
                                 <!-- Charts Section -->
-                                <div class="finance-card p-4 mt-3 mb-3">
+                                <div class="chart-card p-4 mt-3 mb-3">
                                     <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-3">
                                         <h5 class="section-title mb-3 mb-md-0">Queries Overview</h5>
                                         <div class="d-flex flex-wrap gap-2">
@@ -805,119 +1021,9 @@
                                     </div>
                                 </form>
 
-                                <style>
-                                    .query-card {
-                                        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-                                        border-radius: 10px;
-                                        border: none;
-                                        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-                                        margin-bottom: 0.2rem;
-                                        overflow: hidden;
-                                        background: white;
-                                        font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-                                    }
-
-                                    .query-card:hover {
-                                        transform: translateY(-4px);
-                                        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
-                                    }
-
-                                    .query-card .card-header {
-                                        padding: 0.85rem 1rem;
-                                        background: var(--body-background-color);
-                                        display: flex;
-                                        justify-content: space-between;
-                                        align-items: center;
-                                    }
-
-                                    .query-card .query-id {
-                                        font-weight: 650;
-                                        font-size: 0.88rem;
-                                        color: var(--sidenavbar-text-color);
-                                        display: flex;
-                                        align-items: center;
-                                        letter-spacing: -0.2px;
-                                    }
-
-                                    .query-card .query-id i {
-                                        margin-right: 8px;
-                                        font-size: 1rem;
-                                    }
-
-                                    .badge-status {
-                                        font-size: 0.68rem;
-                                        padding: 0.3rem 0.6rem;
-                                        border-radius: 6px;
-                                        font-weight: 650;
-                                        letter-spacing: 0.3px;
-                                    }
-
-                                    .query-card .card-body {
-                                        padding: 1rem;
-                                        background-color: var(--body-background-color) !important;
-                                    }
-
-                                    .meta-row {
-                                        display: flex;
-                                        justify-content: space-between;
-                                        margin-bottom: 0.6rem;
-                                    }
-
-                                    .meta-label {
-                                        color: #64748b;
-                                        font-size: 0.75rem;
-                                        font-weight: 500;
-                                        letter-spacing: 0.2px;
-                                    }
-
-                                    .meta-value {
-                                        font-weight: 600;
-                                        color: #1e293b;
-                                        font-size: 0.82rem;
-                                    }
-
-                                    .expense-value {
-                                        color: #2563eb;
-                                        font-weight: 650;
-                                        font-size: 0.85rem;
-                                    }
-
-                                    .description {
-                                        font-size: 0.8rem;
-                                        color: var(--sidenavbar-text-color);
-                                        margin-top: 0.75rem;
-                                        line-height: 1.5;
-                                        display: -webkit-box;
-                                        -webkit-line-clamp: 2;
-                                        -webkit-box-orient: vertical;
-                                        overflow: hidden;
-                                    }
-
-                                    .card-footer {
-                                        padding: 0.7rem 1rem;
-                                        background: #f8fafc;
-                                        border-top: 1px solid rgba(0, 0, 0, 0.05);
-                                    }
-
-                                    .btn-start {
-                                        font-size: 0.72rem;
-                                        padding: 0.35rem 0.7rem;
-                                        border-radius: 6px;
-                                        font-weight: 600;
-                                        letter-spacing: 0.2px;
-                                    }
-
-                                    .date-highlight {
-                                        background: var(--sidenavbar-body-color);
-                                        padding: 0.5rem;
-                                        border-radius: 6px;
-                                        margin-bottom: 0.75rem;
-                                    }
-                                </style>
-
-                                <div class="finance-card p-4">
+                                <div class="chart-card p-4">
                                     <div class="d-flex justify-content-between align-items-center mb-4">
-                                        <h5 class="section-title mb-0" style="font-size: 1.15rem; font-weight: 650; color: #1e293b;">Recent Queries</h5>
+                                        <h5 class="section-title mb-0" style="font-size: 1.15rem; font-weight: 650;">Recent Queries</h5>
                                     </div>
 
                                     @if(count($queries) > 0)
@@ -1044,156 +1150,10 @@
         </section>
     </div>
 
-    <style>
-        /* Modal Styles */
-        #queryDetailsModal .modal {
-            z-index: 1050;
-            display: none;
-            position: fixed;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: var(--sidenavbar-body-color);
-            overflow-y: auto;
-            padding: 1rem;
-        }
 
-        #queryDetailsModal .modal-content {
-            background-color: var(--sidenavbar-body-color);
-            margin: 2rem auto;
-            border-radius: 0.5rem;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-            max-width: 650px;
-            width: 100%;
-            overflow: hidden;
-            animation: modalFadeIn 0.2s ease-out;
-            border: 1px solid rgba(0, 0, 0, 0.1);
-        }
-
-        #queryDetailsModal .modal-header {
-            padding: 1rem 1.25rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        #queryDetailsModal .modal-title {
-            font-size: 1.1rem;
-            font-weight: 600;
-            margin: 0;
-            color: var(--sidenavbar-text-color);
-        }
-
-        /* Location and Date/Expense Rows */
-         #queryDetailsModal .location-row,
-          .date-expense-row {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 1rem;
-            margin-bottom: 1rem;
-        }
-
-        #queryDetailsModal .location-item,
-        .date-expense-item {
-            flex: 1;
-            min-width: 120px;
-            padding: 0.5rem 0;
-        }
-
-        #queryDetailsModal .location-item {
-            min-width: 150px;
-        }
-
-        #queryDetailsModal .meta-label {
-            display: block;
-            font-size: 0.75rem;
-            font-weight: 600;
-            color: var(--sidenavbar-text-color);
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            margin-bottom: 0.15rem;
-        }
-
-        #queryDetailsModal .meta-value {
-            font-size: 0.85rem;
-            font-weight: 500;
-            color: var(--sidenavbar-text-color);
-        }
-
-        /* Description & Remarks */
-        #queryDetailsModal .section-title {
-            font-size: 0.75rem;
-            font-weight: 600;
-            color: var(--sidenavbar-text-color);
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            margin-bottom: 0.5rem;
-        }
-
-        #queryDetailsModal .description-content, .remarks-content {
-            background-color: var(--body-background-color);
-            padding: 0.75rem;
-            border-radius: 0.375rem;
-            line-height: 1.5;
-            color: var(--sidenavbar-text-color);
-            font-size: 0.9rem;
-        }
-
-        /* Gallery Styles */
-        #queryDetailsModal .gallery-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-            gap: 0.5rem;
-        }
-
-        #queryDetailsModal .gallery-item img {
-            width: 100%;
-            height: 80px;
-            object-fit: cover;
-            border-radius: 0.25rem;
-            transition: transform 0.2s ease;
-            cursor: pointer;
-        }
-
-        #queryDetailsModal .gallery-item img:hover {
-            transform: scale(1.05);
-        }
-
-        /* Responsive Adjustments */
-        @media (max-width: 768px) {
-            #queryDetailsModal .location-row,
-            .date-expense-row {
-                gap: 0.75rem;
-            }
-
-            #queryDetailsModal .location-item,
-            .date-expense-item {
-                min-width: calc(50% - 0.75rem);
-            }
-        }
-
-        @media (max-width: 576px) {
-            #queryDetailsModal .modal-content {
-                margin: 1rem auto;
-            }
-
-            #queryDetailsModal .location-item,
-            .date-expense-item {
-                min-width: calc(50% - 0.75rem);
-            }
-
-            #queryDetailsModal .modal-header {
-                flex-direction: row;
-                align-items: center;
-            }
-        }
-    </style>
 
     <div id="queryDetailsModal" class="modal" style="display: none;">
         <div class="modal-content">
-            <!-- Content will be dynamically inserted here by JavaScript -->
         </div>
     </div>
 

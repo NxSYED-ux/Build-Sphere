@@ -19,124 +19,461 @@
             margin-top: 45px;
         }
 
-        #demoteModel .accordion-item {
-            background-color: transparent;
-            border: 1px solid var(--border-color) !important;
-            border-radius: 8px !important;
-            margin-bottom: 12px;
+        .chart-card {
+            border: none;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
             transition: all 0.3s ease;
+            background: var(--sidenavbar-body-color);
             overflow: hidden;
         }
 
-        #demoteModel .accordion-button {
-            background-color: var(--body-background-color);
-            color: var(--sidenavbar-text-color);
-            padding: 1rem 1.5rem;
-            box-shadow: none;
+        .chart-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
         }
 
-        #demoteModel .accordion-button:not(.collapsed) {
-            background-color: var(--sidenavbar-body-color);
+        .filter-section {
+            background:  var(--sidenavbar-body-color);
+            border-radius: 14px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .filter-section label {
+            font-weight: 500;
             color: var(--sidenavbar-text-color) !important;
-            box-shadow: none;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
         }
-
-        #demoteModel .accordion-arrow {
-            transition: transform 0.3s ease;
-            color: var(--sidenavbar-text-color) !important;
-            font-size: 1.1em;
-        }
-
-        #demoteModel .accordion-button:not(.collapsed) .accordion-arrow {
-            transform: rotate(90deg);
-            color: var(--sidenavbar-text-color) !important;
-        }
-
-        #demoteModel .accordion-button::after {
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%236b7280'%3E%3Cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E");
-            transition: transform var(--transition-speed) ease;
-        }
-
-        #demoteModel .accordion-button:not(.collapsed)::after {
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%236b7280'%3E%3Cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E");
-        }
-
-        #demoteModel .accordion-body {
-            padding: 1rem 1.5rem;
-            background-color: var(--sidenavbar-body-color);
+        .empty-state h4 {
+            font-weight: 600;
+            margin-bottom: 0.75rem;
             color: var(--sidenavbar-text-color);
         }
 
-        #demoteModel .permission-item-container {
-            background-color: var(--body-background-color);
+        .empty-state p {
+            max-width: 400px;
+            margin: 0 auto 1.5rem;
+        }
+
+        .btn-primary {
+            background-color: var(--color-blue);
+            border-color: var(--color-blue);
+            padding: 0.5rem 1.25rem;
+            font-weight: 500;
+            letter-spacing: 0.2px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--color-blue);
+            border-color: var(--color-blue);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+        }
+
+        .form-select, .form-control {
             border-radius: 8px;
-            padding: 0;
-            margin-bottom: 10px;
-            border: 2px solid var(--border-color) !important;
-            transition: all 0.2s ease;
+            padding: 0.5rem 1rem;
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s ease;
         }
 
-        #demoteModel .permission-toggle-container {
+        .form-select:focus, .form-control:focus {
+            border-color: #a5b4fc;
+            box-shadow: 0 0 0 3px rgba(199, 210, 254, 0.5);
+        }
+
+        .section-title {
+            font-weight: 600;
+            color: var(--sidenavbar-text-color) !important;
+            margin-bottom: 1.5rem;
+            font-size: 1.25rem;
+            position: relative;
+            padding-left: 1rem;
+        }
+
+        .section-title::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 4px;
+            background: #2196F3;
+            border-radius: 4px;
+        }
+
+        @media (max-width: 768px) {
+        }
+
+        .chart-container {
+            position: relative;
+            width: 100%;
+            min-height: 300px;
+            margin-bottom: 2rem;
+        }
+
+        /* For smaller screens */
+        @media (max-width: 768px) {
+            .chart-container {
+                min-height: 250px;
+            }
+        }
+
+        /* Staff Details Container */
+        .staff-detail-container {
+            position: relative;
+            background: var(--body-card-bg);
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+            overflow: visible;
+        }
+
+        .staff-detail-container .staff-detail-hero {
+            display: flex;
+            flex-direction: row;
+            padding: 2rem 2rem 0.5rem 2rem;
+        }
+
+        .staff-detail-container .staff-image-section {
+            flex: 0 0 250px;
+            padding-right: 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .staff-detail-container .staff-avatar {
+            width: 200px;
+            height: 200px;
+            border-radius: 10px;
+            object-fit: cover;
+            border: 4px solid #f8f9fa;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 1.5rem;
+        }
+
+        .staff-detail-container .staff-detail-section {
+            flex: 1;
+        }
+
+        .staff-detail-container .staff-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 12px 16px;
-            background-color: var(--body-background-color);
-            border-radius: 8px;
+            margin-bottom: 0.5rem;
         }
 
-        #demoteModel .child-permission{
-            border-radius: 0 !important;
-        }
-
-        #demoteModel .child-permission:last-child{
-            border-radius: 8px !important;
-        }
-
-        #demoteModel .permission-label {
-            font-weight: 600;
+        .staff-detail-container .staff-name {
+            font-size: 2rem;
+            font-weight: 700;
             color: var(--sidenavbar-text-color);
-            margin-bottom: 0;
+            margin: 0;
+        }
+
+        .staff-detail-container .staff-header-actions {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .staff-detail-container .staff-position {
+            font-size: 1.1rem;
+            color: var(--sidenavbar-text-color);
+            margin-bottom: 1.5rem;
+        }
+
+        .staff-detail-container .staff-meta {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1rem;
+        }
+
+        .staff-detail-container .meta-item {
             display: flex;
             align-items: center;
+            gap: 0.75rem;
+            font-size: 0.95rem;
+            padding: 0.1rem 0;
         }
 
-        #demoteModel .child-permission .permission-label {
-            font-weight: 400;
+        .staff-detail-container .promote-item {
+            align-items: flex-start;
         }
 
-        #demoteModel .permission-icon {
-            margin-right: 10px;
-            color: var(--sidenavbar-text-color);
-            font-size: 1.1em;
+        .staff-detail-container .meta-icon {
+            color: var(--color-blue);
+            width: 20px;
+            text-align: center;
+            font-size: 1rem;
+            margin-top: 2px;
         }
 
-        #demoteModel .child-permission .permission-icon {
-            color: var(--sidenavbar-text-color);
-            font-size: 1.1em;
+        /* Buildings Specific Styles */
+        .staff-detail-container .meta-item-buildings {
+            position: relative;
+            align-items: flex-start;
         }
 
-        #demoteModel .child-permissions .permission-toggle-container {
-            padding: 10px 16px;
-            background-color: var(--body-background-color);
+        .staff-detail-container .buildings-container {
+            flex: 1;
+            position: relative; /* Added for proper dropdown positioning */
         }
 
-        #demoteModel .form-switch .form-check-input {
-            width: 2.8em;
-            height: 1.5em;
+        /* Building Card Styles */
+        .staff-detail-container .building-card {
+            background: #f8f9fa;
+            border-radius: 6px;
+            padding: 6px 12px;
+            font-size: 0.9rem;
+            border: 1px solid #e9ecef;
+            display: inline-block;
+            max-width: 200px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Buildings Dropdown Styles */
+        .staff-detail-container .buildings-dropdown {
+            display: inline-block;
+            position: relative; /* Changed to relative for proper dropdown positioning */
+        }
+
+        .staff-detail-container .buildings-toggle {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+            padding: 6px 12px;
+            font-size: 0.9rem;
             cursor: pointer;
-            background-color: var(--border-color);
-            border-color: var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+            min-width: 120px;
         }
 
-        #demoteModel .accordion-header{
+        .staff-detail-container .buildings-toggle:hover {
+            background: #e9ecef;
+        }
+
+        .staff-detail-container .buildings-count {
+            font-weight: 500;
+        }
+
+        .staff-detail-container .dropdown-icon {
+            font-size: 0.8rem;
+            transition: transform 0.2s;
+        }
+
+        .staff-detail-container .buildings-dropdown.active .dropdown-icon {
+            transform: rotate(180deg);
+        }
+
+        .staff-detail-container .buildings-dropdown-menu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: var(--body-background-color);
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            min-width: 100%;
+            max-height: 300px;
+            overflow-y: auto;
+            z-index: 1000;
+            display: none;
+            margin-top: 4px;
+        }
+
+        /* Corrected active state selector */
+        .staff-detail-container .buildings-dropdown.active .buildings-dropdown-menu {
+            display: block;
+        }
+
+        .staff-detail-container .building-item {
+            padding: 8px 12px;
+            border-bottom: 1px solid #f1f3f5;
+            transition: background 0.2s;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .staff-detail-container .building-item:hover {
+            background: #f8f9fa;
+        }
+
+        .staff-detail-container .building-item:last-child {
+            border-bottom: none;
+        }
+
+        .staff-detail-container .no-buildings {
+            color: #868e96;
+            font-style: italic;
+        }
+
+        /* Button Styles */
+        .staff-detail-container .btn {
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: all 0.2s;
+            border: none;
+            white-space: nowrap;
+        }
+
+        .staff-detail-container .btn-edit {
+            background-color: var(--color-blue);
+            color: white;
+        }
+
+        .staff-detail-container .btn-edit:hover {
+            background-color: var(--color-blue);
+        }
+
+        .staff-detail-container .btn-danger {
+            background-color: #e74a3b;
+            color: white;
+        }
+
+        .staff-detail-container .btn-danger:hover {
+            background-color: #d52a1a;
+        }
+
+        /* Mobile Actions */
+        .staff-detail-container .staff-mobile-actions {
+            display: none;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 992px) {
+            .staff-detail-container .staff-detail-hero {
+                flex-direction: column;
+                padding: 1.5rem;
+            }
+
+            .staff-detail-container .staff-image-section {
+                padding-right: 0;
+                margin-bottom: 1.5rem;
+                flex: 0 0 auto;
+            }
+
+            .staff-detail-container .staff-avatar {
+                width: 150px;
+                height: 150px;
+            }
+
+            .staff-detail-container .staff-meta {
+                grid-template-columns: 1fr;
+            }
+
+            .staff-detail-container .buildings-dropdown-menu {
+                left: 0;
+                right: auto;
+                min-width: 100%;
+            }
+
+            .staff-detail-container .staff-header-actions {
+                display: none;
+            }
+
+            .staff-detail-container .staff-mobile-actions {
+                display: block;
+                margin-top: 1.5rem;
+            }
+
+            .staff-detail-container .mobile-action-row {
+                display: flex;
+                gap: 0.75rem;
+            }
+
+            .staff-detail-container .building-card {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .staff-detail-container .staff-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+
+            .staff-detail-container .staff-name {
+                font-size: 1.5rem;
+            }
+
+            .staff-detail-container .mobile-action-row {
+                flex-direction: column;
+            }
+
+            .staff-detail-container .mobile-action-row .btn {
+                width: 100%;
+            }
+
+            .staff-detail-container .buildings-toggle {
+                min-width: 100%;
+            }
+        }
+
+        /* Charts Styles */
+        .charts-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            margin-bottom: 0.7rem;
+        }
+
+        .chart-container {
+            flex: 1;
+            min-width: 300px;
+            position: relative;
+            min-height: 300px;
+            background: var(--body-background-color);
+            border-radius: 14px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .chart-title {
+            font-weight: 600;
             color: var(--sidenavbar-text-color);
-            font-size: 20px;
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
         }
 
-        #demoteModel .form-switch .form-check-input:checked {
-            background-color: var(--success-color);
-            border-color: var(--success-color);
+        .chart-wrapper {
+            position: relative;
+            height: 300px;
+            width: 100%;
+        }
+
+        @media (max-width: 768px) {
+            .charts-row {
+                flex-direction: column;
+            }
+
+            .chart-container {
+                min-width: 100%;
+            }
+
+            /* New styles for small screens */
+            .d-flex.justify-content-between.align-items-center.mb-3 {
+                flex-direction: column;
+                align-items: flex-start !important;
+                gap: 1rem;
+            }
+
+            .performance-indicator {
+                width: 100%;
+                justify-content: space-between;
+            }
         }
     </style>
 @endpush
@@ -155,19 +492,190 @@
 
     <!-- Error/Success Modal -->
     <x-error-success-model />
+    <x-demote-to-staff />
 
     <div id="main">
-        <section class="content my-3 mx-2">
+        <section class="content mt-1 mb-5 mx-2">
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-md-12">
                         <div class="box">
                             <div class="container mt-2">
-                                <div class="d-flex justify-content-between align-items-center mb-4">
-                                    <h3 class="mb-1">Manager</h3>
+
+                                <div class="staff-detail-container">
+                                    <div class="staff-detail-hero">
+                                        <!-- Left Side - Staff Image -->
+                                        <div class="staff-image-section">
+                                            <img src="{{ $staffInfo->user->picture ? asset($staffInfo->user->picture) : asset('img/placeholder-profile.png') }}"
+                                                 alt="{{ $staffInfo->user->name }}"
+                                                 class="staff-avatar">
+                                        </div>
+
+                                        <!-- Right Side - Staff Details -->
+                                        <div class="staff-detail-section">
+                                            <div class="staff-header">
+                                                <h1 class="staff-name">{{ $staffInfo->user->name }}</h1>
+                                                <div class="staff-header-actions">
+                                                    <a href="{{ route('owner.staff.edit', $staffInfo->id) }}" class="btn btn-edit" title="Edit Staff">
+                                                        <i class="fas fa-edit"></i> Edit
+                                                    </a>
+                                                    <button type="button"
+                                                            class="btn btn-danger delete-member-btn"
+                                                            data-member-id="{{ $staffInfo->id }}"
+                                                            title="Delete Staff Member">
+                                                        <i class="fas fa-trash-alt"></i> Delete
+                                                    </button>
+                                                </div>
+                                            </div>
+
+                                            <p class="staff-position">
+                                                {{ $staffInfo->user->role->name ?? 'Manager' }}
+                                            </p>
+
+                                            <div class="staff-meta">
+                                                <div class="meta-item">
+                                                    <i class="fas fa-envelope meta-icon"></i>
+                                                    <a href="mailto:{{ $staffInfo->user->email }}" class="text-decoration-none">{{ $staffInfo->user->email }}</a>
+                                                </div>
+                                                <div class="meta-item">
+                                                    <i class="fas fa-phone meta-icon"></i>
+                                                    <span>{{ $staffInfo->user->phone_no ?? 'Not provided' }}</span>
+                                                </div>
+                                                <div class="meta-item">
+                                                    <i class="fas fa-address-card meta-icon"></i>
+                                                    <span>{{ $staffInfo->user->cnic ?? 'Not provided' }}</span>
+                                                </div>
+                                                <div class="meta-item">
+                                                    <i class="fas fa-calendar-alt meta-icon"></i>
+                                                    <span>Member since {{ $staffInfo->created_at->format('M Y') }}</span>
+                                                </div>
+                                                <div class="meta-item meta-item-buildings">
+                                                    <i class="fas fa-building meta-icon pt-2"></i>
+                                                    <div class="buildings-container w-100">
+                                                        @if($managerBuildings->count() > 0)
+                                                            @if($managerBuildings->count() === 1)
+                                                                <div class="building-card">
+                                                                    {{ $managerBuildings->first()->building->name }}
+                                                                </div>
+                                                            @else
+                                                                <div class="buildings-dropdown">
+                                                                    <button class="buildings-toggle">
+                                                                        <span class="buildings-count">{{ $managerBuildings->count() }} Buildings</span>
+                                                                        <i class="fas fa-chevron-down dropdown-icon"></i>
+                                                                    </button>
+                                                                    <div class="buildings-dropdown-menu">
+                                                                        @foreach($managerBuildings as $managerBuilding)
+                                                                            <div class="building-item">
+                                                                                {{ $managerBuilding->building->name }}
+                                                                            </div>
+                                                                        @endforeach
+                                                                    </div>
+                                                                </div>
+                                                            @endif
+                                                        @else
+                                                            <div class="no-buildings">No buildings assigned</div>
+                                                        @endif
+                                                    </div>
+                                                </div>
+                                                <div class="meta-item promote-item">
+                                                    <i class="fas fa-user-shield meta-icon pt-2"></i>
+                                                    <button class="btn btn-primary demote-btn w-100" data-staff-id="{{ $staffInfo->id }}">Demote To Staff</button>
+                                                </div>
+                                            </div>
+
+                                            <!-- Mobile Actions -->
+                                            <div class="staff-mobile-actions">
+                                                <div class="mobile-action-row">
+                                                    <a href="{{ route('owner.staff.edit', $staffInfo->id) }}" class="btn btn-edit" title="Edit Staff">
+                                                        <i class="fas fa-edit"></i> Edit
+                                                    </a>
+                                                    <button type="button"
+                                                            class="btn btn-danger delete-member-btn"
+                                                            data-member-id="{{ $staffInfo->id }}"
+                                                            title="Delete Staff Member">
+                                                        <i class="fas fa-trash-alt"></i> Delete
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
 
-                                <button class="btn btn-primary promote-btn" data-staff-id="{{ $id }}">Demote To Staff</button>
+                                <!-- Charts Section -->
+                                <div class="chart-card p-4 mt-3 mb-3">
+                                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-3">
+                                        <h5 class="section-title mb-3 mb-md-0">Queries Overview</h5>
+                                        <div class="d-flex flex-wrap gap-2">
+                                            <select class="form-select" id="yearSelect">
+                                                @for($i = date('Y'); $i >= 2020; $i--)
+                                                    <option value="{{ $i }}" {{ $i == date('Y') ? 'selected' : '' }}>{{ $i }}</option>
+                                                @endfor
+                                            </select>
+                                            <select class="form-select" id="monthSelect">
+                                                <option value="">All Months</option>
+                                                @foreach([
+                                                    '01' => 'January', '02' => 'February', '03' => 'March',
+                                                    '04' => 'April', '05' => 'May', '06' => 'June',
+                                                    '07' => 'July', '08' => 'August', '09' => 'September',
+                                                    '10' => 'October', '11' => 'November', '12' => 'December'
+                                                ] as $num => $name)
+                                                    <option value="{{ $num }}" {{ $num == date('m') ? 'selected' : '' }}>{{ $name }}</option>
+                                                @endforeach
+                                            </select>
+                                            <select class="form-select" id="buildingSelect">
+                                                <option value="">All Buildings</option>
+                                                @foreach($managerBuildings as $managerBuilding)
+                                                    <option value="{{ $managerBuilding->building->id }}" >{{ $managerBuilding->building->name }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="charts-row">
+                                        <!-- Pie Chart Container -->
+                                        <div class="chart-container">
+                                            <div class="chart-title">Building Units</div>
+                                            <div class="chart-wrapper">
+                                                <canvas id="pieChart"></canvas>
+                                            </div>
+                                        </div>
+
+                                        <!-- Line Chart Container -->
+                                        <div class="chart-container">
+                                            <div class="chart-title">Financial Overview</div>
+                                            <div class="chart-wrapper">
+                                                <canvas id="financialChart"></canvas>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Transactions Section -->
+                                <div class="chart-card p-4">
+                                    <div class="d-flex justify-content-between align-items-center mb-4">
+                                        <h5 class="section-title mb-0">Recent Transactions</h5>
+                                    </div>
+
+                                    @if(count($transactions) > 0)
+                                        <div class="row">
+                                            @foreach($transactions as $item)
+                                                <x-transaction-card :transaction="$item" route-name="owner.finance.show"/>
+                                            @endforeach
+                                        </div>
+
+                                        @if ($transactions)
+                                            <div class="mt-4 custom-pagination-wrapper">
+                                                {{ $transactions->links('pagination::bootstrap-5') }}
+                                            </div>
+                                        @endif
+                                    @else
+                                        <div class="empty-state">
+                                            <i class="fas fa-exchange-alt empty-state-icon"></i>
+                                            <h4>No Transactions Found</h4>
+                                            <p>You don't have any transactions yet.</p>
+                                        </div>
+                                    @endif
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -178,390 +686,210 @@
 
 
 
-    <div class="modal fade" id="demoteModel" tabindex="-1" role="dialog" aria-hidden="true"></div>
 
 @endsection
 
 @push('scripts')
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
-
-            // Handle promote button clicks
-            document.querySelectorAll('.promote-btn').forEach(button => {
-                button.addEventListener('click', handlePromoteClick);
+            document.querySelectorAll('.buildings-toggle').forEach(toggle => {
+                toggle.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    this.closest('.buildings-dropdown').classList.toggle('active');
+                });
             });
 
-            async function handlePromoteClick(e) {
-                e.preventDefault();
-                const staffId = this.dataset.staffId;
+            // Close when clicking elsewhere
+            document.addEventListener('click', function() {
+                document.querySelectorAll('.buildings-dropdown').forEach(dropdown => {
+                    dropdown.classList.remove('active');
+                });
+            });
+        });
+    </script>
 
-                try {
-                    const response = await fetch(`{{ route('owner.managers.promote.index', ':id') }}`.replace(':id', staffId), {
-                        method: "GET",
-                        headers: {
-                            "X-Requested-With": "XMLHttpRequest",
-                            "Accept": "application/json",
-                            "X-CSRF-TOKEN": csrfToken
-                        }
-                    });
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const ctx = document.getElementById('financialChart').getContext('2d');
+        const chartContainer = document.getElementById('financialChart').parentElement;
 
-                    if (!response.ok) {
-                        const error = await response.json();
-
-                        // Check for plan upgrade error
-                        if (error.plan_upgrade_error) {
-                            Swal.fire({
-                                title: 'Upgrade Plan Error',
-                                text: error.plan_upgrade_error || error.error || 'Request failed',
-                                icon: 'error',
-                                background: 'var(--body-background-color)',
-                                color: 'var(--sidenavbar-text-color)',
-                                showConfirmButton: true,
-                                confirmButtonText: 'Upgrade Plan',
-                                confirmButtonColor: '#3085d6',
-                                showCancelButton: true,
-                                allowOutsideClick: true,
-                                allowEscapeKey: true
-                            }).then((result) => {
-                                if (result.isConfirmed) {
-                                    window.location.href = "{{ route('owner.plan.upgrade.index') }}";
-                                }
-                            });
-                        } else {
-                            throw new Error(error.error || 'Request failed');
-                        }
-                        return;
-                    }
-
-                    const data = await response.json();
-                    const modal = createdemoteModel(data);
-                    document.body.appendChild(modal);
-
-                    const bootstrapModal = new bootstrap.Modal(modal);
-                    bootstrapModal.show();
-
-                    // Setup modal events after it's shown
-                    setupModalEvents(modal);
-
-                    modal.addEventListener('hidden.bs.modal', () => {
-                        document.body.removeChild(modal);
-                    });
-                } catch (error) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: error.message,
-                        confirmButtonColor: '#3085d6',
-                    });
-                }
-            }
-
-            function createdemoteModel(data) {
-                const modal = document.createElement('div');
-                modal.className = 'modal fade';
-                modal.id = 'demoteModel';
-                modal.tabIndex = '-1';
-                modal.setAttribute('aria-hidden', 'true');
-
-                const staff = data.staffInfo?.user || {};
-                const staffName = staff.name || 'Staff Member';
-                const staffEmail = staff.email || 'No email';
-                const staffPicture = staff.picture ? "{{ asset('/') }}" + staff.picture : "{{ asset('assets/placeholder-profile.png') }}";
-                const currentBuildingId = data.staffInfo?.building_id || '';
-                const currentDepartmentId = data.staffInfo?.department_id || '';
-
-                modal.innerHTML = `
-            <div class="modal-dialog modal-lg">
-                <div class="modal-content">
-                    <div class="modal-header" style="background-color: var(--body-card-bg) !important;">
-                        <h5 class="modal-title" style="color: var(--sidenavbar-text-color);">Demotion ${staffName}</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        function showLoading() {
+            if (!document.getElementById('chartLoading')) {
+                const loadingDiv = document.createElement('div');
+                loadingDiv.id = 'chartLoading';
+                loadingDiv.innerHTML = `
+                <div style="
+                    position: absolute;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    text-align: center;
+                ">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
                     </div>
-                    <div class="modal-body" style="background-color: var(--body-card-bg) !important;">
-                        <div class="staff-info-section mb-4 p-3 border rounded">
-                            <div class="d-flex align-items-center">
-                                <img src="${staffPicture}" alt="${staffName}"
-                                     class="member-avatar rounded-circle me-3"
-                                     style="width: 80px; height: 80px; object-fit: cover;">
-                                <div>
-                                    <h5  style="color: var(--sidenavbar-text-color);">${staffName}</h5>
-                                    <p class="mb-1"  style="color: var(--sidenavbar-text-color);">${staffEmail}</p>
-                                    <span class="badge bg-primary bg-opacity-10 text-primary">
-                                        <i class='bx bx-user me-1'></i>Staff Member
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <form id="promotionForm">
-                            <input type="hidden" name="_token" value="${csrfToken}">
-                            <input type="hidden" name="manager_id" value="${data.staffInfo?.id || ''}">
-
-                            <div class="row mb-1">
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label class="form-label">Department</label>
-                                        ${renderDepartments(data.departments || [], currentDepartmentId)}
-                                        <div class="form-text" style="color: var(--sidenavbar-text-color);">Select the department this staff will oversee</div>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label class="form-label">Building</label>
-                                        ${renderBuildings(data.buildings || [], currentBuildingId)}
-                                        <div class="form-text" style="color: var(--sidenavbar-text-color);">Select the building this staff will oversee</div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="mb-4">
-                                <h6 class="mb-3">Manager Permissions</h6>
-                                ${renderPermissions(data.permissions || [])}
-                            </div>
-                        </form>
-                    </div>
-                    <div class="modal-footer" style="background-color: var(--body-card-bg) !important;">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                        <button type="button" class="btn btn-primary" id="submitPromotion">Demote to Staff Member</button>
-                    </div>
-                </div>
-            </div>
-        `;
-
-                return modal;
-            }
-
-            function renderDepartments(departments, currentDepartmentId) {
-                if (!departments || Object.keys(departments).length === 0) {
-                    return '<select class="form-select" name="department_id" disabled><option>No departments available</option></select>';
-                }
-
-                let options = Object.entries(departments).map(([id, name]) =>
-                    `<option value="${id}" ${id == currentDepartmentId ? 'selected' : ''}>${name}</option>`
-                ).join('');
-
-                return `
-            <select class="form-select" name="department_id" required>
-                <option value="">Select Department</option>
-                ${options}
-            </select>
-        `;
-            }
-
-            function renderBuildings(buildings, currentBuildingId) {
-                if (!buildings || Object.keys(buildings).length === 0) {
-                    return '<select class="form-select" name="building_id" disabled><option>No buildings available</option></select>';
-                }
-
-                let options = Object.entries(buildings).map(([id, name]) =>
-                    `<option value="${id}" ${id == currentBuildingId ? 'selected' : ''}>${name}</option>`
-                ).join('');
-
-                return `
-            <select class="form-select" name="building_id" required>
-                <option value="">Select Building</option>
-                ${options}
-            </select>
-        `;
-            }
-
-            function renderPermissions(permissions) {
-                if (!permissions.length) return '<div class="text-center fw-bold">No permissions found.</div>';
-
-                const grouped = permissions.reduce((acc, perm) => {
-                    const header = perm.permission?.header || 'General Permissions';
-                    if (!acc[header]) acc[header] = [];
-                    acc[header].push(perm);
-                    return acc;
-                }, {});
-
-                return `
-            <div class="accordion" id="permissionsAccordion">
-                ${Object.entries(grouped).map(([header, perms], index) => `
-                    <div class="accordion-item mb-3">
-                        <h6 class="accordion-header" id="heading${index}">
-                            <button class="accordion-button collapsed" type="button"
-                                    data-bs-toggle="collapse" data-bs-target="#collapse${index}"
-                                    aria-expanded="false" aria-controls="collapse${index}">
-                                <div class="d-flex align-items-center w-100">
-                                    <i class='bx bx-category-alt me-2'></i>
-                                    <span class="fw-semibold">${header}</span>
-                                    <span class="badge bg-primary bg-opacity-10 text-primary ms-auto me-2">
-                                        ${perms.length} ${perms.length === 1 ? 'permission' : 'permissions'}
-                                    </span>
-                                </div>
-                            </button>
-                        </h6>
-                        <div id="collapse${index}" class="accordion-collapse collapse"
-                             aria-labelledby="heading${index}" data-bs-parent="#permissionsAccordion">
-                            <div class="accordion-body pt-2">
-                                <div class="row">
-                                    ${renderPermissionGroup(perms)}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                `).join('')}
-            </div>
-        `;
-            }
-
-            function renderPermissionGroup(permissions) {
-                const parents = permissions.filter(p => !p.permission?.parent_id);
-
-                return parents.map(permission => {
-                    const children = permissions.filter(
-                        p => p.permission?.parent_id === permission.permission_id
-                    );
-
-                    return `
-                <div class="col-sm-12 mb-3 parent-permission">
-                    <div class="permission-item-container">
-                        <div class="permission-toggle-container border-bottom ${children.length > 0 ? 'rounded-bottom-0' : 'rounded-bottom'}">
-                            <label class="permission-label">
-                                <i class='bx bxs-check-circle permission-icon'></i>
-                                ${permission.permission?.name || 'Permission'}
-                            </label>
-                            <div class="form-check form-switch">
-                                <input type="hidden" name="permissions[${permission.permission_id}]" value="0">
-                                <input class="form-check-input permission-toggle parent-toggle"
-                                       type="checkbox"
-                                       name="permissions[${permission.permission_id}]"
-                                       value="1"
-                                       data-permission-id="${permission.permission_id}"
-                                       ${permission.status ? 'checked' : ''}>
-                            </div>
-                        </div>
-                        ${children.length ? renderChildPermissions(children, permission) : ''}
-                    </div>
+                    <p class="mt-2">Loading data...</p>
                 </div>
             `;
-                }).join('');
+                chartContainer.style.position = 'relative';
+                chartContainer.appendChild(loadingDiv);
+            }
+        }
+
+        function hideLoading() {
+            const loadingElement = document.getElementById('chartLoading');
+            if (loadingElement) loadingElement.remove();
+        }
+
+        window.addEventListener('beforeunload', function() {
+            if (window.chartResizeObserver) {
+                window.chartResizeObserver.disconnect();
+            }
+        });
+
+        function updateChart() {
+            showLoading();
+
+            // Destroy previous chart instance if exists
+            if (window.chartInstance) {
+                window.chartInstance.destroy();
             }
 
-            function renderChildPermissions(children, parentPermission) {
-                return `
-            <div class="child-permissions">
-                ${children.map(child => `
-                    <div class="permission-toggle-container child-permission">
-                        <label class="permission-label">
-                            <i class='bx bx-radio-circle permission-icon'></i>
-                            ${child.permission?.name || 'Child Permission'}
-                        </label>
-                        <div class="form-check form-switch">
-                            <input type="hidden" name="permissions[${child.permission_id}]" value="0">
-                            <input class="form-check-input permission-toggle child-toggle"
-                                   type="checkbox"
-                                   name="permissions[${child.permission_id}]"
-                                   value="1"
-                                   data-parent-id="${parentPermission.permission_id}"
-                                   ${parentPermission.status && child.status ? 'checked' : ''}
-                                   ${!parentPermission.status ? 'disabled' : ''}>
-                        </div>
-                    </div>
-                `).join('')}
-            </div>
-        `;
-            }
+            const managerId = @json($staffInfo->id);
+            const buildingId = document.getElementById('buildingSelect').value;
 
-            function setupModalEvents(modal) {
-                // Parent-child permission logic
-                modal.querySelectorAll('.parent-toggle').forEach(toggle => {
-                    const permissionId = toggle.dataset.permissionId;
-                    const children = modal.querySelectorAll(`.child-toggle[data-parent-id="${permissionId}"]`);
+            fetch(`{{ route('owner.managers.monthlyFinancial.stats', $staffInfo->id) }}?buildingId=${buildingId}`)
+                .then(response => response.json())
+                .then(chartData => {
+                    const gridColor = 'rgba(0, 0, 0, 0.05)';
+                    const tooltipBackground = 'rgba(0, 0, 0, 0.8)';
+                    const fontFamily = "'Inter', sans-serif";
 
-                    toggle.addEventListener('change', function() {
-                        children.forEach(child => {
-                            child.checked = this.checked;
-                            child.disabled = !this.checked;
-                        });
+                    // Get the parent container dimensions
+                    const container = document.getElementById('financialChart').parentElement;
+                    const containerWidth = container.clientWidth;
+
+                    // Adjust font sizes based on container width
+                    const baseFontSize = containerWidth > 768 ? 12 : 10;
+                    const titleFontSize = containerWidth > 768 ? 16 : 12;
+
+                    window.chartInstance = new Chart(ctx, {
+                        type: 'line',
+                        data: chartData,
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    labels: {
+                                        font: {
+                                            family: fontFamily,
+                                            size: baseFontSize
+                                        },
+                                        padding: 20,
+                                        usePointStyle: true,
+                                        pointStyle: 'circle'
+                                    }
+                                },
+                                tooltip: {
+                                    mode: 'index',
+                                    intersect: false,
+                                    backgroundColor: tooltipBackground,
+                                    titleFont: {
+                                        family: fontFamily,
+                                        size: baseFontSize,
+                                        weight: 'bold'
+                                    },
+                                    bodyFont: {
+                                        family: fontFamily,
+                                        size: baseFontSize
+                                    },
+                                    padding: 10,
+                                    cornerRadius: 6,
+                                    callbacks: {
+                                        label: function(context) {
+                                            return context.dataset.label + ': PKR ' + context.raw.toLocaleString();
+                                        }
+                                    }
+                                }
+                            },
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    grid: {
+                                        color: gridColor,
+                                        drawBorder: false
+                                    },
+                                    ticks: {
+                                        font: {
+                                            family: fontFamily,
+                                            size: baseFontSize
+                                        },
+                                        callback: function(value) {
+                                            return 'PKR ' + value.toLocaleString();
+                                        }
+                                    }
+                                },
+                                x: {
+                                    grid: {
+                                        color: gridColor,
+                                        drawBorder: false
+                                    },
+                                    ticks: {
+                                        font: {
+                                            family: fontFamily,
+                                            size: baseFontSize
+                                        }
+                                    }
+                                }
+                            },
+                            elements: {
+                                line: {
+                                    tension: 0.3,
+                                    borderWidth: 2,
+                                    fill: true
+                                },
+                                point: {
+                                    radius: 0,
+                                    hoverRadius: 0,
+                                    backgroundColor: 'white',
+                                    borderWidth: 2
+                                }
+                            },
+                            animation: {
+                                duration: 1000,
+                                easing: 'easeOutQuart'
+                            }
+                        }
                     });
 
-                    // Initialize child states
-                    children.forEach(child => {
-                        child.disabled = !toggle.checked;
-
-                        child.addEventListener('change', function() {
-                            if (this.checked && !toggle.checked) {
-                                this.checked = false;
-                                Swal.fire({
-                                    icon: 'warning',
-                                    title: 'Permission Conflict',
-                                    text: 'Please enable the parent permission first.',
-                                    confirmButtonColor: '#3085d6',
-                                });
+                    // Add resize observer to handle window resizing
+                    if (!window.chartResizeObserver) {
+                        window.chartResizeObserver = new ResizeObserver(() => {
+                            if (window.chartInstance) {
+                                window.chartInstance.resize();
                             }
                         });
-                    });
-                });
-
-                // Form submission
-                modal.querySelector('#submitPromotion').addEventListener('click', async () => {
-                    const form = modal.querySelector('#promotionForm');
-                    const submitBtn = modal.querySelector('#submitPromotion');
-
-                    try {
-                        submitBtn.disabled = true;
-                        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Processing...';
-
-
-                        const formData = new FormData(form);
-
-                        // Convert permissions object to array format expected by backend
-                        const permissions = {};
-                        form.querySelectorAll('input[name^="permissions["]').forEach(input => {
-                            if (input.type === 'checkbox') {
-                                const key = input.name.match(/\[(.*?)\]/)[1];
-                                permissions[key] = input.checked ? 1 : 0;
-                            }
-                        });
-
-                        // Add permissions to form data
-                        formData.delete('permissions');
-                        for (const [key, value] of Object.entries(permissions)) {
-                            formData.append(`permissions[${key}]`, value);
-                        }
-
-                        const response = await fetch(`{{ route('owner.managers.promote.store') }}`, {
-                            method: "POST",
-                            body: formData,
-                            headers: {
-                                "X-Requested-With": "XMLHttpRequest",
-                                "Accept": "application/json"
-                            }
-                        });
-
-                        if (!response.ok) {
-                            const error = await response.json();
-                            throw new Error(error.error || error.message || 'Failed to promote staff');
-                        }
-
-                        const result = await response.json();
-
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Success',
-                            text: result.message || 'Staff promoted successfully!',
-                            confirmButtonColor: '#3085d6',
-                        }).then(() => {
-                            const bsModal = bootstrap.Modal.getInstance(modal);
-                            bsModal.hide();
-                            window.location.reload();
-                        });
-                    } catch (error) {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Error',
-                            text: error.message,
-                            confirmButtonColor: '#3085d6',
-                        });
-                    } finally {
-                        submitBtn.disabled = false;
-                        submitBtn.textContent = 'Promote to Manager';
+                        window.chartResizeObserver.observe(container);
                     }
+                })
+                .catch(error => {
+                    console.error('Error loading chart data:', error);
+                })
+                .finally(() => {
+                    hideLoading();
                 });
-            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize the chart
+            updateChart();
+
+            // Add event listener for building select change
+            document.getElementById('buildingSelect').addEventListener('change', function() {
+                updateChart();
+            });
         });
     </script>
 @endpush

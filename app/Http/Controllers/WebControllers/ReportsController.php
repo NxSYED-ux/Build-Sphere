@@ -187,6 +187,7 @@ class ReportsController extends Controller
 
                 $currentDate->addMonth();
             }
+            Log::info('Chart Data:', $chartData);
 
             return response()->json($chartData);
 
