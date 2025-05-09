@@ -562,9 +562,171 @@
             .chart-container {
                 min-width: 100%;
             }
+
+            /* New styles for small screens */
+            .d-flex.justify-content-between.align-items-center.mb-3 {
+                flex-direction: column;
+                align-items: flex-start !important;
+                gap: 1rem;
+            }
+
+            .performance-indicator {
+                width: 100%;
+                justify-content: space-between;
+            }
         }
 
-        /* Your existing styles... */
+        /* Performance-indicator... */
+        .performance-indicator {
+            background: var(--body-card-bg);
+            padding: 0.3rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: default;
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            position: relative;
+        }
+
+        .performance-label {
+            color: var(--sidenavbar-text-color);
+            opacity: 0.9;
+            font-weight: 500;
+        }
+
+        .performance-value {
+            font-weight: 600;
+            padding: 0.25rem 0.6rem;
+            border-radius: 12px;
+            min-width: 80px;
+            text-align: center;
+            font-size: 0.8rem;
+        }
+
+        .custom-performance-tooltip {
+            position: absolute;
+            display: none;
+            z-index: 1000;
+            background-color: var(--body-background-color);
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            width: 220px;
+            font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            border: 1px solid #e0e0e0;
+            transform: translateY(5px);
+            opacity: 0;
+            transition: opacity 0.2s ease, transform 0.2s ease;
+            pointer-events: none; /* Initially disable pointer events */
+        }
+
+        .custom-performance-tooltip.show {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto; /* Enable pointer events when shown */
+        }
+
+        .tooltip-content {
+            padding: 0;
+        }
+
+        .tooltip-header {
+            padding: 12px 16px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .tooltip-header h4 {
+            margin: 0;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--sidenavbar-text-color);
+        }
+
+        .tooltip-body {
+            padding: 16px;
+        }
+
+        .tooltip-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            align-items: center;
+        }
+
+        .tooltip-label {
+            font-size: 13px;
+            color: var(--sidenavbar-text-color);
+        }
+
+        .tooltip-value {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--sidenavbar-text-color);
+        }
+
+        .tooltip-rating {
+            font-size: 12px;
+            font-weight: 600;
+            padding: 4px 8px;
+            border-radius: 12px;
+        }
+
+        .tooltip-divider {
+            height: 1px;
+            background-color: #f0f0f0;
+            margin: 16px 0;
+        }
+
+        .tooltip-scale h5 {
+            margin: 0 0 12px 0;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--sidenavbar-text-color);
+        }
+
+        .scale-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+            gap: 10px;
+        }
+
+        .scale-range {
+            font-size: 12px;
+            color: var(--sidenavbar-text-color);
+            width: 50px;
+        }
+
+        .scale-label {
+            font-size: 12px;
+            color: var(--sidenavbar-text-color);
+            flex-grow: 1;
+        }
+
+        .scale-marker {
+            width: 12px;
+            height: 12px;
+            border-radius: 3px;
+        }
+
+        /* Performance rating classes */
+        .performance-excellent { background-color: #10b981; color: white; }
+        .performance-good { background-color: #3b82f6; color: white; }
+        .performance-fair { background-color: #f59e0b; color: white; }
+        .performance-poor { background-color: #ef4444; color: white; }
+        .performance-critical { background-color: #7c3aed; color: white; }
+        .performance-na { background-color: #9ca3af; color: white; }
+
+        .performance-value {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+        }
     </style>
 
 @endpush
@@ -701,7 +863,13 @@
                                     <div class="charts-row">
                                         <!-- Pie Chart Container -->
                                         <div class="chart-container">
-                                            <div class="chart-title">Query Status Distribution</div>
+                                            <div class="chart-header d-flex justify-content-between align-items-center mb-3">
+                                                <div class="chart-title">Query Status Distribution</div>
+                                                <div id="performanceIndicator" class="performance-indicator">
+                                                    <span class="performance-label">Performance:</span>
+                                                    <span class="performance-value badge bg-secondary">Calculating...</span>
+                                                </div>
+                                            </div>
                                             <div class="chart-wrapper">
                                                 <canvas id="pieChart"></canvas>
                                             </div>
@@ -798,7 +966,7 @@
                                         border-radius: 10px;
                                         border: none;
                                         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-                                        margin-bottom: 1.25rem;
+                                        margin-bottom: 0.2rem;
                                         overflow: hidden;
                                         background: white;
                                         font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
@@ -811,8 +979,7 @@
 
                                     .query-card .card-header {
                                         padding: 0.85rem 1rem;
-                                        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-                                        background: white;
+                                        background: var(--body-background-color);
                                         display: flex;
                                         justify-content: space-between;
                                         align-items: center;
@@ -821,7 +988,7 @@
                                     .query-card .query-id {
                                         font-weight: 650;
                                         font-size: 0.88rem;
-                                        color: #1a1a1a;
+                                        color: var(--sidenavbar-text-color);
                                         display: flex;
                                         align-items: center;
                                         letter-spacing: -0.2px;
@@ -842,6 +1009,7 @@
 
                                     .query-card .card-body {
                                         padding: 1rem;
+                                        background-color: var(--body-background-color) !important;
                                     }
 
                                     .meta-row {
@@ -871,7 +1039,7 @@
 
                                     .description {
                                         font-size: 0.8rem;
-                                        color: #334155;
+                                        color: var(--sidenavbar-text-color);
                                         margin-top: 0.75rem;
                                         line-height: 1.5;
                                         display: -webkit-box;
@@ -881,7 +1049,7 @@
                                     }
 
                                     .card-footer {
-                                        padding: 0.75rem 1rem;
+                                        padding: 0.7rem 1rem;
                                         background: #f8fafc;
                                         border-top: 1px solid rgba(0, 0, 0, 0.05);
                                     }
@@ -895,7 +1063,7 @@
                                     }
 
                                     .date-highlight {
-                                        background: #f1f5f9;
+                                        background: var(--sidenavbar-body-color);
                                         padding: 0.5rem;
                                         border-radius: 6px;
                                         margin-bottom: 0.75rem;
@@ -940,35 +1108,27 @@
 
                                                 <div class="col-lg-4 col-md-6 mb-4">
                                                     <div class="card query-card h-100" onclick="showQueryDetails({{ $query->id }})" style="cursor: pointer;">
-                                                        <div class="card-header">
+                                                        <div class="card-header border-bottom">
                                                             <div class="query-id">
                                                                 <i class="fas fa-{{ $statusConfig['icon'] }} text-{{ $statusConfig['color'] }}"></i>
                                                                 QR-{{ str_pad($query->id, 5, '0', STR_PAD_LEFT) }}
                                                             </div>
                                                             <span class="badge-status badge-{{ $statusConfig['color'] }}">
-                                {{ $query->status }}
-                            </span>
+                                                                {{ $query->status }}
+                                                            </span>
                                                         </div>
 
                                                         <div class="card-body">
-                                                            <div class="date-highlight">
-                                                                <div class="meta-row">
-                                                                    <div>
-                                                                        <span class="meta-label">Opened</span>
-                                                                        <span class="meta-value">{{ $query->created_at->format('M d, Y') }}</span>
-                                                                    </div>
-                                                                    <div>
-                                                                        @if($query->status == 'Closed' && $query->closure_date)
-                                                                            <span class="meta-label">Closed</span>
-                                                                            <span class="meta-value">{{ $query->closure_date->format('M d, Y') }}</span>
-                                                                        @elseif($query->status == 'In Progress' && $query->expected_closure_date)
-                                                                            <span class="meta-label">Expected</span>
-                                                                            <span class="meta-value">{{ $query->expected_closure_date->format('M d, Y') }}</span>
-                                                                        @endif
-                                                                    </div>
+                                                            <div class="meta-row">
+                                                                <div>
+                                                                    <span class="meta-label">Building</span>
+                                                                    <span class="meta-value">{{ $query->building->name ?? 'N/A' }}</span>
+                                                                </div>
+                                                                <div>
+                                                                    <span class="meta-label">Department</span>
+                                                                    <span class="meta-value">{{ $query->department->name ?? 'N/A' }}</span>
                                                                 </div>
                                                             </div>
-
                                                             <div class="meta-row">
                                                                 <div>
                                                                     <span class="meta-label">Unit</span>
@@ -980,9 +1140,37 @@
                                                                 </div>
                                                             </div>
 
-                                                            <div class="description">
-                                                                {{ Str::limit($query->description, 90) }}
+                                                            <div class="description mb-3">
+                                                                {{ $query->description ? Str::limit($query->description, 55) : 'N/A' }}
                                                             </div>
+
+                                                            <div class="date-highlight">
+                                                                <div class="meta-row">
+                                                                    <div>
+                                                                        <span class="meta-label">Opened</span>
+                                                                        <span class="meta-value">{{ $query->created_at->format('M d, Y') }}</span>
+                                                                    </div>
+                                                                    <div>
+                                                                        @if($query->status == 'Closed' && ($query->closure_date || $query->expected_closure_date))
+                                                                            <span class="meta-label">Closed</span>
+                                                                            <span class="meta-value">
+                                                                                @if($query->closure_date)
+                                                                                    {{ $query->closure_date->format('M d, Y') }}
+                                                                                @else
+                                                                                    {{ $query->expected_closure_date->format('M d, Y') }}
+                                                                                @endif
+                                                                            </span>
+                                                                        @elseif($query->status == 'In Progress' && $query->expected_closure_date)
+                                                                            <span class="meta-label">Expected</span>
+                                                                            <span class="meta-value">{{ $query->expected_closure_date->format('M d, Y') }}</span>
+                                                                        @endif
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+
+
+
+
                                                         </div>
 
                                                         @if($query->status == 'Pending')
@@ -1042,12 +1230,202 @@
             const yearSelect = document.getElementById('yearSelect');
             const monthSelect = document.getElementById('monthSelect');
 
+            // Initialize Bootstrap tooltip
+            const performanceTooltip = new bootstrap.Tooltip(document.getElementById('performanceIndicator'), {
+                html: true,
+                placement: 'left'
+            });
+
+            // Function to calculate performance
+            function calculatePerformance(data) {
+                console.log("Input data:", data);
+
+                if (!data || !data.total_queries || data.total_queries === 0) {
+                    return null;
+                }
+
+                // Map input status names to your expected format
+                const statusMap = {
+                    'Open': 'open',
+                    'In Progress': 'in_progress',
+                    'Closed': 'closed',
+                    'Closed Late': 'closed_late',
+                    'Rejected': 'rejected'
+                };
+
+                const weights = {
+                    open: 0,
+                    in_progress: 1,
+                    closed: 2,
+                    closed_late: 1,
+                    rejected: -1
+                };
+
+                let actualScore = 0;
+                Object.keys(weights).forEach(status => {
+                    // Find the corresponding input data key
+                    const inputKey = Object.keys(statusMap).find(key => statusMap[key] === status);
+                    const count = inputKey ? parseInt(data[inputKey] || 0) : 0;
+                    const weight = weights[status];
+                    const score = count * weight;
+                    actualScore += score;
+                });
+
+                const maxScore = data.total_queries * 2;
+
+                const normalizedPercentage = Math.round((actualScore / maxScore) * 100);
+                const finalScore = Math.max(0, Math.min(100, normalizedPercentage));
+                return finalScore;
+            }
+
+
+            // Function to update performance indicator
+            function updatePerformanceIndicator(percentage) {
+                const indicator = document.getElementById('performanceIndicator');
+                const valueElement = indicator.querySelector('.performance-value');
+
+                // Create tooltip element if it doesn't exist
+                let tooltip = document.querySelector('.custom-performance-tooltip');
+                if (!tooltip) {
+                    tooltip = document.createElement('div');
+                    tooltip.className = 'custom-performance-tooltip';
+                    document.body.appendChild(tooltip);
+
+                    // Add event listeners for showing/hiding tooltip
+                    let tooltipTimeout;
+                    let isMouseInTooltip = false;
+
+                    indicator.addEventListener('mouseenter', () => {
+                        clearTimeout(tooltipTimeout);
+                        positionTooltip(indicator, tooltip);
+                        tooltip.style.display = 'block';
+                        setTimeout(() => tooltip.classList.add('show'), 10);
+                    });
+
+                    indicator.addEventListener('mouseleave', () => {
+                        // Only hide if mouse isn't in tooltip
+                        if (!isMouseInTooltip) {
+                            tooltipTimeout = setTimeout(() => {
+                                tooltip.classList.remove('show');
+                                setTimeout(() => tooltip.style.display = 'none', 200);
+                            }, 100);
+                        }
+                    });
+
+                    // Track when mouse enters tooltip
+                    tooltip.addEventListener('mouseenter', () => {
+                        isMouseInTooltip = true;
+                        clearTimeout(tooltipTimeout);
+                        tooltip.classList.add('show');
+                        tooltip.style.display = 'block';
+                    });
+
+                    // Track when mouse leaves tooltip
+                    tooltip.addEventListener('mouseleave', () => {
+                        isMouseInTooltip = false;
+                        tooltip.classList.remove('show');
+                        setTimeout(() => tooltip.style.display = 'none', 200);
+                    });
+                }
+
+                function positionTooltip(element, tooltip) {
+                    const rect = element.getBoundingClientRect();
+                    tooltip.style.left = `${rect.left + window.scrollX}px`;
+                    tooltip.style.top = `${rect.bottom + window.scrollY + 5}px`;
+                }
+
+                if (percentage === null) {
+                    valueElement.textContent = 'N/A';
+                    valueElement.className = 'performance-value performance-na';
+                    tooltip.innerHTML = `
+            <div class="tooltip-content">
+                <div class="tooltip-header">
+                    <h4>Performance Data</h4>
+                </div>
+                <div class="tooltip-body">
+                    <p>Not enough data to calculate performance</p>
+                </div>
+            </div>
+        `;
+                    return;
+                }
+
+                let rating, className;
+                if (percentage >= 80) {
+                    rating = 'Excellent';
+                    className = 'performance-excellent';
+                } else if (percentage >= 60) {
+                    rating = 'Good';
+                    className = 'performance-good';
+                } else if (percentage >= 40) {
+                    rating = 'Fair';
+                    className = 'performance-fair';
+                } else if (percentage >= 20) {
+                    rating = 'Poor';
+                    className = 'performance-poor';
+                } else {
+                    rating = 'Critical';
+                    className = 'performance-critical';
+                }
+
+                valueElement.textContent = `${percentage}% (${rating})`;
+                valueElement.className = `performance-value ${className}`;
+
+                tooltip.innerHTML = `
+        <div class="tooltip-content">
+            <div class="tooltip-header">
+                <h4>Performance Details</h4>
+            </div>
+            <div class="tooltip-body">
+                <div class="tooltip-row">
+                    <span class="tooltip-label">Score:</span>
+                    <span class="tooltip-value">${percentage}%</span>
+                </div>
+                <div class="tooltip-row">
+                    <span class="tooltip-label">Rating:</span>
+                    <span class="tooltip-rating ${className}">${rating}</span>
+                </div>
+
+                <div class="tooltip-divider"></div>
+
+                <div class="tooltip-scale">
+                    <h5>Performance Scale</h5>
+                    <div class="scale-row">
+                        <span class="scale-range">80-100%</span>
+                        <span class="scale-label">Excellent</span>
+                        <span class="scale-marker performance-excellent"></span>
+                    </div>
+                    <div class="scale-row">
+                        <span class="scale-range">60-79%</span>
+                        <span class="scale-label">Good</span>
+                        <span class="scale-marker performance-good"></span>
+                    </div>
+                    <div class="scale-row">
+                        <span class="scale-range">40-59%</span>
+                        <span class="scale-label">Fair</span>
+                        <span class="scale-marker performance-fair"></span>
+                    </div>
+                    <div class="scale-row">
+                        <span class="scale-range">20-39%</span>
+                        <span class="scale-label">Poor</span>
+                        <span class="scale-marker performance-poor"></span>
+                    </div>
+                    <div class="scale-row">
+                        <span class="scale-range">0-19%</span>
+                        <span class="scale-label">Critical</span>
+                        <span class="scale-marker performance-critical"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+            }
+
             // Initialize charts
             function initCharts() {
                 const pieCtx = document.getElementById('pieChart').getContext('2d');
                 const lineCtx = document.getElementById('lineChart').getContext('2d');
 
-                // Enhanced Pie Chart with labels
                 pieChart = new Chart(pieCtx, {
                     type: 'pie',
                     data: {
@@ -1077,7 +1455,7 @@
                                         size: 12,
                                         family: "'Inter', sans-serif"
                                     },
-                                    color: '#374151'
+                                    color: getComputedStyle(document.documentElement).getPropertyValue('--sidenavbar-text-color').trim(),
                                 }
                             },
                             tooltip: {
@@ -1142,7 +1520,6 @@
                     plugins: [ChartDataLabels]
                 });
 
-                // Enhanced Line Chart
                 lineChart = new Chart(lineCtx, {
                     type: 'line',
                     data: {
@@ -1166,8 +1543,9 @@
                                         size: 12
                                     },
                                     maxRotation: 45,
-                                    minRotation: 45
-                                }
+                                    minRotation: 45,
+                                    color: getComputedStyle(document.documentElement).getPropertyValue('--sidenavbar-text-color').trim()
+                                },
                             },
                             y: {
                                 beginAtZero: true,
@@ -1176,6 +1554,7 @@
                                     font: {
                                         size: 12
                                     },
+                                    color: getComputedStyle(document.documentElement).getPropertyValue('--sidenavbar-text-color').trim(),
                                     callback: function(value) {
                                         if (Number.isInteger(value)) {
                                             return value;
@@ -1196,7 +1575,8 @@
                                     font: {
                                         size: 12
                                     },
-                                    boxWidth: 12
+                                    boxWidth: 12,
+                                    color: getComputedStyle(document.documentElement).getPropertyValue('--sidenavbar-text-color').trim(),
                                 }
                             },
                             tooltip: {
@@ -1271,13 +1651,13 @@
                     pieChart.data.datasets[0].data = [1];
                     pieChart.data.datasets[0].backgroundColor = ['#E5E7EB'];
                     pieChart.update();
+                    updatePerformanceIndicator(null);
                     return;
                 }
 
                 const labels = [];
                 const values = [];
 
-                // Exclude total_queries from the pie chart
                 Object.keys(data).forEach(key => {
                     if (key !== 'total_queries' && data[key] > 0) {
                         labels.push(key.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' '));
@@ -1285,7 +1665,6 @@
                     }
                 });
 
-                // If no data, show a placeholder
                 if (labels.length === 0) {
                     pieChart.data.labels = ['No Data Available'];
                     pieChart.data.datasets[0].data = [1];
@@ -1300,6 +1679,10 @@
                 }
 
                 pieChart.update();
+
+                // Calculate and update performance
+                const performancePercentage = calculatePerformance(data);
+                updatePerformanceIndicator(performancePercentage);
             }
 
             // Update line chart with new data
@@ -1317,7 +1700,6 @@
                     return;
                 }
 
-                // Extract months and statuses
                 const months = Object.keys(data);
                 const statuses = new Set();
 
@@ -1329,7 +1711,6 @@
                     });
                 });
 
-                // Prepare datasets for each status
                 const datasets = [];
                 const colors = [
                     '#3B82F6', '#10B981', '#F59E0B', '#EF4444',
@@ -1356,7 +1737,6 @@
                     colorIndex++;
                 });
 
-                // Also add total queries dataset
                 datasets.push({
                     label: 'Total Queries',
                     data: months.map(month => data[month].total_queries),
@@ -1384,13 +1764,11 @@
 
             // Add event listeners for filters
             yearSelect.addEventListener('change', function() {
-                // When year changes, update both charts
                 fetchPieChartData();
                 fetchLineChartData();
             });
 
             monthSelect.addEventListener('change', function() {
-                // When month changes, update only pie chart
                 fetchPieChartData();
             });
         });
