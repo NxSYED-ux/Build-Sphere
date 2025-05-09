@@ -125,8 +125,8 @@ class ReportsController extends Controller
                 }
             }
 
-            $endDate = now()->endOfMonth();
-            $startDate = now()->subMonths(11)->startOfMonth();
+            $startDate = now()->startOfYear();
+            $endDate = now()->endOfYear();
 
             $chartData = [
                 'labels' => [],
@@ -154,7 +154,7 @@ class ReportsController extends Controller
 
             $currentDate = $startDate->copy();
             while ($currentDate <= $endDate) {
-                $monthLabel = $currentDate->format('M Y');
+                $monthLabel = $currentDate->format('M');
                 $chartData['labels'][] = $monthLabel;
 
                 $revenue = Transaction::whereBetween('created_at', [$currentDate->copy()->startOfMonth(), $currentDate->copy()->endOfMonth()])
