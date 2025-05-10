@@ -662,6 +662,12 @@ class hrController extends Controller
                 );
             }
 
+            $permissionIdsToKeep = array_keys($new);
+
+            UserPermission::where('user_id', $user->id)
+                ->whereNotIn('permission_id', $permissionIdsToKeep)
+                ->delete();
+
             DB::commit();
 
             return redirect()->route('owner.staff.index')->with('success', 'Staff updated successfully.');
@@ -801,6 +807,12 @@ class hrController extends Controller
                     ]
                 );
             }
+
+            $permissionIdsToKeep = array_keys($new);
+
+            UserPermission::where('user_id', $user->id)
+                ->whereNotIn('permission_id', $permissionIdsToKeep)
+                ->delete();
 
             DB::commit();
 
