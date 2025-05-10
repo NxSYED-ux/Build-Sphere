@@ -513,7 +513,7 @@
                                             <!-- Submit Button -->
                                             <div class="d-flex justify-content-end mt-4">
                                                 <button type="submit" class="btn btn-primary px-4">
-                                                    <i class='bx bx-save me-1'></i> Create Staff
+                                                    <i class='bx bx-save me-1'></i> Create Manager
                                                 </button>
                                             </div>
                                         </form>

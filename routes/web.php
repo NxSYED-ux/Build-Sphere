@@ -367,8 +367,8 @@ Route::prefix('owner')->middleware(['auth.jwt'])->group(function () {
             Route::put('/', [hrController::class , 'managerUpdate'])->name('owner.managers.update');
             Route::delete('/', [hrController::class , 'managerDestroy'])->name('owner.managers.destroy');
 
-            Route::get('/demotion/{id}', [hrController::class , 'demotionGet'])->name('owner.managers.promote.index');
-            Route::post('/demotion', [hrController::class , 'demotion'])->name('owner.managers.promote.store');
+            Route::get('/demotion/{id}', [hrController::class , 'demotionGet'])->name('owner.managers.demote.index');
+            Route::post('/demotion', [hrController::class , 'demotion'])->name('owner.managers.demote.store');
 
             Route::get('/{manager}/show', [hrController::class , 'managerShow'])->name('owner.managers.show');
             Route::get('/{manager}/occupancy-stats', [ReportsController::class , 'getManagerBuildingsOccupancyStats'])->name('owner.managers.occupancy.stats');

@@ -153,7 +153,7 @@
                 const staffId = this.dataset.staffId;
 
                 try {
-                    const response = await fetch(`{{ route('owner.managers.promote.index', ':id') }}`.replace(':id', staffId), {
+                    const response = await fetch(`{{ route('owner.managers.demote.index', ':id') }}`.replace(':id', staffId), {
                         method: "GET",
                         headers: {
                             "X-Requested-With": "XMLHttpRequest",
@@ -479,7 +479,7 @@
                             formData.append(`permissions[${key}]`, value);
                         }
 
-                        const response = await fetch(`{{ route('owner.managers.promote.store') }}`, {
+                        const response = await fetch(`{{ route('owner.managers.demote.store') }}`, {
                             method: "POST",
                             body: formData,
                             headers: {
