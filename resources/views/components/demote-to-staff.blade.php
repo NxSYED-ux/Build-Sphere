@@ -503,7 +503,7 @@
                         }).then(() => {
                             const bsModal = bootstrap.Modal.getInstance(modal);
                             bsModal.hide();
-                            window.location.reload();
+                            window.location.href = '{{ route("owner.staff.index") }}';
                         });
                     } catch (error) {
                         Swal.fire({

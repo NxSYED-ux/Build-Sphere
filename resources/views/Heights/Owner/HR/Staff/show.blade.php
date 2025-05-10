@@ -469,7 +469,10 @@
         }
 
         .tooltip-body {
+            background-color: var(--body-background-color);
+            color: var(--sidenavbar-text-color);
             padding: 16px;
+            border-radius: 8px;
         }
 
         .tooltip-row {
@@ -868,7 +871,7 @@
                                                     <div class="query-handling-toggle">
                                                         <span class="toggle-label">Handle Queries</span>
                                                         <label class="enable-query-toggle-btn">
-                                                            <input type="checkbox" {{ $staffInfo->accept_queries ? 'checked' : '' }}>
+                                                            <input type="checkbox" class="enable-query-btn" data-staff-id="{{ $staffInfo->id }}" {{ $staffInfo->accept_queries ? 'checked' : '' }}>
                                                             <span class="toggle-slider round"></span>
                                                         </label>
                                                     </div>
@@ -1163,6 +1166,70 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
     <script>
+        // Handle Accept Queries
+        document.addEventListener('DOMContentLoaded', function() {
+            document.body.addEventListener('change', function(e) {
+                if (e.target.classList.contains('enable-query-btn')) {
+                    const button = e.target;
+                    const staffId = button.dataset.staffId;
+                    const isChecked = button.checked ? 1 : 0;
+
+                    const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+
+                    const queryUrl = "{{ route('owner.staff.handle.queries') }}";
+                    const originalHTML = button.nextElementSibling.innerHTML;
+                    button.nextElementSibling.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+                    button.disabled = true;
+
+                    fetch(queryUrl, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': csrfToken,
+                            'Accept': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest'
+                        },
+                        body: JSON.stringify({
+                            id: staffId,
+                            accept_query: isChecked
+                        })
+                    })
+                        .then(response => {
+                            if (!response.ok) {
+                                return response.json().then(err => { throw err; });
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Success!',
+                                text: data.success || 'Status updated successfully',
+                                timer: 2000,
+                                showConfirmButton: false
+                            });
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error!',
+                                text: error.error || 'Something went wrong. Please try again.',
+                                timer: 2000,
+                                showConfirmButton: true
+                            });
+                            // Revert the checkbox state
+                            button.checked = !button.checked;
+                        })
+                        .finally(() => {
+                            button.nextElementSibling.innerHTML = originalHTML;
+                            button.disabled = false;
+                        });
+                }
+            });
+        });
+
+        //Charts
         document.addEventListener('DOMContentLoaded', function() {
             const staffId = "{{ $staffInfo->id }}";
             const yearlyStatsRoute = "{{ route('owner.staff.queries.yearly', ['staff' => ':staffId']) }}".replace(':staffId', staffId);

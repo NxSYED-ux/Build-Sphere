@@ -384,7 +384,7 @@
                                                     @foreach($buildings as $building)
                                                         <div class="col-sm-12 col-md-6 col-xl-4">
                                                             <div class="form-group mb-3">
-                                                                <div class="permission-toggle-container">
+                                                                <div class="permission-toggle-container border">
                                                                     <label class="permission-label">
                                                                         <i class='bx bxs-check-circle permission-icon'></i>
                                                                         {{ $building->name }}
