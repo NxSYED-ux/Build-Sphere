@@ -301,8 +301,9 @@
         }
 
         .staff-detail-container .no-buildings {
-            color: #868e96;
+            color: var(--sidenavbar-text-color);
             font-style: italic;
+            margin-top: 6px;
         }
 
         /* Button Styles */
@@ -582,7 +583,7 @@
                                 <!-- Charts Section -->
                                 <div class="chart-card p-4 mt-3 mb-3">
                                     <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-3">
-                                        <h5 class="section-title mb-3 mb-md-0">Queries Overview</h5>
+                                        <h5 class="section-title mb-3 mb-md-0">Buildings Overview</h5>
                                         <div class="d-flex flex-wrap gap-2">
                                             <select class="form-select" id="yearSelect">
                                                 @for($i = date('Y'); $i >= 2020; $i--)

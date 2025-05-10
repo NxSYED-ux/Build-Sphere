@@ -223,7 +223,7 @@
                 const staff = data.staffInfo?.user || {};
                 const staffName = staff.name || 'Staff Member';
                 const staffEmail = staff.email || 'No email';
-                const staffPicture = staff.picture ? "{{ asset('/') }}" + staff.picture : "{{ asset('assets/placeholder-profile.png') }}";
+                const staffPicture = staff.picture ? "{{ asset('/') }}" + staff.picture : "{{ asset('img/placeholder-profile.png') }}";
                 const currentBuildingId = data.staffInfo?.building_id || '';
                 const currentDepartmentId = data.staffInfo?.department_id || '';
 
