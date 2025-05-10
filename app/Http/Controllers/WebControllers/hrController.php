@@ -549,18 +549,19 @@ class hrController extends Controller
                 ->pluck('name', 'id');
 
 
-            $userPermissionIds = UserPermission::where('user_id', $staffInfo->user_id)
+            $userPermissions = UserPermission::where('user_id', $staffInfo->user_id)
                 ->select('id', 'permission_id', 'status')
                 ->get();
 
-            $excludedPermissionIds = $userPermissionIds->pluck('permission_id');
+            $excludedPermissionIds = $userPermissions->pluck('permission_id');
 
-            $rolePermissionIds = RolePermission::where('role_id', 4)
+            $rolePermissions = RolePermission::where('role_id', 4)
                 ->whereNotIn('permission_id', $excludedPermissionIds)
                 ->select('id', 'permission_id', 'status')
                 ->get();
 
-            $permissions = $userPermissionIds->concat($rolePermissionIds);
+            $permissions = $userPermissions->concat($rolePermissions)
+                ->sortBy('permission_id');
 
             return view('Heights.Owner.HR.Staff.edit', compact('staffInfo', 'departments', 'buildings', 'permissions'));
 
@@ -662,7 +663,7 @@ class hrController extends Controller
                 );
             }
 
-            $permissionIdsToKeep = array_keys($new);
+            $permissionIdsToKeep = array_keys($changedPermissions->toArray());
 
             UserPermission::where('user_id', $user->id)
                 ->whereNotIn('permission_id', $permissionIdsToKeep)
@@ -714,7 +715,8 @@ class hrController extends Controller
                 ->select('id', 'permission_id', 'status')
                 ->get();
 
-            $permissions = $userPermissions->concat($rolePermissions);
+            $permissions = $userPermissions->concat($rolePermissions)
+                ->sortBy('permission_id');
 
             return view('Heights.Owner.HR.Manager.edit', compact('staffInfo', 'buildings', 'managerBuildings', 'permissions'));
 
@@ -808,7 +810,7 @@ class hrController extends Controller
                 );
             }
 
-            $permissionIdsToKeep = array_keys($new);
+            $permissionIdsToKeep = array_keys($changedPermissions->toArray());
 
             UserPermission::where('user_id', $user->id)
                 ->whereNotIn('permission_id', $permissionIdsToKeep)
