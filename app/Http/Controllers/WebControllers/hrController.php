@@ -1221,9 +1221,7 @@ class hrController extends Controller
         try {
             $staff = StaffMember::where('id', $request->id)
                 ->where('organization_id', $organization_id)
-                ->with(['user', 'queries' => function($query) {
-                    $query->whereIn('status', ['Open', 'In Progress']);
-                }])
+                ->with('user')
                 ->first();
 
             if (!$staff) {
@@ -1231,7 +1229,7 @@ class hrController extends Controller
                 return response()->json(['error' => 'Staff not found.'], 404);
             }
 
-            if ($staff->queries->exists()) {
+            if ($staff->queries()->whereIn('status', ['Open', 'In Progress'])->exists()) {
                 DB::rollBack();
                 return response()->json(['error' => 'Cannot delete staff with open or in-progress queries.'], 400);
             }
