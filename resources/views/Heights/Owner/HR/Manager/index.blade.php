@@ -35,18 +35,41 @@
             font-size: 0.9rem;
         }
 
-        .search-input {
+        .filter-select, .search-input {
             width: 100%;
+            padding: 10px 15px;
             border-radius: 6px;
             border: 1px solid #e0e0e0;
             background-color: white;
             transition: all 0.3s ease;
             box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+
+        .search-input {
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23999' viewBox='0 0 16 16'%3E%3Cpath d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z'/%3E%3C/svg%3E");
             background-repeat: no-repeat;
             background-position: 15px center;
             background-size: 16px 16px;
-            padding: 10px 15px 10px 40px;
+            padding-left: 40px;
+        }
+
+        .filter-buttons {
+            display: flex;
+            gap: 12px;
+            margin-left: auto;
+            align-self: center;
+            margin-top: 30px;
+        }
+
+        .filter-buttons .btn {
+            padding: 10px 15px;
+            border-radius: 6px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 120px;
         }
 
         .team-members {
@@ -62,6 +85,7 @@
             overflow: hidden;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             transition: transform 0.3s ease;
+            position: relative;
         }
 
         .member-card:hover {
@@ -89,14 +113,23 @@
             font-size: 1.3rem;
         }
 
+        .member-position {
+            margin: 5px 0 0;
+            color: var(--sidenavbar-text-color);
+            font-size: 0.9rem;
+        }
+
         .member-details {
-            padding: 20px;
+            padding: 15px 20px 0 20px;
         }
 
         .detail-item {
             display: flex;
             align-items: center;
             margin-bottom: 12px;
+        }
+        .detail-item:last-child {
+            margin-bottom: 5px;
         }
 
         .detail-icon {
@@ -133,7 +166,7 @@
             color: #bdc3c7;
         }
 
-        .btn {
+        .btn-add {
             padding: 10px 20px;
             border-radius: 8px;
             font-weight: 500;
@@ -167,12 +200,119 @@
             color: #27ae60;
         }
 
+        .member-details .enable-query-toggle-btn {
+            position: relative;
+            display: inline-block;
+            width: 36px;
+            height: 18px;
+        }
 
+        .member-details .enable-query-toggle-btn input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .member-details .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #e0e0e0;
+            transition: .4s;
+            border-radius: 18px;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .member-details .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 14px;
+            width: 14px;
+            left: 2px;
+            bottom: 2px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+        }
+
+        .member-details input:checked + .toggle-slider {
+            background-color: #4CAF50;
+        }
+
+        .member-details input:checked + .toggle-slider:before {
+            transform: translateX(18px);
+        }
+
+        .member-details input:focus + .toggle-slider {
+            box-shadow: 0 0 1px #4CAF50;
+        }
 
         @media (max-width: 768px) {
             .filter-group {
                 min-width: 100%;
             }
+
+            .filter-buttons {
+                width: 100%;
+                margin-left: 0;
+                margin-top: 10px;
+            }
+
+            .filter-buttons .btn {
+                flex-grow: 1;
+            }
+        }
+
+        .member-actions-dropdown {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 10;
+        }
+
+        .dropdown-toggle-btn {
+            background: transparent;
+            border: none;
+            color: var(--sidenavbar-text-color);
+            padding: 5px 8px;
+            transition: all 0.3s ease;
+        }
+
+        .dropdown-toggle-btn:hover {
+            background: rgba(0,0,0,0.05);
+            transform: scale(1.1);
+        }
+
+        .dropdown-menu {
+            border: none;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            border-radius: 8px;
+            background-color: var(--sidenavbar-body-color);
+            overflow: hidden;
+        }
+
+        .dropdown-item {
+            padding: 8px 16px;
+            font-size: 0.9rem;
+            color: var(--sidenavbar-text-color);
+            transition: all 0.2s ease;
+        }
+
+        .dropdown-item:hover {
+            color: var(--sidenavbar-text-color);
+            background-color: rgba(0,0,0,0.05);
+        }
+
+        .dropdown-item.delete-item:hover {
+            background-color: rgba(220, 53, 69, 0.1);
+        }
+
+        .dropdown-divider {
+            margin: 0.3rem 0;
         }
     </style>
 @endpush
@@ -190,6 +330,7 @@
 
     <!-- Error/Success Modal -->
     <x-error-success-model />
+    <x-demote-to-staff />
 
     <div id="main">
         <section class="content my-3 mx-2">
@@ -225,6 +366,24 @@
                                                      class="member-avatar">
                                                 <h3 class="member-name">{{ $staffMember->user->name }}</h3>
                                                 <div class="member-position">Manager</div>
+                                                <div class="dropdown member-actions-dropdown">
+                                                    <button class="btn btn-sm dropdown-toggle-btn rounded-circle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                        <i class="fas fa-ellipsis-v fa-lg"></i>
+                                                    </button>
+                                                    <ul class="dropdown-menu dropdown-menu-end">
+                                                        <li>
+                                                            <a class="dropdown-item promote-item demote-btn"  href="#" data-staff-id="{{ $staffMember->id }}">
+                                                                <i class="fas fa-user-shield me-2"></i> Promote to Manager
+                                                            </a>
+                                                        </li>
+                                                        <li><hr class="dropdown-divider"></li>
+                                                        <li>
+                                                            <a class="dropdown-item delete-item delete-member-btn text-danger" href="#" data-member-id="{{ $staffMember->id }}">
+                                                                <i class="fas fa-trash-alt me-2"></i> Delete Manager
+                                                            </a>
+                                                        </li>
+                                                    </ul>
+                                                </div>
                                             </div>
                                             <div class="member-details">
                                                 <div class="detail-item">
@@ -289,5 +448,93 @@
 
 @push('scripts')
     <script>
+        function resetFilters() {
+            window.location.href = '{{ route("owner.staff.index") }}';
+        }
+
+        function deleteStaffMember(memberId) {
+            const deleteUrl = "{{ route('owner.managers.destroy') }}";
+
+            return fetch(deleteUrl, {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({ id: memberId })
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(err => { throw err; });
+                    }
+                    return response.json();
+                });
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll('.delete-member-btn').forEach(button => {
+                button.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const memberId = this.getAttribute('data-member-id');
+
+                    Swal.fire({
+                        title: 'Are you sure?',
+                        text: "You won't be able to revert this!",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Yes, delete it!',
+                        cancelButtonText: 'Cancel',
+                        background: 'var(--body-background-color)',
+                        color: 'var(--sidenavbar-text-color)',
+                        backdrop: true,
+                        allowOutsideClick: false,
+                        showClass: {
+                            popup: 'animate__animated animate__fadeInDown'
+                        },
+                        hideClass: {
+                            popup: 'animate__animated animate__fadeOutUp'
+                        }
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            Swal.fire({
+                                title: 'Deleting...',
+                                html: 'Please wait while we delete the staff member.',
+                                allowOutsideClick: false,
+                                didOpen: () => {
+                                    Swal.showLoading();
+                                },
+                                background: 'var(--body-background-color)',
+                                color: 'var(--sidenavbar-text-color)',
+                            });
+
+                            deleteStaffMember(memberId)
+                                .then(data => {
+                                    Swal.fire({
+                                        title: 'Deleted!',
+                                        text: data.success || 'Staff member has been deleted.',
+                                        icon: 'success',
+                                        background: 'var(--body-background-color)',
+                                        color: 'var(--sidenavbar-text-color)',
+                                    }).then(() => {
+                                        window.location.reload();
+                                    });
+                                })
+                                .catch(error => {
+                                    Swal.fire({
+                                        title: 'Error!',
+                                        text: error.message || error.error || 'An error occurred while deleting.',
+                                        icon: 'error',
+                                        background: 'var(--body-background-color)',
+                                        color: 'var(--sidenavbar-text-color)',
+                                    });
+                                });
+                        }
+                    });
+                });
+            });
+        });
     </script>
 @endpush

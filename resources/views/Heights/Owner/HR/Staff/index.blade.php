@@ -107,18 +107,6 @@
             margin-bottom: 15px;
         }
 
-        .delete-member-btn {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            transition: all 0.3s ease;
-            z-index: 10;
-        }
-
-        .delete-member-btn:hover {
-            transform: scale(1.1);
-        }
-
         .member-name {
             margin: 0;
             color: var(--sidenavbar-text-color);
@@ -278,6 +266,54 @@
                 flex-grow: 1;
             }
         }
+
+        .member-actions-dropdown {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 10;
+        }
+
+        .dropdown-toggle-btn {
+            background: transparent;
+            border: none;
+            color: var(--sidenavbar-text-color);
+            padding: 5px 8px;
+            transition: all 0.3s ease;
+        }
+
+        .dropdown-toggle-btn:hover {
+            background: rgba(0,0,0,0.05);
+            transform: scale(1.1);
+        }
+
+        .dropdown-menu {
+            border: none;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            border-radius: 8px;
+            background-color: var(--sidenavbar-body-color);
+            overflow: hidden;
+        }
+
+        .dropdown-item {
+            padding: 8px 16px;
+            font-size: 0.9rem;
+            color: var(--sidenavbar-text-color);
+            transition: all 0.2s ease;
+        }
+
+        .dropdown-item:hover {
+            color: var(--sidenavbar-text-color);
+            background-color: rgba(0,0,0,0.05);
+        }
+
+        .dropdown-item.delete-item:hover {
+            background-color: rgba(220, 53, 69, 0.1);
+        }
+
+        .dropdown-divider {
+            margin: 0.3rem 0;
+        }
     </style>
 @endpush
 
@@ -294,6 +330,7 @@
 
     <!-- Error/Success Modal -->
     <x-error-success-model />
+    <x-promote-to-manager />
 
     <div id="main">
         <section class="content my-3 mx-2">
@@ -366,11 +403,24 @@
                                                 <p class="member-position">
                                                     {{ $staffMember->department->name ?? 'No Department' }}
                                                 </p>
-                                                <button type="button"
-                                                        class="btn btn-sm delete-member-btn btn-danger rounded-circle shadow-sm transition-all delete-plan-btn"
-                                                        data-member-id="{{ $staffMember->id }}"  title="Delete Staff Member">
-                                                    <i class="fas fa-trash-alt"></i>
-                                                </button>
+                                                <div class="dropdown member-actions-dropdown">
+                                                    <button class="btn btn-sm dropdown-toggle-btn rounded-circle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                        <i class="fas fa-ellipsis-v fa-lg"></i>
+                                                    </button>
+                                                    <ul class="dropdown-menu dropdown-menu-end">
+                                                        <li>
+                                                            <a class="dropdown-item promote-item promote-btn"  href="#" data-staff-id="{{ $staffMember->id }}">
+                                                                <i class="fas fa-user-shield me-2"></i> Promote to Manager
+                                                            </a>
+                                                        </li>
+                                                        <li><hr class="dropdown-divider"></li>
+                                                        <li>
+                                                            <a class="dropdown-item delete-item delete-member-btn text-danger" href="#" data-member-id="{{ $staffMember->id }}">
+                                                                <i class="fas fa-trash-alt me-2"></i> Delete Manager
+                                                            </a>
+                                                        </li>
+                                                    </ul>
+                                                </div>
                                             </div>
                                             <div class="member-details">
                                                 <div class="detail-item">
@@ -442,13 +492,30 @@
         function resetFilters() {
             window.location.href = '{{ route("owner.staff.index") }}';
         }
-    </script>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Add click event to all delete buttons
+        function deleteStaffMember(memberId) {
+            const deleteUrl = "{{ route('owner.staff.destroy') }}";
+
+            return fetch(deleteUrl, {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({ id: memberId })
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(err => { throw err; });
+                    }
+                    return response.json();
+                });
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
             document.querySelectorAll('.delete-member-btn').forEach(button => {
-                button.addEventListener('click', function(e) {
+                button.addEventListener('click', function (e) {
                     e.preventDefault();
                     const memberId = this.getAttribute('data-member-id');
 
@@ -472,42 +539,40 @@
                             popup: 'animate__animated animate__fadeOutUp'
                         }
                     }).then((result) => {
-                        {{--if (result.isConfirmed) {--}}
-                        {{--    // Submit delete request--}}
-                        {{--    fetch(`/owner/staff/${memberId}`, {--}}
-                        {{--        method: 'DELETE',--}}
-                        {{--        headers: {--}}
-                        {{--            'X-CSRF-TOKEN': '{{ csrf_token() }}',--}}
-                        {{--            'Content-Type': 'application/json',--}}
-                        {{--            'Accept': 'application/json'--}}
-                        {{--        }--}}
-                        {{--    })--}}
-                        {{--        .then(response => response.json())--}}
-                        {{--        .then(data => {--}}
-                        {{--            if (data.success) {--}}
-                        {{--                Swal.fire(--}}
-                        {{--                    'Deleted!',--}}
-                        {{--                    'Staff member has been deleted.',--}}
-                        {{--                    'success'--}}
-                        {{--                ).then(() => {--}}
-                        {{--                    window.location.reload();--}}
-                        {{--                });--}}
-                        {{--            } else {--}}
-                        {{--                Swal.fire(--}}
-                        {{--                    'Error!',--}}
-                        {{--                    data.message || 'Something went wrong.',--}}
-                        {{--                    'error'--}}
-                        {{--                );--}}
-                        {{--            }--}}
-                        {{--        })--}}
-                        {{--        .catch(error => {--}}
-                        {{--            Swal.fire(--}}
-                        {{--                'Error!',--}}
-                        {{--                'An error occurred while deleting.',--}}
-                        {{--                'error'--}}
-                        {{--            );--}}
-                        {{--        });--}}
-                        {{--}--}}
+                        if (result.isConfirmed) {
+                            Swal.fire({
+                                title: 'Deleting...',
+                                html: 'Please wait while we delete the staff member.',
+                                allowOutsideClick: false,
+                                didOpen: () => {
+                                    Swal.showLoading();
+                                },
+                                background: 'var(--body-background-color)',
+                                color: 'var(--sidenavbar-text-color)',
+                            });
+
+                            deleteStaffMember(memberId)
+                                .then(data => {
+                                    Swal.fire({
+                                        title: 'Deleted!',
+                                        text: data.success || 'Staff member has been deleted.',
+                                        icon: 'success',
+                                        background: 'var(--body-background-color)',
+                                        color: 'var(--sidenavbar-text-color)',
+                                    }).then(() => {
+                                        window.location.reload();
+                                    });
+                                })
+                                .catch(error => {
+                                    Swal.fire({
+                                        title: 'Error!',
+                                        text: error.message || error.error || 'An error occurred while deleting.',
+                                        icon: 'error',
+                                        background: 'var(--body-background-color)',
+                                        color: 'var(--sidenavbar-text-color)',
+                                    });
+                                });
+                        }
                     });
                 });
             });
