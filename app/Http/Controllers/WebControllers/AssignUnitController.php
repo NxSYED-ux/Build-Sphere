@@ -144,7 +144,7 @@ class AssignUnitController extends Controller
 
             $unit = BuildingUnit::find($request->unitId);
 
-            [$assignedUnit, $type] = $this->assignUnitToUser($user, $unit, $request->price, $request->no_of_months);
+            [$assignedUnit, $type] = $this->assignUnitToUser($user, $unit, $request->price, $request->type, $request->no_of_months);
             $transaction = $this->createTransaction($user, $unit, $type, null, $assignedUnit, 'PKR', $request->no_of_months);
 
             if ($request->hasFile('pictures')) {
@@ -273,10 +273,8 @@ class AssignUnitController extends Controller
         return $user;
     }
 
-    private function assignUnitToUser($user, BuildingUnit $unit, $price, $no_of_months = 1 )
+    private function assignUnitToUser($user, BuildingUnit $unit, $price, $type, $no_of_months = 1 )
     {
-        $type = $unit->sale_or_rent === 'Sale' ? 'Sold' : 'Rented';
-
         $assignedUnit = UserBuildingUnit::create([
             'user_id' => $user->id,
             'unit_id' => $unit->id,
