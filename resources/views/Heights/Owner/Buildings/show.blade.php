@@ -4,8 +4,35 @@
 
 @push('styles')
     <style>
-        body {
+        /* ================ */
+        /* CSS Variables */
+        /* ================ */
+        :root {
+            --sage-green: var(--color-blue);
+            --deep-teal: #0b5351;
+            --warm-taupe: var(--color-blue);
+            --soft-clay: #d7b29d;
+            --mist-blue: #a5c4d4;
+            --pale-blush: #e8c7c8;
+            --dark-charcoal: #33312e;
+            --light-ivory: #f8f5f2;
+            --soft-gray: #e0ddd9;
         }
+
+        /* ================ */
+        /* Base Styles */
+        /* ================ */
+        body {
+            /* Add any base body styles here */
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        /* ================ */
+        /* Main Content */
+        /* ================ */
         #main {
             margin-top: 45px;
         }
@@ -21,108 +48,19 @@
             object-fit: cover;
         }
 
-
-        .card-detail {
-            border-radius: 25px;
-            max-width: 400px;
-            min-width: 300px;
-            height: auto;
-            max-height: 90vh;
-            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
-            border: 1px solid #dee2e6;
-            padding: 1rem;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .card-detail h4 {
-            font-size: 18px;
-            font-weight: bold;
-        }
-
-        .card-detail .image-container {
-            position: relative;
-            width: 100%;
-            height: 170px;
-            overflow: hidden;
-        }
-
-        .card-detail .image-container img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            border-radius: 8px;
-        }
-
-        .card-detail .card-body {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .card-detail .card-title {
-            color: #28a745;
-            font-weight: bold;
-            text-align: center;
-        }
-
-        .card-detail .text-center p {
-            margin-bottom: 0;
-        }
-
-        .card-detail .status-button {
-            border-radius: 8px;
-            font-weight: bold;
-            padding: 0.5rem;
-        }
-
-        .card-detail hr {
-            margin-top: auto;
-            margin-bottom: auto;
-        }
-
-        .card-detail .building-details {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            height: 100%;
-        }
-
-        .card-detail .building-details p {
-            margin-block: 1vh;
-            font-size: 16px;
-            color: var(--sidenavbar-text-color)
-        }
-
-        @media (max-width: 560px) {
-            .card-detail .building-details p {
-                margin-block: 1vh;
-                font-size: 13px;
-                color: var(--sidenavbar-text-color)
-            }
-        }
-
-
-        /* Tree Card*/
-        .tree-card{
+        /* ================ */
+        /* Tree Card & Modal */
+        /* ================ */
+        .tree-card {
             background-color: var(--main-background-color);
             color: var(--main-text-color);
+            padding: 0 !important;
         }
 
-
-        .modal-content{
+        .modal-content,
+        .modal-body {
             background-color: var(--main-background-color);
             color: var(--main-text-color);
-        }
-        .modal-body{
-            background-color: var(--main-background-color);
-            color: var(--main-text-color);
-        }
-
-        .model-btn-close {
-            background-color: transparent;
-            color: black !important;
-            border: none;
         }
 
         .model-btn-close {
@@ -135,14 +73,14 @@
             box-shadow: none;
         }
 
-        #tree{
-            background-color: var(--main-background-color);
-        }
-
+        #tree,
         #tree>svg {
             background-color: var(--main-background-color);
         }
-        /*partial*/
+
+        /* ================ */
+        /* Tree Visualization */
+        /* ================ */
         [lcn='levels']>rect {
             fill: #3498db;
         }
@@ -194,14 +132,6 @@
             fill: #ecaf00;
         }
 
-        .levels>[data-ctrl-n-menu-id] line {
-            stroke: #ecaf00;
-        }
-
-        .levels>g>.ripple {
-            fill: #ecaf00;
-        }
-
         [lcn='units']>rect {
             fill: red;
         }
@@ -226,92 +156,401 @@
             fill: orange;
         }
 
-
-        /**/
-        #reject-btn{
-            border-radius: 5px;
-            border: 1px solid #EC5252;
-            color: #EC5252;
-            background-color: white;
+        /* ================ */
+        /* Modal Buttons */
+        /* ================ */
+        .model-btn-close {
+            color: #008CFF !important;
+            background-color: #ffff !important;
+            border: 1px solid #008CFF !important;
         }
 
-        #reject-btn:hover{
-            border: 1px solid #EC5252;
-            color: #fff;
-            background-color: #EC5252;
+        .model-btn-close:hover {
+            color: #008CFF !important;
+            background-color: #ffff !important;
+            border: 1px solid #008CFF !important;
         }
 
-        #reject-btn #reject-svg{
-            fill: #EC5252;
+        .model-btn-submit {
+            color: #ffff !important;
+            background-color: #008CFF !important;
+            border: 1px solid #008CFF !important;
         }
 
-        #reject-btn:hover #reject-svg{
-            fill: #ffff;
+        .model-btn-submit:hover {
+            color: #ffff !important;
+            background-color: #008CFF !important;
+            border: 1px solid #008CFF !important;
         }
 
-        #rejectIcon {
-            filter: invert(36%) sepia(86%) saturate(345%) hue-rotate(358deg) brightness(93%) contrast(88%);
-        }
-
-        #approved-btn{
-            border-radius: 5px;
-            border: 1px solid #008CFF;
+        /* ================ */
+        /* Building Hero Section */
+        /* ================ */
+        .building-hero {
+            background: linear-gradient(135deg, var(--deep-teal) 0%, var(--color-light-blue-2) 100%);
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            padding: 2rem;
+            margin-bottom: 1.3rem;
             color: white;
-            background-color: #008CFF;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+            animation: fadeInUp 0.6s ease-out;
         }
 
-        #approved-btn:hover{
-            border: 1px solid #008CFF !important;
-            color: #008CFF !important;
-            background-color: #fff !important;
+        .hero-grid {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 2rem;
         }
 
-        #approved-btn #approve-svg{
-            fill: #ffff;
+        .hero-content {
+            flex: 1;
+            min-width: 0;
+            padding-right: 1rem;
         }
 
-        #approved-btn:hover #approve-svg{
-            fill: #008CFF;
+        .hero-carousel-wrapper {
+            display: flex;
+            justify-content: flex-end;
+            width: 350px;
+            flex-shrink: 0;
         }
 
-        .model-btn-close{
-            color: #008CFF !important;
-            background-color: #ffff !important;
-            border: 1px solid #008CFF !important;
-        }
-        .model-btn-close:hover{
-            color: #008CFF !important;
-            background-color: #ffff !important;
-            border: 1px solid #008CFF !important;
+        .hero-carousel {
+            position: relative;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            width: 350px;
+            height: 300px;
         }
 
-        .model-btn-submit{
-            color: #ffff !important;
-            background-color: #008CFF !important;
-            border: 1px solid #008CFF !important;
+        .building-carousel {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.5s ease;
         }
 
-        .model-btn-submit:hover{
-            color: #ffff !important;
-            background-color: #008CFF !important;
-            border: 1px solid #008CFF !important;
+        .carousel-slide {
+            min-width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        .carousel-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .carousel-dots {
+            position: absolute;
+            bottom: 1rem;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .carousel-dots span {
+            display: block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.6);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .carousel-dots span.active {
+            background: white;
+            transform: scale(1.3);
+        }
+
+        .building-title {
+            font-weight: 700;
+            margin-bottom: 2rem;
+            font-size: 2.2rem;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            position: relative;
+            display: inline-block;
+            font-family: 'Playfair Display', serif;
+            color: var(--light-ivory);
+        }
+
+        .building-title::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 60px;
+            height: 4px;
+            background: var(--warm-taupe);
+            border-radius: 2px;
+        }
+
+        .building-description {
+            font-size: 1.1rem;
+            line-height: 1.7;
+            max-width: 800px;
+            opacity: 0.9;
+            margin-bottom: 1.5rem;
+            color: rgba(255,255,255,0.9);
+        }
+
+        .building-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            margin-top: 1rem;
+            justify-content: flex-start; /* Left align on large screens */
+        }
+
+        .meta-group {
+            display: flex;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.95rem;
+            color: rgba(255, 255, 255, 0.85);
+        }
+
+        /* Address always on new line */
+        .building-address {
+            flex-basis: 100%;
+            margin-top: 0.5rem;
+        }
+
+        .meta-icon {
+            font-size: 1.1rem;
+            color: #fff !important;
+        }
+
+        /* ================ */
+        /* Action Buttons */
+        /* ================ */
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .action-buttons a, button{
+            width: 201px;
+
+        }
+
+        .building-hero .btn-edit,
+        .building-hero .btn-back {
+            color: white;
+            border-radius: 50px;
+            padding: 0.6rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+        }
+
+        .building-hero .btn-edit:hover,
+        .building-hero .btn-delete:hover,
+        .building-hero .btn-back:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .btn-edit {
+            background: rgba(255,255,255,0.15);
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+
+        .btn-edit:hover {
+            background: rgba(255,255,255,0.25);
+        }
+
+        .btn-back {
+            background: rgba(255,255,255,0.15);
+            border: 1px solid rgba(255,255,255,0.3);
+            font-weight: 500;
+        }
+
+        .btn-back:hover {
+            background: rgba(255,255,255,0.25);
+        }
+
+        /* ================ */
+        /* Building Stats Cards */
+        /* ================ */
+        .building-stats-cards {
+            display: flex;
+            gap: 1.5rem;
+            margin-bottom: 1.3rem;
+            flex-wrap: wrap;
+        }
+
+        .building-stat-card {
+            flex: 1;
+            min-width: 200px;
+            background: var(--sidenavbar-body-color);
+            border-radius: 16px;
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .building-stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-icon {
+            font-size: 1.75rem;
+            color: #fff;
+            width: 50px;
+            height: 50px;
+            background: rgba(0, 128, 128, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .stat-content h3 {
+            font-size: 0.9rem;
+            color: #fff;
+            margin-bottom: 0.25rem;
+            font-weight: 600;
+        }
+
+        .stat-content p {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #fff;
+            margin: 0;
+        }
+
+        /* ================ */
+        /* Responsive Styles */
+        /* ================ */
+        @media (max-width: 1200px) {
+            /* Large devices (desktops, less than 1200px) */
         }
 
         @media (max-width: 992px) {
-            .d-flex.flex-wrap {
+            /* Medium devices (tablets, less than 992px) */
+            .hero-grid {
                 flex-direction: column;
+            }
+
+            .hero-carousel-wrapper {
+                width: 100%;
+                justify-content: center;
+                order: -1;
+                margin-bottom: 1.5rem;
+            }
+
+            .hero-content {
+                padding-right: 0;
+                width: 100%;
+            }
+
+            .hero-carousel {
+                width: 100%;
+                max-width: 500px;
+                margin: 0 auto;
+            }
+
+            .building-stats-cards {
+                flex-direction: column;
+            }
+
+            .building-stat-card {
+                width: 100%;
             }
         }
 
+        @media (max-width: 768px) {
+            /* Small devices (landscape phones, less than 768px) */
+            .building-title {
+                font-size: 1.8rem;
+            }
 
-        /*    */
-        .unit-user-details{
-            background-color: var(--sidenavbar-body-color);
+            .building-hero {
+                text-align: center;
+            }
+
+            .building-title::after {
+                left: 50%;
+                transform: translateX(-50%);
+            }
+
+            .building-meta {
+                justify-content: center; /* Center align on small screens */
+                text-align: center;
+            }
+
+            .meta-group {
+                justify-content: center;
+                width: 100%;
+            }
+
+            .building-type {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .meta-item {
+                justify-content: center;
+            }
+
+            .action-buttons {
+                justify-content: center;
+            }
         }
 
-    </style>
+        @media (max-width: 576px) {
+            /* Extra small devices (portrait phones, less than 576px) */
+            .building-hero {
+                padding: 1.25rem;
+            }
 
+            .building-title {
+                font-size: 1.6rem;
+            }
+
+            .building-description {
+                font-size: 1rem;
+            }
+
+            .hero-carousel {
+                height: 250px;
+            }
+
+            .meta-group {
+                justify-content: center;
+            }
+            .building-address {
+                margin-left: 10px !important;
+                margin-right: 10px !important;
+            }
+        }
+    </style>
 @endpush
+
 
 @section('content')
 
@@ -330,85 +569,127 @@
     <div id="main">
         <section class="content my-3 mx-2">
             <div class="container-fluid">
-                <div class="d-flex flex-wrap flex-lg-nowrap gap-3">
-                    <div class="card shadow-sm border p-3 h-100 d-flex flex-column"
-                         style="border-radius: 25px; max-width: 400px; min-width: 300px;">
-                        <h4 style="font-size: 18px; font-weight: bold">Building Detail</h4>
 
-                        <!-- Image Container -->
-                        <div class="position-relative" style="width: 100%; height: 200px; overflow: hidden;">
-                            <img src="{{ asset( $building->pictures->first() ?  $building->pictures->first()->file_path : '') }}"
-                                 class="img-fluid rounded w-100 h-100 object-fit-cover"
-                                 alt="Building Image">
-                        </div>
+                <div class="row">
+                    <div class="col-12">
+                        <!-- Building Hero Section (unchanged) -->
+                        <div class="building-hero">
+                            <div class="hero-grid">
+                                <!-- Text Content -->
+                                <div class="hero-content">
+                                    <h1 class="building-title">{{ $building->name }}</h1>
+                                    <p class="building-description">
+                                        {{ $building->remarks ?? 'No additional remarks available for this building.' }}
+                                    </p>
 
-                        <div class="card-body d-flex flex-column">
-                            <h5 class="card-title text-success fw-bold text-center">{{ $building->name }}</h5>
-                            <p class="text-center mb-0 pb-0">
-                                <svg width="15" height="15" viewBox="0 0 17 20" fill="none"
-                                     xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M14.173 14.8819L13.053 16.0558C12.2275 16.9144 11.1564 18.0184 9.83928 19.3679C9.0163 20.2113 7.71058 20.2112 6.88769 19.3677L3.59355 15.9718C3.17955 15.541 2.83301 15.1777 2.55386 14.8819C-0.654672 11.4815 -0.654672 5.9683 2.55386 2.56789C5.76239 -0.832524 10.9645 -0.832524 14.173 2.56789C17.3815 5.9683 17.3815 11.4815 14.173 14.8819ZM10.7226 8.9996C10.7226 7.61875 9.66633 6.49936 8.36344 6.49936C7.06056 6.49936 6.0043 7.61875 6.0043 8.9996C6.0043 10.3804 7.06056 11.4998 8.36344 11.4998C9.66633 11.4998 10.7226 10.3804 10.7226 8.9996Z" fill="red"/>
-                                </svg>
-                                {{ $building->address->location }}, {{ $building->address->city }}, {{ $building->address->province }}, {{ $building->address->country }}
-                            </p>
+                                    <div class="building-meta">
+                                        <div class="meta-group">
+                                            <div class="meta-item">
+                                                <i class="bx bx-area meta-icon"></i>
+                                                <span>{{ $building->area ? $building->area . ' sq.f' : 'N/A' }}</span>
+                                            </div>
+                                            <div class="meta-item">
+                                                <i class="bx bx-time meta-icon"></i>
+                                                <span>Year Built {{ $building->construction_year }}</span>
+                                            </div>
+                                        </div>
+                                        <div class="meta-item building-type">
+                                            <i class="fas fa-building meta-icon"></i>
+                                            <span>{{ $building->building_type ?? 'N/A' }}</span>
+                                        </div>
 
-                            <hr class="mt-3">
-
-                            <div class="text-center flex-grow-1">
-                                <p><strong>Organization:</strong> {{ $building->organization->name }}</p>
-                                <p><strong>Type:</strong> {{ $building->building_type }}</p>
-                                <div class="row">
-                                    <div class="col-5">
-                                        <p><strong>Levels:</strong> {{ $building->levels->count() }}</p>
+                                        <div class="meta-item building-address">
+                                            <i class="fas fa-map-marker meta-icon"></i>
+                                            <span>{{ $building->address ? $building->address->location . ', ' . $building->address->city . ', ' . $building->address->province . ', ' . $building->address->country . ' ' : 'Address not provided' }}</span>
+                                        </div>
                                     </div>
-                                    <div class="col-7">
-                                        <p><strong>Units:</strong> {{ $building->levels->sum(fn($level) => $level->units->count()) }}</p>
+
+                                    <div class="action-buttons">
+                                        <a href="{{ route('buildings.edit', $building->id) }}" class="btn-edit">
+                                            <i class="fas fa-pen"></i> Edit Building
+                                        </a>
+
+                                        @if($building->status === "Under Processing" || $building->status === "Rejected")
+                                            <form action="{{ route('owner.buildings.submit') }}" method="POST">
+                                                @csrf
+                                                <input type="hidden" name="building_id" value="{{ $building->id }}">
+                                                <button type="submit" class="btn-edit" id="building-approved-btn">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" width="24" height="24" viewBox="0 0 20 20"><path id="approve-svg" d="M5.5 2A1.5 1.5 0 0 0 4 3.5v14a.5.5 0 0 0 .5.5H7v-3.5a.5.5 0 0 1 .5-.5h1.522c.05-.555.183-1.087.386-1.582a.75.75 0 1 1 .752-1.296A5.49 5.49 0 0 1 14.5 9c.509 0 1.002.07 1.47.199A1.5 1.5 0 0 0 14.5 8H13V3.5A1.5 1.5 0 0 0 11.5 2zm2 3.75a.75.75 0 1 1-1.5 0a.75.75 0 0 1 1.5 0M6.75 8a.75.75 0 1 1 0 1.5a.75.75 0 0 1 0-1.5m.75 3.75a.75.75 0 1 1-1.5 0a.75.75 0 0 1 1.5 0M9.75 5a.75.75 0 1 1 0 1.5a.75.75 0 0 1 0-1.5m.75 3.75a.75.75 0 1 1-1.5 0a.75.75 0 0 1 1.5 0M9.022 15a5.5 5.5 0 0 0 1.235 3H8v-3zM19 14.5a4.5 4.5 0 1 1-9 0a4.5 4.5 0 0 1 9 0m-2.146-1.854a.5.5 0 0 0-.708 0L13.5 15.293l-.646-.647a.5.5 0 0 0-.708.708l1 1a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0 0-.708"/></svg>
+                                                    Submit</button>
+                                            </form>
+                                        @elseif($building->status === "Under Review" || $building->status === "For Reaproval" )
+                                            <form action="{{ route('owner.buildings.reminder') }}" method="POST">
+                                                @csrf
+                                                 <input type="hidden" name="building_id" value="{{ $building->id }}">
+                                                <button type="submit" class="btn-edit" >Reminder</button>
+                                            </form>
+                                        @endif
+
+                                        <a href="{{ route('owner.buildings.index') }}" class="btn-back">
+                                            <i class="fas fa-arrow-left"></i> Back to Buildings
+                                        </a>
                                     </div>
-                                    <div class="col-5">
-                                        <p><strong>Area:</strong> {{ $building->area }}</p>
-                                    </div>
-                                    <div class="col-7">
-                                        <p><strong>Construction Year:</strong> {{ $building->construction_year }}</p>
+                                </div>
+
+                                <!-- Image Carousel -->
+                                <div class="hero-carousel-wrapper">
+                                    <div class="hero-carousel">
+                                        <div class="building-carousel">
+                                            @foreach($building->pictures as $image)
+                                                <div class="carousel-slide">
+                                                    <img src="{{ asset($image->file_path) }}" alt="{{ $building->name }}" class="carousel-image">
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                        <div class="carousel-dots"></div>
                                     </div>
                                 </div>
                             </div>
-
-                            @if($building->status === "Under Processing" || $building->status === "Rejected" )
-                                <hr class="mb-0">
-                                <div class="d-flex justify-content-between align-items-stretch mt-3">
-                                    <a href="{{ route('owner.buildings.index') }}" class="btn btn-outline-primary w-50 me-2 status-button">Close</a>
-                                    <form action="{{ route('owner.buildings.submit') }}" method="POST" class="w-50">
-                                        @csrf
-                                        <input type="hidden" name="building_id" value="{{ $building->id }}">
-                                        <button type="submit" class="btn w-100 status-button" id="approved-btn">Submit</button>
-                                    </form>
-                                </div>
-                            @elseif($building->status === "Under Review" || $building->status === "For Reaproval" )
-                                <hr class="mb-0">
-                                <div class="d-flex justify-content-between align-items-stretch mt-3">
-                                    <a href="{{ route('owner.buildings.index') }}" class="btn btn-outline-primary w-50 me-2 status-button">Close</a>
-                                    <form action="{{ route('owner.buildings.reminder') }}" method="POST" class="w-50">
-                                        @csrf
-                                        <input type="hidden" name="building_id" value="{{ $building->id }}">
-                                        <button type="submit" class="btn w-100 status-button" id="approved-btn">Reminder</button>
-                                    </form>
-                                </div>
-                            @else
-                                <hr>
-                                <div class="d-flex justify-content-between mt-3">
-                                    <a href="{{ route('owner.buildings.index') }}" class="btn btn-outline-primary w-100 me-2 status-button">Close</a>
-                                </div>
-                            @endif
-
-
                         </div>
-                    </div>
 
-                    <div class="card tree-card border p-1 flex-grow-1" style="border-radius: 25px;">
-                        <div id="tree" class="py-0" style="border-radius: 25px;"></div>
+
+                        <!-- New: 3 Cards Row (below hero section) -->
+                        <div class="building-stats-cards">
+                            <div class="building-stat-card" style="background-color: #87CEEB !important;">
+                                <div class="stat-icon">
+                                    <i class="bx bx-layer"></i>
+                                </div>
+                                <div class="stat-content">
+                                    <h3>Levels</h3>
+                                    <p>4</p>
+                                </div>
+                            </div>
+
+                            <div class="building-stat-card" style="background-color: #FA8072 !important;">
+                                <div class="stat-icon">
+                                    <i class="fas fa-cube"></i>
+                                </div>
+                                <div class="stat-content">
+                                    <h3>Units</h3>
+                                    <p>10</p>
+                                </div>
+                            </div>
+
+                            <div class="building-stat-card" style="background-color: #66CDAA !important;">
+                                <div class="stat-icon">
+                                    <i class="fas fa-building"></i>
+                                </div>
+                                <div class="stat-content">
+                                    <h3>Organization</h3>
+                                    <p>{{ $building->organization->name ?? 'N/A' }}</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card tree-card border p-1 flex-grow-1" style="border-radius: 25px;">
+                            <div id="tree" class="py-0" style="border-radius: 25px;"></div>
+                        </div>
+                    </div>
+                </div>
 
             </div>
         </section>
@@ -656,5 +937,61 @@
         }
 
 
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const carousel = document.querySelector('.building-carousel');
+            const slides = document.querySelectorAll('.carousel-slide');
+            const dotsContainer = document.querySelector('.carousel-dots');
+
+            // Only initialize if we have slides
+            if (slides.length > 0) {
+                let currentIndex = 0;
+
+                // Create dots
+                slides.forEach((_, index) => {
+                    const dot = document.createElement('span');
+                    dot.addEventListener('click', () => goToSlide(index));
+                    dotsContainer.appendChild(dot);
+                });
+
+                const dots = document.querySelectorAll('.carousel-dots span');
+                dots[0]?.classList.add('active');
+
+                // Auto-rotate slides
+                let interval = setInterval(nextSlide, 5000);
+
+                function updateCarousel() {
+                    carousel.style.transform = `translateX(-${currentIndex * 100}%)`;
+
+                    dots.forEach((dot, index) => {
+                        dot.classList.toggle('active', index === currentIndex);
+                    });
+                }
+
+                function nextSlide() {
+                    currentIndex = (currentIndex + 1) % slides.length;
+                    updateCarousel();
+                }
+
+                function goToSlide(index) {
+                    currentIndex = index;
+                    updateCarousel();
+                    clearInterval(interval);
+                    interval = setInterval(nextSlide, 5000);
+                }
+
+                // Pause on hover
+                carousel.addEventListener('mouseenter', () => clearInterval(interval));
+                carousel.addEventListener('mouseleave', () => {
+                    clearInterval(interval);
+                    interval = setInterval(nextSlide, 5000);
+                });
+
+                // Initialize
+                updateCarousel();
+            }
+        });
     </script>
 @endpush
