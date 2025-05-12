@@ -331,7 +331,14 @@
             });
 
             function fetchBuildings() {
-                fetch("{{ route('owner.levels.create') }}")
+                fetch("{{ route('owner.levels.create') }}", {
+                    method: 'GET',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
                     .then(response => response.json())
                     .then(data => {
                         const buildingSelect = document.getElementById('building_id');
@@ -373,8 +380,10 @@
                     fetch(`{{ route('owner.levels.edit', ':level') }}`.replace(':level', id), {
                         method: "GET",
                         headers: {
-                            "X-Requested-With": "XMLHttpRequest",
-                            "Accept": "application/json",
+                            'Accept': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            'Content-Type': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest'
                         },
                     })
                         .then(response => response.json())

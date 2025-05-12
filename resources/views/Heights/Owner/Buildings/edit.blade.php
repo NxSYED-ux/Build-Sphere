@@ -659,7 +659,10 @@
                     fetch(`{{ route('buildings.remove_picture', ':id') }}`.replace(':id', imageId), {
                         method: 'DELETE',
                         headers: {
+                            'Accept': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
                             'Content-Type': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest'
                         },
                     })
                         .then(response => response.json())
@@ -819,8 +822,10 @@
                     fetch(`{{ route('building_documents.removeDocument', ':id') }}`.replace(':id', fileId), {
                         method: 'DELETE',
                         headers: {
+                            'Accept': 'application/json',
                             'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                            'Content-Type': 'application/json'
+                            'Content-Type': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest'
                         }
                     })
                         .then(response => response.json())
@@ -875,8 +880,10 @@
                     fetch(`{{ route('building_document.edit', ':id') }}`.replace(':id', id), {
                         method: "GET",
                         headers: {
-                            "X-Requested-With": "XMLHttpRequest",
-                            "Accept": "application/json"
+                            'Accept': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            'Content-Type': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest'
                         }
                     })
                         .then(response => response.json())

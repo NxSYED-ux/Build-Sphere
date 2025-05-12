@@ -939,7 +939,10 @@
                 fetch(url, {
                     method: "GET",
                     headers: {
-                        "Accept": "application/json"
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
                     }
                 })
                     .then(response => response.json())
@@ -1278,9 +1281,10 @@
             fetch("{{ route('organizations.onlinePaymentStatus.update') }}", {
                 method: 'PUT',
                 headers: {
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
                     'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': token,
-                    'Accept': 'application/json'
+                    'X-Requested-With': 'XMLHttpRequest'
                 },
                 body: JSON.stringify({
                     id: organizationId,

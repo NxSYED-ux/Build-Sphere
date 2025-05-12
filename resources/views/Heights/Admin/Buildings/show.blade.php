@@ -640,16 +640,16 @@
 
                                 <!-- Image Carousel -->
                                 <div class="hero-carousel-wrapper">
-                                <div class="hero-carousel">
-                                    <div class="building-carousel">
-                                        @foreach($building->pictures as $image)
-                                            <div class="carousel-slide">
-                                                <img src="{{ asset($image->file_path) }}" alt="{{ $building->name }}" class="carousel-image">
-                                            </div>
-                                        @endforeach
+                                    <div class="hero-carousel">
+                                        <div class="building-carousel">
+                                            @foreach($building->pictures as $image)
+                                                <div class="carousel-slide">
+                                                    <img src="{{ asset($image->file_path) }}" alt="{{ $building->name }}" class="carousel-image">
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                        <div class="carousel-dots"></div>
                                     </div>
-                                    <div class="carousel-dots"></div>
-                                </div>
                                 </div>
                             </div>
                         </div>
@@ -691,12 +691,12 @@
                 </div>
 
                 <div class="row">
-                        <div class="col-12">
-                            <div class="card tree-card border p-1 flex-grow-1" style="border-radius: 25px;">
-                                <div id="tree" class="py-0" style="border-radius: 25px;"></div>
-                            </div>
+                    <div class="col-12">
+                        <div class="card tree-card border p-1 flex-grow-1" style="border-radius: 25px;">
+                            <div id="tree" class="py-0" style="border-radius: 25px;"></div>
                         </div>
                     </div>
+                </div>
 
             </div>
         </section>
@@ -802,7 +802,7 @@
             show: false
         };
 
-       // Get the options and merge with toolbar settings
+        // Get the options and merge with toolbar settings
         let options = Object.assign(getOptions(), {
             toolbar: {
                 fullScreen: true,
@@ -886,16 +886,16 @@
             { id: "Building {{ $building->id }}", stpid: "buildings", name: "{{ $building->name }}", title: "Building", img: "{{ asset( $building->pictures->first() ?  $building->pictures->first()->file_path : 'img/placeholder-img.jfif') }}", tags: ["top"] },
             { id: "Owner {{ $owner->id }}", pid: "buildings", name: "{{ $owner->name }}", title: "Owner", img: "{{ asset( $owner->picture ?? 'img/placeholder-profile.png') }}", tags: ["assistant"] },
 
-            @foreach( $levels as $level )
+                @foreach( $levels as $level )
             { id: "levels {{ $level->id }}", pid: "buildings", tags: ["levels", "department"], name: "{{ $level->level_name }}" },
-            @endforeach
+                @endforeach
 
-            @foreach( $levels as $level )
-                { id: "Level {{ $level->id }}", stpid: "levels {{ $level->id }}", name: "{{ $level->level_name }}", title: "Level {{ $level->level_number }}" },
-            @endforeach
+                @foreach( $levels as $level )
+            { id: "Level {{ $level->id }}", stpid: "levels {{ $level->id }}", name: "{{ $level->level_name }}", title: "Level {{ $level->level_number }}" },
+                @endforeach
 
-            @foreach( $units as $unit )
-                { id: "Unit {{ $unit->id }}", pid: "Level {{ $unit->level_id }}", name: "{{ $unit->unit_name }}", title: "{{ $unit->availability_status }}", img: "{{ asset( $unit->pictures->first() ? $unit->pictures->first()->file_path : 'img/placeholder-unit.png') }}", tags: ["{{ $unit->unit_type }}"] },
+                @foreach( $units as $unit )
+            { id: "Unit {{ $unit->id }}", pid: "Level {{ $unit->level_id }}", name: "{{ $unit->unit_name }}", title: "{{ $unit->availability_status }}", img: "{{ asset( $unit->pictures->first() ? $unit->pictures->first()->file_path : 'img/placeholder-unit.png') }}", tags: ["{{ $unit->unit_type }}"] },
             @endforeach
         ]);
 
@@ -946,11 +946,12 @@
             fetch(`{{ route('units.details', ':id') }}`.replace(':id', numericUnitId), {
                 method: "GET",
                 headers: {
-                    "X-Requested-With": "XMLHttpRequest",
-                    "Accept": "application/json"
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
                 }
-            })
-                .then(response => response.json())
+            }) .then(response => response.json())
                 .then(data => {
                     if (data.error) {
                         console.error("Error:", data.error);

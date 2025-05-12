@@ -416,8 +416,10 @@
                     fetch(`{{ route('organizations.buildings', ':id') }}`.replace(':id', organizationId), {
                         method: "GET",
                         headers: {
-                            "X-Requested-With": "XMLHttpRequest",
-                            "Accept": "application/json"
+                            'Accept': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            'Content-Type': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest'
                         }
                     })
                         .then(response => response.json())
@@ -448,8 +450,10 @@
                     fetch(`{{ route('buildings.levels', ':id') }}`.replace(':id', buildingId), {
                         method: "GET",
                         headers: {
-                            "X-Requested-With": "XMLHttpRequest",
-                            "Accept": "application/json"
+                            'Accept': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            'Content-Type': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest'
                         }
                     })
                         .then(response => response.json())

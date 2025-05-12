@@ -404,7 +404,7 @@
             });
         });
     </script>
-    
+
     <!-- Remove Profile -->
     <script>
         document.querySelectorAll('.remove_picture_button').forEach(button => {
@@ -416,9 +416,10 @@
                 fetch("{{ route('admin.profile.picture.delete') }}", {
                     method: "DELETE",
                     headers: {
-                        "X-CSRF-TOKEN": "{{ csrf_token() }}",
-                        "Content-Type": "application/json",
-                        "Accept": "application/json"
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
                     }
                 })
                     .then(response => response.json())
@@ -469,8 +470,10 @@
                             method: "POST",
                             body: formData,
                             headers: {
-                                "X-CSRF-TOKEN": "{{ csrf_token() }}",
-                                "Accept": "application/json"
+                                'Accept': 'application/json',
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                'Content-Type': 'application/json',
+                                'X-Requested-With': 'XMLHttpRequest'
                             }
                         })
                             .then(response => response.json())

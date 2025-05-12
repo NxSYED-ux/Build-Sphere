@@ -791,8 +791,10 @@
             fetch("{{ route('send_signup_otp') }}", {
                 method: 'POST',
                 headers: {
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
                     'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    'X-Requested-With': 'XMLHttpRequest'
                 },
                 body: JSON.stringify({ email: email })
             })

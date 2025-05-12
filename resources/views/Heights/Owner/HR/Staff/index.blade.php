@@ -521,8 +521,6 @@
                     const staffId = button.dataset.staffId;
                     const isChecked = button.checked ? 1 : 0;
 
-                    const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
-
                     const queryUrl = "{{ route('owner.staff.handle.queries') }}";
                     const originalHTML = button.nextElementSibling.innerHTML;
                     button.nextElementSibling.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
@@ -531,9 +529,9 @@
                     fetch(queryUrl, {
                         method: 'PUT',
                         headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': csrfToken,
                             'Accept': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            'Content-Type': 'application/json',
                             'X-Requested-With': 'XMLHttpRequest'
                         },
                         body: JSON.stringify({
@@ -553,6 +551,8 @@
                                 title: 'Success!',
                                 text: data.success || 'Status updated successfully',
                                 timer: 2000,
+                                background: 'var(--body-background-color)',
+                                color: 'var(--sidenavbar-text-color)',
                                 showConfirmButton: false
                             });
                         })
@@ -563,6 +563,8 @@
                                 title: 'Error!',
                                 text: error.error || 'Something went wrong. Please try again.',
                                 timer: 2000,
+                                background: 'var(--body-background-color)',
+                                color: 'var(--sidenavbar-text-color)',
                                 showConfirmButton: true
                             });
                             // Revert the checkbox state

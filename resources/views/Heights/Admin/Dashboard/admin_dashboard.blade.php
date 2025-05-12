@@ -4,7 +4,6 @@
 
 @push('styles')
     <style>
-
         #main{
         }
         .padding-y {
@@ -113,7 +112,7 @@
                 <div class="col-12">
                     <div class="content-wrapper" style="min-height: 751px;">
                         <section class="content-header mt-1">
-                        <!-- <span class="inline-span " style="position: absolute; left: 0px; top: 15px; " id="sidenav_toggler" onclick="openNav()"><i class="fa fa-circle" style="font-size:36px;"></i> </span> -->
+                            <!-- <span class="inline-span " style="position: absolute; left: 0px; top: 15px; " id="sidenav_toggler" onclick="openNav()"><i class="fa fa-circle" style="font-size:36px;"></i> </span> -->
                             <h3 class="inline-span dashboard_Header">Dashboard</h3>
 
                         </section>
@@ -167,7 +166,7 @@
                                             <div class="mt-2">
                                                 <p class="currentDate mb-2"></p>
                                                 <div style="">
-                                                <button class="label text-center getPdfButton" type="button" id="" data-bs-toggle="dropdown">GET PDF</button>
+                                                    <button class="label text-center getPdfButton" type="button" id="" data-bs-toggle="dropdown">Details</button>
                                                 </div>
                                             </div>
                                             <br>
@@ -207,7 +206,7 @@
                                             <div class="mt-2">
                                                 <p class="currentDate mb-2"></p>
                                                 <div style="">
-                                                <button class="label text-center getPdfButton" type="button" id="" data-bs-toggle="dropdown">GET PDF</button>
+                                                    <button class="label text-center getPdfButton" type="button" id="" data-bs-toggle="dropdown">Details</button>
                                                 </div>
                                             </div>
                                             <br>
@@ -252,10 +251,10 @@
                             <div class="row my-2">
                                 <div data-aos="fade-up" class="aos-init aos-animate">
                                     <iframe  style="border:0; width: 100%; height: 350px;" class="embed-map-frame" frameborder="0" scrolling="no" marginheight="0" marginwidth="0"
-                                          src="https://maps.google.com/maps?width=600&height=350&hl=en&q=COMSATS&t=&z=15&ie=UTF8&iwloc=B&output=embed">
+                                             src="https://maps.google.com/maps?width=600&height=350&hl=en&q=COMSATS&t=&z=15&ie=UTF8&iwloc=B&output=embed">
                                     </iframe>
                                 </div>
-                             </div>
+                            </div>
 
                         </section>
                     </div>
@@ -268,82 +267,140 @@
 @endsection
 
 @push('scripts')
-
-    <!-- // charts -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!--  -->
+    <!-- Charts -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            let Jsondata;
+            // Dummy data for charts
+            const dummyData = {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                income: [12000, 19000, 15000, 18000, 21000, 25000, 22000, 24000, 23000, 26000, 28000, 30000],
+                expenses: [8000, 12000, 10000, 11000, 15000, 18000, 16000, 17000, 15000, 19000, 20000, 22000],
+                bookings: [45, 60, 55, 70, 85, 90, 80, 75, 82, 88, 92, 95],
+                vacancies: [15, 10, 15, 10, 5, 5, 10, 15, 8, 7, 3, 2]
+            };
 
-            fetch("{{ asset('js/data.json') }}")
-                .then(response => {
-                    if (response.ok) {
-                        return response.json();
-                    }
-                    throw new Error("Failed to load JSON data.");
-                })
-                .then(data => {
-                    Jsondata = data;
-                    createChart(Jsondata, 'bar', 'barChart');
-                    createChart(Jsondata, 'line', 'lineChart');
-                })
-                .catch(error => console.error(error));
-
-            function createChart(data, type, chartId) {
-                const canvas = document.getElementById(chartId);
-                if (!canvas) {
-                    console.error(`Canvas with ID "${chartId}" not found.`);
-                    return;
-                }
-
-                const ctx = canvas.getContext('2d');
-                new Chart(ctx, {
-                    type: type,
-                    data: {
-                        labels: data.map(row => row.month),
-                        datasets: [
-                            {
-                                label: 'Income',
-                                data: data.map(row => row.income),
-                                backgroundColor: type === 'bar' ? 'rgba(75, 192, 192, 0.2)' : 'transparent',
-                                borderColor: 'rgba(75, 192, 192, 1)',
-                                borderWidth: 2,
-                                fill: type === 'line'
-                            },
-                            {
-                                label: 'Expenses',
-                                data: data.map(row => row.expenses),
-                                backgroundColor: type === 'bar' ? 'rgba(255, 99, 132, 0.2)' : 'transparent',
-                                borderColor: 'rgba(255, 99, 132, 1)',
-                                borderWidth: 2,
-                                fill: type === 'line'
+            // Bar Chart - Bookings vs Vacancies
+            const barCtx = document.getElementById('barChart').getContext('2d');
+            new Chart(barCtx, {
+                type: 'bar',
+                data: {
+                    labels: dummyData.labels,
+                    datasets: [
+                        {
+                            label: 'Bookings',
+                            data: dummyData.bookings,
+                            backgroundColor: 'rgba(54, 162, 235, 0.7)',
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Vacancies',
+                            data: dummyData.vacancies,
+                            backgroundColor: 'rgba(255, 99, 132, 0.7)',
+                            borderColor: 'rgba(255, 99, 132, 1)',
+                            borderWidth: 1
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Number of Units'
                             }
-                        ]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        scales: {
-                            y: {
-                                beginAtZero: true
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Month'
                             }
                         }
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Monthly Bookings vs Vacancies',
+                            font: {
+                                size: 16
+                            }
+                        },
+                        legend: {
+                            position: 'top'
+                        }
                     }
-                });
-            }
+                }
+            });
+
+            // Line Chart - Income vs Expenses
+            const lineCtx = document.getElementById('lineChart').getContext('2d');
+            new Chart(lineCtx, {
+                type: 'line',
+                data: {
+                    labels: dummyData.labels,
+                    datasets: [
+                        {
+                            label: 'Income',
+                            data: dummyData.income,
+                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            borderWidth: 2,
+                            tension: 0.3,
+                            fill: true
+                        },
+                        {
+                            label: 'Expenses',
+                            data: dummyData.expenses,
+                            backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                            borderColor: 'rgba(255, 99, 132, 1)',
+                            borderWidth: 2,
+                            tension: 0.3,
+                            fill: true
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Amount ($)'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Month'
+                            }
+                        }
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Monthly Income vs Expenses',
+                            font: {
+                                size: 16
+                            }
+                        },
+                        legend: {
+                            position: 'top'
+                        }
+                    }
+                }
+            });
         });
-    </script>
 
-
-    <!-- current date and time -->
-    <script>
-        // Create an array of month names
+        // current date and time
         const monthNames = ["JANUARY", "FEBRUARY", "MARCH", "APRIL", "MAY", "JUNE", "JULY", "AUGUST", "SEPTEMBER", "OCTOBER", "NOVEMBER", "DECEMBER"];
 
-        // Function to format and display date or month
         function displayDateOrMonth(format, className) {
             const currentDate = new Date();
             const year = currentDate.getFullYear();
@@ -371,6 +428,7 @@
         displayDateOrMonth("month", "currentMonth");
     </script>
 
+    <!-- Fetch dashboard data -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
 
@@ -413,6 +471,4 @@
 
         });
     </script>
-
 @endpush
-

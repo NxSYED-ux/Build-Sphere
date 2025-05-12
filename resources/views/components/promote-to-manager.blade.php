@@ -155,9 +155,10 @@
                     const response = await fetch(`{{ route('owner.staff.promote.index', ':id') }}`.replace(':id', staffId), {
                         method: "GET",
                         headers: {
-                            "X-Requested-With": "XMLHttpRequest",
-                            "Accept": "application/json",
-                            "X-CSRF-TOKEN": csrfToken
+                            'Accept': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            'Content-Type': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest'
                         }
                     });
 
@@ -228,52 +229,52 @@
                 const currentBuildingId = data.staffInfo?.building_id || '';
 
                 modal.innerHTML = `
-            <div class="modal-dialog modal-lg" >
-                <div class="modal-content">
-                    <div class="modal-header" style="background-color: var(--body-card-bg) !important;">
-                        <h5 class="modal-title">Promote ${staffName}</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body" style="background-color: var(--body-card-bg) !important;">
-                        <div class="staff-info-section mb-4 p-3 border rounded">
-                            <div class="d-flex align-items-center">
-                                <img src="${staffPicture}" alt="${staffName}"
-                                     class="member-avatar rounded-circle me-3"
-                                     style="width: 80px; height: 80px; object-fit: cover;">
-                                <div>
-                                    <h5  style="color: var(--sidenavbar-text-color);">${staffName}</h5>
-                                    <p class="mb-1"  style="color: var(--sidenavbar-text-color);">${staffEmail}</p>
-                                    <span class="badge bg-primary bg-opacity-10 text-primary">
-                                        <i class='bx bx-user me-1'></i>Staff Member
-                                    </span>
+                    <div class="modal-dialog modal-lg" >
+                        <div class="modal-content">
+                            <div class="modal-header" style="background-color: var(--body-card-bg) !important;">
+                                <h5 class="modal-title">Promote ${staffName}</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body" style="background-color: var(--body-card-bg) !important;">
+                                <div class="staff-info-section mb-4 p-3 border rounded">
+                                    <div class="d-flex align-items-center">
+                                        <img src="${staffPicture}" alt="${staffName}"
+                                             class="member-avatar rounded-circle me-3"
+                                             style="width: 80px; height: 80px; object-fit: cover;">
+                                        <div>
+                                            <h5  style="color: var(--sidenavbar-text-color);">${staffName}</h5>
+                                            <p class="mb-1"  style="color: var(--sidenavbar-text-color);">${staffEmail}</p>
+                                            <span class="badge bg-primary bg-opacity-10 text-primary">
+                                                <i class='bx bx-user me-1'></i>Staff Member
+                                            </span>
+                                        </div>
+                                    </div>
                                 </div>
+
+                                <form id="promotionForm">
+                                    <input type="hidden" name="_token" value="${csrfToken}">
+                                    <input type="hidden" name="staff_id" value="${data.staffInfo?.id || ''}">
+
+                                    <div class="mb-4">
+                                        <h6 class="mb-3">Buildings to Manage</h6>
+                                        <div class="row">
+                                            ${renderBuildings(data.buildings || [], currentBuildingId)}
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-4">
+                                        <h6 class="mb-3">Manager Permissions</h6>
+                                        ${renderPermissions(data.permissions || [])}
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer" style="background-color: var(--body-card-bg) !important;">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                <button type="button" class="btn btn-primary" id="submitPromotion">Promote to Manager</button>
                             </div>
                         </div>
-
-                        <form id="promotionForm">
-                            <input type="hidden" name="_token" value="${csrfToken}">
-                            <input type="hidden" name="staff_id" value="${data.staffInfo?.id || ''}">
-
-                            <div class="mb-4">
-                                <h6 class="mb-3">Buildings to Manage</h6>
-                                <div class="row">
-                                    ${renderBuildings(data.buildings || [], currentBuildingId)}
-                                </div>
-                            </div>
-
-                            <div class="mb-4">
-                                <h6 class="mb-3">Manager Permissions</h6>
-                                ${renderPermissions(data.permissions || [])}
-                            </div>
-                        </form>
                     </div>
-                    <div class="modal-footer" style="background-color: var(--body-card-bg) !important;">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                        <button type="button" class="btn btn-primary" id="submitPromotion">Promote to Manager</button>
-                    </div>
-                </div>
-            </div>
-        `;
+                `;
 
                 return modal;
             }
@@ -282,19 +283,19 @@
                 if (!buildings.length) return '<p class="col-12">No buildings available</p>';
 
                 return buildings.map(building => `
-        <div class="col-md-4 col-lg-3">
-            <div class="form-check">
-                <input class="form-check-input" type="checkbox"
-                       name="buildings[]"
-                       value="${building.id}"
-                       id="building-${building.id}"
-                       ${building.id == currentBuildingId ? 'checked' : ''}>
-                <label class="form-check-label" for="building-${building.id}">
-                    ${building.name || 'Unnamed Building'}
-                </label>
-            </div>
-        </div>
-    `).join('');
+                    <div class="col-md-4 col-lg-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox"
+                                   name="buildings[]"
+                                   value="${building.id}"
+                                   id="building-${building.id}"
+                                   ${building.id == currentBuildingId ? 'checked' : ''}>
+                            <label class="form-check-label" for="building-${building.id}">
+                                ${building.name || 'Unnamed Building'}
+                            </label>
+                        </div>
+                    </div>
+                `).join('');
             }
 
             function renderPermissions(permissions) {
@@ -308,34 +309,34 @@
                 }, {});
 
                 return `
-            <div class="accordion" id="permissionsAccordion">
-                ${Object.entries(grouped).map(([header, perms], index) => `
-                    <div class="accordion-item mb-3">
-                        <h6 class="accordion-header" id="heading${index}">
-                            <button class="accordion-button collapsed" type="button"
-                                    data-bs-toggle="collapse" data-bs-target="#collapse${index}"
-                                    aria-expanded="false" aria-controls="collapse${index}">
-                                <div class="d-flex align-items-center w-100">
-                                    <i class='bx bx-category-alt me-2'></i>
-                                    <span class="fw-bold">${header}</span>
-                                    <span class="badge bg-primary bg-opacity-10 text-primary ms-auto me-2">
-                                        ${perms.length} ${perms.length === 1 ? 'permission' : 'permissions'}
-                                    </span>
-                                </div>
-                            </button>
-                        </h6>
-                        <div id="collapse${index}" class="accordion-collapse collapse"
-                             aria-labelledby="heading${index}" data-bs-parent="#permissionsAccordion">
-                            <div class="accordion-body pt-2">
-                                <div class="row">
-                                    ${renderPermissionGroup(perms)}
+                    <div class="accordion" id="permissionsAccordion">
+                        ${Object.entries(grouped).map(([header, perms], index) => `
+                            <div class="accordion-item mb-3">
+                                <h6 class="accordion-header" id="heading${index}">
+                                    <button class="accordion-button collapsed" type="button"
+                                            data-bs-toggle="collapse" data-bs-target="#collapse${index}"
+                                            aria-expanded="false" aria-controls="collapse${index}">
+                                        <div class="d-flex align-items-center w-100">
+                                            <i class='bx bx-category-alt me-2'></i>
+                                            <span class="fw-bold">${header}</span>
+                                            <span class="badge bg-primary bg-opacity-10 text-primary ms-auto me-2">
+                                                ${perms.length} ${perms.length === 1 ? 'permission' : 'permissions'}
+                                            </span>
+                                        </div>
+                                    </button>
+                                </h6>
+                                <div id="collapse${index}" class="accordion-collapse collapse"
+                                     aria-labelledby="heading${index}" data-bs-parent="#permissionsAccordion">
+                                    <div class="accordion-body pt-2">
+                                        <div class="row">
+                                            ${renderPermissionGroup(perms)}
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        `).join('')}
                     </div>
-                `).join('')}
-            </div>
-        `;
+                `;
             }
 
             function renderPermissionGroup(permissions) {
@@ -347,53 +348,53 @@
                     );
 
                     return `
-                <div class="col-sm-12 mb-3 parent-permission">
-                    <div class="permission-item-container">
-                        <div class="permission-toggle-container border-bottom ${children.length > 0 ? 'rounded-bottom-0' : 'rounded-bottom'}">
-                            <label class="permission-label">
-                                <i class='bx bxs-check-circle permission-icon'></i>
-                                ${permission.permission?.name || 'Permission'}
-                            </label>
-                            <div class="form-check form-switch">
-                                <input type="hidden" name="permissions[${permission.permission_id}]" value="0">
-                                <input class="form-check-input permission-toggle parent-toggle"
-                                       type="checkbox"
-                                       name="permissions[${permission.permission_id}]"
-                                       value="1"
-                                       data-permission-id="${permission.permission_id}"
-                                       ${permission.status ? 'checked' : ''}>
+                        <div class="col-sm-12 mb-3 parent-permission">
+                            <div class="permission-item-container">
+                                <div class="permission-toggle-container border-bottom ${children.length > 0 ? 'rounded-bottom-0' : 'rounded-bottom'}">
+                                    <label class="permission-label">
+                                        <i class='bx bxs-check-circle permission-icon'></i>
+                                        ${permission.permission?.name || 'Permission'}
+                                    </label>
+                                    <div class="form-check form-switch">
+                                        <input type="hidden" name="permissions[${permission.permission_id}]" value="0">
+                                        <input class="form-check-input permission-toggle parent-toggle"
+                                               type="checkbox"
+                                               name="permissions[${permission.permission_id}]"
+                                               value="1"
+                                               data-permission-id="${permission.permission_id}"
+                                               ${permission.status ? 'checked' : ''}>
+                                    </div>
+                                </div>
+                                ${children.length ? renderChildPermissions(children, permission) : ''}
                             </div>
                         </div>
-                        ${children.length ? renderChildPermissions(children, permission) : ''}
-                    </div>
-                </div>
-            `;
+                    `;
                 }).join('');
             }
 
             function renderChildPermissions(children, parentPermission) {
                 return `
-            <div class="child-permissions">
-                ${children.map(child => `
-                    <div class="permission-toggle-container child-permission">
-                        <label class="permission-label">
-                            <i class='bx bx-radio-circle permission-icon'></i>
-                            ${child.permission?.name || 'Child Permission'}
-                        </label>
-                        <div class="form-check form-switch">
-                            <input type="hidden" name="permissions[${child.permission_id}]" value="0">
-                            <input class="form-check-input permission-toggle child-toggle"
-                                   type="checkbox"
-                                   name="permissions[${child.permission_id}]"
-                                   value="1"
-                                   data-parent-id="${parentPermission.permission_id}"
-                                   ${parentPermission.status && child.status ? 'checked' : ''}
-                                   ${!parentPermission.status ? 'disabled' : ''}>
-                        </div>
+                    <div class="child-permissions">
+                        ${children.map(child => `
+                            <div class="permission-toggle-container child-permission">
+                                <label class="permission-label">
+                                    <i class='bx bx-radio-circle permission-icon'></i>
+                                    ${child.permission?.name || 'Child Permission'}
+                                </label>
+                                <div class="form-check form-switch">
+                                    <input type="hidden" name="permissions[${child.permission_id}]" value="0">
+                                    <input class="form-check-input permission-toggle child-toggle"
+                                           type="checkbox"
+                                           name="permissions[${child.permission_id}]"
+                                           value="1"
+                                           data-parent-id="${parentPermission.permission_id}"
+                                           ${parentPermission.status && child.status ? 'checked' : ''}
+                                           ${!parentPermission.status ? 'disabled' : ''}>
+                                </div>
+                            </div>
+                        `).join('')}
                     </div>
-                `).join('')}
-            </div>
-        `;
+                `;
             }
 
             function setupModalEvents(modal) {
@@ -465,8 +466,10 @@
                             method: "POST",
                             body: formData,
                             headers: {
-                                "X-Requested-With": "XMLHttpRequest",
-                                "Accept": "application/json"
+                                'Accept': 'application/json',
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                'Content-Type': 'application/json',
+                                'X-Requested-With': 'XMLHttpRequest'
                             }
                         });
 

@@ -399,7 +399,10 @@
                 const response = await fetch('{{ route('owner.cards.store') }}', {
                     method: 'POST',
                     headers: {
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
                         'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
                     },
                     body: JSON.stringify({ payment_method_id: methodId })
                 });
@@ -431,8 +434,11 @@
 
                 try {
                     const response = await fetch('{{ route('owner.cards.index') }}', {
+                        method: 'GET',
                         headers: {
                             'Accept': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            'Content-Type': 'application/json',
                             'X-Requested-With': 'XMLHttpRequest'
                         }
                     });
@@ -655,9 +661,10 @@
                 const response = await fetch('{{ route('owner.cards.update.default') }}', {
                     method: 'PUT',
                     headers: {
-                        'Content-Type': 'application/json',
                         'Accept': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
                     },
                     body: JSON.stringify({ payment_method_id: cardId })
                 });
@@ -713,9 +720,10 @@
                 const response = await fetch('{{ route('owner.cards.delete') }}', {
                     method: 'DELETE',
                     headers: {
-                        'Content-Type': 'application/json',
                         'Accept': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
                     },
                     body: JSON.stringify({ payment_method_id: cardId })
                 });
@@ -793,7 +801,10 @@
                 fetch(url, {
                     method: "GET",
                     headers: {
-                        "Accept": "application/json"
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
                     }
                 })
                     .then(response => response.json())
@@ -997,9 +1008,10 @@
                     const response = await fetch('{{ route('owner.plan.upgrade.processing') }}', {
                         method: 'POST',
                         headers: {
-                            'Content-Type': 'application/json',
                             'Accept': 'application/json',
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            'Content-Type': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest'
                         },
                         body: JSON.stringify(dataToSend)
                     });
@@ -1064,9 +1076,10 @@
                 const completeResponse = await fetch("{{ route('owner.plan.upgrade.processing.complete') }}", {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json',
                         'Accept': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
                     },
                     body: JSON.stringify(dataForComplete)
                 });

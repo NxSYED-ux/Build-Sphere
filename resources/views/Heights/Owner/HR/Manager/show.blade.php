@@ -716,7 +716,14 @@
             const year = document.getElementById('yearSelect').value;
             const ctx = document.getElementById('financialChart').getContext('2d');
 
-            fetch(`{{ route('owner.managers.monthlyFinancial.stats', $staffInfo->id) }}?buildingId=${buildingId}&year=${year}`)
+            fetch(`{{ route('owner.managers.monthlyFinancial.stats', $staffInfo->id) }}?buildingId=${buildingId}&year=${year}`, {
+                headers: {
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
                 .then(response => response.json())
                 .then(chartData => {
                     const gridColor = 'rgba(0, 0, 0, 0.05)';
@@ -832,7 +839,14 @@
             const managerId = @json($staffInfo->id);
             const ctx = document.getElementById('occupancyChart').getContext('2d');
 
-            fetch(`{{ route('owner.managers.occupancy.stats', $staffInfo->id) }}?buildingId=${buildingId}`)
+            fetch(`{{ route('owner.managers.occupancy.stats', $staffInfo->id) }}?buildingId=${buildingId}`, {
+                headers: {
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
                 .then(response => response.json())
                 .then(data => {
                     const chartData = {

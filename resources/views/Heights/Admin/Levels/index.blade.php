@@ -375,7 +375,15 @@
             });
 
             function fetchBuildings() {
-                fetch("{{ route('levels.create') }}")
+                fetch("{{ route('levels.create') }}", {
+                    method: 'GET',
+                        headers: {
+                            'Accept': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            'Content-Type': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    })
                     .then(response => response.json())
                     .then(data => {
                         const buildingSelect = document.getElementById('building_id');
@@ -414,12 +422,14 @@
                     const id = this.getAttribute("data-id"); // 'this' refers to the clicked button
 
                     fetch(`{{ route('levels.edit', ':id') }}`.replace(':id', id), {
-                        method: "GET",
-                        headers: {
-                            "X-Requested-With": "XMLHttpRequest",
-                            "Accept": "application/json"
-                        }
-                    })
+                        method: 'GET',
+                            headers: {
+                                'Accept': 'application/json',
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                'Content-Type': 'application/json',
+                                'X-Requested-With': 'XMLHttpRequest'
+                            }
+                        })
                         .then(response => response.json())
                         .then(data => {
                             if (data.message) {

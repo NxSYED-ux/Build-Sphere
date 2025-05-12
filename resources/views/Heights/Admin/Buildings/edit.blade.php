@@ -840,7 +840,8 @@
                         method: 'DELETE',
                         headers: {
                             'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                            'Content-Type': 'application/json'
+                            'Content-Type': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest'
                         }
                     })
                     .then(response => response.json())
@@ -895,8 +896,9 @@
                     fetch(`{{ route('building_document.edit', ':id') }}`.replace(':id', id), {
                         method: "GET",
                         headers: {
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
                             "X-Requested-With": "XMLHttpRequest",
-                            "Accept": "application/json"
+                            "Accept": "application/json",
                         }
                     })
                         .then(response => response.json())

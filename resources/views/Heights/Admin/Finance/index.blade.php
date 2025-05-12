@@ -505,8 +505,14 @@
                 window.chartInstance.destroy();
             }
 
-            fetch(`{{ route('finance.chart') }}?days=${days}`)
-                .then(response => response.json())
+            fetch(`{{ route('finance.chart') }}?days=${days}`, {
+                method: 'GET',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            }).then(response => response.json())
                 .then(chartData => {
                     const gridColor = 'rgba(0, 0, 0, 0.05)';
                     const tooltipBackground = 'rgba(0, 0, 0, 0.8)';
@@ -632,6 +638,8 @@
             fetch(`{{ route('finance.trends') }}?year=${year}&month=${month}`, {
                 headers: {
                     'Accept': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Content-Type': 'application/json',
                     'X-Requested-With': 'XMLHttpRequest'
                 }
             })

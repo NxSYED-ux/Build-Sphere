@@ -173,7 +173,8 @@
                 method: "POST",
                 headers: {
                     "X-CSRF-TOKEN": "{{ csrf_token() }}",
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
+                    'X-Requested-With': 'XMLHttpRequest'
                 }
             })
                 .then(response => {
@@ -217,7 +218,8 @@
                 method: "POST",
                 headers: {
                     "X-CSRF-TOKEN": "{{ csrf_token() }}",
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
+                    'X-Requested-With': 'XMLHttpRequest'
                 },
                 body: JSON.stringify({ notification_id: notificationId })
             })
@@ -250,37 +252,38 @@
     </script>
 @endpush
 
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            function fetchUnreadNotifications() {
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        function fetchUnreadNotifications() {
 
-                fetch({{ route('notifications.unread.count') }}, {
-                    method: "GET",
-                    headers: {
-                        "Accept": "application/json",
-                        'X-Requested-With': 'XMLHttpRequest'
+            fetch({{ route('notifications.unread.count') }}, {
+                method: "GET",
+                headers: {
+                    "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                    "Content-Type": "application/json",
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    const notificationBadge = document.getElementById('notification-badge');
+                    const notificationBadge2 = document.getElementById('notification-badge2');
+                    if (data.count > 0) {
+                        notificationBadge.style.display = 'block';
+                        notificationBadge2.style.display = 'block';
+                    } else {
+                        notificationBadge.style.display = 'none';
+                        notificationBadge2.style.display = 'none';
                     }
                 })
-                    .then(response => response.json())
-                    .then(data => {
-                        const notificationBadge = document.getElementById('notification-badge');
-                        const notificationBadge2 = document.getElementById('notification-badge2');
-                        if (data.count > 0) {
-                            notificationBadge.style.display = 'block';
-                            notificationBadge2.style.display = 'block';
-                        } else {
-                            notificationBadge.style.display = 'none';
-                            notificationBadge2.style.display = 'none';
-                        }
-                    })
-                    .catch(error => {
-                        console.error("Error fetching notifications:", error);
-                    });
-            }
+                .catch(error => {
+                    console.error("Error fetching notifications:", error);
+                });
+        }
 
-            fetchUnreadNotifications();
-        });
-    </script>
+        fetchUnreadNotifications();
+    });
+</script>
 
 
 

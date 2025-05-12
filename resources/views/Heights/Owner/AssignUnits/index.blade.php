@@ -782,7 +782,12 @@
 
                 fetch(`{{ route('owner.buildings.units.available', ':id') }}`.replace(':id', buildingId), {
                     method: "GET",
-                    headers: { "X-Requested-With": "XMLHttpRequest", "Accept": "application/json" }
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
                 })
                     .then(response => response.json())
                     .then(data => {
@@ -812,7 +817,12 @@
 
                 fetch(`{{ route('owner.units.details', ':id') }}`.replace(':id', unitId), {
                     method: "GET",
-                    headers: { "Accept": "application/json" }
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
                 })
                     .then(response => response.json())
                     .then(data => {
@@ -922,7 +932,10 @@
                 fetch(`{{ route('users.show', ':id') }}`.replace(':id', userId), {
                     method: "GET",
                     headers: {
-                        "Accept": "application/json"
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
                     }
                 })
                     .then(response => response.json())

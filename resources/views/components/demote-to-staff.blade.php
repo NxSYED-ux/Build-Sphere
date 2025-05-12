@@ -141,7 +141,6 @@
 @push('scripts')
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
 
             // Handle promote button clicks
             document.querySelectorAll('.demote-btn').forEach(button => {
@@ -156,9 +155,10 @@
                     const response = await fetch(`{{ route('owner.managers.demote.index', ':id') }}`.replace(':id', staffId), {
                         method: "GET",
                         headers: {
-                            "X-Requested-With": "XMLHttpRequest",
-                            "Accept": "application/json",
-                            "X-CSRF-TOKEN": csrfToken
+                            'Accept': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            'Content-Type': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest'
                         }
                     });
 
@@ -228,62 +228,62 @@
                 const currentDepartmentId = data.staffInfo?.department_id || '';
 
                 modal.innerHTML = `
-            <div class="modal-dialog modal-lg">
-                <div class="modal-content">
-                    <div class="modal-header" style="background-color: var(--body-card-bg) !important;">
-                        <h5 class="modal-title" style="color: var(--sidenavbar-text-color);">Demotion ${staffName}</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body" style="background-color: var(--body-card-bg) !important;">
-                        <div class="staff-info-section mb-4 p-3 border rounded">
-                            <div class="d-flex align-items-center">
-                                <img src="${staffPicture}" alt="${staffName}"
-                                     class="member-avatar rounded-circle me-3"
-                                     style="width: 80px; height: 80px; object-fit: cover;">
-                                <div>
-                                    <h5  style="color: var(--sidenavbar-text-color);">${staffName}</h5>
-                                    <p class="mb-1"  style="color: var(--sidenavbar-text-color);">${staffEmail}</p>
-                                    <span class="badge bg-primary bg-opacity-10 text-primary">
-                                        <i class='bx bx-user me-1'></i>Manager
-                                    </span>
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header" style="background-color: var(--body-card-bg) !important;">
+                                <h5 class="modal-title" style="color: var(--sidenavbar-text-color);">Demotion ${staffName}</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body" style="background-color: var(--body-card-bg) !important;">
+                                <div class="staff-info-section mb-4 p-3 border rounded">
+                                    <div class="d-flex align-items-center">
+                                        <img src="${staffPicture}" alt="${staffName}"
+                                             class="member-avatar rounded-circle me-3"
+                                             style="width: 80px; height: 80px; object-fit: cover;">
+                                        <div>
+                                            <h5  style="color: var(--sidenavbar-text-color);">${staffName}</h5>
+                                            <p class="mb-1"  style="color: var(--sidenavbar-text-color);">${staffEmail}</p>
+                                            <span class="badge bg-primary bg-opacity-10 text-primary">
+                                                <i class='bx bx-user me-1'></i>Manager
+                                            </span>
+                                        </div>
+                                    </div>
                                 </div>
+
+                                <form id="promotionForm">
+                                    <input type="hidden" name="_token" value="${csrfToken}">
+                                    <input type="hidden" name="manager_id" value="${data.staffInfo?.id || ''}">
+
+                                    <div class="row mb-1">
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label class="form-label">Department</label>
+                                                ${renderDepartments(data.departments || [], currentDepartmentId)}
+                                                <div class="form-text" style="color: var(--sidenavbar-text-color);">Select the department this staff will oversee</div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label class="form-label">Building</label>
+                                                ${renderBuildings(data.buildings || [], currentBuildingId)}
+                                                <div class="form-text" style="color: var(--sidenavbar-text-color);">Select the building this staff will oversee</div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-4">
+                                        <h6 class="mb-3">Manager Permissions</h6>
+                                        ${renderPermissions(data.permissions || [])}
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer" style="background-color: var(--body-card-bg) !important;">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                <button type="button" class="btn btn-primary" id="submitPromotion">Demote to Staff Member</button>
                             </div>
                         </div>
-
-                        <form id="promotionForm">
-                            <input type="hidden" name="_token" value="${csrfToken}">
-                            <input type="hidden" name="manager_id" value="${data.staffInfo?.id || ''}">
-
-                            <div class="row mb-1">
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label class="form-label">Department</label>
-                                        ${renderDepartments(data.departments || [], currentDepartmentId)}
-                                        <div class="form-text" style="color: var(--sidenavbar-text-color);">Select the department this staff will oversee</div>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label class="form-label">Building</label>
-                                        ${renderBuildings(data.buildings || [], currentBuildingId)}
-                                        <div class="form-text" style="color: var(--sidenavbar-text-color);">Select the building this staff will oversee</div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="mb-4">
-                                <h6 class="mb-3">Manager Permissions</h6>
-                                ${renderPermissions(data.permissions || [])}
-                            </div>
-                        </form>
                     </div>
-                    <div class="modal-footer" style="background-color: var(--body-card-bg) !important;">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                        <button type="button" class="btn btn-primary" id="submitPromotion">Demote to Staff Member</button>
-                    </div>
-                </div>
-            </div>
-        `;
+                `;
 
                 return modal;
             }
@@ -483,8 +483,10 @@
                             method: "POST",
                             body: formData,
                             headers: {
-                                "X-Requested-With": "XMLHttpRequest",
-                                "Accept": "application/json"
+                                'Accept': 'application/json',
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                'Content-Type': 'application/json',
+                                'X-Requested-With': 'XMLHttpRequest'
                             }
                         });
 

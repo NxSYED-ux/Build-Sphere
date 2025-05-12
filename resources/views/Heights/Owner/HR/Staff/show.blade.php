@@ -1174,8 +1174,6 @@
                     const staffId = button.dataset.staffId;
                     const isChecked = button.checked ? 1 : 0;
 
-                    const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
-
                     const queryUrl = "{{ route('owner.staff.handle.queries') }}";
                     const originalHTML = button.nextElementSibling.innerHTML;
                     button.nextElementSibling.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
@@ -1184,9 +1182,9 @@
                     fetch(queryUrl, {
                         method: 'PUT',
                         headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': csrfToken,
                             'Accept': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            'Content-Type': 'application/json',
                             'X-Requested-With': 'XMLHttpRequest'
                         },
                         body: JSON.stringify({
@@ -1206,7 +1204,9 @@
                                 title: 'Success!',
                                 text: data.success || 'Status updated successfully',
                                 timer: 2000,
-                                showConfirmButton: false
+                                showConfirmButton: false,
+                                background: 'var(--body-background-color)',
+                                color: 'var(--sidenavbar-text-color)',
                             });
                         })
                         .catch(error => {
@@ -1216,6 +1216,8 @@
                                 title: 'Error!',
                                 text: error.error || 'Something went wrong. Please try again.',
                                 timer: 2000,
+                                background: 'var(--body-background-color)',
+                                color: 'var(--sidenavbar-text-color)',
                                 showConfirmButton: true
                             });
                             // Revert the checkbox state
@@ -1629,7 +1631,14 @@
                 const year = yearSelect.value;
                 const month = monthSelect.value;
 
-                fetch(`${yearlyStatsRoute}?year=${year}${month ? `&month=${month}` : ''}`)
+                fetch(`${yearlyStatsRoute}?year=${year}${month ? `&month=${month}` : ''}`, {
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
                     .then(response => response.json())
                     .then(data => {
                         updatePieChart(data.data);
@@ -1643,7 +1652,14 @@
             function fetchLineChartData() {
                 const year = yearSelect.value;
 
-                fetch(`${monthlyStatsRoute}?year=${year}`)
+                fetch(`${monthlyStatsRoute}?year=${year}`, {
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
                     .then(response => response.json())
                     .then(data => {
                         updateLineChart(data.monthly);
@@ -1800,6 +1816,8 @@
              fetch(`{{ route('owner.staff.query.details', ':id') }}`.replace(':id', queryId), {
                  headers: {
                      'Accept': 'application/json',
+                     'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                     'Content-Type': 'application/json',
                      'X-Requested-With': 'XMLHttpRequest'
                  }
              })

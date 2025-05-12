@@ -545,7 +545,6 @@
             const dropdownTypeButton = document.getElementById("add_dropdwon_type_button");
             const dropdownValueButton = document.getElementById("add_dropdwon_value_button");
             const editTypeButtons = document.getElementsByClassName("edit_dropdwon_type_button");
-            // const editValueButtons = document.getElementsByClassName("edit_dropdwon_value_button");
             const dropdownTypeModal = new bootstrap.Modal(document.getElementById("createDropdownTypeModal"));
             const dropdownValueModal = new bootstrap.Modal(document.getElementById("createDropdownValueModal"));
 
@@ -572,6 +571,7 @@
                     fetch(`{{ route('types.edit', ':id') }}`.replace(':id', id), {
                         method: "GET",
                         headers: {
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
                             "X-Requested-With": "XMLHttpRequest",
                             "Accept": "application/json"
                         }
@@ -746,6 +746,7 @@
                     fetch(`{{ route('values.edit', ':id') }}`.replace(':id', id), {
                         method: "GET",
                         headers: {
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
                             "X-Requested-With": "XMLHttpRequest",
                             "Accept": "application/json"
                         }

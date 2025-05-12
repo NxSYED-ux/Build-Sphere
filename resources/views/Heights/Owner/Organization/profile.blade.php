@@ -539,6 +539,8 @@
                     method: 'GET',
                     headers: {
                         'Accept': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Content-Type': 'application/json',
                         'X-Requested-With': 'XMLHttpRequest'
                     }
                 });
@@ -872,7 +874,10 @@
                 const response = await fetch('{{ route('owner.cards.store') }}', {
                     method: 'POST',
                     headers: {
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
                         'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
                     },
                     body: JSON.stringify({ payment_method_id: methodId })
                 });
@@ -904,8 +909,11 @@
 
                 try {
                     const response = await fetch('{{ route('owner.cards.index') }}', {
+                        method: 'GET',
                         headers: {
                             'Accept': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            'Content-Type': 'application/json',
                             'X-Requested-With': 'XMLHttpRequest'
                         }
                     });
@@ -1120,9 +1128,10 @@
                 const response = await fetch('{{ route('owner.cards.update.default') }}', {
                     method: 'PUT',
                     headers: {
-                        'Content-Type': 'application/json',
                         'Accept': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
                     },
                     body: JSON.stringify({ payment_method_id: cardId })
                 });
@@ -1178,9 +1187,10 @@
                 const response = await fetch('{{ route('owner.cards.delete') }}', {
                     method: 'DELETE',
                     headers: {
-                        'Content-Type': 'application/json',
                         'Accept': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
                     },
                     body: JSON.stringify({ payment_method_id: cardId })
                 });
@@ -1303,14 +1313,14 @@
             }
 
             const isEnabled = checkbox.checked ? 1 : 0;
-            const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
             fetch("{{ route('owner.organization.onlinePaymentStatus.update') }}", {
                 method: 'PUT',
                 headers: {
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
                     'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': token,
-                    'Accept': 'application/json'
+                    'X-Requested-With': 'XMLHttpRequest'
                 },
                 body: JSON.stringify({
                     id: organizationId,

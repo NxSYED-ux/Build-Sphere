@@ -498,7 +498,10 @@
                         fetch(`{{ route('units.remove_picture', ':id') }}`.replace(':id', imageId), {
                             method: 'DELETE',
                             headers: {
+                                'Accept': 'application/json',
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
                                 'Content-Type': 'application/json',
+                                'X-Requested-With': 'XMLHttpRequest'
                             },
                         })
                             .then(response => response.json())
@@ -541,7 +544,12 @@
                 if (buildingId) {
                     fetch(`{{ route('buildings.levels', ':id') }}`.replace(':id', buildingId), {
                         method: "GET",
-                        headers: { "X-Requested-With": "XMLHttpRequest", "Accept": "application/json" }
+                        headers: {
+                            'Accept': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            'Content-Type': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
                     })
                         .then(response => response.json())
                         .then(data => {

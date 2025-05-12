@@ -135,7 +135,10 @@
                 fetch(`{{ route('plans', ':planCycle') }}`.replace(':planCycle', cycleId), {
                     method: "GET",
                     headers: {
-                        "Accept": "application/json"
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
                     }
                 })
                     .then(response => response.json())

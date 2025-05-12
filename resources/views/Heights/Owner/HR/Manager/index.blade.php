@@ -458,9 +458,10 @@
             return fetch(deleteUrl, {
                 method: 'DELETE',
                 headers: {
+                    'Accept': 'application/json',
                     'X-CSRF-TOKEN': '{{ csrf_token() }}',
                     'Content-Type': 'application/json',
-                    'Accept': 'application/json'
+                    'X-Requested-With': 'XMLHttpRequest'
                 },
                 body: JSON.stringify({ id: memberId })
             })

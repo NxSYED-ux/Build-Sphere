@@ -319,7 +319,12 @@
 
                     fetch(`{{ route('roles.edit', ':id') }}`.replace(":id", id), {
                         method: "GET",
-                        headers: { "X-Requested-With": "XMLHttpRequest" }
+                        headers: {
+                            'Accept': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            'Content-Type': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
                     })
                         .then(response => response.json())
                         .then(data => {
@@ -489,7 +494,12 @@
             function fetchPermissions() {
                 fetch("{{ route('roles.create') }}", {
                     method: "GET",
-                    headers: { "X-Requested-With": "XMLHttpRequest" }
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
                 })
                     .then(response => response.json())
                     .then(data => {

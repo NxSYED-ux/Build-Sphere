@@ -893,8 +893,10 @@
             fetch(`{{ route('owner.units.details.contract', ':id') }}`.replace(':id', numericUnitId), {
                 method: "GET",
                 headers: {
-                    "X-Requested-With": "XMLHttpRequest",
-                    "Accept": "application/json"
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
                 }
             })
                 .then(response => response.json())
