@@ -1111,7 +1111,7 @@
                                                                         <span class="meta-value">{{ $query->created_at->format('M d, Y') }}</span>
                                                                     </div>
                                                                     <div>
-                                                                        @if($query->status == 'Closed' && ($query->closure_date || $query->expected_closure_date))
+                                                                        @if(($query->status == 'Closed' || $query->status == 'Closed Late') && ($query->closure_date || $query->expected_closure_date))
                                                                             <span class="meta-label">Closed</span>
                                                                             <span class="meta-value">
                                                                                 @if($query->closure_date)
@@ -1120,6 +1120,9 @@
                                                                                     {{ $query->expected_closure_date->format('M d, Y') }}
                                                                                 @endif
                                                                             </span>
+{{--                                                                        @elseif($query->status == 'Rejected' && $query->expected_closure_date)--}}
+{{--                                                                            <span class="meta-label">Expected</span>--}}
+{{--                                                                            <span class="meta-value">{{ $query->expected_closure_date->format('M d, Y') }}</span>--}}
                                                                         @elseif($query->status == 'In Progress' && $query->expected_closure_date)
                                                                             <span class="meta-label">Expected</span>
                                                                             <span class="meta-value">{{ $query->expected_closure_date->format('M d, Y') }}</span>
@@ -1342,7 +1345,7 @@
                 function positionTooltip(element, tooltip) {
                     const rect = element.getBoundingClientRect();
                     tooltip.style.left = `${rect.left + window.scrollX}px`;
-                    tooltip.style.top = `${rect.bottom + window.scrollY + 5}px`;
+                    tooltip.style.top = `${rect.bottom + window.scrollY - 38}px`;
                 }
 
                 if (percentage === null) {
