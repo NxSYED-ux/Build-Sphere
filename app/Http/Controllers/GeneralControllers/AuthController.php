@@ -14,14 +14,60 @@ use Illuminate\View\View;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Pusher\Pusher;
+use Tymon\JWTAuth\JWT;
 
 
 class AuthController extends Controller
 {
     // Login Page
-    public function index(): View
+    public function index(Request $request)
     {
-        return view('auth.login');
+        $token = $request->cookie('jwt_token');
+
+        if (!$token) {
+            return view('auth.login');
+        }
+
+        try {
+            $user = JWTAuth::setToken($token)->authenticate();
+
+            if (!$user) {
+                return view('auth.login');
+            }
+
+            $permissions = $this->listOfPermissions($user);
+            $rolesWithOwnerAccess = [2, 3, 4];
+            $route = null;
+
+            if (in_array($user->role_id, $rolesWithOwnerAccess, true)) {
+                if (array_key_exists('Owner Portal', $permissions)) {
+                    $access = $this->OrganizationAccess($user);
+                    if ($access === false || $access === null) {
+                        unset($permissions['Owner Portal']);
+                        return view('auth.login');
+                    }
+                    $route = 'owner_manager_dashboard';
+                } elseif (array_key_exists('Admin Portal', $permissions)) {
+                    $route = 'admin_dashboard';
+                }
+            } else {
+                if (array_key_exists('Admin Portal', $permissions)) {
+                    $route = 'admin_dashboard';
+                } elseif (array_key_exists('Owner Portal', $permissions)) {
+                    $route = 'owner_manager_dashboard';
+                }
+            }
+
+            if ($route) {
+                return redirect()->route($route);
+            }
+
+            return view('auth.login');
+
+        } catch (\Exception $e) {
+            Log::error('Error in login index: ' . $e->getMessage());
+            return view('auth.login');
+        }
     }
 
 

@@ -189,7 +189,7 @@ class CheckOutController extends Controller
         }
     }
 
-    private function assignUnitToUser($user, BuildingUnit $unit, $price, )
+    private function assignUnitToUser($user, BuildingUnit $unit, $price)
     {
         $type = $unit->sale_or_rent === 'Sale' ? 'Sold' : 'Rented';
 

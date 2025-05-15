@@ -18,6 +18,7 @@ class UserBuildingUnit extends Model
         'unit_id',
         'type',
         'price',
+//        'subscription_id',
         'billing_cycle',
         'rent_start_date',
         'rent_end_date',
@@ -38,18 +39,27 @@ class UserBuildingUnit extends Model
     {
         return $this->belongsTo(User::class, 'user_id', 'id');
     }
+
     public function unit()
     {
         return $this->belongsTo(BuildingUnit::class, 'unit_id', 'id');
     }
+
+//    public function subscription()
+//    {
+//        return $this->belongsTo(Subscription::class, 'subscription_id', 'id');
+//    }
+
     public function creator()
     {
         return $this->belongsTo(User::class, 'created_by', 'id');
     }
+
     public function updater()
     {
         return $this->belongsTo(User::class, 'updated_by', 'id');
     }
+
 
     // Has Many Relations
     public function pictures()
