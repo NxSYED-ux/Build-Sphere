@@ -96,7 +96,7 @@
             <!-- Memberships -->
             <li class="mb-1 hidden" id="OwnerMemberships">
                 <div id="link-a">
-                    <a href="#" class="link-dark collapsed {{ in_array('Memberships', $openSections) ? 'Link-background-color' : '' }} px-1" id="Membershipsbtn" >
+                    <a href="{{ route('owner.memberships.index') }}" class="link-dark collapsed {{ in_array('Memberships', $openSections) ? 'Link-background-color' : '' }} px-1" id="Membershipsbtn" >
                     <i class='bx bxs-credit-card-front icons' ></i> Memberships </a>
                 </div>
             </li>

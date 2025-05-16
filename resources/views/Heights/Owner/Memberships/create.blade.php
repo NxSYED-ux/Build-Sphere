@@ -99,26 +99,24 @@
                                     <div class="row">
                                         <div class="col-md-6">
                                             <div class="mb-3">
-                                                <label for="name" class="form-label">Membership Name</label>
+                                                <label for="name" class="form-label">Membership Name <span class="required__field">*</span></label>
                                                 <input type="text" class="form-control" id="name" name="name" required placeholder="e.g. Premium Gym Access">
                                             </div>
                                         </div>
                                         <div class="col-md-6">
                                             <div class="mb-3">
-                                                <label for="category" class="form-label">Category</label>
+                                                <label for="category" class="form-label">Category <span class="required__field">*</span></label>
                                                 <select class="form-select" id="category" name="category" required>
                                                     <option value="">Select Category</option>
-                                                    <option value="gym">Gym/Fitness</option>
-                                                    <option value="restaurant">Restaurant/Dining</option>
-                                                    <option value="spa">Spa/Wellness</option>
-                                                    <option value="retail">Retail/Shopping</option>
-                                                    <option value="other">Other</option>
+                                                    <option value="GYM">GYM</option>
+                                                    <option value="Restaurant">Restaurant</option>
+                                                    <option value="Other">Other</option>
                                                 </select>
                                             </div>
                                         </div>
                                         <div class="col-md-6">
                                             <div class="mb-3">
-                                                <label for="category" class="form-label">Buildings</label>
+                                                <label for="category" class="form-label">Buildings <span class="required__field">*</span></label>
                                                 <select class="form-select" id="building_id" name="building_id" required>
                                                     <option value="">Select Building</option>
                                                 </select>
@@ -126,7 +124,7 @@
                                         </div>
                                         <div class="col-md-6">
                                             <div class="mb-3">
-                                                <label for="category" class="form-label">Units</label>
+                                                <label for="category" class="form-label">Units <span class="required__field">*</span></label>
                                                 <select class="form-select" id="unit_id" name="unit_id" required>
                                                     <option value="">Select Unit</option>
                                                 </select>
@@ -145,25 +143,53 @@
                                     <div class="row">
                                         <div class="col-md-4">
                                             <div class="mb-3">
-                                                <label for="price" class="form-label">Monthly Price ($)</label>
+                                                <label for="currency" class="form-label">Currency <span class="required__field">*</span></label>
+                                                <select class="form-select" id="currency" name="currency" required>
+                                                    <option value="USD">USD</option>
+                                                    <option value="PKR">PKR</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="mb-3">
+                                                <label for="price" class="form-label">Monthly Price <span class="required__field">*</span></label>
                                                 <input type="number" class="form-control" id="price" name="price" min="0" step="0.01" required placeholder="49.99">
                                             </div>
                                         </div>
                                         <div class="col-md-4">
                                             <div class="mb-3">
-                                                <label for="original_price" class="form-label">Original Price ($)</label>
+                                                <label for="original_price" class="form-label">Original Price</label>
                                                 <input type="number" class="form-control" id="original_price" name="original_price" min="0" step="0.01" placeholder="59.99">
                                                 <small class="text-muted">Leave blank if no discount</small>
                                             </div>
                                         </div>
+                                    </div>
+                                    <div class="row">
                                         <div class="col-md-4">
                                             <div class="mb-3">
-                                                <label for="billing_cycle" class="form-label">Billing Cycle</label>
+                                                <label for="scans_per_month" class="form-label">Scans Per Month <span class="required__field">*</span></label>
+                                                <input type="number" class="form-control" id="scans_per_month" name="scans_per_month" min="1" required placeholder="100">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="mb-3">
+                                                <label for="billing_cycle" class="form-label">Billing Cycle <span class="required__field">*</span></label>
                                                 <select class="form-select" id="billing_cycle" name="billing_cycle" required>
-                                                    <option value="monthly">Monthly</option>
-                                                    <option value="quarterly">Quarterly</option>
+                                                    <option value="monthly" selected>Monthly</option>
                                                     <option value="yearly">Yearly</option>
                                                 </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4" id="months_field_container">
+                                            <div class="mb-3">
+                                                <label for="number_of_months" class="form-label">Number of Months <span class="required__field">*</span></label>
+                                                <input type="number" class="form-control" id="number_of_months" name="number_of_months" min="1" value="1">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4" id="years_field_container" style="display: none;">
+                                            <div class="mb-3">
+                                                <label for="number_of_years" class="form-label">Number of Years</label>
+                                                <input type="number" class="form-control" id="number_of_years" name="number_of_years" min="1" value="1">
                                             </div>
                                         </div>
                                     </div>
@@ -175,67 +201,24 @@
                                     <div class="row">
                                         <div class="col-md-6">
                                             <div class="mb-3">
-                                                <label class="form-label">Membership Image</label>
+                                                <label class="form-label">Membership Image<span class="required__field">*</span></label>
                                                 <div class="form-image-upload" onclick="document.getElementById('image_upload').click()">
                                                     <div class="text-center">
                                                         <x-icon name="image" size="30" class="text-muted mb-2" />
                                                         <p class="mb-1">Click to upload image</p>
                                                         <small class="text-muted">Recommended size: 800x600px</small>
-                                                        <input type="file" id="image_upload" name="image" accept="image/*" style="display: none;" onchange="previewImage(this)">
+                                                        <input type="file" id="image_upload" name="image" accept="image/*" style="display: none;" onchange="previewImage(this)" required>
                                                     </div>
                                                     <img id="image_preview" class="preview-image d-none">
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="col-md-6">
-                                            <div class="mb-3">
-                                                <label class="form-label">Badge Options</label>
-                                                <div class="card p-3">
-                                                    <div class="form-check mb-2">
-                                                        <input class="form-check-input" type="checkbox" id="show_discount_badge" name="show_discount_badge">
-                                                        <label class="form-check-label" for="show_discount_badge">
-                                                            Show Discount Badge
-                                                        </label>
-                                                    </div>
-                                                    <div class="form-check">
-                                                        <input class="form-check-input" type="checkbox" id="show_popular_badge" name="show_popular_badge">
-                                                        <label class="form-check-label" for="show_popular_badge">
-                                                            Mark as "Popular"
-                                                        </label>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Additional Options -->
-                                <div class="form-section">
-                                    <h5 class="section-title">Additional Options</h5>
-                                    <div class="mb-3">
-                                        <label for="features" class="form-label">Key Features</label>
-                                        <div id="features-container">
-                                            <div class="input-group mb-2">
-                                                <input type="text" class="form-control" name="features[]" placeholder="Feature 1">
-                                                <button type="button" class="btn btn-danger" onclick="removeFeature(this)">
-                                                    <x-icon name="delete" size="16" />
-                                                </button>
-                                            </div>
-                                        </div>
-                                        <button type="button" class="btn btn-sm btn-outline-primary mt-2" onclick="addFeature()">
-                                            <x-icon name="add" size="16" class="me-1" />
-                                            Add Feature
-                                        </button>
                                     </div>
                                 </div>
 
                                 <!-- Form Actions -->
-                                <div class="d-flex justify-content-between pt-3">
-                                    <a href="#" class="btn btn-outline-secondary">
-                                        <x-icon name="arrow-back" size="16" class="me-1" />
-                                        Cancel
-                                    </a>
-                                    <button type="submit" class="btn btn-primary">
+                                <div class="pt-3">
+                                    <button type="submit" class="btn btn-primary w-100">
                                         <x-icon name="save" size="16" class="me-1" />
                                         Create Membership
                                     </button>
@@ -264,31 +247,23 @@
                 reader.readAsDataURL(input.files[0]);
             }
         }
+    </script>
 
-        // Dynamic feature fields
-        function addFeature() {
-            const container = document.getElementById('features-container');
-            const count = container.children.length + 1;
-            const div = document.createElement('div');
-            div.className = 'input-group mb-2';
-            div.innerHTML = `
-                <input type="text" class="form-control" name="features[]" placeholder="Feature ${count}">
-                <button type="button" class="btn btn-danger" onclick="removeFeature(this)">
-                    <x-icon name="delete" size="16" />
-                </button>
-            `;
-            container.appendChild(div);
-        }
-
-        function removeFeature(button) {
-            if (document.getElementById('features-container').children.length > 1) {
-                button.parentElement.remove();
-            }
-        }
-
-        // Initialize the form with one empty feature field
+    <script>
         document.addEventListener('DOMContentLoaded', function() {
-            addFeature();
+            const billingCycleSelect = document.getElementById('billing_cycle');
+            const monthsFieldContainer = document.getElementById('months_field_container');
+            const yearsFieldContainer = document.getElementById('years_field_container');
+
+            billingCycleSelect.addEventListener('change', function() {
+                if (this.value === 'yearly') {
+                    monthsFieldContainer.style.display = 'none';
+                    yearsFieldContainer.style.display = 'block';
+                } else {
+                    monthsFieldContainer.style.display = 'block';
+                    yearsFieldContainer.style.display = 'none';
+                }
+            });
         });
     </script>
 @endpush

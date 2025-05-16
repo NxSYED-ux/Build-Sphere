@@ -113,26 +113,6 @@
                     </div>
                 </li>
 
-                <!-- Reports -->
-                <li class="mb-1 hidden" id="AdminReports">
-                    <div id="link-a">
-                        <a href="#" class="link-dark  link-toggle collapsed d-flex justify-content-between align-items-center"  data-bs-toggle="collapse"
-                            data-bs-target="#Reports" aria-expanded="{{ in_array('Reports', $openSections) ? 'true' : 'false' }}" >
-                            <span class="d-flex align-items-center">
-                                <i class="bx bxs-pie-chart-alt-2 icons"></i> <!-- Adjusted with spacing -->
-                                <span>Reports</span>
-                            </span>
-                            <i class="fa fa-chevron-left  chevron-icon" style="cursor: pointer;"></i>
-                        </a>
-                    </div>
-                    <div class="collapse {{ in_array('Reports', $openSections) ? 'show' : '' }}" id="Reports">
-                        <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                            <li id="AdminReport1"><a href="#" class="link-dark {{ in_array('', $openSections) ? 'Link-background-color' : '' }}" data-bs-target="#Reports" ><i class="bx bx-bar-chart icons"></i> Report1</a> </li>
-                            <li id="AdminReport2"><a href="#" class="link-dark {{ in_array('', $openSections) ? 'Link-background-color' : '' }}" data-bs-target="#Reports" ><i class="bx bx-line-chart-down icons"></i> Report2</a> </li>
-                        </ul>
-                    </div>
-                </li>
-
             </ul>
 
         </div>
