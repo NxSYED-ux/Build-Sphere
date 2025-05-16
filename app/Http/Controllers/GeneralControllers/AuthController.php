@@ -59,7 +59,7 @@ class AuthController extends Controller
             }
 
             if ($route) {
-                return redirect()->route($route);
+                return redirect()->route($route)->with('permissions', $permissions);
             }
 
             return view('auth.login');

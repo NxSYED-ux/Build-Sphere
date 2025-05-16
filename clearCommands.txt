@@ -1,0 +1,7 @@
+php artisan cache:clear
+php artisan config:clear
+php artisan route:clear
+php artisan view:clear
+php artisan queue:flush
+php artisan queue:restart
+php artisan queue:clear

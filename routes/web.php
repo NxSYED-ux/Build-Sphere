@@ -15,6 +15,7 @@ use App\Http\Controllers\WebControllers\DropdownValueController;
 use App\Http\Controllers\WebControllers\FinanceController;
 use App\Http\Controllers\WebControllers\hrController;
 use App\Http\Controllers\WebControllers\landingController;
+use App\Http\Controllers\WebControllers\MembershipController;
 use App\Http\Controllers\WebControllers\OrganizationController;
 use App\Http\Controllers\WebControllers\OwnerDashboardController;
 use App\Http\Controllers\WebControllers\PlanController;
@@ -380,6 +381,12 @@ Route::prefix('owner')->middleware(['auth.jwt'])->group(function () {
 
             Route::get('/occupancy-stats', [ReportsController::class , 'getOccupancyStats'])->name('owner.reports.occupancy.stats');
             Route::get('/monthly/financial/stats', [ReportsController::class , 'getOrgMonthlyFinancialStats'])->name('owner.reports.monthlyFinancial.stats');
+
+        });
+
+        Route::prefix('memberships')->group(function () {
+
+            Route::get('/', [MembershipController::class , 'index'])->name('owner.memberships.index');
 
         });
 

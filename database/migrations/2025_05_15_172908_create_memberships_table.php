@@ -13,7 +13,7 @@ return new class extends Migration
             $table->unsignedBigInteger('unit_id');
             $table->unsignedBigInteger('building_id')->nullable();
             $table->unsignedBigInteger('organization_id');
-            $table->string('image')->default('uploads\memberships\images\defaultImage.jpeg');
+            $table->string('image')->default('uploads/memberships/images/defaultImage.jpeg');
             $table->string('name', 100);
             $table->string('url');
             $table->text('description')->nullable();
