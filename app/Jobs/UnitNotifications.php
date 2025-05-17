@@ -98,7 +98,7 @@ class UnitNotifications implements ShouldQueue
                 $unitImagePath,
                 $this->initiatorHeading,
                 $this->initiatorMessage,
-                ['web' =>$this->initiatorLink, 'mobile' => $this->userLink]
+                ['web' =>$this->initiatorLink]
             ));
         }
 

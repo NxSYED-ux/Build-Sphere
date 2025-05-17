@@ -98,7 +98,7 @@ class MembershipNotifications implements ShouldQueue
                 $membershipImagePath,
                 $this->initiatorHeading,
                 $this->initiatorMessage,
-                ['web' =>$this->initiatorLink, 'mobile' => $this->userLink]
+                ['web' =>$this->initiatorLink]
             ));
         }
 
