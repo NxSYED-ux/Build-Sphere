@@ -612,7 +612,7 @@ class MembershipController extends Controller
 
             if (empty($token['organization_id']) || empty($token['role_name'])) {
                 DB::rollBack();
-                return redirect()->back()->with('error', 'Only organization-related personnel can perform this action.');
+                return response()->json(['error' => 'Only organization-related personnel can perform this action.'], 403);
             }
 
             $organization_id = $token['organization_id'];
@@ -625,17 +625,17 @@ class MembershipController extends Controller
 
             if (!$membership) {
                 DB::rollBack();
-                return redirect()->back()->with('error', 'Membership not found.');
+                return response()->json(['error' => 'Membership not found.'], 404);
             }
 
             if (in_array($membership->status, ['Archived', 'Draft'])) {
                 DB::rollBack();
-                return redirect()->back()->with('error', 'Archived or Draft memberships cannot be toggled as featured.');
+                return response()->json(['error' => 'Archived or Draft memberships cannot be toggled as featured.'], 400);
             }
 
             if ((bool) $membership->mark_as_featured === $requestedValue) {
                 DB::rollBack();
-                return redirect()->back()->with('success', 'Membership is already in the requested state.');
+                return response()->json(['success' => 'Membership is already in the requested state.']);
             }
 
             $subscriptionLimit = PlanSubscriptionItem::where('organization_id', $organization_id)
@@ -645,13 +645,13 @@ class MembershipController extends Controller
 
             if (!$subscriptionLimit) {
                 DB::rollBack();
-                return redirect()->back()->with('plan_upgrade_error', 'This plan does not support featured memberships.');
+                return response()->json(['error' => 'This plan does not support featured memberships.'], 400);
             }
 
             if ($requestedValue) {
                 if ($subscriptionLimit->used >= $subscriptionLimit->quantity) {
                     DB::rollBack();
-                    return redirect()->back()->with('plan_upgrade_error', 'Featured membership limit reached. Upgrade your plan.');
+                    return response()->json(['error' => 'Featured membership limit reached. Upgrade your plan.'], 400);
                 }
 
                 $membership->mark_as_featured = 1;
@@ -661,7 +661,7 @@ class MembershipController extends Controller
 
                 DB::commit();
 
-                return redirect()->back()->with('success', 'Membership marked as featured successfully.');
+                return response()->json(['success' => 'Membership marked as featured successfully.']);
             } else {
                 $membership->mark_as_featured = 0;
                 $membership->save();
@@ -672,13 +672,13 @@ class MembershipController extends Controller
 
                 DB::commit();
 
-                return redirect()->back()->with('success', 'Membership unmarked from featured successfully.');
+                return response()->json(['success' => 'Membership unmarked from featured successfully.']);
             }
 
         } catch (\Throwable $e) {
             DB::rollBack();
             Log::error('Error in toggleFeatured: ' . $e->getMessage());
-            return redirect()->back()->with('error', 'Something went wrong! Please try again.');
+            return response()->json(['error' => 'Something went wrong! Please try again.'], 500);
         }
     }
 

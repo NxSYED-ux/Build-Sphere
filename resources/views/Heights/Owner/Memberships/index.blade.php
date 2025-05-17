@@ -660,13 +660,12 @@
                     const membershipId = button.dataset.membershipId;
                     const isChecked = button.checked ? 1 : 0;
 
-                    const queryUrl = "{{ route('owner.memberships.toggleFeatured') }}";
                     const originalHTML = button.nextElementSibling.innerHTML;
                     button.nextElementSibling.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
                     button.disabled = true;
 
-                    fetch(queryUrl, {
-                        method: 'POST',
+                    fetch( "{{ route('owner.memberships.toggle.featured') }}" , {
+                        method: 'PUT',
                         headers: {
                             'Accept': 'application/json',
                             'X-CSRF-TOKEN': '{{ csrf_token() }}',
@@ -675,7 +674,7 @@
                         },
                         body: JSON.stringify({
                             membership_id: membershipId,
-                            value: isChecked  // Keep 'value' to match your controller validation
+                            value: isChecked
                         })
                     })
                         .then(response => {

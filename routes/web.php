@@ -392,13 +392,13 @@ Route::prefix('owner')->middleware(['auth.jwt'])->group(function () {
             Route::get('/create', [MembershipController::class , 'create'])->name('owner.memberships.create');
             Route::post('/', [MembershipController::class , 'store'])->name('owner.memberships.store');
             Route::get('/{membership}/edit', [MembershipController::class , 'edit'])->name('owner.memberships.edit');
-            Route::put('/', [MembershipController::class , 'update'])->name('owner.memberships.update');
+            Route::put('/update', [MembershipController::class , 'update'])->name('owner.memberships.update');
             Route::get('/{membership}/show', [MembershipController::class , 'show'])->name('owner.memberships.show');
 
             Route::get('/{membership}/assign', [MembershipController::class , 'assignMembershipView'])->name('owner.memberships.assign.view');
             Route::post('/assign', [MembershipController::class , 'assignMembership'])->name('owner.memberships.assign');
 
-            Route::post('/featured/toggle', [MembershipController::class, 'toggleFeatured'])->name('owner.memberships.toggleFeatured');
+            Route::put('/toggle-featured', [MembershipController::class, 'toggleFeatured'])->name('owner.memberships.toggle.featured');
         });
 
     });
