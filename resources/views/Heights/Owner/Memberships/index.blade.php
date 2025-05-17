@@ -448,9 +448,9 @@
                     <div class="col-md-12">
                         <div class="box">
                             <div class="container mt-2">
-                                <div class="d-flex justify-content-between align-items-center mb-4">
-                                    <h3 class="section-title">Premium Memberships</h3>
-                                    <a href="#" class="btn btn-primary add-membership-btn" id="Owner-Level-Add-Button">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <h3 class="section-title">Memberships</h3>
+                                    <a href="{{ route('owner.memberships.create') }}" class="btn btn-primary add-membership-btn" id="Owner-Level-Add-Button">
                                         <x-icon name="add" type="svg" size="20" />
                                         Add Membership
                                     </a>
