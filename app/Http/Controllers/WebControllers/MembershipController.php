@@ -105,7 +105,7 @@ class MembershipController extends Controller
                 $membershipQuery->where('name', 'like', '%' . $searchTerm . '%');
             }
 
-            $memberships = $membershipQuery->paginate(12);
+            $memberships = $membershipQuery->orderBy('updated_at', 'desc')->paginate(12);
             $buildings = $buildingsQuery->get();
             $units = $unitsQuery->get();
 
