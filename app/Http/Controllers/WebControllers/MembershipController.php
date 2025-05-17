@@ -657,16 +657,22 @@ class MembershipController extends Controller
 
                 $membership->mark_as_featured = 1;
                 $membership->save();
+
                 $subscriptionLimit->increment('used');
+
                 DB::commit();
+
                 return redirect()->back()->with('success', 'Membership marked as featured successfully.');
             } else {
                 $membership->mark_as_featured = 0;
                 $membership->save();
+
                 if ($subscriptionLimit->used > 0) {
                     $subscriptionLimit->decrement('used');
                 }
+
                 DB::commit();
+
                 return redirect()->back()->with('success', 'Membership unmarked from featured successfully.');
             }
 
