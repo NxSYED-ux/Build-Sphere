@@ -558,12 +558,12 @@
                                                          class="membership-img">
 
                                                     <div class="action-buttons">
-                                                        <button class="action-btn view-btn" title="View Details" onclick="viewMembership({{ $membership->id }})">
+                                                        <a href="{{ route('owner.memberships.show', $membership->id) }}" class="action-btn view-btn text-decoration-none" title="View Details">
                                                             <x-icon name="view" type="material" class="icon" />
-                                                        </button>
-                                                        <button class="action-btn edit-btn text-warning" title="Edit Membership" onclick="editMembership({{ $membership->id }})">
+                                                        </a>
+                                                        <a href="{{ route('owner.memberships.edit', $membership->id) }}" class="action-btn edit-btn text-warning text-decoration-none" title="Edit Membership">
                                                             <x-icon name="edit" type="material" class="icon" />
-                                                        </button>
+                                                        </a>
                                                         <button class="action-btn delete-btn" title="Delete Membership" onclick="confirmDelete({{ $membership->id }})">
                                                             <x-icon name="delete" type="material" class="icon" />
                                                         </button>
@@ -626,9 +626,9 @@
                                                 </div>
 
                                                 <div class="membership-footer">
-                                                    <button class="btn btn-primary btn-membership">
+                                                    <a href="{{ route('owner.memberships.assign.view', $membership->id) }}" class="btn btn-primary btn-membership text-decoration-none">
                                                         Assign Membership
-                                                    </button>
+                                                    </a>
                                                 </div>
                                             </div>
                                         </div>
@@ -650,6 +650,84 @@
         function resetFilters() {
             window.location.href = '{{ route("owner.memberships.index") }}';
         }
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            document.body.addEventListener('change', function(e) {
+                if (e.target.classList.contains('featured-toggle')) {
+                    const button = e.target;
+                    const membershipId = button.dataset.membershipId;
+                    const isChecked = button.checked ? 1 : 0;
+
+                    const queryUrl = "{{ route('owner.memberships.toggleFeatured') }}";
+                    const originalHTML = button.nextElementSibling.innerHTML;
+                    button.nextElementSibling.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+                    button.disabled = true;
+
+                    fetch(queryUrl, {
+                        method: 'POST',
+                        headers: {
+                            'Accept': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            'Content-Type': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest'
+                        },
+                        body: JSON.stringify({
+                            membership_id: membershipId,
+                            value: isChecked  // Keep 'value' to match your controller validation
+                        })
+                    })
+                        .then(response => {
+                            if (!response.ok) {
+                                return response.json().then(err => {
+                                    throw new Error(
+                                        err.message ||
+                                        err.error ||
+                                        'Request failed with status ' + response.status
+                                    );
+                                });
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            if (data.redirect) {
+                                window.location.href = data.redirect;
+                                return;
+                            }
+
+                            // Handle success message from redirect
+                            const successMessage = data.success || 'Membership featured status updated';
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Success!',
+                                text: successMessage,
+                                timer: 2000,
+                                background: 'var(--body-background-color)',
+                                color: 'var(--sidenavbar-text-color)',
+                                showConfirmButton: false
+                            });
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error!',
+                                text: error.message || 'Something went wrong. Please try again.',
+                                timer: 2000,
+                                background: 'var(--body-background-color)',
+                                color: 'var(--sidenavbar-text-color)',
+                                showConfirmButton: true
+                            });
+                            button.checked = !button.checked;  // Revert checkbox on error
+                        })
+                        .finally(() => {
+                            button.nextElementSibling.innerHTML = originalHTML;
+                            button.disabled = false;
+                        });
+                }
+            });
+        });
     </script>
 {{--    <script>--}}
 {{--        $(document).ready(function() {--}}

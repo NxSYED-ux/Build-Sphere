@@ -5,7 +5,6 @@
 @push('styles')
     <style>
         body {
-            background-color: #f8f9fa;
         }
         #main {
             margin-top: 50px;

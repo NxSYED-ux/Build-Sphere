@@ -446,7 +446,7 @@ class MembershipController extends Controller
                     'unit:id,unit_name,building_id',
                     'building:id,name',
                     'membershipUsers',
-                    'membershipUsers.users',
+                    'membershipUsers.user',
                 ])
                 ->first();
 
@@ -509,8 +509,7 @@ class MembershipController extends Controller
                 ->where('status', 1)
                 ->pluck('user_id');
 
-            $availableUsers = User::where('organization_id', $organization_id)
-                ->where('id', '!=', $user->id)
+            $availableUsers = User::where('id', '!=', $user->id)
                 ->whereNotIn('id', $assignedUserIds)
                 ->select('id', 'name', 'email', 'cnic', 'picture')
                 ->get();

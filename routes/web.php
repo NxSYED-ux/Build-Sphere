@@ -398,7 +398,7 @@ Route::prefix('owner')->middleware(['auth.jwt'])->group(function () {
             Route::get('/{membership}/assign', [MembershipController::class , 'assignMembershipView'])->name('owner.memberships.assign.view');
             Route::post('/assign', [MembershipController::class , 'assignMembership'])->name('owner.memberships.assign');
 
-            Route::post('/{membership}/toggle-featured', [MembershipController::class, 'toggleFeatured'])->name('owner.memberships.toggleFeatured');
+            Route::post('/featured/toggle', [MembershipController::class, 'toggleFeatured'])->name('owner.memberships.toggleFeatured');
         });
 
     });

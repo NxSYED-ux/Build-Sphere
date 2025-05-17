@@ -4,22 +4,26 @@
 
 @push('styles')
     <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        #main {
+            margin-top: 50px;
+        }
         .edit-membership-container {
-            max-width: 800px;
             margin: 0 auto;
             padding: 30px;
-            background: white;
+            background: var(--body-card-bg);
             border-radius: 12px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
         }
         .form-header {
-            border-bottom: 1px solid #eee;
-            padding-bottom: 20px;
-            margin-bottom: 30px;
+            padding-bottom: 5px;
+            margin-bottom: 10px;
         }
         .form-title {
             font-weight: 700;
-            color: #2c3e50;
+            color: var(--sidenavbar-text-color);
         }
         .form-section {
             margin-bottom: 30px;
@@ -28,9 +32,8 @@
             font-size: 1.2rem;
             font-weight: 600;
             color: #3498db;
-            margin-bottom: 20px;
-            padding-bottom: 8px;
-            border-bottom: 2px solid #f1f1f1;
+            margin-bottom: 10px;
+            padding-bottom: 5px;
         }
         .form-image-upload {
             border: 2px dashed #ddd;
@@ -62,12 +65,13 @@
             font-size: 0.85rem;
         }
         .current-image-container {
-            margin-bottom: 15px;
+            margin-top: 15px;
+            text-align: center;
         }
-        .current-image-label {
-            font-weight: 500;
-            margin-bottom: 8px;
-            display: block;
+        .current-image {
+            max-width: 200px;
+            max-height: 150px;
+            border-radius: 6px;
         }
     </style>
 @endpush
@@ -77,7 +81,7 @@
     <!-- Top Navbar -->
     <x-Owner.top-navbar :searchVisible="false" :breadcrumbLinks="[
             ['url' => route('owner_manager_dashboard'), 'label' => 'Dashboard'],
-            ['url' => '', 'label' => 'Memberships'],
+            ['url' => route('owner.memberships.index'), 'label' => 'Memberships'],
             ['url' => '', 'label' => 'Edit Membership']
         ]"
     />
@@ -88,17 +92,17 @@
     <div id="main">
         <section class="content mt-1 mb-5 mx-2">
             <div class="container-fluid">
-                <div class="row justify-content-center">
-                    <div class="col-lg-10">
+                <div class="row">
+                    <div class="col-lg-12">
                         <div class="edit-membership-container">
                             <div class="form-header">
                                 <h3 class="form-title">Edit Membership</h3>
-                                <p class="text-muted mb-0">Update the details of this membership plan</p>
                             </div>
 
-                            <form action="#" method="POST" enctype="multipart/form-data">
-                                @csrf
+                            <form action="{{ route('owner.memberships.update') }}" method="POST" enctype="multipart/form-data">
                                 @method('PUT')
+                                @csrf
+                                <input type="hidden" name="id" value="{{ $membership->id }}">
 
                                 <!-- Basic Information Section -->
                                 <div class="form-section">
@@ -106,28 +110,83 @@
                                     <div class="row">
                                         <div class="col-md-6">
                                             <div class="mb-3">
-                                                <label for="name" class="form-label">Membership Name</label>
+                                                <label for="name" class="form-label">Membership Name <span class="required__field">*</span></label>
                                                 <input type="text" class="form-control" id="name" name="name" required
                                                        value="{{ old('name', $membership->name) }}" placeholder="e.g. Premium Gym Access">
                                             </div>
                                         </div>
                                         <div class="col-md-6">
                                             <div class="mb-3">
-                                                <label for="category" class="form-label">Category</label>
+                                                <label for="category" class="form-label">Category <span class="required__field">*</span></label>
                                                 <select class="form-select" id="category" name="category" required>
                                                     <option value="">Select Category</option>
-                                                    <option value="gym" {{ old('category', $membership->category) == 'gym' ? 'selected' : '' }}>Gym/Fitness</option>
-                                                    <option value="restaurant" {{ old('category', $membership->category) == 'restaurant' ? 'selected' : '' }}>Restaurant/Dining</option>
-                                                    <option value="spa" {{ old('category', $membership->category) == 'spa' ? 'selected' : '' }}>Spa/Wellness</option>
-                                                    <option value="retail" {{ old('category', $membership->category) == 'retail' ? 'selected' : '' }}>Retail/Shopping</option>
-                                                    <option value="other" {{ old('category', $membership->category) == 'other' ? 'selected' : '' }}>Other</option>
+                                                    @foreach($types as $type)
+                                                        <option value="{{ $type }}" {{ old('category', $membership->category) == $type ? 'selected' : '' }}>
+                                                            {{ $type }}
+                                                        </option>
+                                                    @endforeach
                                                 </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="building_id" class="form-label">Buildings <span class="required__field">*</span></label>
+                                                <select class="form-select" id="building_id" name="building_id" required>
+                                                    <option value="">Select Building</option>
+                                                    @foreach($buildings as $building)
+                                                        <option value="{{ $building->id }}" {{ old('building_id', $membership->building_id) == $building->id ? 'selected' : '' }}>
+                                                            {{ $building->name }}
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="unit_id" class="form-label">Units <span class="required__field">*</span></label>
+                                                <select class="form-select" id="unit_id" name="unit_id" required>
+                                                    <option value="">Select Unit</option>
+                                                    @if($membership->unit)
+                                                        <option value="{{ $membership->unit_id }}" selected>
+                                                            {{ $membership->unit->unit_name }}
+                                                        </option>
+                                                    @endif
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="scans_per_day" class="form-label">Scans Per Day <span class="required__field">*</span></label>
+                                                <input type="number" class="form-control" id="scans_per_day" name="scans_per_day"
+                                                       min="1" required value="{{ old('scans_per_day', $membership->scans_per_day) }}" placeholder="ie.100">
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="status" class="form-label">Status <span class="required__field">*</span></label>
+                                                <select class="form-select" id="status" name="status" required>
+                                                    <option value="">Select Status</option>
+                                                    @foreach($statuses as $status)
+                                                        <option value="{{ $status }}" {{ old('status', $membership->status) == $status ? 'selected' : '' }}>
+                                                            {{ $status }}
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <div class="mb-3">
+                                                <label for="url" class="form-label">Membership Url <span class="required__field">*</span></label>
+                                                <input type="text" class="form-control" id="url" name="url" required
+                                                       value="{{ old('url', $membership->url) }}" placeholder="e.g. membership url">
                                             </div>
                                         </div>
                                     </div>
                                     <div class="mb-3">
                                         <label for="description" class="form-label">Description</label>
-                                        <textarea class="form-control" id="description" name="description" rows="3" required
+                                        <textarea class="form-control" id="description" name="description" rows="3"
                                                   placeholder="Brief description of the membership benefits">{{ old('description', $membership->description) }}</textarea>
                                     </div>
                                 </div>
@@ -138,27 +197,38 @@
                                     <div class="row">
                                         <div class="col-md-4">
                                             <div class="mb-3">
-                                                <label for="price" class="form-label">Monthly Price ($)</label>
-                                                <input type="number" class="form-control" id="price" name="price" min="0" step="0.01" required
-                                                       value="{{ old('price', $membership->price) }}" placeholder="49.99">
+                                                <label for="currency" class="form-label">Currency <span class="required__field">*</span></label>
+                                                <select class="form-select" id="currency" name="currency" required>
+                                                    @foreach($currency as $curr)
+                                                        <option value="{{ $curr }}" {{ old('currency', $membership->currency) == $curr ? 'selected' : '' }}>
+                                                            {{ $curr }}
+                                                        </option>
+                                                    @endforeach
+                                                </select>
                                             </div>
                                         </div>
                                         <div class="col-md-4">
                                             <div class="mb-3">
-                                                <label for="original_price" class="form-label">Original Price ($)</label>
-                                                <input type="number" class="form-control" id="original_price" name="original_price" min="0" step="0.01"
-                                                       value="{{ old('original_price', $membership->original_price) }}" placeholder="59.99">
+                                                <label for="price" class="form-label">Monthly Price <span class="required__field">*</span></label>
+                                                <input type="number" class="form-control" id="price" name="price"
+                                                       min="0" step="0.01" required value="{{ old('price', $membership->price) }}" placeholder="49.99">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="mb-3">
+                                                <label for="original_price" class="form-label">Original Price</label>
+                                                <input type="number" class="form-control" id="original_price" name="original_price"
+                                                       min="0" step="0.01" value="{{ old('original_price', $membership->original_price) }}" placeholder="59.99">
                                                 <small class="text-muted">Leave blank if no discount</small>
                                             </div>
                                         </div>
-                                        <div class="col-md-4">
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6">
                                             <div class="mb-3">
-                                                <label for="billing_cycle" class="form-label">Billing Cycle</label>
-                                                <select class="form-select" id="billing_cycle" name="billing_cycle" required>
-                                                    <option value="monthly" {{ old('billing_cycle', $membership->billing_cycle) == 'monthly' ? 'selected' : '' }}>Monthly</option>
-                                                    <option value="quarterly" {{ old('billing_cycle', $membership->billing_cycle) == 'quarterly' ? 'selected' : '' }}>Quarterly</option>
-                                                    <option value="yearly" {{ old('billing_cycle', $membership->billing_cycle) == 'yearly' ? 'selected' : '' }}>Yearly</option>
-                                                </select>
+                                                <label for="duration_months" class="form-label">Duration (Months) <span class="required__field">*</span></label>
+                                                <input type="number" class="form-control" id="duration_months" name="duration_months"
+                                                       min="1" required value="{{ old('duration_months', $membership->duration_months) }}">
                                             </div>
                                         </div>
                                     </div>
@@ -170,12 +240,18 @@
                                     <div class="row">
                                         <div class="col-md-6">
                                             <div class="mb-3">
-                                                @if($membership->image)
-                                                    <div class="current-image-container">
-                                                        <span class="current-image-label">Current Image:</span>
-                                                        <img src="{{ asset('storage/' . $membership->image) }}" class="preview-image" style="max-width: 200px;">
-                                                    </div>
-                                                @endif
+                                                <label class="form-label">Current Image</label>
+                                                <div class="current-image-container">
+                                                    @if($membership->image)
+                                                        <img src="{{ asset($membership->image) }}" class="current-image" alt="Current Membership Image">
+                                                    @else
+                                                        <p>No image uploaded</p>
+                                                    @endif
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
                                                 <label class="form-label">Update Image</label>
                                                 <div class="form-image-upload" onclick="document.getElementById('image_upload').click()">
                                                     <div class="text-center">
@@ -188,60 +264,12 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="col-md-6">
-                                            <div class="mb-3">
-                                                <label class="form-label">Badge Options</label>
-                                                <div class="card p-3">
-                                                    <div class="form-check mb-2">
-                                                        <input class="form-check-input" type="checkbox" id="show_discount_badge" name="show_discount_badge"
-                                                            {{ old('show_discount_badge', $membership->show_discount_badge) ? 'checked' : '' }}>
-                                                        <label class="form-check-label" for="show_discount_badge">
-                                                            Show Discount Badge
-                                                        </label>
-                                                    </div>
-                                                    <div class="form-check">
-                                                        <input class="form-check-input" type="checkbox" id="show_popular_badge" name="show_popular_badge"
-                                                            {{ old('show_popular_badge', $membership->show_popular_badge) ? 'checked' : '' }}>
-                                                        <label class="form-check-label" for="show_popular_badge">
-                                                            Mark as "Popular"
-                                                        </label>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Additional Options -->
-                                <div class="form-section">
-                                    <h5 class="section-title">Additional Options</h5>
-                                    <div class="mb-3">
-                                        <label for="features" class="form-label">Key Features</label>
-                                        <div id="features-container">
-                                            @foreach(old('features', $membership->features ?? ['']) as $index => $feature)
-                                                <div class="input-group mb-2">
-                                                    <input type="text" class="form-control" name="features[]"
-                                                           value="{{ $feature }}" placeholder="Feature {{ $index + 1 }}">
-                                                    <button type="button" class="btn btn-outline-danger" onclick="removeFeature(this)">
-                                                        <x-icon name="close" size="16" />
-                                                    </button>
-                                                </div>
-                                            @endforeach
-                                        </div>
-                                        <button type="button" class="btn btn-sm btn-outline-primary mt-2" onclick="addFeature()">
-                                            <x-icon name="add" size="16" class="me-1" />
-                                            Add Feature
-                                        </button>
                                     </div>
                                 </div>
 
                                 <!-- Form Actions -->
-                                <div class="d-flex justify-content-between pt-3">
-                                    <a href="#" class="btn btn-outline-secondary">
-                                        <x-icon name="arrow-back" size="16" class="me-1" />
-                                        Cancel
-                                    </a>
-                                    <button type="submit" class="btn btn-primary">
+                                <div class="pt-3">
+                                    <button type="submit" class="btn btn-primary w-100">
                                         <x-icon name="save" size="16" class="me-1" />
                                         Update Membership
                                     </button>
@@ -270,34 +298,52 @@
                 reader.readAsDataURL(input.files[0]);
             }
         }
+    </script>
 
-        // Dynamic feature fields
-        function addFeature() {
-            const container = document.getElementById('features-container');
-            const count = container.children.length + 1;
-            const div = document.createElement('div');
-            div.className = 'input-group mb-2';
-            div.innerHTML = `
-                <input type="text" class="form-control" name="features[]" placeholder="Feature ${count}">
-                <button type="button" class="btn btn-outline-danger" onclick="removeFeature(this)">
-                    <x-icon name="close" size="16" />
-                </button>
-            `;
-            container.appendChild(div);
-        }
+    <script>
+        $(document).ready(function() {
+            // When either category or building selection changes
+            $('#category, #building_id').change(function() {
+                var category = $('#category').val();
+                var buildingId = $('#building_id').val();
 
-        function removeFeature(button) {
-            if (document.getElementById('features-container').children.length > 1) {
-                button.parentElement.remove();
-            }
-        }
+                // Clear units dropdown if either field is empty
+                if (!category || !buildingId) {
+                    $('#unit_id').html('<option value="">Select Unit</option>');
+                    return;
+                }
 
-        // Initialize the form with existing features
-        document.addEventListener('DOMContentLoaded', function() {
-            // If no features exist, add one empty field
-            if (document.getElementById('features-container').children.length === 0) {
-                addFeature();
-            }
+                // Make AJAX call
+                $.ajax({
+                    url: "{{ route('owner.buildings.units.byType', ['building' => ':building', 'type' => ':type']) }}"
+                        .replace(':building', buildingId)
+                        .replace(':type', category),
+                    type: 'GET',
+                    dataType: 'json',
+                    success: function(response) {
+                        var unitsDropdown = $('#unit_id');
+                        unitsDropdown.empty();
+                        unitsDropdown.append('<option value="">Select Unit</option>');
+
+                        if (response.units.length > 0) {
+                            $.each(response.units, function(key, unit) {
+                                var selected = unit.id == "{{ old('unit_id', $membership->unit_id ?? '') }}" ? 'selected' : '';
+                                unitsDropdown.append('<option value="' + unit.id + '" ' + selected + '>' + unit.unit_name + '</option>');
+                            });
+                        } else {
+                            unitsDropdown.append('<option value="">No units available</option>');
+                        }
+                    },
+                    error: function(xhr) {
+                        console.log(xhr.responseText);
+                    }
+                });
+            });
+
+            // Trigger change event if old values exist
+            @if(old('building_id', $membership->building_id) && old('category', $membership->category))
+            $('#building_id, #category').trigger('change');
+            @endif
         });
     </script>
 @endpush
