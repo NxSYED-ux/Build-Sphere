@@ -710,12 +710,25 @@ class BuildingUnitController extends Controller
     }
 
 
-    // Get Building Units
+    // Get Building Available Units
     public function getAvailableBuildingUnits($building_id){
 
         $units = BuildingUnit::select('id', 'unit_name')
             ->where('sale_or_rent', '!=', 'Not Available')
             ->where('availability_status', 'Available')
+            ->where('status', 'Approved')
+            ->where('building_id', $building_id)
+            ->get();
+
+        return response()->json(['units' => $units]);
+    }
+
+    // Get Building Units by type
+    public function getBuildingUnitsByType ($building_id, $unit_type){
+
+        $units = BuildingUnit::select('id', 'unit_name')
+            ->where('sale_or_rent', 'Not Available')
+            ->where('unit_type', $unit_type)
             ->where('status', 'Approved')
             ->where('building_id', $building_id)
             ->get();

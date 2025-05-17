@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('name', 100);
             $table->string('url');
             $table->text('description')->nullable();
-            $table->enum('category', ['GYM', 'Restaurant', 'Other']);
+            $table->enum('category', ['Gym', 'Restaurant', 'Other']);
             $table->integer('duration_months');
             $table->integer('scans_per_day');
             $table->boolean('mark_as_featured')->default(false);

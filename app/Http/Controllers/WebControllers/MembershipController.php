@@ -22,7 +22,7 @@ class MembershipController extends Controller
             $memberships = collect();
             $buildings = collect();
             $units = collect();
-            $types = ['Restaurant', 'GYM', 'Other'];
+            $types = ['Restaurant', 'Gym', 'Other'];
             $statuses = ['Draft', 'Published', 'Non Renewable', 'Archived'];
 
             $token = $request->attributes->get('token');
@@ -117,7 +117,7 @@ class MembershipController extends Controller
         try {
             $buildings = collect();
             $units = collect();
-            $types = ['Restaurant', 'GYM', 'Other'];
+            $types = ['Restaurant', 'Gym', 'Other'];
             $statuses = ['Draft', 'Published', 'Non Renewable'];
             $currency = ['PKR'];
 
@@ -146,7 +146,6 @@ class MembershipController extends Controller
                 $managerBuildingIds = ManagerBuilding::where('user_id', $user->id)->pluck('building_id');
 
                 if ($managerBuildingIds->isEmpty()) {
-                    $memberships = collect();
                     return view('Heights.Owner.Memberships.create', compact('buildings', 'units', 'types', 'statuses', 'currency'));
                 }
 
@@ -180,7 +179,7 @@ class MembershipController extends Controller
             ],
             'url' => 'required|url|max:255',
             'description' => 'nullable|string',
-            'category' => 'required|in:GYM,Restaurant,Other',
+            'category' => 'required|in:Gym,Restaurant,Other',
             'duration_months' => 'required|integer|min:1',
             'scans_per_day' => 'required|integer|min:1',
             'currency' => 'nullable|string|max:10',
