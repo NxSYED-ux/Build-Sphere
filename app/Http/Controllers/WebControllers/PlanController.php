@@ -89,6 +89,7 @@ class PlanController extends Controller
         }
     }
 
+
     public function create()
     {
         try {
@@ -113,6 +114,7 @@ class PlanController extends Controller
             return redirect()->back()->with('error', 'Failed to load plan creation form. Please try again later.');
         }
     }
+
 
     public function store(Request $request)
     {
@@ -182,6 +184,7 @@ class PlanController extends Controller
             return back()->with('error', 'Failed to create plan. Please try again.');
         }
     }
+
 
     public function show(Request $request, $id)
     {
@@ -269,6 +272,7 @@ class PlanController extends Controller
         }
     }
 
+
     public function edit($id)
     {
         try {
@@ -339,6 +343,7 @@ class PlanController extends Controller
             return redirect()->back()->with('error', 'Failed to load plan editing form. Please try again later.');
         }
     }
+
 
     public function update(Request $request)
     {
@@ -447,6 +452,7 @@ class PlanController extends Controller
         }
     }
 
+
     public function destroy($id)
     {
         $plan = Plan::find($id);
@@ -499,7 +505,6 @@ class PlanController extends Controller
 
         return $this->plans($planCycle, ['Active'], $customPlanId);
     }
-
 
     private function plans(string $planCycle, $statuses, int $includeCustomPlanId = null)
     {

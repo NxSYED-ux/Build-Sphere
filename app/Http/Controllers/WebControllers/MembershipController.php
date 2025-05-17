@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\WebControllers;
 
 use App\Http\Controllers\Controller;
+use App\Jobs\MembershipNotifications;
 use App\Models\Building;
 use App\Models\BuildingUnit;
 use App\Models\ManagerBuilding;
@@ -117,7 +118,6 @@ class MembershipController extends Controller
 
         try {
             $buildings = collect();
-            $units = collect();
             $types = ['Restaurant', 'Gym', 'Other'];
             $statuses = ['Draft', 'Published', 'Non Renewable'];
             $currency = ['PKR'];
@@ -125,7 +125,7 @@ class MembershipController extends Controller
             $token = $request->attributes->get('token');
 
             if (empty($token['organization_id']) || empty($token['role_name'])) {
-                return view('Heights.Owner.Memberships.create', compact('buildings', 'units', 'types', 'statuses', 'currency'));
+                return view('Heights.Owner.Memberships.create', compact('buildings', 'types', 'statuses', 'currency'));
             }
 
             $organization_id = $token['organization_id'];
@@ -136,28 +136,19 @@ class MembershipController extends Controller
                 ->where('isFreeze', 0)
                 ->select('id', 'name');
 
-            $unitsQuery = BuildingUnit::where('organization_id', $organization_id)
-                ->where('status', 'Approved')
-                ->where('availability_status', 'Available')
-                ->where('sale_or_rent', 'Not Available')
-                ->whereNotIn('unit_type', ['Room', 'Shop', 'Apartment'])
-                ->select('id', 'unit_name');
-
             if ($role_name === 'Manager') {
                 $managerBuildingIds = ManagerBuilding::where('user_id', $user->id)->pluck('building_id');
 
                 if ($managerBuildingIds->isEmpty()) {
-                    return view('Heights.Owner.Memberships.create', compact('buildings', 'units', 'types', 'statuses', 'currency'));
+                    return view('Heights.Owner.Memberships.create', compact('buildings', 'types', 'statuses', 'currency'));
                 }
 
                 $buildingsQuery->whereIn('id', $managerBuildingIds);
-                $unitsQuery->whereIn('building_id', $managerBuildingIds);
             }
 
             $buildings = $buildingsQuery->get();
-            $units = $unitsQuery->get();
 
-            return view('Heights.Owner.Memberships.create', compact('buildings', 'units', 'types', 'statuses', 'currency'));
+            return view('Heights.Owner.Memberships.create', compact('buildings','types', 'statuses', 'currency'));
 
         } catch (\Throwable $e) {
             Log::error('Error in Memberships create: ' . $e->getMessage());
@@ -218,7 +209,7 @@ class MembershipController extends Controller
                 $imagePath = $this->handleImageUpload($request);
             }
 
-            Membership::create([
+            $membership = Membership::create([
                 'organization_id' => $organization_id,
                 'unit_id' => $request->unit_id,
                 'building_id' => $request->building_id,
@@ -235,7 +226,18 @@ class MembershipController extends Controller
                 'status' => $request->status,
             ]);
 
+            dispatch(new MembershipNotifications(
+                $organization_id,
+                $membership->id,
+                "New membership Created by {$token['role_name']} ({$user->name})",
+                "The membership '{$membership->name}' has been successfully created.",
+                "owner/memberships/{$membership->id}/show",
 
+                $user->id,
+                "New Membership Created",
+                "The membership '{$membership->name}' has been successfully created.",
+                "owner/memberships/{$membership->id}/show",
+            ));
 
             return redirect()->route('owner.memberships.index')->with('success', 'Membership created successfully.');
 
@@ -246,13 +248,160 @@ class MembershipController extends Controller
     }
 
 
-    public function edit(Request $request, $id){
+    public function edit(Request $request, $id)
+    {
+        $user = $request->user() ?? abort(404, 'Page not found');
 
+        try {
+            $types = ['Restaurant', 'Gym', 'Other'];
+            $currency = ['PKR'];
+            $token = $request->attributes->get('token');
+
+            if (empty($token['organization_id']) || empty($token['role_name'])) {
+                return redirect()->back()->with('error', 'Only organization-related personnel can perform this action.');
+            }
+
+            $organization_id = $token['organization_id'];
+            $role_name = $token['role_name'];
+
+            $buildingsQuery = Building::where('organization_id', $organization_id)
+                ->whereIn('status', ['Approved', 'For Re-Approval'])
+                ->where('isFreeze', 0)
+                ->select('id', 'name');
+
+            $membership = Membership::where('id', $id)
+                ->where('organization_id', $organization_id)
+                ->with([
+                    'unit:id,unit_name',
+                    'building:id,name'
+                ])->first();
+
+            if (!$membership) {
+                return redirect()->back()->with('error', 'Membership not found.');
+            }
+
+            $statuses = ['Published', 'Non Renewable', $membership->status === 'Draft' ? 'Draft' : 'Archived'];
+
+            if ($role_name === 'Manager') {
+                $managerBuildingIds = ManagerBuilding::where('user_id', $user->id)->pluck('building_id')->toArray();
+
+                if (!in_array($membership->building_id, $managerBuildingIds)) {
+                    return redirect()->back()->with('error', 'You do not have access to edit this membership.');
+                }
+
+                $buildingsQuery->whereIn('id', $managerBuildingIds);
+            }
+
+            $buildings = $buildingsQuery->get();
+
+            return view('Heights.Owner.Memberships.edit', compact(
+                'membership', 'buildings', 'types', 'statuses', 'currency'
+            ));
+
+        } catch (\Throwable $e) {
+            Log::error('Error in Memberships edit: ' . $e->getMessage());
+            return back()->with('error', 'Something went wrong! Please try again.');
+        }
     }
 
-    public function update(Request $request, $id){
 
+    public function update(Request $request)
+    {
+        $user = $request->user() ?? abort(404, 'Unauthorized Action');
+
+        $request->validate([
+            'id' => 'required|exists:memberships,id',
+            'unit_id' => 'required|exists:buildingunits,id',
+            'building_id' => 'required|exists:buildings,id',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'name' => ['required', 'string', 'max:100',
+                Rule::unique('memberships')->ignore($request->id)->where(function ($query) use ($request) {
+                    return $query->where('unit_id', $request->unit_id);
+                }),
+            ],
+            'url' => 'required|url|max:255',
+            'description' => 'nullable|string',
+            'category' => 'required|in:Gym,Restaurant,Other',
+            'duration_months' => 'required|integer|min:1',
+            'scans_per_day' => 'required|integer|min:1',
+            'currency' => 'nullable|string|max:10',
+            'price' => 'required|numeric|min:0',
+            'original_price' => 'nullable|numeric|min:0',
+            'status' => 'in:Draft,Published,Non Renewable,Archived',
+        ]);
+
+        try {
+            $token = $request->attributes->get('token');
+
+            if (empty($token['organization_id']) || empty($token['role_name'])) {
+                return redirect()->back()->withInput()->with('error', 'Only organization-related personnel can perform this action.');
+            }
+
+            $organization_id = $token['organization_id'];
+            $role_name = $token['role_name'];
+
+            $membership = Membership::where('id', $request->id)
+                ->where('organization_id', $organization_id)
+                ->first();
+
+            if (!$membership) {
+                return redirect()->back()->with('error', 'Membership not found.');
+            }
+
+            if ($role_name === 'Manager' && !ManagerBuilding::where('building_id', $request->building_id)
+                    ->where('user_id', $user->id)->exists()) {
+                return redirect()->back()->withInput()->with('error', 'You do not have access to edit memberships for the selected building.');
+            }
+
+            $unit = BuildingUnit::where('id', $request->unit_id)
+                ->where('organization_id', $organization_id)->first();
+
+            if (!$unit || $unit->building_id !== (int)$request->building_id) {
+                return redirect()->back()->withInput()->with('error', 'Selected unit does not belong to the selected building.');
+            }
+
+            $imagePath = $membership->image;
+            if ($request->hasFile('image')) {
+                $imagePath = $this->handleImageUpload($request);
+            }
+
+            $membership->update([
+                'unit_id' => $request->unit_id,
+                'building_id' => $request->building_id,
+                'image' => $imagePath,
+                'name' => $request->name,
+                'url' => $request->url,
+                'description' => $request->description,
+                'category' => $request->category,
+                'duration_months' => $request->duration_months,
+                'scans_per_day' => $request->scans_per_day,
+                'currency' => $request->currency,
+                'price' => $request->price,
+                'original_price' => $request->original_price,
+                'status' => $request->status,
+            ]);
+
+            dispatch(new MembershipNotifications(
+                $organization_id,
+                $membership->id,
+                "Membership Updated by {$token['role_name']} ({$user->name})",
+                "The membership '{$membership->name}' has been successfully updated.",
+                "owner/memberships/{$membership->id}/show",
+
+                $user->id,
+                "Membership Updated",
+                "The membership '{$membership->name}' has been successfully updated.",
+                "owner/memberships/{$membership->id}/show",
+            ));
+
+            return redirect()->route('owner.memberships.index')->with('success', 'Membership updated successfully.');
+
+        } catch (\Throwable $e) {
+            Log::error('Error in Memberships update: ' . $e->getMessage());
+            return redirect()->back()->withInput()->with('error', 'Something went wrong! Please try again.');
+        }
     }
+
 
     public function show(Request $request, $id){
 
