@@ -603,6 +603,7 @@ class MembershipController extends Controller
     {
         $request->validate([
             'membership_id' => 'required|exists:memberships,id',
+            'value' => 'required|in:0,1',
         ]);
 
         DB::beginTransaction();
@@ -616,6 +617,7 @@ class MembershipController extends Controller
             }
 
             $organization_id = $token['organization_id'];
+            $requestedValue = (bool) $request->value;
 
             $membership = Membership::where('id', $request->membership_id)
                 ->where('organization_id', $organization_id)
@@ -632,6 +634,11 @@ class MembershipController extends Controller
                 return redirect()->back()->with('error', 'Archived or Draft memberships cannot be toggled as featured.');
             }
 
+            if ((bool) $membership->mark_as_featured === $requestedValue) {
+                DB::rollBack();
+                return redirect()->back()->with('success', 'Membership is already in the requested state.');
+            }
+
             $subscriptionLimit = PlanSubscriptionItem::where('organization_id', $organization_id)
                 ->where('service_catalog_id', 6)
                 ->lockForUpdate()
@@ -642,7 +649,7 @@ class MembershipController extends Controller
                 return redirect()->back()->with('plan_upgrade_error', 'This plan does not support featured memberships.');
             }
 
-            if (!$membership->mark_as_featured) {
+            if ($requestedValue) {
                 if ($subscriptionLimit->used >= $subscriptionLimit->quantity) {
                     DB::rollBack();
                     return redirect()->back()->with('plan_upgrade_error', 'Featured membership limit reached. Upgrade your plan.');
@@ -650,23 +657,20 @@ class MembershipController extends Controller
 
                 $membership->mark_as_featured = true;
                 $subscriptionLimit->increment('used');
-
                 DB::commit();
                 return redirect()->back()->with('success', 'Membership marked as featured successfully.');
             } else {
                 $membership->mark_as_featured = false;
-
                 if ($subscriptionLimit->used > 0) {
                     $subscriptionLimit->decrement('used');
                 }
-
                 DB::commit();
                 return redirect()->back()->with('success', 'Membership unmarked from featured successfully.');
             }
 
         } catch (\Throwable $e) {
             DB::rollBack();
-            Log::error('Error in markedAsFeatured (toggle): ' . $e->getMessage());
+            Log::error('Error in toggleFeatured: ' . $e->getMessage());
             return redirect()->back()->with('error', 'Something went wrong! Please try again.');
         }
     }
