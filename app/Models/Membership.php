@@ -56,7 +56,7 @@ class Membership extends Model
     }
 
     // Has Many Relations
-    public function userMemberships()
+    public function membershipUsers()
     {
         return $this->hasMany(MembershipUser::class, 'membership_id', 'id');
     }

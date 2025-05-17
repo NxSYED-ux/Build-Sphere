@@ -403,9 +403,51 @@ class MembershipController extends Controller
     }
 
 
-    public function show(Request $request, $id){
+    public function show(Request $request, $id)
+    {
+        $user = $request->user() ?? abort(404, 'Unauthorized');
 
+        try {
+            $token = $request->attributes->get('token');
+
+            if (empty($token['organization_id']) || empty($token['role_name'])) {
+                return redirect()->back()->with('error', 'Only organization-related personnel can perform this action.');
+            }
+
+            $organization_id = $token['organization_id'];
+            $role_name = $token['role_name'];
+
+            $membership = Membership::where('id', $id)
+                ->where('organization_id', $organization_id)
+                ->with([
+                    'unit:id,unit_name,building_id',
+                    'building:id,name',
+                    'membershipUsers',
+                    'membershipUsers.users',
+                ])
+                ->first();
+
+            if (!$membership) {
+                return redirect()->back()->with('error', 'Membership not found.');
+            }
+
+            if (
+                $role_name === 'Manager' &&
+                !ManagerBuilding::where('user_id', $user->id)
+                    ->where('building_id', $membership->building_id)
+                    ->exists()
+            ) {
+                return redirect()->back()->with('error', 'You do not have permission to view this membership.');
+            }
+
+            return view('Heights.Owner.Memberships.show', compact('membership'));
+
+        } catch (\Throwable $e) {
+            Log::error('Error in Memberships show: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Something went wrong! Please try again.');
+        }
     }
+
 
     // Helper Functions
     private function handleImageUpload(Request $request): string
