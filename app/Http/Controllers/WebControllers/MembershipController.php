@@ -8,7 +8,13 @@ use App\Models\Building;
 use App\Models\BuildingUnit;
 use App\Models\ManagerBuilding;
 use App\Models\Membership;
+use App\Models\MembershipUser;
+use App\Models\PlanSubscriptionItem;
+use App\Models\Subscription;
+use App\Models\Transaction;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 
@@ -381,6 +387,23 @@ class MembershipController extends Controller
                 'status' => $request->status,
             ]);
 
+            if (
+                $request->status === 'Archived' &&
+                $membership->mark_as_featured
+            ) {
+                $membership->mark_as_featured = false;
+                $membership->save();
+
+                $planItem = PlanSubscriptionItem::where('organization_id', $organization_id)
+                    ->where('service_catalog_id', 6)
+                    ->lockForUpdate()
+                    ->first();
+
+                if ($planItem && $planItem->used > 0) {
+                    $planItem->decrement('used');
+                }
+            }
+
             dispatch(new MembershipNotifications(
                 $organization_id,
                 $membership->id,
@@ -449,6 +472,207 @@ class MembershipController extends Controller
     }
 
 
+    public function assignMembershipView(Request $request, $id)
+    {
+        $user = $request->user() ?? abort(404, 'Unauthorized');
+
+        try {
+            $token = $request->attributes->get('token');
+
+            if (empty($token['organization_id']) || empty($token['role_name'])) {
+                return redirect()->back()->with('error', 'Only organization-related personnel can perform this action.');
+            }
+
+            $organization_id = $token['organization_id'];
+            $role_name = $token['role_name'];
+
+            $membership = Membership::where('id', $id)
+                ->where('organization_id', $organization_id)
+                ->where('status', '!=', 'Archived')
+                ->with(['building:id,name', 'unit:id,unit_name'])
+                ->first();
+
+            if (!$membership) {
+                return redirect()->back()->with('error', 'Membership not found.');
+            }
+
+            if (
+                $role_name === 'Manager' &&
+                !ManagerBuilding::where('user_id', $user->id)
+                    ->where('building_id', $membership->building_id)
+                    ->exists()
+            ) {
+                return redirect()->back()->with('error', 'You do not have permission to assign this membership.');
+            }
+
+            $assignedUserIds = MembershipUser::where('membership_id', $id)
+                ->where('status', 1)
+                ->pluck('user_id');
+
+            $availableUsers = User::where('organization_id', $organization_id)
+                ->where('id', '!=', $user->id)
+                ->whereNotIn('id', $assignedUserIds)
+                ->select('id', 'name', 'email', 'cnic', 'picture')
+                ->get();
+
+            return view('Heights.Owner.Memberships.assign', compact('membership', 'availableUsers'));
+
+        } catch (\Throwable $e) {
+            Log::error('Error in assignMembershipView: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Something went wrong! Please try again.');
+        }
+    }
+
+
+    public function assignMembership(Request $request)
+    {
+        $loggedUser = $request->user() ?? abort(404, 'Unauthorized');
+
+        $request->validate([
+            'membership_id' => 'required|exists:memberships,id',
+            'user_id' => 'required|exists:users,id',
+        ]);
+
+        try {
+            DB::beginTransaction();
+
+            $token = $request->attributes->get('token');
+
+            if (empty($token['organization_id']) || empty($token['role_name'])) {
+                DB::rollBack();
+                return redirect()->back()->with('error', 'Only organization-related personnel can perform this action.');
+            }
+
+            $organization_id = $token['organization_id'];
+            $role_name = $token['role_name'];
+
+            $membership = Membership::where('id', $request->membership_id)
+                ->where('status', '!=', 'Archived')
+                ->where('organization_id', $organization_id)
+                ->first();
+
+            if (!$membership) {
+                DB::rollBack();
+                return redirect()->back()->with('error', 'Membership not found.');
+            }
+
+            if (
+                $role_name === 'Manager' &&
+                !ManagerBuilding::where('user_id', $loggedUser->id)
+                    ->where('building_id', $membership->building_id)
+                    ->exists()
+            ) {
+                DB::rollBack();
+                return redirect()->back()->with('error', 'You do not have permission to assign this membership.');
+            }
+
+            $alreadyAssigned = MembershipUser::where('membership_id', $membership->id)
+                ->where('user_id', $request->user_id)
+                ->where('status', 1)
+                ->exists();
+
+            if ($alreadyAssigned) {
+                DB::rollBack();
+                return redirect()->back()->with('error', 'This membership is already assigned to the selected user.');
+            }
+
+            $user = User::find($request->user_id);
+
+            if(!$user){
+                DB::rollBack();
+                return redirect()->back()->with('error', 'Selected User is invalid.');
+            }
+
+            $transaction = $this->membershipAssignment_Transaction($user, $membership, null);
+
+            DB::commit();
+
+            $this->sendMembershipSuccessNotifications($membership->organization_id, $membership, $transaction, $user, $loggedUser);
+
+            return redirect()->route('owner.memberships.index')->with('success', 'Membership assigned to user successfully.');
+
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            Log::error('Error assigning membership: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Something went wrong! Please try again.');
+        }
+    }
+
+
+    public function toggleFeatured(Request $request)
+    {
+        $request->validate([
+            'membership_id' => 'required|exists:memberships,id',
+        ]);
+
+        DB::beginTransaction();
+
+        try {
+            $token = $request->attributes->get('token');
+
+            if (empty($token['organization_id']) || empty($token['role_name'])) {
+                DB::rollBack();
+                return redirect()->back()->with('error', 'Only organization-related personnel can perform this action.');
+            }
+
+            $organization_id = $token['organization_id'];
+
+            $membership = Membership::where('id', $request->membership_id)
+                ->where('organization_id', $organization_id)
+                ->lockForUpdate()
+                ->first();
+
+            if (!$membership) {
+                DB::rollBack();
+                return redirect()->back()->with('error', 'Membership not found.');
+            }
+
+            if (in_array($membership->status, ['Archived', 'Draft'])) {
+                DB::rollBack();
+                return redirect()->back()->with('error', 'Archived or Draft memberships cannot be toggled as featured.');
+            }
+
+            $subscriptionLimit = PlanSubscriptionItem::where('organization_id', $organization_id)
+                ->where('service_catalog_id', 6)
+                ->lockForUpdate()
+                ->first();
+
+            if (!$subscriptionLimit) {
+                DB::rollBack();
+                return redirect()->back()->with('plan_upgrade_error', 'This plan does not support featured memberships.');
+            }
+
+            if (!$membership->mark_as_featured) {
+                if ($subscriptionLimit->used >= $subscriptionLimit->quantity) {
+                    DB::rollBack();
+                    return redirect()->back()->with('plan_upgrade_error', 'Featured membership limit reached. Upgrade your plan.');
+                }
+
+                $membership->mark_as_featured = true;
+                $subscriptionLimit->increment('used');
+
+                DB::commit();
+                return redirect()->back()->with('success', 'Membership marked as featured successfully.');
+            } else {
+                $membership->mark_as_featured = false;
+
+                if ($subscriptionLimit->used > 0) {
+                    $subscriptionLimit->decrement('used');
+                }
+
+                DB::commit();
+                return redirect()->back()->with('success', 'Membership unmarked from featured successfully.');
+            }
+
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            Log::error('Error in markedAsFeatured (toggle): ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Something went wrong! Please try again.');
+        }
+    }
+
+
+
     // Helper Functions
     private function handleImageUpload(Request $request): string
     {
@@ -457,6 +681,125 @@ class MembershipController extends Controller
         $imagePath = 'uploads/memberships/images/' . $imageName;
         $image->move(public_path('uploads/memberships/images'), $imageName);
         return $imagePath;
+    }
+
+    private function membershipAssignment_Transaction($user, $membership, $paymentIntentId)
+    {
+        $source_id = $membership->id;
+        $source_name = 'membership';
+        $isSubscription = false;
+
+        if ($membership->status === 'Published') {
+            $subscription = Subscription::create([
+                'customer_payment_id' => $user->customer_payment_id,
+                'building_id' => $membership->building_id,
+                'unit_id' => $membership->unit_id,
+                'user_id' => $user->id,
+                'organization_id' => $membership->organization_id,
+                'source_id' => $source_id,
+                'source_name' => $source_name,
+                'billing_cycle' => $membership->duration_months,
+                'subscription_status' => 'Active',
+                'price_at_subscription' => $membership->price,
+                'currency_at_subscription' => $membership->currency,
+                'ends_at' => now()->addMonths($membership->duration_months),
+            ]);
+
+            $source_id = $subscription->id;
+            $source_name = 'subscription';
+            $isSubscription = true;
+        }
+
+        MembershipUser::create([
+            'user_id' => $user->id,
+            'membership_id' => $membership->id,
+            'subscription_id' => $isSubscription ? $source_id : null,
+            'quantity' => $membership->scans_per_day,
+            'used' => $membership->scans_per_day,
+        ]);
+
+        return Transaction::create([
+            'transaction_title' => "{$membership->name}",
+            'transaction_category' => 'New',
+            'building_id' => $membership->building_id,
+            'unit_id' => $membership->unit_id,
+            'buyer_id' => $user->id,
+            'buyer_type' => 'user',
+            'seller_type' => 'organization',
+            'seller_id' => $membership->organization_id,
+            'payment_method' => 'Card',
+            'gateway_payment_id' => $paymentIntentId,
+            'price' => $membership->price,
+            'currency' => $membership->currency,
+            'status' => 'Completed',
+            'is_subscription' => $isSubscription,
+            'billing_cycle' => $isSubscription ? "{$membership->duration_months} Month" : null,
+            'subscription_start_date' => $isSubscription ? now() : null,
+            'subscription_end_date' => $isSubscription ? now()->addMonths($membership->duration_months) : null,
+            'source_id' => $source_id,
+            'source_name' => $source_name,
+        ]);
+    }
+
+    private function sendMembershipSuccessNotifications($organizationId, $membership, $transaction, $user, $loggedUser)
+    {
+        $userId = $user->id;
+        $billingCycle = $membership->duration_months ?? 1;
+        $price = $transaction->price ?? $membership->price;
+
+        $userHeading = "{$membership->name} Purchased Successfully!";
+        $userMessage = "Congratulations! You have successfully purchased the {$membership->name} "
+            . "for the price of {$price} PKR"
+            . ($membership->status === 'Non Renewable' ? '.' : " per {$billingCycle} month(s).");
+
+
+        $ownerHeading = "{$membership->name} sold successfully";
+        $ownerMessage = "{$membership->name} has been sold successfully for Price: {$price}";
+
+
+        $transactionHeading = "Transaction Completed Successfully";
+        $transactionMessage = "A payment of {$price} PKR has been successfully recorded for the sale of {$membership->name}.";
+
+        $userTransactionHeading = "Transaction Successful!";
+        $userTransactionMessage = "You have successfully made a payment of {$price} PKR for {$membership->name}.";
+
+
+        dispatch(new MembershipNotifications(
+            $organizationId,
+            $membership->id,
+            $ownerHeading,
+            $ownerMessage,
+            "owner/memberships/{$membership->id}/show",
+
+            $loggedUser->id,
+            $ownerHeading,
+            $ownerMessage,
+            "owner/memberships/{$membership->id}/show",
+
+            $userId,
+            $userHeading,
+            $userMessage,
+            "",
+        ));
+
+
+        dispatch(new MembershipNotifications(
+            $organizationId,
+            $membership->id,
+            $transactionHeading,
+            $transactionMessage,
+            "owner/finance/{$transaction->id}/show",
+
+            $loggedUser->id,
+            $transactionHeading,
+            $transactionMessage,
+            "owner/finance/{$transaction->id}/show",
+
+            $userId,
+            $userTransactionHeading,
+            $userTransactionMessage,
+            "",
+        ));
     }
 
 }

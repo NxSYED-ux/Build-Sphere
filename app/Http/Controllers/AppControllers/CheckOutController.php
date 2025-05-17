@@ -151,6 +151,7 @@ class CheckOutController extends Controller
                 $paymentIntent = PaymentIntent::retrieve($request->payment_intent_id);
 
             } catch (CardException $e) {
+                DB::rollBack();
                 Log::error('Stripe Error: ' . $e->getMessage());
 
                 return response()->json([
@@ -204,7 +205,7 @@ class CheckOutController extends Controller
             return response()->json(['error' => 'Something went wrong after payment.'], 500);
         }
     }
-    
+
 
     // Membership Checkout functions
     public function membershipsOnlinePayment(Request $request)
@@ -222,6 +223,8 @@ class CheckOutController extends Controller
         }
 
         try {
+            DB::beginTransaction();
+
             $membershipData = Membership::where('id', $request->membership_id)
                 ->where('status', '!=', 'Archived')
                 ->where('price', $request->price)
@@ -229,6 +232,7 @@ class CheckOutController extends Controller
                 ->first();
 
             if (!$membershipData) {
+                DB::rollBack();
                 return response()->json([
                     'error' => 'Membership not found.'
                 ], 404);
@@ -240,6 +244,7 @@ class CheckOutController extends Controller
                 ->exists();
 
             if (!$isAlreadySubscribed) {
+                DB::rollBack();
                 return response()->json([
                     'error' => 'Membership is already subscribed.'
                 ], 404);
@@ -298,8 +303,6 @@ class CheckOutController extends Controller
                     'error' => 'Payment Failed. Please try again.',
                 ], 402);
             }
-
-            DB::beginTransaction();
 
             $transaction = $this->membershipAssignment_Transaction($user, $membershipData, $paymentIntent->id);
 
