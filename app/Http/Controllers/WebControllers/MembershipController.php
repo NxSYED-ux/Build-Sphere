@@ -655,12 +655,14 @@ class MembershipController extends Controller
                     return redirect()->back()->with('plan_upgrade_error', 'Featured membership limit reached. Upgrade your plan.');
                 }
 
-                $membership->mark_as_featured = true;
+                $membership->mark_as_featured = 1;
+                $membership->save();
                 $subscriptionLimit->increment('used');
                 DB::commit();
                 return redirect()->back()->with('success', 'Membership marked as featured successfully.');
             } else {
-                $membership->mark_as_featured = false;
+                $membership->mark_as_featured = 0;
+                $membership->save();
                 if ($subscriptionLimit->used > 0) {
                     $subscriptionLimit->decrement('used');
                 }
