@@ -474,41 +474,57 @@ class CheckOutController extends Controller
 
     private function sendUnitSuccessNotifications($organizationId, $unit, $transaction, $billing_cycle, $user)
     {
-        $userId = $request->userId ?? $user->id;
+        $userId = $user->id;
         $billingCycle = $billing_cycle ?? 1;
-        $actionType = $unit->type === 'Sold' ? 'Purchased' : 'Rented';
+        $isSold = $unit->availability_status === 'Sold';
+        $actionType = $isSold ? 'Purchased' : 'Rented';
+        $unitName = $unit->unit_name;
+        $unitPrice = number_format($unit->price);
 
-        $userHeading = "{$unit->unit_name} {$actionType} Successfully!";
-        $userMessage = "Congratulations! You have successfully " .
-            strtolower($actionType) . " {$unit->unit_name} for the price of {$unit->price} PKR" .
-            ($unit->type === 'Sold' ? '.' : " per {$billingCycle} month.");
 
+        $userHeading1 = "$unitName $actionType Successfully!";
+        $userMessage1 = "Congratulations! You have successfully " .
+            strtolower($actionType) . " $unitName for the price of PKR $unitPrice" .
+            ($isSold ? "." : " per $billingCycle month(s).");
 
         dispatch(new UnitNotifications(
             $organizationId,
             $unit->id,
-            "{$unit->unit_name} {$unit->type} successfully",
-            "{$unit->unit_name} has been {$request->type} successfully for Price: {$unit->price}",
+            "$unitName {$unit->availability_status} successfully",
+            "$unitName has been {$unit->availability_status} successfully for Price: PKR $unitPrice.",
             "owner/units/{$unit->id}/show",
 
+            null,
+            '',
+            '',
+            '',
+
             $userId,
-            $userHeading,
-            $userMessage,
-            "",
+            $userHeading1,
+            $userMessage1,
+            ""
         ));
 
+
+        $userHeading2 = "Transaction Successful!";
+        $userMessage2 = "You have successfully made a payment of PKR $unitPrice for $unitName.";
 
         dispatch(new UnitNotifications(
             $organizationId,
             $unit->id,
             "Transaction Completed Successfully",
-            "A payment of {$request->price} PKR has been successfully recorded for your {$request->type} of {$unit->unit_name}.",
+            "A payment of PKR $unitPrice has been successfully recorded for your unit $unitName due to $actionType.",
             "owner/finance/{$transaction->id}/show",
 
+            null,
+            '',
+            '',
+            '',
+
             $userId,
-            "Transaction Successful!",
-            "You have successfully made a payment of {$request->price} PKR for {$unit->unit_name}.",
-            "",
+            $userHeading2,
+            $userMessage2,
+            ""
         ));
     }
 
@@ -601,6 +617,11 @@ class CheckOutController extends Controller
             $ownerMessage,
             "owner/memberships/{$membership->id}/show",
 
+            null,
+            '',
+            '',
+            '',
+
             $userId,
             $userHeading,
             $userMessage,
@@ -614,6 +635,11 @@ class CheckOutController extends Controller
             $transactionHeading,
             $transactionMessage,
             "owner/finance/{$transaction->id}/show",
+
+            null,
+            '',
+            '',
+            '',
 
             $userId,
             $userTransactionHeading,
