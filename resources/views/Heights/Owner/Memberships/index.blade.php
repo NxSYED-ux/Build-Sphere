@@ -172,6 +172,7 @@
             flex-grow: 1;
             font-size: 0.95rem;
             margin-bottom: 0 !important;
+            opacity: 0.8;
         }
         .membership-card .price-container {
             background: linear-gradient(135deg, #f8f9fa, #e9ecef);
@@ -186,7 +187,6 @@
             font-weight: 800;
             color: #e74c3c;
             line-height: 2;
-            /*font-family: 'Poppins', sans-serif;*/
         }
         .membership-card .membership-period {
             font-size: 0.9rem;
@@ -250,30 +250,6 @@
             box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
             background: linear-gradient(135deg, #2980b9, #3498db);
         }
-        .membership-card .section-title {
-            position: relative;
-            margin-bottom: 30px;
-            font-weight: 800;
-            color: #2c3e50;
-            font-size: 2rem;
-            text-align: center;
-            font-family: 'Poppins', sans-serif;
-        }
-        .membership-card .add-membership-btn {
-            border-radius: 10px;
-            padding: 12px 24px;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            background: linear-gradient(135deg, var(--color-blue), var(--color-blue));
-            border: none;
-            transition: all 0.3s ease;
-        }
-        .membership-card .add-membership-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(46, 204, 113, 0.3);
-        }
 
         /* Action Buttons */
         .membership-card .action-buttons {
@@ -314,7 +290,7 @@
             font-size: 16px !important;
         }
 
-        /* Enhanced Building/Unit Info - Beautiful Design */
+        /* Enhanced Building/Unit Info */
         .membership-card .property-info {
             margin-bottom: 15px;
             background: transparent;
@@ -333,22 +309,6 @@
             background-color: rgba(241, 242, 246, 0.9);
             transform: translateX(3px);
         }
-        .membership-card .property-icon {
-            margin-right: 10px;
-            color: #3498db;
-            font-size: 1rem;
-            min-width: 20px;
-            text-align: center;
-        }
-        .membership-card .property-label {
-            font-size: 0.8rem;
-            color: var(--sidenavbar-text-color);
-            font-weight: 600;
-            margin-right: 5px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            min-width: 60px;
-        }
         .membership-card .property-value {
             font-size: 0.9rem;
             color: var(--sidenavbar-text-color);
@@ -356,7 +316,7 @@
             flex-grow: 1;
         }
 
-        /* Price Details - Elegant Design */
+        /* Price Details */
         .membership-card .price-details {
             display: flex;
             justify-content: space-between;
@@ -382,11 +342,6 @@
         }
 
         /* Toggle Switch Styles */
-        .membership-card .featured-toggle-container {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
         .membership-card .switch {
             position: relative;
             display: inline-block;
@@ -427,22 +382,39 @@
             transform: translateX(20px);
         }
 
-        /* Ribbon for Featured Items */
-        .membership-card .featured-ribbon {
-            position: absolute;
-            top: 15px;
-            left: -30px;
-            width: 120px;
-            padding: 5px 0;
-            background: linear-gradient(135deg, #3498db, #2980b9);
-            color: white;
-            text-align: center;
-            font-weight: 700;
+        /* New Status and Category Badges */
+        .membership-card .meta-badges {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+        .membership-card .status-badge {
+            padding: 4px 10px;
+            border-radius: 12px;
             font-size: 0.75rem;
-            transform: rotate(-45deg);
-            box-shadow: 0 3px 8px rgba(0,0,0,0.15);
-            z-index: 1;
+            font-weight: 600;
+            text-transform: uppercase;
             letter-spacing: 0.5px;
+        }
+        .membership-card .status-active {
+            background: rgba(46, 204, 113, 0.1);
+            color: #2ecc71;
+        }
+        .membership-card .status-inactive {
+            background: rgba(231, 76, 60, 0.1);
+            color: #e74c3c;
+        }
+        .membership-card .status-pending {
+            background: rgba(241, 196, 15, 0.1);
+            color: #f1c40f;
+        }
+        .membership-card .category-badge {
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            background: rgba(52, 152, 219, 0.1);
+            color: #3498db;
         }
 
         /* Responsive adjustments */
@@ -578,12 +550,8 @@
 
                                 <div class="row">
                                     @foreach($memberships as $membership)
-                                        <div class="col-md-6 col-lg-3 mb-4">
+                                        <div class="col-md-6 col-lg-4 mb-4">
                                             <div class="membership-card">
-                                                @if($membership->mark_as_featured)
-                                                    <div class="featured-ribbon">FEATURED</div>
-                                                @endif
-
                                                 <div class="membership-img-container">
                                                     <img src="{{ $membership->image ? asset($membership->image) : 'https://images.unsplash.com/photo-1571902943202-507ec2618e8f?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80' }}"
                                                          alt="{{ $membership->name }}"
@@ -615,6 +583,16 @@
                                                 </div>
 
                                                 <div class="membership-body">
+                                                    <!-- Status and Category Badges -->
+                                                    <div class="meta-badges d-flex justify-content-between align-items-center">
+                                                        <span class="status-badge status-{{ strtolower($membership->status) }}">
+                                                            {{ $membership->status }}
+                                                        </span>
+                                                        <span class="category-badge">
+                                                            {{ $membership->category ?? 'General' }}
+                                                        </span>
+                                                    </div>
+
                                                     <h4 class="membership-title">{{ $membership->name }}</h4>
 
                                                     <!-- Beautiful Building/Unit Info -->
@@ -634,8 +612,8 @@
                                                     <div class="price-container">
                                                         <div class="price-details">
                                                             <div class="current-price">
-                                                                <span class="membership-price">{{ number_format($membership->price, 2) . ' ' . $membership->currency }}</span>
-                                                                <span class="membership-period">/{{ $membership->duration_months . ' Month' }}</span>
+                                                                <span class="membership-price">{{ number_format($membership->price, 2) . ' ' . $membership->currency }} </span>
+                                                                <span class="membership-period"> / {{ $membership->duration_months . ' Month' }}</span>
                                                             </div>
                                                             @if($membership->original_price > $membership->price)
                                                                 <div class="price-comparison">
