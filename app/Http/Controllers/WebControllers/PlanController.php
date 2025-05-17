@@ -104,7 +104,7 @@ class PlanController extends Controller
             return view('Heights.Admin.Plans.create', [
                 'services' => $services,
                 'priceCycles' => $priceCycles,
-                'currencies' => ['USD', 'PKR'],
+                'currencies' => ['PKR'],
                 'status' => ['Active', 'Inactive', 'Custom'],
             ]);
 

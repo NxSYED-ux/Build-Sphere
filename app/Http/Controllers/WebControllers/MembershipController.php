@@ -110,6 +110,7 @@ class MembershipController extends Controller
         }
     }
 
+
     public function create(Request $request)
     {
         $user = $request->user() ?? abort(404, 'Page not found');
@@ -163,6 +164,7 @@ class MembershipController extends Controller
             return back()->with('error', 'Something went wrong! Please try again.');
         }
     }
+
 
     public function store(Request $request)
     {
@@ -244,7 +246,6 @@ class MembershipController extends Controller
     }
 
 
-
     public function edit(Request $request, $id){
 
     }
@@ -258,7 +259,7 @@ class MembershipController extends Controller
     }
 
     // Helper Functions
-    private function handleImageUpload(Request $request): ?string
+    private function handleImageUpload(Request $request): string
     {
         $image = $request->file('image');
         $imageName = time() . '_' . $image->getClientOriginalName();

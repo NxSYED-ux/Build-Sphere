@@ -280,7 +280,8 @@ Route::prefix('owner')->middleware(['auth.jwt'])->group(function () {
             Route::put('/', [BuildingController::class, 'ownerUpdate'])->name('owner.buildings.update');
             Route::post('/submit', [BuildingController::class, 'submitBuilding'])->name('owner.buildings.submit');
             Route::post('/reminder', [BuildingController::class, 'approvalReminder'])->name('owner.buildings.reminder');
-            Route::get('/{building}/available', [BuildingUnitController::class, 'getAvailableBuildingUnits'])->name('owner.buildings.units.available');
+
+            Route::get('/{building}/available-units', [BuildingUnitController::class, 'getAvailableBuildingUnits'])->name('owner.buildings.units.available');
             Route::get('/{building}/{type}/units', [BuildingUnitController::class, 'getBuildingUnitsByType'])->name('owner.buildings.units.byType');
 
         });
