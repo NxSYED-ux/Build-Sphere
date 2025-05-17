@@ -5,6 +5,7 @@ use App\Http\Controllers\AppControllers\CheckOutController;
 use App\Http\Controllers\AppControllers\DropdownController;
 use App\Http\Controllers\AppControllers\FavouritesController;
 use App\Http\Controllers\AppControllers\ListingController;
+use App\Http\Controllers\AppControllers\MembershipController;
 use App\Http\Controllers\AppControllers\MyPropertiesController;
 use App\Http\Controllers\AppControllers\QueryController;
 use App\Http\Controllers\AppControllers\TransactionController;
@@ -30,6 +31,7 @@ Route::get('/test-permissions', function () {
 
 Route::get('/values-by-type/{type}', [DropdownController::class, 'getDropdownValuesByType']);
 Route::get('/values-by-value/{value}', [DropdownController::class, 'getDropdownValuesByValue']);
+Route::post('/membership/verify', [MembershipController::class, 'verifyToken']);
 
 Route::prefix('auth')->group(function () {
 
@@ -121,6 +123,20 @@ Route::middleware(['auth.jwt'])->group(function () {
 
             Route::get('/', [TransactionController::class, 'index']);
             Route::get('/show/{id}', [TransactionController::class, 'show']);
+
+        });
+
+        Route::prefix('memberships')->group(function () {
+
+            Route::get('/', [MembershipController::class, 'index']);
+            Route::get('/{id}', [MembershipController::class, 'show']);
+            Route::get('/my', [MembershipController::class, 'myMemberships']);
+            Route::get('/my/{id}', [MembershipController::class, 'myMembershipShow']);
+            Route::get('/past', [MembershipController::class, 'pastMemberships']);
+            Route::post('/redeem', [MembershipController::class, 'redeem']);
+
+            Route::post('/checkout', [CheckOutController::class, 'membershipsOnlinePayment']);
+            Route::post('/complete/checkout', [CheckOutController::class, 'completeMembershipPayment']);
 
         });
 

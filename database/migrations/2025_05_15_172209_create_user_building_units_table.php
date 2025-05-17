@@ -12,10 +12,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('unit_id');
-//            $table->foreignId('subscription_id')->nullable()->constrained()->onDelete('cascade');
-            $table->date('rent_start_date')->nullable();
-            $table->date('rent_end_date')->nullable();
-            $table->date('purchase_date')->nullable();
+            $table->foreignId('subscription_id')->nullable()->constrained()->onDelete('cascade');
             $table->tinyInteger('contract_status')->default(1);
             $table->enum('type', ['Rented', 'Sold']);
             $table->integer('billing_cycle')->nullable()->comment('In Months only');

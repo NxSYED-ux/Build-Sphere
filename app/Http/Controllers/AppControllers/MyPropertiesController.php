@@ -19,13 +19,13 @@ class MyPropertiesController extends Controller
 
             $userUnits = UserBuildingUnit::where('user_id', $user->id)
                 ->where('contract_status', 1)
-                ->select('id', 'unit_id', 'type', 'price', 'rent_start_date', 'rent_end_date', 'purchase_date')
                 ->with([
                     'unit:id,level_id,unit_name,area',
                     'unit.level:id,building_id,level_name',
                     'unit.level.building:id,name,address_id',
                     'unit.level.building.address:id,location,city,province,country',
-                    'unit.pictures:unit_id,file_path'
+                    'unit.pictures:unit_id,file_path',
+                    'subscription'
                 ])
                 ->whereHas('unit', function ($query) {
                     $query->where('status', 'Approved');
@@ -54,17 +54,14 @@ class MyPropertiesController extends Controller
 
             $myUnitDetails = UserBuildingUnit::where('id', $id)
                 ->where('user_id', $user->id)
-                ->select('id', 'unit_id', 'type', 'price', 'rent_start_date', 'rent_end_date', 'purchase_date')
+                ->where('contract_status', 1)
                 ->with([
                     'unit:id,level_id,unit_name',
                     'unit.level:id,building_id,level_name',
                     'unit.level.building:id,name,address_id',
                     'unit.level.building.address:id,location,city,province,country',
                     'unit.pictures:unit_id,file_path',
-                    'unit.queries' => function ($q) use ($user) {
-                        $q->select('id', 'description', 'status', 'expected_closure_date', 'remarks', 'created_at', 'unit_id')
-                            ->where('user_id', $user->id);
-                    }
+                    'subscription'
                 ])
                 ->first();
 

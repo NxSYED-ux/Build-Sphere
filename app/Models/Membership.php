@@ -19,7 +19,7 @@ class Membership extends Model
         'description',
         'category',
         'duration_months',
-        'scans_per_month',
+        'scans_per_day',
         'mark_as_featured',
         'currency',
         'price',
@@ -59,6 +59,26 @@ class Membership extends Model
     public function userMemberships()
     {
         return $this->hasMany(MembershipUser::class, 'membership_id', 'id');
+    }
+
+
+    protected static function booted()
+    {
+        static::creating(function ($model) {
+            $user = request()->user;
+
+            if ($user) {
+                $model->created_by = $user->id;
+                $model->updated_by = $user->id;
+            }
+        });
+
+        static::updating(function ($model) {
+            $user = request()->user;
+            if ($user) {
+                $model->updated_by = $user->id;
+            }
+        });
     }
 
 }

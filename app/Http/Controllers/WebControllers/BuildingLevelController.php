@@ -526,7 +526,7 @@ class BuildingLevelController extends Controller
         if ($role_name === 'Manager' && !ManagerBuilding::where('building_id', $request->building_id)
                 ->where('user_id', $user->id)
                 ->exists()) {
-            return redirect()->back()->withInput()->with('error', 'You do not have access to add units of the selected building.');
+            return redirect()->back()->withInput()->with('error', 'You do not have access to add levels to the selected building.');
         }
 
         return $organization_id;

@@ -2,8 +2,8 @@
 
 namespace App\Jobs;
 
-use App\Models\BuildingUnit;
 use App\Models\ManagerBuilding;
+use App\Models\Membership;
 use App\Models\User;
 use App\Models\Organization;
 use App\Notifications\DatabaseOnlyNotification;
@@ -15,12 +15,12 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Notification;
 
-class UnitNotifications implements ShouldQueue
+class MembershipNotifications implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     protected $organizationId;
-    protected $unitId;
+    protected $membershipId;
     protected $heading;
     protected $message;
     protected $link;
@@ -34,10 +34,10 @@ class UnitNotifications implements ShouldQueue
     protected $userLink;
 
 
-    public function __construct($organizationId, $unitId, $heading, $message, $link, $initiatorId, $initiatorHeading, $initiatorMessage, $initiatorLink, $user_id = null, $userHeading = null, $userMessage = null, $userLink = null)
+    public function __construct($organizationId, $membershipId, $heading, $message, $link, $initiatorId, $initiatorHeading, $initiatorMessage, $initiatorLink, $user_id = null, $userHeading = null, $userMessage = null, $userLink = null)
     {
         $this->organizationId = $organizationId;
-        $this->unitId = $unitId;
+        $this->membershipId = $membershipId;
         $this->heading = $heading;
         $this->message = $message;
         $this->link = $link;
@@ -55,12 +55,12 @@ class UnitNotifications implements ShouldQueue
 
     public function handle()
     {
-        $unit = BuildingUnit::with('pictures')->find($this->unitId);
-        $unitImagePath = optional($unit->pictures->first())->file_path ?? 'uploads/logo/application-logo.png';
+        $membership = Membership::find($this->membershipId);
+        $membershipImagePath = $membership->image ?? 'uploads/logo/application-logo.png';
 
 
-        $organization = Organization::find($unit?->organization_id);
-        $managers = ManagerBuilding::where('building_id', $unit?->building_id)->pluck('user_id');
+        $organization = Organization::find($membership?->organization_id);
+        $managers = ManagerBuilding::where('building_id', $membership?->building_id)->pluck('user_id');
         $initiator = User::find($this->initiatorId);
 
         $customHeading = $this->heading . ($initiator ? " ({$initiator->name})" : '');
@@ -70,7 +70,7 @@ class UnitNotifications implements ShouldQueue
 
             if ($owner && $owner->id !== $this->initiatorId) {
                 Notification::send($owner, new UserNotification(
-                    $unitImagePath,
+                    $membershipImagePath,
                     $customHeading,
                     $this->message,
                     ['web' => $this->link]
@@ -85,7 +85,7 @@ class UnitNotifications implements ShouldQueue
 
             if ($users->isNotEmpty()) {
                 Notification::send($users, new UserNotification(
-                    $unitImagePath,
+                    $membershipImagePath,
                     $customHeading,
                     $this->message,
                     ['web' => $this->link]
@@ -95,7 +95,7 @@ class UnitNotifications implements ShouldQueue
 
         if ($initiator) {
             $initiator->notify(new DatabaseOnlyNotification(
-                $unitImagePath,
+                $membershipImagePath,
                 $this->initiatorHeading,
                 $this->initiatorMessage,
                 ['web' =>$this->initiatorLink, 'mobile' => $this->userLink]
@@ -106,7 +106,7 @@ class UnitNotifications implements ShouldQueue
             $userRecipient = User::find($this->user_id);
             if ($userRecipient) {
                 $userRecipient->notify(new UserNotification(
-                    $unitImagePath,
+                    $membershipImagePath,
                     $this->userHeading,
                     $this->userMessage,
                     ['mobile' => $this->userLink]

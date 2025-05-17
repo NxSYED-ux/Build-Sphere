@@ -387,6 +387,11 @@ Route::prefix('owner')->middleware(['auth.jwt'])->group(function () {
         Route::prefix('memberships')->group(function () {
 
             Route::get('/', [MembershipController::class , 'index'])->name('owner.memberships.index');
+            Route::get('/create', [MembershipController::class , 'create'])->name('owner.memberships.create');
+            Route::post('/', [MembershipController::class , 'store'])->name('owner.memberships.store');
+            Route::get('/{membership}/edit', [MembershipController::class , 'edit'])->name('owner.memberships.edit');
+            Route::put('/', [MembershipController::class , 'update'])->name('owner.memberships.update');
+            Route::get('/{membership}/show', [MembershipController::class , 'show'])->name('owner.memberships.show');
 
         });
 

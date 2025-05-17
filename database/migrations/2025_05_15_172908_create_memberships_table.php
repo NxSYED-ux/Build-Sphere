@@ -19,7 +19,7 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->enum('category', ['GYM', 'Restaurant', 'Other']);
             $table->integer('duration_months');
-            $table->integer('scans_per_month');
+            $table->integer('scans_per_day');
             $table->boolean('mark_as_featured')->default(false);
             $table->string('currency', 10)->default('PKR');
             $table->decimal('price', 10, 2)->default(0);

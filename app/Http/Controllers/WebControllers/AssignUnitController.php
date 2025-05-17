@@ -144,8 +144,7 @@ class AssignUnitController extends Controller
 
             $unit = BuildingUnit::find($request->unitId);
 
-            [$assignedUnit, $type] = $this->assignUnitToUser($user, $unit, $request->price, $request->type, $request->no_of_months);
-            $transaction = $this->createTransaction($user, $unit, $type, null, $assignedUnit, 'PKR', $request->no_of_months);
+            [$assignedUnit, $transaction] = $this->unitAssignment_Transaction($user, $unit, $request->type,null, $request->price, (int) $request->no_of_months);
 
             if ($request->hasFile('pictures')) {
                 foreach ($request->file('pictures') as $image) {
@@ -167,7 +166,7 @@ class AssignUnitController extends Controller
             $userMessage = "Congratulations! You have successfully " .
                 ($request->type === 'Sold' ? 'purchased' : 'rented') .
                 " {$unit->unit_name} for the price of {$request->price} PKR" .
-                ($request->type === 'Sold' ? '.' : ' per month.');
+                ($request->type === 'Sold' ? '.' : " per {$request->no_of_months} month.");
 
 
             dispatch( new UnitNotifications(
@@ -273,69 +272,67 @@ class AssignUnitController extends Controller
         return $user;
     }
 
-    private function assignUnitToUser($user, BuildingUnit $unit, $price, $type, $no_of_months = 1 )
+
+    private function unitAssignment_Transaction($user, $unit, $type, $paymentIntentId, $price, int $billing_cycle = 1, $currency = 'PKR')
     {
+        $unit->update(['availability_status' => $type]);
+
         $assignedUnit = UserBuildingUnit::create([
             'user_id' => $user->id,
             'unit_id' => $unit->id,
             'type' => $type,
             'price' => $price,
-            'rent_start_date' => $type === 'Rented' ? now() : null,
-            'rent_end_date' => $type === 'Rented' ? now()->addMonths((int) $no_of_months) : null,
-            'purchase_date' => $type === 'Sold' ? now() : null,
+            'billing_cycle' => $billing_cycle
         ]);
 
-        $unit->update(['availability_status' => $type]);
-
-        return [$assignedUnit, $type];
-    }
-
-    private function createTransaction($user, $unit, $type, $paymentIntentId, $assignedUnit, $currency = 'PKR', $no_of_months = 1, string $paymentMethod = 'Cash')
-    {
         $source_id = $assignedUnit->id;
         $source_name = 'unit contract';
 
         if ($type === 'Rented') {
             $subscription = Subscription::create([
                 'customer_payment_id' => $user->customer_payment_id,
-                'user_id' => $user->id,
-                'organization_id' => $unit->organization_id,
                 'building_id' => $unit->building_id,
                 'unit_id' => $unit->id,
-                'source_id' => $assignedUnit->id,
-                'source_name' => 'unit contract',
-                'billing_cycle' => 1,
+                'user_id' => $user->id,
+                'organization_id' => $unit->organization_id,
+                'source_id' => $source_id,
+                'source_name' => $source_name,
+                'billing_cycle' => $billing_cycle,
                 'subscription_status' => 'Active',
                 'price_at_subscription' => $assignedUnit->price,
                 'currency_at_subscription' => $currency,
-                'ends_at' => now()->addMonths((int) $no_of_months),
+                'ends_at' => now()->addMonths($billing_cycle),
             ]);
 
             $source_id = $subscription->id;
             $source_name = 'subscription';
+
+            $assignedUnit->update(['subscription_id' => $subscription->id]);
         }
 
-        return Transaction::create([
+        $transaction = Transaction::create([
             'transaction_title' => "{$unit->unit_name} ({$type})",
             'transaction_category' => 'New',
             'building_id' => $unit->building_id,
             'unit_id' => $unit->id,
             'buyer_id' => $user->id,
             'buyer_type' => 'user',
-            'seller_id' => $unit->organization_id,
             'seller_type' => 'organization',
-            'payment_method' => $paymentMethod,
+            'seller_id' => $unit->organization_id,
+            'payment_method' => 'Cash',
             'gateway_payment_id' => $paymentIntentId,
             'price' => $assignedUnit->price,
             'currency' => $currency,
             'status' => 'Completed',
             'is_subscription' => $type === 'Rented',
-            'billing_cycle' => $type === 'Rented' ? $no_of_months . ' Months' : null,
-            'subscription_start_date' => $assignedUnit->rent_start_date,
-            'subscription_end_date' => $assignedUnit->rent_end_date,
+            'billing_cycle' => $type === 'Rented' ? "{$billing_cycle} Month" : null,
+            'subscription_start_date' => $type === 'Rented' ? now() : null,
+            'subscription_end_date' => $type === 'Rented' ? now()->addMonths($billing_cycle) : null,
             'source_id' => $source_id,
             'source_name' => $source_name,
         ]);
+
+        return [$assignedUnit, $transaction];
     }
 
 }
