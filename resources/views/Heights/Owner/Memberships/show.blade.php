@@ -80,9 +80,14 @@
 
         .featured-badge {
             position: absolute;
-            top: 10px;
-            right: 10px;
-            z-index: 1;
+            top: 10px;       /* Adjust as needed */
+            right: 10px;     /* Adjust as needed */
+            z-index: 1;      /* Ensures badge stays on top of image */
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
     </style>
 @endsection
@@ -115,13 +120,19 @@
                                             <span class="badge bg-primary">
                                                 {{ $membership->category }}
                                             </span>
+                                            @if($membership->mark_as_featured)
+                                                <span class="badge bg-warning text-dark">
+                                                    <i class="bx bx-star me-1"></i> Featured
+                                                </span>
+                                            @endif
+
                                         </div>
                                     </div>
                                     <div class="d-flex gap-2">
                                         <a href="{{ route('owner.memberships.edit', $membership->id) }}" class="btn btn-primary px-4">
-                                            Edit Membership
+                                            Edit
                                         </a>
-                                        <a href="{{ route('owner.memberships.index') }}" class="btn btn-outline-secondary px-4">
+                                        <a href="{{ route('owner.memberships.index') }}" class="btn btn-secondary px-4">
                                             Back
                                         </a>
                                     </div>
@@ -130,19 +141,14 @@
                         </div>
 
                         <div class="row mb-4">
-                            <div class="col-md-4">
+                            <div class="col-md-5">
                                 <div class="card border-0 shadow-sm h-100">
-                                    <div class="card-body p-0 position-relative">
-                                        @if($membership->mark_as_featured)
-                                            <span class="featured-badge badge bg-warning text-dark">
-                                                Featured
-                                            </span>
-                                        @endif
-                                        <img src="{{ asset($membership->image) }}" alt="Membership Image" class="membership-image">
+                                    <div class="card-body p-0  ">
+                                        <img src="{{ asset($membership->image) }}" alt="Membership Image" class="img-fluid w-100 h-100 rounded-3 " style="object-fit: cover;">
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-8">
+                            <div class="col-md-7">
                                 <div class="card border-0 shadow-sm h-100">
                                     <div class="card-body">
                                         <div class="row">
@@ -159,8 +165,8 @@
                                                 <p class="fw-bold">{{ $membership->duration_months }} months</p>
                                             </div>
                                             <div class="col-md-6 mb-3">
-                                                <label class="form-label fw-semibold text-muted">Scans per Month</label>
-                                                <p class="fw-bold">{{ $membership->scans_per_month }}</p>
+                                                <label class="form-label fw-semibold text-muted">Scans per Day</label>
+                                                <p class="fw-bold">{{ $membership->scans_per_day }}</p>
                                             </div>
                                             <div class="col-md-6 mb-3">
                                                 <label class="form-label fw-semibold text-muted">Price</label>
@@ -175,7 +181,14 @@
                                             <div class="col-md-12">
                                                 <label class="form-label fw-semibold text-muted">URL</label>
                                                 <p class="fw-bold">
-                                                    <a href="{{ $membership->url }}" target="_blank">{{ $membership->url }}</a>
+                                                    @if($membership->url)
+                                                        <a href="{{ $membership->url }}" target="_blank" class="text-primary">
+                                                            <i class="fas fa-external-link-alt mr-1" style="margin-right: 10px; font-size: 0.8rem;"></i>Visit
+                                                        </a>
+                                                    @else
+                                                        N/A
+                                                    @endif
+{{--                                                    <a href="{{ $membership->url }}" target="_blank">{{ $membership->url }}</a>--}}
                                                 </p>
                                             </div>
                                         </div>

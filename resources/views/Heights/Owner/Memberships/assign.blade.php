@@ -258,7 +258,7 @@
                                                             <td>
                                                                 @if($membership->url)
                                                                     <a href="{{ $membership->url }}" target="_blank" class="text-primary">
-                                                                        <i class="fas fa-external-link-alt mr-1"></i>Visit
+                                                                        <i class="fas fa-external-link-alt mr-1" style="margin-right: 10px; font-size: 0.8rem;"></i>Visit
                                                                     </a>
                                                                 @else
                                                                     N/A
