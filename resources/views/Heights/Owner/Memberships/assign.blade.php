@@ -112,8 +112,11 @@
         <div class="container-fluid">
             <div class="row">
                 <div class="col-md-12">
-                    <div class="mb-3">
+                    <div class="mb-3 d-flex justify-content-between align-items-center">
                         <h3 class="mb-1">Assign Membership</h3>
+                        <a href="{{ route('owner.staff.index') }}" class="btn btn-secondary" title="Go Back">
+                            <i class="fas fa-arrow-left me-2"></i> Go Back
+                        </a>
                     </div>
 
                     <div class="card shadow-sm">
@@ -195,11 +198,15 @@
                                                 </div>
 
                                                 <div class="highlight-box">
-                                                    <h5 class="mb-2 text-dark">{{ $membership->name }}</h5>
+                                                    <div class="d-flex justify-content-between align-items-center">
+                                                        <h5 class="mb-2 text-dark">{{ $membership->name }}</h5>
+                                                        @if($membership->mark_as_featured)
+                                                            <span class="badge feature-badge mb-2" style="color: #ffff !important;"><i class="fas fa-star mr-1"></i>Featured</span>
+                                                        @endif
+                                                    </div>
+
                                                     <p class="text-muted mb-2">{{ $membership->description }}</p>
-                                                    @if($membership->mark_as_featured)
-                                                        <span class="badge feature-badge mb-2"><i class="fas fa-star mr-1"></i>Featured</span>
-                                                    @endif
+
                                                 </div>
 
                                                 <div class="table-responsive">
@@ -226,7 +233,7 @@
                                                             <td>{{ $membership->duration_months }} months</td>
                                                         </tr>
                                                         <tr>
-                                                            <th>Scans/Month:</th>
+                                                            <th>Scans/Day:</th>
                                                             <td>{{ $membership->scans_per_day }}</td>
                                                         </tr>
                                                         <tr>
@@ -274,10 +281,8 @@
 
                                 <div class="row mt-4">
                                     <div class="col-md-12 text-right">
-                                        <a href="{{ route('owner.memberships.index') }}" class="btn btn-outline-secondary mr-2">
-                                            <i class="fas fa-times mr-1"></i> Cancel
-                                        </a>
-                                        <button type="submit" class="btn btn-primary" id="assignBtn" disabled>
+
+                                        <button type="submit" class="btn btn-primary w-100" id="assignBtn" disabled>
                                             <i class="fas fa-user-check mr-1"></i> Assign Membership
                                         </button>
                                     </div>
