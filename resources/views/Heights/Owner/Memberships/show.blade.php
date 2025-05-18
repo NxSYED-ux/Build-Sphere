@@ -112,21 +112,8 @@
                             <div class="col-12">
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div>
-                                        <h1 class="display-6 fw-bold text-gradient-primary mb-2">{{ $membership->name }}</h1>
-                                        <div class="d-flex align-items-center gap-2">
-                                            <span class="badge bg-{{ $membership->status === 'Published' ? 'success' : ($membership->status === 'Draft' ? 'warning' : 'secondary') }} text-white">
-                                                {{ $membership->status }}
-                                            </span>
-                                            <span class="badge bg-primary">
-                                                {{ $membership->category }}
-                                            </span>
-                                            @if($membership->mark_as_featured)
-                                                <span class="badge bg-warning text-dark">
-                                                    <i class="bx bx-star me-1"></i> Featured
-                                                </span>
-                                            @endif
+                                        <h3 class=" mb-2">{{ $membership->name }}</h3>
 
-                                        </div>
                                     </div>
                                     <div class="d-flex gap-2">
                                         <a href="{{ route('owner.memberships.edit', $membership->id) }}" class="btn btn-primary px-4">
@@ -142,9 +129,23 @@
 
                         <div class="row mb-4">
                             <div class="col-md-5">
-                                <div class="card border-0 shadow-sm h-100">
+                                <div class="card border-0 h-70" style="background-color: transparent;">
                                     <div class="card-body p-0  ">
                                         <img src="{{ asset($membership->image) }}" alt="Membership Image" class="img-fluid w-100 h-100 rounded-3 " style="object-fit: cover;">
+                                        <div class="d-flex align-items-center py-2 px-1 gap-2">
+                                            <span class="badge bg-{{ $membership->status === 'Published' ? 'success' : ($membership->status === 'Draft' ? 'warning' : 'secondary') }} py-2" style="width: 40%; color: #fff!important;">
+                                                {{ $membership->status }}
+                                            </span>
+                                            <span class="badge bg-primary py-2" style="width: 40%; color: #fff!important;">
+                                                {{ $membership->category }}
+                                            </span>
+                                            @if($membership->mark_as_featured)
+                                                <span class="badge bg-warning py-2" style="width: 40%; color: #fff!important; ">
+                                                    <i class="bx bx-star me-1"></i> Featured
+                                                </span>
+                                            @endif
+
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -152,30 +153,30 @@
                                 <div class="card border-0 shadow-sm h-100">
                                     <div class="card-body">
                                         <div class="row">
-                                            <div class="col-md-6 mb-3">
+                                            <div class="col-6 mb-2">
                                                 <label class="form-label fw-semibold text-muted">Building</label>
-                                                <p class="fw-bold">{{ $membership->building->name ?? 'N/A' }}</p>
+                                                <p class="">{{ $membership->building->name ?? 'N/A' }}</p>
                                             </div>
-                                            <div class="col-md-6 mb-3">
+                                            <div class="col-6 mb-2">
                                                 <label class="form-label fw-semibold text-muted">Unit</label>
-                                                <p class="fw-bold">{{ $membership->unit->unit_name ?? 'N/A' }}</p>
+                                                <p class="">{{ $membership->unit->unit_name ?? 'N/A' }}</p>
                                             </div>
-                                            <div class="col-md-6 mb-3">
+                                            <div class="col-6 mb-2">
                                                 <label class="form-label fw-semibold text-muted">Duration</label>
-                                                <p class="fw-bold">{{ $membership->duration_months }} months</p>
+                                                <p class="">{{ $membership->duration_months }} months</p>
                                             </div>
-                                            <div class="col-md-6 mb-3">
+                                            <div class="col-6 mb-2">
                                                 <label class="form-label fw-semibold text-muted">Scans per Day</label>
-                                                <p class="fw-bold">{{ $membership->scans_per_day }}</p>
+                                                <p class="">{{ $membership->scans_per_day }}</p>
                                             </div>
-                                            <div class="col-md-6 mb-3">
+                                            <div class="col-6 mb-2">
                                                 <label class="form-label fw-semibold text-muted">Price</label>
-                                                <p class="fw-bold">{{ number_format($membership->price, 2) }} {{ $membership->currency }}</p>
+                                                <p class="">{{ number_format($membership->price, 2) }} {{ $membership->currency }}</p>
                                             </div>
                                             @if($membership->original_price)
-                                                <div class="col-md-6 mb-3">
+                                                <div class="col-6 mb-2">
                                                     <label class="form-label fw-semibold text-muted">Original Price</label>
-                                                    <p class="fw-bold text-decoration-line-through">{{ number_format($membership->original_price, 2) }} {{ $membership->currency }}</p>
+                                                    <p class="text-decoration-line-through">{{ number_format($membership->original_price, 2) }} {{ $membership->currency }}</p>
                                                 </div>
                                             @endif
                                             <div class="col-md-12">

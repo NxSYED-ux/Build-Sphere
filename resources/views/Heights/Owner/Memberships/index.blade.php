@@ -24,7 +24,7 @@
 
         /* All filter groups have equal width */
         .filter-group {
-            flex: 1 0 calc(20% - 15px); /* 5 items per row */
+            flex: 1 0 calc(20% - 15px);
             min-width: 180px;
             max-width: 100%;
         }
@@ -69,7 +69,7 @@
         }
 
         select.form-select {
-             padding: 7px;
+            padding: 7px;
         }
 
         .filter-buttons .btn {
@@ -120,12 +120,13 @@
         }
 
         /* Memberships Cards */
+        /* Memberships Cards - Compact Design with Category/Status */
         .membership-card {
-            border-radius: 16px;
+            border-radius: 12px;
             overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
             transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-            margin-bottom: 30px;
+            margin-bottom: 25px;
             background: var(--body-card-bg);
             height: 100%;
             display: flex;
@@ -135,11 +136,11 @@
             border: 1px solid rgba(0,0,0,0.03);
         }
         .membership-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
         }
         .membership-card .membership-img-container {
-            height: 180px;
+            height: 150px;
             overflow: hidden;
             position: relative;
         }
@@ -153,19 +154,20 @@
             transform: scale(1.05);
         }
         .membership-card .membership-body {
-            padding: 20px;
+            padding: 15px;
             flex: 1;
             display: flex;
             flex-direction: column;
         }
         .membership-card .membership-title {
-            font-size: 1.4rem;
+            font-size: 1.2rem;
             font-weight: 700;
             color: var(--sidenavbar-text-color);
-            margin-bottom: 12px;
+            margin-bottom: 10px;
             line-height: 1.3;
             font-family: 'Poppins', sans-serif;
         }
+
         .membership-card .membership-description {
             color: var(--sidenavbar-text-color);
             line-height: 1.5;
@@ -174,215 +176,118 @@
             margin-bottom: 0 !important;
             opacity: 0.8;
         }
-        .membership-card .price-container {
-            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
-            padding: 10px;
-            border-radius: 10px;
-            margin-bottom: 0;
-            margin-top: 0 !important;
-            border: 1px solid rgba(0,0,0,0.05);
+
+        .membership-card .price-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 8px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
         .membership-card .membership-price {
-            font-size: 1.2rem;
-            font-weight: 800;
-            color: #e74c3c;
-            line-height: 2;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #fff;
         }
         .membership-card .membership-period {
-            font-size: 0.9rem;
-            color: #5F5F5F !important;
+            font-size: 0.8rem;
+            color: rgba(255,255,255,0.8);
             font-weight: 500;
-            line-height: 2.5;
         }
         .membership-card .original-price {
-            font-size: 1rem;
-            color: #5F5F5F;
+            font-size: 0.9rem;
+            color: rgba(255,255,255,0.7);
             text-decoration: line-through;
             font-weight: 500;
+            margin-right: 5px;
         }
         .membership-card .discount-badge {
             position: absolute;
-            top: 15px;
-            right: 15px;
+            top: 10px;
+            right: 10px;
             background: linear-gradient(135deg, #e74c3c, #c0392b);
             color: white;
-            padding: 6px 14px;
-            border-radius: 20px;
+            padding: 4px 10px;
+            border-radius: 12px;
             font-weight: 700;
-            font-size: 0.85rem;
-            box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+            font-size: 0.75rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
             z-index: 2;
         }
         .membership-card .popular-badge {
             position: absolute;
-            top: 15px;
-            left: 15px;
+            top: 10px;
+            left: 10px;
             background: linear-gradient(135deg, #3498db, #2980b9);
             color: white;
-            padding: 6px 14px;
-            border-radius: 20px;
+            padding: 4px 10px;
+            border-radius: 12px;
             font-weight: 700;
-            font-size: 0.85rem;
-            box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+            font-size: 0.75rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
             z-index: 2;
             display: flex;
             align-items: center;
-            gap: 8px;
-        }
-        .membership-card .membership-footer {
-            padding: 0 20px 20px;
-        }
-        .membership-card .btn-membership {
-            border-radius: 10px;
-            padding: 12px 20px;
-            font-weight: 700;
-            width: 100%;
-            transition: all 0.3s ease;
-            background: linear-gradient(135deg, #3498db, #3498db);
-            border: none;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            font-size: 0.85rem;
-            box-shadow: 0 2px 5px rgba(52, 152, 219, 0.2);
-        }
-        .membership-card .btn-membership:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
-            background: linear-gradient(135deg, #2980b9, #3498db);
+            gap: 6px;
         }
 
-        /* Action Buttons */
-        .membership-card .action-buttons {
+        /* Action Menu (Three Dots) */
+        .membership-card .action-menu {
             position: absolute;
-            bottom: 15px;
-            right: 15px;
-            display: flex;
-            gap: 8px;
+            top: 10px;
+            right: 10px;
             z-index: 3;
         }
         .membership-card .action-btn {
-            width: 32px;
-            height: 32px;
+            width: 30px;
+            height: 30px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            background: rgba(255, 255, 255, 0.9);
-            color: #2c3e50;
+            background: var(--sidenavbar-body-color);
+            color: var(--sidenavbar-text-color);
             border: none;
             transition: all 0.3s ease;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         }
         .membership-card .action-btn:hover {
             transform: scale(1.1);
-            background: white;
-            box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
         }
-        .membership-card .view-btn {
-            color: #3498db;
+        .membership-card .dropdown-menu {
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border: none;
+            padding: 5px 0;
+            width: 70px !important;
+            background-color: var(--sidenavbar-body-color);
         }
-        .membership-card .edit-btn {
-        }
-        .membership-card .delete-btn {
-            color: #e74c3c;
-        }
-        .membership-card .action-btn .icon {
-            font-size: 16px !important;
-        }
-
-        /* Enhanced Building/Unit Info */
-        .membership-card .property-info {
-            margin-bottom: 15px;
-            background: transparent;
-            padding: 0;
-        }
-        .membership-card .property-row {
+        .membership-card .dropdown-item {
+            padding: 8px 15px;
+            font-size: 0.85rem;
             display: flex;
             align-items: center;
-            margin-bottom: 8px;
-            padding: 8px 12px;
-            border-radius: 8px;
-            background-color: rgba(241, 242, 246, 0.5);
-            transition: all 0.3s ease;
+            gap: 8px;
+            background-color: var(--sidenavbar-body-color);
         }
-        .membership-card .property-row:hover {
-            background-color: rgba(241, 242, 246, 0.9);
-            transform: translateX(3px);
+        .membership-card .dropdown-item .icon {
+            font-size: 16px !important;
+            /*margin-right: 4px !important;*/
         }
-        .membership-card .property-value {
-            font-size: 0.9rem;
-            color: var(--sidenavbar-text-color);
-            font-weight: 600;
-            flex-grow: 1;
+        .membership-card .view-item {
+            color: #3498db;
+        }
+        .membership-card .edit-item {
+            color: #f39c12;
         }
 
-        /* Price Details */
-        .membership-card .price-details {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-end;
-            margin-top: 5px;
-        }
-        .membership-card .current-price {
-            display: flex;
-            align-items: flex-end;
-        }
-        .membership-card .price-comparison {
-            text-align: right;
-        }
-        .membership-card .savings-badge {
-            display: inline-block;
-            background: rgba(231, 76, 60, 0.1);
-            color: #e74c3c;
-            padding: 3px 8px;
-            border-radius: 4px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            margin-top: 3px;
-        }
-
-        /* Toggle Switch Styles */
-        .membership-card .switch {
-            position: relative;
-            display: inline-block;
-            width: 40px;
-            height: 20px;
-        }
-        .membership-card .switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-        .membership-card .slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: #ccc;
-            transition: .4s;
-            border-radius: 34px;
-        }
-        .membership-card .slider:before {
-            position: absolute;
-            content: "";
-            height: 16px;
-            width: 16px;
-            left: 2px;
-            bottom: 2px;
-            background-color: white;
-            transition: .4s;
-            border-radius: 50%;
-        }
-        .membership-card input:checked + .slider {
-            background: linear-gradient(135deg, #2ecc71, #27ae60);
-        }
-        .membership-card input:checked + .slider:before {
-            transform: translateX(20px);
-        }
-
-        /* New Status and Category Badges */
+        /* Meta Badges (Status and Category) */
         .membership-card .meta-badges {
             display: flex;
             gap: 8px;
@@ -417,14 +322,115 @@
             color: #3498db;
         }
 
+        /* Compact Property Info */
+        .membership-card .property-info {
+            margin-bottom: 12px;
+            gap: 10px;
+        }
+        .membership-card .property-badge {
+            padding: 4px 10px;
+            border-radius: 6px;
+            background-color: rgba(241, 242, 246, 0.5);
+            font-size: 0.8rem;
+            color: var(--sidenavbar-text-color);
+            font-weight: 500;
+        }
+
+        /* Toggle Switch Styles */
+        .membership-card .switch {
+            position: relative;
+            display: inline-block;
+            width: 36px;
+            height: 18px;
+        }
+        .membership-card .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .membership-card .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+        .membership-card .slider:before {
+            position: absolute;
+            content: "";
+            height: 14px;
+            width: 14px;
+            left: 2px;
+            bottom: 2px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        .membership-card input:checked + .slider {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+        }
+        .membership-card input:checked + .slider:before {
+            transform: translateX(18px);
+        }
+
+        /* Footer Button */
+        .membership-card .membership-footer {
+            padding: 0 15px 15px;
+        }
+        .membership-card .btn-membership {
+            border-radius: 8px;
+            padding: 10px 15px;
+            font-weight: 600;
+            width: 100%;
+            transition: all 0.3s ease;
+            background: linear-gradient(135deg, #3498db, #3498db);
+            border: none;
+            font-size: 0.8rem;
+            box-shadow: 0 2px 5px rgba(52, 152, 219, 0.1);
+        }
+        .membership-card .btn-membership:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(52, 152, 219, 0.2);
+            background: linear-gradient(135deg, #2980b9, #3498db);
+        }
+
         /* Responsive adjustments */
         @media (max-width: 767.98px) {
             .membership-card .membership-img-container {
-                height: 160px;
+                height: 140px;
             }
             .membership-card .membership-title {
-                font-size: 1.3rem;
+                font-size: 1.1rem;
             }
+        }
+
+        .empty-state {
+            border-radius: 10px;
+        }
+
+        .empty-state-icon svg {
+            opacity: 0.6;
+        }
+
+        .empty-state h3 {
+            color: #343a40;
+            font-weight: 600;
+        }
+
+        .btn-membership-create {
+            padding: 10px 25px;
+            font-weight: 500;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .btn-membership-create:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
         }
     </style>
 @endpush
@@ -462,7 +468,7 @@
                                     <div class="filter-group">
                                         <label for="search">Search</label>
                                         <input type="text" name="search" id="search" class="form-control search-input"
-                                               placeholder="Search by name or email"
+                                               placeholder="Search by name"
                                                value="{{ request('search') }}">
                                     </div>
 
@@ -539,101 +545,117 @@
                                     </div>
 
                                     <div class="filter-buttons">
-                                        <button type="button" class="btn btn-secondary" onclick="resetFilters()">
+                                        <button type="button" class="btn btn-secondary w-100" onclick="resetFilters()">
                                             <i class="fas fa-undo me-2"></i> Reset
                                         </button>
-                                        <button type="submit" class="btn btn-primary">
+                                    </div>
+                                    <div class="filter-buttons">
+                                        <button type="submit" class="btn btn-primary w-100">
                                             <i class="fas fa-filter me-2"></i> Apply Filters
                                         </button>
                                     </div>
                                 </form>
 
                                 <div class="row">
-                                    @foreach($memberships as $membership)
-                                        <div class="col-md-6 col-lg-4 mb-4">
-                                            <div class="membership-card">
-                                                <div class="membership-img-container">
-                                                    <img src="{{ $membership->image ? asset($membership->image) : 'https://images.unsplash.com/photo-1571902943202-507ec2618e8f?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80' }}"
-                                                         alt="{{ $membership->name }}"
-                                                         class="membership-img">
+                                    @if(count($memberships) > 0)
+                                        @foreach($memberships as $membership)
+                                            <div class="col-md-6 col-lg-4 mb-4">
+                                                <div class="membership-card">
+                                                    <div class="membership-img-container">
+                                                        <img src="{{ $membership->image ? asset($membership->image) : 'https://images.unsplash.com/photo-1571902943202-507ec2618e8f?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80' }}"
+                                                             alt="{{ $membership->name }}"
+                                                             class="membership-img">
 
-                                                    <div class="action-buttons">
-                                                        <a href="{{ route('owner.memberships.show', $membership->id) }}" class="action-btn view-btn text-decoration-none" title="View Details">
-                                                            <x-icon name="view" type="material" class="icon" />
-                                                        </a>
-                                                        <a href="{{ route('owner.memberships.edit', $membership->id) }}" class="action-btn edit-btn text-warning text-decoration-none" title="Edit Membership">
-                                                            <x-icon name="edit" type="material" class="icon" />
-                                                        </a>
-                                                        <button class="action-btn delete-btn" title="Delete Membership" onclick="confirmDelete({{ $membership->id }})">
-                                                            <x-icon name="delete" type="material" class="icon" />
-                                                        </button>
-                                                    </div>
-
-                                                    @if($membership->discount > 0)
-                                                        <span class="discount-badge">{{ $membership->discount }}% OFF</span>
-                                                    @endif
-
-                                                    <span class="popular-badge">
-                                                        <span>Featured</span>
-                                                        <label class="switch">
-                                                            <input type="checkbox" class="featured-toggle" data-membership-id="{{ $membership->id }}" {{ $membership->mark_as_featured ? 'checked' : '' }}>
-                                                            <span class="slider"></span>
-                                                        </label>
-                                                    </span>
-                                                </div>
-
-                                                <div class="membership-body">
-                                                    <!-- Status and Category Badges -->
-                                                    <div class="meta-badges d-flex justify-content-between align-items-center">
-                                                        <span class="status-badge status-{{ strtolower($membership->status) }}">
-                                                            {{ $membership->status }}
-                                                        </span>
-                                                        <span class="category-badge">
-                                                            {{ $membership->category ?? 'General' }}
-                                                        </span>
-                                                    </div>
-
-                                                    <h4 class="membership-title">{{ $membership->name }}</h4>
-
-                                                    <!-- Beautiful Building/Unit Info -->
-                                                    <div class="property-info">
-                                                        <div class="property-row text-center">
-                                                            <div class="property-value">{{ $membership->building->name ?? 'N/A' }}</div>
-                                                        </div>
-                                                        <div class="property-row text-center">
-                                                            <div class="property-value">{{ $membership->unit->unit_name ?? 'N/A' }}</div>
-                                                        </div>
-                                                    </div>
-
-                                                    <p class="membership-description">
-                                                        {{ Str::limit($membership->description, 120) }}
-                                                    </p>
-
-                                                    <div class="price-container">
-                                                        <div class="price-details">
-                                                            <div class="current-price">
-                                                                <span class="membership-price">{{ number_format($membership->price, 2) . ' ' . $membership->currency }} </span>
-                                                                <span class="membership-period"> / {{ $membership->duration_months . ' Month' }}</span>
-                                                            </div>
+                                                        <!-- Price Overlay -->
+                                                        <div class="price-overlay">
                                                             @if($membership->original_price > $membership->price)
-                                                                <div class="price-comparison">
-                                                                    <div class="original-price">{{ number_format($membership->original_price, 2) }}</div>
-                                                                    <div class="savings-badge">Save {{ number_format(100 - ($membership->price/$membership->original_price)*100, 0) }}%</div>
-                                                                </div>
+                                                                <span class="original-price">{{ number_format($membership->original_price, 2) . ' ' . $membership->currency }}</span>
+                                                            @endif
+                                                            <span class="membership-price">{{ number_format($membership->price, 2) . ' ' . $membership->currency }}</span>
+                                                            <span class="membership-period">/ {{ $membership->duration_months }} Month</span>
+                                                        </div>
+
+                                                        @if($membership->discount > 0)
+                                                            <span class="discount-badge">{{ $membership->discount }}% OFF</span>
+                                                        @endif
+
+                                                        <span class="popular-badge">
+                                                            <span>Featured</span>
+                                                            <label class="switch">
+                                                                <input type="checkbox" class="featured-toggle" data-membership-id="{{ $membership->id }}" {{ $membership->mark_as_featured ? 'checked' : '' }}>
+                                                                <span class="slider"></span>
+                                                            </label>
+                                                        </span>
+
+                                                        <!-- Action Menu (Three Dots) -->
+                                                        <div class="action-menu">
+                                                            <button class="action-btn" data-bs-toggle="dropdown" aria-expanded="false">
+                                                                <i class="fas fa-ellipsis-v"></i>
+                                                            </button>
+                                                            <ul class="dropdown-menu dropdown-menu-end">
+                                                                <li>
+                                                                    <a class="dropdown-item view-item" href="{{ route('owner.memberships.show', $membership->id) }}">
+                                                                        <x-icon name="view" type="material" class="icon" /> View
+                                                                    </a>
+                                                                </li>
+                                                                <li>
+                                                                    <a class="dropdown-item edit-item" href="{{ route('owner.memberships.edit', $membership->id) }}">
+                                                                        <x-icon name="edit" type="material" class="icon" /> Edit
+                                                                    </a>
+                                                                </li>
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="membership-body">
+                                                        <!-- Status and Category Badges -->
+                                                        <div class="meta-badges d-flex justify-content-between align-items-center">
+                                                            <span class="status-badge status-{{ strtolower($membership->status) }}">
+                                                                {{ $membership->status }}
+                                                            </span>
+                                                            @if($membership->category)
+                                                                <span class="category-badge">
+                                                                {{ $membership->category }}
+                                                            </span>
                                                             @endif
                                                         </div>
+
+                                                        <h4 class="membership-title">{{ $membership->name }}</h4>
+
+                                                        <!-- Compact Property Info -->
+                                                        <div class="property-info">
+                                                            <span class="property-badge">{{ $membership->building->name ?? 'N/A' }}</span>
+                                                            <span class="property-badge">{{ $membership->unit->unit_name ?? 'N/A' }}</span>
+                                                        </div>
+
+                                                        <p class="membership-description">
+                                                            {{ Str::limit($membership->description, 120) }}
+                                                        </p>
+                                                    </div>
+
+                                                    <div class="membership-footer">
+                                                        <a href="{{ route('owner.memberships.assign.view', $membership->id) }}" class="btn btn-primary btn-membership text-decoration-none">
+                                                            Assign Membership
+                                                        </a>
                                                     </div>
                                                 </div>
+                                            </div>
+                                        @endforeach
+                                    @else
+                                        <div class="col-12">
+                                            <div class="empty-state text-center py-5">
+                                                <i class="fas fa-users fa-3x mb-3"></i>
+                                                <h4 class="mt-3">No Memberships Found</h4>
+                                                <p class="">There are currently no memberships matching your filters.</p>
+                                                <a href="{{ route('owner.memberships.create') }}" class="btn btn-primary mt-3">
+                                                    <i class="fas fa-plus me-2"></i> Create New Membership
+                                                </a>
 
-                                                <div class="membership-footer">
-                                                    <a href="{{ route('owner.memberships.assign.view', $membership->id) }}" class="btn btn-primary btn-membership text-decoration-none">
-                                                        Assign Membership
-                                                    </a>
-                                                </div>
                                             </div>
                                         </div>
-                                    @endforeach
+                                    @endif
                                 </div>
+
                             </div>
                         </div>
                     </div>
@@ -728,37 +750,5 @@
             });
         });
     </script>
-{{--    <script>--}}
-{{--        $(document).ready(function() {--}}
-{{--            // Initialize tooltips--}}
-{{--            $('[data-bs-toggle="tooltip"]').tooltip();--}}
 
-{{--            // Handle featured toggle--}}
-{{--            $('.featured-toggle').change(function() {--}}
-{{--                const membershipId = $(this).data('membership-id');--}}
-{{--                const isFeatured = $(this).is(':checked');--}}
-
-{{--                $.ajax({--}}
-{{--                    url: '/owner/memberships/' + membershipId + '/toggle-featured',--}}
-{{--                    method: 'POST',--}}
-{{--                    data: {--}}
-{{--                        _token: '{{ csrf_token() }}',--}}
-{{--                        featured: isFeatured ? 1 : 0--}}
-{{--                    },--}}
-{{--                    success: function(response) {--}}
-{{--                        if (response.success) {--}}
-{{--                            location.reload(); // Reload to show updated state--}}
-{{--                        } else {--}}
-{{--                            toastr.error('Failed to update featured status');--}}
-{{--                            $(this).prop('checked', !isFeatured);--}}
-{{--                        }--}}
-{{--                    },--}}
-{{--                    error: function() {--}}
-{{--                        toastr.error('An error occurred');--}}
-{{--                        $(this).prop('checked', !isFeatured);--}}
-{{--                    }--}}
-{{--                });--}}
-{{--            });--}}
-{{--        });--}}
-{{--    </script>--}}
 @endpush
