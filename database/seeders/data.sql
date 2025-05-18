@@ -44,7 +44,7 @@ INSERT INTO `users` (`id`, `name`, `email`, `password`, `phone_no`, `cnic`, `dat
 (10, 'Shanza Malik', 'shanza@gmail.com', '$2y$12$yk.kQEOK1BYrrYEW1yG1Z.FmvVDAKFXMD.TWmsOsMy9Pmwh4HDcnS', '0300-0000010', '35202-0000001-0', '2002-07-29', 'Female', 'uploads/users/images/1740824787_User_10.jpg', 4, 0, 1, 17, 1, NULL, 'cus_SB7n5kzItNKqZk', 1, 1, '2025-02-28 04:17:27', '2025-04-22 18:30:16'),
 (11, 'Syed Abdullah', 'smibrahim297@gmail.com', '$2y$12$yk.kQEOK1BYrrYEW1yG1Z.FmvVDAKFXMD.TWmsOsMy9Pmwh4HDcnS', '0300-0000011', '35202-0000001-1', '2002-07-29', 'Male', 'uploads/users/images/1740824788_User_11.jpg', 4, 0, 1, 18, 1, NULL, 'cus_SB7nM02TVZBTGd', 1, 1, '2025-02-28 04:17:27', '2025-04-22 18:30:16'),
 (12, 'Rehan Manzoor', 'rh7081789@gmail.com', '$2y$12$yk.kQEOK1BYrrYEW1yG1Z.FmvVDAKFXMD.TWmsOsMy9Pmwh4HDcnS', '0300-0000012', '35202-0000001-2', '2002-07-29', 'Male', 'uploads/users/images/1740824789_User_12.jpg', 4, 0, 1, 19, 1, NULL, 'cus_SB7oMiIqMOdOcU', 1, 1, '2025-02-28 04:17:27', '2025-04-22 18:30:16'),
-(13, 'Neha Kashif', 'neha@gmail.com', '$2y$12$yk.kQEOK1BYrrYEW1yG1Z.FmvVDAKFXMD.TWmsOsMy9Pmwh4HDcnS', '0300-0000013', '35202-0000001-3', '2002-07-29', 'Female', 'uploads/users/images/1740824789_User_13.jpg', 5, 0, 1, 20, 1, NULL, 'cus_SB7e0HJrHluQcQ', 1, 1, '2025-03-20 07:00:17', '2025-04-22 18:30:16'),
+(13, 'Abrar Ibrahim', 'abrar@gmail.com', '$2y$12$yk.kQEOK1BYrrYEW1yG1Z.FmvVDAKFXMD.TWmsOsMy9Pmwh4HDcnS', '0300-0000013', '35202-0000001-3', '2002-07-29', 'Female', 'uploads/users/images/1740824789_User_13.jpg', 5, 0, 1, 20, 1, NULL, 'cus_SB7e0HJrHluQcQ', 1, 1, '2025-03-20 07:00:17', '2025-04-22 18:30:16'),
 (14, 'Mahnoor Sheikh', 'mahnoor@gmail.com', '$2y$12$yk.kQEOK1BYrrYEW1yG1Z.FmvVDAKFXMD.TWmsOsMy9Pmwh4HDcnS', '0300-0000014', '35202-0000001-4', '2002-07-29', 'Female', 'uploads/users/images/1740824789_User_14.jpg', 5, 0, 1, 21, 1, NULL, 'cus_SB7pmLoeZxqatk', 1, 1, '2025-03-20 07:00:17', '2025-04-22 18:30:16'),
 (15, 'Minahil Pathan', 'minahil@gmail.com', '$2y$12$yk.kQEOK1BYrrYEW1yG1Z.FmvVDAKFXMD.TWmsOsMy9Pmwh4HDcnS', '0300-0000015', '35202-0000001-5', '2002-07-29', 'Female', 'uploads/users/images/1740824789_User_15.jpg', 5, 0, 1, 22, 1, NULL, 'cus_SB7pm6RSylJgce', 1, 1, '2025-03-20 07:00:17', '2025-04-22 18:30:16');
 
@@ -94,8 +94,8 @@ INSERT INTO `buildinglevels` (`id`, `organization_id`, `building_id`, `level_nam
 
 
 INSERT INTO `buildingunits` (`id`, `level_id`, `building_id`, `organization_id`, `unit_name`, `unit_type`, `availability_status`, `sale_or_rent`, `price`, `area`, `description`, `status`, `created_by`, `updated_by`, `created_at`, `updated_at`) VALUES
-(1, 9, 1, 1, 'Room 01', 'Room', 'Available', 'Rent', 10000.00, 100.00, 'A cozy room with large windows, neutral walls, hardwood floors, a queen-sized bed, a desk, and built-in closets. Perfect for relaxation and productivity.', 'Approved', 1, 2, '2025-02-28 10:19:46', '2025-05-01 03:48:05'),
-(2, 2, 2, 1, 'Shop 01', 'Shop', 'Available', 'Sale', 150000.00, 100.00, 'Vintage Treasures offers handpicked antiques, unique collectibles, and retro décor in a charming, rustic setting.', 'Approved', 1, 2, '2025-02-28 10:19:46', '2025-05-01 03:48:38'),
+(1, 9, 1, 1, 'Pizza Galleria', 'Restaurant', 'Available', 'Not Available', 0.00, 100.00, 'Restaurant that offers a delightful fusion of authentic Italian flavors and a cozy dining experience. Enjoy handcrafted pizzas made with fresh ingredients and artistic flair.', 'Approved', 1, 2, '2025-02-28 10:19:46', '2025-05-01 03:48:05'),
+(2, 2, 2, 1, 'Fitness Pro', 'Gym', 'Available', 'Not Available', 0.00, 100.00, 'An ultimate destination for strength, cardio, and transformation. Experience top-tier equipment, expert trainers, and a motivating atmosphere.', 'Approved', 1, 2, '2025-02-28 10:19:46', '2025-05-01 03:48:38'),
 (3, 10, 3, 2, 'Apartment 01', 'Apartment', 'Available', 'Rent', 35000.00, 100.00, 'A modern two-bedroom apartment with an open living area, stainless steel appliances, spacious bedrooms, and a private balcony with city views.', 'Approved', 1, 1, '2025-02-28 10:19:46', '2025-05-01 08:41:22'),
 (4, 2, 2, 1, 'Room 02', 'Room', 'Available', 'Sale', 100000.00, 100.00, 'A cozy room with large windows, neutral walls, hardwood floors, a queen-sized bed, a desk, and built-in closets. Perfect for relaxation and productivity.', 'Approved', 1, 1, '2025-02-28 10:19:46', '2025-05-01 08:41:22'),
 (5, 2, 2, 1, 'Shop 02', 'Shop', 'Available', 'Rent', 15000.00, 100.00, 'Vintage Treasures offers handpicked antiques, unique collectibles, and retro décor in a charming, rustic setting.', 'Approved', 1, 1, '2025-02-28 10:19:46', '2025-02-28 10:19:46'),
@@ -611,15 +611,23 @@ INSERT INTO `planserviceprices` (`id`, `service_id`, `billing_cycle_id`, `price`
 
 
 INSERT INTO `subscriptions` (`id`, `customer_payment_id`, `user_id`, `organization_id`, `building_id`, `unit_id`, `source_id`, `source_name`, `billing_cycle`, `subscription_status`, `price_at_subscription`, `currency_at_subscription`, `trial_ends_at`, `ends_at`, `created_at`, `updated_at`) VALUES
-(1, 'cus_SB7inAoxSnwbHf', 2, 1, NULL, NULL, 3, 'plan', '12', 'Active', 33660.00, 'PKR', NULL, '2026-04-22 14:04:24', '2025-04-22 14:04:26', '2025-04-22 19:10:54'),
-(2, 'cus_SB7iqXRvLnRyDn', 3, 2, NULL, NULL, 3, 'plan', '12', 'Active', 33660.00, 'PKR', NULL, '2026-04-22 14:04:24', '2025-04-22 14:04:26', '2025-04-22 14:04:26'),
-(3, 'cus_SB7jglEJjpDMC8', 4, 3, NULL, NULL, 3, 'plan', '12', 'Active', 33660.00, 'PKR', NULL, '2026-04-22 14:04:24', '2025-04-22 14:04:26', '2025-04-22 14:04:26');
+(1, 'cus_SB7inAoxSnwbHf', 2, 1, NULL, NULL, 3, 'plan', '12', 'Active', 33660.00, 'PKR', NULL, '2026-04-22 09:04:24', '2025-04-22 09:04:26', '2025-04-22 14:10:54'),
+(2, 'cus_SB7iqXRvLnRyDn', 3, 2, NULL, NULL, 3, 'plan', '12', 'Active', 33660.00, 'PKR', NULL, '2026-04-22 09:04:24', '2025-04-22 09:04:26', '2025-04-22 09:04:26'),
+(3, 'cus_SB7jglEJjpDMC8', 4, 3, NULL, NULL, 3, 'plan', '12', 'Active', 33660.00, 'PKR', NULL, '2026-04-22 09:04:24', '2025-04-22 09:04:26', '2025-04-22 09:04:26'),
+(4, 'cus_SB7e0HJrHluQcQ', 13, 1, 2, 2, 2, 'membership', '1', 'Active', 5999.00, 'PKR', NULL, '2025-06-18 05:38:10', '2025-05-18 05:38:10', '2025-05-18 05:38:10'),
+(5, 'cus_SB7pmLoeZxqatk', 14, 1, 1, 1, 1, 'membership', '1', 'Active', 2999.00, 'PKR', NULL, '2025-06-18 05:38:24', '2025-05-18 05:38:24', '2025-05-18 05:38:24'),
+(6, 'cus_SB7pm6RSylJgce', 15, 1, 2, 2, 2, 'membership', '1', 'Active', 5999.00, 'PKR', NULL, '2025-06-18 05:39:07', '2025-05-18 05:39:07', '2025-05-18 05:39:07'),
+(7, 'cus_SB7pm6RSylJgce', 15, 1, 1, 1, 1, 'membership', '1', 'Active', 2999.00, 'PKR', NULL, '2025-06-18 05:39:23', '2025-05-18 05:39:23', '2025-05-18 05:39:23');
 
 
 INSERT INTO `transactions` (`id`, `transaction_title`, `transaction_category`, `buyer_id`, `buyer_type`, `buyer_transaction_type`, `seller_id`, `seller_type`, `seller_transaction_type`, `building_id`, `unit_id`, `payment_method`, `gateway_payment_id`, `price`, `currency`, `status`, `is_subscription`, `billing_cycle`, `subscription_start_date`, `subscription_end_date`, `source_id`, `source_name`, `created_at`, `updated_at`) VALUES
-(1, 'Pro (12 Months)', 'New', 1, 'organization', 'Debit', NULL, 'platform', 'Credit', NULL, NULL, 'Cash', 'pi_3RGm7HGaie07GUSY0VOzkfot', 33660.00, 'PKR', 'Completed', 1, '12 Months', '2025-04-22 14:04:24', '2026-04-22 14:04:24', 1, 'subscription', '2025-04-22 14:04:27', '2025-04-22 14:04:27'),
-(2, 'Pro (12 Months)', 'New', 2, 'organization', 'Debit', NULL, 'platform', 'Credit', NULL, NULL, 'Cash', 'pi_3RGm7HGaie07GUSY0VOzkfot', 33660.00, 'PKR', 'Completed', 1, '12 Months', '2025-04-22 14:04:24', '2026-04-22 14:04:24', 2, 'subscription', '2025-04-22 14:04:27', '2025-04-22 14:04:27'),
-(3, 'Pro (12 Months)', 'New', 3, 'organization', 'Debit', NULL, 'platform', 'Credit', NULL, NULL, 'Cash', 'pi_3RGm7HGaie07GUSY0VOzkfot', 33660.00, 'PKR', 'Completed', 1, '12 Months', '2025-04-22 14:04:24', '2026-04-22 14:04:24', 3, 'subscription', '2025-04-22 14:04:27', '2025-04-22 14:04:27');
+(1, 'Pro (12 Months)', 'New', 1, 'organization', 'Debit', NULL, 'platform', 'Credit', NULL, NULL, 'Cash', 'pi_3RGm7HGaie07GUSY0VOzkfot', 33660.00, 'PKR', 'Completed', 1, '12 Months', '2025-04-22 09:04:24', '2026-04-22 09:04:24', 1, 'subscription', '2025-04-22 09:04:27', '2025-04-22 09:04:27'),
+(2, 'Pro (12 Months)', 'New', 2, 'organization', 'Debit', NULL, 'platform', 'Credit', NULL, NULL, 'Cash', 'pi_3RGm7HGaie07GUSY0VOzkfot', 33660.00, 'PKR', 'Completed', 1, '12 Months', '2025-04-22 09:04:24', '2026-04-22 09:04:24', 2, 'subscription', '2025-04-22 09:04:27', '2025-04-22 09:04:27'),
+(3, 'Pro (12 Months)', 'New', 3, 'organization', 'Debit', NULL, 'platform', 'Credit', NULL, NULL, 'Cash', 'pi_3RGm7HGaie07GUSY0VOzkfot', 33660.00, 'PKR', 'Completed', 1, '12 Months', '2025-04-22 09:04:24', '2026-04-22 09:04:24', 3, 'subscription', '2025-04-22 09:04:27', '2025-04-22 09:04:27'),
+(4, 'Elite Fitness Pass', 'New', 13, 'user', 'Debit', 1, 'organization', 'Credit', 2, 2, 'Cash', NULL, 5999.00, 'PKR', 'Completed', 1, '1 Month', '2025-05-18 05:38:10', '2025-06-18 05:38:10', 4, 'subscription', '2025-05-18 05:38:10', '2025-05-18 05:38:10'),
+(5, 'Foodie Feast', 'New', 14, 'user', 'Debit', 1, 'organization', 'Credit', 1, 1, 'Cash', NULL, 2999.00, 'PKR', 'Completed', 1, '1 Month', '2025-05-18 05:38:24', '2025-06-18 05:38:24', 5, 'subscription', '2025-05-18 05:38:24', '2025-05-18 05:38:24'),
+(6, 'Elite Fitness Pass', 'New', 15, 'user', 'Debit', 1, 'organization', 'Credit', 2, 2, 'Cash', NULL, 5999.00, 'PKR', 'Completed', 1, '1 Month', '2025-05-18 05:39:07', '2025-06-18 05:39:07', 6, 'subscription', '2025-05-18 05:39:07', '2025-05-18 05:39:07'),
+(7, 'Foodie Feast', 'New', 15, 'user', 'Debit', 1, 'organization', 'Credit', 1, 1, 'Cash', NULL, 2999.00, 'PKR', 'Completed', 1, '1 Month', '2025-05-18 05:39:23', '2025-06-18 05:39:23', 7, 'subscription', '2025-05-18 05:39:23', '2025-05-18 05:39:23');
 
 
 INSERT INTO `plansubscriptionitems` (`id`, `organization_id`, `subscription_id`, `service_catalog_id`, `quantity`, `used`, `meta`, `created_at`, `updated_at`) VALUES
@@ -628,7 +636,7 @@ INSERT INTO `plansubscriptionitems` (`id`, `organization_id`, `subscription_id`,
 (3, 1, 1, 3, 50, 2, '{\"quantity\":null}', '2025-04-22 14:04:27', '2025-04-22 14:04:27'),
 (4, 1, 1, 4, 10, 3, '{\"quantity\":7,\"1\":{\"used\":3},\"2\":{\"used\":2},\"4\":{\"used\":3}}', '2025-04-22 14:04:27', '2025-04-27 13:08:14'),
 (5, 1, 1, 5, 60, 8, '{\"quantity\":7,\"1\":{\"used\":8},\"2\":{\"used\":8},\"4\":{\"used\":7}}', '2025-04-22 14:04:27', '2025-04-22 14:04:27'),
-(6, 1, 1, 6, 5, 0, '{\"quantity\":null}', '2025-04-22 14:04:27', '2025-04-22 14:04:27'),
+(6, 1, 1, 6, 5, 1, '{\"quantity\":null}', '2025-04-22 14:04:27', '2025-04-22 14:04:27'),
 (7, 2, 2, 1, 7, 1, '{\"quantity\":null}', '2025-04-22 14:04:27', '2025-04-22 14:04:27'),
 (8, 2, 2, 2, 5, 0, '{\"quantity\":null}', '2025-04-22 14:04:27', '2025-04-22 14:04:27'),
 (9, 2, 2, 3, 50, 2, '{\"quantity\":null}', '2025-04-22 14:04:27', '2025-04-22 14:04:27'),
@@ -641,3 +649,15 @@ INSERT INTO `plansubscriptionitems` (`id`, `organization_id`, `subscription_id`,
 (16, 3, 3, 4, 10, 0, '{\"quantity\":7}', '2025-04-22 14:04:27', '2025-04-22 14:04:27'),
 (17, 3, 3, 5, 60, 0, '{\"quantity\":7}', '2025-04-22 14:04:27', '2025-04-22 14:04:27'),
 (18, 3, 3, 6, 5, 0, '{\"quantity\":null}', '2025-04-22 14:04:27', '2025-04-22 14:04:27');
+
+
+INSERT INTO `memberships` (`id`, `organization_id`, `building_id`, `unit_id`, `image`, `name`, `url`, `description`, `category`, `duration_months`, `scans_per_day`, `mark_as_featured`, `currency`, `price`, `original_price`, `status`, `created_by`, `updated_by`, `created_at`, `updated_at`) VALUES
+(1, 1, 1, 1, 'uploads/memberships/images/restaurant.jpg', 'Foodie Feast', 'http://localhost:8000/membership/testing', 'Enjoy exclusive monthly perks with free delivery, 20% off on all pizzas, and a complimentary dessert every week.', 'Restaurant', 1, 3, 1, 'PKR', 2999.00, 4000.00, 'Published', 2, 2, '2025-05-18 05:01:56', '2025-05-18 10:09:26'),
+(2, 1, 2, 2, 'uploads/memberships/images/gym.jpg', 'Elite Fitness Pass', 'http://localhost:8000/membership/testing', 'Gain full access to gym facilities, group classes, and one personal training session per week with this premium membership.', 'Gym', 1, 1, 0, 'PKR', 5999.00, 8000.00, 'Published', 2, 2, '2025-05-18 05:05:10', '2025-05-18 10:09:28');
+
+
+INSERT INTO `membership_users` (`id`, `user_id`, `membership_id`, `subscription_id`, `status`, `quantity`, `used`, `created_at`, `updated_at`) VALUES
+(1, 13, 2, 4, 1, 1, 1, '2025-05-18 05:30:54', '2025-05-18 05:30:54'),
+(2, 14, 1, 5, 1, 3, 3, '2025-05-18 05:32:21', '2025-05-18 05:32:21'),
+(3, 15, 2, 6, 1, 1, 1, '2025-05-18 06:30:54', '2025-05-18 06:30:54'),
+(4, 15, 1, 7, 1, 3, 3, '2025-05-18 06:32:21', '2025-05-18 06:32:21');

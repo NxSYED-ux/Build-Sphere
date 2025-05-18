@@ -738,7 +738,7 @@ class MembershipController extends Controller
             'buyer_type' => 'user',
             'seller_type' => 'organization',
             'seller_id' => $membership->organization_id,
-            'payment_method' => 'Card',
+            'payment_method' => 'Cash',
             'gateway_payment_id' => $paymentIntentId,
             'price' => $membership->price,
             'currency' => $membership->currency,

@@ -16,6 +16,8 @@ class UserBuildingUnit extends Model
     protected $fillable = [
         'user_id',
         'unit_id',
+        'building_id',
+        'organization_id',
         'type',
         'price',
         'subscription_id',
@@ -40,6 +42,16 @@ class UserBuildingUnit extends Model
     public function unit()
     {
         return $this->belongsTo(BuildingUnit::class, 'unit_id', 'id');
+    }
+
+    public function building()
+    {
+        return $this->belongsTo(Building::class, 'building_id', 'id');
+    }
+
+    public function organization()
+    {
+        return $this->belongsTo(Organization::class, 'organization_id', 'id');
     }
 
     public function subscription()
