@@ -280,6 +280,8 @@ class AssignUnitController extends Controller
         $assignedUnit = UserBuildingUnit::create([
             'user_id' => $user->id,
             'unit_id' => $unit->id,
+            'building_id' => $unit->building_id,
+            'organization_id' => $unit->organization_id,
             'type' => $type,
             'price' => $price,
             'billing_cycle' => $billing_cycle
