@@ -10,9 +10,10 @@ return new class extends Migration
     {
         Schema::create('memberships', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('unit_id');
-            $table->unsignedBigInteger('building_id')->nullable();
-            $table->unsignedBigInteger('organization_id');
+            $table->foreignId('organization_id')->constrained('organizations')->onDelete('cascade');
+            $table->foreignId('building_id')->constrained('buildings')->onDelete('cascade');
+            $table->foreignId('unit_id')->constrained('units')->onDelete('cascade');
+
             $table->string('image')->default('uploads/memberships/images/defaultImage.jpeg');
             $table->string('name', 100);
             $table->string('url');
@@ -23,18 +24,14 @@ return new class extends Migration
             $table->boolean('mark_as_featured')->default(false);
             $table->string('currency', 10)->default('PKR');
             $table->decimal('price', 10, 2)->default(0);
-            $table->decimal('original_price', 10, 2)->nullable();
+            $table->decimal('original_price', 10, 2)->default(0);
             $table->enum('status', ['Draft', 'Published', 'Non Renewable', 'Archived'])->default('Draft');
-            $table->unsignedBigInteger('created_by');
-            $table->unsignedBigInteger('updated_by');
+
+            $table->foreignId('created_by')->nullable()->constrained('users')->onDelete('set null');
+            $table->foreignId('updated_by')->nullable()->constrained('users')->onDelete('set null');
+
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
-
-            $table->foreign('unit_id')->references('id')->on('buildingunits');
-            $table->foreign('building_id')->references('id')->on('buildings');
-            $table->foreign('organization_id')->references('id')->on('organizations');
-            $table->foreign('created_by')->references('id')->on('users');
-            $table->foreign('updated_by')->references('id')->on('users');
 
             $table->unique(['unit_id', 'name']);
         });

@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->string('name',50);
+
             $table->string('email',255)->unique();
             $table->string('password',255);
             $table->string('phone_no',20)->nullable();
@@ -18,24 +18,19 @@ return new class extends Migration
             $table->date('date_of_birth');
             $table->enum('gender', ['Male', 'Female', 'Other']);
             $table->string('picture',255)->nullable();
-            $table->unsignedInteger('role_id');
             $table->tinyInteger('is_super_admin')->default(0);
             $table->tinyInteger('is_verified')->default(0);
-            $table->unsignedBigInteger('address_id')->unique();
             $table->tinyInteger('status')->default(1);
             $table->text('reset_token')->nullable();
-
             $table->string('customer_payment_id')->nullable()->index();
 
-            $table->unsignedBigInteger('created_by')->nullable();
-            $table->unsignedBigInteger('updated_by')->nullable();
+            $table->unsignedInteger('role_id'); $table->foreign('role_id')->references('id')->on('roles')->onDelete('cascade');
+            $table->foreignId('address_id')->unique()->constrained('address')->onDelete('cascade');
+            $table->foreignId('created_by')->nullable()->constrained('users')->onDelete('set null');
+            $table->foreignId('updated_by')->nullable()->constrained('users')->onDelete('set null');
+
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
-
-            $table->foreign('role_id')->references('id')->on('roles');
-            $table->foreign('address_id')->references('id')->on('address');
-            $table->foreign('created_by')->references('id')->on('users');
-            $table->foreign('updated_by')->references('id')->on('users');
 
             $table->index('role_id');
             $table->index('is_super_admin');

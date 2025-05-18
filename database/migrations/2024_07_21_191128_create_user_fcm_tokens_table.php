@@ -9,9 +9,12 @@ return new class extends Migration {
     {
         Schema::create('user_fcm_tokens', function (Blueprint $table) {
             $table->id();
+
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->string('token')->unique();
-            $table->timestamps();
+
+            $table->timestamp('created_at')->useCurrent();
+            $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
         });
     }
 

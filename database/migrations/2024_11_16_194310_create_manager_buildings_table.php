@@ -10,15 +10,13 @@ return new class extends Migration
     {
         Schema::create('managerbuildings', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('user_id');
-            $table->unsignedBigInteger('staff_id');
-            $table->unsignedBigInteger('building_id');
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
+            $table->foreignId('staff_id')->constrained('staffmembers')->onDelete('cascade');
+            $table->foreignId('building_id')->constrained('buildings')->onDelete('cascade');
+
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
 
-            $table->foreign('user_id')->references('id')->on('users');
-            $table->foreign('staff_id')->references('id')->on('staffmembers');
-            $table->foreign('building_id')->references('id')->on('buildings');
         });
     }
 

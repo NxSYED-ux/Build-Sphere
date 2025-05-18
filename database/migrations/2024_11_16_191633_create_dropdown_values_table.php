@@ -10,16 +10,19 @@ return new class extends Migration
     {
         Schema::create('dropdownvalues', function (Blueprint $table) {
             $table->unsignedInteger('id',true);
+
             $table->string('value_name',50)->unique();
             $table->text('description')->nullable();
             $table->unsignedInteger('dropdown_type_id');
             $table->unsignedInteger('parent_value_id')->nullable();
             $table->tinyInteger('status')->default(1);
+
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
 
             $table->foreign('dropdown_type_id')->references('id')->on('dropdowntypes');
             $table->foreign('parent_value_id')->references('id')->on('dropdownvalues');
+
         });
     }
 

@@ -10,15 +10,17 @@ return new class extends Migration
     {
         Schema::create('plansubscriptionitems', function (Blueprint $table) {
             $table->id();
-
             $table->foreignId('organization_id')->constrained()->onDelete('cascade');
             $table->foreignId('subscription_id')->constrained()->onDelete('cascade');
             $table->foreignId('service_catalog_id')->constrained('planservicecatalog')->onDelete('cascade');
+
             $table->integer('quantity');
             $table->integer('used')->default(0);
             $table->json('meta')->nullable();
 
-            $table->timestamps();
+            $table->timestamp('created_at')->useCurrent();
+            $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
+
         });
     }
 

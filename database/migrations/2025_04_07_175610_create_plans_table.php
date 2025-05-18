@@ -10,6 +10,7 @@ return new class extends Migration
     {
         Schema::create('plans', function (Blueprint $table) {
             $table->id();
+
             $table->string('name')->unique(); // e.g., Free, Pro, Enterprise
             $table->text('description')->nullable();
             $table->string('currency', 10)->default('PKR');
@@ -17,6 +18,7 @@ return new class extends Migration
 
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
+
         });
     }
 

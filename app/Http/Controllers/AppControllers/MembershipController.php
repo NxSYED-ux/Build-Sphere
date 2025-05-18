@@ -165,7 +165,8 @@ class MembershipController extends Controller
                 ->with([
                     'membership',
                     'membership.unit:id,unit_name',
-                    'membership.building:id,name'
+                    'membership.building:id,name',
+                    'subscription',
                 ])
                 ->first();
 
@@ -176,7 +177,7 @@ class MembershipController extends Controller
             }
 
             return response()->json([
-                'my_membership' => $membershipUser,
+                'details' => $membershipUser,
             ]);
 
         } catch (\Throwable $e) {
@@ -207,7 +208,7 @@ class MembershipController extends Controller
             $pastMemberships = Membership::whereIn('id', $membershipIds)
                 ->with([
                     'unit:id,unit_name',
-                    'building:id,name'
+                    'building:id,name',
                 ])
                 ->orderByDesc('updated_at')
                 ->get();

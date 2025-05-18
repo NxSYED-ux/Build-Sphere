@@ -14,9 +14,9 @@ return new class extends Migration
             $table->string('title', 255);
             $table->string('description')->nullable();
             $table->string('icon')->nullable();
-            $table->unsignedBigInteger('parent_id')->nullable();
 
-            $table->foreign('parent_id')->references('id')->on('planservicecatalog');
+            $table->foreignId('parent_id')->nullable()->constrained('planservicecatalog')->onDelete('set null');
+
         });
 
         Schema::create('planservices', function (Blueprint $table) {

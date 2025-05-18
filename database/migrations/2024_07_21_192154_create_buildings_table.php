@@ -10,24 +10,23 @@ return new class extends Migration
     {
         Schema::create('buildings', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('organization_id');
+
             $table->string('name','100')->unique();
             $table->string('building_type', 50)->comment('Residential, Commercial, Industrial, Mixed-Use');
             $table->string('status',50)->comment('Approved, Under Review, Rejected, Under Processing, For Re-Approval');
             $table->text('remarks')->nullable();
             $table->decimal('area', 10, 2);
             $table->year('construction_year')->nullable();
-            $table->unsignedBigInteger('address_id')->unique();
             $table->tinyInteger('isFreeze')->default(0);
-            $table->unsignedBigInteger('created_by');
-            $table->unsignedBigInteger('updated_by');
+
+            $table->foreignId('organization_id')->constrained()->onDelete('cascade');
+            $table->foreignId('address_id')->unique()->constrained('address')->onDelete('cascade');
+            $table->foreignId('created_by')->nullable()->constrained('users')->onDelete('set null');
+            $table->foreignId('updated_by')->nullable()->constrained('users')->onDelete('set null');
+
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
 
-            $table->foreign('organization_id')->references('id')->on('organizations');
-            $table->foreign('address_id')->references('id')->on('address');
-            $table->foreign('created_by')->references('id')->on('users');
-            $table->foreign('updated_by')->references('id')->on('users');
         });
     }
 

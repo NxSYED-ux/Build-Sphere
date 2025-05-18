@@ -10,13 +10,14 @@ return new class extends Migration
     {
         Schema::create('unitpictures', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('unit_id');
+            $table->foreignId('unit_id')->constrained('buildingunits')->onDelete('cascade');
+
             $table->string('file_path',255)->nullable();
             $table->string('file_name',255)->nullable();
+
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
 
-            $table->foreign('unit_id')->references('id')->on('buildingunits');
         });
     }
 

@@ -10,22 +10,23 @@ return new class extends Migration
     {
         Schema::create('userbuildingunits', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('user_id');
-            $table->unsignedBigInteger('unit_id');
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->foreignId('unit_id')->constrained('buildingunits')->onDelete('cascade');
+            $table->foreignId('building_id')->constrained()->onDelete('cascade');
+            $table->foreignId('organization_id')->constrained()->onDelete('cascade');
             $table->foreignId('subscription_id')->nullable()->constrained()->onDelete('cascade');
+
             $table->tinyInteger('contract_status')->default(1);
             $table->enum('type', ['Rented', 'Sold']);
             $table->integer('billing_cycle')->nullable()->comment('In Months only');
             $table->decimal('price', 10, 2)->default(0);
-            $table->unsignedBigInteger('created_by');
-            $table->unsignedBigInteger('updated_by');
+
+            $table->foreignId('created_by')->nullable()->constrained('users')->onDelete('set null');
+            $table->foreignId('updated_by')->nullable()->constrained('users')->onDelete('set null');
+
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
 
-            $table->foreign('user_id')->references('id')->on('users');
-            $table->foreign('unit_id')->references('id')->on('buildingunits');
-            $table->foreign('created_by')->references('id')->on('users');
-            $table->foreign('updated_by')->references('id')->on('users');
         });
     }
 

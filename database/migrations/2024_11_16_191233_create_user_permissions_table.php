@@ -10,16 +10,19 @@ return new class extends Migration
     {
         Schema::create('userpermissions', function (Blueprint $table) {
             $table->id();
+
             $table->unsignedBigInteger('user_id');
             $table->unsignedInteger('permission_id');
             $table->tinyInteger('status')->default(1);
             $table->unsignedBigInteger('granted_by');
+
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
 
             $table->foreign('user_id')->references('id')->on('users');
             $table->foreign('permission_id')->references('id')->on('permissions');
             $table->foreign('granted_by')->references('id')->on('users');
+
         });
     }
 

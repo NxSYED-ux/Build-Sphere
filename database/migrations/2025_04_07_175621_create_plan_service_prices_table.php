@@ -10,14 +10,16 @@ return new class extends Migration
     {
         Schema::create('billing_cycles', function (Blueprint $table) {
             $table->id();
+
             $table->integer('duration_months');
             $table->string('description')->nullable();
+
         });
 
         Schema::create('planserviceprices', function (Blueprint $table) {
             $table->id();
 
-            $table->unsignedBigInteger('service_id');
+            $table->foreignId('service_id')->constrained('planservices')->onDelete('cascade');
             $table->foreignId('billing_cycle_id')->constrained('billing_cycles')->onDelete('cascade');
 
             $table->decimal('price', 10, 2);
@@ -25,7 +27,6 @@ return new class extends Migration
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
 
-            $table->foreign('service_id')->references('id')->on('planservices')->onDelete('cascade');
             $table->unique(['service_id', 'billing_cycle_id']);
         });
     }

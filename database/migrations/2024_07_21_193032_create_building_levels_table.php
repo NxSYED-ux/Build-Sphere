@@ -10,20 +10,20 @@ return new class extends Migration
     {
         Schema::create('buildinglevels', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('organization_id');
-            $table->unsignedBigInteger('building_id');
+
             $table->string('level_name',50);
             $table->text('description')->nullable();
             $table->integer('level_number');
             $table->enum('status', ['Approved', 'Rejected']);
-            $table->unsignedBigInteger('created_by');
-            $table->unsignedBigInteger('updated_by');
+
+            $table->foreignId('organization_id')->constrained()->onDelete('cascade');
+            $table->foreignId('building_id')->constrained()->onDelete('cascade');
+            $table->foreignId('created_by')->nullable()->constrained('users')->onDelete('set null');
+            $table->foreignId('updated_by')->nullable()->constrained('users')->onDelete('set null');
+
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
 
-            $table->foreign('building_id')->references('id')->on('buildings');
-            $table->foreign('created_by')->references('id')->on('users');
-            $table->foreign('updated_by')->references('id')->on('users');
         });
     }
 

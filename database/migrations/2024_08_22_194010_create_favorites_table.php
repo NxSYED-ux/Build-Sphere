@@ -10,13 +10,13 @@ return new class extends Migration
     {
         Schema::create('favorites', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('user_id');
-            $table->unsignedBigInteger('unit_id');
+
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->foreignId('unit_id')->constrained('buildingunits')->onDelete('cascade');
+
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
 
-            $table->foreign('user_id')->references('id')->on('users');
-            $table->foreign('unit_id')->references('id')->on('buildingunits');
         });
     }
 

@@ -10,6 +10,7 @@ return new class extends Migration
     {
         Schema::create('otps', function (Blueprint $table) {
             $table->id();
+
             $table->string('email');
             $table->string('otp', 10);
             $table->timestamp('expires_at');
@@ -17,6 +18,7 @@ return new class extends Migration
 
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
+
         });
     }
 
