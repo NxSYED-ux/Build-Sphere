@@ -12,7 +12,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('organization_id')->constrained('organizations')->onDelete('cascade');
             $table->foreignId('building_id')->constrained('buildings')->onDelete('cascade');
-            $table->foreignId('unit_id')->constrained('units')->onDelete('cascade');
+            $table->foreignId('unit_id')->constrained('buildingunits')->onDelete('cascade');
 
             $table->string('image')->default('uploads/memberships/images/defaultImage.jpeg');
             $table->string('name', 100);

@@ -11,7 +11,7 @@ return new class extends Migration
         Schema::create('queries', function (Blueprint $table) {
             $table->id();
 
-            $table->foreignId('user_id')->constrained()->onDelete('set null');
+            $table->foreignId('user_id')->nullable()->constrained()->onDelete('set null');
             $table->foreignId('building_id')->constrained()->onDelete('cascade');
             $table->foreignId('unit_id')->constrained('buildingunits')->onDelete('cascade');
             $table->foreignId('department_id')->nullable()->constrained()->onDelete('set null');
