@@ -40,6 +40,92 @@
         .btn-close {
             filter: invert(var(--invert, 0));
         }
+
+        /* Card View Styles */
+        .card-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            padding: 20px 0;
+        }
+
+        .level-card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            overflow: hidden;
+        }
+
+        .level-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-header {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .card-body {
+            padding: 15px;
+        }
+
+        .card-footer {
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-top: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .level-name {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .level-info {
+            color: #6c757d;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+
+        .level-description {
+            margin: 10px 0;
+            color: #495057;
+        }
+
+        .status-badge {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .status-approved {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .status-rejected {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .no-levels {
+            text-align: center;
+            padding: 40px;
+            color: #6c757d;
+            font-size: 1.1rem;
+        }
     </style>
 @endpush
 
@@ -72,48 +158,45 @@
                                     </a>
                                 </div>
                                 <div class="card shadow p-3 mb-5 bg-body rounded" style="border: none;">
-                                    <div class="card-body " style="overflow-x: auto;">
-                                        <table id="LevelsTable" class="table shadow-sm table-hover table-striped">
-                                            <thead class="shadow">
-                                            <tr>
-                                                <th>ID</th>
-                                                <th>Name</th>
-                                                <th>Description</th>
-                                                <th>Level Number</th>
-                                                <th>Status</th>
-                                                <th>Building</th>
-                                                <th class="w-170 text-center">Actions</th>
-                                            </tr>
-                                            </thead>
-                                            <tbody>
-                                            @forelse($levels ?? [] as $level)
-                                                <tr>
-                                                    <td>{{ $level->id }}</td>
-                                                    <td>{{ $level->level_name }}</td>
-                                                    <td>{{ $level->description ?? 'N/A' }}</td>
-                                                    <td>{{ $level->level_number ?? 'N/A' }}</td>
-                                                    <td>
-                                                        {{ $level->status ?? 'N/A' }}
-                                                    </td>
-                                                    <td>{{ $level->building->name ?? 'N/A' }}</td>
-                                                    <td class="w-170 text-center">
-                                                        <div class="d-flex justify-content-center align-items-center gap-3">
-                                                            <a href="{{ route('units.index', ['level_id' => $level->id]) }}" class="text-info" title="View Units">
-                                                                <x-icon name="view" type="icon" class="" size="20px" />
-                                                            </a>
-                                                            <a href="#" class="text-warning Admin-Level-Edit-Button hidden" data-id="{{ $level->id }}" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit">
-                                                                <x-icon name="edit" type="icon" class="" size="20px" />
-                                                            </a>
+                                    <div class="card-body">
+                                        @if($levels && count($levels) > 0)
+                                            <div class="card-container">
+                                                @foreach($levels as $level)
+                                                    <div class="level-card">
+                                                        <div class="card-header">
+                                                            <div class="level-name">{{ $level->level_name }}</div>
+                                                            <div class="level-info">Level #{{ $level->level_number ?? 'N/A' }}</div>
                                                         </div>
-                                                    </td>
-                                                </tr>
-                                            @empty
-                                                <tr>
-                                                    <td colspan="7" class="text-center">No levels found.</td>
-                                                </tr>
-                                            @endforelse
-                                            </tbody>
-                                        </table>
+                                                        <div class="card-body">
+                                                            <div class="level-description">
+                                                                {{ $level->description ?? 'No description available' }}
+                                                            </div>
+                                                            <div class="level-info">
+                                                                <strong>Building:</strong> {{ $level->building->name ?? 'N/A' }}
+                                                            </div>
+                                                        </div>
+                                                        <div class="card-footer">
+                                                            <span class="status-badge status-{{ strtolower($level->status) }}">
+                                                                {{ $level->status ?? 'N/A' }}
+                                                            </span>
+                                                            <div class="action-buttons">
+                                                                <a href="{{ route('units.index', ['level_id' => $level->id]) }}" class="text-info" title="View Units" data-bs-toggle="tooltip">
+                                                                    <x-icon name="view" type="icon" class="" size="20px" />
+                                                                </a>
+                                                                <a href="#" class="text-warning Admin-Level-Edit-Button hidden" data-id="{{ $level->id }}" title="Edit" data-bs-toggle="tooltip">
+                                                                    <x-icon name="edit" type="icon" class="" size="20px" />
+                                                                </a>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                @endforeach
+                                            </div>
+                                        @else
+                                            <div class="no-levels">
+                                                <i class='bx bx-building-house' style="font-size: 50px; margin-bottom: 15px;"></i>
+                                                <p>No levels found.</p>
+                                            </div>
+                                        @endif
                                     </div>
                                 </div>
                             </div>
@@ -310,38 +393,6 @@
 
 @push('scripts')
 
-    <!-- Add DataTables JS -->
-    <script src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/1.11.3/js/dataTables.bootstrap5.min.js"></script>
-
-    <!-- Add DataTables Buttons JS -->
-    <script src="https://cdn.datatables.net/buttons/2.3.6/js/dataTables.buttons.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.bootstrap5.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.html5.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.print.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
-
-    <!-- Data Tables Script -->
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            new DataTable("#LevelsTable", {
-                pageLength: 10,
-                lengthMenu: [10, 20, 50, 100],
-                language: {
-                    paginate: {
-                        first: "First",
-                        last: "Last",
-                        next: "Next",
-                        previous: "Previous"
-                    },
-                    searchPlaceholder: "Search users..."
-                }
-            });
-        });
-    </script>
-
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const buildingSelect = document.getElementById('building_id');
@@ -377,13 +428,13 @@
             function fetchBuildings() {
                 fetch("{{ route('levels.create') }}", {
                     method: 'GET',
-                        headers: {
-                            'Accept': 'application/json',
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                            'Content-Type': 'application/json',
-                            'X-Requested-With': 'XMLHttpRequest'
-                        }
-                    })
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
                     .then(response => response.json())
                     .then(data => {
                         const buildingSelect = document.getElementById('building_id');
@@ -423,13 +474,13 @@
 
                     fetch(`{{ route('levels.edit', ':id') }}`.replace(':id', id), {
                         method: 'GET',
-                            headers: {
-                                'Accept': 'application/json',
-                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                                'Content-Type': 'application/json',
-                                'X-Requested-With': 'XMLHttpRequest'
-                            }
-                        })
+                        headers: {
+                            'Accept': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            'Content-Type': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    })
                         .then(response => response.json())
                         .then(data => {
                             if (data.message) {
