@@ -20,6 +20,7 @@ return new class extends Migration
             $table->enum('type', ['Rented', 'Sold']);
             $table->integer('billing_cycle')->nullable()->comment('In Months only');
             $table->decimal('price', 10, 2)->default(0);
+            $table->boolean('renew_canceled')->default(false);  // This is for administration cancellation
 
             $table->foreignId('created_by')->nullable()->constrained('users')->onDelete('set null');
             $table->foreignId('updated_by')->nullable()->constrained('users')->onDelete('set null');

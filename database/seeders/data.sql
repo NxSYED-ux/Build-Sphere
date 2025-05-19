@@ -636,7 +636,7 @@ INSERT INTO `plansubscriptionitems` (`id`, `organization_id`, `subscription_id`,
 (3, 1, 1, 3, 50, 2, '{\"quantity\":null}', '2025-04-22 14:04:27', '2025-04-22 14:04:27'),
 (4, 1, 1, 4, 10, 3, '{\"quantity\":7,\"1\":{\"used\":3},\"2\":{\"used\":2},\"4\":{\"used\":3}}', '2025-04-22 14:04:27', '2025-04-27 13:08:14'),
 (5, 1, 1, 5, 60, 8, '{\"quantity\":7,\"1\":{\"used\":8},\"2\":{\"used\":8},\"4\":{\"used\":7}}', '2025-04-22 14:04:27', '2025-04-22 14:04:27'),
-(6, 1, 1, 6, 5, 1, '{\"quantity\":null}', '2025-04-22 14:04:27', '2025-04-22 14:04:27'),
+(6, 1, 1, 6, 5, 5, '{\"quantity\":null}', '2025-04-22 14:04:27', '2025-04-22 14:04:27'),
 (7, 2, 2, 1, 7, 1, '{\"quantity\":null}', '2025-04-22 14:04:27', '2025-04-22 14:04:27'),
 (8, 2, 2, 2, 5, 0, '{\"quantity\":null}', '2025-04-22 14:04:27', '2025-04-22 14:04:27'),
 (9, 2, 2, 3, 50, 2, '{\"quantity\":null}', '2025-04-22 14:04:27', '2025-04-22 14:04:27'),
@@ -652,8 +652,32 @@ INSERT INTO `plansubscriptionitems` (`id`, `organization_id`, `subscription_id`,
 
 
 INSERT INTO `memberships` (`id`, `organization_id`, `building_id`, `unit_id`, `image`, `name`, `url`, `description`, `category`, `duration_months`, `scans_per_day`, `mark_as_featured`, `currency`, `price`, `original_price`, `status`, `created_by`, `updated_by`, `created_at`, `updated_at`) VALUES
-(1, 1, 1, 1, 'uploads/memberships/images/restaurant.jpg', 'Foodie Feast', 'http://localhost:8000/membership/testing', 'Enjoy exclusive monthly perks with free delivery, 20% off on all pizzas, and a complimentary dessert every week.', 'Restaurant', 1, 3, 1, 'PKR', 2999.00, 4000.00, 'Published', 2, 2, '2025-05-18 05:01:56', '2025-05-18 10:09:26'),
-(2, 1, 2, 2, 'uploads/memberships/images/gym.jpg', 'Elite Fitness Pass', 'http://localhost:8000/membership/testing', 'Gain full access to gym facilities, group classes, and one personal training session per week with this premium membership.', 'Gym', 1, 1, 0, 'PKR', 5999.00, 8000.00, 'Published', 2, 2, '2025-05-18 05:05:10', '2025-05-18 10:09:28');
+(2, 1, 2, 2, 'uploads/memberships/images/gym.jpg', 'Elite Fitness Pass', 'http://localhost:8000/membership/testing', 'Gain full access to gym facilities, group classes, and one personal training session per week with this premium membership.', 'Gym', 1, 1, 0, 'PKR', 5999.00, 8000.00, 'Published', 2, 2, '2025-05-18 05:05:10', '2025-05-18 10:09:28'),
+
+-- 🍕 Restaurant Memberships
+(1, 1, 1, 1, 'uploads/memberships/images/restaurant.jpg', 'Foodie Feast', 'http://localhost:8000/membership/testing', 'Enjoy exclusive monthly perks with free delivery, 20% off on all pizzas, and a complimentary dessert every week.', 'Restaurant', 1, 3, 1, 'PKR', 2999.00, 4000.00, 'Published', 2, 2, NOW(), NOW()),
+(3, 1, 1, 1, 'uploads/memberships/images/restaurant.jpg', 'Midnight Muncher Club', 'http://localhost:8000/membership/testing', 'Late-night discounts up to 25% on selected pizzas and a free drink every Friday.', 'Restaurant', 1, 3, 0, 'PKR', 3200.00, 4500.00, 'Published', 2, 2, NOW(), NOW()),
+(4, 1, 1, 1, 'uploads/memberships/images/restaurant.jpg', 'Family Feast Gold', 'http://localhost:8000/membership/testing', 'Share more with family combos at 30% off and priority table booking on weekends.', 'Restaurant', 1, 3, 0, 'PKR', 5000.00, 6800.00, 'Published', 2, 2, NOW(), NOW()),
+(5, 1, 1, 1, 'uploads/memberships/images/restaurant.jpg', 'Cheesy Perks Pass', 'http://localhost:8000/membership/testing', 'Unlock free cheesy bread, sauce upgrades, and dine-in discounts all month long.', 'Restaurant', 1, 3, 0, 'PKR', 2800.00, 4000.00, 'Published', 2, 2, NOW(), NOW()),
+(6, 1, 1, 1, 'uploads/memberships/images/restaurant.jpg', 'Crust Lover Elite', 'http://localhost:8000/membership/testing', 'Love crust? Get unlimited flavor swaps and loyalty-based side orders.', 'Restaurant', 1, 3, 0, 'PKR', 3900.00, 5600.00, 'Published', 2, 2, NOW(), NOW()),
+(7, 1, 1, 1, 'uploads/memberships/images/restaurant.jpg', 'Topping Transformer', 'http://localhost:8000/membership/testing', 'Customize any pizza with unlimited toppings and enjoy weekly chef specials.', 'Restaurant', 1, 3, 1, 'PKR', 4200.00, 6000.00, 'Published', 2, 2, NOW(), NOW()),
+(8, 1, 1, 1, 'uploads/memberships/images/restaurant.jpg', 'Slice & Strength Combo', 'http://localhost:8000/membership/testing', 'Enjoy delicious meals guilt-free with salad combos and fitness partner coupons.', 'Restaurant', 1, 3, 0, 'PKR', 3500.00, 4900.00, 'Published', 2, 2, NOW(), NOW()),
+(9, 1, 1, 1, 'uploads/memberships/images/restaurant.jpg', 'Deep Dish Burn', 'http://localhost:8000/membership/testing', 'Pair indulgent pizzas with health shakes and calorie-counted menus.', 'Restaurant', 1, 3, 0, 'PKR', 3100.00, 4500.00, 'Published', 2, 2, NOW(), NOW()),
+(10, 1, 1, 1, 'uploads/memberships/images/restaurant.jpg', 'Thin Crust Premium', 'http://localhost:8000/membership/testing', 'Priority access to our light pizza menu and special olive oil-infused crusts.', 'Restaurant', 1, 3, 0, 'PKR', 3300.00, 4800.00, 'Published', 2, 2, NOW(), NOW()),
+(11, 1, 1, 1, 'uploads/memberships/images/restaurant.jpg', 'Supreme Slices Club', 'http://localhost:8000/membership/testing', 'Unlimited drink refills, early-bird buffet access, and pizza birthday surprises.', 'Restaurant', 1, 3, 0, 'PKR', 3700.00, 5200.00, 'Published', 2, 2, NOW(), NOW()),
+
+-- 🏋️ Gym Memberships
+(12, 1, 2, 2, 'uploads/memberships/images/gym.jpg', 'Fitness Pro Ignite', 'http://localhost:8000/membership/testing', 'Accelerate your strength journey with HIIT and custom progress tracking.', 'Gym', 1, 1, 1, 'PKR', 6499.00, 8500.00, 'Published', 2, 2, NOW(), NOW()),
+(13, 1, 2, 2, 'uploads/memberships/images/gym.jpg', 'Fitness Pro Shred', 'http://localhost:8000/membership/testing', 'Designed for fast fat loss with meal plans and metabolic workouts.', 'Gym', 1, 1, 0, 'PKR', 7200.00, 9500.00, 'Published', 2, 2, NOW(), NOW()),
+(14, 1, 2, 2, 'uploads/memberships/images/gym.jpg', 'Fitness Pro Warrior', 'http://localhost:8000/membership/testing', 'Train like a warrior with MMA-inspired workouts and bodyweight mastery.', 'Gym', 1, 1, 0, 'PKR', 6750.00, 8700.00, 'Published', 2, 2, NOW(), NOW()),
+(15, 1, 2, 2, 'uploads/memberships/images/gym.jpg', 'Fitness Pro Total Body', 'http://localhost:8000/membership/testing', 'Balanced full-body training with access to yoga, strength, and recovery.', 'Gym', 1, 1, 0, 'PKR', 6999.00, 9000.00, 'Published', 2, 2, NOW(), NOW()),
+(16, 1, 2, 2, 'uploads/memberships/images/gym.jpg', 'Fitness Pro Rise', 'http://localhost:8000/membership/testing', 'Early-bird access, sunrise bootcamps, and healthy breakfast shakes.', 'Gym', 1, 1, 0, 'PKR', 5800.00, 7500.00, 'Published', 2, 2, NOW(), NOW()),
+(17, 1, 2, 2, 'uploads/memberships/images/gym.jpg', 'Fitness Pro Flex', 'http://localhost:8000/membership/testing', 'Flexibility-focused plan with pilates, stretches, and injury prevention.', 'Gym', 1, 1, 0, 'PKR', 6000.00, 7900.00, 'Published', 2, 2, NOW(), NOW()),
+(18, 1, 2, 2, 'uploads/memberships/images/gym.jpg', 'Fitness Pro Elite', 'http://localhost:8000/membership/testing', 'Premium lounge access, unlimited sauna use, and weekly massages.', 'Gym', 1, 1, 1, 'PKR', 8999.00, 11500.00, 'Published', 2, 2, NOW(), NOW()),
+(19, 1, 2, 2, 'uploads/memberships/images/gym.jpg', 'Fitness Pro Cardio Boost', 'http://localhost:8000/membership/testing', 'Unlimited treadmill, cycling classes, and heart-rate tracking tools.', 'Gym', 1, 1, 0, 'PKR', 6200.00, 8000.00, 'Published', 2, 2, NOW(), NOW()),
+(20, 1, 2, 2, 'uploads/memberships/images/gym.jpg', 'Fitness Pro StrengthMax', 'http://localhost:8000/membership/testing', 'Powerlifting access, strength coaching, and protein bar discounts.', 'Gym', 1, 1, 1, 'PKR', 7700.00, 9700.00, 'Published', 2, 2, NOW(), NOW()),
+(21, 1, 2, 2, 'uploads/memberships/images/gym.jpg', 'Fitness Pro Starter', 'http://localhost:8000/membership/testing', 'Perfect for beginners – gym induction, free locker, and 3 trainer sessions.', 'Gym', 1, 1, 0, 'PKR', 4500.00, 6000.00, 'Published', 2, 2, NOW(), NOW());
+
 
 
 INSERT INTO `membership_users` (`id`, `user_id`, `membership_id`, `subscription_id`, `status`, `quantity`, `used`, `created_at`, `updated_at`) VALUES

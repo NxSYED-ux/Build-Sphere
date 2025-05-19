@@ -33,7 +33,7 @@ class MembershipController extends Controller
                 ->toArray();
 
             $baseQuery = Membership::whereNotIn('id', $excludedMembershipIds)
-                ->where('status', '!=', 'Archived')
+                ->whereNotIn('status', ['Archived', 'Draft'])
                 ->with([
                     'unit:id,unit_name',
                     'building:id,name'
@@ -42,10 +42,10 @@ class MembershipController extends Controller
 
             $featuredMemberships = (clone $baseQuery)
                 ->where('mark_as_featured', 1)
+                ->select('id', 'image', 'name', 'original_price', 'price', 'category')
                 ->get();
 
             $memberships = (clone $baseQuery)
-                ->where('mark_as_featured', 0)
                 ->get();
 
             return response()->json([
@@ -85,7 +85,7 @@ class MembershipController extends Controller
             }
 
             $membership = Membership::where('id', $id)
-                ->where('status', '!=', 'Archived')
+                ->whereNotIn('status', ['Archived', 'Draft'])
                 ->with([
                     'unit:id,unit_name',
                     'building:id,name'
