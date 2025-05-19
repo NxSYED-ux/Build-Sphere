@@ -393,7 +393,7 @@ Route::prefix('owner')->middleware(['auth.jwt'])->group(function () {
             Route::get('/create', [MembershipController::class , 'create'])->name('owner.memberships.create');
             Route::post('/', [MembershipController::class , 'store'])->name('owner.memberships.store');
             Route::get('/{membership}/edit', [MembershipController::class , 'edit'])->name('owner.memberships.edit');
-            Route::put('/update', [MembershipController::class , 'update'])->name('owner.memberships.update');
+            Route::put('/', [MembershipController::class , 'update'])->name('owner.memberships.update');
             Route::get('/{membership}/show', [MembershipController::class , 'show'])->name('owner.memberships.show');
 
             Route::get('/{membership}/assign', [MembershipController::class , 'assignMembershipView'])->name('owner.memberships.assign.view');
@@ -405,6 +405,7 @@ Route::prefix('owner')->middleware(['auth.jwt'])->group(function () {
         Route::prefix('property_users')->group(function () {
 
             Route::get('/', [PropertyUsersController::class , 'index'])->name('owner.property.users.index');
+            Route::get('/{user}/show', [PropertyUsersController::class , 'show'])->name('owner.property.users.show');
 
         });
 
