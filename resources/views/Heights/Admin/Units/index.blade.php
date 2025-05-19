@@ -533,224 +533,243 @@
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-md-12">
-                        <div class="box ">
-                            <div class="container mt-2">
-                                <div class="d-flex justify-content-between align-items-center mb-2">
-                                    <h3 class="mb-1">Units</h3>
-                                    <a href="{{ route('units.create') }}" class="btn float-end hidden add_button" id="Admin-Unit-Add-Button"  data-bs-toggle="tooltip" data-bs-placement="top" title="Add Unit">
-                                        <x-icon name="add" type="svg" class="" size="25" />
-                                    </a>
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h3 class="mb-1">Units</h3>
+                            <a href="{{ route('units.create') }}" class="btn float-end hidden add_button" id="Admin-Unit-Add-Button"  data-bs-toggle="tooltip" data-bs-placement="top" title="Add Unit">
+                                <x-icon name="add" type="svg" class="" size="25" />
+                            </a>
+                        </div>
+
+                        <!-- Filter Form -->
+                        <form method="GET" id="filterForm" class="filter-container">
+                            <div class="filter-group">
+                                <label for="search">Search</label>
+                                <input type="text" name="search" id="search" class="search-input"
+                                       placeholder="Search by name"
+                                       value="{{ request('search') }}">
+                            </div>
+
+                            <div class="filter-group">
+                                <label for="DepartmentId">Organization</label>
+                                <select name="DepartmentId" id="DepartmentId" class="form-select filter-select">
+                                    <option value="">All Organizations</option>
+                                </select>
+                            </div>
+
+                            <div class="filter-group">
+                                <label for="BuildingId">Building</label>
+                                <select name="BuildingId" id="BuildingId" class="form-select filter-select">
+                                    <option value="">All Buildings</option>
+                                </select>
+                            </div>
+
+                            <div class="filter-buttons">
+                                <button type="button" class="btn btn-secondary flex-grow-1 d-flex align-items-center justify-content-center" onclick="resetFilters()">
+                                    <i class="fas fa-undo me-2"></i> Reset
+                                </button>
+                                <button type="submit" class="btn btn-primary flex-grow-1 d-flex align-items-center justify-content-center">
+                                    <i class="fas fa-filter me-2"></i> Apply Filters
+                                </button>
+                            </div>
+                        </form>
+
+                        <div class="card shadow p-3 mb-5 bg-body rounded" style="border: none; background-color: var(--sidenavbar-body-color) !important;">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center mb-4 tools-container">
+                                    <div class="grid-view-toggle me-3">
+                                        <span class="me-2">View:</span>
+                                        <div class="btn-group" role="group">
+                                            <button type="button" class="btn btn-outline-secondary active" id="gridViewBtn">
+                                                <i class='bx bx-grid-alt'></i>
+                                            </button>
+                                            <button type="button" class="btn btn-outline-secondary" id="tableViewBtn">
+                                                <i class='bx bx-table'></i>
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <div class="dropdown">
+                                        <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="exportDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                            <x-icon name="export" type="icon" class="me-1" size="16" />
+                                            Export
+                                        </button>
+                                        <ul class="dropdown-menu" aria-labelledby="exportDropdown">
+                                            <li><button class="dropdown-item" type="button" id="copyButton"><i class='bx bx-copy me-2'></i>Copy</button></li>
+                                            <li><button class="dropdown-item" type="button" id="csvButton"><i class='bx bx-file me-2'></i>CSV</button></li>
+                                            <li><button class="dropdown-item" type="button" id="excelButton"><i class='bx bx-spreadsheet me-2'></i>Excel</button></li>
+                                            <li><button class="dropdown-item" type="button" id="pdfButton"><i class='bx bxs-file-pdf me-2'></i>PDF</button></li>
+                                            <li><button class="dropdown-item" type="button" id="printButton"><i class='bx bx-printer me-2'></i>Print</button></li>
+                                        </ul>
+                                    </div>
                                 </div>
 
-                                <!-- Filter Form -->
-                                <form method="GET" id="filterForm" class="filter-container">
-                                    <div class="filter-group">
-                                        <label for="search">Search</label>
-                                        <input type="text" name="search" id="search" class="search-input"
-                                               placeholder="Search by name"
-                                               value="{{ request('search') }}">
-                                    </div>
+                                <style>
+                                    .team-members {
+                                        display: grid;
+                                        grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+                                        gap: 20px;
+                                        margin-top: 20px;
+                                    }
 
-                                    <div class="filter-group">
-                                        <label for="DepartmentId">Organization</label>
-                                        <select name="DepartmentId" id="DepartmentId" class="form-select filter-select">
-                                            <option value="">All Organizations</option>
-                                        </select>
-                                    </div>
+                                    .member-card {
+                                        background: var(--sidenavbar-body-color);
+                                        border-radius: 10px;
+                                        overflow: hidden;
+                                        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+                                        transition: transform 0.3s ease;
+                                        position: relative;
+                                    }
 
-                                    <div class="filter-group">
-                                        <label for="BuildingId">Building</label>
-                                        <select name="BuildingId" id="BuildingId" class="form-select filter-select">
-                                            <option value="">All Buildings</option>
-                                        </select>
-                                    </div>
+                                    .member-card:hover {
+                                        transform: translateY(-5px);
+                                    }
+                                </style>
 
-                                    <div class="filter-buttons">
-                                        <button type="button" class="btn btn-secondary flex-grow-1 d-flex align-items-center justify-content-center" onclick="resetFilters()">
-                                            <i class="fas fa-undo me-2"></i> Reset
-                                        </button>
-                                        <button type="submit" class="btn btn-primary flex-grow-1 d-flex align-items-center justify-content-center">
-                                            <i class="fas fa-filter me-2"></i> Apply Filters
-                                        </button>
-                                    </div>
-                                </form>
+                                <!-- Card View -->
+                                <div id="cardView">
+                                    <div class="team-members">
+                                        @forelse($units ?? [] as $unit)
+                                            <div class="member-card">
+                                                <div class="card building-card">
+                                                    <div class="card-img-container">
+                                                        @if(count($unit->pictures ?? []) > 0)
+                                                            <img src="{{ asset($unit->pictures[0]->file_path) }}" class="card-img-top" alt="Building Image">
+                                                        @else
+                                                            <img src="{{ asset('img/placeholder-img.jfif') }}" class="card-img-top" alt="Building Image">
+                                                        @endif
+                                                        <div class="unit-type-badge">
+                                                            {{ $unit->unit_type }}
+                                                        </div>
+                                                        <div class="unit-sale-rent-badge">
+                                                            {{ $unit->sale_or_rent }}
+                                                        </div>
+                                                        <div class="unit-price-tag">
+                                                            PKR {{ $unit->price ?? 'N/A' }}
+                                                        </div>
+                                                        <div class="unit-availability-tag">
+                                                            {{ $unit->availability_status ?? 'N/A' }}
+                                                        </div>
+                                                    </div>
+                                                    <div class="card-body">
+                                                        <div class="d-flex justify-content-between align-items-start">
+                                                            <h5 class="card-title">{{ $unit->unit_name }}</h5>
+                                                            <span class="badge badge-status
+                                                                @if($unit->status === 'Approved') badge-active
+                                                                @elseif($unit->status === 'Rejected') badge-inactive
+                                                                @else badge-inactive
+                                                                @endif">
+                                                                {{ $unit->status }}
+                                                            </span>
+                                                        </div>
+                                                        <p class="card-text"><i class='bx bxl-slack me-1'></i> {{ $unit->organization->name ?? 'N/A' }}</p>
+                                                        <p class="card-text"><i class='bx bx-buildings me-1'></i> {{ $unit->building->name ?? 'N/A' }}</p>
+                                                        <p class="card-text"><i class='bx bxs-layer me-1'></i> {{ $unit->level->level_name ?? 'N/A' }}</p>
 
-                                <div class="card shadow p-3 mb-5 bg-body rounded" style="border: none; background-color: var(--sidenavbar-body-color) !important;">
-                                    <div class="card-body">
-                                        <div class="d-flex justify-content-between align-items-center mb-4 tools-container">
-                                            <div class="grid-view-toggle me-3">
-                                                <span class="me-2">View:</span>
-                                                <div class="btn-group" role="group">
-                                                    <button type="button" class="btn btn-outline-secondary active" id="gridViewBtn">
-                                                        <i class='bx bx-grid-alt'></i>
-                                                    </button>
-                                                    <button type="button" class="btn btn-outline-secondary" id="tableViewBtn">
-                                                        <i class='bx bx-table'></i>
-                                                    </button>
+
+                                                        <div class="action-buttons">
+                                                            <a href="javascript:void(0);" class="action-btn btn-add btn-view view-unit gap-1" data-id="{{ $unit->id }}" title="View">
+                                                                <i class='bx bx-show'></i> View
+                                                            </a>
+
+                                                            <a href="{{ route('units.edit', $unit->id) }}" class="action-btn btn-add btn-edit gap-1 Admin-Building-Edit-Button hidden" title="Edit">
+                                                                <i class='bx bx-edit'></i> Edit
+                                                            </a>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
-
-                                            <div class="dropdown">
-                                                <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="exportDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                                                    <x-icon name="export" type="icon" class="me-1" size="16" />
-                                                    Export
-                                                </button>
-                                                <ul class="dropdown-menu" aria-labelledby="exportDropdown">
-                                                    <li><button class="dropdown-item" type="button" id="copyButton"><i class='bx bx-copy me-2'></i>Copy</button></li>
-                                                    <li><button class="dropdown-item" type="button" id="csvButton"><i class='bx bx-file me-2'></i>CSV</button></li>
-                                                    <li><button class="dropdown-item" type="button" id="excelButton"><i class='bx bx-spreadsheet me-2'></i>Excel</button></li>
-                                                    <li><button class="dropdown-item" type="button" id="pdfButton"><i class='bx bxs-file-pdf me-2'></i>PDF</button></li>
-                                                    <li><button class="dropdown-item" type="button" id="printButton"><i class='bx bx-printer me-2'></i>Print</button></li>
-                                                </ul>
-                                            </div>
-                                        </div>
-
-                                        <!-- Card View -->
-                                        <div id="cardView">
-                                            <div class="row">
-                                                @forelse($units ?? [] as $unit)
-                                                    <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12 mb-4">
-                                                        <div class="card building-card h-100">
-                                                            <div class="card-img-container">
-                                                                @if(count($unit->pictures ?? []) > 0)
-                                                                    <img src="{{ asset($unit->pictures[0]->file_path) }}" class="card-img-top" alt="Building Image">
-                                                                @else
-                                                                    <img src="{{ asset('img/placeholder-img.jfif') }}" class="card-img-top" alt="Building Image">
-                                                                @endif
-                                                                <div class="unit-type-badge">
-                                                                    {{ $unit->unit_type }}
-                                                                </div>
-                                                                <div class="unit-sale-rent-badge">
-                                                                    {{ $unit->sale_or_rent }}
-                                                                </div>
-                                                                <div class="unit-price-tag">
-                                                                    PKR {{ $unit->price ?? 'N/A' }}
-                                                                </div>
-                                                                <div class="unit-availability-tag">
-                                                                    {{ $unit->availability_status ?? 'N/A' }}
-                                                                </div>
-                                                            </div>
-                                                            <div class="card-body">
-                                                                <div class="d-flex justify-content-between align-items-start">
-                                                                    <h5 class="card-title">{{ $unit->unit_name }}</h5>
-                                                                    <span class="badge badge-status
-                                                                        @if($unit->status === 'Approved') badge-active
-                                                                        @elseif($unit->status === 'Rejected') badge-inactive
-                                                                        @else badge-inactive
-                                                                        @endif">
-                                                                        {{ $unit->status }}
-                                                                    </span>
-                                                                </div>
-                                                                <p class="card-text"><i class='bx bxl-slack me-1'></i> {{ $unit->organization->name ?? 'N/A' }}</p>
-                                                                <p class="card-text"><i class='bx bx-buildings me-1'></i> {{ $unit->building->name ?? 'N/A' }}</p>
-                                                                <p class="card-text"><i class='bx bxs-layer me-1'></i> {{ $unit->level->level_name ?? 'N/A' }}</p>
-
-
-                                                                <div class="action-buttons">
-                                                                    <a href="javascript:void(0);" class="action-btn btn-add btn-view view-unit gap-1" data-id="{{ $unit->id }}" title="View">
-                                                                        <i class='bx bx-show'></i> View
-                                                                    </a>
-
-                                                                    <a href="{{ route('units.edit', $unit->id) }}" class="action-btn btn-add btn-edit gap-1 Admin-Building-Edit-Button hidden" title="Edit">
-                                                                        <i class='bx bx-edit'></i> Edit
-                                                                    </a>
-                                                                </div>
-                                                            </div>
-                                                        </div>
+                                        @empty
+                                            <div class="col-12">
+                                                <div class="empty-state">
+                                                    <div class="empty-state-icon">
+                                                        <i class='bx bx-building-house'></i>
                                                     </div>
-                                                @empty
-                                                    <div class="col-12">
-                                                        <div class="empty-state">
-                                                            <div class="empty-state-icon">
-                                                                <i class='bx bx-building-house'></i>
-                                                            </div>
-                                                            <h4>No Buildings Found</h4>
-                                                            <p class="text-muted">There are no buildings to display. You can add a new building by clicking the "Add Building" button.</p>
-                                                        </div>
-                                                    </div>
-                                                @endforelse
+                                                    <h4>No Buildings Found</h4>
+                                                    <p class="text-muted">There are no buildings to display. You can add a new building by clicking the "Add Building" button.</p>
+                                                </div>
                                             </div>
-                                        </div>
-
-                                        <!-- Table View (Hidden by default) -->
-                                        <div id="tableView" style="display: none; margin-top: 0!important; padding-top: 0 !important;">
-                                            <div class="table-responsive">
-                                                <table id="unitsTable" class="table shadow-sm table-hover table-striped">
-                                                    <thead class="shadow">
-                                                        <tr>
-                                                            <th>ID</th>
-                                                            <th>Picture</th>
-                                                            <th>Name</th>
-                                                            <th>Type</th>
-                                                            <th>Price</th>
-                                                            <th>Status</th>
-                                                            <th>Sale or Rent</th>
-                                                            <th>Availability Status</th>
-                                                            <th>Building</th>
-                                                            <th>Level</th>
-                                                            <th>Organization</th>
-                                                            <th class="w-170 text-center">Actions</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        @forelse ($units ?? [] as $unit)
-                                                            <tr>
-                                                                <td>{{ $unit->id }}</td>
-                                                                <td>
-                                                                    <div id="unitCarousel{{ $unit->id }}" class="carousel slide" data-bs-ride="carousel">
-                                                                        <div class="carousel-inner">
-                                                                            @forelse($unit->pictures ?? [] as $key => $picture)
-                                                                                <div class="carousel-item {{ $key == 0 ? 'active' : '' }}">
-                                                                                    <img src="{{ asset($picture->file_path) }}" class="d-block" alt="Unit Picture" style="border-radius: 5px; width:100px; height:50px;">
-                                                                                </div>
-                                                                            @empty
-                                                                                <img src="{{ asset('img/placeholder-img.jfif') }}" class="d-block" alt="Unit Picture" style="border-radius: 5px; width:100px; height:50px;">
-                                                                            @endforelse
-                                                                        </div>
-                                                                    </div>
-                                                                </td>
-                                                                <td>{{ $unit->unit_name }}</td>
-                                                                <td>
-                                                                    {{ $unit->unit_type }}
-                                                                </td>
-                                                                <td>{{ $unit->price ?? 'N/A' }}</td>
-                                                                <td>{{ $unit->status ?? 'N/A' }}</td>
-                                                                <td>{{ $unit->sale_or_rent ?? 'N/A' }}</td>
-                                                                <td>{{ $unit->availability_status ?? 'N/A' }}</td>
-                                                                <td>{{ $unit->level->building->name ?? 'N/A' }}</td>
-                                                                <td>{{ $unit->level->level_name ?? 'N/A' }}</td>
-                                                                <td>{{ $unit->organization->name ?? 'N/A' }}</td>
-                                                                <td class="text-center ">
-                                                                    <div class="d-flex justify-content-center align-items-center gap-3">
-                                                                        <a href="javascript:void(0);" class="text-info view-unit" data-id="{{ $unit->id }}" data-bs-toggle="tooltip" data-bs-placement="top" title="View">
-                                                                            <x-icon name="view" type="icon" class="" size="20px" />
-                                                                        </a>
-                                                                        <a href="{{ route('units.edit', $unit->id) }}" class="text-warning Admin-Unit-Edit-Button hidden" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit">
-                                                                            <x-icon name="edit" type="icon" class="" size="20px" />
-                                                                        </a>
-                                                                    </div>
-                                                                </td>
-                                                            </tr>
-                                                        @empty
-                                                            <tr>
-                                                                <td colspan="12" class="text-center">No units found.</td>
-                                                            </tr>
-                                                        @endforelse
-                                                    </tbody>
-                                                </table>
-                                            </div>
-                                        </div>
-
-                                        @if ($units && $units->count() > 0)
-                                            <div class="mt-3">
-                                                {{ $units->links('pagination::bootstrap-5') }}
-                                            </div>
-                                        @endif
+                                        @endforelse
                                     </div>
                                 </div>
 
+                                <!-- Table View (Hidden by default) -->
+                                <div id="tableView" style="display: none; margin-top: 0!important; padding-top: 0 !important;">
+                                    <div class="table-responsive">
+                                        <table id="unitsTable" class="table shadow-sm table-hover table-striped">
+                                            <thead class="shadow">
+                                                <tr>
+                                                    <th>ID</th>
+                                                    <th>Picture</th>
+                                                    <th>Name</th>
+                                                    <th>Type</th>
+                                                    <th>Price</th>
+                                                    <th>Status</th>
+                                                    <th>Sale or Rent</th>
+                                                    <th>Availability Status</th>
+                                                    <th>Building</th>
+                                                    <th>Level</th>
+                                                    <th>Organization</th>
+                                                    <th class="w-170 text-center">Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @forelse ($units ?? [] as $unit)
+                                                    <tr>
+                                                        <td>{{ $unit->id }}</td>
+                                                        <td>
+                                                            <div id="unitCarousel{{ $unit->id }}" class="carousel slide" data-bs-ride="carousel">
+                                                                <div class="carousel-inner">
+                                                                    @forelse($unit->pictures ?? [] as $key => $picture)
+                                                                        <div class="carousel-item {{ $key == 0 ? 'active' : '' }}">
+                                                                            <img src="{{ asset($picture->file_path) }}" class="d-block" alt="Unit Picture" style="border-radius: 5px; width:100px; height:50px;">
+                                                                        </div>
+                                                                    @empty
+                                                                        <img src="{{ asset('img/placeholder-img.jfif') }}" class="d-block" alt="Unit Picture" style="border-radius: 5px; width:100px; height:50px;">
+                                                                    @endforelse
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                        <td>{{ $unit->unit_name }}</td>
+                                                        <td>
+                                                            {{ $unit->unit_type }}
+                                                        </td>
+                                                        <td>{{ $unit->price ?? 'N/A' }}</td>
+                                                        <td>{{ $unit->status ?? 'N/A' }}</td>
+                                                        <td>{{ $unit->sale_or_rent ?? 'N/A' }}</td>
+                                                        <td>{{ $unit->availability_status ?? 'N/A' }}</td>
+                                                        <td>{{ $unit->level->building->name ?? 'N/A' }}</td>
+                                                        <td>{{ $unit->level->level_name ?? 'N/A' }}</td>
+                                                        <td>{{ $unit->organization->name ?? 'N/A' }}</td>
+                                                        <td class="text-center ">
+                                                            <div class="d-flex justify-content-center align-items-center gap-3">
+                                                                <a href="javascript:void(0);" class="text-info view-unit" data-id="{{ $unit->id }}" data-bs-toggle="tooltip" data-bs-placement="top" title="View">
+                                                                    <x-icon name="view" type="icon" class="" size="20px" />
+                                                                </a>
+                                                                <a href="{{ route('units.edit', $unit->id) }}" class="text-warning Admin-Unit-Edit-Button hidden" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit">
+                                                                    <x-icon name="edit" type="icon" class="" size="20px" />
+                                                                </a>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                @empty
+                                                    <tr>
+                                                        <td colspan="12" class="text-center">No units found.</td>
+                                                    </tr>
+                                                @endforelse
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+
+                                @if ($units && $units->count() > 0)
+                                    <div class="mt-3">
+                                        {{ $units->links('pagination::bootstrap-5') }}
+                                    </div>
+                                @endif
                             </div>
                         </div>
+
+
                     </div>
                 </div>
             </div>
