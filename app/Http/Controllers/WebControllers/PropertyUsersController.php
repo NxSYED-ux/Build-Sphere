@@ -31,6 +31,7 @@ class PropertyUsersController extends Controller
         try {
             $users = collect();
 
+            $token = $request->attributes->get('token');
             if (empty($token['organization_id']) || empty($token['role_name'])) {
                 return view('Heights.Owner.PropertyUsers.index', compact('users'));
             }
