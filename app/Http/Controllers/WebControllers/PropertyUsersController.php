@@ -75,7 +75,7 @@ class PropertyUsersController extends Controller
             $token = $request->attributes->get('token');
 
             if (empty($token['organization_id'])) {
-                return redirect()->back()->with('error', 'This info is related to the organization personals');
+                return back()->with('error', 'This information is restricted to authorized organization personnel only.');
             }
 
             $organizationId = $token['organization_id'];
