@@ -23,6 +23,7 @@ class UserBuildingUnit extends Model
         'subscription_id',
         'billing_cycle',
         'contract_status',
+        'renew_canceled'
     ];
 
     public $timestamps = true;
