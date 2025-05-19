@@ -26,10 +26,16 @@ use Stripe\Stripe;
 
 class PropertyUsersController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         try {
-            $organizationId = 1;
+            $users = collect();
+
+            if (empty($token['organization_id']) || empty($token['role_name'])) {
+                return view('Heights.Owner.PropertyUsers.index', compact('users'));
+            }
+
+            $organizationId = $token['organization_id'];
 
             $users = User::with([
                 'userUnits' => fn($q) => $q->where('organization_id', $organizationId)
@@ -42,6 +48,7 @@ class PropertyUsersController extends Controller
                 ->paginate(12);
 
             return view('Heights.Owner.PropertyUsers.index', compact('users'));
+
         } catch (\Exception $e) {
             Log::error('Error in Property Users index: ' . $e->getMessage());
             return back()->with('error', 'Something went wrong. Please try again.');

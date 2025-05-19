@@ -19,6 +19,7 @@ use App\Http\Controllers\WebControllers\MembershipController;
 use App\Http\Controllers\WebControllers\OrganizationController;
 use App\Http\Controllers\WebControllers\OwnerDashboardController;
 use App\Http\Controllers\WebControllers\PlanController;
+use App\Http\Controllers\WebControllers\PropertyUsersController;
 use App\Http\Controllers\WebControllers\ReportsController;
 use App\Http\Controllers\WebControllers\RolePermissionController;
 use App\Http\Controllers\WebControllers\RoleController;
@@ -399,6 +400,12 @@ Route::prefix('owner')->middleware(['auth.jwt'])->group(function () {
             Route::post('/assign', [MembershipController::class , 'assignMembership'])->name('owner.memberships.assign');
 
             Route::put('/toggle-featured', [MembershipController::class, 'toggleFeatured'])->name('owner.memberships.toggle.featured');
+        });
+
+        Route::prefix('property_users')->group(function () {
+
+            Route::get('/', [PropertyUsersController::class , 'index'])->name('owner.property.users.index');
+
         });
 
     });
