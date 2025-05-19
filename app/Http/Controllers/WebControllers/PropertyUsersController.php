@@ -32,26 +32,75 @@ class PropertyUsersController extends Controller
             $users = collect();
 
             $token = $request->attributes->get('token');
-            if (empty($token['organization_id']) || empty($token['role_name'])) {
+
+            if (empty($token['organization_id'])) {
                 return view('Heights.Owner.PropertyUsers.index', compact('users'));
             }
 
             $organizationId = $token['organization_id'];
 
             $users = User::with([
-                'userUnits' => fn($q) => $q->where('organization_id', $organizationId)
+                'userUnits' => fn ($query) =>
+                $query->where('organization_id', $organizationId)
+                    ->where('status', 1)
             ])
                 ->withCount([
-                    'userUnits as rented_units_count' => fn($q) => $q->where('type', 'rented')->where('organization_id', $organizationId),
-                    'userUnits as sold_units_count' => fn($q) => $q->where('type', 'sold')->where('organization_id', $organizationId)
+                    'userUnits as rented_units_count' => fn ($query) =>
+                    $query->where('type', 'rented')
+                        ->where('organization_id', $organizationId)
+                        ->where('status', 1),
+
+                    'userUnits as sold_units_count' => fn ($query) =>
+                    $query->where('type', 'sold')
+                        ->where('organization_id', $organizationId)
+                        ->where('status', 1)
                 ])
-                ->whereHas('userUnits', fn($q) => $q->where('organization_id', $organizationId))
+                ->whereHas('userUnits', fn ($query) =>
+                $query->where('organization_id', $organizationId)
+                    ->where('status', 1)
+                )
                 ->paginate(12);
 
             return view('Heights.Owner.PropertyUsers.index', compact('users'));
 
         } catch (\Exception $e) {
             Log::error('Error in Property Users index: ' . $e->getMessage());
+            return back()->with('error', 'Something went wrong. Please try again.');
+        }
+    }
+
+    public function show(Request $request, $id)
+    {
+        try {
+            $token = $request->attributes->get('token');
+
+            if (empty($token['organization_id'])) {
+                return redirect()->back()->with('error', 'This info is related to the organization personals');
+            }
+
+            $organizationId = $token['organization_id'];
+
+            $user = User::with([
+                'userUnits' => fn($query) =>
+                $query->where('organization_id', $organizationId)
+                    ->where('status', 1)
+                    ->with(['building', 'unit', 'subscription'])
+            ])
+                ->where('id', $id)
+                ->whereHas('userUnits', fn($query) =>
+                $query->where('organization_id', $organizationId)
+                    ->where('status', 1)
+                )
+                ->first();
+
+            if (!$user || $user->userUnits->isEmpty()) {
+                return back()->with('error', 'The user could not be found or has no active rented or sold units associated with your organization.');
+            }
+
+            return view('Heights.Owner.PropertyUsers.show', compact('user'));
+
+        } catch (\Exception $e) {
+            Log::error("Error in Property Users show: " . $e->getMessage());
             return back()->with('error', 'Something went wrong. Please try again.');
         }
     }
