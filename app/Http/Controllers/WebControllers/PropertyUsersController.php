@@ -42,22 +42,22 @@ class PropertyUsersController extends Controller
             $users = User::with([
                 'userUnits' => fn ($query) =>
                 $query->where('organization_id', $organizationId)
-                    ->where('status', 1)
+                    ->where('contract_status', 1)
             ])
                 ->withCount([
                     'userUnits as rented_units_count' => fn ($query) =>
                     $query->where('type', 'rented')
                         ->where('organization_id', $organizationId)
-                        ->where('status', 1),
+                        ->where('contract_status', 1),
 
                     'userUnits as sold_units_count' => fn ($query) =>
                     $query->where('type', 'sold')
                         ->where('organization_id', $organizationId)
-                        ->where('status', 1)
+                        ->where('contract_status', 1)
                 ])
                 ->whereHas('userUnits', fn ($query) =>
                 $query->where('organization_id', $organizationId)
-                    ->where('status', 1)
+                    ->where('contract_status', 1)
                 )
                 ->paginate(12);
 
@@ -83,13 +83,13 @@ class PropertyUsersController extends Controller
             $user = User::with([
                 'userUnits' => fn($query) =>
                 $query->where('organization_id', $organizationId)
-                    ->where('status', 1)
+                    ->where('contract_status', 1)
                     ->with(['building', 'unit', 'subscription'])
             ])
                 ->where('id', $id)
                 ->whereHas('userUnits', fn($query) =>
                 $query->where('organization_id', $organizationId)
-                    ->where('status', 1)
+                    ->where('contract_status', 1)
                 )
                 ->first();
 
