@@ -442,175 +442,175 @@
                         </form>
 
                         <div class="card shadow p-3 mb-5 bg-body rounded" style="border: none; background-color: var(--sidenavbar-body-color) !important;">
-                                    <div class="card-body">
-                                        <div class="d-flex justify-content-between align-items-center mb-4 tools-container">
-                                            <div class="grid-view-toggle me-3">
-                                                <span class="me-2">View:</span>
-                                                <div class="btn-group" role="group">
-                                                    <button type="button" class="btn btn-outline-secondary active" id="gridViewBtn">
-                                                        <i class='bx bx-grid-alt'></i>
-                                                    </button>
-                                                    <button type="button" class="btn btn-outline-secondary" id="tableViewBtn">
-                                                        <i class='bx bx-table'></i>
-                                                    </button>
-                                                </div>
-                                            </div>
-
-                                            <div class="dropdown">
-                                                    <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="exportDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                                                        <x-icon name="export" type="icon" class="me-1" size="16" />
-                                                        Export
-                                                    </button>
-                                                    <ul class="dropdown-menu" aria-labelledby="exportDropdown">
-                                                        <li><button class="dropdown-item" type="button" id="copyButton"><i class='bx bx-copy me-2'></i>Copy</button></li>
-                                                        <li><button class="dropdown-item" type="button" id="csvButton"><i class='bx bx-file me-2'></i>CSV</button></li>
-                                                        <li><button class="dropdown-item" type="button" id="excelButton"><i class='bx bx-spreadsheet me-2'></i>Excel</button></li>
-                                                        <li><button class="dropdown-item" type="button" id="pdfButton"><i class='bx bxs-file-pdf me-2'></i>PDF</button></li>
-                                                        <li><button class="dropdown-item" type="button" id="printButton"><i class='bx bx-printer me-2'></i>Print</button></li>
-                                                    </ul>
-                                                </div>
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center mb-4 tools-container">
+                                    <div class="grid-view-toggle me-3">
+                                        <span class="me-2">View:</span>
+                                        <div class="btn-group" role="group">
+                                            <button type="button" class="btn btn-outline-secondary active" id="gridViewBtn">
+                                                <i class='bx bx-grid-alt'></i>
+                                            </button>
+                                            <button type="button" class="btn btn-outline-secondary" id="tableViewBtn">
+                                                <i class='bx bx-table'></i>
+                                            </button>
                                         </div>
+                                    </div>
 
-                                        <!-- Card View -->
-                                        <div id="cardView">
-                                            <div class="row">
-                                                @forelse($buildings ?? [] as $building)
-                                                    <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12 mb-4">
-                                                        <div class="card building-card h-100">
-                                                            <div class="card-img-container">
-                                                                @if(count($building->pictures ?? []) > 0)
-                                                                    <img src="{{ asset($building->pictures[0]->file_path) }}" class="card-img-top" alt="Building Image">
-                                                                @else
-                                                                    <img src="{{ asset('img/placeholder-img.jfif') }}" class="card-img-top" alt="Building Image">
-                                                                @endif
-                                                                <a href="{{ route('levels.index', ['building_id' => $building->id]) }}" class="levels-btn" title="Levels">
-                                                                    <i class='bx bxs-layer'></i>
+                                    <div class="dropdown">
+                                            <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="exportDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                                <x-icon name="export" type="icon" class="me-1" size="16" />
+                                                Export
+                                            </button>
+                                            <ul class="dropdown-menu" aria-labelledby="exportDropdown">
+                                                <li><button class="dropdown-item" type="button" id="copyButton"><i class='bx bx-copy me-2'></i>Copy</button></li>
+                                                <li><button class="dropdown-item" type="button" id="csvButton"><i class='bx bx-file me-2'></i>CSV</button></li>
+                                                <li><button class="dropdown-item" type="button" id="excelButton"><i class='bx bx-spreadsheet me-2'></i>Excel</button></li>
+                                                <li><button class="dropdown-item" type="button" id="pdfButton"><i class='bx bxs-file-pdf me-2'></i>PDF</button></li>
+                                                <li><button class="dropdown-item" type="button" id="printButton"><i class='bx bx-printer me-2'></i>Print</button></li>
+                                            </ul>
+                                        </div>
+                                </div>
+
+                                <!-- Card View -->
+                                <div id="cardView">
+                                    <div class="row">
+                                        @forelse($buildings ?? [] as $building)
+                                            <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12 mb-4">
+                                                <div class="card building-card h-100">
+                                                    <div class="card-img-container">
+                                                        @if(count($building->pictures ?? []) > 0)
+                                                            <img src="{{ asset($building->pictures[0]->file_path) }}" class="card-img-top" alt="Building Image">
+                                                        @else
+                                                            <img src="{{ asset('img/placeholder-img.jfif') }}" class="card-img-top" alt="Building Image">
+                                                        @endif
+                                                        <a href="{{ route('levels.index', ['building_id' => $building->id]) }}" class="levels-btn" title="Levels">
+                                                            <i class='bx bxs-layer'></i>
+                                                        </a>
+                                                    </div>
+                                                    <div class="card-body">
+                                                        <div class="d-flex justify-content-between align-items-start">
+                                                            <h5 class="card-title">{{ $building->name }}</h5>
+                                                            <span class="badge badge-status
+                                                            @if($building->status === 'Under Review') badge-under-review
+                                                            @elseif($building->status === 'Approved') badge-active
+                                                            @elseif($building->status === 'Rejected') badge-inactive
+                                                            @else badge-inactive
+                                                            @endif">
+                                                            {{ $building->status }}
+                                                        </span>
+                                                        </div>
+                                                        <p class="card-text"><i class='bx bx-buildings me-1'></i> {{ $building->organization->name ?? 'N/A' }}</p>
+                                                        <p class="card-text"><i class='bx bx-map me-1'></i> {{ $building->address->city ?? 'N/A' }}</p>
+                                                        <p class="card-text"><i class='bx bx-area me-1'></i> {{ $building->area ?? 'N/A' }} sqft</p>
+
+
+                                                        <div class="action-buttons">
+                                                            @if($building->status === "Under Review")
+                                                                <a href="{{ route('buildings.show', ['building' => $building->id]) }}" class="action-btn btn-add btn-view gap-1" title="Review">
+                                                                    <i class='bx bx-comment-edit'></i> Review
                                                                 </a>
-                                                            </div>
-                                                            <div class="card-body">
-                                                                <div class="d-flex justify-content-between align-items-start">
-                                                                    <h5 class="card-title">{{ $building->name }}</h5>
-                                                                    <span class="badge badge-status
-                                                                    @if($building->status === 'Under Review') badge-under-review
-                                                                    @elseif($building->status === 'Approved') badge-active
-                                                                    @elseif($building->status === 'Rejected') badge-inactive
-                                                                    @else badge-inactive
-                                                                    @endif">
-                                                                    {{ $building->status }}
-                                                                </span>
-                                                                </div>
-                                                                <p class="card-text"><i class='bx bx-buildings me-1'></i> {{ $building->organization->name ?? 'N/A' }}</p>
-                                                                <p class="card-text"><i class='bx bx-map me-1'></i> {{ $building->address->city ?? 'N/A' }}</p>
-                                                                <p class="card-text"><i class='bx bx-area me-1'></i> {{ $building->area ?? 'N/A' }} sqft</p>
+                                                            @else
+                                                                <a href="{{ route('buildings.show', ['building' => $building->id]) }}" class="action-btn btn-add btn-view gap-1" title="View">
+                                                                    <i class='bx bx-show'></i> View
+                                                                </a>
+                                                            @endif
 
-
-                                                                <div class="action-buttons">
-                                                                    @if($building->status === "Under Review")
-                                                                        <a href="{{ route('buildings.show', ['building' => $building->id]) }}" class="action-btn btn-add btn-view gap-1" title="Review">
-                                                                            <i class='bx bx-comment-edit'></i> Review
-                                                                        </a>
-                                                                    @else
-                                                                        <a href="{{ route('buildings.show', ['building' => $building->id]) }}" class="action-btn btn-add btn-view gap-1" title="View">
-                                                                            <i class='bx bx-show'></i> View
-                                                                        </a>
-                                                                    @endif
-
-                                                                    <a href="{{ route('buildings.edit', $building->id) }}" class="action-btn btn-add btn-edit gap-1 Admin-Building-Edit-Button hidden" title="Edit">
-                                                                        <i class='bx bx-edit'></i> Edit
-                                                                    </a>
-                                                                </div>
-                                                            </div>
+                                                            <a href="{{ route('buildings.edit', $building->id) }}" class="action-btn btn-add btn-edit gap-1 Admin-Building-Edit-Button hidden" title="Edit">
+                                                                <i class='bx bx-edit'></i> Edit
+                                                            </a>
                                                         </div>
                                                     </div>
-                                                @empty
-                                                    <div class="col-12">
-                                                        <div class="empty-state">
-                                                            <div class="empty-state-icon">
-                                                                <i class='bx bx-building-house'></i>
-                                                            </div>
-                                                            <h4>No Buildings Found</h4>
-                                                            <p class="text-muted">There are no buildings to display. You can add a new building by clicking the "Add Building" button.</p>
-                                                        </div>
+                                                </div>
+                                            </div>
+                                        @empty
+                                            <div class="col-12">
+                                                <div class="empty-state">
+                                                    <div class="empty-state-icon">
+                                                        <i class='bx bx-building-house'></i>
                                                     </div>
-                                                @endforelse
+                                                    <h4>No Buildings Found</h4>
+                                                    <p class="text-muted">There are no buildings to display. You can add a new building by clicking the "Add Building" button.</p>
+                                                </div>
                                             </div>
-                                        </div>
-
-                                        <!-- Table View (Hidden by default) -->
-                                        <div id="tableView" style="display: none; margin-top: 0!important; padding-top: 0 !important;">
-                                            <div class="table-responsive">
-                                                <table id="buildingsTable" class="table shadow-sm table-hover table-striped">
-                                                    <thead class="shadow">
-                                                    <tr>
-                                                        <th>ID</th>
-                                                        <th>Picture</th>
-                                                        <th>Name</th>
-                                                        <th>Remarks</th>
-                                                        <th>Area</th>
-                                                        <th>Organization</th>
-                                                        <th>City</th>
-                                                        <th>Status</th>
-                                                        <th class="w-170 text-center">Actions</th>
-                                                    </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                    @forelse($buildings ?? [] as $building)
-                                                        <tr>
-                                                            <td>{{ $building->id }}</td>
-                                                            <td>
-                                                                <div id="unitCarousel{{ $building->id }}" class="carousel slide" data-bs-ride="carousel">
-                                                                    <div class="carousel-inner">
-                                                                        @forelse($building->pictures ?? [] as $key => $picture)
-                                                                            <div class="carousel-item {{ $key == 0 ? 'active' : '' }}">
-                                                                                <img src="{{ asset($picture->file_path) }}" class="d-block" alt="Building Picture" style="border-radius: 5px; width:100px; height:50px;">
-                                                                            </div>
-                                                                        @empty
-                                                                            <img src="{{ asset('img/placeholder-img.jfif') }}" class="d-block" alt="Building Picture" style="border-radius: 5px; width:100px; height:50px;">
-                                                                        @endforelse
-                                                                    </div>
-                                                                </div>
-                                                            </td>
-                                                            <td>{{ $building->name }}</td>
-                                                            <td>{{ $building->remarks ?? 'N/A' }}</td>
-                                                            <td>{{ $building->area ?? 'N/A' }}</td>
-                                                            <td>{{ $building->organization->name ?? 'N/A' }}</td>
-                                                            <td>{{ $building->address->city ?? 'N/A' }}</td>
-                                                            <td>
-                                                                    {{ $building->status }}
-                                                            </td>
-                                                            <td class="w-170 text-center">
-                                                                <div class="d-flex justify-content-center align-items-center gap-3">
-                                                                    @if($building->status === "Under Review")
-                                                                        <a href="{{ route('buildings.show', ['building' => $building->id]) }}" class="text-warning" title="Review"><i class='bx bx-comment-edit' style="font-size: 20px;"></i></a>
-                                                                    @else
-                                                                        <a href="{{ route('buildings.show', ['building' => $building->id]) }}" class="text-info" title="View">
-                                                                            <x-icon name="view" type="icon" class="" size="20px" />
-                                                                        </a>
-                                                                    @endif
-                                                                    <a href="{{ route('levels.index', ['building_id' => $building->id]) }}" class="text-secondary" title="View Levels"><i class="bx bxs-layer icons" style="font-size: 20px;"></i></a>
-                                                                    <a href="{{ route('buildings.edit', $building->id) }}" class="text-warning Admin-Building-Edit-Button hidden"  title="Edit">
-                                                                        <x-icon name="edit" type="icon" class="" size="20px" />
-                                                                    </a>
-                                                                </div>
-                                                            </td>
-                                                        </tr>
-                                                    @empty
-                                                        <tr>
-                                                            <td colspan="9" class="text-center">No buildings found.</td>
-                                                        </tr>
-                                                    @endforelse
-                                                    </tbody>
-                                                </table>
-                                            </div>
-                                        </div>
-
-                                        @if ($buildings && $buildings->count() > 0)
-                                            <div class="mt-3">
-                                                {{ $buildings->links('pagination::bootstrap-5') }}
-                                            </div>
-                                        @endif
+                                        @endforelse
                                     </div>
                                 </div>
+
+                                <!-- Table View (Hidden by default) -->
+                                <div id="tableView" style="display: none; margin-top: 0!important; padding-top: 0 !important;">
+                                    <div class="table-responsive">
+                                        <table id="buildingsTable" class="table shadow-sm table-hover table-striped">
+                                            <thead class="shadow">
+                                            <tr>
+                                                <th>ID</th>
+                                                <th>Picture</th>
+                                                <th>Name</th>
+                                                <th>Remarks</th>
+                                                <th>Area</th>
+                                                <th>Organization</th>
+                                                <th>City</th>
+                                                <th>Status</th>
+                                                <th class="w-170 text-center">Actions</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            @forelse($buildings ?? [] as $building)
+                                                <tr>
+                                                    <td>{{ $building->id }}</td>
+                                                    <td>
+                                                        <div id="unitCarousel{{ $building->id }}" class="carousel slide" data-bs-ride="carousel">
+                                                            <div class="carousel-inner">
+                                                                @forelse($building->pictures ?? [] as $key => $picture)
+                                                                    <div class="carousel-item {{ $key == 0 ? 'active' : '' }}">
+                                                                        <img src="{{ asset($picture->file_path) }}" class="d-block" alt="Building Picture" style="border-radius: 5px; width:100px; height:50px;">
+                                                                    </div>
+                                                                @empty
+                                                                    <img src="{{ asset('img/placeholder-img.jfif') }}" class="d-block" alt="Building Picture" style="border-radius: 5px; width:100px; height:50px;">
+                                                                @endforelse
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td>{{ $building->name }}</td>
+                                                    <td>{{ $building->remarks ?? 'N/A' }}</td>
+                                                    <td>{{ $building->area ?? 'N/A' }}</td>
+                                                    <td>{{ $building->organization->name ?? 'N/A' }}</td>
+                                                    <td>{{ $building->address->city ?? 'N/A' }}</td>
+                                                    <td>
+                                                            {{ $building->status }}
+                                                    </td>
+                                                    <td class="w-170 text-center">
+                                                        <div class="d-flex justify-content-center align-items-center gap-3">
+                                                            @if($building->status === "Under Review")
+                                                                <a href="{{ route('buildings.show', ['building' => $building->id]) }}" class="text-warning" title="Review"><i class='bx bx-comment-edit' style="font-size: 20px;"></i></a>
+                                                            @else
+                                                                <a href="{{ route('buildings.show', ['building' => $building->id]) }}" class="text-info" title="View">
+                                                                    <x-icon name="view" type="icon" class="" size="20px" />
+                                                                </a>
+                                                            @endif
+                                                            <a href="{{ route('levels.index', ['building_id' => $building->id]) }}" class="text-secondary" title="View Levels"><i class="bx bxs-layer icons" style="font-size: 20px;"></i></a>
+                                                            <a href="{{ route('buildings.edit', $building->id) }}" class="text-warning Admin-Building-Edit-Button hidden"  title="Edit">
+                                                                <x-icon name="edit" type="icon" class="" size="20px" />
+                                                            </a>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            @empty
+                                                <tr>
+                                                    <td colspan="9" class="text-center">No buildings found.</td>
+                                                </tr>
+                                            @endforelse
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+
+                                @if ($buildings && $buildings->count() > 0)
+                                    <div class="mt-3">
+                                        {{ $buildings->links('pagination::bootstrap-5') }}
+                                    </div>
+                                @endif
+                            </div>
+                        </div>
 
                     </div>
                 </div>

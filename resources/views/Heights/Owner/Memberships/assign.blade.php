@@ -114,7 +114,7 @@
                 <div class="col-md-12">
                     <div class="mb-3 d-flex justify-content-between align-items-center">
                         <h3 class="mb-1">Assign Membership</h3>
-                        <a href="{{ route('owner.staff.index') }}" class="btn btn-secondary" title="Go Back">
+                        <a href="{{ route('owner.memberships.index') }}" class="btn btn-secondary" title="Go Back">
                             <i class="fas fa-arrow-left me-2"></i> Go Back
                         </a>
                     </div>

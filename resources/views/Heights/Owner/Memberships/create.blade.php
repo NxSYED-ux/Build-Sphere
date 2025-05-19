@@ -89,7 +89,7 @@
                                 <h3 class="form-title">Create New Membership</h3>
                             </div>
 
-                            <form action="{{ route('owner.memberships.store') }}" method="POST" enctype="multipart/form-data">
+                            <form action="{{ route('owner.memberships.store') }}" class="membership-form" method="POST" enctype="multipart/form-data">
                                 @csrf
 
                                 <!-- Basic Information Section -->
@@ -194,15 +194,18 @@
                                             <div class="mb-3">
                                                 <label for="price" class="form-label">Monthly Price <span class="required__field">*</span></label>
                                                 <input type="number" class="form-control" id="price" name="price"
-                                                       min="0" step="0.01" required value="{{ old('price') }}" placeholder="49.99">
+                                                       min="0" step="0.01" required value="{{ old('price') }}" placeholder="00.00">
                                             </div>
                                         </div>
                                         <div class="col-md-4">
                                             <div class="mb-3">
                                                 <label for="original_price" class="form-label">Original Price</label>
                                                 <input type="number" class="form-control" id="original_price" name="original_price"
-                                                       min="0" step="0.01" value="{{ old('original_price') }}" placeholder="59.99">
+                                                       min="0" step="0.01" value="{{ old('original_price') }}" placeholder="00.00">
                                                 <small class="text-muted">Leave blank if no discount</small>
+                                                <div id="original_price_error" class="invalid-feedback" style="display: none;">
+                                                    Original price cannot be less than monthly price
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -226,7 +229,7 @@
                                         <div class="col-md-4" id="years_field_container" style="display: none;">
                                             <div class="mb-3">
                                                 <label for="number_of_years" class="form-label">Number of Years</label>
-                                                <input type="number" class="form-control" id="number_of_years" name="duration_months"
+                                                <input type="number" class="form-control" id="number_of_years"
                                                        min="1" value="{{ old('number_of_years', 1) }}">
                                             </div>
                                         </div>
@@ -287,30 +290,110 @@
         }
     </script>
 
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            const priceInput = document.getElementById('price');
+            const originalPriceInput = document.getElementById('original_price');
+            const errorDiv = document.getElementById('original_price_error');
+            const form = originalPriceInput.closest('form');
+
+            // Prevent negative sign input for both fields
+            [priceInput, originalPriceInput].forEach(input => {
+                // Block '-' key press
+                input.addEventListener('keydown', function(e) {
+                    if (e.key === '-' || e.key === 'Subtract') {
+                        e.preventDefault();
+                    }
+                    if (e.key === '_' || e.key === 'Add') {
+                        e.preventDefault();
+                    }
+
+                });
+
+                // Prevent pasting negative values
+                input.addEventListener('paste', function(e) {
+                    const pasteData = e.clipboardData.getData('text');
+                    if (pasteData.startsWith('-')) {
+                        e.preventDefault();
+                    }
+
+                    if (pasteData.startsWith('+')) {
+                        e.preventDefault();
+                    }
+                });
+
+                // Additional validation on change
+                input.addEventListener('change', function() {
+                    if (input.value && parseFloat(input.value) < 0) {
+                        input.value = Math.abs(parseFloat(input.value));
+                    }
+                });
+            });
+
+            // Price validation logic
+            function validatePrices() {
+                const price = parseFloat(priceInput.value) || 0;
+                const originalPrice = parseFloat(originalPriceInput.value) || 0;
+
+                originalPriceInput.classList.remove('is-invalid');
+                errorDiv.style.display = 'none';
+
+                if (originalPrice > 0 && originalPrice < price) {
+                    originalPriceInput.classList.add('is-invalid');
+                    errorDiv.style.display = 'block';
+                    return false;
+                }
+
+                return true;
+            }
+
+            // Set up event listeners
+            priceInput.addEventListener('change', validatePrices);
+            originalPriceInput.addEventListener('change', validatePrices);
+
+            if (form) {
+                form.addEventListener('submit', function(e) {
+                    if (!validatePrices()) {
+                        e.preventDefault();
+                    }
+                });
+            }
+        });
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.querySelector('.membership-form');
             const billingCycleSelect = document.getElementById('billing_cycle');
             const monthsFieldContainer = document.getElementById('months_field_container');
             const yearsFieldContainer = document.getElementById('years_field_container');
+            const monthsInput = document.getElementById('number_of_months');
+            const yearsInput = document.getElementById('number_of_years');
 
-            // Set initial state based on old input or default
-            if (billingCycleSelect.value === 'yearly') {
-                monthsFieldContainer.style.display = 'none';
-                yearsFieldContainer.style.display = 'block';
-            } else {
-                monthsFieldContainer.style.display = 'block';
-                yearsFieldContainer.style.display = 'none';
-            }
-
-            billingCycleSelect.addEventListener('change', function() {
-                if (this.value === 'yearly') {
+            // Set initial state
+            function updateFields() {
+                if (billingCycleSelect.value === 'yearly') {
                     monthsFieldContainer.style.display = 'none';
                     yearsFieldContainer.style.display = 'block';
                 } else {
                     monthsFieldContainer.style.display = 'block';
                     yearsFieldContainer.style.display = 'none';
                 }
+            }
+
+            // Handle form submission
+            form.addEventListener('submit', function(e) {
+                if (billingCycleSelect.value === 'yearly') {
+                    // Convert years to months and update the months input
+                    monthsInput.value = parseInt(yearsInput.value) * 12;
+                }
+                // Form will submit with the proper duration_months value
             });
+
+            // Initialize
+            updateFields();
+            billingCycleSelect.addEventListener('change', updateFields);
         });
     </script>
 

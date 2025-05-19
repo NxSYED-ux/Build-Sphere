@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Users')
+@section('title', 'Property Users')
 
 @push('styles')
     <style>
@@ -421,14 +421,14 @@
 @section('content')
 
     <!-- Top Navbar -->
-    <x-Admin.top-navbar :searchVisible="false" :breadcrumbLinks="[
-            ['url' => route('admin_dashboard'), 'label' => 'Dashboard'],
-            ['url' => '', 'label' => 'Users']
+    <x-Owner.top-navbar :searchVisible="false" :breadcrumbLinks="[
+            ['url' => route('owner_manager_dashboard'), 'label' => 'Dashboard'],
+            ['url' => '', 'label' => 'Property Users']
         ]"
     />
 
     <!-- Side Navbar -->
-    <x-Admin.side-navbar :openSections="['AdminControl', 'UserManagement']" />
+    <x-Owner.side-navbar :openSections="['Property Users']" />
     <x-error-success-model />
 
     <div id="main">
@@ -438,10 +438,7 @@
                 <div class="row">
                     <div class="col-md-12">
                         <div class="d-flex justify-content-between align-items-center mb-2">
-                            <h3 class="mb-1">User Management</h3>
-                            <a href="{{ route('users.create') }}" class="btn float-end add_button" id="add_button"  data-bs-toggle="tooltip" data-bs-placement="top" title="Add User">
-                                <x-icon name="add" type="svg" class="" size="25" />
-                            </a>
+                            <h3 class="mb-1">Property Users</h3>
                         </div>
 
                         <!-- Filter Form -->
@@ -454,9 +451,9 @@
                             </div>
 
                             <div class="filter-group">
-                                <label for="DepartmentId">Role</label>
-                                <select name="DepartmentId" id="DepartmentId" class="form-select filter-select">
-                                    <option value="">All Roles</option>
+                                <label for="BuildingId">Building</label>
+                                <select name="BuildingId" id="BuildingId" class="form-select filter-select">
+                                    <option value="">All Buildings</option>
                                 </select>
                             </div>
 
@@ -486,23 +483,6 @@
                                              alt="{{ $user->name }}"
                                              class="member-avatar">
                                         <h3 class="member-name">{{ $user->name }}</h3>
-                                        <p class="member-position">
-                                            {{ $user->role->name }}
-                                            <span class="member-card-status {{ $user->status ? 'bg-success' : 'bg-danger' }}"></span>
-
-                                        </p>
-                                        <div class="dropdown member-actions-dropdown">
-                                            <button class="btn btn-sm dropdown-toggle-btn rounded-circle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                                <i class="fas fa-ellipsis-v fa-lg"></i>
-                                            </button>
-                                            <ul class="dropdown-menu dropdown-menu-end">
-                                                <li>
-                                                    <a class="dropdown-item delete-item delete-member-btn text-danger" href="#" data-member-id="{{ $user->id }}">
-                                                        <i class="fas fa-trash-alt me-2"></i> Delete User
-                                                    </a>
-                                                </li>
-                                            </ul>
-                                        </div>
                                     </div>
                                     <div class="member-details">
                                         <div class="detail-item">
@@ -524,9 +504,15 @@
                                             </div>
                                         </div>
                                         <div class="detail-item">
-                                            <i class="bx bx-map detail-icon fs-5"></i>
+                                            <i class="fas fa-home detail-icon"></i>
                                             <div class="detail-text">
-                                                {{ $user->address->city ?? 'Not provided' }}
+                                                Buy Units: <strong>{{ $user->sold_units_count ?? 0 }}</strong>
+                                            </div>
+                                        </div>
+                                        <div class="detail-item">
+                                            <i class="fas fa-key detail-icon"></i>
+                                            <div class="detail-text">
+                                                Rented Units: <strong>{{ $user->rented_units_count ?? 0 }}</strong>
                                             </div>
                                         </div>
                                     </div>
@@ -534,7 +520,7 @@
                                         <a href="javascript:void(0);" class="btn btn-add btn-sm btn-view view-user btn-member gap-1" data-id="{{ $user->id }}" title="View Details">
                                             <i class="fas fa-eye"></i> View
                                         </a>
-                                        <a href="{{ route('owner.staff.edit', $user->id) }}" class="btn btn-add btn-sm btn-edit btn-member gap-1" title="Edit Manager">
+                                        <a href="javascript:void(0);" class="btn btn-add btn-sm btn-edit btn-member gap-1" title="Edit Manager">
                                             <i class="fas fa-edit"></i> Edit
                                         </a>
                                     </div>
@@ -542,8 +528,8 @@
                             @empty
                                 <div class="no-members">
                                     <i class="fas fa-users fa-3x mb-3"></i>
-                                    <h4>No staff members found</h4>
-                                    <p>There are currently no staff members matching your filters.</p>
+                                    <h4>No users found</h4>
+                                    <p>There are currently no users matching your filters.</p>
                                 </div>
                             @endforelse
                         </div>
@@ -618,48 +604,9 @@
 @endsection
 
 @push('scripts')
-
-    <!-- User Detail Model script -->
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            // This works for both table and card view user clicks
-            document.querySelectorAll(".view-user").forEach(button => {
-                button.addEventListener("click", function () {
-                    let userId = this.dataset.id;
-
-                    fetch(`{{ route('users.show', ':id') }}`.replace(':id', userId), {
-                        method: "GET",
-                        headers: {
-                            'Accept': 'application/json',
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                            'Content-Type': 'application/json',
-                            'X-Requested-With': 'XMLHttpRequest'
-                        }
-                    })
-                        .then(response => response.json())
-                        .then(data => {
-                            let user = data.user;
-
-                            document.getElementById("userPicture").src = user.picture ? "{{ asset('/') }}" + user.picture : "{{ asset('assets/placeholder-profile.png') }}";
-                            document.getElementById("userName").textContent = user.name;
-                            document.getElementById("userEmail").textContent = user.email;
-                            document.getElementById("userPhone").textContent = user.phone_no;
-                            document.getElementById("userCnic").textContent = user.cnic;
-                            document.getElementById("userGender").textContent = user.gender;
-                            document.getElementById("userRole").textContent = user.role.name;
-
-                            let userStatus = document.getElementById("userStatus");
-                            userStatus.classList.remove("bg-success", "bg-danger");
-                            userStatus.classList.add(user.status ? "bg-success" : "bg-danger");
-
-                            let userModal = new bootstrap.Modal(document.getElementById("userModal"));
-                            userModal.show();
-                        })
-                        .catch(error => {
-                            console.error("Error:", error);
-                        });
-                });
-            });
-        });
+        function resetFilters() {
+            window.location.href = '{{ route("owner.property.users.index") }}';
+        }
     </script>
 @endpush

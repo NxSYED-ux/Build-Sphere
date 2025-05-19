@@ -140,7 +140,7 @@
             box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
         }
         .membership-card .membership-img-container {
-            height: 150px;
+            height: 200px;
             overflow: hidden;
             position: relative;
         }
@@ -182,9 +182,9 @@
             bottom: 0;
             left: 0;
             right: 0;
-            background: rgba(0, 0, 0, 0.7);
+            background: rgba(0, 0, 0, 0.4);
             color: white;
-            padding: 8px 15px;
+            padding: 5px 15px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -472,7 +472,7 @@
                                                value="{{ request('search') }}">
                                     </div>
 
-                                    @if(isset($buildings) && $buildings->count() > 0)
+
                                         <div class="filter-group">
                                             <label for="building_id">Building</label>
                                             <select name="building_id" id="building_id" class="form-select">
@@ -484,7 +484,6 @@
                                                 @endforeach
                                             </select>
                                         </div>
-                                    @endif
 
                                     <div class="filter-group">
                                         <label for="unit_id">Unit</label>
@@ -654,6 +653,12 @@
                                             </div>
                                         </div>
                                     @endif
+
+                                        @if (count($memberships) > 0)
+                                            <div class="mt-4">
+                                                {{ $memberships->appends(request()->query())->links('pagination::bootstrap-5') }}
+                                            </div>
+                                        @endif
                                 </div>
 
                             </div>

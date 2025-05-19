@@ -88,8 +88,8 @@
             <!-- Rentals -->
             <li class="mb-1 hidden" id="OwnerRentals">
                 <div id="link-a">
-                    <a href="" class="link-dark collapsed {{ in_array('Rentals', $openSections) ? 'Link-background-color' : '' }} px-1" id="Organizationbtn" >
-                    <i class="bx bxs-business icons"></i> Rentals </a>
+                    <a href="{{ route('owner.property.users.index') }}" class="link-dark collapsed {{ in_array('PropertyUsers', $openSections) ? 'Link-background-color' : '' }} px-1" id="PropertyUsersbtn" >
+                        <i class="bx bxs-business icons"></i> PropertyUsers </a>
                 </div>
             </li>
 
