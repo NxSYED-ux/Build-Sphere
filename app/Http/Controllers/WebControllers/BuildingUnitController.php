@@ -612,7 +612,7 @@ class BuildingUnitController extends Controller
                 },
                 'userUnits' => function ($query) {
                     $query->where('contract_status', 1)
-                        ->select('id', 'unit_id', 'user_id', 'rent_start_date', 'rent_end_date', 'purchase_date')
+                        ->select('id', 'unit_id', 'user_id')
                         ->with(['user' => function ($query) {
                             $query->select('id', 'name', 'picture');
                         }]);
