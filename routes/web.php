@@ -306,8 +306,8 @@ Route::prefix('owner')->middleware(['auth.jwt'])->group(function () {
             Route::get('/{unit}/show', [BuildingUnitController::class, 'ownerShow'])->name('owner.units.show');
             Route::get('/{unit}/edit', [BuildingUnitController::class, 'ownerEdit'])->name('owner.units.edit');
             Route::put('/', [BuildingUnitController::class, 'ownerUpdate'])->name('owner.units.update');
-            Route::get('/{unit}/details', [BuildingUnitController::class, 'unitDetails'])->name('owner.units.details');
-            Route::get('/{unit}/details_with_contract', [BuildingUnitController::class, 'getUnitDetailsWithActiveContract'])->name('owner.units.details.contract');
+            Route::get('/{id}/details', [BuildingUnitController::class, 'unitDetails'])->name('owner.units.details');
+            Route::get('/{id}/details_with_contract', [BuildingUnitController::class, 'getUnitDetailsWithActiveContract'])->name('owner.units.details.contract');
 
         });
 

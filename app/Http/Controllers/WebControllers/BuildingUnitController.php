@@ -612,10 +612,11 @@ class BuildingUnitController extends Controller
                 },
                 'userUnits' => function ($query) {
                     $query->where('contract_status', 1)
-                        ->select('id', 'unit_id', 'user_id')
-                        ->with(['user' => function ($query) {
-                            $query->select('id', 'name', 'picture');
-                        }]);
+                        ->select('id', 'unit_id', 'user_id', 'type', 'created_at', 'subscription_id')
+                        ->with([
+                            'user:id,name,picture',
+                            'subscription:id,created_at,ends_at'
+                        ]);
                 }
             ])->find($id);
 
