@@ -452,7 +452,7 @@ class CheckOutController extends Controller
         }
 
         return Transaction::create([
-            'transaction_title' => "{$unit->unit_name} ({$type})",
+            'transaction_title' => $unit->unit_name,
             'transaction_category' => 'New',
             'building_id' => $unit->building_id,
             'unit_id' => $unit->id,

@@ -23,8 +23,8 @@ class MyPropertiesController extends Controller
                     'unit:id,level_id,unit_name,area',
                     'unit.level:id,building_id,level_name',
                     'unit.level.building:id,name,address_id',
-                    'unit.address:id,location,city,province,country',
-                    'unit.pictures:unit_id,file_path'
+                    'unit.level.building.address:id,location,city,province,country',
+                    'unit.pictures:unit_id,file_path',
                 ])
                 ->whereHas('unit', function ($query) {
                     $query->where('status', 'Approved');

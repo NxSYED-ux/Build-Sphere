@@ -313,7 +313,7 @@ class AssignUnitController extends Controller
         }
 
         $transaction = Transaction::create([
-            'transaction_title' => "{$unit->unit_name} ({$type})",
+            'transaction_title' => $unit->unit_name,
             'transaction_category' => 'New',
             'building_id' => $unit->building_id,
             'unit_id' => $unit->id,
