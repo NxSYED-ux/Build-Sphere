@@ -347,14 +347,14 @@ class BuildingUnitController extends Controller
                 return redirect()->back()->with('error', 'Invalid Unit Id');
             }
 
-            $activeContract = UserBuildingUnit::with(['user', 'updater', 'pictures'])
+            $activeContract = UserBuildingUnit::with(['user', 'subscription'])
                 ->where([
                     ['unit_id', $unit->id],
                     ['contract_status', 1]
                 ])
                 ->first();
 
-            $pastContract = UserBuildingUnit::with(['user', 'updater', 'pictures'])
+            $pastContract = UserBuildingUnit::with(['user', 'subscription'])
                 ->where([
                     ['unit_id', $unit->id],
                     ['contract_status', 0]

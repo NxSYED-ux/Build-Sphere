@@ -243,7 +243,7 @@ class CheckOutController extends Controller
                 ->where('status', 1)
                 ->exists();
 
-            if (!$isAlreadySubscribed) {
+            if ($isAlreadySubscribed) {
                 DB::rollBack();
                 return response()->json([
                     'error' => 'Membership is already subscribed.'
@@ -383,7 +383,7 @@ class CheckOutController extends Controller
                 ->where('status', 1)
                 ->exists();
 
-            if (!$isAlreadySubscribed) {
+            if ($isAlreadySubscribed) {
                 DB::rollBack();
                 return response()->json([
                     'error' => 'Membership is already subscribed.'

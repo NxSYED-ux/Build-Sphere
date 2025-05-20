@@ -23,9 +23,8 @@ class MyPropertiesController extends Controller
                     'unit:id,level_id,unit_name,area',
                     'unit.level:id,building_id,level_name',
                     'unit.level.building:id,name,address_id',
-                    'unit.level.building.address:id,location,city,province,country',
-                    'unit.pictures:unit_id,file_path',
-                    'subscription'
+                    'unit.address:id,location,city,province,country',
+                    'unit.pictures:unit_id,file_path'
                 ])
                 ->whereHas('unit', function ($query) {
                     $query->where('status', 'Approved');
@@ -61,7 +60,7 @@ class MyPropertiesController extends Controller
                     'unit.level.building:id,name,address_id',
                     'unit.level.building.address:id,location,city,province,country',
                     'unit.pictures:unit_id,file_path',
-                    'subscription'
+                    'subscription:id,created_at,ends_at,subscription_status,price_at_subscription'
                 ])
                 ->first();
 
