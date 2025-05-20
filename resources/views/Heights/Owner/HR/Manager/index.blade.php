@@ -373,7 +373,7 @@
                                                     <ul class="dropdown-menu dropdown-menu-end">
                                                         <li>
                                                             <a class="dropdown-item promote-item demote-btn"  href="#" data-staff-id="{{ $staffMember->id }}">
-                                                                <i class="fas fa-user-shield me-2"></i> Promote to Manager
+                                                                <i class="fas fa-user-shield me-2"></i> Demote to Staff
                                                             </a>
                                                         </li>
                                                         <li><hr class="dropdown-divider"></li>

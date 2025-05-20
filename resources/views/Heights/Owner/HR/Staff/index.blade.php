@@ -416,7 +416,7 @@
                                                         <li><hr class="dropdown-divider"></li>
                                                         <li>
                                                             <a class="dropdown-item delete-item delete-member-btn text-danger" href="#" data-member-id="{{ $staffMember->id }}">
-                                                                <i class="fas fa-trash-alt me-2"></i> Delete Manager
+                                                                <i class="fas fa-trash-alt me-2"></i> Delete Staff
                                                             </a>
                                                         </li>
                                                     </ul>

@@ -620,7 +620,7 @@
                                         @elseif($building->status === "Under Review" || $building->status === "For Reaproval" )
                                             <form action="{{ route('owner.buildings.reminder') }}" method="POST">
                                                 @csrf
-                                                 <input type="hidden" name="building_id" value="{{ $building->id }}">
+                                                <input type="hidden" name="building_id" value="{{ $building->id }}">
                                                 <button type="submit" class="btn-edit" >Reminder</button>
                                             </form>
                                         @endif
@@ -698,31 +698,7 @@
     <!-- Unit Modal -->
     <div class="modal fade" id="UnitModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" style="max-width: 380px;">
-            <div class="modal-content rounded-3 shadow">
-                <div class="position-relative">
-                    <!-- Close Button -->
-                    <button type="button" class="btn-close position-absolute top-0 end-0 m-2 p-2 bg-white rounded-circle shadow-sm" data-bs-dismiss="modal"></button>
-
-                    <!-- Unit Image -->
-                    <img id="unitImage" src="" class="w-100 rounded-top" style="height: 200px; object-fit: cover;" alt="Unit Image">
-                </div>
-
-                <!-- Unit Details -->
-                <div class="p-3">
-                    <h5 id="unitTitle" class="text-primary fw-bold mb-1"></h5>
-                    <p class="mb-1"><strong>Type:</strong> <span id="unitType"></span></p>
-                    <p class="mb-2"><strong>Price:</strong> <span id="unitPrice"></span></p>
-
-                    <!-- Owner/Tenant Info -->
-                    <div class="border rounded p-2 d-flex align-items-center shadow-sm unit-user-details">
-                        <img id="userImage" src="/img/placeholder-profile.png" class="rounded-circle border me-2" width="50" height="50" alt="User">
-                        <div>
-                            <p class="mb-1 fw-bold" id="userName"></p>
-                            <p class="mb-0" id="userDetail"></p>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <!-- Inner content will be generated here dynamically -->
         </div>
     </div>
 
@@ -735,8 +711,6 @@
         OrgChart.templates.ana.plus =
             `<circle cx="15" cy="15" r="15" fill="#ffffff" stroke="#aeaeae" stroke-width="1"></circle>
             <text text-anchor="middle" style="font-size: 18px;cursor:pointer;" fill="#757575" x="15" y="22">{collapsed-children-count}</text>`;
-
-
 
         OrgChart.templates.itTemplate = Object.assign({}, OrgChart.templates.ana);
         OrgChart.templates.itTemplate.nodeMenuButton = "";
@@ -878,19 +852,38 @@
                     keyboard: false
                 });
 
-                modal.show();
+                // modal.show();
             }
         });
 
+
+        let unitModal = null;
+
         function fetchUnitDetails(unitId) {
-            let numericUnitId = parseInt(unitId);
-            if (isNaN(numericUnitId) || numericUnitId <= 0) {
-                console.error("Invalid Unit ID:", unitId);
-                return;
+            // Initialize modal if not already done
+            if (!unitModal) {
+                unitModal = new bootstrap.Modal(document.getElementById('UnitModal'));
             }
 
-            // Unit Details Fetch
-            fetch(`{{ route('owner.units.details.contract', ':id') }}`.replace(':id', numericUnitId), {
+            const modalDialog = document.querySelector('#UnitModal .modal-dialog');
+
+            // Show loading state
+            modalDialog.innerHTML = `
+        <div class="modal-content">
+            <div class="p-4 text-center">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <p class="mt-2">Loading unit details...</p>
+            </div>
+        </div>
+    `;
+
+            // Show modal immediately
+            unitModal.show();
+
+            // Fetch unit details
+            fetch(`{{ route('owner.units.details.contract', ':id') }}`.replace(':id', unitId), {
                 method: "GET",
                 headers: {
                     'Accept': 'application/json',
@@ -902,41 +895,83 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.error) {
-                        console.error("Error:", data.error);
-                        return;
+                        throw new Error(data.error);
                     }
-                    populateUnitModal(data);
+                    renderModalContent(data);
                 })
-                .catch(() => {
-                    console.error("An error occurred while retrieving the data.");
+                .catch(error => {
+                    console.error("Error:", error);
+                    modalDialog.innerHTML = `
+            <div class="modal-content">
+                <div class="p-4 text-center text-danger">
+                    <i class="bi bi-exclamation-circle-fill fs-1"></i>
+                    <p class="mt-2">Failed to load unit details</p>
+                    <button class="btn btn-sm btn-outline-secondary" onclick="unitModal.hide()">Close</button>
+                </div>
+            </div>
+        `;
                 });
-
         }
 
-        function populateUnitModal(unitData) {
-            let unit = unitData.Unit;
-            let userUnit = unit.user_units.length > 0 ? unit.user_units[0] : null;
-            let user = userUnit ? userUnit.user : null;
-            let saleOrRent = unit.sale_or_rent || 'N/A';
+        function renderModalContent(unitData) {
+            const unit = unitData.Unit;
+            const userUnit = unit.user_units.length > 0 ? unit.user_units[0] : null;
+            const user = userUnit ? userUnit.user : null;
+            const saleOrRent = unit.availability_status || 'N/A';
+            const unitImage = unit.pictures.length > 0 ? '/' + unit.pictures[0].file_path : 'default-image.jpg';
+            const userImage = user ? '/' + user.picture : '/img/placeholder-profile.png';
+            const userName = user ? user.name : 'N/A';
 
-            let unitImage = unit.pictures.length > 0 ? '/' + unit.pictures[0].file_path : 'default-image.jpg';
-            let userImage = user ? '/' + user.picture : '/img/placeholder-profile.png';
-            let userName = user ? user.name : 'N/A';
+            // Generate user details if exists
+            let userDetailsHTML = '';
+            if (user) {
+                const userDetail = saleOrRent === "Sold"
+                    ? `Purchased on: ${userUnit ? new Date(userUnit.created_at).toLocaleDateString() : 'N/A'}`
+                    : `Rented: ${userUnit.subscription ? new Date(userUnit.subscription.created_at).toLocaleDateString() : 'N/A'} - ${userUnit.subscription ? new Date(userUnit.subscription.ends_at).toLocaleDateString() : 'N/A'}`;
 
-            document.getElementById('unitImage').src = unitImage;
-            document.getElementById('unitTitle').innerHTML = `${saleOrRent} - ${unit.unit_name}`;
-            document.getElementById('unitType').innerText = unit.unit_type;
-            document.getElementById('unitPrice').innerText = `${unit.price} PKR ${saleOrRent === 'Sale' ? '(For Sale)' : '/month'}`;
+                userDetailsHTML = `
+            <div class="border rounded p-2 d-flex align-items-center shadow-sm mt-3">
+                <img src="${userImage}" class="rounded-circle border me-2" width="50" height="50" alt="User">
+                <div>
+                    <p class="mb-1 fw-bold">${userName}</p>
+                    <p class="mb-0">${userDetail}</p>
+                </div>
+            </div>
+        `;
+            }
 
-            document.getElementById('userImage').src = userImage;
-            document.getElementById('userName').innerHTML = user ? `<strong>${userName}</strong>` : 'No Buyer/Renter';
-
-            let userDetail = saleOrRent === "Sale"
-                ? `Purchased on: ${userUnit ? new Date(userUnit.purchase_date).toLocaleDateString() : 'N/A'}`
-                : `Rent: ${userUnit ? new Date(userUnit.rent_start_date).toLocaleDateString() : 'N/A'} - ${userUnit ? new Date(userUnit.rent_end_date).toLocaleDateString() : 'N/A'}`;
-
-            document.getElementById('userDetail').innerText = userDetail;
+            // Generate complete modal content
+            const modalDialog = document.querySelector('#UnitModal .modal-dialog');
+            modalDialog.innerHTML = `
+        <div class="modal-content rounded-3 shadow">
+            <div class="position-relative">
+                <button type="button" class="btn-close position-absolute top-0 end-0 m-2 p-2 bg-white rounded-circle shadow-sm"
+                        onclick="unitModal.hide()" aria-label="Close"></button>
+                <img src="${unitImage}" class="w-100 rounded-top" style="height: 200px; object-fit: cover;" alt="Unit Image">
+                <span class="position-absolute top-0 start-0 m-2 px-2 py-1 text-white rounded shadow-sm" style="background-color: rgba(0, 0, 0, 0.5);">
+                    ${unit.unit_type}
+                </span>
+            </div>
+            <div class="p-3">
+                <div class="d-flex justify-content-between align-items-center">
+                <h5 class="text-primary fw-bold mb-1">${unit.unit_name}</h5>
+                <h5 class="text-primary fw-bold mb-1">${saleOrRent}</h5>
+                </div>
+<!--                <div class="d-flex justify-content-between align-items-center">-->
+                <p class="mb-1"><strong>Status:</strong> ${unit.status}</p>
+                <p class="mb-1"><strong>For Sale Or Rent:</strong> ${unit.sale_or_rent}</p>
+<!--                </div>-->
+                <p class="mb-2"><strong>Price:</strong> ${unit.price} PKR ${saleOrRent === 'Sale' ? '(For Sale)' : '/month'}</p>
+                ${userDetailsHTML}
+            </div>
+        </div>
+    `;
         }
+
+        // Initialize modal when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            unitModal = new bootstrap.Modal(document.getElementById('UnitModal'));
+        });
 
 
     </script>

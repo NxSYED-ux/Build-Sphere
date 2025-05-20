@@ -84,17 +84,17 @@
             overflow-x: auto;
         }
 
-        /* ================ BUILDING CARDS ================ */
-        /* Card Grid Layout */
-        .buildings-grid {
+        /* ================ Unit CARDS ================ */
+
+        .unit-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
             gap: 20px;
-            margin: 0 -10px;
+            margin-top: 20px;
         }
 
         /* Card Styles */
-        .building-card {
+        .unit-card {
             transition: all 0.3s ease;
             border-radius: 12px;
             overflow: hidden;
@@ -107,27 +107,27 @@
             background: var(--body-background-color);
         }
 
-        .building-card:hover {
+        .unit-card:hover {
             transform: translateY(-5px);
             box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
         }
 
         /* Card Image */
-        .building-card .card-img-container {
+        .unit-card .card-img-container {
             height: 180px;
             overflow: hidden;
             position: relative;
             background-color: #f8f9fa;
         }
 
-        .building-card .card-img-top {
+        .unit-card .card-img-top {
             object-fit: cover;
             width: 100%;
             height: 100%;
             transition: transform 0.5s ease;
         }
 
-        .building-card:hover .card-img-top {
+        .unit-card:hover .card-img-top {
             transform: scale(1.05);
         }
 
@@ -179,7 +179,7 @@
 
 
         /* Card Body */
-        .building-card .card-body {
+        .unit-card .card-body {
             padding: 1.25rem;
             flex: 1;
             display: flex;
@@ -187,7 +187,7 @@
             background-color: var(--body-background-color);
         }
 
-        .building-card .card-title {
+        .unit-card .card-title {
             font-size: 1.1rem;
             font-weight: 600;
             margin-bottom: 0.5rem;
@@ -195,7 +195,7 @@
             word-break: break-word;
         }
 
-        .building-card .card-text {
+        .unit-card .card-text {
             color: var(--sidenavbar-text-color);
             font-size: 0.9rem;
             margin-bottom: 0.5rem;
@@ -203,7 +203,7 @@
         }
 
         /* Status Badges */
-        .building-card .badge-status {
+        .unit-card .badge-status {
             font-size: 0.75rem;
             padding: 0.35em 0.65em;
             border-radius: 50px;
@@ -211,30 +211,30 @@
             white-space: nowrap;
         }
 
-        .building-card .badge-under-review {
+        .unit-card .badge-under-review {
             background-color: #fff3cd;
             color: #856404 !important;
         }
 
-        .building-card .badge-active {
+        .unit-card .badge-active {
             background-color: #d4edda;
             color: #155724 !important;
         }
 
-        .building-card .badge-inactive {
+        .unit-card .badge-inactive {
             background-color: #f8d7da;
             color: #721c24 !important;
         }
 
         /* Action Buttons */
-        .building-card .action-buttons {
+        .unit-card .action-buttons {
             display: flex;
             margin-top: auto;
             flex-wrap: wrap;
             gap: 8px;
         }
 
-        .building-card .action-btn {
+        .unit-card .action-btn {
             flex: 1 1 calc(50% - 4px);
             margin: 0;
             padding: 8px 0;
@@ -282,7 +282,7 @@
         }
 
         /* Levels Button */
-        .building-card .levels-btn {
+        .unit-card .levels-btn {
             position: absolute;
             top: 10px;
             right: 10px;
@@ -299,7 +299,7 @@
             z-index: 1;
         }
 
-        .building-card .levels-btn:hover {
+        .unit-card .levels-btn:hover {
             background: white;
             color: #3498db;
             transform: scale(1.1);
@@ -350,7 +350,7 @@
                 grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
             }
 
-            .building-card .card-img-container {
+            .unit-card .card-img-container {
                 height: 170px;
             }
         }
@@ -370,7 +370,7 @@
                 grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
             }
 
-            .building-card .card-img-container {
+            .unit-card .card-img-container {
                 height: 160px;
             }
 
@@ -393,7 +393,7 @@
                 grid-template-columns: 1fr;
             }
 
-            .building-card .card-img-container {
+            .unit-card .card-img-container {
                 height: 200px;
             }
 
@@ -401,21 +401,21 @@
                 min-width: 100%;
             }
 
-            .building-card .action-btn {
+            .unit-card .action-btn {
                 flex: 1 1 100%;
             }
         }
 
         @media (max-width: 400px) {
-            .building-card .card-text {
+            .unit-card .card-text {
                 font-size: 0.85rem;
             }
 
-            .building-card .card-title {
+            .unit-card .card-title {
                 font-size: 1rem;
             }
 
-            .building-card .badge-status {
+            .unit-card .badge-status {
                 font-size: 0.65rem;
             }
 
@@ -424,7 +424,7 @@
                 font-size: 0.85rem !important;
                 padding: 8px 5px !important;
             }
-            .building-card .action-btn {
+            .unit-card .action-btn {
                 flex: 1 1 calc(50% - 4px);
             }
         }
@@ -603,34 +603,12 @@
                                     </div>
                                 </div>
 
-                                <style>
-                                    .team-members {
-                                        display: grid;
-                                        grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
-                                        gap: 20px;
-                                        margin-top: 20px;
-                                    }
-
-                                    .member-card {
-                                        background: var(--sidenavbar-body-color);
-                                        border-radius: 10px;
-                                        overflow: hidden;
-                                        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-                                        transition: transform 0.3s ease;
-                                        position: relative;
-                                    }
-
-                                    .member-card:hover {
-                                        transform: translateY(-5px);
-                                    }
-                                </style>
-
                                 <!-- Card View -->
                                 <div id="cardView">
-                                    <div class="team-members">
+                                    <div class="unit-grid">
                                         @forelse($units ?? [] as $unit)
                                             <div class="member-card">
-                                                <div class="card building-card">
+                                                <div class="card unit-card">
                                                     <div class="card-img-container">
                                                         @if(count($unit->pictures ?? []) > 0)
                                                             <img src="{{ asset($unit->pictures[0]->file_path) }}" class="card-img-top" alt="Building Image">
@@ -777,7 +755,7 @@
     </div>
 
 
-    <!-- User Details Modal -->
+    <!-- Unit Details Modal -->
     <div class="modal fade" id="unitModal" tabindex="-1" aria-labelledby="unitModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-md modal-dialog-centered">
             <div class="modal-content shadow-lg unit-modal-content">
