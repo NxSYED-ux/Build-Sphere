@@ -133,8 +133,6 @@ class PropertyUsersController extends Controller
 
             $unitId = $request->input('unit_id');
             $buildingId = $request->input('building_id');
-            $minPrice = $request->input('min_price');
-            $maxPrice = $request->input('max_price');
 
             $managerBuildingIds = [];
 
@@ -171,13 +169,12 @@ class PropertyUsersController extends Controller
                 ->where('contract_status', 1)
                 ->when($unitId, fn($q) => $q->where('unit_id', $unitId))
                 ->when($buildingId, fn($q) => $q->where('building_id', $buildingId))
-                ->when($minPrice, fn($q) => $q->where('price', '>=', $minPrice))
-                ->when($maxPrice, fn($q) => $q->where('price', '<=', $maxPrice))
                 ->when(!empty($managerBuildingIds), fn($q) => $q->whereIn('building_id', $managerBuildingIds))
                 ->with(['building', 'unit'])
                 ->paginate(12);
 
-            return view('Heights.Owner.PropertyUsers.show', compact('user', 'userUnits', 'buildings', 'units'));
+            $types = ['Rented', 'Sold'];
+            return view('Heights.Owner.PropertyUsers.show', compact('user', 'userUnits', 'buildings', 'units', 'types'));
 
         } catch (\Exception $e) {
             Log::error("Error in Property Users show: " . $e->getMessage());
