@@ -27,7 +27,7 @@
             display: flex;
             flex-direction: column;
             flex-grow: 1;
-            min-width: 220px;
+            min-width: 200px;
         }
 
         .filter-group label {
@@ -72,6 +72,22 @@
             align-items: center;
             justify-content: center;
             min-width: 120px;
+        }
+
+        @media (max-width: 768px) {
+            .filter-group {
+                min-width: 100%;
+            }
+
+            .filter-buttons {
+                width: 100%;
+                margin-left: 0;
+                margin-top: 10px;
+            }
+
+            .filter-buttons .btn {
+                flex-grow: 1;
+            }
         }
 
 
@@ -355,21 +371,7 @@
             box-shadow: 0 0 1px #4CAF50;
         }
 
-        @media (max-width: 768px) {
-            .filter-group {
-                min-width: 100%;
-            }
 
-            .filter-buttons {
-                width: 100%;
-                margin-left: 0;
-                margin-top: 10px;
-            }
-
-            .filter-buttons .btn {
-                flex-grow: 1;
-            }
-        }
 
         .member-actions-dropdown {
             position: absolute;
@@ -452,15 +454,37 @@
 
                             <div class="filter-group">
                                 <label for="BuildingId">Building</label>
-                                <select name="BuildingId" id="BuildingId" class="form-select filter-select">
+                                <select name="building_id" id="BuildingId" class="form-select filter-select">
                                     <option value="">All Buildings</option>
+                                    @foreach($buildings as $building)
+                                        <option value="{{ $building->id }}" {{ request('building_id') == $building->id ? 'selected' : '' }}>
+                                            {{ $building->name }}
+                                        </option>
+                                    @endforeach
                                 </select>
                             </div>
 
                             <div class="filter-group">
-                                <label for="Status">Status</label>
-                                <select name="Status" id="Status" class="form-select filter-select">
-                                    <option value="">All Status</option>
+                                <label for="unit_id">Unit</label>
+                                <select name="unit_id" id="unit_id" class="form-select filter-select">
+                                    <option value="">All Units</option>
+                                    @foreach($units as $unit)
+                                        <option value="{{ $unit->id }}" {{ request('unit_id') == $unit->id ? 'selected' : '' }}>
+                                            {{ $unit->unit_name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <div class="filter-group">
+                                <label for="type">Types</label>
+                                <select name="type" id="type" class="form-select filter-select">
+                                    <option value="">All Type</option>
+                                    @foreach($types as $type)
+                                        <option value="{{ $type }}" {{ request('$type') == $type ? 'selected' : '' }}>
+                                            {{ $type }}
+                                        </option>
+                                    @endforeach
                                 </select>
                             </div>
 
@@ -469,7 +493,7 @@
                                     <i class="fas fa-undo me-2"></i> Reset
                                 </button>
                                 <button type="submit" class="btn btn-primary flex-grow-1 d-flex align-items-center justify-content-center">
-                                    <i class="fas fa-filter me-2"></i> Apply Filters
+                                    <i class="fas fa-filter me-2"></i> Apply
                                 </button>
                             </div>
                         </form>

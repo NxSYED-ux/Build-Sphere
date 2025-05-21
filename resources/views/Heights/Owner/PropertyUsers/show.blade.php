@@ -217,7 +217,7 @@
         .unit-type-badge {
             position: absolute;
             top: 15px;
-            right: 15px;
+            left: 15px;
             background: rgba(0, 0, 0, 0.7);
             color: white;
             padding: 4px 10px;
@@ -228,13 +228,13 @@
         .unit-sale-rent-badge {
             position: absolute;
             top: 15px;
-            left: 15px;
-            background: rgba(0, 0, 0, 0.7);
-            color: white;
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
+            right: 15px;
+            /*background: rgba(0, 0, 0, 0.7);*/
+            /*color: white;*/
+            /*padding: 4px 10px;*/
+            /*border-radius: 20px;*/
+            /*font-size: 12px;*/
+            /*font-weight: 600;*/
         }
 
         .unit-price-tag {
@@ -336,6 +336,19 @@
             justify-content: center;
             min-width: 110px;
             font-size: 0.95rem !important;
+            text-decoration: none;
+        }
+
+        .rented-status-btn {
+            padding: 5px 5px !important;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 100px;
+            font-size: 0.7rem !important;
             text-decoration: none;
         }
 
@@ -539,86 +552,6 @@
                 flex: 1 1 calc(50% - 4px);
             }
         }
-
-        /*  Unit Model */
-        .modal-dialog {
-            max-width: 400px;
-            border-radius: 20px !important;
-            overflow: hidden;
-        }
-
-        .modal-content {
-            max-width: 400px;
-            border-radius: 20px !important;
-            overflow: hidden;
-            box-shadow: none !important;
-            border: 2px solid var(--modal-border);
-        }
-
-        .unit-modal-content {
-            border-radius: 20px !important;
-            overflow: hidden;
-        }
-
-        .unit-modal-dialog {
-            border-radius: 20px !important;
-        }
-
-        #unitModal h5{
-            font-size: 15px;
-            font-weight: 600;
-            color: var(--modal-text);
-            font-family: 'Montserrat', sans-serif;
-        }
-
-        #unitModal span{
-            font-size: 15px;
-            color: var(--modal-text);
-            font-family: 'Montserrat', sans-serif;
-        }
-
-        .unit-modal-header {
-            background: var(--modal-bg) !important;
-            color: var(--modal-text) !important;
-            font-family: 'Montserrat', sans-serif !important;
-        }
-
-        #unitModalLabel{
-            font-size: 18px !important;
-            font-weight: bold !important;
-        }
-
-        .unit-modal-body {
-            background: var(--modal-bg) !important;
-            color: var(--modal-text) !important;
-            font-family: 'Montserrat', sans-serif !important;
-        }
-
-        .unit-modal-footer {
-            background: var(--modal-bg) !important;
-            border-top: 1px solid var(--modal-border) !important;
-        }
-
-        .unit-modal-close-btn {
-            background: white;
-            color: var(--modal-btn-text);
-            border: 2px solid var(--modal-btn-bg);
-            border-radius: 10px;
-        }
-
-        .unit-modal-close-btn:hover {
-            background: var(--modal-btn-bg);
-            color: var(--modal-btn-text-hover);
-            opacity: 0.8;
-        }
-
-        .unit-close-btn {
-            filter: invert(var(--invert, 0));
-        }
-
-        .unit-img-border {
-            border: 2px solid var(--modal-border);
-        }
     </style>
 @endpush
 
@@ -681,15 +614,6 @@
                                 </div>
 
                                 <div class="user-detail-row">
-                                    <span class="user-detail-label">Status:</span>
-                                    <span class="user-detail-value">
-                                        <span class="user-status-badge {{ $user->status === 'active' ? 'status-active' : 'status-inactive' }}">
-                                            {{ ucfirst($user->status ?? 'N/A') }}
-                                        </span>
-                                    </span>
-                                </div>
-
-                                <div class="user-detail-row">
                                     <span class="user-detail-label">City:</span>
                                     <span class="user-detail-value">{{ $user->address->city ?? 'N/A' }}</span>
                                 </div>
@@ -709,27 +633,38 @@
                         <!-- Filter Form -->
                         <form method="GET" id="filterForm" class="filter-container">
                             <div class="filter-group">
-                                <label for="search">Search</label>
-                                <input type="text" name="search" id="search" class="search-input"
-                                       placeholder="Search by unit name"
-                                       value="{{ request('search') }}">
-                            </div>
-
-                            <div class="filter-group">
-                                <label for="contract_type">Contract Type</label>
-                                <select name="contract_type" id="contract_type" class="form-select filter-select">
-                                    <option value="">All Types</option>
-                                    <option value="rented" {{ request('contract_type') == 'rented' ? 'selected' : '' }}>Rented</option>
-                                    <option value="sold" {{ request('contract_type') == 'sold' ? 'selected' : '' }}>Sold</option>
+                                <label for="BuildingId">Building</label>
+                                <select name="building_id" id="BuildingId" class="form-select filter-select">
+                                    <option value="">All Buildings</option>
+                                    @foreach($buildings as $building)
+                                        <option value="{{ $building->id }}" {{ request('building_id') == $building->id ? 'selected' : '' }}>
+                                            {{ $building->name }}
+                                        </option>
+                                    @endforeach
                                 </select>
                             </div>
 
                             <div class="filter-group">
-                                <label for="status">Status</label>
-                                <select name="status" id="status" class="form-select filter-select">
-                                    <option value="">All Statuses</option>
-                                    <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>Active</option>
-                                    <option value="inactive" {{ request('status') == 'inactive' ? 'selected' : '' }}>Inactive</option>
+                                <label for="unit_id">Unit</label>
+                                <select name="unit_id" id="unit_id" class="form-select filter-select">
+                                    <option value="">All Units</option>
+                                    @foreach($units as $unit)
+                                        <option value="{{ $unit->id }}" {{ request('unit_id') == $unit->id ? 'selected' : '' }}>
+                                            {{ $unit->unit_name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <div class="filter-group">
+                                <label for="type">Types</label>
+                                <select name="type" id="type" class="form-select filter-select">
+                                    <option value="">All Type</option>
+                                    @foreach($types as $type)
+                                        <option value="{{ $type }}" {{ request('$type') == $type ? 'selected' : '' }}>
+                                            {{ $type }}
+                                        </option>
+                                    @endforeach
                                 </select>
                             </div>
 
@@ -744,7 +679,7 @@
                         </form>
 
                         <div class="unit-grid">
-                            @forelse($user->userUnits ?? [] as $userUnit)
+                            @forelse($userUnits ?? [] as $userUnit)
                                 @php
                                     $unit = $userUnit->unit;
                                     $contractType = $userUnit->contract_type;
@@ -759,9 +694,9 @@
                                         <div class="unit-type-badge">
                                             {{ $unit->unit_type ?? 'N/A' }}
                                         </div>
-                                        <div class="unit-sale-rent-badge">
-                                            {{ $unit->sale_or_rent }}
-                                        </div>
+{{--                                        <div class="unit-sale-rent-badge">--}}
+{{--                                            --}}
+{{--                                        </div>--}}
                                         <div class="unit-price-tag">
                                             PKR {{ $unit->price ?? 'N/A' }}
                                         </div>
@@ -772,47 +707,46 @@
                                     <div class="card-body">
                                         <div class="d-flex justify-content-between align-items-start">
                                             <h5 class="card-title">{{ $unit->unit_name ?? 'N/A' }}</h5>
-                                            <span class="badge badge-status
-                                                @if($userUnit->status === 'active') badge-active
-                                                @else badge-inactive
-                                                @endif">
-                                                {{ ucfirst($userUnit->status ?? 'N/A') }}
-                                            </span>
-                                        </div>
-                                        <p class="card-text"><i class='bx bx-buildings me-1'></i> {{ $unit->building->name ?? 'N/A' }}</p>
-                                        <p class="card-text"><i class='bx bxs-layer me-1'></i> {{ $unit->level->level_name ?? 'N/A' }}</p>
-                                        <p class="card-text"><i class='bx bx-calendar me-1'></i> Contract Date: {{ $userUnit->contract_date ? \Carbon\Carbon::parse($userUnit->contract_date)->format('M d, Y') : 'N/A' }}</p>
-
-                                        <div class="action-buttons">
-                                            <a href="javascript:void(0);" class="action-btn btn-add btn-view view-unit gap-1" data-id="{{ $unit->id }}" title="View">
-                                                <i class='bx bx-show'></i> View
-                                            </a>
-
-                                            @if($userUnit->type === 'Sold')
-                                                <form action="" method="POST" class="d-inline">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" class="action-btn btn-add btn-danger gap-1" title="Delete" onclick="return confirm('Are you sure you want to delete this unit?')">
-                                                        <i class='bx bx-trash'></i> Delete
-                                                    </button>
-                                                </form>
-                                            @else
-                                                @if($userUnit->contract_status === 1)
+                                            @if($userUnit->type === 'Rented')
+                                                @if($userUnit->renew_canceled === 0)
                                                     <form action="" method="POST" class="d-inline">
                                                         @csrf
-                                                        <button type="submit" class="action-btn btn-add btn-warning gap-1" title="Discontinue" onclick="return confirm('Are you sure you want to discontinue this rental?')">
+                                                        <button type="submit" class="action-btn rented-status-btn btn-warning gap-1" title="Discontinue" onclick="return confirm('Are you sure you want to discontinue this rental?')">
                                                             <i class='bx bx-pause'></i> Discontinue
                                                         </button>
                                                     </form>
                                                 @else
                                                     <form action="" method="POST" class="d-inline">
                                                         @csrf
-                                                        <button type="submit" class="action-btn btn-add btn-edit gap-1" title="Continue" onclick="return confirm('Are you sure you want to continue this rental?')">
+                                                        <button type="submit" class="action-btn rented-status-btn btn-edit gap-1" title="Continue" onclick="return confirm('Are you sure you want to continue this rental?')">
                                                             <i class='bx bx-play'></i> Continue
                                                         </button>
                                                     </form>
                                                 @endif
                                             @endif
+                                        </div>
+                                        <p class="card-text"><i class='bx bx-buildings me-1'></i> {{ $unit->building->name ?? 'N/A' }}</p>
+                                        <p class="card-text"><i class='bx bxs-layer me-1'></i> {{ $unit->level->level_name ?? 'N/A' }}</p>
+                                        @if($userUnit->type === 'Sold')
+                                        <p class="card-text"><i class='bx bx-calendar me-1'></i> Contract Date: {{ $userUnit->created_at ? \Carbon\Carbon::parse($userUnit->contract_date)->format('M d, Y') : 'N/A' }}</p>
+                                        @elseif($userUnit->type === 'Rented')
+                                            <p class="card-text"><i class='bx bx-calendar me-1'></i> Start Date: {{ $userUnit->subscription->created_at ? \Carbon\Carbon::parse($userUnit->contract_date)->format('M d, Y') : 'N/A' }}</p>
+                                            <p class="card-text"><i class='bx bx-calendar me-1'></i> End Date: {{ $userUnit->subscription->ends_at ? \Carbon\Carbon::parse($userUnit->contract_date)->format('M d, Y') : 'N/A' }}</p>
+                                        @endif
+
+                                        <div class="action-buttons">
+                                            <a href="javascript:void(0);" class="action-btn btn-add btn-view view-unit gap-1" data-id="{{ $unit->id }}" title="View">
+                                                <i class='bx bx-show'></i> View
+                                            </a>
+                                            <form action="" method="POST" class="d-inline">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="action-btn btn-add btn-danger gap-1" title="Delete" onclick="return confirm('Are you sure you want to delete this unit?')">
+                                                    <i class='bx bx-trash'></i> Delete
+                                                </button>
+                                            </form>
+
+
                                         </div>
                                     </div>
                                 </div>
