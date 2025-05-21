@@ -19,6 +19,7 @@
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
             position: relative;
             transition: all 0.3s ease;
+            border: 1px solid rgba(0, 0, 0, 0.05);
         }
 
         .user-profile-header {
