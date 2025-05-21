@@ -221,6 +221,14 @@ class MembershipController extends Controller
                     ->exists()) {
                 return redirect()->back()->withInput()->with('error', 'You do not have access to add memberships for the selected building.');
             }
+            elseif ($role_name === 'Staff'){
+                $staffRecord = StaffMember::where('user_id', $user->id)->first();
+
+                if (!$staffRecord || $staffRecord->building_id != $request->buildingId) {
+                    DB::rollBack();
+                    return redirect()->back()->withInput()->with('error', 'You do not have access to add memberships for the selected building.');
+                }
+            }
 
             $unit = BuildingUnit::where('id', $request->unit_id)
                 ->where('organization_id', $organization_id)->first();
@@ -316,6 +324,14 @@ class MembershipController extends Controller
 
                 $buildingsQuery->whereIn('id', $managerBuildingIds);
             }
+            elseif ($role_name === 'Staff'){
+                $staffRecord = StaffMember::where('user_id', $user->id)->first();
+
+                if ($staffRecord) {
+                    $staffBuildingId = $staffRecord->building_id;
+                    $buildingsQuery->where('id', $staffBuildingId);
+                }
+            }
 
             $buildings = $buildingsQuery->get();
 
@@ -356,9 +372,12 @@ class MembershipController extends Controller
         ]);
 
         try {
+            DB::beginTransaction();
+
             $token = $request->attributes->get('token');
 
             if (empty($token['organization_id']) || empty($token['role_name'])) {
+                DB::rollBack();
                 return redirect()->back()->withInput()->with('error', 'Only organization-related personnel can perform this action.');
             }
 
@@ -370,18 +389,29 @@ class MembershipController extends Controller
                 ->first();
 
             if (!$membership) {
+                DB::rollBack();
                 return redirect()->back()->with('error', 'Membership not found.');
             }
 
             if ($role_name === 'Manager' && !ManagerBuilding::where('building_id', $request->building_id)
                     ->where('user_id', $user->id)->exists()) {
+                DB::rollBack();
                 return redirect()->back()->withInput()->with('error', 'You do not have access to edit memberships for the selected building.');
+            }
+            elseif ($role_name === 'Staff'){
+                $staffRecord = StaffMember::where('user_id', $user->id)->first();
+
+                if (!$staffRecord || $staffRecord->building_id != $request->buildingId) {
+                    DB::rollBack();
+                    return redirect()->back()->withInput()->with('error', 'You do not have access to edit memberships for the selected building.');
+                }
             }
 
             $unit = BuildingUnit::where('id', $request->unit_id)
                 ->where('organization_id', $organization_id)->first();
 
             if (!$unit || $unit->building_id !== (int)$request->building_id) {
+                DB::rollBack();
                 return redirect()->back()->withInput()->with('error', 'Selected unit does not belong to the selected building.');
             }
 
@@ -423,6 +453,8 @@ class MembershipController extends Controller
                 }
             }
 
+            DB::commit();
+
             dispatch(new MembershipNotifications(
                 $organization_id,
                 $membership->id,
@@ -439,6 +471,7 @@ class MembershipController extends Controller
             return redirect()->route('owner.memberships.index')->with('success', 'Membership updated successfully.');
 
         } catch (\Throwable $e) {
+            DB::rollBack();
             Log::error('Error in Memberships update: ' . $e->getMessage());
             return redirect()->back()->withInput()->with('error', 'Something went wrong! Please try again.');
         }
@@ -480,6 +513,13 @@ class MembershipController extends Controller
                     ->exists()
             ) {
                 return redirect()->back()->with('error', 'You do not have permission to view this membership.');
+            }
+            elseif ($role_name === 'Staff'){
+                $staffRecord = StaffMember::where('user_id', $user->id)->first();
+
+                if (!$staffRecord || $staffRecord->building_id != $request->buildingId) {
+                    return redirect()->back()->with('error', 'You do not have permission to view this membership.');
+                }
             }
 
             return view('Heights.Owner.Memberships.show', compact('membership'));
@@ -530,7 +570,7 @@ class MembershipController extends Controller
 
             $availableUsers = User::where('id', '!=', $user->id)
                 ->whereNotIn('id', $assignedUserIds)
-                ->select('id', 'name', 'email', 'cnic', 'picture')
+                ->select('id', 'name', 'email')
                 ->get();
 
             return view('Heights.Owner.Memberships.assign', compact('membership', 'availableUsers'));

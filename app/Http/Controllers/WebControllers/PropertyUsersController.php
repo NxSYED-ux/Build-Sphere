@@ -133,6 +133,7 @@ class PropertyUsersController extends Controller
 
             $unitId = $request->input('unit_id');
             $buildingId = $request->input('building_id');
+            $type = $request->input('type');
 
             $managerBuildingIds = [];
 
@@ -169,6 +170,7 @@ class PropertyUsersController extends Controller
                 ->where('contract_status', 1)
                 ->when($unitId, fn($q) => $q->where('unit_id', $unitId))
                 ->when($buildingId, fn($q) => $q->where('building_id', $buildingId))
+                ->when($type, fn($q) => $q->where('type', $type))
                 ->when(!empty($managerBuildingIds), fn($q) => $q->whereIn('building_id', $managerBuildingIds))
                 ->with(['building', 'unit'])
                 ->paginate(12);
