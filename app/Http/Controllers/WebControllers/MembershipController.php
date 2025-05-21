@@ -224,7 +224,7 @@ class MembershipController extends Controller
             elseif ($role_name === 'Staff'){
                 $staffRecord = StaffMember::where('user_id', $user->id)->first();
 
-                if (!$staffRecord || $staffRecord->building_id != $request->buildingId) {
+                if (!$staffRecord || $staffRecord->building_id != $request->building_id) {
                     DB::rollBack();
                     return redirect()->back()->withInput()->with('error', 'You do not have access to add memberships for the selected building.');
                 }
@@ -327,10 +327,11 @@ class MembershipController extends Controller
             elseif ($role_name === 'Staff'){
                 $staffRecord = StaffMember::where('user_id', $user->id)->first();
 
-                if ($staffRecord) {
-                    $staffBuildingId = $staffRecord->building_id;
-                    $buildingsQuery->where('id', $staffBuildingId);
+                if (!$staffRecord || $staffRecord->building_id != $membership->building_id) {
+                    return redirect()->back()->with('error', 'You do not have access to edit this membership.');
                 }
+
+                $buildingsQuery->where('id', $staffRecord->building_id);
             }
 
             $buildings = $buildingsQuery->get();
@@ -401,7 +402,7 @@ class MembershipController extends Controller
             elseif ($role_name === 'Staff'){
                 $staffRecord = StaffMember::where('user_id', $user->id)->first();
 
-                if (!$staffRecord || $staffRecord->building_id != $request->buildingId) {
+                if (!$staffRecord || $staffRecord->building_id != $request->building_id) {
                     DB::rollBack();
                     return redirect()->back()->withInput()->with('error', 'You do not have access to edit memberships for the selected building.');
                 }
@@ -517,7 +518,7 @@ class MembershipController extends Controller
             elseif ($role_name === 'Staff'){
                 $staffRecord = StaffMember::where('user_id', $user->id)->first();
 
-                if (!$staffRecord || $staffRecord->building_id != $request->buildingId) {
+                if (!$staffRecord || $staffRecord->building_id != $membership->building_id) {
                     return redirect()->back()->with('error', 'You do not have permission to view this membership.');
                 }
             }
@@ -562,6 +563,13 @@ class MembershipController extends Controller
                     ->exists()
             ) {
                 return redirect()->back()->with('error', 'You do not have permission to assign this membership.');
+            }
+            elseif ($role_name === 'Staff'){
+                $staffRecord = StaffMember::where('user_id', $user->id)->first();
+
+                if (!$staffRecord || $staffRecord->building_id != $membership->building_id) {
+                    return redirect()->back()->with('error', 'You do not have permission to assign this membership.');
+                }
             }
 
             $assignedUserIds = MembershipUser::where('membership_id', $id)
@@ -622,6 +630,14 @@ class MembershipController extends Controller
             ) {
                 DB::rollBack();
                 return redirect()->back()->with('error', 'You do not have permission to assign this membership.');
+            }
+            elseif ($role_name === 'Staff'){
+                $staffRecord = StaffMember::where('user_id', $loggedUser->id)->first();
+
+                if (!$staffRecord || $staffRecord->building_id != $membership->building_id) {
+                    DB::rollBack();
+                    return redirect()->back()->with('error', 'You do not have permission to assign this membership.');
+                }
             }
 
             $alreadyAssigned = MembershipUser::where('membership_id', $membership->id)

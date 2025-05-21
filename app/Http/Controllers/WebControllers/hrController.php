@@ -55,35 +55,34 @@ class hrController extends Controller
             $selectedDepartment = $request->input('DepartmentId');
             $selectedBuilding = $request->input('BuildingId');
 
-            $managerBuildingIds = [];
+            $onlyBuildingIds = [];
             if ($role_name === 'Manager' && $roleId !== 3) {
-                $managerBuildingIds = ManagerBuilding::where('user_id', $user->id)->pluck('building_id')->toArray();
+                $onlyBuildingIds = ManagerBuilding::where('user_id', $user->id)->pluck('building_id')->toArray();
+            } elseif ($role_name === 'Staff' && $roleId !== 3) {
+                $staffRecord = StaffMember::where('user_id', $user->id)->first();
+                $onlyBuildingIds = $staffRecord ? [$staffRecord->building_id] : [];
             }
 
-            $staffQuery = StaffMember::where('organization_id', $organization_id)
+            $staffMembers = StaffMember::where('organization_id', $organization_id)
                 ->whereHas('user', function ($query) use ($roleId, $search) {
                     $query->where('role_id', $roleId);
 
                     if (!empty($search)) {
                         $query->where(function ($q) use ($search) {
-                            $q->where('name', 'like', '%' . $search . '%')
-                                ->orWhere('email', 'like', '%' . $search . '%');
+                            $q->where('name', 'like', "%{$search}%")
+                                ->orWhere('email', 'like', "%{$search}%");
                         });
                     }
                 })
-                ->when($selectedDepartment, fn($query) => $query->where('department_id', $selectedDepartment))
-                ->with('user');
-
-            if ($role_name === 'Manager') {
-                $staffQuery->whereIn('building_id', $managerBuildingIds);
-                if ($selectedBuilding && in_array($selectedBuilding, $managerBuildingIds)) {
-                    $staffQuery->where('building_id', $selectedBuilding);
-                }
-            } elseif ($selectedBuilding) {
-                $staffQuery->where('building_id', $selectedBuilding);
-            }
-
-            $staffMembers = $staffQuery->paginate(12);
+                ->when($selectedDepartment, fn($q) => $q->where('department_id', $selectedDepartment))
+                ->when(!empty($onlyBuildingIds), function ($q) use ($onlyBuildingIds) {
+                    $q->whereIn('building_id', $onlyBuildingIds);
+                })
+                ->when($selectedBuilding, function ($q) use ($selectedBuilding) {
+                    $q->where('building_id', $selectedBuilding);
+                })
+                ->with('user')
+                ->paginate(12);
 
             if ($roleId === 4) {
                 $departments = Department::where('organization_id', $organization_id)
@@ -91,7 +90,7 @@ class hrController extends Controller
                     ->get();
 
                 $buildings = Building::where('organization_id', $organization_id)
-                    ->when($role_name === 'Manager', fn($q) => $q->whereIn('id', $managerBuildingIds))
+                    ->when(!empty($onlyBuildingIds), fn($q) => $q->whereIn('id', $onlyBuildingIds))
                     ->select('id', 'name')
                     ->get();
 
@@ -128,16 +127,20 @@ class hrController extends Controller
                 return $result;
             }
 
-            $managerBuildingIds = [];
+            $onlyBuildingIds = [];
             if ($role_name === 'Manager') {
-                $managerBuildingIds = ManagerBuilding::where('user_id', $user->id)->pluck('building_id')->toArray();
+                $onlyBuildingIds = ManagerBuilding::where('user_id', $user->id)->pluck('building_id')->toArray();
+            }
+            elseif ($role_name === 'Staff'){
+                $staffRecord = StaffMember::where('user_id', $user->id)->first();
+                $onlyBuildingIds = [$staffRecord->building_id];
             }
 
             $departments = Department::where('organization_id', $organization_id)
                 ->pluck('name', 'id');
 
             $buildings = Building::where('organization_id', $organization_id)
-                ->when($role_name === 'Manager', fn($q) => $q->whereIn('id', $managerBuildingIds))
+                ->when(!empty($onlyBuildingIds), fn($q) => $q->whereIn('id', $onlyBuildingIds))
                 ->pluck('name', 'id');
 
             $permissions = RolePermission::where('role_id', 4)->get();
@@ -186,6 +189,13 @@ class hrController extends Controller
                 ->exists()
         ) {
             return redirect()->back()->withInput()->with('error', 'You do not have access to add staff members of the selected building.');
+        }
+        elseif ($role_name === 'Staff'){
+            $staffRecord = StaffMember::where('user_id', $loggedUser->id)->first();
+
+            if (!$staffRecord || $staffRecord->building_id != $request->building_id) {
+                return redirect()->back()->withInput()->with('error', 'You do not have access to add staff members of the selected building.');
+            }
         }
 
         $password = Str::random(8);
@@ -435,14 +445,23 @@ class hrController extends Controller
                 return redirect()->back()->with('error', 'Invalid staff id');
             }
 
-            $managerBuildingIds = [];
+            $onlyBuildingIds = [];
             if ($role_name === 'Manager') {
-                $managerBuildingIds = ManagerBuilding::where('user_id', $user->id)->pluck('building_id')->toArray();
-                $hasAccess = !in_array($staffInfo->building_id, $managerBuildingIds);
+                $onlyBuildingIds = ManagerBuilding::where('user_id', $user->id)->pluck('building_id')->toArray();
+                $hasAccess = !in_array($staffInfo->building_id, $onlyBuildingIds);
 
                 if (!$hasAccess) {
                     return redirect()->back()->with('error', 'Access denied: You do not manage this building or its staff.');
                 }
+            }
+            elseif ($role_name === 'Staff'){
+                $staffRecord = StaffMember::where('user_id', $user->id)->first();
+
+                if (!$staffRecord || $staffRecord->building_id != $staffInfo->building_id) {
+                    return redirect()->back()->with('error', 'Access denied: You do not manage this building or its staff.');
+                }
+
+                $onlyBuildingIds = [$staffInfo->building_id];
             }
 
             $queries = $staffInfo->queries()
@@ -469,9 +488,7 @@ class hrController extends Controller
 
             $units = BuildingUnit::where('organization_id', $organization_id)
                 ->where('status', 'Approved')
-                ->when($role_name === 'Manager', function ($query) use ($managerBuildingIds) {
-                    $query->whereIn('building_id', $managerBuildingIds);
-                })
+                ->when(!empty($onlyBuildingIds), fn($q) => $q->whereIn('building_id', $onlyBuildingIds))
                 ->select('id', 'unit_name')
                 ->get();
 
@@ -532,11 +549,18 @@ class hrController extends Controller
                 return redirect()->back()->with('error', 'Invalid staff id');
             }
 
-            $managerBuildingIds = [];
+            $onlyBuildingIds = [];
             if ($role_name === 'Manager') {
-                $managerBuildingIds = ManagerBuilding::where('user_id', $user->id)->pluck('building_id')->toArray();
+                $onlyBuildingIds = ManagerBuilding::where('user_id', $user->id)->pluck('building_id')->toArray();
 
-                if (!in_array($staffInfo->building_id, $managerBuildingIds)) {
+                if (!in_array($staffInfo->building_id, $onlyBuildingIds)) {
+                    return redirect()->back()->with('error', 'Access denied: You do not manage this building or its staff.');
+                }
+            }
+            elseif ($role_name === 'Staff'){
+                $staffRecord = StaffMember::where('user_id', $user->id)->first();
+
+                if (!$staffRecord || $staffRecord->building_id != $staffInfo->building_id) {
                     return redirect()->back()->with('error', 'Access denied: You do not manage this building or its staff.');
                 }
             }
@@ -545,7 +569,7 @@ class hrController extends Controller
                 ->pluck('name', 'id');
 
             $buildings = Building::where('organization_id', $organization_id)
-                ->when($role_name === 'Manager', fn($q) => $q->whereIn('id', $managerBuildingIds))
+                ->when(!empty($onlyBuildingIds), fn($q) => $q->whereIn('id', $onlyBuildingIds))
                 ->pluck('name', 'id');
 
 
@@ -611,6 +635,13 @@ class hrController extends Controller
                 ->exists()
         ) {
             return redirect()->back()->withInput()->with('error', 'You do not have access to add staff members of the selected building.');
+        }
+        elseif ($role_name === 'Staff'){
+            $staffRecord = StaffMember::where('user_id', $loggedUser->id)->first();
+
+            if (!$staffRecord || $staffRecord->building_id != $request->building_id) {
+                return redirect()->back()->withInput()->with('error', 'You do not have access to add staff members of the selected building.');
+            }
         }
 
         DB::beginTransaction();

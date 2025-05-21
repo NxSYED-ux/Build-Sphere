@@ -9,6 +9,7 @@ use App\Models\Building;
 use App\Models\BuildingUnit;
 use App\Models\DropdownType;
 use App\Models\ManagerBuilding;
+use App\Models\StaffMember;
 use App\Models\Subscription;
 use App\Models\Transaction;
 use App\Models\User;
@@ -50,59 +51,57 @@ class PropertyUsersController extends Controller
             $type = $request->input('type');
             $search = $request->input('search');
 
-            $managerBuildingIds = [];
-
+            $onlyBuildingIds = [];
             if ($roleName === 'Manager') {
-                $managerBuildingIds = ManagerBuilding::where('user_id', $loggedUser->id)->pluck('building_id')->toArray();
+                $onlyBuildingIds = ManagerBuilding::where('user_id', $loggedUser->id)->pluck('building_id')->toArray();
 
-                if (empty($managerBuildingIds)) {
+                if (empty($onlyBuildingIds)) {
                     return view('Heights.Owner.PropertyUsers.index', compact('users', 'buildings', 'units', 'types'));
                 }
             }
+            elseif ($roleName === 'Staff'){
+                $staffRecord = StaffMember::where('user_id', $loggedUser->id)->first();
+                $onlyBuildingIds = [$staffRecord->building_id];
+            }
 
-            $buildings = Building::where('organization_id', $organizationId)
-                ->when(!empty($managerBuildingIds), fn($q) => $q->whereIn('id', $managerBuildingIds))
-                ->get();
-
-            $units = BuildingUnit::where('organization_id', $organizationId)
-                ->when(!empty($managerBuildingIds), fn($q) => $q->whereIn('building_id', $managerBuildingIds))
-                ->get();
+            $buildings = $this->getFilteredBuildings($organizationId, $onlyBuildingIds);
+            $units = $this->getFilteredUnits($organizationId, $onlyBuildingIds);
 
             $users = User::with([
-                'userUnits' => function ($query) use ($organizationId, $buildingId, $unitId, $type, $managerBuildingIds) {
+                'userUnits' => function ($query) use ($organizationId, $buildingId, $unitId, $type, $onlyBuildingIds) {
                     $query->where('organization_id', $organizationId)
                         ->where('contract_status', 1)
                         ->when($buildingId, fn($q) => $q->where('building_id', $buildingId))
                         ->when($unitId, fn($q) => $q->where('unit_id', $unitId))
                         ->when($type, fn($q) => $q->where('type', $type))
-                        ->when(!empty($managerBuildingIds), fn($q) => $q->whereIn('building_id', $managerBuildingIds));
+                        ->when(!empty($onlyBuildingIds), fn($q) => $q->whereIn('building_id', $onlyBuildingIds));
                 }
             ])
                 ->withCount([
-                    'userUnits as rented_units_count' => function ($query) use ($organizationId, $buildingId, $unitId, $managerBuildingIds) {
+                    'userUnits as rented_units_count' => function ($query) use ($organizationId, $buildingId, $unitId, $onlyBuildingIds) {
                         $query->where('type', 'rented')
                             ->where('organization_id', $organizationId)
                             ->where('contract_status', 1)
                             ->when($buildingId, fn($q) => $q->where('building_id', $buildingId))
                             ->when($unitId, fn($q) => $q->where('unit_id', $unitId))
-                            ->when(!empty($managerBuildingIds), fn($q) => $q->whereIn('building_id', $managerBuildingIds));
+                            ->when(!empty($onlyBuildingIds), fn($q) => $q->whereIn('building_id', $onlyBuildingIds));
                     },
-                    'userUnits as sold_units_count' => function ($query) use ($organizationId, $buildingId, $unitId, $managerBuildingIds) {
+                    'userUnits as sold_units_count' => function ($query) use ($organizationId, $buildingId, $unitId, $onlyBuildingIds) {
                         $query->where('type', 'sold')
                             ->where('organization_id', $organizationId)
                             ->where('contract_status', 1)
                             ->when($buildingId, fn($q) => $q->where('building_id', $buildingId))
                             ->when($unitId, fn($q) => $q->where('unit_id', $unitId))
-                            ->when(!empty($managerBuildingIds), fn($q) => $q->whereIn('building_id', $managerBuildingIds));
+                            ->when(!empty($onlyBuildingIds), fn($q) => $q->whereIn('building_id', $onlyBuildingIds));
                     }
                 ])
-                ->whereHas('userUnits', function ($query) use ($organizationId, $buildingId, $unitId, $type, $managerBuildingIds) {
+                ->whereHas('userUnits', function ($query) use ($organizationId, $buildingId, $unitId, $type, $onlyBuildingIds) {
                     $query->where('organization_id', $organizationId)
                         ->where('contract_status', 1)
                         ->when($buildingId, fn($q) => $q->where('building_id', $buildingId))
                         ->when($unitId, fn($q) => $q->where('unit_id', $unitId))
                         ->when($type, fn($q) => $q->where('type', $type))
-                        ->when(!empty($managerBuildingIds), fn($q) => $q->whereIn('building_id', $managerBuildingIds));
+                        ->when(!empty($onlyBuildingIds), fn($q) => $q->whereIn('building_id', $onlyBuildingIds));
                 })
                 ->when($search, fn($q) => $q->where(function ($subQ) use ($search) {
                     $subQ->where('name', 'like', "%$search%")
@@ -135,29 +134,28 @@ class PropertyUsersController extends Controller
             $buildingId = $request->input('building_id');
             $type = $request->input('type');
 
-            $managerBuildingIds = [];
+            $onlyBuildingIds = [];
 
             if ($roleName === 'Manager') {
-                $managerBuildingIds = ManagerBuilding::where('user_id', $loggedUser->id)->pluck('building_id')->toArray();
+                $onlyBuildingIds = ManagerBuilding::where('user_id', $loggedUser->id)->pluck('building_id')->toArray();
 
-                if (empty($managerBuildingIds)) {
+                if (empty($onlyBuildingIds)) {
                     return back()->with('error', 'You do not have access to any buildings.');
                 }
             }
+            elseif ($roleName === 'Staff'){
+                $staffRecord = StaffMember::where('user_id', $loggedUser->id)->first();
+                $onlyBuildingIds = [$staffRecord->building_id];
+            }
 
-            $buildings = Building::where('organization_id', $organizationId)
-                ->when(!empty($managerBuildingIds), fn($q) => $q->whereIn('id', $managerBuildingIds))
-                ->get();
-
-            $units = BuildingUnit::where('organization_id', $organizationId)
-                ->when(!empty($managerBuildingIds), fn($q) => $q->whereIn('building_id', $managerBuildingIds))
-                ->get();
+            $buildings = $this->getFilteredBuildings($organizationId, $onlyBuildingIds);
+            $units = $this->getFilteredUnits($organizationId, $onlyBuildingIds);
 
             $user = User::where('id', $id)
-                ->whereHas('userUnits', function ($query) use ($organizationId, $managerBuildingIds) {
+                ->whereHas('userUnits', function ($query) use ($organizationId, $onlyBuildingIds) {
                     $query->where('organization_id', $organizationId)
                         ->where('contract_status', 1)
-                        ->when(!empty($managerBuildingIds), fn($q) => $q->whereIn('building_id', $managerBuildingIds));
+                        ->when(!empty($onlyBuildingIds), fn($q) => $q->whereIn('building_id', $onlyBuildingIds));
                 })
                 ->first();
 
@@ -171,7 +169,7 @@ class PropertyUsersController extends Controller
                 ->when($unitId, fn($q) => $q->where('unit_id', $unitId))
                 ->when($buildingId, fn($q) => $q->where('building_id', $buildingId))
                 ->when($type, fn($q) => $q->where('type', $type))
-                ->when(!empty($managerBuildingIds), fn($q) => $q->whereIn('building_id', $managerBuildingIds))
+                ->when(!empty($onlyBuildingIds), fn($q) => $q->whereIn('building_id', $onlyBuildingIds))
                 ->with(['building', 'unit'])
                 ->paginate(12);
 
@@ -183,11 +181,34 @@ class PropertyUsersController extends Controller
             return back()->with('error', 'Something went wrong. Please try again.');
         }
     }
-
-
+    
 
     public function Discontinue(Request $request){
 
+    }
+
+
+    //Helper functions
+    private function getFilteredBuildings($organizationId, $onlyBuildingIds = [])
+    {
+        return Building::where('organization_id', $organizationId)
+            ->whereIn('status', ['Approved', 'For Re-Approval'])
+            ->where('isFreeze', 0)
+            ->when(!empty($onlyBuildingIds), fn($q) => $q->whereIn('id', $onlyBuildingIds))
+            ->select('id', 'name')
+            ->orderBy('name', 'ASC')
+            ->get();
+    }
+
+    private function getFilteredUnits($organizationId, $onlyBuildingIds = [])
+    {
+        return BuildingUnit::where('organization_id', $organizationId)
+            ->where('status', 'Approved')
+            ->where('availability_status', '!=', 'Available')
+            ->when(!empty($onlyBuildingIds), fn($q) => $q->whereIn('building_id', $onlyBuildingIds))
+            ->select('id', 'unit_name')
+            ->orderBy('unit_name', 'ASC')
+            ->get();
     }
 
 }
