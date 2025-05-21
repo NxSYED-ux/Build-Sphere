@@ -32,13 +32,17 @@ class PropertyUsersController extends Controller
 
         try {
             $users = collect();
+            $buildings = collect();
+            $units = collect();
+            $types = ['Rented', 'Sold'];
+
             $token = $request->attributes->get('token');
 
             $organizationId = $token['organization_id'] ?? null;
             $roleName = $token['role_name'] ?? null;
 
             if (!$organizationId || !$roleName) {
-                return view('Heights.Owner.PropertyUsers.index', compact('users'));
+                return view('Heights.Owner.PropertyUsers.index', compact('users', 'buildings', 'units', 'types'));
             }
 
             $buildingId = $request->input('building_id');
@@ -52,7 +56,7 @@ class PropertyUsersController extends Controller
                 $managerBuildingIds = ManagerBuilding::where('user_id', $loggedUser->id)->pluck('building_id')->toArray();
 
                 if (empty($managerBuildingIds)) {
-                    return view('Heights.Owner.PropertyUsers.index', compact('users'));
+                    return view('Heights.Owner.PropertyUsers.index', compact('users', 'buildings', 'units', 'types'));
                 }
             }
 
@@ -106,7 +110,7 @@ class PropertyUsersController extends Controller
                 }))
                 ->paginate(12);
 
-            return view('Heights.Owner.PropertyUsers.index', compact('users', 'buildings', 'units'));
+            return view('Heights.Owner.PropertyUsers.index', compact('users', 'buildings', 'units', 'types'));
 
         } catch (\Exception $e) {
             Log::error('Error in Property Users index: ' . $e->getMessage());
@@ -173,7 +177,7 @@ class PropertyUsersController extends Controller
                 ->with(['building', 'unit'])
                 ->paginate(12);
 
-            return view('Heights.Owner.PropertyUsers.show', compact('user', 'buildings', 'units', 'userUnits'));
+            return view('Heights.Owner.PropertyUsers.show', compact('user', 'userUnits', 'buildings', 'units'));
 
         } catch (\Exception $e) {
             Log::error("Error in Property Users show: " . $e->getMessage());

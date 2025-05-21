@@ -9,6 +9,7 @@ use App\Models\Building;
 use App\Models\BuildingUnit;
 use App\Models\DropdownType;
 use App\Models\ManagerBuilding;
+use App\Models\StaffMember;
 use App\Models\Subscription;
 use App\Models\Transaction;
 use App\Models\User;
@@ -55,6 +56,13 @@ class AssignUnitController extends Controller
             if ($roleName === 'Manager') {
                 $managerBuildingIds = ManagerBuilding::where('user_id', $user->id)->pluck('building_id')->toArray();
                 $query->whereIn('id', $managerBuildingIds);
+
+            }elseif ($roleName === 'Staff'){
+                $staffRecord = StaffMember::where('user_id', $user->id)->first();
+                if ($staffRecord) {
+                    $selectedBuildingId = $staffRecord->building_id;
+                    $query->where('id', $selectedBuildingId);
+                }
             }
 
             $buildings = $query->get();
@@ -123,6 +131,14 @@ class AssignUnitController extends Controller
                     ->exists()) {
                 DB::rollBack();
                 return redirect()->back()->withInput()->with('error', 'You do not have access to assign units of the selected building.');
+            }
+            elseif ($roleName === 'Staff'){
+                $staffRecord = StaffMember::where('user_id', $loggedUser->id)->first();
+
+                if (!$staffRecord || $staffRecord->building_id != $request->buildingId) {
+                    DB::rollBack();
+                    return redirect()->back()->withInput()->with('error', 'You do not have access to assign units of the selected building.');
+                }
             }
 
             try {

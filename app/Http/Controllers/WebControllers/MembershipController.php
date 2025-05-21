@@ -10,6 +10,7 @@ use App\Models\ManagerBuilding;
 use App\Models\Membership;
 use App\Models\MembershipUser;
 use App\Models\PlanSubscriptionItem;
+use App\Models\StaffMember;
 use App\Models\Subscription;
 use App\Models\Transaction;
 use App\Models\User;
@@ -70,6 +71,16 @@ class MembershipController extends Controller
                 $membershipQuery->whereIn('building_id', $managerBuildingIds);
                 $buildingsQuery->whereIn('id', $managerBuildingIds);
                 $unitsQuery->whereIn('building_id', $managerBuildingIds);
+
+            }elseif ($role_name === 'Staff'){
+                $staffRecord = StaffMember::where('user_id', $user->id)->first();
+                if ($staffRecord) {
+                    $staffBuildingId = $staffRecord->building_id;
+
+                    $membershipQuery->where('building_id', $staffBuildingId);
+                    $buildingsQuery->where('id', $staffBuildingId);
+                    $unitsQuery->where('building_id', $staffBuildingId);
+                }
             }
 
             if ($request->filled('building_id')) {
@@ -150,6 +161,14 @@ class MembershipController extends Controller
                 }
 
                 $buildingsQuery->whereIn('id', $managerBuildingIds);
+            }
+            elseif ($role_name === 'Staff'){
+                $staffRecord = StaffMember::where('user_id', $user->id)->first();
+
+                if ($staffRecord) {
+                    $staffBuildingId = $staffRecord->building_id;
+                    $buildingsQuery->where('id', $staffBuildingId);
+                }
             }
 
             $buildings = $buildingsQuery->get();

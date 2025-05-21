@@ -129,9 +129,9 @@ Route::middleware(['auth.jwt'])->group(function () {
         Route::prefix('memberships')->group(function () {
 
             Route::get('/', [MembershipController::class, 'index']);
-            Route::get('/{id}', [MembershipController::class, 'show']);
+            Route::get('/{id}/show', [MembershipController::class, 'show']);
             Route::get('/my', [MembershipController::class, 'myMemberships']);
-            Route::get('/my/{id}', [MembershipController::class, 'myMembershipShow']);
+            Route::get('/{id}/my-show', [MembershipController::class, 'myMembershipShow']);
             Route::get('/past', [MembershipController::class, 'pastMemberships']);
             Route::post('/redeem', [MembershipController::class, 'redeem']);
 
