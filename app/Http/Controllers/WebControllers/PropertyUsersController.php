@@ -116,6 +116,7 @@ class PropertyUsersController extends Controller
 
     public function show(Request $request, $id)
     {
+        $loggedUser = $request->user() ?? abort(403, 'Unauthorised Access');
         try {
             $token = $request->attributes->get('token');
 
@@ -125,7 +126,6 @@ class PropertyUsersController extends Controller
 
             $organizationId = $token['organization_id'];
             $roleName = $token['role_name'] ?? null;
-            $loggedUser = $request->user();
 
             $unitId = $request->input('unit_id');
             $buildingId = $request->input('building_id');
@@ -150,19 +150,7 @@ class PropertyUsersController extends Controller
                 ->when(!empty($managerBuildingIds), fn($q) => $q->whereIn('building_id', $managerBuildingIds))
                 ->get();
 
-            $user = User::with([
-                'userUnits' => function ($query) use ($organizationId, $unitId, $buildingId, $minPrice, $maxPrice, $managerBuildingIds) {
-                    $query->where('organization_id', $organizationId)
-                        ->where('contract_status', 1)
-                        ->when($unitId, fn($q) => $q->where('unit_id', $unitId))
-                        ->when($buildingId, fn($q) => $q->where('building_id', $buildingId))
-                        ->when($minPrice, fn($q) => $q->where('price', '>=', $minPrice))
-                        ->when($maxPrice, fn($q) => $q->where('price', '<=', $maxPrice))
-                        ->when(!empty($managerBuildingIds), fn($q) => $q->whereIn('building_id', $managerBuildingIds))
-                        ->with(['building', 'unit']);
-                }
-            ])
-                ->where('id', $id)
+            $user = User::where('id', $id)
                 ->whereHas('userUnits', function ($query) use ($organizationId, $managerBuildingIds) {
                     $query->where('organization_id', $organizationId)
                         ->where('contract_status', 1)
@@ -170,21 +158,29 @@ class PropertyUsersController extends Controller
                 })
                 ->first();
 
-            if (!$user || $user->userUnits->isEmpty()) {
-                if ($unitId || $buildingId || $minPrice || $maxPrice) {
-                    return view('Heights.Owner.PropertyUsers.show', compact('user', 'buildings', 'units'));
-                }
-
+            if (!$user) {
                 return back()->with('error', 'The user could not be found or has no active rented or sold units associated with your organization.');
             }
 
-            return view('Heights.Owner.PropertyUsers.show', compact('user', 'buildings', 'units'));
+            $userUnits = $user->userUnits()
+                ->where('organization_id', $organizationId)
+                ->where('contract_status', 1)
+                ->when($unitId, fn($q) => $q->where('unit_id', $unitId))
+                ->when($buildingId, fn($q) => $q->where('building_id', $buildingId))
+                ->when($minPrice, fn($q) => $q->where('price', '>=', $minPrice))
+                ->when($maxPrice, fn($q) => $q->where('price', '<=', $maxPrice))
+                ->when(!empty($managerBuildingIds), fn($q) => $q->whereIn('building_id', $managerBuildingIds))
+                ->with(['building', 'unit'])
+                ->paginate(12);
+
+            return view('Heights.Owner.PropertyUsers.show', compact('user', 'buildings', 'units', 'userUnits'));
 
         } catch (\Exception $e) {
             Log::error("Error in Property Users show: " . $e->getMessage());
             return back()->with('error', 'Something went wrong. Please try again.');
         }
     }
+
 
 
     public function Discontinue(Request $request){
