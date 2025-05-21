@@ -13,84 +13,154 @@
         /* User Profile Section */
         .user-profile-card {
             background: var(--sidenavbar-body-color);
-            border-radius: 10px;
-            padding: 20px;
-            margin-bottom: 25px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
-            border: 1px solid rgba(0, 0, 0, 0.05);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
             position: relative;
+            transition: all 0.3s ease;
         }
 
         .user-profile-header {
             display: flex;
             justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 15px;
+            align-items: center;
+            margin-bottom: 25px;
         }
 
         .user-profile-title {
-            font-size: 1.5rem;
-            font-weight: 600;
+            font-size: 1.6rem;
+            font-weight: 700;
             color: var(--sidenavbar-text-color);
+            margin: 0;
         }
 
         .user-profile-actions {
             display: flex;
-            gap: 10px;
+            gap: 12px;
         }
 
         .user-profile-content {
             display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
+            gap: 30px;
+            align-items: center; /* This centers both avatar and details vertically */
+        }
+
+        .user-avatar-wrapper {
+            position: relative;
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            flex-shrink: 0;
         }
 
         .user-avatar {
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
+            width: 100%;
+            height: 100%;
             object-fit: cover;
-            border: 3px solid #fff;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            display: block;
         }
 
-        .user-details {
+        .user-avatar-hover {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            cursor: pointer;
+        }
+
+        .user-avatar-hover i {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+        }
+
+        .user-avatar-hover span {
+            font-size: 0.8rem;
+        }
+
+        .user-avatar-wrapper:hover .user-avatar-hover {
+            opacity: 1;
+        }
+
+        .user-details-grid {
+            display: flex;
+            gap: 40px;
+            flex-grow: 1;
+            align-items: center; /* This centers the grid content vertically */
+        }
+
+        .user-details-column {
             flex: 1;
-            min-width: 250px;
+            min-width: 0;
         }
 
         .user-detail-row {
             display: flex;
-            flex-wrap: wrap;
-            margin-bottom: 8px;
+            margin-bottom: 15px;
+            align-items: center;
         }
 
         .user-detail-label {
             font-weight: 600;
             color: var(--sidenavbar-text-color);
-            min-width: 120px;
+            min-width: 100px;
+            display: flex;
+            align-items: center;
+            opacity: 0.8;
         }
 
         .user-detail-value {
             color: var(--sidenavbar-text-color);
+            font-weight: 500;
+            word-break: break-word;
         }
 
-        .user-status-badge {
-            display: inline-block;
-            padding: 3px 10px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 600;
-        }
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .user-profile-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
 
-        .status-active {
-            background-color: #d4edda;
-            color: #155724;
-        }
+            .user-profile-actions {
+                width: 100%;
+                justify-content: flex-end;
+            }
 
-        .status-inactive {
-            background-color: #f8d7da;
-            color: #721c24;
+            .user-profile-content {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .user-details-grid {
+                flex-direction: column;
+                gap: 20px;
+                width: 100%;
+                align-items: flex-start;
+            }
+
+            .user-detail-row {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
+
+            .user-detail-label {
+                min-width: auto;
+            }
         }
 
         /* ================ FILTERS SECTION ================ */
@@ -576,55 +646,73 @@
                 <div class="row">
                     <div class="col-md-12">
 
-                    <!-- User Profile Section -->
-                    <div class="user-profile-card">
-                        <div class="user-profile-header">
-                            <h4 class="user-profile-title">{{ $user->name ?? 'N/A' }}</h4>
-                            <div class="user-profile-actions">
-                                <a href="{{ route('owner.property.users.index') }}" class="btn btn-secondary">
-                                    <i class="fas fa-arrow-left me-1"></i> Back
-                                </a>
-                                <a href="" class="btn btn-primary">
-                                    <i class="fas fa-edit me-1"></i> Edit
-                                </a>
+                        <!-- User Profile Section -->
+                        <div class="user-profile-card">
+                            <div class="user-profile-header">
+                                <h4 class="user-profile-title">{{ $user->name ?? 'N/A' }}</h4>
+                                <div class="user-profile-actions">
+                                    <a href="{{ route('owner.property.users.index') }}" class="btn btn-secondary">
+                                        <i class="fas fa-arrow-left me-1"></i> Back
+                                    </a>
+                                    <a href="" class="btn btn-primary">
+                                        <i class="fas fa-edit me-1"></i> Edit
+                                    </a>
+                                </div>
+                            </div>
+
+                            <div class="user-profile-content">
+                                <div class="user-avatar-wrapper">
+                                    <img src="{{ $user->picture ? asset($user->picture) : asset('img/default-user.png') }}"
+                                         class="user-avatar"
+                                         alt="User Avatar">
+                                    <div class="user-avatar-hover">
+                                        <i class="fas fa-camera"></i>
+                                        <span>Change Photo</span>
+                                    </div>
+                                </div>
+
+                                <div class="user-details-grid">
+                                    <div class="user-details-column">
+                                        <div class="user-detail-row">
+                    <span class="user-detail-label">
+                        <i class="fas fa-envelope me-2"></i>Email:
+                    </span>
+                                            <span class="user-detail-value">{{ $user->email ?? 'N/A' }}</span>
+                                        </div>
+
+                                        <div class="user-detail-row">
+                    <span class="user-detail-label">
+                        <i class="fas fa-phone me-2"></i>Phone:
+                    </span>
+                                            <span class="user-detail-value">{{ $user->phone_no ?? 'N/A' }}</span>
+                                        </div>
+
+                                        <div class="user-detail-row">
+                    <span class="user-detail-label">
+                        <i class="fas fa-id-card me-2"></i>CNIC:
+                    </span>
+                                            <span class="user-detail-value">{{ $user->cnic ?? 'N/A' }}</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="user-details-column">
+                                        <div class="user-detail-row">
+                    <span class="user-detail-label">
+                        <i class="fas fa-city me-2"></i>City:
+                    </span>
+                                            <span class="user-detail-value">{{ $user->address->city ?? 'N/A' }}</span>
+                                        </div>
+
+                                        <div class="user-detail-row">
+                    <span class="user-detail-label">
+                        <i class="fas fa-venus-mars me-2"></i>Gender:
+                    </span>
+                                            <span class="user-detail-value">{{ ucfirst($user->gender ?? 'N/A') }}</span>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-
-                        <div class="user-profile-content">
-                            <div>
-                                <img src="{{ $user->picture ? asset($user->picture) : asset('img/default-user.png') }}"
-                                     class="user-avatar"
-                                     alt="User Avatar">
-                            </div>
-
-                            <div class="user-details">
-                                <div class="user-detail-row">
-                                    <span class="user-detail-label">Email:</span>
-                                    <span class="user-detail-value">{{ $user->email ?? 'N/A' }}</span>
-                                </div>
-
-                                <div class="user-detail-row">
-                                    <span class="user-detail-label">Phone:</span>
-                                    <span class="user-detail-value">{{ $user->phone_no ?? 'N/A' }}</span>
-                                </div>
-
-                                <div class="user-detail-row">
-                                    <span class="user-detail-label">CNIC:</span>
-                                    <span class="user-detail-value">{{ $user->cnic ?? 'N/A' }}</span>
-                                </div>
-
-                                <div class="user-detail-row">
-                                    <span class="user-detail-label">City:</span>
-                                    <span class="user-detail-value">{{ $user->address->city ?? 'N/A' }}</span>
-                                </div>
-
-                                <div class="user-detail-row">
-                                    <span class="user-detail-label">Gender:</span>
-                                    <span class="user-detail-value">{{ ucfirst($user->gender ?? 'N/A') }}</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
 
                     <div class="d-flex justify-content-between align-items-center mb-2">
                         <h3 class="mb-1">User Units</h3>
@@ -761,7 +849,15 @@
                                     </div>
                                 </div>
                             @endforelse
+
+
                         </div>
+                        <!-- Pagination -->
+                        @if ($userUnits)
+                            <div class="mt-4">
+                                {{ $userUnits->appends(request()->query())->links('pagination::bootstrap-5') }}
+                            </div>
+                        @endif
 
 
                     </div>
