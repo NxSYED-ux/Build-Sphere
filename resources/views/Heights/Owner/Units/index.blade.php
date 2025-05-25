@@ -10,6 +10,71 @@
             margin-top: 45px;
         }
 
+        /* ================ FILTERS SECTION ================ */
+        .filter-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 25px;
+            background: var(--sidenavbar-body-color);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            align-items: flex-end;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+            min-width: 220px;
+        }
+
+        .filter-group label {
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--sidenavbar-text-color);
+            font-size: 0.9rem;
+        }
+
+        .filter-select, .search-input {
+            width: 100%;
+            padding: 10px 15px;
+            border-radius: 6px;
+            border: 1px solid #e0e0e0;
+            background-color: white;
+            transition: all 0.3s ease;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+
+        .search-input {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23999' viewBox='0 0 16 16'%3E%3Cpath d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: 15px center;
+            background-size: 16px 16px;
+            padding-left: 40px;
+        }
+
+        .filter-buttons {
+            display: flex;
+            gap: 12px;
+            margin-left: auto;
+            align-self: center;
+            margin-top: 30px;
+        }
+
+        .filter-buttons .btn {
+            padding: 10px 15px;
+            border-radius: 6px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 120px;
+        }
+
         th, td {
             white-space: nowrap;
         }
@@ -19,146 +84,350 @@
             overflow-x: auto;
         }
 
-        /* Unit Card*/
-        .unit-card{
-            background-color: var(--body-card-bg) !important;
+        /* ================ Unit CARDS ================ */
+
+        .unit-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
         }
 
-        #myTabContent{
+        /* Card Styles */
+        .unit-card {
+            transition: all 0.3s ease;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border: none;
+            margin-bottom: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            background: var(--body-background-color);
+        }
+
+        .unit-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Card Image */
+        .unit-card .card-img-container {
+            height: 180px;
+            overflow: hidden;
+            position: relative;
+            background-color: #f8f9fa;
+        }
+
+        .unit-card .card-img-top {
+            object-fit: cover;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.5s ease;
+        }
+
+        .unit-card:hover .card-img-top {
+            transform: scale(1.05);
+        }
+
+        .unit-type-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .unit-sale-rent-badge {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .unit-price-tag {
+            position: absolute;
+            bottom: 5px;
+            left: 5px;
+            background: rgba(0, 0, 0, 0.4);
+            color: white;
+            padding: 5px 15px;
+            /*border-radius: 20px;*/
+            font-size: 14px;
+            font-weight: 600;
+        }
+        .unit-availability-tag {
+            position: absolute;
+            bottom: 5px;
+            right: 5px;
+            background: rgba(0, 0, 0, 0.4);
+            color: white;
+            padding: 5px 15px;
+            /*border-radius: 20px;*/
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+
+        /* Card Body */
+        .unit-card .card-body {
+            padding: 1.25rem;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
             background-color: var(--body-background-color);
         }
 
-
-
-        /*  Unit Model */
-        .modal-dialog {
-            max-width: 400px;
-            border-radius: 20px !important;
-            overflow: hidden;
-        }
-
-        .modal-content {
-            max-width: 400px;
-            border-radius: 20px !important;
-            overflow: hidden; /* Ensures the content respects the border radius */
-            box-shadow: none !important; /* Remove Bootstrap shadow */
-            border: 2px solid var(--modal-border); /* Ensures corners have a visible border */
-        }
-
-        .unit-modal-content {
-            border-radius: 20px !important;
-            overflow: hidden; /* Important for applying radius properly */
-        }
-
-        .unit-modal-dialog {
-            border-radius: 20px !important;
-        }
-
-        #unitModal h5{
-            font-size: 15px;
+        .unit-card .card-title {
+            font-size: 1.1rem;
             font-weight: 600;
-            color: var(--modal-text);
-            font-family: 'Montserrat', sans-serif;
+            margin-bottom: 0.5rem;
+            color: var(--sidenavbar-text-color);
+            word-break: break-word;
         }
 
-        #unitModal span{
-            font-size: 15px;
-            color: var(--modal-text);
-            font-family: 'Montserrat', sans-serif;
+        .unit-card .card-text {
+            color: var(--sidenavbar-text-color);
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            word-break: break-word;
         }
 
-        .unit-modal-header {
-            background: var(--modal-bg) !important;
-            /*background: var(--modal-header-bg);*/
-            color: var(--modal-text) !important;
-            font-family: 'Montserrat', sans-serif !important;
+        /* Status Badges */
+        .unit-card .badge-status {
+            font-size: 0.75rem;
+            padding: 0.35em 0.65em;
+            border-radius: 50px;
+            font-weight: 600;
+            white-space: nowrap;
         }
 
-        #unitModalLabel{
-            font-size: 18px !important;
-            font-weight: bold !important;
+        .unit-card .badge-under-review {
+            background-color: #fff3cd;
+            color: #856404 !important;
         }
 
-        .unit-modal-body {
-            background: var(--modal-bg) !important;
-            color: var(--modal-text) !important;
-            font-family: 'Montserrat', sans-serif !important;
+        .unit-card .badge-active {
+            background-color: #d4edda;
+            color: #155724 !important;
         }
 
-        .unit-modal-footer {
-            background: var(--modal-bg) !important;
-            border-top: 1px solid var(--modal-border) !important;
+        .unit-card .badge-inactive {
+            background-color: #f8d7da;
+            color: #721c24 !important;
         }
 
-        .unit-modal-close-btn {
-            background: white;
-            color: var(--modal-btn-text);
-            border: 2px solid var(--modal-btn-bg);
-            border-radius: 10px;
+        /* Action Buttons */
+        .unit-card .action-buttons {
+            display: flex;
+            margin-top: auto;
+            flex-wrap: wrap;
+            gap: 8px;
         }
 
-        .unit-modal-close-btn:hover {
-            background: var(--modal-btn-bg);
-            color: var(--modal-btn-text-hover);
-            opacity: 0.8;
-        }
-
-        .unit-close-btn {
-            filter: invert(var(--invert, 0));
-        }
-
-        .unit-img-border {
-            border: 2px solid var(--modal-border);
-        }
-
-        .nav-tabs .nav-item {
-            flex: 1;
+        .unit-card .action-btn {
+            flex: 1 1 calc(50% - 4px);
+            margin: 0;
+            padding: 8px 0;
+            border-radius: 5px;
+            font-size: 0.85rem;
             text-align: center;
-            max-width: 100%;
+            min-width: 100px;
+            transition: all 0.2s ease;
         }
 
-        .nav-tabs .nav-link {
-            background-color: var(--nav-tabs-inactive-bg-color) !important;
-            color: var(--nav-tabs-inactive-text-color) !important;
-            border-bottom: none;
-        }
-        .nav-tabs .nav-link.active {
-            background-color: var(--body-background-color) !important;
-            color: var(--nav-tabs-active-text-color) !important;
-            /*border-bottom: 1px solid var(--nav-tabs-inactive-border-color) !important;*/
-        }
-
-        /* DataTables Entries Dropdown */
-        .dataTables_wrapper .dataTables_length select {
-            background-color: var(--dataTable-paginate-menu-bg-color);
-            color: var(--dataTable-paginate-menu-text-color);
-            border: 1px solid var(--dataTable-paginate-menu-border-color);
-        }
-        .dataTables_wrapper .dataTables_length label {
-            color: var(--dataTable-paginate-menu-label-color);
-        }
-        /* DataTables Search Box */
-        .dataTables_wrapper .dataTables_filter input {
-            background-color: var(--dataTable-search-input-bg-color);
-            color: var(--dataTable-search-input-text-color);
-            border: 1px solid var(--dataTable-search-input-border-color);
-        }
-        .dataTables_wrapper .dataTables_filter label {
-            color: var(--dataTable-search-label-color);
-        }
-        .dataTables_filter input::placeholder {
-            color: var(--dataTable-search-placeholder-color); /* Standard */
-        }
-        .dataTables_filter input::-webkit-input-placeholder {
-            color: var(--dataTable-search-placeholder-color); /* WebKit browsers */
-        }
-        .dataTables_filter input::-moz-placeholder {
-            color: var(--dataTable-search-placeholder-color); /* Mozilla Firefox 19+ */
-        }
-        .dataTables_filter input:-ms-input-placeholder {
-            color: var(--dataTable-search-placeholder-color); /* Internet Explorer 10+ */
+        /* Special Button Styles */
+        .btn-add {
+            padding: 10px 10px !important;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 110px;
+            font-size: 0.95rem !important;
+            text-decoration: none;
         }
 
+        .btn-view {
+            background-color: rgba(52, 152, 219, 0.1);
+            color: #3498db;
+            border: 1px solid rgba(52, 152, 219, 0.2);
+        }
+
+        .btn-view:hover {
+            background-color: rgba(52, 152, 219, 0.2);
+            color: #2980b9;
+        }
+
+        .btn-edit {
+            background-color: rgba(46, 204, 113, 0.1);
+            color: var(--sage-green);
+            border: 1px solid rgba(46, 204, 113, 0.2);
+        }
+
+        .btn-edit:hover {
+            background-color: rgba(46, 204, 113, 0.2);
+            color: #27ae60;
+        }
+
+        /* Levels Button */
+        .unit-card .levels-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            color: #7f8c8d;
+            transition: all 0.2s ease;
+            z-index: 1;
+        }
+
+        .unit-card .levels-btn:hover {
+            background: white;
+            color: #3498db;
+            transform: scale(1.1);
+        }
+
+        /* ================ EMPTY STATE ================ */
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            background-color: #f8f9fa;
+            border-radius: 12px;
+            grid-column: 1 / -1;
+        }
+
+        .empty-state-icon {
+            font-size: 3rem;
+            color: #bdc3c7;
+            margin-bottom: 15px;
+        }
+
+        /* ================ VIEW TOGGLE ================ */
+        .grid-view-toggle {
+            display: flex;
+            align-items: center;
+            margin-right: 15px;
+        }
+
+        .grid-view-toggle .btn {
+            padding: 0.375rem 0.75rem;
+        }
+
+        /* ================ TABLE VIEW ================ */
+        #tableView {
+            display: none;
+            margin-top: 0!important;
+            padding-top: 0 !important;
+        }
+
+        /* ================ RESPONSIVE ADJUSTMENTS ================ */
+        @media (max-width: 1399.98px) {
+            .buildings-grid {
+                grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            }
+        }
+
+        @media (max-width: 1199.98px) {
+            .buildings-grid {
+                grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            }
+
+            .unit-card .card-img-container {
+                height: 170px;
+            }
+        }
+
+        @media (max-width: 991.98px) {
+            .buildings-grid {
+                grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            }
+
+            .filter-group {
+                min-width: 180px;
+            }
+        }
+
+        @media (max-width: 767.98px) {
+            .buildings-grid {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            }
+
+            .unit-card .card-img-container {
+                height: 160px;
+            }
+
+            .filter-container {
+                flex-direction: column;
+            }
+
+            .filter-buttons {
+                margin-left: 0;
+                width: 100%;
+            }
+
+            .filter-buttons .btn {
+                flex: 1;
+            }
+        }
+
+        @media (max-width: 575.98px) {
+            .buildings-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .unit-card .card-img-container {
+                height: 200px;
+            }
+
+            .filter-group {
+                min-width: 100%;
+            }
+
+            .unit-card .action-btn {
+                flex: 1 1 100%;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .unit-card .card-text {
+                font-size: 0.85rem;
+            }
+
+            .unit-card .card-title {
+                font-size: 1rem;
+            }
+
+            .unit-card .badge-status {
+                font-size: 0.65rem;
+            }
+
+            .btn-add {
+                min-width: 90px;
+                font-size: 0.85rem !important;
+                padding: 8px 5px !important;
+            }
+            .unit-card .action-btn {
+                flex: 1 1 calc(50% - 4px);
+            }
+        }
     </style>
 @endpush
 
@@ -174,202 +443,224 @@
     <x-Owner.side-navbar :openSections="['Buildings', 'Units']"/>
     <x-error-success-model />
 
-    @php
-        $activeTab = 'Cards';
-    @endphp
-
     <div id="main">
 
         <section class="content  mt-1 mb-3 mx-2">
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-md-12">
-                        <div class="box ">
-                            <div class="container mt-2">
-                                <div class="d-flex justify-content-between align-items-center mb-2">
-                                    <h3 class="mb-1">Units</h3>
-                                    <a href="{{ route('owner.units.create') }}" class="btn float-end hidden add_button" id="Owner-Unit-Add-Button"  data-bs-toggle="tooltip" data-bs-placement="top" title="Add Unit">
-                                        <x-icon name="add" type="svg" class="" size="25" />
-                                    </a>
-                                </div>
-                                <div class="card shadow p-2 pt-1 mb-5 bg-body rounded" style="border: none;">
-                                    <div class="card-body">
-                                        <div class="d-flex justify-content-between align-items-center">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h3 class="mb-1">Units</h3>
+                            <a href="{{ route('owner.units.create') }}" class="btn float-end Owner-Unit-Add-Button hidden add_button" data-bs-toggle="tooltip" data-bs-placement="top" title="Add Unit">
+                                <x-icon name="add" type="svg" class="" size="25" />
+                            </a>
+                        </div>
 
-                                            <div  class="d-flex align-items-center">
-                                                <button class="btn btn-light" type="button" id="menu-icon" data-bs-toggle="dropdown" aria-expanded="false">
-                                                    <!-- <i class="bx bx-menu"></i> -->
-                                                    <i class='bx bx-export' style="font-size: 20px;"></i>
-                                                </button>
+                        <!-- Filter Form -->
+                        <form method="GET" id="filterForm" class="filter-container">
+                            <div class="filter-group">
+                                <label for="search">Search</label>
+                                <input type="text" name="search" id="search" class="search-input"
+                                       placeholder="Search by name"
+                                       value="{{ request('search') }}">
+                            </div>
 
-                                                <ul id="button-list" class="dropdown-menu dropdown-menu-end" >
-                                                    <li><button class="dropdown-item" type="button" id="copyButton">Copy</button></li>
-                                                    <li><button class="dropdown-item" type="button" id="csvButton">CSV</button></li>
-                                                    <li><button class="dropdown-item" type="button" id="excelButton">Excel</button></li>
-                                                    <li><button class="dropdown-item" type="button" id="pdfButton">PDF</button></li>
-                                                    <li><button class="dropdown-item" type="button" id="printButton">Print</button></li>
-                                                    <!-- <li><button class="dropdown-item" type="button" id="colvisButton">Column Visibility</button></li> -->
-                                                </ul>
-                                            </div>
+                            <div class="filter-group">
+                                <label for="DepartmentId">Organization</label>
+                                <select name="DepartmentId" id="DepartmentId" class="form-select filter-select">
+                                    <option value="">All Organizations</option>
+                                </select>
+                            </div>
 
-                                            <form method="GET" action="{{ route('owner.units.index') }}" class="d-flex" style="margin-left: 6px;">
-                                                <input
-                                                    type="text"
-                                                    name="search"
-                                                    class="form-control me-2"
-                                                    placeholder="Search units..."
-                                                    value="{{ request('search') }}"
-                                                >
-                                                <button type="submit" class="btn btn-primary"><i class='bx bx-search' style="font-size: 20px;"></i></button>
-                                            </form>
-                                        </div>
-                                        <ul class="nav nav-tabs mt-2" id="myTab" role="tablist">
-                                            <li class="nav-item" role="presentation">
-                                                <a class="nav-link {{ $activeTab === 'Cards' ? 'active' : '' }}" id="dropdwon-cards-tab" data-bs-toggle="tab" href="#dropdwon-cards" role="tab" aria-controls="dropdwon-cards" aria-selected="{{ $activeTab === 'Cards' ? 'true' : 'false' }}">Cards</a>
-                                            </li>
-                                            <li class="nav-item" role="presentation">
-                                                <a class="nav-link {{ $activeTab === 'Table' ? 'active' : '' }}" id="dropdwon-table-tab" data-bs-toggle="tab" href="#dropdwon-table" role="tab" aria-controls="dropdwon-table" aria-selected="{{ $activeTab === 'Table' ? 'true' : 'false' }}">Table</a>
-                                            </li>
-                                        </ul>
-                                        <div class="tab-content mt-0 pt-0 border rounded-bottom" id="myTabContent" >
-                                            <div class="tab-pane fade {{ $activeTab === 'Cards' ? 'show active' : '' }}" id="dropdwon-cards" role="tabpanel" aria-labelledby="dropdwon-cards-tab">
-                                                <div class="container">
-                                                    <div class="row text-center mt-3">
-                                                        @forelse ($units ?? [] as $unit)
-                                                            <div class="col-lg-4 col-md-6 col-12 mb-3">
-                                                                <div class="card unit-card shadow-sm" style="border-radius: 10px;">
-                                                                    <div class="position-relative">
-                                                                        @if($unit->pictures->isNotEmpty())
-                                                                            <div id="carousel{{ $unit->id }}" class="carousel slide" data-bs-ride="carousel">
-                                                                                <div class="carousel-inner">
-                                                                                    @foreach ($unit->pictures as $key => $picture)
-                                                                                        <div class="carousel-item {{ $key == 0 ? 'active' : '' }}">
-                                                                                            <img src="{{ asset($picture->file_path) }}" class="d-block w-100"
-                                                                                                 alt="Unit Picture" style="border-radius: 10px 10px 0 0; height: 180px; object-fit: cover;">
-                                                                                        </div>
-                                                                                    @endforeach
-                                                                                </div>
-                                                                            </div>
-                                                                        @else
-                                                                            <img src="{{ asset('img/placeholder-img.jfif') }}" class="d-block w-100"
-                                                                                 alt="Unit Picture" style="border-radius: 10px 10px 0 0; height: 180px; object-fit: cover;">
-                                                                        @endif
+                            <div class="filter-group">
+                                <label for="BuildingId">Building</label>
+                                <select name="BuildingId" id="BuildingId" class="form-select filter-select">
+                                    <option value="">All Buildings</option>
+                                </select>
+                            </div>
 
-                                                                        <!-- Top Left Badges -->
-                                                                        <div class="position-absolute top-0 start-0 m-2 d-flex gap-1">
-                                                                            <span class="badge bg-warning  px-3 py-2" style="color: #fff !important;">{{ $unit->sale_or_rent }}</span>
-                                                                            <span class="badge bg-info  px-3 py-2" style="color: #fff !important;">{{ $unit->unit_type }}</span>
-                                                                        </div>
+                            <div class="filter-buttons">
+                                <button type="button" class="btn btn-secondary flex-grow-1 d-flex align-items-center justify-content-center" onclick="resetFilters()">
+                                    <i class="fas fa-undo me-2"></i> Reset
+                                </button>
+                                <button type="submit" class="btn btn-primary flex-grow-1 d-flex align-items-center justify-content-center">
+                                    <i class="fas fa-filter me-2"></i> Apply Filters
+                                </button>
+                            </div>
+                        </form>
 
-                                                                        <!-- Top Right Icons -->
-                                                                        <div class="position-absolute top-0 end-0 m-2 d-flex gap-1">
-                                                                            <a href="{{ route('owner.units.show', $unit->id) }}" class="btn btn-light btn-sm rounded-circle shadow"><i class="fa fa-eye"></i></a>
-                                                                            <a href="{{ route('owner.units.edit', $unit->id) }}" class="btn btn-light btn-sm rounded-circle shadow"><i class="fa fa-pencil"></i></a>
-                                                                        </div>
-                                                                    </div>
-
-
-                                                                    <div class="card-body mt-2 pt-0 text-start position-relative">
-                                                                        <h5 class="fw-bold mb-1">{{ $unit->unit_name ?? 'Shop 03' }}</h5>
-                                                                        <span class="badge  {{ $unit->status === "Approved" ? 'bg-success' : 'bg-danger' }} position-absolute py-2" style="top: 0; right: 10px; color: #fff !important;">{{ $unit->status }}</span>
-                                                                        <!-- Location -->
-                                                                        <p class="mb-1">
-                                                                            <svg width="15" height="15" viewBox="0 0 17 20" fill="none"
-                                                                                 xmlns="http://www.w3.org/2000/svg">
-                                                                                <path d="M14.173 14.8819L13.053 16.0558C12.2275 16.9144 11.1564 18.0184 9.83928 19.3679C9.0163 20.2113 7.71058 20.2112 6.88769 19.3677L3.59355 15.9718C3.17955 15.541 2.83301 15.1777 2.55386 14.8819C-0.654672 11.4815 -0.654672 5.9683 2.55386 2.56789C5.76239 -0.832524 10.9645 -0.832524 14.173 2.56789C17.3815 5.9683 17.3815 11.4815 14.173 14.8819ZM10.7226 8.9996C10.7226 7.61875 9.66633 6.49936 8.36344 6.49936C7.06056 6.49936 6.0043 7.61875 6.0043 8.9996C6.0043 10.3804 7.06056 11.4998 8.36344 11.4998C9.66633 11.4998 10.7226 10.3804 10.7226 8.9996Z" fill="red"/>
-                                                                            </svg>
-                                                                            {{ $unit->building->address ? $unit->building->address->location .', ' . $unit->building->address->city .', ' .  $unit->building->address->province  .', ' .  $unit->building->address->country : 'No Address'  }}
-                                                                        </p>
-
-                                                                        <!-- Price -->
-                                                                        <div class="d-flex justify-content-between align-items-center">
-                                                                            <p class="fw-bold mb-0 me-2">{{ $unit->building->name }}</p>
-                                                                            <p class="fw-bold mb-0">Rs {{ number_format($unit->price ?? 135000) }} PKR</p>
-                                                                        </div>
-
-
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        @empty
-                                                            <h1>No Units Found.</h1>
-                                                        @endforelse
-                                                    </div>
-
-                                                </div>
-                                            </div>
-                                            <div class="tab-pane fade {{ $activeTab === 'Table' ? 'show active' : '' }}" id="dropdwon-table" role="tabpanel" aria-labelledby="dropdwon-table-tab"   style="margin: 0px !important; padding: 0px !important;">
-
-                                                <table id="unitsTable" class="table shadow-sm table-hover table-striped" style="margin: 0px !important; padding: 0px !important;">
-                                                <thead class="shadow"  style="margin: 0px !important; padding: 0px !important;">
-                                                <tr>
-                                                    <th>ID</th>
-                                                    <th>Picture</th>
-                                                    <th>Name</th>
-                                                    <th>Type</th>
-                                                    <th>Price</th>
-                                                    <th>Status</th>
-                                                    <th>Sale or Rent</th>
-                                                    <th>Availability Status</th>
-                                                    <th>Building</th>
-                                                    <th>Level</th>
-                                                    <th>Organization</th>
-                                                    <th class="w-170 text-center">Actions</th>
-                                                </tr>
-                                                </thead>
-                                                <tbody>
-                                                @forelse ($units ?? [] as $unit)
-                                                    <tr>
-                                                        <td>{{ $unit->id }}</td>
-                                                        <td>
-                                                            <div id="unitCarousel{{ $unit->id }}" class="carousel slide" data-bs-ride="carousel">
-                                                                <div class="carousel-inner">
-                                                                    @forelse($unit->pictures ?? [] as $key => $picture)
-                                                                        <div class="carousel-item {{ $key == 0 ? 'active' : '' }}">
-                                                                            <img src="{{ asset($picture->file_path) }}" class="d-block" alt="Unit Picture" style="border-radius: 5px; width:100px; height:50px;">
-                                                                        </div>
-                                                                    @empty
-                                                                        <img src="{{ asset('img/placeholder-img.jfif') }}" class="d-block" alt="Unit Picture" style="border-radius: 5px; width:100px; height:50px;">
-                                                                    @endforelse
-                                                                </div>
-                                                            </div>
-                                                        </td>
-                                                        <td>{{ $unit->unit_name }}</td>
-                                                        <td>
-                                                            {{ $unit->unit_type }}
-                                                        </td>
-                                                        <td>{{ $unit->price ?? 'N/A' }}</td>
-                                                        <td>{{ $unit->status ?? 'N/A' }}</td>
-                                                        <td>{{ $unit->sale_or_rent ?? 'N/A' }}</td>
-                                                        <td>{{ $unit->availability_status ?? 'N/A' }}</td>
-                                                        <td>{{ $unit->level->building->name ?? 'N/A' }}</td>
-                                                        <td>{{ $unit->level->level_name ?? 'N/A' }}</td>
-                                                        <td>{{ $unit->organization->name ?? 'N/A' }}</td>
-                                                        <td class="text-center">
-                                                            <a href="{{ route('owner.units.show', $unit->id) }}" class="text-info view-unit" data-id="{{ $unit->id }}" data-bs-toggle="tooltip" data-bs-placement="top" title="View"><i class="fa fa-eye mx-2" style="font-size: 20px;"></i></a>
-                                                            <a href="{{ route('owner.units.edit', $unit->id) }}" class="text-warning hidden Owner-Unit-Edit-Button" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit">
-                                                                <i class="fa fa-pencil mx-2" style="font-size: 20px;"></i>
-                                                            </a>
-                                                        </td>
-                                                    </tr>
-                                                @empty
-                                                    <tr>
-                                                        <td colspan="12" class="text-center">No units found.</td>
-                                                    </tr>
-                                                @endforelse
-                                                </tbody>
-                                                </table>
-                                            </div>
-                                        </div>
-                                        @if ($units)
-                                            <div class="mt-3 custom-pagination-wrapper">
-                                                {{ $units->links('pagination::bootstrap-5') }}
-                                            </div>
-                                        @endif
+                        <div class="card shadow p-3 mb-5 bg-body rounded" style="border: none; background-color: var(--sidenavbar-body-color) !important;">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center mb-4 tools-container">
+                                    <div class="grid-view-toggle me-3">
+                                        <span class="me-2">View:</span>
+                                        <div class="btn-group" role="group">
+                                            <button type="button" class="btn btn-outline-secondary active" id="gridViewBtn">
+                                                <i class='bx bx-grid-alt'></i>
+                                            </button>
+                                            <button type="button" class="btn btn-outline-secondary" id="tableViewBtn">
+                                                <i class='bx bx-table'></i>
+                                            </button>
                                         </div>
                                     </div>
+
+                                    <div class="dropdown">
+                                        <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="exportDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                            <x-icon name="export" type="icon" class="me-1" size="16" />
+                                            Export
+                                        </button>
+                                        <ul class="dropdown-menu" aria-labelledby="exportDropdown">
+                                            <li><button class="dropdown-item" type="button" id="copyButton"><i class='bx bx-copy me-2'></i>Copy</button></li>
+                                            <li><button class="dropdown-item" type="button" id="csvButton"><i class='bx bx-file me-2'></i>CSV</button></li>
+                                            <li><button class="dropdown-item" type="button" id="excelButton"><i class='bx bx-spreadsheet me-2'></i>Excel</button></li>
+                                            <li><button class="dropdown-item" type="button" id="pdfButton"><i class='bx bxs-file-pdf me-2'></i>PDF</button></li>
+                                            <li><button class="dropdown-item" type="button" id="printButton"><i class='bx bx-printer me-2'></i>Print</button></li>
+                                        </ul>
+                                    </div>
+                                </div>
+
+                                <!-- Card View -->
+                                <div id="cardView">
+                                    <div class="unit-grid">
+                                        @forelse($units ?? [] as $unit)
+                                            <div class="member-card">
+                                                <div class="card unit-card">
+                                                    <div class="card-img-container">
+                                                        @if(count($unit->pictures ?? []) > 0)
+                                                            <img src="{{ asset($unit->pictures[0]->file_path) }}" class="card-img-top" alt="Building Image">
+                                                        @else
+                                                            <img src="{{ asset('img/placeholder-img.jfif') }}" class="card-img-top" alt="Building Image">
+                                                        @endif
+                                                        <div class="unit-type-badge">
+                                                            {{ $unit->unit_type }}
+                                                        </div>
+                                                        <div class="unit-sale-rent-badge">
+                                                            {{ $unit->sale_or_rent }}
+                                                        </div>
+                                                        <div class="unit-price-tag">
+                                                            PKR {{ $unit->price ?? 'N/A' }}
+                                                        </div>
+                                                        <div class="unit-availability-tag">
+                                                            {{ $unit->availability_status ?? 'N/A' }}
+                                                        </div>
+                                                    </div>
+                                                    <div class="card-body">
+                                                        <div class="d-flex justify-content-between align-items-start">
+                                                            <h5 class="card-title">{{ $unit->unit_name }}</h5>
+                                                            <span class="badge badge-status
+                                                                @if($unit->status === 'Approved') badge-active
+                                                                @elseif($unit->status === 'Rejected') badge-inactive
+                                                                @else badge-inactive
+                                                                @endif">
+                                                                {{ $unit->status }}
+                                                            </span>
+                                                        </div>
+                                                        <p class="card-text"><i class='bx bx-buildings me-1'></i> {{ $unit->building->name ?? 'N/A' }}</p>
+                                                        <p class="card-text"><i class='bx bxs-layer me-1'></i> {{ $unit->level->level_name ?? 'N/A' }}</p>
+
+
+                                                        <div class="action-buttons">
+                                                            <a href="{{ route('owner.units.show', $unit->id) }}" class="action-btn btn-add btn-view view-unit gap-1" title="View">
+                                                                <i class='bx bx-show'></i> View
+                                                            </a>
+
+                                                            <a href="{{ route('owner.units.edit', $unit->id) }}" class="action-btn btn-add btn-edit gap-1 Owner-Unit-Edit-Button hidden" title="Edit">
+                                                                <i class='bx bx-edit'></i> Edit
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        @empty
+                                            <div class="col-12">
+                                                <div class="empty-state">
+                                                    <div class="empty-state-icon">
+                                                        <i class='bx bx-building-house'></i>
+                                                    </div>
+                                                    <h4>No Units Found</h4>
+                                                    <p class="text-muted">There are no units to display. You can add a new unit by clicking the "Add Unit" button.</p>
+                                                </div>
+                                            </div>
+                                        @endforelse
+                                    </div>
+                                </div>
+
+                                <!-- Table View (Hidden by default) -->
+                                <div id="tableView" style="display: none; margin-top: 0!important; padding-top: 0 !important;">
+                                    <div class="table-responsive">
+                                        <table id="unitsTable" class="table shadow-sm table-hover table-striped">
+                                            <thead class="shadow">
+                                            <tr>
+                                                <th>ID</th>
+                                                <th>Picture</th>
+                                                <th>Name</th>
+                                                <th>Type</th>
+                                                <th>Price</th>
+                                                <th>Status</th>
+                                                <th>Sale or Rent</th>
+                                                <th>Availability Status</th>
+                                                <th>Building</th>
+                                                <th>Level</th>
+                                                <th class="w-170 text-center">Actions</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            @forelse ($units ?? [] as $unit)
+                                                <tr>
+                                                    <td>{{ $unit->id }}</td>
+                                                    <td>
+                                                        <div id="unitCarousel{{ $unit->id }}" class="carousel slide" data-bs-ride="carousel">
+                                                            <div class="carousel-inner">
+                                                                @forelse($unit->pictures ?? [] as $key => $picture)
+                                                                    <div class="carousel-item {{ $key == 0 ? 'active' : '' }}">
+                                                                        <img src="{{ asset($picture->file_path) }}" class="d-block" alt="Unit Picture" style="border-radius: 5px; width:100px; height:50px;">
+                                                                    </div>
+                                                                @empty
+                                                                    <img src="{{ asset('img/placeholder-img.jfif') }}" class="d-block" alt="Unit Picture" style="border-radius: 5px; width:100px; height:50px;">
+                                                                @endforelse
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td>{{ $unit->unit_name }}</td>
+                                                    <td>
+                                                        {{ $unit->unit_type }}
+                                                    </td>
+                                                    <td>{{ $unit->price ?? 'N/A' }}</td>
+                                                    <td>{{ $unit->status ?? 'N/A' }}</td>
+                                                    <td>{{ $unit->sale_or_rent ?? 'N/A' }}</td>
+                                                    <td>{{ $unit->availability_status ?? 'N/A' }}</td>
+                                                    <td>{{ $unit->level->building->name ?? 'N/A' }}</td>
+                                                    <td>{{ $unit->level->level_name ?? 'N/A' }}</td>
+                                                    <td class="text-center ">
+                                                        <div class="d-flex justify-content-center align-items-center gap-3">
+                                                            <a href="{{ route('owner.units.show', $unit->id) }}" class="text-info view-unit" data-bs-toggle="tooltip" data-bs-placement="top" title="View">
+                                                                <x-icon name="view" type="icon" class="" size="20px" />
+                                                            </a>
+                                                            <a href="{{ route('owner.units.edit', $unit->id) }}" class="text-warning Owner-Unit-Edit-Button hidden" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit">
+                                                                <x-icon name="edit" type="icon" class="" size="20px" />
+                                                            </a>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            @empty
+                                                <tr>
+                                                    <td colspan="12" class="text-center">No units found.</td>
+                                                </tr>
+                                            @endforelse
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+
+                                @if ($units && $units->count() > 0)
+                                    <div class="mt-3">
+                                        {{ $units->links('pagination::bootstrap-5') }}
+                                    </div>
+                                @endif
                             </div>
                         </div>
+
+
                     </div>
                 </div>
             </div>
@@ -377,64 +668,7 @@
     </div>
 
 
-    <!-- Unit Details Modal -->
-    <div class="modal fade" id="unitModal" tabindex="-1" aria-labelledby="unitModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-md modal-dialog-centered">
-            <div class="modal-content shadow-lg unit-modal-content">
-                <!-- Header -->
-                <div class="modal-header unit-modal-header position-relative">
-                    <h5 class="modal-title fw-bold w-100 text-center" id="unitModalLabel">Unit Details</h5>
-                </div>
-
-                <!-- Body -->
-                <div class="modal-body unit-modal-body">
-                    <div class="d-flex flex-column align-items-center justify-content-center mb-3">
-                        <div class="d-flex align-items-center">
-                            <img id="unitPicture" src="" alt="Unit Picture" class="img-fluid rounded-circle shadow-sm border unit-img-border"
-                                 style="width: 140px; height: 140px; object-fit: cover;">
-                            <div class="ms-3" style="padding-left: 10px !important;">
-                                <h5 id="unitName" class="mb-1"></h5>
-                                <p class="mb-0"><strong>PKR </strong><span id="unitPrice"></span></p>
-
-                            </div>
-                        </div>
-                    </div>
-
-
-                    <div class="container">
-                        <div class="row px-3">
-                            <div class="col-7 mb-2">
-                                <h5>Building</h5>
-                                <span id="unitBuilding"></span>
-                            </div>
-                            <div class="col-5 mb-2">
-                                <h5>Level</h5>
-                                <span id="unitLevel"></span>
-                            </div>
-                            <div class="col-7 mb-2">
-                                <h5>Organization</h5>
-                                <span id="unitOrganization"></span>
-                            </div>
-                            <div class="col-5 mb-2">
-                                <h5>Type</h5>
-                                <span id="unitType"></span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Footer -->
-                <div class="modal-footer unit-modal-footer">
-                    <button type="button" class="btn unit-modal-close-btn w-100" data-bs-dismiss="modal">Close</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-
 @endsection
-
-
 
 @push('scripts')
     <!-- Add DataTables JS -->
@@ -450,9 +684,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
 
-    <!-- Data Table script -->
     <script>
         document.addEventListener("DOMContentLoaded", function () {
+            // Initialize DataTable for table view
             var table = new DataTable("#unitsTable", {
                 searching: false,
                 paging: false,
@@ -482,6 +716,26 @@
                 ]
             });
 
+            // View toggle functionality
+            const gridViewBtn = document.getElementById('gridViewBtn');
+            const tableViewBtn = document.getElementById('tableViewBtn');
+            const cardView = document.getElementById('cardView');
+            const tableView = document.getElementById('tableView');
+
+            gridViewBtn.addEventListener('click', function() {
+                this.classList.add('active');
+                tableViewBtn.classList.remove('active');
+                cardView.style.display = 'block';
+                tableView.style.display = 'none';
+            });
+
+            tableViewBtn.addEventListener('click', function() {
+                this.classList.add('active');
+                gridViewBtn.classList.remove('active');
+                cardView.style.display = 'none';
+                tableView.style.display = 'block';
+            });
+
             function triggerButton(buttonClass, logMessage) {
                 console.log(logMessage);
                 table.buttons(buttonClass).trigger();
@@ -503,50 +757,17 @@
                 triggerButton(".buttons-print", "Print Button clicked");
             });
 
-            document.getElementById("colvisButton")?.addEventListener("click", function () {
-                triggerButton(".buttons-colvis", "Column Visibility Button clicked");
+            document.getElementById("copyButton")?.addEventListener("click", function () {
+                triggerButton(".buttons-copy", "Copy Button clicked");
             });
         });
     </script>
 
-
-    <!-- Unit Detail Model script -->
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            document.querySelectorAll(".view-unit").forEach(button => {
-                button.addEventListener("click", function () {
-                    let userId = this.dataset.id;
-
-                    fetch(`{{ route('owner.units.details', ':id') }}`.replace(':id', userId), {
-                        method: "GET",
-                        headers: {
-                            'Accept': 'application/json',
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                            'Content-Type': 'application/json',
-                            'X-Requested-With': 'XMLHttpRequest'
-                        }
-                    })
-                        .then(response => response.json())
-                        .then(data => {
-                            let unit = data.Unit;
-
-                            document.getElementById("userPicture").src = unit.picture ? unit.picture : "https://via.placeholder.com/150";
-                            document.getElementById("unitName").textContent = unit.unit_name;
-                            document.getElementById("unitBuilding").textContent = unit.building.name;
-                            document.getElementById("unitLevel").textContent = unit.level.level_name;
-                            document.getElementById("unitOrganization").textContent = unit.organization.name;
-                            document.getElementById("unitType").textContent = unit.unit_type;
-                            document.getElementById("unitPrice").textContent = unit.price;
-
-                            let unitModal = new bootstrap.Modal(document.getElementById("unitModal"));
-                            unitModal.show();
-                        })
-                        .catch(error => {
-                            console.error("Error:", error);
-                        });
-                });
-            });
-        });
+        function resetFilters() {
+            window.location.href = '{{ route("owner.units.index") }}';
+        }
     </script>
+
 
 @endpush

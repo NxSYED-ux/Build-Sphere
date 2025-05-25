@@ -10,6 +10,71 @@
             margin-top: 45px;
         }
 
+        /* ================ FILTERS SECTION ================ */
+        .filter-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 25px;
+            background: var(--sidenavbar-body-color);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            align-items: flex-end;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+            min-width: 220px;
+        }
+
+        .filter-group label {
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--sidenavbar-text-color);
+            font-size: 0.9rem;
+        }
+
+        .filter-select, .search-input {
+            width: 100%;
+            padding: 10px 15px;
+            border-radius: 6px;
+            border: 1px solid #e0e0e0;
+            background-color: white;
+            transition: all 0.3s ease;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+
+        .search-input {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23999' viewBox='0 0 16 16'%3E%3Cpath d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: 15px center;
+            background-size: 16px 16px;
+            padding-left: 40px;
+        }
+
+        .filter-buttons {
+            display: flex;
+            gap: 12px;
+            margin-left: auto;
+            align-self: center;
+            margin-top: 30px;
+        }
+
+        .filter-buttons .btn {
+            padding: 10px 15px;
+            border-radius: 6px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 120px;
+        }
+
         /* Model Windows */
         .modal-content{
             background: var(--modal-header-bg);
@@ -40,6 +105,190 @@
         .btn-close {
             filter: invert(var(--invert, 0));
         }
+
+        /* Card View Styles */
+        .levels-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .level-card {
+            transition: all 0.3s ease;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border: none;
+            margin-bottom: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            background: var(--sidenavbar-body-color);
+        }
+
+        .level-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .level-card-header {
+            padding: 15px 20px;
+            background: linear-gradient(135deg, var(--color-blue) 0%, var(--sidenavbar-body-color) 100%);
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .level-card-body {
+            padding: 15px;
+        }
+
+        .level-card-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin: 0;
+            color: white;
+        }
+
+        .level-card-number {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        .level-card-detail {
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+        }
+        .level-card-detail:last-child {
+            margin-bottom: 2px;
+            display: flex;
+            align-items: center;
+        }
+
+        .level-card-detail i {
+            margin-right: 10px;
+            color: var(--sidenavbar-text-color);
+            width: 20px;
+            text-align: center;
+        }
+
+        .level-card-detail span {
+            color: var(--sidenavbar-text-color);
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            margin-top: auto;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 0 8px 8px 8px;
+        }
+
+        .action-btn {
+            flex: 1 1 calc(50% - 4px);
+            margin: 0;
+            padding: 8px 0;
+            border-radius: 5px;
+            font-size: 0.85rem;
+            text-align: center;
+            min-width: 100px;
+            transition: all 0.2s ease;
+        }
+
+        /* Special Button Styles */
+        .btn-add {
+            padding: 10px 10px !important;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 110px;
+            font-size: 0.95rem !important;
+            text-decoration: none;
+        }
+
+        .btn-view {
+            background-color: rgba(52, 152, 219, 0.1);
+            color: #3498db;
+            border: 1px solid rgba(52, 152, 219, 0.2);
+        }
+
+        .btn-view:hover {
+            background-color: rgba(52, 152, 219, 0.2);
+            color: #2980b9;
+        }
+
+        .btn-edit {
+            background-color: rgba(46, 204, 113, 0.1);
+            color: green;
+            border: 1px solid rgba(46, 204, 113, 0.2);
+        }
+
+        .btn-edit:hover {
+            background-color: rgba(46, 204, 113, 0.2);
+            color: #27ae60;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            grid-column: 1 / -1;
+        }
+
+        .empty-state-icon {
+            font-size: 3rem;
+            color: #dee2e6;
+            margin-bottom: 20px;
+        }
+
+        .empty-state-text {
+            color: var(--sidenavbar-text-color);
+            font-size: 1.1rem;
+        }
+
+        .status-badge {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            text-transform: capitalize;
+        }
+
+        .status-approved {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .status-rejected {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .building-tag {
+            display: inline-block;
+            background-color: #e9ecef;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            color: #495057 !important;
+        }
+
+        .card-icon {
+            font-size: 1.2rem;
+            vertical-align: middle;
+            margin-right: 5px;
+        }
+
     </style>
 @endpush
 
@@ -66,51 +315,92 @@
                             <div class="container mt-2">
                                 <div class="d-flex justify-content-between align-items-center mb-2">
                                     <h3 class="mb-1">Levels</h3>
-                                    <a href="#" class="btn float-end hidden add_button" id="Owner-Level-Add-Button"  data-bs-toggle="tooltip" data-bs-placement="top" title="Add Level">
+                                    <a href="#" class="btn float-end hidden Owner-Level-Add-Button add_button" id="Owner-Level-Add-Button"  data-bs-toggle="tooltip" data-bs-placement="top" title="Add Level">
                                         <x-icon name="add" type="svg" class="" size="25" />
                                     </a>
                                 </div>
-                                <div class="card shadow p-3 mb-5 bg-body rounded" style="border: none;">
-                                    <div class="card-body " style="overflow-x: auto;">
-                                        <table id="LevelsTable" class="table shadow-sm table-hover table-striped">
-                                            <thead class="shadow">
-                                            <tr>
-                                                <th>ID</th>
-                                                <th>Name</th>
-                                                <th>Description</th>
-                                                <th>Level Number</th>
-                                                <th>Status</th>
-                                                <th>Building</th>
-                                                <th class="w-170 text-center">Actions</th>
-                                            </tr>
-                                            </thead>
-                                            <tbody>
-                                            @forelse($levels ?? [] as $level)
-                                                <tr>
-                                                    <td>{{ $level->id }}</td>
-                                                    <td>{{ $level->level_name }}</td>
-                                                    <td>{{ $level->description ?? 'N/A' }}</td>
-                                                    <td>{{ $level->level_number ?? 'N/A' }}</td>
-                                                    <td>
-                                                        {{ $level->status ?? 'N/A' }}
-                                                    </td>
-                                                    <td>{{ $level->building->name ?? 'N/A' }}</td>
-                                                    <td class="w-170 text-center">
-                                                        <a href="{{ route('owner.units.index', ['level_id' => $level->id]) }}" class="text-info" title="View Units"><i class="bx bxs-home icons" style="font-size: 20px;margin-right:5px;;"></i></a>
-                                                        <a href="#" class="text-warning Owner-Level-Edit-Button hidden" id="Owner-Level-Edit-Button" data-id="{{ $level->id }}" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit">
-                                                            <i class="fa fa-pencil" style="font-size: 20px;"></i>
-                                                        </a>
-                                                    </td>
-                                                </tr>
-                                            @empty
-                                                <tr>
-                                                    <td colspan="7" class="text-center">No levels found.</td>
-                                                </tr>
-                                            @endforelse
-                                            </tbody>
-                                        </table>
+
+                                <!-- Filter Form -->
+                                <form method="GET" id="filterForm" class="filter-container">
+                                    <div class="filter-group">
+                                        <label for="search">Search</label>
+                                        <input type="text" name="search" id="search" class="search-input"
+                                               placeholder="Search by name"
+                                               value="{{ request('search') }}">
                                     </div>
-                                </div>
+
+                                    <div class="filter-group">
+                                        <label for="DepartmentId">Organization</label>
+                                        <select name="DepartmentId" id="DepartmentId" class="form-select filter-select">
+                                            <option value="">All Organizations</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="filter-group">
+                                        <label for="BuildingId">Building</label>
+                                        <select name="BuildingId" id="BuildingId" class="form-select filter-select">
+                                            <option value="">All Buildings</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="filter-buttons">
+                                        <button type="button" class="btn btn-secondary flex-grow-1 d-flex align-items-center justify-content-center" onclick="resetFilters()">
+                                            <i class="fas fa-undo me-2"></i> Reset
+                                        </button>
+                                        <button type="submit" class="btn btn-primary flex-grow-1 d-flex align-items-center justify-content-center">
+                                            <i class="fas fa-filter me-2"></i> Apply Filters
+                                        </button>
+                                    </div>
+                                </form>
+
+                                @if($levels)
+                                    <div class="levels-container">
+                                        @foreach($levels as $level)
+                                            <div class="level-card">
+                                                <div class="level-card-header">
+                                                    <h3 class="level-card-title">{{ $level->level_name }}</h3>
+                                                    <span class="level-card-number">Level {{ $level->level_number ?? 'N/A' }}</span>
+                                                </div>
+                                                <div class="level-card-body">
+                                                    <div class="level-card-detail">
+                                                        <i class="bx bx-buildings card-icon"></i>
+                                                        <span class="building-tag">{{ $level->building->name ?? 'N/A' }}</span>
+                                                    </div>
+                                                    <div class="level-card-detail">
+                                                        <i class="bx bx-stats card-icon"></i>
+                                                        <span class="status-badge status-{{ strtolower($level->status) }}">
+                                                            {{ $level->status ?? 'N/A' }}
+                                                        </span>
+                                                    </div>
+                                                    <div class="level-card-detail">
+                                                        <i class="bx bx-info-circle card-icon"></i>
+                                                        <span>{{ $level->description ?? 'No description provided' }}</span>
+                                                    </div>
+                                                </div>
+                                                <div class="action-buttons">
+                                                    <a href="{{ route('owner.units.index', ['level_id' => $level->id]) }}" class="action-btn btn-add btn-view view-unit gap-1" title="View">
+                                                        <i class='bx bxs-home'></i> Units
+                                                    </a>
+
+                                                    <a href="#" class="action-btn btn-add btn-edit gap-1 Owner-Level-Edit-Button hidden" id="Owner-Level-Edit-Button" data-id="{{ $level->id }}"  title="Edit">
+                                                        <i class='bx bx-edit'></i> Edit
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                @else
+                                    <div class="levels-container">
+                                        <div class="empty-state">
+                                            <div class="empty-state-icon">
+                                                <i class="bx bx-layer"></i>
+                                            </div>
+                                            <h4>No Levels Found</h4>
+                                            <p class="empty-state-text">You haven't added any levels yet. Click the button above to add your first level.</p>
+                                        </div>
+                                    </div>
+                                @endif
+
                             </div>
                         </div>
                     </div>

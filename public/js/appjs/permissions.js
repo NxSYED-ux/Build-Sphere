@@ -128,11 +128,11 @@ function applyPermissions() {
         toggleVisibility("#OwnerLevels", storedPermissions['Owner Portal'].includes('Owner Levels'));
         toggleVisibility("#OwnerUnits", storedPermissions['Owner Portal'].includes('Owner Units'));
 
-        toggleVisibility("#Owner-Building-Add-Button", storedPermissions['Owner Portal'].includes('Owner Add Building'));
+        toggleVisibility(".Owner-Building-Add-Button", storedPermissions['Owner Portal'].includes('Owner Add Building'));
         toggleVisibility(".Owner-Building-Edit-Button", storedPermissions['Owner Portal'].includes('Owner Edit Building'));
-        toggleVisibility("#Owner-Level-Add-Button", storedPermissions['Owner Portal'].includes('Owner Add Level'));
+        toggleVisibility(".Owner-Level-Add-Button", storedPermissions['Owner Portal'].includes('Owner Add Level'));
         toggleVisibility(".Owner-Level-Edit-Button", storedPermissions['Owner Portal'].includes('Owner Edit Level'));
-        toggleVisibility("#Owner-Unit-Add-Button", storedPermissions['Owner Portal'].includes('Owner Add Unit'));
+        toggleVisibility(".Owner-Unit-Add-Button", storedPermissions['Owner Portal'].includes('Owner Add Unit'));
         toggleVisibility(".Owner-Unit-Edit-Button", storedPermissions['Owner Portal'].includes('Owner Edit Unit'));
 
         // Other Sections
@@ -165,11 +165,11 @@ function applyPermissions() {
         toggleVisibility("#AdminLevels", storedPermissions['Admin Portal'].includes('Admin Levels'));
         toggleVisibility("#AdminUnits", storedPermissions['Admin Portal'].includes('Admin Units'));
 
-        toggleVisibility("#Admin-Building-Add-Button", storedPermissions['Admin Portal'].includes('Admin Add Building'));
+        toggleVisibility(".Admin-Building-Add-Button", storedPermissions['Admin Portal'].includes('Admin Add Building'));
         toggleVisibility(".Admin-Building-Edit-Button", storedPermissions['Admin Portal'].includes('Admin Edit Building'));
-        toggleVisibility("#Admin-Level-Add-Button", storedPermissions['Admin Portal'].includes('Admin Add Level'));
+        toggleVisibility(".Admin-Level-Add-Button", storedPermissions['Admin Portal'].includes('Admin Add Level'));
         toggleVisibility(".Admin-Level-Edit-Button", storedPermissions['Admin Portal'].includes('Admin Edit Level'));
-        toggleVisibility("#Admin-Unit-Add-Button", storedPermissions['Admin Portal'].includes('Admin Add Unit'));
+        toggleVisibility(".Admin-Unit-Add-Button", storedPermissions['Admin Portal'].includes('Admin Add Unit'));
         toggleVisibility(".Admin-Unit-Edit-Button", storedPermissions['Admin Portal'].includes('Admin Edit Unit'));
 
         // Other Sections
@@ -192,13 +192,13 @@ function showAllPermissionBlocks() {
     const allSelectors = [
         ".switch-admin-portal-btn",
         "#OwnerBuildingss", "#OwnerBuildings", "#OwnerLevels", "#OwnerUnits",
-        "#OwnerAssignUnits", "#OwnerBuildingsTree", "#OwnerRentals", "#Owner-Building-Add-Button", ".Owner-Building-Edit-Button", "#Owner-Level-Add-Button", ".Owner-Level-Edit-Button", "#Owner-Unit-Add-Button", ".Owner-Unit-Edit-Button",
+        "#OwnerAssignUnits", "#OwnerBuildingsTree", "#OwnerRentals", ".Owner-Building-Add-Button", ".Owner-Building-Edit-Button", ".Owner-Level-Add-Button", ".Owner-Level-Edit-Button", ".Owner-Unit-Add-Button", ".Owner-Unit-Edit-Button",
         "#OwnerDepartments", "#OwnerMemberships", "#OwnerStaff", "#OwnerReports",
 
         ".switch-owner-portal-btn",
         "#AdminControls", "#AdminUserManagement", "#AdminUserRoles", "#AdminRolePermissions", "#AdminDropdowns",
         "#AdminBuildingss", "#AdminBuildings", "#AdminLevels", "#AdminUnits",
-        "#Admin-Building-Add-Button", ".Admin-Building-Edit-Button", "#Admin-Level-Add-Button", ".Admin-Level-Edit-Button", "#Admin-Unit-Add-Button", ".Admin-Unit-Edit-Button",
+        ".Admin-Building-Add-Button", ".Admin-Building-Edit-Button", ".Admin-Level-Add-Button", ".Admin-Level-Edit-Button", ".Admin-Unit-Add-Button", ".Admin-Unit-Edit-Button",
         "#AdminOrganizations", "#AdminReports"
     ];
 

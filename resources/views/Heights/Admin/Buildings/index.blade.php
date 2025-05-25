@@ -395,7 +395,7 @@
                     <div class="col-md-12">
                         <div class="d-flex justify-content-between align-items-center mb-4">
                             <h3 class="mb-1">Buildings</h3>
-                            <a href="{{ route('buildings.create') }}" class="btn btn-primary d-flex align-items-center hidden" id="Admin-Building-Add-Button" data-bs-toggle="tooltip" data-bs-placement="top" title="Add Building">
+                            <a href="{{ route('buildings.create') }}" class="btn btn-primary d-flex align-items-center Admin-Building-Add-Button hidden" data-bs-toggle="tooltip" data-bs-placement="top" title="Add Building">
                                 <x-icon name="add" type="svg" class="me-1" size="18" />
                                 Add Building
                             </a>

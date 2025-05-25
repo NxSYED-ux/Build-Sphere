@@ -535,7 +535,7 @@
                     <div class="col-md-12">
                         <div class="d-flex justify-content-between align-items-center mb-2">
                             <h3 class="mb-1">Units</h3>
-                            <a href="{{ route('units.create') }}" class="btn float-end hidden add_button" id="Admin-Unit-Add-Button"  data-bs-toggle="tooltip" data-bs-placement="top" title="Add Unit">
+                            <a href="{{ route('units.create') }}" class="btn float-end hidden Admin-Unit-Add-Button add_button" data-bs-toggle="tooltip" data-bs-placement="top" title="Add Unit">
                                 <x-icon name="add" type="svg" class="" size="25" />
                             </a>
                         </div>
@@ -662,8 +662,8 @@
                                                     <div class="empty-state-icon">
                                                         <i class='bx bx-building-house'></i>
                                                     </div>
-                                                    <h4>No Buildings Found</h4>
-                                                    <p class="text-muted">There are no buildings to display. You can add a new building by clicking the "Add Building" button.</p>
+                                                    <h4>No Units Found</h4>
+                                                    <p class="text-muted">There are no units to display. You can add a new unit by clicking the "Add Unit" button.</p>
                                                 </div>
                                             </div>
                                         @endforelse
