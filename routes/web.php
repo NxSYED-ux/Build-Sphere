@@ -31,6 +31,10 @@ Route::fallback(function () {
     abort(404, 'Page Not Found');
 });
 
+Route::get('/back', function () {
+    return redirect()->back();
+})->name('back');
+
 // Website Home Screen
 Route::prefix('')->group(function () {
 
@@ -113,7 +117,6 @@ Route::prefix('admin')->middleware(['auth.jwt'])->group(function () {
         Route::get('/', [RoleController::class, 'index'])->name('roles.index');
         Route::get('/create', [RoleController::class, 'create'])->name('roles.create');
         Route::post('/', [RoleController::class, 'store'])->name('roles.store');
-        Route::get('/{role}', [RoleController::class, 'show'])->name('roles.show');
         Route::get('/{role}/edit', [RoleController::class, 'edit'])->name('roles.edit');
         Route::put('/update', [RoleController::class, 'update'])->name('roles.update');
         Route::delete('/{role}', [RoleController::class, 'destroy'])->name('roles.destroy');

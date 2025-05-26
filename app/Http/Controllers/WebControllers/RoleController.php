@@ -30,9 +30,7 @@ class RoleController extends Controller
     {
         try {
             $permissions = Permission::with('children')->whereNull('parent_id')->get();
-            return response()->json([
-                'permissions' => $permissions
-            ]);
+            return view('Heights.Admin.Roles.create', compact('permissions'));
         } catch (\Throwable $e) {
             Log::error('Roles create error: ' . $e->getMessage());
             return response()->json(['error' => 'An error occurred. Please try again.'], 500);
@@ -83,44 +81,17 @@ class RoleController extends Controller
         }
     }
 
-    public function show(string $id)
-    {
-        try {
-            $role = Role::select('name', 'description')->findOrFail($id);
-            $rolePermissionIds = RolePermission::where('role_id', $id)->pluck('permission_id');
-
-            $permissions = Permission::with('children')
-                ->whereIn('id', $rolePermissionIds)
-                ->orWhereIn('parent_id', $rolePermissionIds)
-                ->get(['id', 'name', 'status', 'parent_id']);
-
-            return response()->json([
-                'role' => $role,
-                'permissions' => $permissions
-            ]);
-
-        } catch (ModelNotFoundException $e) {
-            return response()->json(['error' => 'Role not found'], 404);
-        } catch (\Throwable $e) {
-            Log::error('Failed to retrieve role data: ' . $e->getMessage());
-            return response()->json(['error' => 'An error occurred while retrieving the role data. Please try again.'], 500);
-        }
-    }
-
     public function edit(string $id)
     {
         try {
             $role = Role::select('id', 'name', 'description', 'updated_at')->findOrFail($id);
             $rolePermissionIds = RolePermission::where('role_id', '=', $role->id)->pluck('permission_id');
+
             $permissions = Permission::with('children')
                 ->whereNull('parent_id')
                 ->get();
 
-            return response()->json([
-                'role' => $role,
-                'activePermissionsId' => $rolePermissionIds,
-                'permissions' => $permissions
-            ]);
+            return view('Heights.Admin.Roles.edit', compact('role', 'permissions', 'rolePermissionIds'));
 
         } catch (ModelNotFoundException $e) {
             return response()->json(['error' => 'Role not found'], 404);
@@ -213,7 +184,10 @@ class RoleController extends Controller
 
         try {
             $role = Role::find($id);
-            if (!$role) return redirect()->back()->with('error', 'Role not Found');
+            if (!$role) {
+                DB::rollBack();
+                return redirect()->back()->with('error', 'Role not Found');
+            }
 
             if ($role->users()->exists()) {
                 DB::rollBack();
