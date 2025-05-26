@@ -229,21 +229,21 @@
              position: absolute;
              top: 10px;
              right: 10px;
-             background: rgba(255, 255, 255, 0.9);
+             background: var(--body-background-color);
              border-radius: 50%;
              width: 36px;
              height: 36px;
              display: flex;
              align-items: center;
              justify-content: center;
+             text-decoration: none !important;
              box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-             color: #7f8c8d;
+             color: var(--sidenavbar-text-color);
              transition: all 0.2s ease;
              z-index: 1;
          }
 
          .building-card .levels-btn:hover {
-             background: white;
              color: #3498db;
              transform: scale(1.1);
          }
@@ -487,7 +487,7 @@
                                                             <img src="{{ asset('img/placeholder-img.jfif') }}" class="card-img-top" alt="Building Image">
                                                         @endif
                                                         <a href="{{ route('levels.index', ['building_id' => $building->id]) }}" class="levels-btn" title="Levels">
-                                                            <i class='bx bxs-layer'></i>
+                                                            <i class='bx bxs-layer fs-5'></i>
                                                         </a>
                                                     </div>
                                                     <div class="card-body">

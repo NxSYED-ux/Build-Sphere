@@ -111,8 +111,8 @@
                             <div class="container mt-2">
                                 <div class="d-flex justify-content-between align-items-center mb-2">
                                     <h3 class="mb-1">Roles</h3>
-                                    <a href="#" class="btn btn-add btn-primary" id="add_button" title="Add New Role">
-                                        <i class="fas fa-user-plus me-2"></i> Add Role
+                                    <a href="{{ route('roles.create') }}" class="btn btn-add btn-primary"  title="Add New Role">
+                                        <i class="fas fa-plus me-2"></i> Add Role
                                     </a>
                                 </div>
                                 <div class="card shadow p-3 mb-5 bg-body rounded" style="border: none;">
@@ -313,6 +313,7 @@
         });
     </script>
 
+    <!-- Delete Roles Scripts -->
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const deleteLinks = document.querySelectorAll('.delete-role');
@@ -343,8 +344,6 @@
             });
         });
     </script>
-
-
 
     <!-- Roles Scripts -->
     <script>
@@ -492,7 +491,6 @@
                     });
                 });
             }
-
 
             document.getElementById("editForm").addEventListener("submit", function (e) {
                 let permissionCheckboxes = document.querySelectorAll('input[name="permissions[]"]:checked');
@@ -648,10 +646,16 @@
                 });
             }
 
+            document.getElementById('createRoleForm').addEventListener('submit', function(e) {
+                const permissionCheckboxes = document.querySelectorAll('input[name="permissions[]"]');
 
-
+                permissionCheckboxes.forEach(checkbox => {
+                    if (!checkbox.checked) {
+                        checkbox.disabled = true;
+                    }
+                });
+            });
         });
-
     </script>
 
 
