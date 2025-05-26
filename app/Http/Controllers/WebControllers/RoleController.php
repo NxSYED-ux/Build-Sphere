@@ -216,6 +216,7 @@ class RoleController extends Controller
             if (!$role) return redirect()->back()->with('error', 'Role not Found');
 
             if ($role->users()->exists()) {
+                DB::rollBack();
                 return redirect()->back()->with('error', 'This role cannot be deleted because it is assigned to existing users.');
             }
 
