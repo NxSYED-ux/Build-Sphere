@@ -23,12 +23,12 @@ INSERT INTO `address` (`id`, `location`, `country`, `province`, `city`, `postal_
 (22, 'Ali Town', 'Pakistan', 'Punjab', 'Lahore', '54000', NULL, NULL, '2025-03-20 11:57:07', '2025-03-20 11:57:07');
 
 
-INSERT INTO `roles` (`id`, `name`, `description`, `status`, `created_at`, `updated_at`) VALUES
-(1, 'Admin', 'Administrator with full access', 1, '2025-02-28 13:53:22', '2025-02-28 13:53:22'),
-(2, 'Owner', 'NO Description', 1, '2025-02-28 13:53:22', '2025-02-28 13:53:22'),
-(3, 'Manager', 'Helpers of the owner.', 1, '2025-02-28 13:54:32', '2025-03-20 07:49:01'),
-(4, 'Staff', 'Building Operational Staff Members', 1, '2025-02-28 13:54:32', '2025-03-20 07:49:22'),
-(5, 'User', 'Tenants and buyers.', 1, '2025-03-20 04:17:02', '2025-03-20 07:49:49');
+INSERT INTO `roles` (`id`, `name`, `description`, `created_at`, `updated_at`) VALUES
+(1, 'Admin', 'Administrator with full access', '2025-02-28 13:53:22', '2025-02-28 13:53:22'),
+(2, 'Owner', 'NO Description','2025-02-28 13:53:22', '2025-02-28 13:53:22'),
+(3, 'Manager', 'Helpers of the owner.', '2025-02-28 13:54:32', '2025-03-20 07:49:01'),
+(4, 'Staff', 'Building Operational Staff Members','2025-02-28 13:54:32', '2025-03-20 07:49:22'),
+(5, 'User', 'Tenants and buyers.','2025-03-20 04:17:02', '2025-03-20 07:49:49');
 
 
 INSERT INTO `users` (`id`, `name`, `email`, `password`, `phone_no`, `cnic`, `date_of_birth`, `gender`, `picture`, `role_id`, `is_super_admin`, `is_verified`, `address_id`, `status`, `reset_token`, `customer_payment_id`, `created_by`, `updated_by`, `created_at`, `updated_at`) VALUES
