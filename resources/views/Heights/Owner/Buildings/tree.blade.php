@@ -182,6 +182,7 @@
     />
     <!--  -->
     <x-Owner.side-navbar :openSections="['Buildings-Tree']"/>
+    <x-error-success-model />
 
     <div id="main">
         <div class="card border-0">
