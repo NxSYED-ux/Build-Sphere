@@ -193,9 +193,9 @@
                     <form method="GET" action="">
                         <select name="building_id" id="building_id" class="form-select form-select-sm" onchange="this.form.submit()">
 
-                            @forelse ($buildingsDropDown ?? [] as $id => $name)
-                                <option value="{{ $id }}" {{ isset($building) && $building->id == $id ? 'selected' : '' }}>
-                                    {{ $name }}
+                            @forelse ($buildingsDropDown ?? [] as $buildingsDropDown)
+                                <option value="{{ $buildingsDropDown->id }}" {{ isset($building) && $building->id == $buildingsDropDown->id ? 'selected' : '' }}>
+                                    {{ $buildingsDropDown->name }}
                                 </option>
                             @empty
                                 <option value="">Choose...</option>

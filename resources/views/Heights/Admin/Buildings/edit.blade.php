@@ -248,25 +248,6 @@
                                                     </div>
                                                 </div>
 
-                                                <div class="col-lg-4 col-md-6 col-sm-12">
-                                                    <div class="form-group">
-                                                        <label for="status">Status</label>
-                                                        <span class="required__field">*</span><br>
-                                                        <select name="status" id="status" class="form-select" required>
-                                                            <option value="Approved" {{ old('status', $building->status) == 'Approved' ? 'selected' : '' }}>Approved</option>
-                                                            <option value="Under Review" {{ old('status', $building->status) == 'Under Review' ? 'selected' : '' }}>Under Review</option>
-                                                            <option value="Rejected" {{ old('status', $building->status) == 'Rejected' ? 'selected' : '' }}>Rejected</option>
-                                                            <option value="Under Process" {{ old('status', $building->status) == 'Under Process' ? 'selected' : '' }}>Under Process</option>
-                                                            <option value="Reapproved" {{ old('status', $building->status) == 'Reapproved' ? 'selected' : '' }}>Reapproved</option>
-                                                        </select>
-                                                        @error('status')
-                                                            <span class="invalid-feedback" role="alert">
-                                                                <strong>{{ $message }}</strong>
-                                                            </span>
-                                                        @enderror
-                                                    </div>
-                                                </div>
-
                                                 <!--  -->
                                                 <div class="col-sm-12 col-md-6 col-lg-4">
                                                     <div class="form-group mb-3">
@@ -350,7 +331,7 @@
                                                 </div>
 
                                                 <!--  -->
-                                                <div class="col-sm-12 col-md-6 col-lg-12">
+                                                <div class="col-sm-12 col-md-12 col-lg-4">
                                                     <div class="form-group mb-3">
                                                         <label for="location">Location</label>
                                                         <span class="required__field">*</span><br>

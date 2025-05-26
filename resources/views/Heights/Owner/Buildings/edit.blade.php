@@ -246,25 +246,6 @@
                                                     </div>
                                                 </div>
 
-                                                <div class="col-lg-4 col-md-6 col-sm-12">
-                                                    <div class="form-group">
-                                                        <label for="status">Status</label>
-                                                        <span class="required__field">*</span><br>
-                                                        <select name="status" id="status" class="form-select" required>
-                                                            <option value="Approved" {{ old('status', $building->status) == 'Approved' ? 'selected' : '' }}>Approved</option>
-                                                            <option value="Under Review" {{ old('status', $building->status) == 'Under Review' ? 'selected' : '' }}>Under Review</option>
-                                                            <option value="Rejected" {{ old('status', $building->status) == 'Rejected' ? 'selected' : '' }}>Rejected</option>
-                                                            <option value="Under Process" {{ old('status', $building->status) == 'Under Process' ? 'selected' : '' }}>Under Process</option>
-                                                            <option value="Reapproved" {{ old('status', $building->status) == 'Reapproved' ? 'selected' : '' }}>Reapproved</option>
-                                                        </select>
-                                                        @error('status')
-                                                        <span class="invalid-feedback" role="alert">
-                                                                <strong>{{ $message }}</strong>
-                                                            </span>
-                                                        @enderror
-                                                    </div>
-                                                </div>
-
                                                 <!--  -->
                                                 <div class="col-sm-12 col-md-6 col-lg-4">
                                                     <div class="form-group mb-3">
@@ -283,7 +264,8 @@
                                                 <div class="col-sm-12 col-md-6 col-lg-4">
                                                     <div class="form-group mb-3">
                                                         <label for="construction_year">Construction Year</label>
-                                                        <input type="number" name="construction_year" id="construction_year" class="form-control @error('construction_year') is-invalid @enderror" value="{{ old('construction_year', $building->construction_year) }}" placeholder="2024">
+                                                        <span class="required__field">*</span><br>
+                                                        <input type="number" name="construction_year" id="construction_year" class="form-control @error('construction_year') is-invalid @enderror" value="{{ old('construction_year', $building->construction_year) }}" placeholder="2024" required>
                                                         @error('construction_year')
                                                         <span class="invalid-feedback" role="alert">
                                                                 <strong>{{ $message }}</strong>
@@ -296,7 +278,8 @@
                                                 <div class="col-lg-4 col-md-6 col-sm-12">
                                                     <div class="form-group mb-3">
                                                         <label for="country">Country</label>
-                                                        <select class="form-select" id="country" name="country">
+                                                        <span class="required__field">*</span><br>
+                                                        <select class="form-select" id="country" name="country" required>
                                                             <option value="" selected>Select Country</option>
                                                         </select>
                                                         @error('country')
@@ -308,7 +291,8 @@
                                                 <div class="col-lg-4 col-md-6 col-sm-12">
                                                     <div class="form-group mb-3">
                                                         <label for="province">Province</label>
-                                                        <select class="form-select" id="province" name="province">
+                                                        <span class="required__field">*</span><br>
+                                                        <select class="form-select" id="province" name="province" required>
                                                             <option value="" selected>Select Province</option>
                                                         </select>
                                                         @error('province')
@@ -321,7 +305,8 @@
                                                 <div class="col-lg-4 col-md-6 col-sm-12">
                                                     <div class="form-group mb-3">
                                                         <label for="city">City</label>
-                                                        <select class="form-select" id="city" name="city">
+                                                        <span class="required__field">*</span><br>
+                                                        <select class="form-select" id="city" name="city" required>
                                                             <option value="" selected>Select Province</option>
                                                         </select>
                                                         @error('customer_city')
@@ -334,7 +319,8 @@
                                                 <div class="col-sm-12 col-md-6 col-lg-4">
                                                     <div class="form-group mb-3">
                                                         <label for="postal_code">Postal Code</label>
-                                                        <input type="text" name="postal_code" id="postal_code" class="form-control @error('postal_code') is-invalid @enderror" value="{{ old('postal_code', $building->address->postal_code ) }}" maxlength="100" placeholder="Enter Postal Code">
+                                                            <span class="required__field">*</span><br>
+                                                        <input type="text" name="postal_code" id="postal_code" class="form-control @error('postal_code') is-invalid @enderror" value="{{ old('postal_code', $building->address->postal_code ) }}" maxlength="100" placeholder="Enter Postal Code" required>
                                                         @error('postal_code')
                                                         <span class="invalid-feedback" role="alert">
                                                                 <strong>{{ $message }}</strong>
@@ -344,10 +330,11 @@
                                                 </div>
 
                                                 <!--  -->
-                                                <div class="col-sm-12 col-md-6 col-lg-12">
+                                                <div class="col-sm-12 col-md-12 col-lg-4">
                                                     <div class="form-group mb-3">
                                                         <label for="location">Location</label>
-                                                        <input type="text" name="location" id="location" class="form-control @error('location') is-invalid @enderror" value="{{ old('location', $building->address->location ) }}" maxlength="100" placeholder="Enter Location">
+                                                        <span class="required__field">*</span><br>
+                                                        <input type="text" name="location" id="location" class="form-control @error('location') is-invalid @enderror" value="{{ old('location', $building->address->location ) }}" maxlength="100" placeholder="Enter Location" required>
                                                         @error('location')
                                                         <span class="invalid-feedback" role="alert">
                                                                 <strong>{{ $message }}</strong>
