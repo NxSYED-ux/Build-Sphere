@@ -197,7 +197,7 @@ class UsersController extends Controller
             'phone_no' => 'required|string|max:15',
             'cnic' => 'required|string|max:18|unique:users,cnic,' . $request->user_id . ',id',
             'gender' => ['required', 'in:Male,Female,Other'],
-            'picture' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'picture' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'role_id' => 'required|exists:roles,id',
             'date_of_birth' => 'required|date',
             'location' => 'required|string|max:255',
