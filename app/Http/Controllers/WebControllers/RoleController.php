@@ -29,7 +29,7 @@ class RoleController extends Controller
     public function create()
     {
         try {
-            $permissions = Permission::with('children')->whereNull('parent_id')->get();
+            $permissions = Permission::all();
             return view('Heights.Admin.Roles.create', compact('permissions'));
         } catch (\Throwable $e) {
             Log::error('Roles create error: ' . $e->getMessage());
@@ -87,9 +87,9 @@ class RoleController extends Controller
             $role = Role::select('id', 'name', 'description', 'updated_at')->findOrFail($id);
             $rolePermissionIds = RolePermission::where('role_id', '=', $role->id)->pluck('permission_id');
 
-            $permissions = Permission::with('children')
-                ->whereNull('parent_id')
-                ->get();
+            $rolePermissionIds = RolePermission::where('role_id', '=', $role->id)->pluck('permission_id');
+
+            $permissions = Permission::all();
 
             return view('Heights.Admin.Roles.edit', compact('role', 'permissions', 'rolePermissionIds'));
 
