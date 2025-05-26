@@ -20,7 +20,7 @@ class RoleController extends Controller
         try {
             $roles = Role::all();
             return view('Heights.Admin.Roles.index', compact('roles'));
-        } catch (\Exception $exception) {
+        } catch (\Throwable $exception) {
             Log::error('Roles index error: ' . $exception->getMessage());
             return redirect()->back()->with('error', 'An unexpected error occurred. Please try again later.');
         }
@@ -33,7 +33,7 @@ class RoleController extends Controller
             return response()->json([
                 'permissions' => $permissions
             ]);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             Log::error('Roles create error: ' . $e->getMessage());
             return response()->json(['error' => 'An error occurred. Please try again.'], 500);
         }
@@ -41,12 +41,9 @@ class RoleController extends Controller
 
     public function store(Request $request)
     {
-        $user = $request->user() ?? abort(401, 'Unauthorized');
-
         $request->validate([
             'name' => 'required|string|unique:roles,name',
             'description' => 'nullable|string',
-            'status' => 'required|integer|in:0,1',
             'permissions' => 'required|array|min:1',
             'permissions.*' => 'required|integer|exists:permissions,id',
         ] , [
@@ -56,11 +53,13 @@ class RoleController extends Controller
         ]);
 
         DB::beginTransaction();
+
         try {
+            $user = $request->user();
+
             $role = Role::create([
                 'name' => $request->name,
                 'description' => $request->description,
-                'status' => $request->status,
             ]);
 
             $rolePermissions = collect($request->permissions)->map(function ($permissionId) use ($user, $role) {
@@ -77,7 +76,7 @@ class RoleController extends Controller
 
             DB::commit();
             return redirect()->route('roles.index')->with('success', 'Role created successfully.');
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             DB::rollBack();
             Log::error('Role creation failed: ' . $e->getMessage());
             return redirect()->back()->withInput()->with('error', 'Failed to create the role. Please try again.');
@@ -87,7 +86,7 @@ class RoleController extends Controller
     public function show(string $id)
     {
         try {
-            $role = Role::select('name', 'description', 'status')->findOrFail($id);
+            $role = Role::select('name', 'description')->findOrFail($id);
             $rolePermissionIds = RolePermission::where('role_id', $id)->pluck('permission_id');
 
             $permissions = Permission::with('children')
@@ -102,7 +101,7 @@ class RoleController extends Controller
 
         } catch (ModelNotFoundException $e) {
             return response()->json(['error' => 'Role not found'], 404);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             Log::error('Failed to retrieve role data: ' . $e->getMessage());
             return response()->json(['error' => 'An error occurred while retrieving the role data. Please try again.'], 500);
         }
@@ -111,7 +110,7 @@ class RoleController extends Controller
     public function edit(string $id)
     {
         try {
-            $role = Role::select('id', 'name', 'description', 'status', 'updated_at')->findOrFail($id);
+            $role = Role::select('id', 'name', 'description', 'updated_at')->findOrFail($id);
             $rolePermissionIds = RolePermission::where('role_id', '=', $role->id)->pluck('permission_id');
             $permissions = Permission::with('children')
                 ->whereNull('parent_id')
@@ -125,7 +124,7 @@ class RoleController extends Controller
 
         } catch (ModelNotFoundException $e) {
             return response()->json(['error' => 'Role not found'], 404);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             Log::error('Failed to retrieve role data: ' . $e->getMessage());
             return response()->json(['error' => 'An error occurred while retrieving the role data. Please try again.'], 500);
         }
@@ -133,12 +132,10 @@ class RoleController extends Controller
 
     public function update(Request $request)
     {
-        $user = $request->user() ?? abort(401, 'Unauthorized');
         $request->validate([
             'role_id' => 'required|integer|exists:roles,id',
             'name' => 'required|string|unique:roles,name,' . $request->role_id . ',id',
             'description' => 'nullable|string',
-            'status' => 'required|integer|in:0,1',
             'permissions' => 'required|array|min:1',
             'permissions.*' => 'required|integer|exists:permissions,id',
             'updated_at' => 'required'
@@ -148,10 +145,12 @@ class RoleController extends Controller
             'permissions.*.exists' => 'One or more selected permissions are invalid or may have been deleted while you were creating the role.',
         ]);
 
-        $roleId = $request->role_id;
-
         DB::beginTransaction();
+
         try {
+            $user = $request->user();
+            $roleId = $request->role_id;
+
             $role = Role::where([
                 ['id', '=', $roleId],
                 ['updated_at', '=', $request->updated_at]
@@ -165,7 +164,6 @@ class RoleController extends Controller
             $role->update([
                 'name' => $request->name,
                 'description' => $request->description,
-                'status' => $request->status,
                 'updated_at' => now()
             ]);
 
@@ -202,7 +200,7 @@ class RoleController extends Controller
             DB::commit();
             return redirect()->route('roles.index')->with('success', 'Role updated successfully');
 
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             DB::rollBack();
             Log::error('Role update failed: ' . $e->getMessage());
             return redirect()->back()->withInput()->with('error', 'Failed to update the role. Please try again.');
@@ -212,19 +210,26 @@ class RoleController extends Controller
     public function destroy(string $id)
     {
         DB::beginTransaction();
+
         try {
             $role = Role::find($id);
             if (!$role) return redirect()->back()->with('error', 'Role not Found');
+
+            if ($role->users()->exists()) {
+                return redirect()->back()->with('error', 'This role cannot be deleted because it is assigned to existing users.');
+            }
 
             RolePermission::where('role_id', $role->id)->delete();
             $role->delete();
 
             DB::commit();
             return redirect()->route('roles.index')->with('success', 'Role deleted successfully');
-        } catch (\Exception $e) {
+
+        } catch (\Throwable $e) {
             DB::rollBack();
             Log::error('Role deletion failed for ID {$id}: ' . $e->getMessage());
             return redirect()->back()->with('error', 'An error occurred while deleting the role. Please try again.');
         }
     }
+
 }
