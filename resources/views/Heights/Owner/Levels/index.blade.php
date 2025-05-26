@@ -266,12 +266,12 @@
 
         .status-approved {
             background-color: #d4edda;
-            color: #155724;
+            color: #155724 !important;
         }
 
         .status-rejected {
             background-color: #f8d7da;
-            color: #721c24;
+            color: #721c24 !important;
         }
 
         .building-tag {
