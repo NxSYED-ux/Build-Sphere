@@ -14,6 +14,8 @@ use App\Models\DropdownType;
 use App\Models\ManagerBuilding;
 use App\Models\Organization;
 use App\Models\PlanSubscriptionItem;
+use App\Services\AdminFiltersService;
+use App\Services\OwnerFiltersService;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -26,25 +28,34 @@ class BuildingController extends Controller
     public function adminIndex(Request $request)
     {
         try {
+            $adminService = new AdminFiltersService();
+
+            $organizations = $adminService->organizations();
+            $statuses = $adminService->getAllowedStatusesForBuilding();
+
             $search = $request->input('search');
+            $selectedOrganization = $request->input('organization_id');
+            $selectedStatus = $request->input('status');
 
-            $buildings = Building::with(['pictures', 'address', 'organization'])
-                ->whereNotIn('status', ['Under Processing', 'Rejected'])
-                ->where(function ($query) use ($search) {
-                    $query->where('name', 'like', '%' . $search . '%')
-                        ->orWhere('remarks', 'like', '%' . $search . '%')
-                        ->orWhereHas('organization', function ($subQuery) use ($search) {
-                            $subQuery->where('name', 'like', '%' . $search . '%');
-                        })
-                        ->orWhereHas('address', function ($subQuery) use ($search) {
-                            $subQuery->where('city', 'like', '%' . $search . '%');
-                        });
-                })
-                ->paginate(10);
+            $buildingsQuery = Building::with(['pictures', 'address', 'organization'])
+                ->whereIn('status', $statuses);
 
+            if ($search) {
+                $buildingsQuery->where('name', 'like', '%' . $search . '%');
+            }
 
-            return view('Heights.Admin.Buildings.index', compact('buildings'));
-        } catch (\Exception $e) {
+            if ($selectedOrganization) {
+                $buildingsQuery->where('organization_id', $selectedOrganization);
+            }
+
+            if ($selectedStatus) {
+                $buildingsQuery->where('status', $selectedStatus);
+            }
+
+            $buildings = $buildingsQuery->paginate(12);
+
+            return view('Heights.Admin.Buildings.index', compact('buildings', 'organizations', 'statuses'));
+        } catch (\Throwable $e) {
             Log::error('Error in adminIndex: ' . $e->getMessage());
             return back()->with('error', 'An error occurred while fetching buildings.');
         }
@@ -52,43 +63,34 @@ class BuildingController extends Controller
 
     public function ownerIndex(Request $request)
     {
-        $user = $request->user() ?? abort(404, 'Page not found');
-
         try {
-            $buildings = null;
+            $ownerService = new OwnerFiltersService();
+            $buildingIds = $ownerService->getAccessibleBuildingIds();
+
             $token = $request->attributes->get('token');
-
-            if (empty($token['organization_id']) || empty($token['role_name'])) {
-                return view('Heights.Owner.Buildings.index', compact('buildings'));
-            }
-
             $organization_id = $token['organization_id'];
-            $role_name = $token['role_name'];
+
             $search = $request->input('search');
+            $selectedStatus = $request->input('status');
 
-            $query = Building::with(['pictures', 'address'])
-                ->where('organization_id', $organization_id);
+            $buildingsQuery = Building::with(['pictures', 'address'])
+                ->where('organization_id', $organization_id)
+                ->whereIn('id', $buildingIds);
 
-            if (!empty($search)) {
-                $query->where(function ($q) use ($search) {
-                    $q->where('name', 'like', "%{$search}%")
-                        ->orWhere('remarks', 'like', "%{$search}%")
-                        ->orWhereHas('address', function ($subQuery) use ($search) {
-                            $subQuery->where('city', 'like', "%{$search}%");
-                        });
-                });
+            if ($search) {
+                $buildingsQuery->where('name', 'like', '%' . $search . '%');
             }
 
-            if ($role_name === 'Manager') {
-                $managerBuildingIds = ManagerBuilding::where('user_id', $user->id)->pluck('building_id');
-                $query->whereIn('id', $managerBuildingIds);
+            if ($selectedStatus) {
+                $buildingsQuery->where('status', $selectedStatus);
             }
 
-            $buildings = $query->paginate(10);
+            $buildings = $buildingsQuery->paginate(12);
+            $statuses = $ownerService->getAllowedStatusesForBuilding();
 
-            return view('Heights.Owner.Buildings.index', compact('buildings'));
+            return view('Heights.Owner.Buildings.index', compact('buildings', 'statuses'));
 
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             Log::error('Error in ownerIndex: ' . $e->getMessage());
             return back()->with('error', 'Something went wrong! Please try again.');
         }
@@ -103,32 +105,32 @@ class BuildingController extends Controller
 
     public function ownerCreate(Request $request)
     {
-        $user = $request->user() ?? abort(403, 'Unauthorized');
-        $token = $request->attributes->get('token');
+        try{
+            $user = $request->user();
+            $token = $request->attributes->get('token');
+            $organization_id = $token['organization_id'];
 
-        if (empty($token['organization_id']) || empty($token['role_name'])) {
-            return redirect()->back()->with('error', 'Invalid Building Id.');
+            $subscriptionLimit = PlanSubscriptionItem::where('organization_id', $organization_id)
+                ->where('service_catalog_id', 1)
+                ->first();
+
+            if(!$subscriptionLimit) {
+                $errorHeading = $user->role_id === 2 ? 'plan_upgrade_error' : 'error';
+                $errorMessage = 'The current plan doesn\'t include building management. Please upgrade the plan.';
+                return redirect()->back()->with($errorHeading, $errorMessage);
+            }
+
+            if($subscriptionLimit->used >= $subscriptionLimit->quantity) {
+                $errorHeading = $user->role_id === 2 ? 'plan_upgrade_error' : 'error';
+                $errorMessage = 'Building limit reached. Upgrade the organization plan to add more buildings.';
+                return redirect()->back()->with($errorHeading, $errorMessage);
+            }
+
+            return $this->create('owner');
+        } catch (\Throwable $e){
+            Log::error('Error in ownerCreate: ' . $e->getMessage());
+            return back()->with('error', 'Something went wrong! Please try again.');
         }
-
-        $organization_id = $token['organization_id'];
-
-        $subscriptionLimit = PlanSubscriptionItem::where('organization_id', $organization_id)
-            ->where('service_catalog_id', 1)
-            ->first();
-
-        if(!$subscriptionLimit) {
-            $errorHeading = $user->role_id === 2 ? 'plan_upgrade_error' : 'error';
-            $errorMessage = 'The current plan doesn\'t include building management. Please upgrade the plan.';
-            return redirect()->back()->with($errorHeading, $errorMessage);
-        }
-
-        if($subscriptionLimit->used >= $subscriptionLimit->quantity) {
-            $errorHeading = $user->role_id === 2 ? 'plan_upgrade_error' : 'error';
-            $errorMessage = 'Building limit reached. Upgrade the organization plan to add more buildings.';
-            return redirect()->back()->with($errorHeading, $errorMessage);
-        }
-
-        return $this->create('owner');
     }
 
     private function create(string $portal)
@@ -150,14 +152,17 @@ class BuildingController extends Controller
             $buildingTypes = $buildingType ? $buildingType->values()->where('status', 1)->get() : collect();
 
             if ($portal == 'admin') {
-                $organizations = Organization::where('status', 'Enable')->get();
+                $adminService = new AdminFiltersService();
+                $organizations = $adminService->organizations();
                 return view('Heights.Admin.Buildings.create', compact('organizations', 'dropdownData', 'buildingTypes', 'documentTypes'));
-            } elseif ($portal == 'owner') {
+            }
+            elseif ($portal == 'owner') {
                 return view('Heights.Owner.Buildings.create', compact('dropdownData', 'buildingTypes', 'documentTypes'));
-            } else {
+            }
+            else {
                 abort(404, 'Page not found');
             }
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             Log::error('Error in create method: ' . $e->getMessage());
             return back()->with('error', 'Something went wrong! Please try again.');
         }
@@ -177,15 +182,10 @@ class BuildingController extends Controller
     {
         try{
             $token = $request->attributes->get('token');
-
-            if (!$token || empty($token['organization_id']) || empty($token['role_name'])) {
-                return redirect()->back()->withInput()->with('error', 'You cannot perform this action because they are not linked to any organization. Please switch to an organization account to proceed.');
-            }
-
             $organization_id = $token['organization_id'];
 
             return $this->store($request, 'owner',$organization_id,'Under Processing',null, $token['role_name']);
-        }catch (\Exception $e) {
+        } catch (\Throwable $e) {
             Log::error('Error in owner store buildings: ' . $e->getMessage());
             return redirect()->back()->withInput()->with('error', 'An error occurred while creating the building.');
         }
@@ -193,21 +193,17 @@ class BuildingController extends Controller
 
     private function store(Request $request, String $portal, $organization_id, $status, $remarks, $role = null)
     {
-        $user = $request->user() ?? abort(403, 'Unauthorized');
-
         $request->validate([
             'name' => 'required|string|max:255|unique:buildings,name',
             'building_type' => 'required|string|max:50',
-            'area' => 'nullable|numeric',
-            'construction_year' => 'nullable|integer|min:1800|max:' . date('Y'),
-            'latitude' => 'nullable|numeric|between:-90,90',
-            'longitude' => 'nullable|numeric|between:-180,180',
-            'location' => 'nullable|string|max:255',
-            'country' => 'nullable|string|max:50',
-            'province' => 'nullable|string|max:50',
-            'city' => 'nullable|string|max:50',
-            'postal_code' => 'nullable|string|max:50',
-            'building_pictures.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'area' => 'required|numeric',
+            'construction_year' => 'required|integer|min:1800|max:' . date('Y'),
+            'location' => 'required|string|max:255',
+            'country' => 'required|string|max:50',
+            'province' => 'required|string|max:50',
+            'city' => 'required|string|max:50',
+            'postal_code' => 'required|string|max:50',
+            'building_pictures.*' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
 
             'documents.*.type' => 'nullable|string|distinct',
             'documents.*.issue_date' => 'nullable|date',
@@ -218,6 +214,7 @@ class BuildingController extends Controller
         DB::beginTransaction();
 
         try {
+            $user = $request->user();
 
             $address = Address::create([
                 'location' => $request->location,
@@ -314,7 +311,8 @@ class BuildingController extends Controller
                 ));
                 return redirect()->route('buildings.index')->with('success', 'Building created successfully.');
 
-            } elseif ($portal == 'owner') {
+            }
+            elseif ($portal == 'owner') {
 
                 dispatch(new BuildingNotifications(
                     $organization_id,
@@ -330,11 +328,12 @@ class BuildingController extends Controller
                 ));
                 return redirect()->route('owner.buildings.index')->with('success', 'Building created successfully.');
 
-            } else {
+            }
+            else {
                 abort(404, 'Page not found');
             }
 
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             DB::rollBack();
             Log::error('Error in store buildings: ' . $e->getMessage());
             return redirect()->back()->withInput()->with('error', 'An error occurred while creating the building.');
@@ -346,12 +345,16 @@ class BuildingController extends Controller
     public function adminShow($id)
     {
         try {
-            $building = $this->validateAdminBuildingAccess($id);
-            if(!$building instanceof Building){
-                return $building;
+            $adminService = new AdminFiltersService();
+            $result = $adminService->checkBuildingAccess($id);
+
+            if (!$result['access']) {
+                return redirect()->back()->with('error', $result['message']);
             }
-            return $this->show('admin', $building);
-        } catch (\Exception $e) {
+
+            return $this->show('admin', $result['building']);
+
+        } catch (\Throwable $e) {
             Log::error('Error in adminShow: ' . $e->getMessage());
             return redirect()->back()->with('error', 'Something went wrong. Please try again.');
         }
@@ -365,7 +368,8 @@ class BuildingController extends Controller
                 return $building;
             }
             return $this->show('owner', $building);
-        } catch (\Exception $e) {
+
+        } catch (\Throwable $e) {
             Log::error('Error in ownerShow: ' . $e->getMessage());
             return redirect()->back()->with('error', 'Something went wrong. Please try again.');
         }
@@ -385,14 +389,10 @@ class BuildingController extends Controller
             $levels = $building->levels ?? collect();
             $units = $levels->flatMap->units ?? collect();
 
-            if ($portal == 'admin') {
-                return view('Heights.Admin.Buildings.show', compact('building', 'levels', 'units', 'owner'));
-            } elseif ($portal == 'owner') {
-                return view('Heights.Owner.Buildings.show', compact('building', 'levels', 'units', 'owner'));
-            } else {
-                abort(404, 'Page not found');
-            }
-        } catch (\Exception $e) {
+            $view = $portal == 'admin' ? 'Heights.Admin.Buildings.show' : 'Heights.Owner.Buildings.show';
+            return view($view, compact('building', 'levels', 'units', 'owner'));
+
+        } catch (\Throwable $e) {
             Log::error('Error in show building: ' . $e->getMessage());
             return redirect()->back()->with('error', 'An error occurred while retrieving building details.');
         }
@@ -403,12 +403,15 @@ class BuildingController extends Controller
     public function adminEdit($id)
     {
         try {
-            $building = $this->validateAdminBuildingAccess($id);
-            if(!$building instanceof Building){
-                return $building;
+            $adminService = new AdminFiltersService();
+            $result = $adminService->checkBuildingAccess($id);
+
+            if (!$result['access']) {
+                return redirect()->back()->with('error', $result['message']);
             }
-            return $this->edit('admin', $building);
-        } catch (\Exception $e) {
+
+            return $this->edit('admin', $result['building']);
+        } catch (\Throwable $e) {
             Log::error('Error in adminEdit: ' . $e->getMessage());
             return redirect()->back()->with('error', 'Something went wrong. Please try again.');
         }
@@ -422,7 +425,7 @@ class BuildingController extends Controller
                 return $building;
             }
             return $this->edit('owner',$building);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             Log::error('Error in ownerEdit: ' . $e->getMessage());
             return redirect()->back()->with('error', 'Something went wrong. Please try again.');
         }
@@ -431,7 +434,7 @@ class BuildingController extends Controller
     private function edit(string $portal, Building $building)
     {
         try {
-            $building->load(['address', 'organization','pictures', 'documents']);
+            $building->load(['address', 'pictures', 'documents']);
 
             $dropdownData = DropdownType::with(['values.childs.childs'])
                 ->where('type_name', 'Country')
@@ -448,17 +451,10 @@ class BuildingController extends Controller
             $documentTypes = $documentType ? $documentType->values->pluck('value_name', 'id') : collect();
             $buildingTypes = $buildingType ? $buildingType->values()->where('status', 1)->get() : collect();
 
-            if ($portal == 'admin') {
-                $organizations = Organization::where('status', 'Enable')
-                    ->orWhere('id', $building->organization->id)
-                    ->get();
-                return view('Heights.Admin.Buildings.edit', compact('building','organizations', 'dropdownData', 'buildingTypes', 'documentTypes'));
-            } elseif ($portal == 'owner') {
-                return view('Heights.Owner.Buildings.edit', compact('building','dropdownData', 'buildingTypes', 'documentTypes'));
-            } else {
-                abort(404, 'Page not found');
-            }
-        } catch (\Exception $e) {
+            $view = $portal == 'admin' ? 'Heights.Admin.Buildings.edit' : 'Heights.Owner.Buildings.edit';
+            return view($view, compact('building', 'dropdownData', 'buildingTypes', 'documentTypes'));
+
+        } catch (\Throwable $e) {
             Log::error('Error in create method: ' . $e->getMessage());
             return back()->with('error', 'Something went wrong! Please try again.');
         }
@@ -468,42 +464,28 @@ class BuildingController extends Controller
     // Update Functions
     public function adminUpdate(Request $request)
     {
-        $request->validate([
-            'organization_id' => 'required|exists:organizations,id',
-        ]);
-        return $this->update($request, 'admin', $request->organization_id);
+        return $this->update($request, 'admin');
     }
 
     public function ownerUpdate(Request $request)
     {
         $token = $request->attributes->get('token');
-
-        if (!$token || empty($token['organization_id']) || empty($token['role_name'])) {
-            return redirect()->back()->withInput()->with('error', 'You cannot perform this action because they are not linked to any organization. Please switch to an organization account to proceed.');
-        }
-
-        $organization_id = $token['organization_id'];
-
-        return $this->update($request, 'owner', $organization_id, $token['role_name']);
+        return $this->update($request, 'owner', $token['organization_id'], $token['role_name']);
     }
 
-    private function update(Request $request, String $portal, $organization_id, $role = null)
+    private function update(Request $request, String $portal, $organization_id = null, $role = null)
     {
-        $user = $request->user() ?? abort(403, 'Unauthorized');
-        $token = $request->attributes->get('token');
-
         $request->validate([
             'id' => 'required|exists:buildings,id',
             'name' => 'required|string|max:255|unique:buildings,name,'. $request->id . ',id',
             'building_type' => 'required|string|max:50',
-            'area' => 'nullable|numeric',
-            'status' => 'required|string',
-            'construction_year' => 'nullable|integer|min:1800|max:' . date('Y'),
-            'location' => 'nullable|string|max:255',
-            'country' => 'nullable|string|max:50',
-            'province' => 'nullable|string|max:50',
-            'city' => 'nullable|string|max:50',
-            'postal_code' => 'nullable|string|max:50',
+            'area' => 'required|numeric',
+            'construction_year' => 'required|integer|min:1800|max:' . date('Y'),
+            'location' => 'required|string|max:255',
+            'country' => 'required|string|max:50',
+            'province' => 'required|string|max:50',
+            'city' => 'required|string|max:50',
+            'postal_code' => 'required|string|max:50',
             'building_pictures.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'updated_at' => 'required',
 
@@ -517,6 +499,8 @@ class BuildingController extends Controller
         DB::beginTransaction();
 
         try {
+            $user = $request->user();
+
             $building = Building::where([
                 ['id', '=', $request->id],
                 ['updated_at', '=', $request->updated_at]
@@ -527,7 +511,7 @@ class BuildingController extends Controller
                 return redirect()->back()->with('error', 'Please refresh the page and try again.');
             }
 
-            if($portal === 'owner' && $token['organization_id'] !== $building->organization_id){
+            if($portal === 'owner' && $organization_id !== $building->organization_id){
                 DB::rollBack();
                 return redirect()->back()->with('error', 'The selected building id is invalid.');
             }
@@ -546,9 +530,7 @@ class BuildingController extends Controller
                 'name' => $request->name,
                 'building_type' => $request->building_type,
                 'area' => $request->area,
-                'status' => $request->status,
                 'construction_year' => $request->construction_year,
-                'organization_id' => $organization_id,
                 'updated_at' => now(),
             ]);
 
@@ -590,6 +572,7 @@ class BuildingController extends Controller
             $message = "{$building->name} has been updated successfully.";
 
             if ($portal == 'admin') {
+                $organization_id = $organization_id ?? $building->organization_id;
 
                 dispatch(new BuildingNotifications(
                     $organization_id,
@@ -627,10 +610,10 @@ class BuildingController extends Controller
                 abort(404, 'Page not found');
             }
 
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             DB::rollBack();
             Log::error('Error in update method: ' . $e->getMessage());
-            return redirect()->back()->withInput()->with('error', 'An error occurred while updating the building.');
+            return redirect()->back()->withInput()->with('error', 'Something went wrong! Please try again.');
         }
     }
 
@@ -638,17 +621,16 @@ class BuildingController extends Controller
     // status Functions
     public function submitBuilding(Request $request)
     {
-        $user = $request->user() ?? abort(403, 'Unauthorized');
-        $token = $request->attributes->get('token');
-        $organization_id = $token['organization_id'] ?? null;
-
         $request->validate([
             'building_id' => 'required|integer|exists:buildings,id',
         ]);
 
         try {
+            $user = $request->user();
+            $token = $request->attributes->get('token');
+            $organization_id = $token['organization_id'];
 
-            $building = $this->validateOwnerBuildingAccess($request,$request->building_id);
+            $building = $this->validateOwnerBuildingAccess($request, $request->building_id);
 
             if(!$building instanceof Building){
                 return $building;
@@ -679,23 +661,24 @@ class BuildingController extends Controller
             ));
 
             return redirect()->route('owner.buildings.index')->with('success', 'Building Submitted successfully.');
-        }catch (\Exception $e) {
+        } catch (\Throwable $e) {
             Log::error('Error in submit building: ' . $e->getMessage());
-            return redirect()->back()->with('error', 'An error occurred while updating the building.');
+            return redirect()->back()->with('error', 'Something went wrong! Please try again.');
         }
     }
 
-    public function approvalReminder(Request $request){
-
-        $user = $request->user() ?? abort(403, 'Unauthorized');
-        $token = $request->attributes->get('token');
-        $organization_id = $token['organization_id'] ?? null;
+    public function approvalReminder(Request $request)
+    {
 
         $request->validate([
             'building_id' => 'required|integer|exists:buildings,id',
         ]);
 
         try {
+            $user = $request->user();
+            $token = $request->attributes->get('token');
+            $organization_id = $token['organization_id'];
+
             $building = $this->validateOwnerBuildingAccess($request,$request->building_id);
 
             if(!$building instanceof Building){
@@ -723,31 +706,30 @@ class BuildingController extends Controller
             return redirect()->route('owner.buildings.index')->with('success', 'Admin Remaindered successfully.');
         }catch (\Exception $e) {
             Log::error('Error in submit building: ' . $e->getMessage());
-            return redirect()->back()->with('error', 'An error occurred while updating the building.');
+            return redirect()->back()->with('error', 'Something went wrong! Please try again.');
         }
     }
 
-    public function approveBuilding(Request $request){
-
-        $user = $request->user() ?? abort(403, 'Unauthorized');
-
+    public function approveBuilding(Request $request)
+    {
         $request->validate([
             'building_id' => 'required|integer|exists:buildings,id',
             'remarks' => 'nullable|string',
         ]);
 
+        DB::beginTransaction();
+
         try {
-            DB::beginTransaction();
+            $user = $request->user();
 
-            $building = $this->validateAdminBuildingAccess($request->building_id);
+            $adminService = new AdminFiltersService();
+            $result = $adminService->checkBuildingAccess($request->bulding_id);
 
-            if(!$building instanceof Building){
-                return $building;
+            if (!$result['access']) {
+                return redirect()->back()->with('error', $result['message']);
             }
 
-            if($building->status === 'Under Processing'){
-                return redirect()->back()->with('error', 'This building is currently under processing and cannot be approved yet.');
-            }
+            $building = $result['building'];
 
             $building->update([
                 'status' => 'Approved',
@@ -777,28 +759,32 @@ class BuildingController extends Controller
             ));
 
             return redirect()->route('buildings.index')->with('success', 'Building Approved Successfully.');
-        } catch (\Exception $e) {
+
+        } catch (\Throwable $e) {
             DB::rollBack();
             Log::error('Error in approving building: ' . $e->getMessage());
-            return redirect()->back()->with('error', 'An error occurred while updating the building.');
+            return redirect()->back()->with('error', 'Something went wrong! Please try again.');
         }
     }
 
-    public function rejectBuilding(Request $request){
-
-        $user = $request->user() ?? abort(403, 'Unauthorized');
-
+    public function rejectBuilding(Request $request)
+    {
         $request->validate([
             'building_id' => 'required|integer|exists:buildings,id',
             'remarks' => 'required|string',
         ]);
 
         try {
-            $building = $this->validateAdminBuildingAccess($request->building_id);
+            $user = $request->user();
 
-            if(!$building instanceof Building){
-                return $building;
+            $adminService = new AdminFiltersService();
+            $result = $adminService->checkBuildingAccess($request->bulding_id);
+
+            if (!$result['access']) {
+                return redirect()->back()->with('error', $result['message']);
             }
+
+            $building = $result['building'];
 
             if($building->status === 'For Re-Approval'){
                 return redirect()->back()->with('error', 'Buildings under re-approval cannot be rejected.');
@@ -827,25 +813,28 @@ class BuildingController extends Controller
             return redirect()->route('buildings.index')->with('success', 'Building rejected successfully.');
         }catch (\Exception $e) {
             Log::error('Error in submit building: ' . $e->getMessage());
-            return redirect()->back()->with('error', 'An error occurred while updating the building.');
+            return redirect()->back()->with('error', 'Something went wrong! Please try again.');
         }
     }
 
-    public function reportBuildingRemarks(Request $request){
-
-        $user = $request->user() ?? abort(403, 'Unauthorized');
-
+    public function reportBuildingRemarks(Request $request)
+    {
         $request->validate([
             'building_id' => 'required|integer|exists:buildings,id',
             'remarks' => 'required|string',
         ]);
 
         try {
-            $building = $this->validateAdminBuildingAccess($request->building_id);
+            $user = $request->user();
 
-            if(!$building instanceof Building){
-                return $building;
+            $adminService = new AdminFiltersService();
+            $result = $adminService->checkBuildingAccess($request->bulding_id);
+
+            if (!$result['access']) {
+                return redirect()->back()->with('error', $result['message']);
             }
+
+            $building = $result['building'];
 
             dispatch(new BuildingNotifications(
                 $building->organization_id,
@@ -864,47 +853,76 @@ class BuildingController extends Controller
 
             return redirect()->route('buildings.index')->with('success', 'Building rejected successfully.');
         }catch (\Exception $e) {
-            Log::error('Error in submit building: ' . $e->getMessage());
-            return redirect()->back()->with('error', 'An error occurred while updating the building.');
+            Log::error('Error in report Building Remarks: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Something went wrong! Please try again.');
+        }
+    }
+
+
+    // Building Tree
+    public function tree(Request $request)
+    {
+        try {
+            $building = null;
+            $levels = null;
+            $units = null;
+            $owner = null;
+            $buildingId = $request->input('building_id');
+
+            $ownerService = new OwnerFiltersService();
+
+            $buildingIds = $ownerService->getAccessibleBuildingIds();
+            $buildingsDropDown = $ownerService->buildings($buildingIds);
+            $buildingId = $buildingId ?? $buildingsDropDown->first()?->id;
+
+            if (!$buildingId || !isset($buildingsDropDown->keyBy('id')[$buildingId])) {
+                if (!$buildingId) {
+                    return view('Heights.Owner.Buildings.tree', compact('building', 'levels', 'units', 'owner', 'buildingsDropDown'));
+                }
+                return redirect()->back()->with('error', 'Invalid Building ID');
+            }
+
+            if ($buildingId) {
+                $building = Building::with([
+                    'address',
+                    'pictures',
+                    'organization.owner',
+                    'levels',
+                    'units.pictures'
+                ])->find($buildingId);
+
+                if ($building) {
+                    $owner = optional($building->organization)->owner;
+                    $levels = $building->levels ?? collect();
+                    $units = $building->units ?? collect();
+                }
+            }
+
+            return view('Heights.Owner.Buildings.tree', compact('building', 'levels', 'units', 'owner', 'buildingsDropDown'));
+        } catch (\Throwable $e) {
+            Log::error('Error in Building Tree : ' . $e->getMessage());
+            return back()->with('error', 'An error occurred, while loading the page.');
         }
     }
 
 
     // Helper Functions
-    private function validateAdminBuildingAccess($id)
-    {
-        $allowedStatuses = ['Approved', 'For Re-approval', 'Under Review'];
-        $building = Building::find($id);
-
-        if (!$building || !in_array($building->status, $allowedStatuses)) {
-            return redirect()->back()->with('error', 'Invalid Building Id.');
-        }
-
-        return $building;
-    }
-
     private function validateOwnerBuildingAccess(Request $request, $id)
     {
-        $user = $request->user() ?? abort(403, 'Unauthorized');
         $token = $request->attributes->get('token');
-
-        if (empty($token['organization_id']) || empty($token['role_name'])) {
-            return redirect()->back()->with('error', 'Invalid Building Id.');
-        }
-
         $organization_id = $token['organization_id'];
-        $role_name = $token['role_name'];
+
         $building = Building::find($id);
 
         if (!$building || $organization_id !== $building->organization_id) {
             return redirect()->back()->with('error', 'Invalid Building Id.');
         }
 
-        if ($role_name === 'Manager' && !ManagerBuilding::where([
-                'building_id' => $building->id,
-                'user_id' => $user->id
-            ])->exists()) {
-            return redirect()->back()->with('error', 'Invalid Building Id.');
+        $ownerService = new OwnerFiltersService();
+        $result = $ownerService->checkBuildingAccess($building->id);
+
+        if(!$result['access']){
+            return redirect()->back()->with('error', $result['message']);
         }
 
         return $building;

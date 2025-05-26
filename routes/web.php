@@ -6,7 +6,6 @@ use App\Http\Controllers\GeneralControllers\ProfileController;
 use App\Http\Controllers\WebControllers\AdminDashboardController;
 use App\Http\Controllers\WebControllers\BuildingController;
 use App\Http\Controllers\WebControllers\BuildingLevelController;
-use App\Http\Controllers\WebControllers\BuildingTreeController;
 use App\Http\Controllers\WebControllers\BuildingUnitController;
 use App\Http\Controllers\WebControllers\CheckOutController;
 use App\Http\Controllers\WebControllers\DepartmentController;
@@ -124,24 +123,18 @@ Route::prefix('admin')->middleware(['auth.jwt'])->group(function () {
     Route::prefix('/types')->group(function () {
 
         Route::get('/', [DropdownTypeController::class, 'index'])->name('types.index');
-        Route::get('/create', [DropdownTypeController::class, 'create'])->name('types.create');
         Route::post('/', [DropdownTypeController::class, 'store'])->name('types.store');
-        Route::get('/{type}', [DropdownTypeController::class, 'show'])->name('types.show');
         Route::get('/{type}/edit', [DropdownTypeController::class, 'edit'])->name('types.edit');
         Route::put('/{type}', [DropdownTypeController::class, 'update'])->name('types.update');
-        Route::delete('/{type}', [DropdownTypeController::class, 'destroy'])->name('types.destroy');
 
     });
 
     Route::prefix('values')->group(function () {
 
         Route::get('/', [DropdownValueController::class, 'index'])->name('values.index');
-        Route::get('/create', [DropdownValueController::class, 'create'])->name('values.create');
         Route::post('/', [DropdownValueController::class, 'store'])->name('values.store');
-        Route::get('/{value}', [DropdownValueController::class, 'show'])->name('values.show');
         Route::get('/{value}/edit', [DropdownValueController::class, 'edit'])->name('values.edit');
         Route::put('/{value}', [DropdownValueController::class, 'update'])->name('values.update');
-        Route::delete('/{value}', [DropdownValueController::class, 'destroy'])->name('values.destroy');
 
     });
 
@@ -165,8 +158,7 @@ Route::prefix('admin')->middleware(['auth.jwt'])->group(function () {
         Route::get('/', [BuildingLevelController::class, 'adminIndex'])->name('levels.index');
         Route::get('/create', [BuildingLevelController::class, 'adminCreate'])->name('levels.create');
         Route::post('/', [BuildingLevelController::class, 'adminStore'])->name('levels.store');
-        Route::get('/{level}/show', [BuildingLevelController::class, 'show'])->name('levels.show');
-        Route::get('/{level}/edit', [BuildingLevelController::class, 'adminEdit'])->name('levels.edit');
+        Route::get('/{level}/edit', [BuildingLevelController::class, 'edit'])->name('levels.edit');
         Route::put('/', [BuildingLevelController::class, 'adminUpdate'])->name('levels.update');
 
     });
@@ -196,8 +188,8 @@ Route::prefix('admin')->middleware(['auth.jwt'])->group(function () {
         Route::post('/mark-payment-received', [OrganizationController::class, 'planPaymentReceived'])->name('organizations.planPaymentReceived');
         Route::put('/plan/cancel', [OrganizationController::class, 'adminCancelPlanSubscription'])->name('organizations.planSubscription.cancel');
         Route::put('/plan/resume', [OrganizationController::class, 'adminResumePlanSubscription'])->name('organizations.planSubscription.resume');
-        Route::get('/plan/{organization}/upgrade', [CheckOutController::class, 'updatePlanAdminIndex'])->name('organizations.plan.upgrade.index');
-        Route::put('/plan/upgrade', [CheckOutController::class, 'adminUpgradePlan'])->name('organizations.plan.upgrade.complete');
+        Route::get('/plan/{organization}/upgrade', [OrganizationController::class, 'adminUpgradePlanView'])->name('organizations.plan.upgrade.index');
+        Route::put('/plan/upgrade', [OrganizationController::class, 'adminUpgradePlan'])->name('organizations.plan.upgrade.complete');
 
         Route::get('/organizations/{id}/buildings', [OrganizationController::class, 'getBuildingsAdmin'])->name('organizations.buildings');
 
@@ -275,7 +267,7 @@ Route::prefix('owner')->middleware(['auth.jwt'])->group(function () {
             Route::get('/', [BuildingController::class, 'ownerIndex'])->name('owner.buildings.index');
             Route::get('/create', [BuildingController::class, 'ownerCreate'])->name('owner.buildings.create');
             Route::post('/', [BuildingController::class, 'ownerStore'])->name('owner.buildings.store');
-            Route::get('/tree', [BuildingTreeController::class, 'tree'])->name('owner.buildings.tree');
+            Route::get('/tree', [BuildingController::class, 'tree'])->name('owner.buildings.tree');
             Route::get('/{building}/show', [BuildingController::class, 'ownerShow'])->name('owner.buildings.show');
             Route::get('/{building}/edit', [BuildingController::class, 'ownerEdit'])->name('owner.buildings.edit');
             Route::put('/', [BuildingController::class, 'ownerUpdate'])->name('owner.buildings.update');
@@ -292,8 +284,7 @@ Route::prefix('owner')->middleware(['auth.jwt'])->group(function () {
             Route::get('/', [BuildingLevelController::class, 'ownerIndex'])->name('owner.levels.index');
             Route::get('/create', [BuildingLevelController::class, 'ownerCreate'])->name('owner.levels.create');
             Route::post('/', [BuildingLevelController::class, 'ownerStore'])->name('owner.levels.store');
-            Route::get('/{level}/show', [BuildingLevelController::class, 'show'])->name('owner.levels.show');
-            Route::get('/{level}/edit', [BuildingLevelController::class, 'ownerEdit'])->name('owner.levels.edit');
+            Route::get('/{level}/edit', [BuildingLevelController::class, 'edit'])->name('owner.levels.edit');
             Route::put('/', [BuildingLevelController::class, 'ownerUpdate'])->name('owner.levels.update');
 
         });
