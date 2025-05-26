@@ -12,7 +12,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 1rem 0;
+            padding: 0 0 1rem 0;
         }
 
         .finance-header h3 {
@@ -280,174 +280,170 @@
 
 
     <div id="main">
-        <section class="content mt-1 mb-5 mx-2">
+        <section class="content my-3 mx-2">
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-md-12">
-                        <div class="box">
-                            <div class="container mt-2">
-                                <!-- Finance Header -->
-                                <div class="finance-header">
-                                    <div>
-                                        <h3>Financial Dashboard</h3>
-                                    </div>
-                                    <form id="trendsFilterForm" method="GET" class="d-flex gap-2">
-                                        <select class="form-select form-select-sm w-auto me-2" style="min-width: 100px;" name="year" id="yearSelect">
-                                            @foreach(range(date('Y'), date('Y') - 5) as $y)
-                                                <option value="{{ $y }}" {{ $y == date('Y') ? 'selected' : '' }}>{{ $y }}</option>
-                                            @endforeach
-                                        </select>
-                                        <select class="form-select form-select-sm w-auto me-2" style="min-width: 100px;" name="month" id="monthSelect">
-                                            @foreach(range(1, 12) as $m)
-                                                <option value="{{ $m }}" {{ $m == date('n') ? 'selected' : '' }}>
-                                                    {{ date('M', mktime(0, 0, 0, $m, 1)) }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                        <button type="submit" class="btn btn-primary btn-sm">
-                                            <span class="d-inline-block">Update Trends</span>
-                                            <i class="fas fa-arrow-right ms-2"></i>
-                                        </button>
-                                    </form>
-                                </div>
+                        <!-- Finance Header -->
+                        <div class="finance-header">
+                            <div>
+                                <h3>Financial Dashboard</h3>
+                            </div>
+                            <form id="trendsFilterForm" method="GET" class="d-flex gap-2">
+                                <select class="form-select form-select-sm w-auto me-2" style="min-width: 100px;" name="year" id="yearSelect">
+                                    @foreach(range(date('Y'), date('Y') - 5) as $y)
+                                        <option value="{{ $y }}" {{ $y == date('Y') ? 'selected' : '' }}>{{ $y }}</option>
+                                    @endforeach
+                                </select>
+                                <select class="form-select form-select-sm w-auto me-2" style="min-width: 100px;" name="month" id="monthSelect">
+                                    @foreach(range(1, 12) as $m)
+                                        <option value="{{ $m }}" {{ $m == date('n') ? 'selected' : '' }}>
+                                            {{ date('M', mktime(0, 0, 0, $m, 1)) }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                <button type="submit" class="btn btn-primary btn-sm">
+                                    <span class="d-inline-block">Update Trends</span>
+                                    <i class="fas fa-arrow-right ms-2"></i>
+                                </button>
+                            </form>
+                        </div>
 
-                                <!-- Fixed Summary Cards -->
-                                <div id="financialMetricsContainer" class="row g-2 mb-2">
-                                    <div class="col-md-4">
-                                        <div class="summary-card">
-                                            <h5>Total Revenue</h5>
-                                            <div class="amount" id="totalRevenue">PKR 0.00</div>
-                                            <div class="trend" id="totalRevenueTrend">
-                                                <i class="fas fa-arrow-up me-1 positive"></i>
-                                                <span class="positive">0.00% from last month</span>
-                                            </div>
-                                        </div>
+                        <!-- Fixed Summary Cards -->
+                        <div id="financialMetricsContainer" class="row g-2 mb-2">
+                            <div class="col-md-4">
+                                <div class="summary-card">
+                                    <h5>Total Revenue</h5>
+                                    <div class="amount" id="totalRevenue">PKR 0.00</div>
+                                    <div class="trend" id="totalRevenueTrend">
+                                        <i class="fas fa-arrow-up me-1 positive"></i>
+                                        <span class="positive">0.00% from last month</span>
                                     </div>
-                                    <div class="col-md-4">
-                                        <div class="summary-card">
-                                            <h5>Total Expenses</h5>
-                                            <div class="amount" id="totalExpenses">PKR 0.00</div>
-                                            <div class="trend" id="totalExpensesTrend">
-                                                <i class="fas fa-arrow-down me-1 positive"></i>
-                                                <span class="positive">0.00% from last month</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <div class="summary-card">
-                                            <h5>Net Profit</h5>
-                                            <div class="amount positive" id="netProfit">PKR 0.00</div>
-                                            <div class="trend" id="netProfitTrend">
-                                                <i class="fas fa-arrow-up me-1 positive"></i>
-                                                <span class="positive">0.00% from last month</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Chart Section -->
-                                <div class="finance-card p-4 mt-3 mb-3">
-                                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-3">
-                                        <h5 class="section-title mb-0 mb-md-0">Financial Overview</h5>
-                                        <select class="form-select days-select"   id="daysSelect">
-                                            <option value="30">Last 30 Days</option>
-                                            <option value="90">Last 90 Days</option>
-                                            <option value="custom" id="thisYearOption">This Year (Jan 1 - Today)</option>
-                                        </select>
-                                    </div>
-                                    <div class="chart-container">
-                                        <div class="card-body" style="position: relative; height: 100%; width: 100%;">
-                                            <canvas id="financialChart"></canvas>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Filter Section -->
-                                <form method="GET" action="{{ route('finance.index') }}">
-                                    <div class="filter-section mb-3">
-                                        <h5 class="section-title mb-4">Transaction Filters</h5>
-                                        <div class="row g-3">
-                                            <div class="col-md-4">
-                                                <label class="form-label">Date Range</label>
-                                                <select name="date_range" class="form-select">
-                                                    <option value="7" {{ request('date_range') == 7 ? 'selected' : '' }}>Last 7 days</option>
-                                                    <option value="30" {{ request('date_range', 30) == 30 ? 'selected' : '' }}>Last 30 days</option>
-                                                    <option value="90" {{ request('date_range') == 90 ? 'selected' : '' }}>Last 3 months</option>
-                                                </select>
-                                            </div>
-                                            <div class="col-md-4">
-                                                <label class="form-label">Transaction Type</label>
-                                                <select name="type" class="form-select">
-                                                    <option value="">All Transactions</option>
-                                                    <option value="Debit" {{ request('type') == 'Debit' ? 'selected' : '' }}>Debit</option>
-                                                    <option value="Credit" {{ request('type') == 'Credit' ? 'selected' : '' }}>Credit</option>
-                                                </select>
-                                            </div>
-                                            <div class="col-md-4">
-                                                <label class="form-label">Status</label>
-                                                <select name="status" class="form-select">
-                                                    <option value="">All Statuses</option>
-                                                    <option value="Completed" {{ request('status') == 'Completed' ? 'selected' : '' }}>Completed</option>
-                                                    <option value="Pending" {{ request('status') == 'Pending' ? 'selected' : '' }}>Pending</option>
-                                                    <option value="Failed" {{ request('status') == 'Failed' ? 'selected' : '' }}>Failed</option>
-                                                </select>
-                                            </div>
-                                            <div class="col-md-4">
-                                                <label class="form-label">Min Amount (PKR)</label>
-                                                <input type="number" name="min_price" class="form-control" placeholder="0" value="{{ request('min_price') }}" >
-                                            </div>
-                                            <div class="col-md-4">
-                                                <label class="form-label">Max Amount (PKR)</label>
-                                                <input type="number" name="max_price" class="form-control" placeholder="100000" value="{{ request('max_price') }}">
-                                            </div>
-
-                                            <div class="col-md-4 d-flex align-items-end">
-                                                <div class="d-flex w-100 justify-content-between gap-2">
-                                                    <a href="{{ route('finance.index') }}" class="btn btn-secondary flex-grow-1 d-flex align-items-center justify-content-center">
-                                                        <i class="fas fa-undo me-2"></i> Reset
-                                                    </a>
-                                                    <button class="btn btn-primary flex-grow-1 d-flex align-items-center justify-content-center">
-                                                        <i class="fas fa-filter me-2"></i> Apply Filters
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </form>
-
-                                <!-- Transactions Section -->
-                                <div class="finance-card p-4">
-                                    <div class="d-flex justify-content-between align-items-center mb-4">
-                                        <h5 class="section-title mb-0">Recent Transactions</h5>
-                                        {{--                                        <button class="btn btn-sm btn-outline-primary">--}}
-                                        {{--                                            <i class="fas fa-plus me-1"></i> Add Transaction--}}
-                                        {{--                                        </button>--}}
-                                    </div>
-
-                                    @if(count($history) > 0)
-                                        <div class="row">
-                                            @foreach($history as $item)
-                                                <x-transaction-card :transaction="$item" route-name="finance.show"/>
-                                            @endforeach
-                                        </div>
-
-                                        @if ($transactions)
-                                            <div class="mt-4 custom-pagination-wrapper">
-                                                {{ $transactions->links('pagination::bootstrap-5') }}
-                                            </div>
-                                        @endif
-                                    @else
-                                        <div class="empty-state">
-                                            <i class="fas fa-exchange-alt empty-state-icon"></i>
-                                            <h4>No Transactions Found</h4>
-                                            <p>You don't have any transactions yet.</p>
-                                            {{--                                            <button class="btn btn-primary">--}}
-                                            {{--                                                <i class="fas fa-plus me-1"></i> Create Transaction--}}
-                                            {{--                                            </button>--}}
-                                        </div>
-                                    @endif
                                 </div>
                             </div>
+                            <div class="col-md-4">
+                                <div class="summary-card">
+                                    <h5>Total Expenses</h5>
+                                    <div class="amount" id="totalExpenses">PKR 0.00</div>
+                                    <div class="trend" id="totalExpensesTrend">
+                                        <i class="fas fa-arrow-down me-1 positive"></i>
+                                        <span class="positive">0.00% from last month</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="summary-card">
+                                    <h5>Net Profit</h5>
+                                    <div class="amount positive" id="netProfit">PKR 0.00</div>
+                                    <div class="trend" id="netProfitTrend">
+                                        <i class="fas fa-arrow-up me-1 positive"></i>
+                                        <span class="positive">0.00% from last month</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Chart Section -->
+                        <div class="finance-card p-4 mt-3 mb-3">
+                            <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-3">
+                                <h5 class="section-title mb-0 mb-md-0">Financial Overview</h5>
+                                <select class="form-select days-select"   id="daysSelect">
+                                    <option value="30">Last 30 Days</option>
+                                    <option value="90">Last 90 Days</option>
+                                    <option value="custom" id="thisYearOption">This Year (Jan 1 - Today)</option>
+                                </select>
+                            </div>
+                            <div class="chart-container">
+                                <div class="card-body" style="position: relative; height: 100%; width: 100%;">
+                                    <canvas id="financialChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Filter Section -->
+                        <form method="GET" action="{{ route('finance.index') }}">
+                            <div class="filter-section mb-3">
+                                <h5 class="section-title mb-4">Transaction Filters</h5>
+                                <div class="row g-3">
+                                    <div class="col-md-4">
+                                        <label class="form-label">Date Range</label>
+                                        <select name="date_range" class="form-select">
+                                            <option value="7" {{ request('date_range') == 7 ? 'selected' : '' }}>Last 7 days</option>
+                                            <option value="30" {{ request('date_range', 30) == 30 ? 'selected' : '' }}>Last 30 days</option>
+                                            <option value="90" {{ request('date_range') == 90 ? 'selected' : '' }}>Last 3 months</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label">Transaction Type</label>
+                                        <select name="type" class="form-select">
+                                            <option value="">All Transactions</option>
+                                            <option value="Debit" {{ request('type') == 'Debit' ? 'selected' : '' }}>Debit</option>
+                                            <option value="Credit" {{ request('type') == 'Credit' ? 'selected' : '' }}>Credit</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label">Status</label>
+                                        <select name="status" class="form-select">
+                                            <option value="">All Statuses</option>
+                                            <option value="Completed" {{ request('status') == 'Completed' ? 'selected' : '' }}>Completed</option>
+                                            <option value="Pending" {{ request('status') == 'Pending' ? 'selected' : '' }}>Pending</option>
+                                            <option value="Failed" {{ request('status') == 'Failed' ? 'selected' : '' }}>Failed</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label">Min Amount (PKR)</label>
+                                        <input type="number" name="min_price" class="form-control" placeholder="0" value="{{ request('min_price') }}" >
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label">Max Amount (PKR)</label>
+                                        <input type="number" name="max_price" class="form-control" placeholder="100000" value="{{ request('max_price') }}">
+                                    </div>
+
+                                    <div class="col-md-4 d-flex align-items-end">
+                                        <div class="d-flex w-100 justify-content-between gap-2">
+                                            <a href="{{ route('finance.index') }}" class="btn btn-secondary flex-grow-1 d-flex align-items-center justify-content-center">
+                                                <i class="fas fa-undo me-2"></i> Reset
+                                            </a>
+                                            <button class="btn btn-primary flex-grow-1 d-flex align-items-center justify-content-center">
+                                                <i class="fas fa-filter me-2"></i> Apply Filters
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+
+                        <!-- Transactions Section -->
+                        <div class="finance-card p-4">
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <h5 class="section-title mb-0">Recent Transactions</h5>
+                                {{--                                        <button class="btn btn-sm btn-outline-primary">--}}
+                                {{--                                            <i class="fas fa-plus me-1"></i> Add Transaction--}}
+                                {{--                                        </button>--}}
+                            </div>
+
+                            @if(count($history) > 0)
+                                <div class="row">
+                                    @foreach($history as $item)
+                                        <x-transaction-card :transaction="$item" route-name="finance.show"/>
+                                    @endforeach
+                                </div>
+
+                                @if ($transactions)
+                                    <div class="mt-4 custom-pagination-wrapper">
+                                        {{ $transactions->links('pagination::bootstrap-5') }}
+                                    </div>
+                                @endif
+                            @else
+                                <div class="empty-state">
+                                    <i class="fas fa-exchange-alt empty-state-icon"></i>
+                                    <h4>No Transactions Found</h4>
+                                    <p>You don't have any transactions yet.</p>
+                                    {{--                                            <button class="btn btn-primary">--}}
+                                    {{--                                                <i class="fas fa-plus me-1"></i> Create Transaction--}}
+                                    {{--                                            </button>--}}
+                                </div>
+                            @endif
                         </div>
                     </div>
                 </div>

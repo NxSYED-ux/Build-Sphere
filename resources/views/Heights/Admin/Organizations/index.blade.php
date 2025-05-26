@@ -318,378 +318,374 @@
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-md-12">
-                        <div class="box" style="overflow-x: auto;">
-                            <div class="container mt-2">
-                                <ul class="nav nav-tabs" id="myTab" role="tablist">
-                                    <li class="nav-item" role="presentation">
-                                        <a class="nav-link {{ $activeTab === 'Tab1' ? 'active' : '' }}" id="dropdwon-types-tab" data-bs-toggle="tab" href="#dropdwon-types" role="tab" aria-controls="dropdwon-types" aria-selected="{{ $activeTab === 'Tab1' ? 'true' : 'false' }}">Organization</a>
-                                    </li>
-                                    <li class="nav-item" role="presentation">
-                                        <a class="nav-link {{ $activeTab === 'Tab2' ? 'active' : '' }}" id="dropdwon-values-tab" data-bs-toggle="tab" href="#dropdwon-values" role="tab" aria-controls="dropdwon-values" aria-selected="{{ $activeTab === 'Tab2' ? 'true' : 'false' }}">Add Organization</a>
-                                    </li>
-                                </ul>
-                                <div class="tab-content mt-0" id="myTabContent">
-                                    <!-- Organization Tab -->
-                                    <div class="tab-pane fade {{ $activeTab === 'Tab1' ? 'show active' : '' }}" id="dropdwon-types" role="tabpanel" aria-labelledby="dropdwon-types-tab">
-                                        <div class="card shadow px-3 pb-3 pt-0 mb-5 mt-0 bg-body rounded" style="border: none;">
-                                            <div class="card-body py-0" style="position: relative; overflow-x: auto;">
-                                                <div class="d-flex align-items-center position-absolute mt-0" style="top: 30px; left: 30px;">
-                                                    <button class="btn btn-light" type="button" id="menu-icon" data-bs-toggle="dropdown" aria-expanded="false">
-                                                        <x-icon name="export" type="icon" class="" size="20px" />
-                                                    </button>
+                        <ul class="nav nav-tabs" id="myTab" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <a class="nav-link {{ $activeTab === 'Tab1' ? 'active' : '' }}" id="dropdwon-types-tab" data-bs-toggle="tab" href="#dropdwon-types" role="tab" aria-controls="dropdwon-types" aria-selected="{{ $activeTab === 'Tab1' ? 'true' : 'false' }}">Organization</a>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <a class="nav-link {{ $activeTab === 'Tab2' ? 'active' : '' }}" id="dropdwon-values-tab" data-bs-toggle="tab" href="#dropdwon-values" role="tab" aria-controls="dropdwon-values" aria-selected="{{ $activeTab === 'Tab2' ? 'true' : 'false' }}">Add Organization</a>
+                            </li>
+                        </ul>
+                        <div class="tab-content mt-0" id="myTabContent">
+                            <!-- Organization Tab -->
+                            <div class="tab-pane fade {{ $activeTab === 'Tab1' ? 'show active' : '' }}" id="dropdwon-types" role="tabpanel" aria-labelledby="dropdwon-types-tab">
+                                <div class="card shadow px-3 pb-3 pt-0 mb-5 mt-0 bg-body rounded" style="border: none;">
+                                    <div class="card-body py-0" style="position: relative; overflow-x: auto;">
+                                        <div class="d-flex align-items-center position-absolute mt-0" style="top: 30px; left: 30px;">
+                                            <button class="btn btn-light" type="button" id="menu-icon" data-bs-toggle="dropdown" aria-expanded="false">
+                                                <x-icon name="export" type="icon" class="" size="20px" />
+                                            </button>
 
-                                                    <ul id="button-list" class="dropdown-menu dropdown-menu-end" style="position: absolute; top: 100%; left: 0;">
-                                                        <li><button class="dropdown-item" type="button" id="copyButton">Copy</button></li>
-                                                        <li><button class="dropdown-item" type="button" id="csvButton">CSV</button></li>
-                                                        <li><button class="dropdown-item" type="button" id="excelButton">Excel</button></li>
-                                                        <li><button class="dropdown-item" type="button" id="pdfButton">PDF</button></li>
-                                                        <li><button class="dropdown-item" type="button" id="printButton">Print</button></li>
-                                                    </ul>
-                                                </div>
-                                                <table id="organizationTable" class="table shadow-sm table-hover table-striped">
-                                                    <thead class="shadow">
+                                            <ul id="button-list" class="dropdown-menu dropdown-menu-end" style="position: absolute; top: 100%; left: 0;">
+                                                <li><button class="dropdown-item" type="button" id="copyButton">Copy</button></li>
+                                                <li><button class="dropdown-item" type="button" id="csvButton">CSV</button></li>
+                                                <li><button class="dropdown-item" type="button" id="excelButton">Excel</button></li>
+                                                <li><button class="dropdown-item" type="button" id="pdfButton">PDF</button></li>
+                                                <li><button class="dropdown-item" type="button" id="printButton">Print</button></li>
+                                            </ul>
+                                        </div>
+                                        <table id="organizationTable" class="table shadow-sm table-hover table-striped">
+                                            <thead class="shadow">
+                                                <tr>
+                                                    <th>ID</th>
+                                                    <th>Picture</th>
+                                                    <th>Name</th>
+                                                    <th>Owner</th>
+                                                    <th>City</th>
+                                                    <th>Online Payment</th>
+                                                    <th>Status</th>
+                                                    <th class="text-center" style="width: 70px;">Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @forelse ($organizations ?? [] as $organization)
+                                                    <tr>
+                                                        <td>{{ $organization->id }}</td>
+                                                        <td>
+                                                            <img src="{{ $organization->logo ? asset($organization->logo) : asset('img/organization_placeholder.png') }}" alt="Organization Picture" class="rounded-circle" width="50" height="50">
+                                                        </td>
+                                                        <td>{{ $organization->name }}</td>
+                                                        <td>{{ $organization->owner->name }}</td>
+                                                        <td>{{ $organization->address->city ?? 'N/A' }}</td>
+                                                        <td class="text-center" style="width: 150px !important;">
+                                                            <div class="form-check form-switch m-0 d-flex justify-content-center">
+                                                                <input type="hidden" name="is_online_payment_enabled" value="0">
+                                                                <input class="form-check-input" type="checkbox" role="switch" id="enable_online_payments"
+                                                                       name="is_online_payment_enabled" value="{{ old('merchant_id', $organization->is_online_payment_enabled) }}"
+                                                                       style="transform: scale(1.3);"
+                                                                       {{ old('is_online_payment_enabled', $organization->is_online_payment_enabled ?? false) ? 'checked' : '' }}
+                                                                       onchange="updateOnlinePaymentStatus(this, '{{ $organization->id }}', '{{ $organization->payment_gateway_merchant_id }}')">
+                                                            </div>
+                                                        </td>
+                                                        <td>{{ $organization->status }}</td>
+                                                        <td class="text-center">
+                                                            <div class="d-flex justify-content-center align-items-center gap-3">
+                                                                <a href="{{ route('organizations.show', ['organization' => $organization->id]) }}" class="text-info" data-bs-toggle="tooltip" data-bs-placement="top" title="View">
+                                                                    <x-icon name="view" type="icon" class="" size="20px" />
+                                                                </a>
+                                                                <a href="{{ route('organizations.edit', $organization->id) }}" class="text-warning" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit">
+                                                                    <x-icon name="edit" type="icon" class="" size="20px" />
+                                                                </a>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    @empty
                                                         <tr>
-                                                            <th>ID</th>
-                                                            <th>Picture</th>
-                                                            <th>Name</th>
-                                                            <th>Owner</th>
-                                                            <th>City</th>
-                                                            <th>Online Payment</th>
-                                                            <th>Status</th>
-                                                            <th class="text-center" style="width: 70px;">Actions</th>
+                                                            <td colspan="9" class="text-center">No organizations found.</td>
                                                         </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        @forelse ($organizations ?? [] as $organization)
-                                                            <tr>
-                                                                <td>{{ $organization->id }}</td>
-                                                                <td>
-                                                                    <img src="{{ $organization->logo ? asset($organization->logo) : asset('img/organization_placeholder.png') }}" alt="Organization Picture" class="rounded-circle" width="50" height="50">
-                                                                </td>
-                                                                <td>{{ $organization->name }}</td>
-                                                                <td>{{ $organization->owner->name }}</td>
-                                                                <td>{{ $organization->address->city ?? 'N/A' }}</td>
-                                                                <td class="text-center" style="width: 150px !important;">
-                                                                    <div class="form-check form-switch m-0 d-flex justify-content-center">
+                                                    @endforelse
+                                            </tbody>
+                                            @if ($organizations)
+                                                <div class="mt-3 custom-pagination-wrapper">
+                                                    {{ $organizations->links('pagination::bootstrap-5') }}
+                                                </div>
+                                            @endif
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Add Organization Tab -->
+                            <div class="tab-pane fade {{ $activeTab === 'Tab2' ? 'show active' : '' }}" id="dropdwon-values" role="tabpanel" aria-labelledby="dropdwon-values-tab">
+                                <div class="card shadow py-2 px-1 mb-5 bg-body rounded" style="border: none;">
+                                    <div class="card-body" style="overflow-x: auto;">
+                                        <form action="{{ route('organizations.store') }}" method="POST" enctype="multipart/form-data" id="organizationForm">
+                                            @csrf
+
+                                            <input type="hidden" name="activeTab" value="Tab2">
+
+                                            <input type="hidden" name="plan_id" id="plan_id">
+                                            <input type="hidden" name="plan_cycle_id"  id="plan_cycle_id">
+                                            <input type="hidden" name="plan_cycle" id="plan_cycle">
+
+                                            <input type="hidden" id="selectedPlanId">
+                                            <input type="hidden" id="selectedPlanCycle">
+                                            <input type="hidden" id="selectedBillingCycleId">
+
+                                            <div class="row">
+                                                <!-- Left Column - Organization Details -->
+                                                <div class="col-lg-6 col-md-12">
+                                                    <div class="form-section shadow-sm">
+                                                        <h5><i class="fas fa-info-circle me-2"></i> Basic Information</h5>
+
+                                                        <div class="row">
+                                                            <div class="col-md-6 mb-3">
+                                                                <label for="name" class="form-label">Organization Name</label>
+                                                                <span class="text-danger">*</span>
+                                                                <input type="text" name="name" id="name"
+                                                                       class="form-control @error('name') is-invalid @enderror"
+                                                                       value="{{ old('name') }}"
+                                                                       maxlength="50"
+                                                                       placeholder="Enter organization name"
+                                                                       required>
+                                                                @error('name')
+                                                                <div class="invalid-feedback">{{ $message }}</div>
+                                                                @enderror
+                                                            </div>
+
+                                                            <div class="col-md-6 mb-3">
+                                                                <label for="owner_id" class="form-label">Owner</label>
+                                                                <span class="text-danger">*</span>
+                                                                <select class="form-select @error('owner_id') is-invalid @enderror"
+                                                                        id="owner_id"
+                                                                        name="owner_id"
+                                                                        required>
+                                                                    <option value="" disabled {{ old('owner_id') === null ? 'selected' : '' }}>Select Owner</option>
+                                                                    @foreach($owners as $id => $name)
+                                                                        <option value="{{ $id }}" {{ old('owner_id') == $id ? 'selected' : '' }}>
+                                                                            {{ $name }}
+                                                                        </option>
+                                                                    @endforeach
+                                                                </select>
+                                                                @error('owner_id')
+                                                                <div class="invalid-feedback">{{ $message }}</div>
+                                                                @enderror
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="row">
+                                                            <div class="col-md-6 mb-3">
+                                                                <label for="email" class="form-label">Email</label>
+                                                                <span class="text-danger">*</span>
+                                                                <input type="email" name="email" id="email" class="form-control @error('email') is-invalid @enderror"
+                                                                       value="{{ old('email') }}" maxlength="50" placeholder="i.e. org@gmail.com" required>
+                                                                @error('email')
+                                                                <div class="invalid-feedback">{{ $message }}</div>
+                                                                @enderror
+                                                            </div>
+
+                                                            <div class="col-md-6 mb-3">
+                                                                <label for="phone" class="form-label">Phone</label>
+                                                                <span class="text-danger">*</span>
+                                                                <input type="text" name="phone" id="phone_no" class="form-control @error('phone') is-invalid @enderror"
+                                                                       value="{{ old('phone') }}" placeholder="0312-3456789" maxlength="14" required>
+                                                                @error('phone')
+                                                                <div class="invalid-feedback">{{ $message }}</div>
+                                                                @enderror
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="row">
+                                                            <div class="col-md-6 mb-3">
+                                                                <label for="stripe_merchant_id" class="form-label">
+                                                                    Stripe Merchant ID <span class="text-danger" id="merchant-required-star" style="display: none;">*</span>
+                                                                </label>
+                                                                <div class="input-group">
+                                                                    <span class="input-group-text" style="background-color: var(--sidenavbar-body-color);">
+                                                                        <i class="fab fa-stripe text-primary"></i>
+                                                                    </span>
+                                                                    <input type="text"
+                                                                           name="merchant_id"
+                                                                           id="stripe_merchant_id"
+                                                                           class="form-control @error('merchant_id') is-invalid @enderror"
+                                                                           value="{{ old('merchant_id') }}"
+                                                                           placeholder="e.g. acct_1L9..."
+                                                                        {{ old('is_online_payments_enabled') ? 'required' : '' }}>
+                                                                </div>
+{{--                                                                        <small class="text-muted">Found in your Stripe Dashboard</small>--}}
+                                                                @error('merchant_id')
+                                                                <div class="invalid-feedback d-block">{{ $message }}</div>
+                                                                @enderror
+                                                            </div>
+
+                                                            <div class="col-md-6 mb-3">
+                                                                <label class="form-label">
+                                                                    Online Payments <span class="text-danger">*</span>
+                                                                </label>
+                                                                <div class="d-flex align-items-center mt-2">
+                                                                    <label class="form-check-label me-3" for="enable_online_payments">
+                                                                        Enable
+                                                                    </label>
+                                                                    <div class="form-check form-switch m-0">
                                                                         <input type="hidden" name="is_online_payment_enabled" value="0">
                                                                         <input class="form-check-input" type="checkbox" role="switch" id="enable_online_payments"
-                                                                               name="is_online_payment_enabled" value="{{ old('merchant_id', $organization->is_online_payment_enabled) }}"
-                                                                               style="transform: scale(1.3);"
-                                                                               {{ old('is_online_payment_enabled', $organization->is_online_payment_enabled ?? false) ? 'checked' : '' }}
-                                                                               onchange="updateOnlinePaymentStatus(this, '{{ $organization->id }}', '{{ $organization->payment_gateway_merchant_id }}')">
-                                                                    </div>
-                                                                </td>
-                                                                <td>{{ $organization->status }}</td>
-                                                                <td class="text-center">
-                                                                    <div class="d-flex justify-content-center align-items-center gap-3">
-                                                                        <a href="{{ route('organizations.show', ['organization' => $organization->id]) }}" class="text-info" data-bs-toggle="tooltip" data-bs-placement="top" title="View">
-                                                                            <x-icon name="view" type="icon" class="" size="20px" />
-                                                                        </a>
-                                                                        <a href="{{ route('organizations.edit', $organization->id) }}" class="text-warning" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit">
-                                                                            <x-icon name="edit" type="icon" class="" size="20px" />
-                                                                        </a>
-                                                                    </div>
-                                                                </td>
-                                                            </tr>
-                                                            @empty
-                                                                <tr>
-                                                                    <td colspan="9" class="text-center">No organizations found.</td>
-                                                                </tr>
-                                                            @endforelse
-                                                    </tbody>
-                                                    @if ($organizations)
-                                                        <div class="mt-3 custom-pagination-wrapper">
-                                                            {{ $organizations->links('pagination::bootstrap-5') }}
-                                                        </div>
-                                                    @endif
-                                                </table>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <!-- Add Organization Tab -->
-                                    <div class="tab-pane fade {{ $activeTab === 'Tab2' ? 'show active' : '' }}" id="dropdwon-values" role="tabpanel" aria-labelledby="dropdwon-values-tab">
-                                        <div class="card shadow py-2 px-1 mb-5 bg-body rounded" style="border: none;">
-                                            <div class="card-body" style="overflow-x: auto;">
-                                                <form action="{{ route('organizations.store') }}" method="POST" enctype="multipart/form-data" id="organizationForm">
-                                                    @csrf
-
-                                                    <input type="hidden" name="activeTab" value="Tab2">
-
-                                                    <input type="hidden" name="plan_id" id="plan_id">
-                                                    <input type="hidden" name="plan_cycle_id"  id="plan_cycle_id">
-                                                    <input type="hidden" name="plan_cycle" id="plan_cycle">
-
-                                                    <input type="hidden" id="selectedPlanId">
-                                                    <input type="hidden" id="selectedPlanCycle">
-                                                    <input type="hidden" id="selectedBillingCycleId">
-
-                                                    <div class="row">
-                                                        <!-- Left Column - Organization Details -->
-                                                        <div class="col-lg-6 col-md-12">
-                                                            <div class="form-section shadow-sm">
-                                                                <h5><i class="fas fa-info-circle me-2"></i> Basic Information</h5>
-
-                                                                <div class="row">
-                                                                    <div class="col-md-6 mb-3">
-                                                                        <label for="name" class="form-label">Organization Name</label>
-                                                                        <span class="text-danger">*</span>
-                                                                        <input type="text" name="name" id="name"
-                                                                               class="form-control @error('name') is-invalid @enderror"
-                                                                               value="{{ old('name') }}"
-                                                                               maxlength="50"
-                                                                               placeholder="Enter organization name"
-                                                                               required>
-                                                                        @error('name')
-                                                                        <div class="invalid-feedback">{{ $message }}</div>
-                                                                        @enderror
-                                                                    </div>
-
-                                                                    <div class="col-md-6 mb-3">
-                                                                        <label for="owner_id" class="form-label">Owner</label>
-                                                                        <span class="text-danger">*</span>
-                                                                        <select class="form-select @error('owner_id') is-invalid @enderror"
-                                                                                id="owner_id"
-                                                                                name="owner_id"
-                                                                                required>
-                                                                            <option value="" disabled {{ old('owner_id') === null ? 'selected' : '' }}>Select Owner</option>
-                                                                            @foreach($owners as $id => $name)
-                                                                                <option value="{{ $id }}" {{ old('owner_id') == $id ? 'selected' : '' }}>
-                                                                                    {{ $name }}
-                                                                                </option>
-                                                                            @endforeach
-                                                                        </select>
-                                                                        @error('owner_id')
-                                                                        <div class="invalid-feedback">{{ $message }}</div>
-                                                                        @enderror
+                                                                               name="is_online_payment_enabled" value="1" style="transform: scale(1.3);"
+                                                                            {{ old('is_online_payment_enabled', $is_online_payment_enabled ?? false) ? 'checked' : '' }}>
                                                                     </div>
                                                                 </div>
-
-                                                                <div class="row">
-                                                                    <div class="col-md-6 mb-3">
-                                                                        <label for="email" class="form-label">Email</label>
-                                                                        <span class="text-danger">*</span>
-                                                                        <input type="email" name="email" id="email" class="form-control @error('email') is-invalid @enderror"
-                                                                               value="{{ old('email') }}" maxlength="50" placeholder="i.e. org@gmail.com" required>
-                                                                        @error('email')
-                                                                        <div class="invalid-feedback">{{ $message }}</div>
-                                                                        @enderror
-                                                                    </div>
-
-                                                                    <div class="col-md-6 mb-3">
-                                                                        <label for="phone" class="form-label">Phone</label>
-                                                                        <span class="text-danger">*</span>
-                                                                        <input type="text" name="phone" id="phone_no" class="form-control @error('phone') is-invalid @enderror"
-                                                                               value="{{ old('phone') }}" placeholder="0312-3456789" maxlength="14" required>
-                                                                        @error('phone')
-                                                                        <div class="invalid-feedback">{{ $message }}</div>
-                                                                        @enderror
-                                                                    </div>
-                                                                </div>
-
-                                                                <div class="row">
-                                                                    <div class="col-md-6 mb-3">
-                                                                        <label for="stripe_merchant_id" class="form-label">
-                                                                            Stripe Merchant ID <span class="text-danger" id="merchant-required-star" style="display: none;">*</span>
-                                                                        </label>
-                                                                        <div class="input-group">
-                                                                            <span class="input-group-text" style="background-color: var(--sidenavbar-body-color);">
-                                                                                <i class="fab fa-stripe text-primary"></i>
-                                                                            </span>
-                                                                            <input type="text"
-                                                                                   name="merchant_id"
-                                                                                   id="stripe_merchant_id"
-                                                                                   class="form-control @error('merchant_id') is-invalid @enderror"
-                                                                                   value="{{ old('merchant_id') }}"
-                                                                                   placeholder="e.g. acct_1L9..."
-                                                                                {{ old('is_online_payments_enabled') ? 'required' : '' }}>
-                                                                        </div>
-{{--                                                                        <small class="text-muted">Found in your Stripe Dashboard</small>--}}
-                                                                        @error('merchant_id')
-                                                                        <div class="invalid-feedback d-block">{{ $message }}</div>
-                                                                        @enderror
-                                                                    </div>
-
-                                                                    <div class="col-md-6 mb-3">
-                                                                        <label class="form-label">
-                                                                            Online Payments <span class="text-danger">*</span>
-                                                                        </label>
-                                                                        <div class="d-flex align-items-center mt-2">
-                                                                            <label class="form-check-label me-3" for="enable_online_payments">
-                                                                                Enable
-                                                                            </label>
-                                                                            <div class="form-check form-switch m-0">
-                                                                                <input type="hidden" name="is_online_payment_enabled" value="0">
-                                                                                <input class="form-check-input" type="checkbox" role="switch" id="enable_online_payments"
-                                                                                       name="is_online_payment_enabled" value="1" style="transform: scale(1.3);"
-                                                                                    {{ old('is_online_payment_enabled', $is_online_payment_enabled ?? false) ? 'checked' : '' }}>
-                                                                            </div>
-                                                                        </div>
-                                                                        @error('is_online_payment_enabled')
-                                                                        <div class="invalid-feedback d-block">{{ $message }}</div>
-                                                                        @enderror
-                                                                    </div>
-
-
-                                                                </div>
+                                                                @error('is_online_payment_enabled')
+                                                                <div class="invalid-feedback d-block">{{ $message }}</div>
+                                                                @enderror
                                                             </div>
 
-                                                            <div class="form-section shadow-sm">
-                                                                <h5><i class="fas fa-map-marker-alt me-2"></i> Location Information</h5>
 
-                                                                <div class="row">
-                                                                    <div class="col-md-6 mb-3">
-                                                                        <label for="country" class="form-label">Country</label>
-                                                                        <span class="text-danger">*</span>
-                                                                        <select class="form-select @error('country') is-invalid @enderror"
-                                                                                id="country"
-                                                                                name="country" required>
-                                                                            <option value="" selected>Select Country</option>
-                                                                        </select>
-                                                                        @error('country')
-                                                                        <div class="invalid-feedback">{{ $message }}</div>
-                                                                        @enderror
-                                                                    </div>
-
-                                                                    <div class="col-md-6 mb-3">
-                                                                        <label for="province" class="form-label">Province/State</label>
-                                                                        <span class="text-danger">*</span>
-                                                                        <select class="form-select @error('province') is-invalid @enderror"
-                                                                                id="province"
-                                                                                name="province" required>
-                                                                            <option value="" selected>Select Province</option>
-                                                                        </select>
-                                                                        @error('province')
-                                                                        <div class="invalid-feedback">{{ $message }}</div>
-                                                                        @enderror
-                                                                    </div>
-
-                                                                    <div class="col-md-6 mb-3">
-                                                                        <label for="city" class="form-label">City</label>
-                                                                        <span class="text-danger">*</span>
-                                                                        <select class="form-select @error('city') is-invalid @enderror"
-                                                                                id="city"
-                                                                                name="city" required>
-                                                                            <option value="" selected>Select City</option>
-                                                                        </select>
-                                                                        @error('city')
-                                                                        <div class="invalid-feedback">{{ $message }}</div>
-                                                                        @enderror
-                                                                    </div>
-
-                                                                    <div class="col-md-6 mb-3">
-                                                                        <label for="postal_code" class="form-label">Postal Code</label>
-                                                                        <span class="text-danger">*</span>
-                                                                        <input type="text" name="postal_code" id="postal_code"
-                                                                               class="form-control @error('postal_code') is-invalid @enderror"
-                                                                               value="{{ old('postal_code') }}"
-                                                                               maxlength="20"
-                                                                               placeholder="Enter postal code" required>
-                                                                        @error('postal_code')
-                                                                        <div class="invalid-feedback">{{ $message }}</div>
-                                                                        @enderror
-                                                                    </div>
-
-                                                                    <div class="col-md-12 mb-3">
-                                                                        <label for="location" class="form-label">Street Address</label>
-                                                                        <span class="text-danger">*</span>
-                                                                        <input type="text" name="location" id="location"
-                                                                               class="form-control @error('location') is-invalid @enderror"
-                                                                               value="{{ old('location') }}"
-                                                                               maxlength="100"
-                                                                               placeholder="Enter street address" required>
-                                                                        @error('location')
-                                                                        <div class="invalid-feedback">{{ $message }}</div>
-                                                                        @enderror
-                                                                    </div>
-
-
-                                                                </div>
-                                                            </div>
-
-                                                            <div class="form-section shadow-sm">
-                                                                <h5><i class="fas fa-image me-2"></i> Organization Pictures</h5>
-                                                                <div class="alert alert-info mb-3">
-                                                                    <strong><i class="fas fa-info-circle me-2"></i>Important:</strong>
-                                                                    The first image you upload will be used as your organization's logo. Choose wisely!
-                                                                    Maximum 5 images allowed.
-                                                                </div>
-                                                                <div class="image-upload-container" id="image-upload-container">
-                                                                    <div class="d-flex flex-column align-items-center">
-                                                                        <i class="fas fa-cloud-upload-alt fa-3x text-primary mb-3"></i>
-                                                                        <h6 class="mb-2">Drag & Drop Images Here</h6>
-                                                                        <p class="mb-3">or</p>
-                                                                        <label for="image-input" class="btn btn-primary">
-                                                                            <i class="fas fa-folder-open me-2"></i> Browse Files
-                                                                        </label>
-                                                                        <input type="file" id="image-input" name="organization_pictures[]"
-                                                                               accept="image/png, image/jpeg, image/jpg, image/gif"
-                                                                               multiple hidden>
-                                                                    </div>
-                                                                    <div class="image-preview mt-3 text-center" id="image-preview">
-                                                                    </div>
-                                                                    @error('organization_pictures')
-                                                                    <div class="text-danger small mt-2">{{ $message }}</div>
-                                                                    @enderror
-                                                                </div>
-                                                            </div>
-                                                        </div>
-
-                                                        <!-- Right Column - Plan Selection -->
-                                                        <div class="col-lg-6 col-md-12">
-                                                            <div class="form-section shadow-sm">
-                                                                <h5><i class="fas fa-cubes me-2"></i> Membership Plan</h5>
-
-                                                                <div class="mb-4">
-                                                                    <label for="billing-cycle" class="form-label mb-2">Billing Cycle</label>
-                                                                    <div class="input-group">
-                                                                        <select id="billing-cycle" name="billing-cycle" class="form-select">
-                                                                            @forelse($planCycles as $planCycle)
-                                                                                <option value="{{ $planCycle }}" {{ old('billing-cycle') == $planCycle ? 'selected' : '' }}>
-                                                                                    {{ $planCycle }} Month
-                                                                                </option>
-                                                                            @empty
-                                                                                <option value="">No Plans Available</option>
-                                                                            @endforelse
-                                                                        </select>
-                                                                        <span class="input-group-text" style="background-color: var(--sidenavbar-body-color);">
-                                                                            <i class="fas fa-calendar-alt"></i>
-                                                                        </span>
-                                                                    </div>
-                                                                </div>
-
-                                                                <div class="mb-4">
-                                                                    <label class="form-label mb-2">Available Plans</label>
-                                                                    <div class="row g-3 plans-container" id="plans-container">
-                                                                        <!-- Plans will be loaded here via JavaScript -->
-                                                                        <div class="col-12 text-center py-4">
-                                                                            <div class="spinner-border text-primary" role="status">
-                                                                                <span class="visually-hidden">Loading...</span>
-                                                                            </div>
-                                                                            <p class="mt-2">Loading plans...</p>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-
-                                                                <div class="selected-plan-details shadow-sm" id="selected-plan-details">
-                                                                    <div class="text-center py-4">
-                                                                        <i class="fas fa-cube fa-3x text-muted mb-3"></i>
-                                                                        <h5 class="text-muted">No Plan Selected</h5>
-                                                                        <p class="text-muted">Please select a plan from above</p>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
                                                         </div>
                                                     </div>
 
-                                                    <div class="d-flex justify-content-center justify-content-md-end mt-4">
-                                                        <button type="submit" class="btn btn-primary px-4 py-2">
-                                                            <i class="fas fa-save me-2"></i> Create Organization
-                                                        </button>
+                                                    <div class="form-section shadow-sm">
+                                                        <h5><i class="fas fa-map-marker-alt me-2"></i> Location Information</h5>
+
+                                                        <div class="row">
+                                                            <div class="col-md-6 mb-3">
+                                                                <label for="country" class="form-label">Country</label>
+                                                                <span class="text-danger">*</span>
+                                                                <select class="form-select @error('country') is-invalid @enderror"
+                                                                        id="country"
+                                                                        name="country" required>
+                                                                    <option value="" selected>Select Country</option>
+                                                                </select>
+                                                                @error('country')
+                                                                <div class="invalid-feedback">{{ $message }}</div>
+                                                                @enderror
+                                                            </div>
+
+                                                            <div class="col-md-6 mb-3">
+                                                                <label for="province" class="form-label">Province/State</label>
+                                                                <span class="text-danger">*</span>
+                                                                <select class="form-select @error('province') is-invalid @enderror"
+                                                                        id="province"
+                                                                        name="province" required>
+                                                                    <option value="" selected>Select Province</option>
+                                                                </select>
+                                                                @error('province')
+                                                                <div class="invalid-feedback">{{ $message }}</div>
+                                                                @enderror
+                                                            </div>
+
+                                                            <div class="col-md-6 mb-3">
+                                                                <label for="city" class="form-label">City</label>
+                                                                <span class="text-danger">*</span>
+                                                                <select class="form-select @error('city') is-invalid @enderror"
+                                                                        id="city"
+                                                                        name="city" required>
+                                                                    <option value="" selected>Select City</option>
+                                                                </select>
+                                                                @error('city')
+                                                                <div class="invalid-feedback">{{ $message }}</div>
+                                                                @enderror
+                                                            </div>
+
+                                                            <div class="col-md-6 mb-3">
+                                                                <label for="postal_code" class="form-label">Postal Code</label>
+                                                                <span class="text-danger">*</span>
+                                                                <input type="text" name="postal_code" id="postal_code"
+                                                                       class="form-control @error('postal_code') is-invalid @enderror"
+                                                                       value="{{ old('postal_code') }}"
+                                                                       maxlength="20"
+                                                                       placeholder="Enter postal code" required>
+                                                                @error('postal_code')
+                                                                <div class="invalid-feedback">{{ $message }}</div>
+                                                                @enderror
+                                                            </div>
+
+                                                            <div class="col-md-12 mb-3">
+                                                                <label for="location" class="form-label">Street Address</label>
+                                                                <span class="text-danger">*</span>
+                                                                <input type="text" name="location" id="location"
+                                                                       class="form-control @error('location') is-invalid @enderror"
+                                                                       value="{{ old('location') }}"
+                                                                       maxlength="100"
+                                                                       placeholder="Enter street address" required>
+                                                                @error('location')
+                                                                <div class="invalid-feedback">{{ $message }}</div>
+                                                                @enderror
+                                                            </div>
+
+
+                                                        </div>
                                                     </div>
 
-                                                </form>
+                                                    <div class="form-section shadow-sm">
+                                                        <h5><i class="fas fa-image me-2"></i> Organization Pictures</h5>
+                                                        <div class="alert alert-info mb-3">
+                                                            <strong><i class="fas fa-info-circle me-2"></i>Important:</strong>
+                                                            The first image you upload will be used as your organization's logo. Choose wisely!
+                                                            Maximum 5 images allowed.
+                                                        </div>
+                                                        <div class="image-upload-container" id="image-upload-container">
+                                                            <div class="d-flex flex-column align-items-center">
+                                                                <i class="fas fa-cloud-upload-alt fa-3x text-primary mb-3"></i>
+                                                                <h6 class="mb-2">Drag & Drop Images Here</h6>
+                                                                <p class="mb-3">or</p>
+                                                                <label for="image-input" class="btn btn-primary">
+                                                                    <i class="fas fa-folder-open me-2"></i> Browse Files
+                                                                </label>
+                                                                <input type="file" id="image-input" name="organization_pictures[]"
+                                                                       accept="image/png, image/jpeg, image/jpg, image/gif"
+                                                                       multiple hidden>
+                                                            </div>
+                                                            <div class="image-preview mt-3 text-center" id="image-preview">
+                                                            </div>
+                                                            @error('organization_pictures')
+                                                            <div class="text-danger small mt-2">{{ $message }}</div>
+                                                            @enderror
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Right Column - Plan Selection -->
+                                                <div class="col-lg-6 col-md-12">
+                                                    <div class="form-section shadow-sm">
+                                                        <h5><i class="fas fa-cubes me-2"></i> Membership Plan</h5>
+
+                                                        <div class="mb-4">
+                                                            <label for="billing-cycle" class="form-label mb-2">Billing Cycle</label>
+                                                            <div class="input-group">
+                                                                <select id="billing-cycle" name="billing-cycle" class="form-select">
+                                                                    @forelse($planCycles as $planCycle)
+                                                                        <option value="{{ $planCycle }}" {{ old('billing-cycle') == $planCycle ? 'selected' : '' }}>
+                                                                            {{ $planCycle }} Month
+                                                                        </option>
+                                                                    @empty
+                                                                        <option value="">No Plans Available</option>
+                                                                    @endforelse
+                                                                </select>
+                                                                <span class="input-group-text" style="background-color: var(--sidenavbar-body-color);">
+                                                                    <i class="fas fa-calendar-alt"></i>
+                                                                </span>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="mb-4">
+                                                            <label class="form-label mb-2">Available Plans</label>
+                                                            <div class="row g-3 plans-container" id="plans-container">
+                                                                <!-- Plans will be loaded here via JavaScript -->
+                                                                <div class="col-12 text-center py-4">
+                                                                    <div class="spinner-border text-primary" role="status">
+                                                                        <span class="visually-hidden">Loading...</span>
+                                                                    </div>
+                                                                    <p class="mt-2">Loading plans...</p>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="selected-plan-details shadow-sm" id="selected-plan-details">
+                                                            <div class="text-center py-4">
+                                                                <i class="fas fa-cube fa-3x text-muted mb-3"></i>
+                                                                <h5 class="text-muted">No Plan Selected</h5>
+                                                                <p class="text-muted">Please select a plan from above</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
-                                        </div>
+
+                                            <div class="d-flex justify-content-center justify-content-md-end mt-4">
+                                                <button type="submit" class="btn btn-primary px-4 py-2">
+                                                    <i class="fas fa-save me-2"></i> Create Organization
+                                                </button>
+                                            </div>
+
+                                        </form>
                                     </div>
                                 </div>
                             </div>

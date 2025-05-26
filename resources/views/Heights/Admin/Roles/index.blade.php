@@ -4,659 +4,638 @@
 
 @push('styles')
     <style>
+        :root {
+            --card-border: #e9ecef;
+            --primary-rgb: 99, 102, 241;
+            --input-border: #ced4da;
+        }
+
         body {
         }
+
         #main {
             margin-top: 45px;
         }
 
-        .btn-add {
-            padding: 10px 20px;
-            border-radius: 8px;
-            font-weight: 500;
-            transition: all 0.2s ease;
+        .btn-add:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(var(--primary-rgb), 0.2);
+        }
+
+        /* Card Styles */
+        .roles-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 25px;
+            padding: 20px 0;
+        }
+
+        .role-card {
+            background: var(--sidenavbar-body-color);
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            border: 1px solid var(--card-border);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            position: relative;
+        }
+
+        .role-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+            border-color: rgba(var(--primary-rgb), 0.3);
+        }
+
+        .role-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(var(--primary-rgb), 0.03) 0%, rgba(var(--primary-rgb), 0.01) 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+
+        .role-card:hover::before {
+            opacity: 1;
+        }
+
+        .role-header {
+            padding: 18px 20px;
+            border-bottom: 1px solid var(--card-border);
+            background: var(--sidenavbar-body-color);
+            position: relative;
+        }
+
+        .role-card:hover .role-header::after {
+            transform: scaleX(1);
+        }
+
+        .role-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--sidenavbar-text-color);
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .role-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, rgba(var(--primary-rgb), 0.1) 0%, rgba(var(--primary-rgb), 0.2) 100%);
             display: flex;
             align-items: center;
             justify-content: center;
-            min-width: 120px;
+            color: var(--color-blue);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .role-card:hover .role-icon {
+            transform: rotate(10deg);
+            box-shadow: 0 5px 15px rgba(var(--primary-rgb), 0.2);
+        }
+
+        .role-id {
+            font-size: 0.8rem;
+            color: #fff;
+            background: var(--color-blue);
+            padding: 3px 10px;
+            border-radius: 20px;
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-family: 'Courier New', monospace;
+            font-weight: 600;
+        }
+
+        .role-body {
+            padding: 20px;
+            flex-grow: 1;
+        }
+
+        .role-description {
+            color: var(--sidenavbar-text-color);
+            margin-bottom: 20px;
+            line-height: 1.6;
             font-size: 0.95rem;
+            position: relative;
+            padding-left: 15px;
         }
 
-        .modal-content{
-            background: var(--modal-header-bg);
-            color: var(--modal-text);
+        .role-description::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 6px;
+            height: calc(100% - 12px);
+            width: 3px;
+            background: linear-gradient(to bottom, var(--color-blue), var(--color-blue));
+            border-radius: 3px;
         }
 
-        .modal-header {
-            background: var(--modal-header-bg);
-            color: var(--modal-text);
+        .role-meta {
+            display: flex;
+            gap: 15px;
+            margin-top: auto;
         }
 
-        .modal-title {
-            font-weight: bold;
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.85rem;
+            color: var(--sidenavbar-text-color);
+            padding: 6px 12px;
+            border-radius: 8px;
+            background: rgba(0, 0, 0, 0.03);
+            transition: all 0.2s ease;
+        }
+
+        .meta-item:hover {
+            background: rgba(var(--primary-rgb), 0.05);
+            color: var(--color-blue);
+            transform: translateY(-2px);
+        }
+
+        .meta-icon {
+            font-size: 1rem;
+            color: inherit;
+        }
+
+        .role-footer {
+            padding: 0;
+            border-top: 1px solid var(--card-border);
+            background: var(--sidenavbar-body-color);
+        }
+
+        .role-actions {
+            display: flex;
+        }
+
+        .role-actions > * {
+            flex: 1;
+            min-width: 0; /* Important for text truncation if needed */
+        }
+
+        .role-actions a,
+        .role-actions button,
+        .role-actions .action-btn,
+        .role-actions form {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 48px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: none;
+            background: transparent;
+            position: relative;
+            overflow: hidden;
+            margin: 0;
+            text-decoration: none;
+            color: var(--sidenavbar-text-color);
             width: 100%;
+        }
+
+        .role-actions form {
+            display: flex;
+        }
+
+        .role-actions .action-btn:not(:last-child),
+        .role-actions > *:not(:last-child) {
+            border-right: 1px solid var(--card-border);
+        }
+
+        .action-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: currentColor;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .action-btn:hover::before {
+            opacity: 0.08;
+        }
+
+        .action-btn:hover {
+            color: var(--sidenavbar-text-color);
+        }
+
+        .action-btn i {
+            font-size: 1.1rem;
+            position: relative;
+            z-index: 1;
+            transition: all 0.3s ease;
+        }
+
+        .action-btn:hover i {
+            transform: scale(1.2);
+        }
+
+        .users-btn:hover {
+            color: #4e73df;
+        }
+
+        .permissions-btn:hover {
+            color: #1cc88a;
+        }
+
+        .edit-btn:hover {
+            color: #f6c23e;
+        }
+
+        .delete-btn:hover {
+            color: #e74a3b;
+        }
+
+
+        .bs-tooltip-auto[data-popper-placement^=top] .tooltip-arrow::before,
+        .bs-tooltip-top .tooltip-arrow::before {
+            border-top-color: #2d3748;
+        }
+
+        /* Empty state */
+        .empty-state {
+            grid-column: 1 / -1;
             text-align: center;
+            padding: 60px 40px;
+            color: var(--sidenavbar-text-color);
+            background: var(--sidenavbar-body-color);
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px dashed var(--card-border);
+            transition: all 0.3s ease;
         }
 
-        .modal-body {
-            background: var(--modal-bg);
-            color: var(--modal-text);
+        .empty-state:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            border-color: var(--color-blue);
         }
 
-        .modal-footer {
-            background: var(--modal-bg);
-            border-top: 1px solid var(--modal-border);
+        .empty-icon {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            opacity: 0.3;
+            transition: all 0.3s ease;
         }
 
-        .btn-close {
-            filter: invert(var(--invert, 0));
+        .empty-state:hover .empty-icon {
+            opacity: 0.5;
+            transform: scale(1.05);
         }
 
-        /* DataTables Entries Dropdown */
-        .dataTables_wrapper .dataTables_length select {
-            background-color: var(--dataTable-paginate-menu-bg-color);
-            color: var(--dataTable-paginate-menu-text-color);
-            border: 1px solid var(--dataTable-paginate-menu-border-color);
-        }
-        .dataTables_wrapper .dataTables_length label {
-            color: var(--dataTable-paginate-menu-label-color);
-        }
-        /* DataTables Search Box */
-        .dataTables_wrapper .dataTables_filter input {
-            background-color: var(--dataTable-search-input-bg-color);
-            color: var(--dataTable-search-input-text-color);
-            border: 1px solid var(--dataTable-search-input-border-color);
-        }
-        .dataTables_wrapper .dataTables_filter label {
-            color: var(--dataTable-search-label-color);
-        }
-        .dataTables_filter input::placeholder {
-            color: var(--dataTable-search-placeholder-color); /* Standard */
-        }
-        .dataTables_filter input::-webkit-input-placeholder {
-            color: var(--dataTable-search-placeholder-color); /* WebKit browsers */
-        }
-        .dataTables_filter input::-moz-placeholder {
-            color: var(--dataTable-search-placeholder-color); /* Mozilla Firefox 19+ */
-        }
-        .dataTables_filter input:-ms-input-placeholder {
-            color: var(--dataTable-search-placeholder-color); /* Internet Explorer 10+ */
+        .empty-text {
+            font-size: 1.3rem;
+            margin-bottom: 25px;
+            font-weight: 500;
+            color: var(--sidenavbar-text-color);
         }
 
+        /* Search styles */
+        .search-container {
+            margin-bottom: 5px;
+            display: flex;
+            gap: 10px;
+            position: relative;
+        }
 
+        .search-input {
+            flex: 1;
+            padding: 12px 20px 12px 45px;
+            border-radius: 8px;
+            border: 1px solid var(--input-border);
+            background: #ffff;
+            color: var(--sidenavbar-text-color);
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+        }
 
+        .search-input:focus {
+            outline: none;
+            border-color: var(--color-blue);
+            box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.1), 0 4px 12px rgba(0,0,0,0.08);
+        }
 
+        .search-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--sidenavbar-text-color);
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus + .search-icon {
+            color: var(--color-blue);
+        }
+
+        /* Badge styles */
+        .role-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-top: 10px;
+            background: rgba(var(--primary-rgb), 0.1);
+            color: var(--color-blue);
+            transition: all 0.3s ease;
+        }
+
+        .role-card:hover .role-badge {
+            background: rgba(var(--primary-rgb), 0.2);
+            transform: translateY(-2px);
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .roles-container {
+                grid-template-columns: 1fr;
+            }
+
+            .role-actions a,
+            .role-actions button,
+            .role-actions .action-btn {
+                height: 42px;
+            }
+
+            .action-btn i {
+                font-size: 1rem;
+            }
+
+            .role-title {
+                font-size: 1.1rem;
+            }
+
+            .role-icon {
+                width: 36px;
+                height: 36px;
+            }
+        }
+
+        /* Animation for cards */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .role-card {
+            animation: fadeInUp 0.5s ease forwards;
+            opacity: 0;
+        }
+
+        .role-card:nth-child(1) { animation-delay: 0.1s; }
+        .role-card:nth-child(2) { animation-delay: 0.2s; }
+        .role-card:nth-child(3) { animation-delay: 0.3s; }
+        .role-card:nth-child(4) { animation-delay: 0.4s; }
+        .role-card:nth-child(5) { animation-delay: 0.5s; }
+        .role-card:nth-child(6) { animation-delay: 0.6s; }
+        .role-card:nth-child(7) { animation-delay: 0.7s; }
+        .role-card:nth-child(8) { animation-delay: 0.8s; }
     </style>
 @endpush
 
 @section('content')
-
-    <!--  -->
     <x-Admin.top-navbar :searchVisible="false" :breadcrumbLinks="[
             ['url' => route('admin_dashboard'), 'label' => 'Dashboard'],
             ['url' => '', 'label' => 'Roles']
         ]"
     />
-    <!--  -->
     <x-Admin.side-navbar :openSections="['AdminControl','UserRoles']" />
     <x-error-success-model />
 
     <div id="main">
-
-        <section class="content mt-1 mb-3 mx-2">
-            <div class="container-fluid ">
+        <section class="content my-3 mx-2">
+            <div class="container-fluid">
                 <div class="row">
                     <div class="col-md-12">
-                        <div class="box mx-0">
-                            <div class="container mt-2">
-                                <div class="d-flex justify-content-between align-items-center mb-2">
-                                    <h3 class="mb-1">Roles</h3>
-                                    <a href="{{ route('roles.create') }}" class="btn btn-add btn-primary"  title="Add New Role">
-                                        <i class="fas fa-plus me-2"></i> Add Role
-                                    </a>
-                                </div>
-                                <div class="card shadow p-3 mb-5 bg-body rounded" style="border: none;">
-                                    <div class="card-body" style="overflow-x: auto;">
-                                        <table id="rolesTable" class="table shadow-sm table-hover table-striped">
-                                            <thead class="shadow">
-                                                <tr>
-                                                    <th>#</th>
-                                                    <th>Role Name</th>
-                                                    <th>Description</th>
-                                                    <th class="text-center" style="width: 100px;">Actions</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                @forelse($roles ?? [] as $role)
-                                                    <tr>
-                                                        <td>{{ $role->id }}</td>
-                                                        <td>{{ $role->name }}</td>
-                                                        <td>{{ $role->description }}</td>
-                                                        <td class="text-center gap-2 d-flex justify-content-between align-items-center" style="width: 100px;">
-                                                            <a href="{{ route('users.index', ['role_id' => $role->id]) }}" class="text-primary" data-bs-toggle="tooltip" data-bs-placement="top" title="Users">
-                                                                <x-icon name="view" type="icon" class="" size="20px" />
-                                                            </a>
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h4 class="mb-1">Roles Management</h4>
+                            <a href="{{ route('roles.create') }}" class="btn btn-primary" title="Add New Role">
+                                <i class="fas fa-plus me-2"></i> Add Role
+                            </a>
+                        </div>
 
-                                                            <a href="#" class="text-warning edit-role-button" id="edit-role-button" data-id="{{ $role->id }}" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit">
-                                                                <x-icon name="edit" type="icon" class="" size="20px" />
-                                                            </a>
+                        <div class="search-container">
+                            <i class="fas fa-search search-icon"></i>
+                            <input type="text" id="roleSearch" class="search-input" placeholder="Search roles by name or description...">
+                        </div>
 
-                                                            <a href="{{ route('roles.destroy', $role->id) }}" class="text-danger delete-role" data-role-id="{{ $role->id }}"
-                                                                data-bs-toggle="tooltip" data-bs-placement="top" title="Delete">
-                                                                <x-icon name="delete" type="icon" class="" size="20px" />
-                                                            </a>
+                        <div class="roles-container" id="rolesContainer">
+                            @forelse($roles ?? [] as $role)
+                                <div class="role-card" data-search="{{ strtolower($role->name.' '.$role->description) }}">
+                                    <div class="role-header">
+                                        <h3 class="role-title">
+                                            <span class="role-icon">
+                                                <i class="fas fa-user-shield"></i>
+                                            </span>
+                                            {{ $role->name }}
+                                        </h3>
+                                        <span class="role-id">ID: {{ $role->id }}</span>
+                                    </div>
+                                    <div class="role-body">
+                                        <p class="role-description">
+                                            {{ $role->description ?: 'No description provided for this role' }}
+                                        </p>
 
-                                                            <form id="delete-form" method="POST" style="display: none;">
-                                                                @csrf
-                                                                @method('DELETE')
-                                                            </form>
+                                        <div class="role-meta">
+                                            <span class="meta-item">
+                                                <i class="fas fa-users meta-icon"></i>
+                                                <span class="count" data-count="{{ $role->users_count ?? 0 }}">0</span> users
+                                            </span>
+                                            <span class="meta-item">
+                                                <i class="fas fa-key meta-icon"></i>
+                                                <span class="count" data-count="{{ $role->role_permissions_count ?? 0 }}">0</span> permissions
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="role-footer">
+                                        <div class="role-actions d-flex justify-content-between">
+                                            <a href="{{ route('users.index', ['role_id' => $role->id]) }}"
+                                               class="action-btn users-btn"
+                                               data-bs-toggle="tooltip"
+                                               data-bs-placement="top"
+                                               title="View Users">
+                                                <i class="fas fa-users"></i>
+                                            </a>
 
-                                                        </td>
-                                                    </tr>
-                                                @empty
-                                                    <tr>
-                                                        <td colspan="6" class="text-center">No roles found</td>
-                                                    </tr>
-                                                @endforelse
-                                            </tbody>
-                                        </table>
+                                            <a href="{{ route('role.permissions') }}"
+                                               class="action-btn permissions-btn"
+                                               data-bs-toggle="tooltip"
+                                               data-bs-placement="top"
+                                               title="Manage Permissions">
+                                                <i class="fas fa-key"></i>
+                                            </a>
+
+                                            <a href="{{ route('roles.edit', $role->id) }}"
+                                               class="action-btn edit-btn"
+                                               data-bs-toggle="tooltip"
+                                               data-bs-placement="top"
+                                               title="Edit Role">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+
+                                            <form action="{{ route('roles.destroy', $role->id) }}"
+                                                  method="POST"
+                                                  class="delete-form d-inline">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="button"
+                                                        class="action-btn delete-btn delete-role text-center"
+                                                        data-bs-toggle="tooltip"
+                                                        data-bs-placement="top"
+                                                        title="Delete Role">
+                                                    <i class="fas fa-trash-alt"></i>
+                                                </button>
+                                            </form>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-
+                            @empty
+                                <div class="empty-state">
+                                    <div class="empty-icon">
+                                        <i class="fas fa-user-shield"></i>
+                                    </div>
+                                    <h4 class="empty-text">No roles have been created yet</h4>
+                                    <a href="{{ route('roles.create') }}" class="btn btn-primary btn-lg">
+                                        <i class="fas fa-plus me-2"></i> Create New Role
+                                    </a>
+                                </div>
+                            @endforelse
                         </div>
                     </div>
                 </div>
             </div>
         </section>
     </div>
-
-    <!-- Create Role Modal -->
-    <div class="modal fade" id="createRoleModal" tabindex="-1" aria-labelledby="createRoleModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg modal-dialog-centered">
-            <div class="modal-content">
-            <div class="modal-header">
-                    <h5 class="modal-title" id="createRoleModalLabel">Create new role</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <form id="createRoleForm" method="POST" action="{{ route('roles.store') }}" >
-                    @csrf
-                    <div class="modal-body" style="max-height: 400px; overflow-y: auto;">
-                        <div class="row">
-                            <div class="col-md-12 mb-3">
-                                <label for="name" class="form-label">Role Name</label>
-                                <span class="required__field">*</span><br>
-                                <div class="position-relative">
-                                    <input type="text" class="form-control" id="name" name="name" value="{{ old('name') }}" maxlength="20" placeholder="Role Name" required>
-                                    <i class='bx bx-street-view input-icon position-absolute top-50 end-0 translate-middle-y me-3'></i>
-                                </div>
-                                @error('name')
-                                <div class="invalid-feedback">
-                                    {{ $message }}
-                                </div>
-                                @enderror
-                            </div>
-                            <div class="col-md-12 mb-3">
-                                <label for="description" class="form-label">Description</label>
-                                <textarea class="form-control" id="description" name="description" maxlength="250" placeholder="Description">{{ old('description') }}</textarea>
-                                @error('description')
-                                <div class="invalid-feedback">
-                                    {{ $message }}
-                                </div>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <!-- Permissions -->
-                        <div class="mb-3">
-                            <label class="form-label">Permissions <span class="text-danger">*</span></label>
-                            <div class="" id="permissions-container">
-                                {{-- Permissions checkboxes will be loaded here via AJAX --}}
-                            </div>
-                            <div id="permissions-error" class="text-danger mt-2"></div>
-                            @error('permissions')
-                            <div class="invalid-feedback d-block">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-primary">Save</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <!-- Edit Role Modal -->
-    <div class="modal fade" id="editRoleModal" tabindex="-1" aria-labelledby="editRoleModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="editRoleModalLabel">Edit Role</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <!-- The edit form will be loaded here via AJAX -->
-                <form id="editForm" action="" method="POST" novalidate>
-                    @csrf
-                    @method('PUT')
-
-                    <div class="modal-body" style="max-height: 400px; overflow-y: auto;">
-                        <input type="hidden" name="role_id" id="edit_role_id">
-                        <input type="hidden" name="updated_at" id="edit_updated_at">
-
-                        <div class="row">
-                            <div class="col-md-12 mb-3">
-                                <label for="edit_name" class="form-label">Role Name <span class="text-danger">*</span></label>
-                                <div class="position-relative">
-                                    <input type="text" class="form-control" id="edit_name" name="name" maxlength="20" placeholder="Role Name" required>
-                                    <i class='bx bx-street-view input-icon position-absolute top-50 end-0 translate-middle-y me-3'></i>
-                                </div>
-                            </div>
-                            <div class="col-md-12 mb-3">
-                                <label for="edit_description" class="form-label">Description</label>
-                                <textarea class="form-control" id="edit_description" name="description" maxlength="250" placeholder="Description"></textarea>
-                            </div>
-                        </div>
-
-                        <!-- Permissions -->
-                        <div class="mb-3">
-                            <label class="form-label">Permissions <span class="text-danger">*</span></label>
-                            <div class="" id="permissionsContainer"></div>
-                            <small class="text-danger d-none" id="permissionsError">At least one permission must be selected.</small>
-                        </div>
-                    </div>
-
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-primary">Update</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
 @endsection
 
 @push('scripts')
-
-    <!-- Add DataTables JS -->
-    <script src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/1.11.3/js/dataTables.bootstrap5.min.js"></script>
-
-    <!-- Add DataTables Buttons JS -->
-    <script src="https://cdn.datatables.net/buttons/2.3.6/js/dataTables.buttons.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.bootstrap5.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.html5.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.print.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
-
-    <!-- Data Tables Script -->
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            new DataTable("#rolesTable", {
-                pageLength: 10,
-                lengthMenu: [10, 20, 50, 100],
-                language: {
-                    paginate: {
-                        first: "First",
-                        last: "Last",
-                        next: "Next",
-                        previous: "Previous"
-                    },
-                    searchPlaceholder: "Search users..."
-                }
-            });
-        });
-    </script>
-
-    <!-- Delete Roles Scripts -->
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            const deleteLinks = document.querySelectorAll('.delete-role');
-            const form = document.getElementById('delete-form');
+            // Initialize tooltips
+            const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
 
-            deleteLinks.forEach(link => {
-                link.addEventListener('click', function (e) {
+            // Delete confirmation
+            const deleteButtons = document.querySelectorAll('.delete-role');
+
+            deleteButtons.forEach(button => {
+                button.addEventListener('click', function (e) {
                     e.preventDefault();
-
-                    const url = this.getAttribute('href');
+                    const form = this.closest('.delete-form');
 
                     Swal.fire({
-                        title: 'Are you sure?',
-                        text: "You won't be able to revert this!",
+                        title: 'Delete Role?',
+                        text: "This will remove the role and all its associations. This action cannot be undone!",
                         icon: 'warning',
                         showCancelButton: true,
                         confirmButtonColor: '#d33',
                         cancelButtonColor: '#6c757d',
                         confirmButtonText: 'Yes, delete it!',
-                        // backgroundColor: var(--body_background_color),
+                        cancelButtonText: 'Cancel',
+                        reverseButtons: true,
+                        backdrop: `
+                            rgba(0,0,0,0.4)
+                            url("/images/nyan-cat.gif")
+                            left top
+                            no-repeat
+                        `
                     }).then((result) => {
                         if (result.isConfirmed) {
-                            form.setAttribute('action', url);
                             form.submit();
                         }
                     });
                 });
             });
-        });
-    </script>
 
-    <!-- Roles Scripts -->
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
+            // Search functionality
+            const searchInput = document.getElementById('roleSearch');
+            const rolesContainer = document.getElementById('rolesContainer');
+            const roleCards = document.querySelectorAll('.role-card');
 
-            document.addEventListener("click", function (e) {
-                if (e.target.closest(".edit-role-button")) {
-                    e.preventDefault();
-                    const button = e.target.closest(".edit-role-button");
-                    const id = button.getAttribute("data-id");
+            searchInput.addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase().trim();
+                let hasVisibleCards = false;
 
-                    fetch(`{{ route('roles.edit', ':id') }}`.replace(":id", id), {
-                        method: "GET",
-                        headers: {
-                            'Accept': 'application/json',
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                            'Content-Type': 'application/json',
-                            'X-Requested-With': 'XMLHttpRequest'
-                        }
-                    })
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.message) {
-                                alert(data.message);
-                            } else if (data.role) {
-                                // Populate role details
-                                document.getElementById("edit_name").value = data.role.name;
-                                document.getElementById("edit_description").value = data.role.description;
-                                document.getElementById("edit_role_id").value = data.role.id;
-                                document.getElementById("edit_updated_at").value = data.role.updated_at;
-
-                                // Clear old permissions
-                                const permissionsContainer = document.getElementById("permissionsContainer");
-                                permissionsContainer.innerHTML = "";
-
-                                if (data.permissions.length > 0) {
-                                    let permissionsHtml = `<div class="row">`; // 3 parents per row
-
-                                    data.permissions.forEach((parentPermission, index) => {
-                                        // Start a new row every 3 parents
-                                        if (index % 3 === 0 && index !== 0) {
-                                            permissionsHtml += `</div><div class="row">`;
-                                        }
-
-                                        const isChecked = data.activePermissionsId.includes(parentPermission.id) ? "checked" : "";
-
-                                        permissionsHtml += `
-                                <div class="col-12 mb-1">
-                                    <div class="card p-2">
-                                        <div class="d-flex justify-content-between align-items-center mx-2">
-                                            <label class="fw-bold mb-0" for="permission_${parentPermission.id}">
-                                                ${parentPermission.name}
-                                            </label>
-                                            <input class="form-check-input parent-permission"
-                                                   type="checkbox"
-                                                   name="permissions[]"
-                                                   value="${parentPermission.id}"
-                                                   id="permission_${parentPermission.id}" ${isChecked}>
-                                        </div>
-                            `;
-
-                                        // Only add child permissions section if there are children
-                                        if (parentPermission.children.length > 0) {
-                                            permissionsHtml += `
-                                    <div class="child-permissions mt-2 row pt-2 pb-0 mb-0 border-top" id="child-container-${parentPermission.id}" style="padding-right: 8px;">
-                                `;
-
-                                            parentPermission.children.forEach(child => {
-                                                const isChildChecked = data.activePermissionsId.includes(child.id) ? "checked" : "";
-                                                permissionsHtml += `
-                                        <div class="form-check col-md-6 col-12">
-                                            <label class="form-check-label d-flex justify-content-between w-100" for="permission_${child.id}">
-                                                ${child.name}
-                                                <input class="form-check-input child-permission ms-2"
-                                                       type="checkbox"
-                                                       name="permissions[]"
-                                                       value="${child.id}"
-                                                       id="permission_${child.id}" ${isChildChecked}
-                                                       data-parent-id="${parentPermission.id}">
-                                            </label>
-                                        </div>
-                                    `;
-                                            });
-
-                                            permissionsHtml += `</div>`; // Close child container
-                                        }
-
-                                        permissionsHtml += `</div></div>`; // Close parent card & column
-                                    });
-
-                                    permissionsHtml += `</div>`; // Close last row
-                                    permissionsContainer.innerHTML = permissionsHtml;
-
-                                    attachEditCheckboxLogic();
-                                } else {
-                                    permissionsContainer.innerHTML = '<p class="text-danger">No permissions available.</p>';
-                                }
-
-                                // Set form action URL
-                                document.getElementById("editForm").setAttribute("action", `{{ route('roles.update', ':id') }}`.replace(":id", id));
-
-                                // Show the modal
-                                let editRoleModal = new bootstrap.Modal(document.getElementById("editRoleModal"));
-                                editRoleModal.show();
-                            } else {
-                                console.error("One or more input fields are missing in the DOM.");
-                            }
-                        })
-                        .catch(error => {
-                            console.error("Error:", error);
-                            alert("An error occurred while retrieving the data.");
-                        });
-                }
-            });
-
-            // Parent-child checkbox logic with toggle effect
-            function attachEditCheckboxLogic() {
-                document.querySelectorAll(".parent-permission").forEach(parentCheckbox => {
-                    parentCheckbox.addEventListener("change", function () {
-                        const parentId = this.value;
-                        const childContainer = document.getElementById(`child-container-${parentId}`);
-
-                        if (childContainer) {
-                            document.querySelectorAll(`.child-permission[data-parent-id="${parentId}"]`)
-                                .forEach(childCheckbox => {
-                                    childCheckbox.checked = this.checked;
-                                });
-                        }
-                    });
-                });
-
-                document.querySelectorAll(".child-permission").forEach(childCheckbox => {
-                    childCheckbox.addEventListener("change", function () {
-                        const parentId = this.getAttribute("data-parent-id");
-                        const parentCheckbox = document.querySelector(`#permission_${parentId}`);
-
-                        if (this.checked) {
-                            parentCheckbox.checked = true;
-                        } else {
-                            const anyChecked = document.querySelectorAll(`.child-permission[data-parent-id="${parentId}"]:checked`).length > 0;
-                            if (!anyChecked) {
-                                parentCheckbox.checked = false;
-                            }
-                        }
-                    });
-                });
-            }
-
-            document.getElementById("editForm").addEventListener("submit", function (e) {
-                let permissionCheckboxes = document.querySelectorAll('input[name="permissions[]"]:checked');
-                let permissionsError = document.getElementById("permissionsError");
-
-                if (permissionCheckboxes.length === 0) {
-                    e.preventDefault();
-                    permissionsError.classList.remove("d-none");
-                } else {
-                    permissionsError.classList.add("d-none");
-                }
-            });
-
-
-            //  Add Role Model
-            const addButton = document.getElementById("add_button");
-            const createRoleModal = document.getElementById("createRoleModal");
-            const permissionsContainer = document.getElementById("permissions-container");
-            const permissionsError = document.getElementById("permissions-error");
-
-            if (addButton) {
-                addButton.addEventListener("click", function (e) {
-                    e.preventDefault();
-
-                    // Clear permissions before fetching new ones
-                    permissionsContainer.innerHTML = '<p class="text-muted">Loading permissions...</p>';
-
-                    // Show modal
-                    let modalInstance = new bootstrap.Modal(createRoleModal);
-                    modalInstance.show();
-
-                    // Fetch permissions
-                    fetchPermissions();
-                });
-            }
-
-            function fetchPermissions() {
-                fetch("{{ route('roles.create') }}", {
-                    method: "GET",
-                    headers: {
-                        'Accept': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                        'Content-Type': 'application/json',
-                        'X-Requested-With': 'XMLHttpRequest'
+                roleCards.forEach(card => {
+                    const searchData = card.getAttribute('data-search');
+                    if (searchTerm === '' || searchData.includes(searchTerm)) {
+                        card.style.display = 'flex';
+                        hasVisibleCards = true;
+                    } else {
+                        card.style.display = 'none';
                     }
-                })
-                    .then(response => response.json())
-                    .then(data => {
-                        permissionsContainer.innerHTML = ""; // Clear previous permissions
+                });
 
-                        if (data.permissions && data.permissions.length > 0) {
-                            let permissionsHtml = `<div class="row">`; // 3 parents per row
-
-                            data.permissions.forEach((permission, index) => {
-                                // Start a new row every 3 parents
-                                if (index % 3 === 0 && index !== 0) {
-                                    permissionsHtml += `</div><div class="row">`;
-                                }
-
-                                permissionsHtml += `
-                        <div class="col-12 mb-1">
-                            <div class="card p-2">
-                                <div class="d-flex justify-content-between align-items-center mx-2">
-                                    <label class="fw-bold mb-0" for="permission_${permission.id}">
-                                        ${permission.name}
-                                    </label>
-                                    <input class="form-check-input parent-permission" type="checkbox"
-                                           name="permissions[]"
-                                           value="${permission.id}"
-                                           id="permission_${permission.id}">
-                                </div>
-                    `;
-
-                                // Only add child permissions section if there are children
-                                if (permission.children.length > 0) {
-                                    permissionsHtml += `
-                            <div class="child-permissions mt-2 row mx-2 pt-2 pb-0 mb-0 border-top d-none" id="child-container-${permission.id}">
+                // Handle empty search results
+                const existingEmpty = rolesContainer.querySelector('.empty-state.search-empty');
+                if (!hasVisibleCards && searchTerm !== '') {
+                    if (!existingEmpty) {
+                        const emptySearch = document.createElement('div');
+                        emptySearch.className = 'empty-state search-empty';
+                        emptySearch.innerHTML = `
+                            <div class="empty-icon">
+                                <i class="fas fa-search fa-2x"></i>
+                            </div>
+                            <h4 class="empty-text">No roles found matching "${searchTerm}"</h4>
+                            <button class="btn btn-secondary" onclick="document.getElementById('roleSearch').value='';document.getElementById('roleSearch').dispatchEvent(new Event('input'))">
+                                Clear search
+                            </button>
                         `;
-
-                                    permission.children.forEach(child => {
-                                        permissionsHtml += `
-                                <div class="form-check col-md-6 col-12">
-                                    <label class="form-check-label d-flex justify-content-between w-100" for="permission_${child.id}">
-                                        ${child.name}
-                                        <input class="form-check-input child-permission ms-2" type="checkbox"
-                                               name="permissions[]"
-                                               value="${child.id}"
-                                               id="permission_${child.id}"
-                                               data-parent-id="${permission.id}">
-                                    </label>
-                                </div>
-                            `;
-                                    });
-
-                                    permissionsHtml += `</div>`; // Close child container
-                                }
-
-                                permissionsHtml += `</div></div>`; // Close parent card & column
-                            });
-
-                            permissionsHtml += `</div>`; // Close last row
-                            permissionsContainer.innerHTML = permissionsHtml;
-                            attachCheckboxLogic();
-                        } else {
-                            permissionsContainer.innerHTML = '<p class="text-danger">No permissions found.</p>';
-                        }
-                    })
-                    .catch(error => {
-                        console.error("Error:", error);
-                        permissionsError.textContent = "Failed to load permissions. Please try again.";
-                    });
-            }
-
-            // Parent-child checkbox logic with toggle effect
-            function attachCheckboxLogic() {
-                document.querySelectorAll(".parent-permission").forEach(parentCheckbox => {
-                    parentCheckbox.addEventListener("change", function () {
-                        const parentId = this.value;
-                        const childContainer = document.getElementById(`child-container-${parentId}`);
-
-                        if (childContainer) {
-                            if (this.checked) {
-                                childContainer.classList.remove("d-none"); // Show children
-                                document.querySelectorAll(`.child-permission[data-parent-id="${parentId}"]`)
-                                    .forEach(childCheckbox => {
-                                        childCheckbox.checked = true;
-                                    });
-                            } else {
-                                childContainer.classList.add("d-none"); // Hide children
-                                document.querySelectorAll(`.child-permission[data-parent-id="${parentId}"]`)
-                                    .forEach(childCheckbox => {
-                                        childCheckbox.checked = false;
-                                    });
-                            }
-                        }
-                    });
-                });
-
-                document.querySelectorAll(".child-permission").forEach(childCheckbox => {
-                    childCheckbox.addEventListener("change", function () {
-                        const parentId = this.getAttribute("data-parent-id");
-                        const parentCheckbox = document.querySelector(`#permission_${parentId}`);
-
-                        if (this.checked) {
-                            parentCheckbox.checked = true;
-                        } else {
-                            const anyChecked = document.querySelectorAll(`.child-permission[data-parent-id="${parentId}"]:checked`).length > 0;
-                            if (!anyChecked) {
-                                parentCheckbox.checked = false;
-                            }
-                        }
-                    });
-                });
-            }
-
-            document.getElementById('createRoleForm').addEventListener('submit', function(e) {
-                const permissionCheckboxes = document.querySelectorAll('input[name="permissions[]"]');
-
-                permissionCheckboxes.forEach(checkbox => {
-                    if (!checkbox.checked) {
-                        checkbox.disabled = true;
+                        rolesContainer.appendChild(emptySearch);
                     }
-                });
+                } else if (existingEmpty) {
+                    existingEmpty.remove();
+                }
             });
         });
     </script>
 
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const counters = document.querySelectorAll('.count');
 
+            counters.forEach(counter => {
+                const target = parseInt(counter.getAttribute('data-count'));
+                const duration = 2000; // 2 seconds
+                const increment = target / (duration / 16); // 60fps
+
+                let current = 0;
+                const timer = setInterval(() => {
+                    current += increment;
+                    if (current >= target) {
+                        clearInterval(timer);
+                        current = target;
+                    }
+                    counter.textContent = Math.floor(current);
+                }, 16);
+            });
+        });
+    </script>
 @endpush

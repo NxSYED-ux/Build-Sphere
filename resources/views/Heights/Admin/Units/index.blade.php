@@ -529,14 +529,15 @@
 
     <div id="main">
 
-        <section class="content  mt-1 mb-3 mx-2">
+        <section class="content  my-3 mx-2">
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-md-12">
                         <div class="d-flex justify-content-between align-items-center mb-2">
-                            <h3 class="mb-1">Units</h3>
-                            <a href="{{ route('units.create') }}" class="btn float-end hidden Admin-Unit-Add-Button add_button" data-bs-toggle="tooltip" data-bs-placement="top" title="Add Unit">
-                                <x-icon name="add" type="svg" class="" size="25" />
+                            <h4 class="mb-1">Units</h4>
+                            <a href="{{ route('units.create') }}" class="btn btn-primary hidden Admin-Unit-Add-Button">
+                                <x-icon name="add" type="svg" class="me-1" size="18" />
+                                Add Unit
                             </a>
                         </div>
 

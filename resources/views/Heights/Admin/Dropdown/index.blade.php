@@ -107,109 +107,105 @@
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-md-12">
-                        <div class="box" style="overflow-x: auto;">
-                            <div class="container mt-2">
-                                <ul class="nav nav-tabs" id="myTab" role="tablist">
-                                    <li class="nav-item" role="presentation">
-                                        <a class="nav-link {{ $activeTab === 'Types' ? 'active' : '' }}" id="dropdwon-types-tab" data-bs-toggle="tab" href="#dropdwon-types" role="tab" aria-controls="dropdwon-types" aria-selected="{{ $activeTab === 'Types' ? 'true' : 'false' }}">Types</a>
-                                    </li>
-                                    <li class="nav-item" role="presentation">
-                                        <a class="nav-link {{ $activeTab === 'Values' ? 'active' : '' }}" id="dropdwon-values-tab" data-bs-toggle="tab" href="#dropdwon-values" role="tab" aria-controls="dropdwon-values" aria-selected="{{ $activeTab === 'Values' ? 'true' : 'false' }}">Values</a>
-                                    </li>
-                                </ul>
-                                <div class="tab-content mt-0" id="myTabContent">
-                                    <!-- Value Types Tab -->
-                                    <div class="tab-pane fade {{ $activeTab === 'Types' ? 'show active' : '' }}" id="dropdwon-types" role="tabpanel" aria-labelledby="dropdwon-types-tab">
-                                        <div class="card shadow p-3 pt-1 mb-5 bg-body rounded" style="border: none;">
-                                            <div class="card-body" style="overflow-x: auto;">
-                                                <a href="#" class="btn float-end add_button" id="add_dropdwon_type_button"  data-bs-toggle="tooltip" data-bs-placement="top" title="Add">
-                                                    <x-icon name="add" type="svg" class="" size="25" />
-                                                </a>
-                                                <h3 class="mb-4">Types</h3>
-                                                <div style="overflow-x: auto;">
-                                                    <table id="typesTable" class="table shadow-sm table-hover table-striped">
-                                                        <thead class="shadow">
-                                                            <tr>
-                                                                <th>ID</th>
-                                                                <th>Name</th>
-                                                                <th>Description</th>
-                                                                <th>Parent Type</th>
-                                                                <th>Status</th>
-                                                                <th class="text-center" style="width: 70px;">Actions</th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                            @forelse ($types ?? [] as $type)
-                                                                <tr>
-                                                                    <td>{{ $type->id }}</td>
-                                                                    <td>{{ $type->type_name }}</td>
-                                                                    <td>{{ $type->description ?? 'N/A' }}</td>
-                                                                    <td>{{ $type->parent->type_name ?? 'N/A' }}</td>
-                                                                    <td>{{ $type->status ? 'Active' : 'Inactive' }}</td>
-                                                                    <td class="text-center" style="width: 70px;">
-                                                                        <a href="#" class="text-warning edit_dropdwon_type_button" id="edit_dropdwon_type_button" data-id="{{ $type->id }}" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit">
-                                                                            <x-icon name="edit" type="icon" class="" size="20px" />
-                                                                        </a>
-                                                                    </td>
-                                                                </tr>
-                                                            @empty
-                                                                <tr>
-                                                                    <td colspan="6" class="text-center">No types found.</td>
-                                                                </tr>
-                                                            @endforelse
-                                                        </tbody>
-                                                    </table>
-                                                </div>
-                                            </div>
+                        <ul class="nav nav-tabs" id="myTab" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <a class="nav-link {{ $activeTab === 'Types' ? 'active' : '' }}" id="dropdwon-types-tab" data-bs-toggle="tab" href="#dropdwon-types" role="tab" aria-controls="dropdwon-types" aria-selected="{{ $activeTab === 'Types' ? 'true' : 'false' }}">Types</a>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <a class="nav-link {{ $activeTab === 'Values' ? 'active' : '' }}" id="dropdwon-values-tab" data-bs-toggle="tab" href="#dropdwon-values" role="tab" aria-controls="dropdwon-values" aria-selected="{{ $activeTab === 'Values' ? 'true' : 'false' }}">Values</a>
+                            </li>
+                        </ul>
+                        <div class="tab-content mt-0" id="myTabContent">
+                            <!-- Value Types Tab -->
+                            <div class="tab-pane fade {{ $activeTab === 'Types' ? 'show active' : '' }}" id="dropdwon-types" role="tabpanel" aria-labelledby="dropdwon-types-tab">
+                                <div class="card shadow p-3 pt-1 mb-5 bg-body rounded" style="border: none;">
+                                    <div class="card-body" style="overflow-x: auto;">
+                                        <a href="#" class="btn float-end add_button" id="add_dropdwon_type_button"  data-bs-toggle="tooltip" data-bs-placement="top" title="Add">
+                                            <x-icon name="add" type="svg" class="" size="25" />
+                                        </a>
+                                        <h3 class="mb-4">Types</h3>
+                                        <div style="overflow-x: auto;">
+                                            <table id="typesTable" class="table shadow-sm table-hover table-striped">
+                                                <thead class="shadow">
+                                                    <tr>
+                                                        <th>ID</th>
+                                                        <th>Name</th>
+                                                        <th>Description</th>
+                                                        <th>Parent Type</th>
+                                                        <th>Status</th>
+                                                        <th class="text-center" style="width: 70px;">Actions</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @forelse ($types ?? [] as $type)
+                                                        <tr>
+                                                            <td>{{ $type->id }}</td>
+                                                            <td>{{ $type->type_name }}</td>
+                                                            <td>{{ $type->description ?? 'N/A' }}</td>
+                                                            <td>{{ $type->parent->type_name ?? 'N/A' }}</td>
+                                                            <td>{{ $type->status ? 'Active' : 'Inactive' }}</td>
+                                                            <td class="text-center" style="width: 70px;">
+                                                                <a href="#" class="text-warning edit_dropdwon_type_button" id="edit_dropdwon_type_button" data-id="{{ $type->id }}" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit">
+                                                                    <x-icon name="edit" type="icon" class="" size="20px" />
+                                                                </a>
+                                                            </td>
+                                                        </tr>
+                                                    @empty
+                                                        <tr>
+                                                            <td colspan="6" class="text-center">No types found.</td>
+                                                        </tr>
+                                                    @endforelse
+                                                </tbody>
+                                            </table>
                                         </div>
                                     </div>
-                                    <!-- Value Masters Tab -->
-                                    <div class="tab-pane fade {{ $activeTab === 'Values' ? 'show active' : '' }}" id="dropdwon-values" role="tabpanel" aria-labelledby="dropdwon-values-tab">
-                                        <div class="card shadow p-3 pt-1 mb-5 bg-body rounded" style="border: none;">
-                                            <div class="card-body" style="overflow-x: auto;">
-                                                <a href="#" class="btn float-end add_button" id="add_dropdwon_value_button"  data-bs-toggle="tooltip" data-bs-placement="top" title="Add Value">
-                                                    <x-icon name="add" type="svg" class="" size="25" />
-                                                </a>
+                                </div>
+                            </div>
+                            <!-- Value Masters Tab -->
+                            <div class="tab-pane fade {{ $activeTab === 'Values' ? 'show active' : '' }}" id="dropdwon-values" role="tabpanel" aria-labelledby="dropdwon-values-tab">
+                                <div class="card shadow p-3 pt-1 mb-5 bg-body rounded" style="border: none;">
+                                    <div class="card-body" style="overflow-x: auto;">
+                                        <a href="#" class="btn float-end add_button" id="add_dropdwon_value_button"  data-bs-toggle="tooltip" data-bs-placement="top" title="Add Value">
+                                            <x-icon name="add" type="svg" class="" size="25" />
+                                        </a>
 {{--                                                <a href="{{ route('values.create') }}" class="btn float-end" id="add_button"><i class="fa fa-plus"></i></a>--}}
-                                                <h3 class="mb-4">Values</h3>
-                                                <div style="overflow-x: auto;">
-                                                    <table id="valuesTable" class="table shadow-sm table-hover table-striped">
-                                                        <thead class="shadow">
-                                                            <tr>
-                                                                <th>ID</th>
-                                                                <th>Name</th>
-                                                                <th>Description</th>
-                                                                <th>Type</th>
-                                                                <th>Parent Value</th>
-                                                                <th>Status</th>
-                                                                <th class="text-center" style="width: 100px;">Actions</th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                            @forelse ($values ?? [] as $value)
-                                                            <tr>
-                                                                <td>{{ $value->id }}</td>
-                                                                <td>{{ $value->value_name }}</td>
-                                                                <td>{{ $value->description }}</td>
-                                                                <td>{{ $value->type->type_name }}</td>
-                                                                <td>{{ $value->parent->value_name ?? 'N/A' }}</td>
-                                                                <td>{{ $value->status ? 'Active' : 'Inactive' }}</td>
-                                                                <td class="text-center" style="width: 100px;">
-                                                                    <a href="#" class="text-warning edit_dropdwon_value_button" id="edit_dropdwon_value_button" data-id="{{ $value->id }}" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit Value">
-                                                                        <x-icon name="edit" type="icon" class="" size="20px" />
-                                                                    </a>
+                                        <h3 class="mb-4">Values</h3>
+                                        <div style="overflow-x: auto;">
+                                            <table id="valuesTable" class="table shadow-sm table-hover table-striped">
+                                                <thead class="shadow">
+                                                    <tr>
+                                                        <th>ID</th>
+                                                        <th>Name</th>
+                                                        <th>Description</th>
+                                                        <th>Type</th>
+                                                        <th>Parent Value</th>
+                                                        <th>Status</th>
+                                                        <th class="text-center" style="width: 100px;">Actions</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @forelse ($values ?? [] as $value)
+                                                    <tr>
+                                                        <td>{{ $value->id }}</td>
+                                                        <td>{{ $value->value_name }}</td>
+                                                        <td>{{ $value->description }}</td>
+                                                        <td>{{ $value->type->type_name }}</td>
+                                                        <td>{{ $value->parent->value_name ?? 'N/A' }}</td>
+                                                        <td>{{ $value->status ? 'Active' : 'Inactive' }}</td>
+                                                        <td class="text-center" style="width: 100px;">
+                                                            <a href="#" class="text-warning edit_dropdwon_value_button" id="edit_dropdwon_value_button" data-id="{{ $value->id }}" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit Value">
+                                                                <x-icon name="edit" type="icon" class="" size="20px" />
+                                                            </a>
 {{--                                                                    <a href="{{ route('values.edit', $value->id) }}" class="text-warning" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit"><i class="fa fa-pencil" style="font-size: 20px;"></i></a>--}}
-                                                                </td>
-                                                            </tr>
-                                                            @empty
-                                                                <tr>
-                                                                    <td colspan="7" class="text-center">No values found.</td>
-                                                                </tr>
-                                                            @endforelse
-                                                        </tbody>
-                                                    </table>
-                                                </div>
-                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    @empty
+                                                        <tr>
+                                                            <td colspan="7" class="text-center">No values found.</td>
+                                                        </tr>
+                                                    @endforelse
+                                                </tbody>
+                                            </table>
                                         </div>
                                     </div>
                                 </div>

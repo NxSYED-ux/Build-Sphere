@@ -261,161 +261,157 @@
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-md-12">
-                        <div class="box">
-                            <div class="container">
-                                <div class="d-flex justify-content-between align-items-center mb-3">
-                                    <h4 class="mb-0">Add Role</h4>
-                                    <a href="{{ route('roles.index') }}" class="btn btn-secondary" title="Go Back">
-                                        <i class="fas fa-arrow-left me-2"></i> Go Back
-                                    </a>
-                                </div>
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h4 class="mb-0">Add Role</h4>
+                            <a href="{{ route('roles.index') }}" class="btn btn-secondary" title="Go Back">
+                                <i class="fas fa-arrow-left me-2"></i> Go Back
+                            </a>
+                        </div>
 
-                                <div class="card shadow py-2 px-4 mb-5 rounded">
-                                    <div class="card-body">
-                                        <form action="{{ route('roles.store') }}" method="POST">
-                                            @csrf
+                        <div class="card shadow py-2 px-4 mb-5 rounded">
+                            <div class="card-body">
+                                <form action="{{ route('roles.store') }}" method="POST">
+                                    @csrf
 
-                                            <!-- Basic Information Section -->
-                                            <div class="form-section">
-                                                <div class="row">
-                                                    <!-- Name Field -->
-                                                    <div class="col-sm-12 col-md-12 col-lg-12">
-                                                        <div class="form-group mb-3">
-                                                            <label for="name" class="form-label">Name <span class="required__field">*</span></label>
-                                                            <div class="position-relative">
-                                                                <input type="text" name="name" id="name" class="form-control @error('name') is-invalid @enderror"
-                                                                       value="{{ old('name') }}" maxlength="50" placeholder="Staff Name" required>
-                                                                <i class='bx bxs-user input-icon position-absolute top-50 end-0 translate-middle-y me-3'></i>
-                                                            </div>
-                                                            @error('name')
-                                                            <div class="invalid-feedback">{{ $message }}</div>
-                                                            @enderror
-                                                        </div>
+                                    <!-- Basic Information Section -->
+                                    <div class="form-section">
+                                        <div class="row">
+                                            <!-- Name Field -->
+                                            <div class="col-sm-12 col-md-12 col-lg-12">
+                                                <div class="form-group mb-3">
+                                                    <label for="name" class="form-label">Name <span class="required__field">*</span></label>
+                                                    <div class="position-relative">
+                                                        <input type="text" name="name" id="name" class="form-control @error('name') is-invalid @enderror"
+                                                               value="{{ old('name') }}" maxlength="50" placeholder="Staff Name" required>
+                                                        <i class='bx bxs-user input-icon position-absolute top-50 end-0 translate-middle-y me-3'></i>
                                                     </div>
-                                                    <div class="col-md-12">
-                                                        <div class="form-group mb-3">
-                                                            <label for="description" class="form-label">Description</label>
-                                                            <textarea class="form-control" id="description" name="description" maxlength="250" placeholder="Description">{{ old('description') }}</textarea>
-                                                            @error('description')
-                                                            <div class="invalid-feedback">
-                                                                {{ $message }}
-                                                            </div>
-                                                            @enderror
-                                                        </div>
-                                                    </div>
+                                                    @error('name')
+                                                    <div class="invalid-feedback">{{ $message }}</div>
+                                                    @enderror
                                                 </div>
                                             </div>
+                                            <div class="col-md-12">
+                                                <div class="form-group mb-3">
+                                                    <label for="description" class="form-label">Description</label>
+                                                    <textarea class="form-control" id="description" name="description" maxlength="250" placeholder="Description">{{ old('description') }}</textarea>
+                                                    @error('description')
+                                                    <div class="invalid-feedback">
+                                                        {{ $message }}
+                                                    </div>
+                                                    @enderror
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
 
-                                            <!-- Permissions Section -->
-                                            <div class="form-section mt-4">
-                                                <h5 class="section-header d-flex align-items-center">
-                                                    <i class='bx bxs-key me-2'></i>Permissions
-                                                </h5>
+                                    <!-- Permissions Section -->
+                                    <div class="form-section mt-2">
+                                        <h5 class="section-header d-flex align-items-center">
+                                            <i class='bx bxs-key me-2'></i>Permissions
+                                        </h5>
 
-                                                @isset($permissions)
-                                                    @php
-                                                        $groupedPermissions = $permissions->groupBy(function($item) {
-                                                            return $item->header;
-                                                        });
+                                        @isset($permissions)
+                                            @php
+                                                $groupedPermissions = $permissions->groupBy(function($item) {
+                                                    return $item->header;
+                                                });
 
-                                                        $oldPermissions = old('permissions', []);
-                                                    @endphp
+                                                $oldPermissions = old('permissions', []);
+                                            @endphp
 
-                                                    <div class="accordion" id="permissionsAccordion">
-                                                        @foreach($groupedPermissions as $header => $permissionGroup)
-                                                            <div class="accordion-item mb-3">
-                                                                <h6 class="accordion-header" id="heading{{ $loop->index }}">
-                                                                    <button class="accordion-button collapsed" type="button"
-                                                                            data-bs-toggle="collapse" data-bs-target="#collapse{{ $loop->index }}"
-                                                                            aria-expanded="false" aria-controls="collapse{{ $loop->index }}">
-                                                                        <div class="d-flex align-items-center w-100">
-                                                                            <i class='bx bx-category-alt me-2'></i>
-                                                                            <span class="fw-bold">{{ $header ?? 'General Permissions' }}</span>
-                                                                        </div>
-                                                                    </button>
-                                                                </h6>
+                                            <div class="accordion" id="permissionsAccordion">
+                                                @foreach($groupedPermissions as $header => $permissionGroup)
+                                                    <div class="accordion-item mb-3">
+                                                        <h6 class="accordion-header" id="heading{{ $loop->index }}">
+                                                            <button class="accordion-button collapsed" type="button"
+                                                                    data-bs-toggle="collapse" data-bs-target="#collapse{{ $loop->index }}"
+                                                                    aria-expanded="false" aria-controls="collapse{{ $loop->index }}">
+                                                                <div class="d-flex align-items-center w-100">
+                                                                    <i class='bx bx-category-alt me-2'></i>
+                                                                    <span class="fw-bold">{{ $header ?? 'General Permissions' }}</span>
+                                                                </div>
+                                                            </button>
+                                                        </h6>
 
-                                                                <div id="collapse{{ $loop->index }}" class="accordion-collapse collapse"
-                                                                     aria-labelledby="heading{{ $loop->index }}" data-bs-parent="#permissionsAccordion">
-                                                                    <div class="accordion-body pt-2">
-                                                                        <div class="row">
-                                                                            @foreach($permissionGroup->filter(fn($permission) => $permission->parent_id === null) as $permission)
-                                                                                @php
-                                                                                    $hasChildren = $permission->children->isNotEmpty();
-                                                                                    // Determine checked state - use old input if available, otherwise use permission status
-                                                                                    $isChecked = array_key_exists($permission->id, $oldPermissions) ? (bool)$oldPermissions[$permission->id] : false;
-                                                                                @endphp
+                                                        <div id="collapse{{ $loop->index }}" class="accordion-collapse collapse"
+                                                             aria-labelledby="heading{{ $loop->index }}" data-bs-parent="#permissionsAccordion">
+                                                            <div class="accordion-body pt-2">
+                                                                <div class="row">
+                                                                    @foreach($permissionGroup->filter(fn($permission) => $permission->parent_id === null) as $permission)
+                                                                        @php
+                                                                            $hasChildren = $permission->children->isNotEmpty();
+                                                                            // Determine checked state - use old input if available, otherwise use permission status
+                                                                            $isChecked = array_key_exists($permission->id, $oldPermissions) ? (bool)$oldPermissions[$permission->id] : false;
+                                                                        @endphp
 
-                                                                                <div class="col-sm-12 mb-3 parent-permission">
-                                                                                    <div class="permission-item-container">
-                                                                                        <div class="permission-toggle-container border-bottom {{ $permission->children->count() > 0 ? 'rounded-bottom-0' : 'rounded-bottom' }}">
+                                                                        <div class="col-sm-12 mb-3 parent-permission">
+                                                                            <div class="permission-item-container">
+                                                                                <div class="permission-toggle-container border-bottom {{ $permission->children->count() > 0 ? 'rounded-bottom-0' : 'rounded-bottom' }}">
 
-                                                                                            <label class="permission-label">
-                                                                                                <i class='bx bxs-check-circle permission-icon'></i>
-                                                                                                {{ $permission->name }}
-                                                                                            </label>
-                                                                                            <div class="form-check form-switch">
+                                                                                    <label class="permission-label">
+                                                                                        <i class='bx bxs-check-circle permission-icon'></i>
+                                                                                        {{ $permission->name }}
+                                                                                    </label>
+                                                                                    <div class="form-check form-switch">
 {{--                                                                                                <input type="hidden" name="permissions[{{ $permission->id }}]" value="0">--}}
-                                                                                                <input class="form-check-input permission-toggle parent-toggle"
-                                                                                                       type="checkbox"
-                                                                                                       name="permissions[{{ $permission->id }}]"
-                                                                                                       value="1"
-                                                                                                       data-permission-id="{{ $permission->id }}"
-                                                                                                    {{ $isChecked ? 'checked' : '' }}>
-                                                                                            </div>
-                                                                                        </div>
-
-                                                                                        @if($hasChildren)
-                                                                                            <div class="child-permissions">
-                                                                                                @foreach($permission->children as $child)
-                                                                                                    @php
-                                                                                                        $childPermission = $permissionGroup->firstWhere('permission_id', $child->id);
-                                                                                                        // Determine checked state for child
-                                                                                                        $isChildChecked = array_key_exists($child->id, $oldPermissions)
-                                                                                                            ? (bool)$oldPermissions[$child->id]
-                                                                                                            : ($childPermission ? $childPermission->status : false);
-                                                                                                    @endphp
-                                                                                                    <div class="permission-toggle-container child-permission">
-                                                                                                        <label class="permission-label">
-                                                                                                            <i class='bx bx-radio-circle permission-icon'></i>
-                                                                                                            {{ $child->name }}
-                                                                                                        </label>
-                                                                                                        <div class="form-check form-switch">
-{{--                                                                                                            <input type="hidden" name="permissions[{{ $child->id }}]" value="0">--}}
-                                                                                                            <input class="form-check-input permission-toggle child-toggle"
-                                                                                                                   type="checkbox"
-                                                                                                                   name="permissions[{{ $child->id }}]"
-                                                                                                                   value="1"
-                                                                                                                   data-parent-id="{{ $permission->id }}"
-                                                                                                                {{ $isChildChecked ? 'checked' : '' }}>
-                                                                                                        </div>
-                                                                                                    </div>
-                                                                                                @endforeach
-                                                                                            </div>
-                                                                                        @endif
+                                                                                        <input class="form-check-input permission-toggle parent-toggle"
+                                                                                               type="checkbox"
+                                                                                               name="permissions[{{ $permission->id }}]"
+                                                                                               value="1"
+                                                                                               data-permission-id="{{ $permission->id }}"
+                                                                                            {{ $isChecked ? 'checked' : '' }}>
                                                                                     </div>
                                                                                 </div>
-                                                                            @endforeach
+
+                                                                                @if($hasChildren)
+                                                                                    <div class="child-permissions">
+                                                                                        @foreach($permission->children as $child)
+                                                                                            @php
+                                                                                                $childPermission = $permissionGroup->firstWhere('permission_id', $child->id);
+                                                                                                // Determine checked state for child
+                                                                                                $isChildChecked = array_key_exists($child->id, $oldPermissions)
+                                                                                                    ? (bool)$oldPermissions[$child->id]
+                                                                                                    : ($childPermission ? $childPermission->status : false);
+                                                                                            @endphp
+                                                                                            <div class="permission-toggle-container child-permission">
+                                                                                                <label class="permission-label">
+                                                                                                    <i class='bx bx-radio-circle permission-icon'></i>
+                                                                                                    {{ $child->name }}
+                                                                                                </label>
+                                                                                                <div class="form-check form-switch">
+{{--                                                                                                            <input type="hidden" name="permissions[{{ $child->id }}]" value="0">--}}
+                                                                                                    <input class="form-check-input permission-toggle child-toggle"
+                                                                                                           type="checkbox"
+                                                                                                           name="permissions[{{ $child->id }}]"
+                                                                                                           value="1"
+                                                                                                           data-parent-id="{{ $permission->id }}"
+                                                                                                        {{ $isChildChecked ? 'checked' : '' }}>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        @endforeach
+                                                                                    </div>
+                                                                                @endif
+                                                                            </div>
                                                                         </div>
-                                                                    </div>
+                                                                    @endforeach
                                                                 </div>
                                                             </div>
-                                                        @endforeach
+                                                        </div>
                                                     </div>
-                                                @else
-                                                    <div class="text-center fw-bold">No permissions found.</div>
-                                                @endisset
+                                                @endforeach
                                             </div>
-
-                                            <!-- Submit Button -->
-                                            <div class="d-flex justify-content-end mt-4">
-                                                <button type="submit" class="btn btn-primary px-4">
-                                                    <i class='bx bx-save me-1'></i> Create Staff
-                                                </button>
-                                            </div>
-                                        </form>
+                                        @else
+                                            <div class="text-center fw-bold">No permissions found.</div>
+                                        @endisset
                                     </div>
-                                </div>
+
+                                    <!-- Submit Button -->
+                                    <div class="d-flex justify-content-end mt-4">
+                                        <button type="submit" class="btn btn-primary px-4">
+                                            <i class='bx bx-save me-1'></i> Create Staff
+                                        </button>
+                                    </div>
+                                </form>
                             </div>
                         </div>
                     </div>

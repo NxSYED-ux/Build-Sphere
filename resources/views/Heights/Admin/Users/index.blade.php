@@ -7,7 +7,7 @@
         body {
         }
         #main {
-            margin-top: 50px;
+            margin-top: 45px;
         }
 
         .filter-container {
@@ -262,18 +262,6 @@
             color: #bdc3c7;
         }
 
-        .btn-add {
-            padding: 10px 20px;
-            border-radius: 8px;
-            font-weight: 500;
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-width: 120px;
-            font-size: 0.95rem;
-        }
-
         .btn-view {
             background-color: rgba(52, 152, 219, 0.1);
             color: #3498db;
@@ -433,13 +421,13 @@
 
     <div id="main">
 
-        <section class="content mt-1 mb-3 mx-2">
+        <section class="content my-3 mx-2">
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-md-12">
                         <div class="d-flex justify-content-between align-items-center mb-2">
-                            <h3 class="mb-1">User Management</h3>
-                            <a href="{{ route('users.create') }}" class="btn btn-add btn-primary" title="Add New User">
+                            <h4 class="mb-1">User Management</h4>
+                            <a href="{{ route('users.create') }}" class="btn btn-primary" title="Add New User">
                                 <i class="fas fa-user-plus me-2"></i> Add User
                             </a>
                         </div>

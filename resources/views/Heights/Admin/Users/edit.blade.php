@@ -110,13 +110,11 @@
             <div class="container-fluid ">
                 <div class="row">
                     <div class="col-md-12">
-                        <div class="box" style="overflow-x: auto;">
-                            <div class="container">
-                                <div class="d-flex justify-content-between align-items-center mb-3">
-                                    <h4 class="mb-0">Edit User</h4>
-                                    <a href="{{ route('users.index') }}" class="btn btn-secondary">Go Back</a>
-                                </div>
-                                <div class="card shadow p-2 px-4 mb-5 bg-body rounded" style="border: none;">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h4 class="mb-0">Edit User</h4>
+                            <a href="{{ route('users.index') }}" class="btn btn-secondary"><i class="fas fa-arrow-left me-2"></i> Go Back</a>
+                        </div>
+                        <div class="card shadow p-2 px-4 mb-5 bg-body rounded" style="border: none;">
                                     <div class="card-body">
                                         <form action="{{ route('users.update')}}" method="POST" enctype="multipart/form-data">
                                             @method('PUT')
@@ -308,7 +306,7 @@
                                                 </div>
 
                                                 <!--  -->
-                                                <div class="col-sm-12 col-md-6 col-lg-4">
+                                                <div class="col-sm-12 col-md-6 col-lg-8">
                                                     <div class="form-group mb-3">
                                                         <label for="location" class="form-label">Location</label>
                                                         <span class="required__field">*</span>
@@ -365,13 +363,14 @@
                                             </div>
                                             </div>
 
-                                            <button type="submit" class="btn btn-primary">Update User</button>
-                                            <a href="{{ route('users.index') }}" class="btn btn-secondary">Cancel</a>
+                                            <div class="d-flex justify-content-end mt-4">
+                                                <button type="submit" class="btn btn-primary px-4">
+                                                    <i class='bx bx-save me-1'></i> Update User
+                                                </button>
+                                            </div>
                                         </form>
                                     </div>
                                 </div>
-                            </div>
-                        </div>
                     </div>
                 </div>
             </div>

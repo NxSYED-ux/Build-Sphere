@@ -234,212 +234,208 @@
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-md-12">
-                        <div class="box" style="overflow-x: auto;">
-                            <div class="container mt-2">
-                                <div class="d-flex justify-content-between align-items-center mb-2">
-                                    <h4 class="mb-0">Add New Building</h4>
-                                    <a href="{{ route('buildings.index') }}" class="btn btn-secondary">Go Back</a>
-                                </div>
-                                <div class="card shadow p-3 mb-5 bg-body rounded" style="border: none;">
-                                    <div class="card-body " >
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h4 class="mb-0">Add New Building</h4>
+                            <a href="{{ route('buildings.index') }}" class="btn btn-secondary"><i class="fas fa-arrow-left me-2"></i> Go Back</a>
+                        </div>
+                        <div class="card shadow p-3 mb-5 bg-body rounded" style="border: none;">
+                            <div class="card-body " >
 
-                                        <form action="{{ route('buildings.store') }}" method="POST" enctype="multipart/form-data">
-                                            @csrf
-                                            <div class="row d-flex align-items-stretch">
-                                                <div class="col-lg-8 col-md-8 col-sm-12 col-12">
-                                                    <div class="row my-0 py-0">
+                                <form action="{{ route('buildings.store') }}" method="POST" enctype="multipart/form-data">
+                                    @csrf
+                                    <div class="row d-flex align-items-stretch">
+                                        <div class="col-lg-8 col-md-8 col-sm-12 col-12">
+                                            <div class="row my-0 py-0">
 
-                                                        <!-- Name -->
-                                                        <div class="col-sm-12 col-md-6 col-lg-6">
-                                                            <div class="form-group mb-3">
-                                                                <label for="name">Name</label>
-                                                                <span class="required__field">*</span><br>
-                                                                <input type="text" name="name" id="name" class="form-control @error('name') is-invalid @enderror" value="{{ old('name') }}" maxlength="50" placeholder="Building Name" required>
-                                                                @error('name')
-                                                                    <span class="invalid-feedback" role="alert">
-                                                                        <strong>{{ $message }}</strong>
-                                                                    </span>
-                                                                @enderror
-                                                            </div>
-                                                        </div>
-
-                                                        <div class="col-lg-6 col-md-6 col-sm-12">
-                                                            <div class="form-group mb-3">
-                                                                <label for="building_type">Building Type</label>
-                                                                <span class="required__field">*</span><br>
-                                                                <select name="building_type" id="building_type" class="form-select" required>
-                                                                    <option value="" selected>Select Type</option>
-                                                                    @foreach($buildingTypes as $value)
-                                                                        <option value="{{ $value->value_name }}" {{ old('building_type') == $value->value_name ? 'selected' : '' }}>
-                                                                            {{ $value->value_name }}
-                                                                        </option>
-                                                                    @endforeach
-                                                                </select>
-                                                                @error('building_type')
-                                                                    <span class="invalid-feedback" role="alert">
-                                                                        <strong>{{ $message }}</strong>
-                                                                    </span>
-                                                                @enderror
-                                                            </div>
-                                                        </div>
-
-
-                                                        <!-- Area -->
-                                                        <div class="col-sm-12 col-md-6 col-lg-6">
-                                                            <div class="form-group mb-3">
-                                                                <label for="area">Area</label>
-                                                                <span class="required__field">*</span><br>
-                                                                <input type="number" name="area" id="area" class="form-control @error('area') is-invalid @enderror" value="{{ old('area') }}" placeholder="1234" required>
-                                                                @error('area')
-                                                                    <span class="invalid-feedback" role="alert">
-                                                                        <strong>{{ $message }}</strong>
-                                                                    </span>
-                                                                @enderror
-                                                            </div>
-                                                        </div>
-
-                                                        <!-- Organization -->
-                                                        <div class="col-sm-12 col-md-6 col-lg-6">
-                                                            <div class="form-group mb-3">
-                                                                <label for="organization_id">Organization</label>
-                                                                <span class="required__field">*</span><br>
-                                                                <select class="form-select" id="organization_id" name="organization_id" value="{{ old('organization_id') }}" required>
-                                                                    <option value="" disabled {{ old('organization_id') === null ? 'selected' : '' }}>Select Organization</option>
-                                                                    @foreach($organizations as $organization)
-                                                                        <option value="{{ $organization->id }}" {{ old('organization_id') == $organization->id ? 'selected' : '' }}>
-                                                                            {{ $organization->name }}
-                                                                        </option>
-                                                                    @endforeach
-                                                                </select>
-                                                                @error('organization_id')
-                                                                    <span class="invalid-feedback" role="alert">
-                                                                        <strong>{{ $message }}</strong>
-                                                                    </span>
-                                                                @enderror
-                                                            </div>
-                                                        </div>
-
-                                                        <!-- Construction Year -->
-                                                        <div class="col-sm-12 col-md-6 col-lg-6">
-                                                            <div class="form-group mb-3">
-                                                                <label for="construction_year">Construction Year</label>
-                                                                <span class="required__field">*</span><br>
-                                                                <input type="number" name="construction_year" id="construction_year" class="form-control @error('construction_year') is-invalid @enderror" value="{{ old('construction_year') }}" placeholder="i.e.2024" required>
-                                                                @error('construction_year')
-                                                                    <span class="invalid-feedback" role="alert">
-                                                                        <strong>{{ $message }}</strong>
-                                                                    </span>
-                                                                @enderror
-                                                            </div>
-                                                        </div>
-
-                                                        <!-- Country -->
-                                                        <div class="col-lg-6 col-md-6 col-sm-12">
-                                                            <div class="form-group mb-3">
-                                                                <label for="country">Country</label>
-                                                                <span class="required__field">*</span><br>
-                                                                <select class="form-select" id="country" name="country" required>
-                                                                    <option value="" selected>Select Country</option>
-                                                                </select>
-                                                                @error('country')
-                                                                    <div class="text-danger">{{ $message }}</div>
-                                                                @enderror
-                                                            </div>
-                                                        </div>
-                                                        <!-- Province -->
-                                                        <div class="col-lg-6 col-md-6 col-sm-12">
-                                                            <div class="form-group mb-3">
-                                                                <label for="province">Province</label>
-                                                                <span class="required__field">*</span><br>
-                                                                <select class="form-select" id="province" name="province" required>
-                                                                    <option value="" selected>Select Province</option>
-                                                                </select>
-                                                                @error('province')
-                                                                    <div class="text-danger">{{ $message }}</div>
-                                                                @enderror
-                                                            </div>
-                                                        </div>
-
-                                                        <!-- City -->
-                                                        <div class="col-lg-6 col-md-6 col-sm-12">
-                                                            <div class="form-group mb-3">
-                                                                <label for="city">City</label>
-                                                                <span class="required__field">*</span><br>
-                                                                <select class="form-select" id="city" name="city" required>
-                                                                    <option value="" selected>Select City</option>
-                                                                </select>
-                                                                @error('city')
-                                                                    <div class="text-danger">{{ $message }}</div>
-                                                                @enderror
-                                                            </div>
-                                                        </div>
-
-                                                        <!--  -->
-                                                        <div class="col-sm-12 col-md-6 col-lg-6">
-                                                            <div class="form-group mb-3">
-                                                                <label for="location">Location</label>
-                                                                <span class="required__field">*</span><br>
-                                                                <input type="text" name="location" id="location" class="form-control @error('location') is-invalid @enderror" value="{{ old('location') }}" maxlength="100" placeholder="Enter Location" required>
-                                                                @error('location')
-                                                                    <span class="invalid-feedback" role="alert">
-                                                                        <strong>{{ $message }}</strong>
-                                                                    </span>
-                                                                @enderror
-                                                            </div>
-                                                        </div>
-
-                                                        <!--  -->
-                                                        <div class="col-sm-12 col-md-6 col-lg-6">
-                                                            <div class="form-group mb-3">
-                                                                <label for="postal_code">Postal Code</label>
-                                                                <span class="required__field">*</span><br>
-                                                                <input type="text" name="postal_code" id="postal_code" class="form-control @error('postal_code') is-invalid @enderror" value="{{ old('postal_code') }}" maxlength="100" placeholder="Enter Postal Code" required>
-                                                                @error('postal_code')
-                                                                    <span class="invalid-feedback" role="alert">
-                                                                        <strong>{{ $message }}</strong>
-                                                                    </span>
-                                                                @enderror
-                                                            </div>
-                                                        </div>
-                                                    </div>
-
-                                                </div>
-                                                <div class="col-lg-4 col-md-4 col-sm-12 col-12">
-                                                    <div class="image-input-container mt-1 pb-3 d-flex flex-column">
-                                                        <input type="file" id="image-input" name="building_pictures[]" accept="image/png, image/jpeg, image/jpg, image/gif" multiple hidden>
-                                                        @error('pictures.*')
-                                                        <span class="invalid-feedback" role="alert">
-                                                            <strong>{{ $message }}</strong>
-                                                        </span>
+                                                <!-- Name -->
+                                                <div class="col-sm-12 col-md-6 col-lg-6">
+                                                    <div class="form-group mb-3">
+                                                        <label for="name">Name</label>
+                                                        <span class="required__field">*</span><br>
+                                                        <input type="text" name="name" id="name" class="form-control @error('name') is-invalid @enderror" value="{{ old('name') }}" maxlength="50" placeholder="Building Name" required>
+                                                        @error('name')
+                                                            <span class="invalid-feedback" role="alert">
+                                                                <strong>{{ $message }}</strong>
+                                                            </span>
                                                         @enderror
-                                                        <div class="image-preview flex-grow-4" id="image-preview">
-                                                            <p id="image-message">No images selected</p>
-                                                            <label for="image-input" class="upload-btn">
-                                                                <i class='bx bx-upload'></i>
-                                                            </label>
-                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-lg-6 col-md-6 col-sm-12">
+                                                    <div class="form-group mb-3">
+                                                        <label for="building_type">Building Type</label>
+                                                        <span class="required__field">*</span><br>
+                                                        <select name="building_type" id="building_type" class="form-select" required>
+                                                            <option value="" selected>Select Type</option>
+                                                            @foreach($buildingTypes as $value)
+                                                                <option value="{{ $value->value_name }}" {{ old('building_type') == $value->value_name ? 'selected' : '' }}>
+                                                                    {{ $value->value_name }}
+                                                                </option>
+                                                            @endforeach
+                                                        </select>
+                                                        @error('building_type')
+                                                            <span class="invalid-feedback" role="alert">
+                                                                <strong>{{ $message }}</strong>
+                                                            </span>
+                                                        @enderror
+                                                    </div>
+                                                </div>
+
+
+                                                <!-- Area -->
+                                                <div class="col-sm-12 col-md-6 col-lg-6">
+                                                    <div class="form-group mb-3">
+                                                        <label for="area">Area</label>
+                                                        <span class="required__field">*</span><br>
+                                                        <input type="number" name="area" id="area" class="form-control @error('area') is-invalid @enderror" value="{{ old('area') }}" placeholder="1234" required>
+                                                        @error('area')
+                                                            <span class="invalid-feedback" role="alert">
+                                                                <strong>{{ $message }}</strong>
+                                                            </span>
+                                                        @enderror
+                                                    </div>
+                                                </div>
+
+                                                <!-- Organization -->
+                                                <div class="col-sm-12 col-md-6 col-lg-6">
+                                                    <div class="form-group mb-3">
+                                                        <label for="organization_id">Organization</label>
+                                                        <span class="required__field">*</span><br>
+                                                        <select class="form-select" id="organization_id" name="organization_id" value="{{ old('organization_id') }}" required>
+                                                            <option value="" disabled {{ old('organization_id') === null ? 'selected' : '' }}>Select Organization</option>
+                                                            @foreach($organizations as $organization)
+                                                                <option value="{{ $organization->id }}" {{ old('organization_id') == $organization->id ? 'selected' : '' }}>
+                                                                    {{ $organization->name }}
+                                                                </option>
+                                                            @endforeach
+                                                        </select>
+                                                        @error('organization_id')
+                                                            <span class="invalid-feedback" role="alert">
+                                                                <strong>{{ $message }}</strong>
+                                                            </span>
+                                                        @enderror
+                                                    </div>
+                                                </div>
+
+                                                <!-- Construction Year -->
+                                                <div class="col-sm-12 col-md-6 col-lg-6">
+                                                    <div class="form-group mb-3">
+                                                        <label for="construction_year">Construction Year</label>
+                                                        <span class="required__field">*</span><br>
+                                                        <input type="number" name="construction_year" id="construction_year" class="form-control @error('construction_year') is-invalid @enderror" value="{{ old('construction_year') }}" placeholder="i.e.2024" required>
+                                                        @error('construction_year')
+                                                            <span class="invalid-feedback" role="alert">
+                                                                <strong>{{ $message }}</strong>
+                                                            </span>
+                                                        @enderror
+                                                    </div>
+                                                </div>
+
+                                                <!-- Country -->
+                                                <div class="col-lg-6 col-md-6 col-sm-12">
+                                                    <div class="form-group mb-3">
+                                                        <label for="country">Country</label>
+                                                        <span class="required__field">*</span><br>
+                                                        <select class="form-select" id="country" name="country" required>
+                                                            <option value="" selected>Select Country</option>
+                                                        </select>
+                                                        @error('country')
+                                                            <div class="text-danger">{{ $message }}</div>
+                                                        @enderror
+                                                    </div>
+                                                </div>
+                                                <!-- Province -->
+                                                <div class="col-lg-6 col-md-6 col-sm-12">
+                                                    <div class="form-group mb-3">
+                                                        <label for="province">Province</label>
+                                                        <span class="required__field">*</span><br>
+                                                        <select class="form-select" id="province" name="province" required>
+                                                            <option value="" selected>Select Province</option>
+                                                        </select>
+                                                        @error('province')
+                                                            <div class="text-danger">{{ $message }}</div>
+                                                        @enderror
+                                                    </div>
+                                                </div>
+
+                                                <!-- City -->
+                                                <div class="col-lg-6 col-md-6 col-sm-12">
+                                                    <div class="form-group mb-3">
+                                                        <label for="city">City</label>
+                                                        <span class="required__field">*</span><br>
+                                                        <select class="form-select" id="city" name="city" required>
+                                                            <option value="" selected>Select City</option>
+                                                        </select>
+                                                        @error('city')
+                                                            <div class="text-danger">{{ $message }}</div>
+                                                        @enderror
+                                                    </div>
+                                                </div>
+
+                                                <!--  -->
+                                                <div class="col-sm-12 col-md-6 col-lg-6">
+                                                    <div class="form-group mb-3">
+                                                        <label for="location">Location</label>
+                                                        <span class="required__field">*</span><br>
+                                                        <input type="text" name="location" id="location" class="form-control @error('location') is-invalid @enderror" value="{{ old('location') }}" maxlength="100" placeholder="Enter Location" required>
+                                                        @error('location')
+                                                            <span class="invalid-feedback" role="alert">
+                                                                <strong>{{ $message }}</strong>
+                                                            </span>
+                                                        @enderror
+                                                    </div>
+                                                </div>
+
+                                                <!--  -->
+                                                <div class="col-sm-12 col-md-6 col-lg-6">
+                                                    <div class="form-group mb-3">
+                                                        <label for="postal_code">Postal Code</label>
+                                                        <span class="required__field">*</span><br>
+                                                        <input type="text" name="postal_code" id="postal_code" class="form-control @error('postal_code') is-invalid @enderror" value="{{ old('postal_code') }}" maxlength="100" placeholder="Enter Postal Code" required>
+                                                        @error('postal_code')
+                                                            <span class="invalid-feedback" role="alert">
+                                                                <strong>{{ $message }}</strong>
+                                                            </span>
+                                                        @enderror
                                                     </div>
                                                 </div>
                                             </div>
 
-                                            <h4>
-                                                <button class="collapse-btn w-100 text-start mt-3 d-flex justify-content-between align-items-center"  type="button" data-bs-toggle="collapse" data-bs-target="#documents" aria-expanded="false" aria-controls="documents">
-                                                    Documents <i class="fa fa-chevron-right"></i>
-                                                </button>
-                                            </h4>
-                                            <div id="documents" class="collapse collapsible-section  text-center">
-                                                <button type="button" id="add-document" class="btn btn-light mt-21 mb-2">Add Document</button>
-                                                <div id="documents-container" class="container document-container">
-                                                    <!-- Document fields will be appended here -->
+                                        </div>
+                                        <div class="col-lg-4 col-md-4 col-sm-12 col-12">
+                                            <div class="image-input-container mt-1 pb-3 d-flex flex-column">
+                                                <input type="file" id="image-input" name="building_pictures[]" accept="image/png, image/jpeg, image/jpg, image/gif" multiple hidden>
+                                                @error('pictures.*')
+                                                <span class="invalid-feedback" role="alert">
+                                                    <strong>{{ $message }}</strong>
+                                                </span>
+                                                @enderror
+                                                <div class="image-preview flex-grow-4" id="image-preview">
+                                                    <p id="image-message">No images selected</p>
+                                                    <label for="image-input" class="upload-btn">
+                                                        <i class='bx bx-upload'></i>
+                                                    </label>
                                                 </div>
                                             </div>
-
-                                            <div class="col-12">
-                                                <button type="submit" class="btn btn-primary mt-2 w-100">Save</button>
-                                            </div>
-                                        </form>
+                                        </div>
                                     </div>
-                                </div>
+
+                                    <h4>
+                                        <button class="collapse-btn w-100 text-start mt-3 d-flex justify-content-between align-items-center"  type="button" data-bs-toggle="collapse" data-bs-target="#documents" aria-expanded="false" aria-controls="documents">
+                                            Documents <i class="fa fa-chevron-right"></i>
+                                        </button>
+                                    </h4>
+                                    <div id="documents" class="collapse collapsible-section  text-center">
+                                        <button type="button" id="add-document" class="btn btn-light mt-21 mb-2">Add Document</button>
+                                        <div id="documents-container" class="container document-container">
+                                            <!-- Document fields will be appended here -->
+                                        </div>
+                                    </div>
+
+                                    <div class="col-12">
+                                        <button type="submit" class="btn btn-primary mt-2 w-100">Save</button>
+                                    </div>
+                                </form>
                             </div>
                         </div>
                     </div>
