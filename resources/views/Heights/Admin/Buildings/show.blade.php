@@ -613,27 +613,19 @@
                                                 <svg xmlns="http://www.w3.org/2000/svg"  fill="currentColor" width="24" height="24" viewBox="0 0 24 24"><path id="reject-svg" d="M17.5 12a5.5 5.5 0 1 1 0 11a5.5 5.5 0 0 1 0-11m-2.476 3.024a.5.5 0 0 0 0 .707l1.769 1.77l-1.767 1.766a.5.5 0 1 0 .707.708l1.767-1.767l1.77 1.769a.5.5 0 1 0 .707-.707l-1.769-1.77l1.771-1.77a.5.5 0 0 0-.707-.707l-1.771 1.77l-1.77-1.77a.5.5 0 0 0-.707 0M11.019 17H3l-.117.007A1 1 0 0 0 3 19h8.174a6.5 6.5 0 0 1-.155-2m.48-2H3a1 1 0 0 1-.117-1.993L3 13h9.81a6.5 6.5 0 0 0-1.312 2M3 11a1 1 0 0 1-.117-1.993L3 9h18a1 1 0 0 1 .117 1.993L21 11zm18-6H3l-.117.007A1 1 0 0 0 3 7h18l.117-.007A1 1 0 0 0 21 5"/></svg>
                                                 Reject Building
                                             </a>
-                                            <form action="{{ route('buildings.approve') }}" method="POST">
-                                                @csrf
-                                                <input type="hidden" name="building_id" value="{{ $building->id }}">
-                                                <a href="#" class="btn-edit" id="building-approved-btn">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" width="24" height="24" viewBox="0 0 20 20"><path d="M5.5 2A1.5 1.5 0 0 0 4 3.5v14a.5.5 0 0 0 .5.5H7v-3.5a.5.5 0 0 1 .5-.5h1.522c.05-.555.183-1.087.386-1.582a.75.75 0 1 1 .752-1.296A5.49 5.49 0 0 1 14.5 9c.509 0 1.002.07 1.47.199A1.5 1.5 0 0 0 14.5 8H13V3.5A1.5 1.5 0 0 0 11.5 2zm2 3.75a.75.75 0 1 1-1.5 0a.75.75 0 0 1 1.5 0M6.75 8a.75.75 0 1 1 0 1.5a.75.75 0 0 1 0-1.5m.75 3.75a.75.75 0 1 1-1.5 0a.75.75 0 0 1 1.5 0M9.75 5a.75.75 0 1 1 0 1.5a.75.75 0 0 1 0-1.5m.75 3.75a.75.75 0 1 1-1.5 0a.75.75 0 0 1 1.5 0M9.022 15a5.5 5.5 0 0 0 1.235 3H8v-3zM19 14.5a4.5 4.5 0 1 1-9 0a4.5 4.5 0 0 1 9 0m-2.146-1.854a.5.5 0 0 0-.708 0L13.5 15.293l-.646-.647a.5.5 0 0 0-.708.708l1 1a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0 0-.708"/></svg>
-                                                    Approve Building
-                                                </a>
-                                            </form>
+                                            <a href="#" class="btn-edit" id="building-approved-btn">
+                                                <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" width="24" height="24" viewBox="0 0 20 20"><path d="M5.5 2A1.5 1.5 0 0 0 4 3.5v14a.5.5 0 0 0 .5.5H7v-3.5a.5.5 0 0 1 .5-.5h1.522c.05-.555.183-1.087.386-1.582a.75.75 0 1 1 .752-1.296A5.49 5.49 0 0 1 14.5 9c.509 0 1.002.07 1.47.199A1.5 1.5 0 0 0 14.5 8H13V3.5A1.5 1.5 0 0 0 11.5 2zm2 3.75a.75.75 0 1 1-1.5 0a.75.75 0 0 1 1.5 0M6.75 8a.75.75 0 1 1 0 1.5a.75.75 0 0 1 0-1.5m.75 3.75a.75.75 0 1 1-1.5 0a.75.75 0 0 1 1.5 0M9.75 5a.75.75 0 1 1 0 1.5a.75.75 0 0 1 0-1.5m.75 3.75a.75.75 0 1 1-1.5 0a.75.75 0 0 1 1.5 0M9.022 15a5.5 5.5 0 0 0 1.235 3H8v-3zM19 14.5a4.5 4.5 0 1 1-9 0a4.5 4.5 0 0 1 9 0m-2.146-1.854a.5.5 0 0 0-.708 0L13.5 15.293l-.646-.647a.5.5 0 0 0-.708.708l1 1a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0 0-.708"/></svg>
+                                                Approve Building
+                                            </a>
                                         @elseif($building->status === "For Re-Approval")
                                             <a href="#" class="btn-edit" id="report-building-remarks-btn" data-id="{{ $building->id }}">
                                                 <svg xmlns="http://www.w3.org/2000/svg"  fill="currentColor" width="24" height="24" viewBox="0 0 24 24"><path id="reject-svg" d="M17.5 12a5.5 5.5 0 1 1 0 11a5.5 5.5 0 0 1 0-11m-2.476 3.024a.5.5 0 0 0 0 .707l1.769 1.77l-1.767 1.766a.5.5 0 1 0 .707.708l1.767-1.767l1.77 1.769a.5.5 0 1 0 .707-.707l-1.769-1.77l1.771-1.77a.5.5 0 0 0-.707-.707l-1.771 1.77l-1.77-1.77a.5.5 0 0 0-.707 0M11.019 17H3l-.117.007A1 1 0 0 0 3 19h8.174a6.5 6.5 0 0 1-.155-2m.48-2H3a1 1 0 0 1-.117-1.993L3 13h9.81a6.5 6.5 0 0 0-1.312 2M3 11a1 1 0 0 1-.117-1.993L3 9h18a1 1 0 0 1 .117 1.993L21 11zm18-6H3l-.117.007A1 1 0 0 0 3 7h18l.117-.007A1 1 0 0 0 21 5"/></svg>
                                                 Report Remarks
                                             </a>
-                                            <form action="{{ route('buildings.approve') }}" method="POST">
-                                                @csrf
-                                                <input type="hidden" name="building_id" value="{{ $building->id }}">
-                                                <a href="#" class="btn-edit" id="building-approved-btn">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" width="24" height="24" viewBox="0 0 20 20"><path d="M5.5 2A1.5 1.5 0 0 0 4 3.5v14a.5.5 0 0 0 .5.5H7v-3.5a.5.5 0 0 1 .5-.5h1.522c.05-.555.183-1.087.386-1.582a.75.75 0 1 1 .752-1.296A5.49 5.49 0 0 1 14.5 9c.509 0 1.002.07 1.47.199A1.5 1.5 0 0 0 14.5 8H13V3.5A1.5 1.5 0 0 0 11.5 2zm2 3.75a.75.75 0 1 1-1.5 0a.75.75 0 0 1 1.5 0M6.75 8a.75.75 0 1 1 0 1.5a.75.75 0 0 1 0-1.5m.75 3.75a.75.75 0 1 1-1.5 0a.75.75 0 0 1 1.5 0M9.75 5a.75.75 0 1 1 0 1.5a.75.75 0 0 1 0-1.5m.75 3.75a.75.75 0 1 1-1.5 0a.75.75 0 0 1 1.5 0M9.022 15a5.5 5.5 0 0 0 1.235 3H8v-3zM19 14.5a4.5 4.5 0 1 1-9 0a4.5 4.5 0 0 1 9 0m-2.146-1.854a.5.5 0 0 0-.708 0L13.5 15.293l-.646-.647a.5.5 0 0 0-.708.708l1 1a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0 0-.708"/></svg>
-                                                    Approve Building
-                                                </a>
-                                            </form>
+                                            <a href="#" class="btn-edit" id="building-re-approved-btn">
+                                                <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" width="24" height="24" viewBox="0 0 20 20"><path d="M5.5 2A1.5 1.5 0 0 0 4 3.5v14a.5.5 0 0 0 .5.5H7v-3.5a.5.5 0 0 1 .5-.5h1.522c.05-.555.183-1.087.386-1.582a.75.75 0 1 1 .752-1.296A5.49 5.49 0 0 1 14.5 9c.509 0 1.002.07 1.47.199A1.5 1.5 0 0 0 14.5 8H13V3.5A1.5 1.5 0 0 0 11.5 2zm2 3.75a.75.75 0 1 1-1.5 0a.75.75 0 0 1 1.5 0M6.75 8a.75.75 0 1 1 0 1.5a.75.75 0 0 1 0-1.5m.75 3.75a.75.75 0 1 1-1.5 0a.75.75 0 0 1 1.5 0M9.75 5a.75.75 0 1 1 0 1.5a.75.75 0 0 1 0-1.5m.75 3.75a.75.75 0 1 1-1.5 0a.75.75 0 0 1 1.5 0M9.022 15a5.5 5.5 0 0 0 1.235 3H8v-3zM19 14.5a4.5 4.5 0 1 1-9 0a4.5 4.5 0 0 1 9 0m-2.146-1.854a.5.5 0 0 0-.708 0L13.5 15.293l-.646-.647a.5.5 0 0 0-.708.708l1 1a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0 0-.708"/></svg>
+                                                Approve Building
+                                            </a>
                                         @endif
 
                                         <a href="{{ route('buildings.index') }}" class="btn-back">
@@ -781,6 +773,33 @@
             </div>
         </div>
     </div>
+
+    <!-- Re Approved Building Modal -->
+    <div class="modal fade" id="ReApprovedBuildingModal" tabindex="-1" aria-labelledby="ReApprovedBuildingModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content" style="border-radius: 25px;">
+                <form id="reApprovedBuildingForm" method="POST" action="{{ route('buildings.approve') }}">
+                    <input type="hidden" name="building_id" value="{{ $building->id }}">
+                    <div class="modal-body" style="border-radius: 25px;">
+                        <div class="mb-3">
+                            <label for="remarks" class="form-label mx-2 " style="font-weight: bold;">Write Remarks</label>
+                            <textarea class="form-control @error('remarks') is-invalid @enderror" id="remarks" name="remarks"   maxlength="100" placeholder="Write your remarks here.....">{{ old('remarks') }}</textarea>
+                            @error('remarks')
+                            <div class="text-danger">{{ $message }}</div>
+                            @enderror
+
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-end gap-2 mb-3 mx-4">
+                        <button type="button" class="btn model-btn-close" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn model-btn-submit">Submit</button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+
 
     <div class="modal fade" id="ReportBuildingRemarksModal" tabindex="-1" aria-labelledby="ReportBuildingRemarksModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg modal-dialog-centered">
@@ -1031,6 +1050,11 @@
                 e.preventDefault();
                 let reportBuildingRemarksModal = new bootstrap.Modal(document.getElementById("ReportBuildingRemarksModal"));
                 reportBuildingRemarksModal.show();
+            });
+            document.getElementById("building-re-approved-btn").addEventListener("click", function (e) {
+                e.preventDefault();
+                let reApprovedModal = new bootstrap.Modal(document.getElementById("ReApprovedBuildingModal"));
+                reApprovedModal.show();
             });
         });
 
