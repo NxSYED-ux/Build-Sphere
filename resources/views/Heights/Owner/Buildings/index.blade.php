@@ -252,14 +252,13 @@
         .empty-state {
             text-align: center;
             padding: 40px;
-            background-color: #f8f9fa;
             border-radius: 12px;
             grid-column: 1 / -1;
         }
 
         .empty-state-icon {
             font-size: 3rem;
-            color: #bdc3c7;
+            color: var(--sidenavbar-text-color);
             margin-bottom: 15px;
         }
 
@@ -410,25 +409,16 @@
                             </div>
 
                             <div class="filter-group">
-                                <label for="DepartmentId">Organization</label>
-                                <select name="DepartmentId" id="DepartmentId" class="form-select filter-select">
-                                    <option value="">All Organizations</option>
+                                <label for="status">Status</label>
+                                <select name="status" id="status" class="form-select filter-select">
+                                    <option value="">All Status</option>
+                                    @foreach($statuses ?? [] as $status)
+                                        <option value="{{ $status }}" {{ request('status') == $status ? 'selected' : '' }}>
+                                            {{ $status }}
+                                        </option>
+                                    @endforeach
                                 </select>
                             </div>
-
-                            @if(isset($buildings) && $buildings->count() > 0)
-                                <div class="filter-group">
-                                    <label for="BuildingId">Building</label>
-                                    <select name="BuildingId" id="BuildingId" class="form-select filter-select">
-                                        <option value="">All Buildings</option>
-                                        @foreach($buildings as $building)
-                                            <option value="{{ $building->id }}" {{ request('BuildingId') == $building->id ? 'selected' : '' }}>
-                                                {{ $building->name }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                            @endif
 
                             <div class="filter-buttons">
                                 <button type="button" class="btn btn-secondary flex-grow-1 d-flex align-items-center justify-content-center" onclick="resetFilters()">
@@ -456,7 +446,7 @@
                                     </div>
 
                                     <div class="dropdown">
-                                        <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="exportDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <button class="btn btn-secondary dropdown-toggle" type="button" id="exportDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                                             <x-icon name="export" type="icon" class="me-1" size="16" />
                                             Export
                                         </button>
@@ -524,10 +514,10 @@
                                             <div class="col-12">
                                                 <div class="empty-state">
                                                     <div class="empty-state-icon">
-                                                        <i class='bx bx-building-house'></i>
+                                                        <i class='bx bx-buildings'></i>
                                                     </div>
                                                     <h4>No Buildings Found</h4>
-                                                    <p class="text-muted">There are no buildings to display. You can add a new building by clicking the "Add Building" button.</p>
+                                                    <p class="">There are no buildings to display. You can add a new building by clicking the "Add Building" button.</p>
                                                 </div>
                                             </div>
                                         @endforelse

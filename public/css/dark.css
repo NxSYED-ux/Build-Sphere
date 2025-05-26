@@ -151,7 +151,7 @@
     }
 
     /* Documents Container */
-    --bg-color: var(--color-gray-2);
+    --bg-color: var(--color-gray);
     --text-color: var(--color-white);
     --border-color: var(--color-gray-4);
     --btn-bg: var(--color-pink);

@@ -133,9 +133,6 @@
                                         Create New User
                                     </h4>
                                     <a href="{{ route('users.index') }}" class="btn btn-secondary">Go Back</a>
-{{--                                    <a href="{{ route('users.index') }}" class="btn btn-secondary">--}}
-{{--                                        <i class='bx bx-arrow-back me-1'></i> Back to Users--}}
-{{--                                    </a>--}}
                                 </div>
 
                                 <div class="card shadow py-2 px-4 mb-5 bg-body rounded">
@@ -194,10 +191,10 @@
 
                                                     <div class="col-sm-12 col-md-6 col-lg-4">
                                                         <div class="form-group mb-3">
-                                                            <label for="contact" class="form-label">Phone Number</label>
+                                                            <label for="contact" class="form-label">Phone Number <span class="required__field">*</span></label>
                                                             <div class="position-relative">
                                                                 <input type="text" name="phone_no" id="contact" value="{{ old('phone_no') }}"
-                                                                       class="form-control contact" placeholder="0312-3456789" maxlength="14">
+                                                                       class="form-control contact" placeholder="0312-3456789" maxlength="14" required>
                                                                 <i class='bx bxs-mobile input-icon position-absolute top-50 end-0 translate-middle-y me-3'></i>
                                                             </div>
                                                             @error('phone_no')
@@ -222,9 +219,9 @@
 
                                                     <div class="col-sm-12 col-md-6 col-lg-4">
                                                         <div class="form-group mb-3">
-                                                            <label for="date_of_birth" class="form-label">Date of Birth</label>
+                                                            <label for="date_of_birth" class="form-label">Date of Birth <span class="required__field">*</span></label>
                                                             <input type="date" class="form-control @error('date_of_birth') is-invalid @enderror" id="date_of_birth" name="date_of_birth"
-                                                                   value="{{ old('date_of_birth', date('Y-m-d')) }}">
+                                                                   value="{{ old('date_of_birth', date('Y-m-d')) }}" required>
                                                             @error('date_of_birth')
                                                             <div class="invalid-feedback">{{ $message }}</div>
                                                             @enderror
@@ -234,13 +231,14 @@
                                                     <div class="col-sm-12 col-md-6 col-lg-4">
                                                         <div class="form-group mb-3">
                                                             <label for="role_id" class="form-label">Role <span class="required__field">*</span></label>
-                                                            <select class="form-select" id="role_id" name="role_id" value="{{ old('role_id') }}" required>
+                                                            <select class="form-select" id="role_id" name="role_id" required>
                                                                 <option value="" disabled {{ old('role_id') === null ? 'selected' : '' }}>Select Role</option>
-                                                                @foreach($roles as $id => $role)
-                                                                    <option value="{{ $id }}" {{ old('role_id') == $id ? 'selected' : '' }}>
-                                                                        {{ $role }}
+                                                                @forelse($roles ?? [] as $role)
+                                                                    <option value="{{ $role->id }}" {{ old('role_id') == $role->id ? 'selected' : '' }}>
+                                                                        {{ $role->name }}
                                                                     </option>
-                                                                @endforeach
+                                                                @empty
+                                                                @endforelse
                                                             </select>
                                                             @error('role_id')
                                                             <div class="invalid-feedback">{{ $message }}</div>
@@ -258,8 +256,8 @@
                                                 <div class="row">
                                                     <div class="col-lg-4 col-md-6 col-sm-12">
                                                         <div class="form-group mb-3">
-                                                            <label for="country" class="form-label">Country</label>
-                                                            <select class="form-select" id="country" name="country">
+                                                            <label for="country" class="form-label">Country <span class="required__field">*</span></label>
+                                                            <select class="form-select" id="country" name="country" required>
                                                                 <option value="" selected>Select Country</option>
                                                             </select>
                                                             @error('country')
@@ -270,8 +268,8 @@
 
                                                     <div class="col-lg-4 col-md-6 col-sm-12">
                                                         <div class="form-group mb-3">
-                                                            <label for="province" class="form-label">Province</label>
-                                                            <select class="form-select" id="province" name="province">
+                                                            <label for="province" class="form-label">Province <span class="required__field">*</span></label>
+                                                            <select class="form-select" id="province" name="province" required>
                                                                 <option value="" selected>Select Province</option>
                                                             </select>
                                                             @error('province')
@@ -282,8 +280,8 @@
 
                                                     <div class="col-lg-4 col-md-6 col-sm-12">
                                                         <div class="form-group mb-3">
-                                                            <label for="city" class="form-label">City</label>
-                                                            <select class="form-select" id="city" name="city">
+                                                            <label for="city" class="form-label">City <span class="required__field">*</span></label>
+                                                            <select class="form-select" id="city" name="city" required>
                                                                 <option value="" selected>Select City</option>
                                                             </select>
                                                             @error('city')
@@ -294,10 +292,10 @@
 
                                                     <div class="col-sm-12 col-md-6 col-lg-6">
                                                         <div class="form-group mb-3">
-                                                            <label for="location" class="form-label">Location</label>
+                                                            <label for="location" class="form-label">Location <span class="required__field">*</span></label>
                                                             <div class="position-relative">
                                                                 <input type="text" name="location" id="location" class="form-control @error('location') is-invalid @enderror"
-                                                                       value="{{ old('location') }}" maxlength="100" placeholder="Enter Location">
+                                                                       value="{{ old('location') }}" maxlength="100" placeholder="Enter Location" required>
                                                                 <i class='bx bxs-edit-location input-icon position-absolute top-50 end-0 translate-middle-y me-3'></i>
                                                             </div>
                                                             @error('location')
@@ -308,10 +306,10 @@
 
                                                     <div class="col-sm-12 col-md-6 col-lg-6">
                                                         <div class="form-group mb-3">
-                                                            <label for="postal_code" class="form-label">Postal Code</label>
+                                                            <label for="postal_code" class="form-label">Postal Code <span class="required__field">*</span></label>
                                                             <div class="position-relative">
                                                                 <input type="text" name="postal_code" id="postal_code" class="form-control @error('postal_code') is-invalid @enderror"
-                                                                       value="{{ old('postal_code') }}" maxlength="100" placeholder="Enter Postal Code">
+                                                                       value="{{ old('postal_code') }}" maxlength="100" placeholder="Enter Postal Code" required>
                                                                 <i class='bx bx-current-location input-icon position-absolute top-50 end-0 translate-middle-y me-3'></i>
                                                             </div>
                                                             @error('postal_code')

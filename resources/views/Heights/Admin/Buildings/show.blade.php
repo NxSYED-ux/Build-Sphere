@@ -622,10 +622,10 @@
                                                 </a>
                                             </form>
                                         @elseif($building->status === "For Re-Approval")
-{{--                                            <a href="#" class="btn-edit" id="building-reject-btn" data-id="{{ $building->id }}">--}}
-{{--                                                <svg xmlns="http://www.w3.org/2000/svg"  fill="currentColor" width="24" height="24" viewBox="0 0 24 24"><path id="reject-svg" d="M17.5 12a5.5 5.5 0 1 1 0 11a5.5 5.5 0 0 1 0-11m-2.476 3.024a.5.5 0 0 0 0 .707l1.769 1.77l-1.767 1.766a.5.5 0 1 0 .707.708l1.767-1.767l1.77 1.769a.5.5 0 1 0 .707-.707l-1.769-1.77l1.771-1.77a.5.5 0 0 0-.707-.707l-1.771 1.77l-1.77-1.77a.5.5 0 0 0-.707 0M11.019 17H3l-.117.007A1 1 0 0 0 3 19h8.174a6.5 6.5 0 0 1-.155-2m.48-2H3a1 1 0 0 1-.117-1.993L3 13h9.81a6.5 6.5 0 0 0-1.312 2M3 11a1 1 0 0 1-.117-1.993L3 9h18a1 1 0 0 1 .117 1.993L21 11zm18-6H3l-.117.007A1 1 0 0 0 3 7h18l.117-.007A1 1 0 0 0 21 5"/></svg>--}}
-{{--                                                Reject Building--}}
-{{--                                            </a>--}}
+                                            <a href="#" class="btn-edit" id="report-building-remarks-btn" data-id="{{ $building->id }}">
+                                                <svg xmlns="http://www.w3.org/2000/svg"  fill="currentColor" width="24" height="24" viewBox="0 0 24 24"><path id="reject-svg" d="M17.5 12a5.5 5.5 0 1 1 0 11a5.5 5.5 0 0 1 0-11m-2.476 3.024a.5.5 0 0 0 0 .707l1.769 1.77l-1.767 1.766a.5.5 0 1 0 .707.708l1.767-1.767l1.77 1.769a.5.5 0 1 0 .707-.707l-1.769-1.77l1.771-1.77a.5.5 0 0 0-.707-.707l-1.771 1.77l-1.77-1.77a.5.5 0 0 0-.707 0M11.019 17H3l-.117.007A1 1 0 0 0 3 19h8.174a6.5 6.5 0 0 1-.155-2m.48-2H3a1 1 0 0 1-.117-1.993L3 13h9.81a6.5 6.5 0 0 0-1.312 2M3 11a1 1 0 0 1-.117-1.993L3 9h18a1 1 0 0 1 .117 1.993L21 11zm18-6H3l-.117.007A1 1 0 0 0 3 7h18l.117-.007A1 1 0 0 0 21 5"/></svg>
+                                                Report Remarks
+                                            </a>
                                             <form action="{{ route('buildings.approve') }}" method="POST">
                                                 @csrf
                                                 <input type="hidden" name="building_id" value="{{ $building->id }}">
@@ -728,6 +728,7 @@
         </div>
     </div>
 
+
     <!-- Reject Building Modal -->
     <div class="modal fade" id="RejectBuildingModal" tabindex="-1" aria-labelledby="RejectBuildingModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg modal-dialog-centered">
@@ -765,6 +766,32 @@
                         <div class="mb-3">
                             <label for="remarks" class="form-label mx-2 " style="font-weight: bold;">Write Remarks</label>
                             <textarea class="form-control @error('remarks') is-invalid @enderror" id="remarks" name="remarks"   maxlength="100" placeholder="Write your remarks here.....">{{ old('remarks') }}</textarea>
+                            @error('remarks')
+                            <div class="text-danger">{{ $message }}</div>
+                            @enderror
+
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-end gap-2 mb-3 mx-4">
+                        <button type="button" class="btn model-btn-close" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn model-btn-submit">Submit</button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="ReportBuildingRemarksModal" tabindex="-1" aria-labelledby="ReportBuildingRemarksModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content" style="border-radius: 25px;">
+                <form id="ReportBuildingRemarksForm" method="POST" action="{{ route('buildings.reportRemarks') }}">
+                    <input type="hidden" name="building_id" value="{{ $building->id }}">
+                    <div class="modal-body" style="border-radius: 25px;">
+                        <div class="mb-3">
+                            <label for="remarks" class="form-label mx-2 " style="font-weight: bold;">Write Remarks</label>
+                            <span class="required__field text-danger">*</span><br>
+                            <textarea class="form-control @error('remarks') is-invalid @enderror" id="remarks" name="remarks" maxlength="100" placeholder="Write your remarks here....." required>{{ old('remarks') }}</textarea>
                             @error('remarks')
                             <div class="text-danger">{{ $message }}</div>
                             @enderror
@@ -1002,8 +1029,8 @@
         document.addEventListener("DOMContentLoaded", function () {
             document.getElementById("report-building-remarks-btn").addEventListener("click", function (e) {
                 e.preventDefault();
-                let rejectModal = new bootstrap.Modal(document.getElementById("ReportBuildingModal"));
-                rejectModal.show();
+                let reportBuildingRemarksModal = new bootstrap.Modal(document.getElementById("ReportBuildingRemarksModal"));
+                reportBuildingRemarksModal.show();
             });
         });
 

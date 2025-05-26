@@ -399,7 +399,7 @@
                                                     <div class="mb-3 border p-2" data-type="{{ $type }}" data-file-count="{{ $building->documents->where('document_type', $type)->count() }}" data-max-files="5">
                                                         <div class="row">
                                                             <div class="col-md-2">
-                                                                <label class="form-label"><b><i><u style="text-decoration-thickness: 2px;">{{ ucfirst($type) }}</u></i></b></label>
+                                                                <label class="form-label" ><b style="text-decoration-thickness: 2px; color: var(--sidenavbar-text-color);">{{ ucfirst($type) }}</b></label>
                                                             </div>
                                                             <div class="col-md-8">
                                                                 @foreach ($building->documents->where('document_type', $type) as $file)

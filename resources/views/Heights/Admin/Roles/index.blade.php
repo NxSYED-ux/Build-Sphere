@@ -120,10 +120,25 @@
                                                         <td>{{ $role->name }}</td>
                                                         <td>{{ $role->description }}</td>
                                                         <td>{{ $role->status ? 'Active' : 'Inactive' }}</td>
-                                                        <td class="text-center" style="width: 100px;">
+                                                        <td class="text-center gap-2 d-flex justify-content-between align-items-center" style="width: 100px;">
+                                                            <a href="{{ route('users.index', ['role_id' => $role->id]) }}" class="text-primary" data-bs-toggle="tooltip" data-bs-placement="top" title="Users">
+                                                                <x-icon name="view" type="icon" class="" size="20px" />
+                                                            </a>
+
                                                             <a href="#" class="text-warning edit-role-button" id="edit-role-button" data-id="{{ $role->id }}" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit">
                                                                 <x-icon name="edit" type="icon" class="" size="20px" />
                                                             </a>
+
+                                                            <a href="{{ route('roles.destroy', $role->id) }}" class="text-danger delete-role" data-role-id="{{ $role->id }}"
+                                                                data-bs-toggle="tooltip" data-bs-placement="top" title="Delete">
+                                                                <x-icon name="delete" type="icon" class="" size="20px" />
+                                                            </a>
+
+                                                            <form id="delete-form" method="POST" style="display: none;">
+                                                                @csrf
+                                                                @method('DELETE')
+                                                            </form>
+
                                                         </td>
                                                     </tr>
                                                 @empty
@@ -305,6 +320,38 @@
             });
         });
     </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const deleteLinks = document.querySelectorAll('.delete-role');
+            const form = document.getElementById('delete-form');
+
+            deleteLinks.forEach(link => {
+                link.addEventListener('click', function (e) {
+                    e.preventDefault();
+
+                    const url = this.getAttribute('href');
+
+                    Swal.fire({
+                        title: 'Are you sure?',
+                        text: "You won't be able to revert this!",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#d33',
+                        cancelButtonColor: '#6c757d',
+                        confirmButtonText: 'Yes, delete it!',
+                        // backgroundColor: var(--body_background_color),
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            form.setAttribute('action', url);
+                            form.submit();
+                        }
+                    });
+                });
+            });
+        });
+    </script>
+
 
 
     <!-- Roles Scripts -->

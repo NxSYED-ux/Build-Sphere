@@ -439,8 +439,8 @@
                     <div class="col-md-12">
                         <div class="d-flex justify-content-between align-items-center mb-2">
                             <h3 class="mb-1">User Management</h3>
-                            <a href="{{ route('users.create') }}" class="btn float-end add_button" id="add_button"  data-bs-toggle="tooltip" data-bs-placement="top" title="Add User">
-                                <x-icon name="add" type="svg" class="" size="25" />
+                            <a href="{{ route('users.create') }}" class="btn btn-add btn-primary" title="Add New User">
+                                <i class="fas fa-user-plus me-2"></i> Add User
                             </a>
                         </div>
 
@@ -449,21 +449,29 @@
                             <div class="filter-group">
                                 <label for="search">Search</label>
                                 <input type="text" name="search" id="search" class="search-input"
-                                       placeholder="Search by name or email"
+                                       placeholder="Search by name, email or phone no"
                                        value="{{ request('search') }}">
                             </div>
 
                             <div class="filter-group">
                                 <label for="DepartmentId">Role</label>
-                                <select name="DepartmentId" id="DepartmentId" class="form-select filter-select">
+                                <select name="role_id" id="role_id" class="form-select filter-select">
                                     <option value="">All Roles</option>
+                                    @forelse($roles ?? [] as $role)
+                                        <option value="{{ $role->id }}" {{ request('role_id') == $role->id ? 'selected' : '' }}>
+                                            {{ $role->name }}
+                                        </option>
+                                    @empty
+                                    @endforelse
                                 </select>
                             </div>
 
                             <div class="filter-group">
                                 <label for="Status">Status</label>
-                                <select name="Status" id="Status" class="form-select filter-select">
-                                    <option value="">All Status</option>
+                                <select name="status" id="status" class="form-select filter-select">
+                                    <option value="" {{ request('status') == '' ? 'selected' : '' }}>All Status</option>
+                                    <option value="1" {{ request('status') == '1' ? 'selected' : '' }}>Active</option>
+                                    <option value="0" {{ request('status') == '0' ? 'selected' : '' }}>In Active</option>
                                 </select>
                             </div>
 
@@ -534,16 +542,24 @@
                                         <a href="javascript:void(0);" class="btn btn-add btn-sm btn-view view-user btn-member gap-1" data-id="{{ $user->id }}" title="View Details">
                                             <i class="fas fa-eye"></i> View
                                         </a>
-                                        <a href="{{ route('owner.staff.edit', $user->id) }}" class="btn btn-add btn-sm btn-edit btn-member gap-1" title="Edit Manager">
-                                            <i class="fas fa-edit"></i> Edit
-                                        </a>
+                                        @if($user->is_verified === 1)
+                                            <a href="{{ route('users.edit', $user->id) }}" class="btn btn-add btn-sm btn-edit btn-member gap-1" title="Edit Manager">
+                                                <i class="fas fa-edit"></i> Edit
+                                            </a>
+                                        @else
+                                            <span class="btn btn-add btn-sm btn-edit btn-member gap-1 disabled pointer-events-none opacity-50" title="User not verified">
+                                                <i class="fas fa-edit"></i> Edit
+                                            </span>
+                                        @endif
+
+
                                     </div>
                                 </div>
                             @empty
                                 <div class="no-members">
                                     <i class="fas fa-users fa-3x mb-3"></i>
-                                    <h4>No staff members found</h4>
-                                    <p>There are currently no staff members matching your filters.</p>
+                                    <h4>No users found</h4>
+                                    <p>There are currently no users matching your filters.</p>
                                 </div>
                             @endforelse
                         </div>
@@ -618,6 +634,12 @@
 @endsection
 
 @push('scripts')
+
+    <script>
+        function resetFilters() {
+            window.location.href = '{{ route("users.index") }}';
+        }
+    </script>
 
     <!-- User Detail Model script -->
     <script>

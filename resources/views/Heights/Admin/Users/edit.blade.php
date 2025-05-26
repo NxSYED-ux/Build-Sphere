@@ -131,7 +131,7 @@
                                                 <div class="col-md-4">
                                                     <div class="form-group mb-3">
                                                         <label for="name" class="form-label">Name</label>
-                                                        <span class="required__field">*</span><br>
+                                                        <span class="required__field">*</span>
                                                         <div class="position-relative">
                                                             <input type="text" name="name" id="name" class="form-control @error('name') is-invalid @enderror" value="{{ old('name', $user->name) }}" maxlength="50" placeholder="User Name" required>
                                                             <i class='bx bxs-user input-icon position-absolute top-50 end-0 translate-middle-y me-3'></i>
@@ -179,9 +179,10 @@
 
                                                 <div class="col-md-4">
                                                     <div class="form-group mb-3">
-                                                        <label for="contact" class="form-label">Phone no:</label><br>
+                                                        <label for="contact" class="form-label">Phone no:</label>
+                                                        <span class="required__field">*</span>
                                                         <div class="position-relative">
-                                                            <input type="text" name="phone_no" id="contact" value="{{ old('phone_no', $user->phone_no) }}" class="form-control contact" placeholder="0312-3456789" maxlength="14">
+                                                            <input type="text" name="phone_no" id="contact" value="{{ old('phone_no', $user->phone_no) }}" class="form-control contact" placeholder="0312-3456789" maxlength="14" required>
                                                             <i class='bx bxs-mobile input-icon position-absolute top-50 end-0 translate-middle-y me-3'></i>
                                                         </div>
                                                         @error('phone_no')
@@ -195,8 +196,9 @@
                                                 <div class="col-md-4">
                                                     <div class="form-group mb-3">
                                                         <label for="cnic" class="form-label">CNIC</label>
+                                                        <span class="required__field">*</span>
                                                         <div class="position-relative">
-                                                            <input type="text" name="cnic" id="cnic" class="form-control @error('cnic') is-invalid @enderror" value="{{ old('cnic', $user->cnic) }}" maxlength="18" placeholder="123-4567-1234567-1">
+                                                            <input type="text" name="cnic" id="cnic" class="form-control @error('cnic') is-invalid @enderror" value="{{ old('cnic', $user->cnic) }}" maxlength="18" placeholder="123-4567-1234567-1" required>
                                                             <i class='bx bxs-id-card input-icon position-absolute top-50 end-0 translate-middle-y me-3'></i>
                                                         </div>
                                                         @error('cnic')
@@ -211,7 +213,8 @@
                                                 <div class="col-md-4">
                                                     <div class="form-group mb-3">
                                                         <label for="date_of_birth" class="form-label">Date of Birth</label>
-                                                        <input type="date" class="form-control" id="date_of_birth" name="date_of_birth" value="{{ old('date_of_birth', isset($user->date_of_birth) ? \Carbon\Carbon::parse($user->date_of_birth )->format('Y-m-d') : '') }}">
+                                                        <span class="required__field">*</span>
+                                                        <input type="date" class="form-control" id="date_of_birth" name="date_of_birth" value="{{ old('date_of_birth', isset($user->date_of_birth) ? \Carbon\Carbon::parse($user->date_of_birth )->format('Y-m-d') : '') }}" required>
                                                         @error('date_of_birth')
                                                             <div class="text-danger">{{ $message }}</div>
                                                         @enderror
@@ -239,11 +242,12 @@
                                                         <label for="role_id" class="form-label">Role</label>
                                                         <span class="required__field">*</span><br>
                                                         <select name="role_id" id="role_id" class="form-select" required>
-                                                            @foreach($roles as $role)
+                                                            @forelse($roles ?? [] as $role)
                                                                 <option value="{{ $role->id }}" {{ old('role_id', $user->role_id) == $role->id ? 'selected' : '' }}>
-                                                                    {{ $role->name }} <!-- Adjust according to your role attribute -->
+                                                                    {{ $role->name }}
                                                                 </option>
-                                                            @endforeach
+                                                            @empty
+                                                            @endforelse
                                                         </select>
                                                         @error('role_id')
                                                             <span class="invalid-feedback" role="alert">
@@ -266,7 +270,8 @@
                                                 <div class="col-lg-4 col-md-6 col-sm-12">
                                                     <div class="form-group mb-3">
                                                         <label for="country" class="form-label">Country</label>
-                                                        <select class="form-select" id="country" name="country">
+                                                        <span class="required__field">*</span>
+                                                        <select class="form-select" id="country" name="country" required>
                                                             <option value="" selected>Select Country</option>
                                                         </select>
                                                         @error('country')
@@ -278,7 +283,8 @@
                                                 <div class="col-lg-4 col-md-6 col-sm-12">
                                                     <div class="form-group mb-3">
                                                         <label for="province" class="form-label">Province</label>
-                                                        <select class="form-select" id="province" name="province">
+                                                        <span class="required__field">*</span>
+                                                        <select class="form-select" id="province" name="province" required>
                                                             <option value="" selected>Select Province</option>
                                                         </select>
                                                         @error('province')
@@ -291,7 +297,8 @@
                                                 <div class="col-lg-4 col-md-6 col-sm-12">
                                                     <div class="form-group mb-3">
                                                         <label for="city" class="form-label">City</label>
-                                                        <select class="form-select" id="city" name="city">
+                                                        <span class="required__field">*</span>
+                                                        <select class="form-select" id="city" name="city" required>
                                                             <option value="" selected>Select Province</option>
                                                         </select>
                                                         @error('customer_city')
@@ -304,8 +311,9 @@
                                                 <div class="col-sm-12 col-md-6 col-lg-4">
                                                     <div class="form-group mb-3">
                                                         <label for="location" class="form-label">Location</label>
+                                                        <span class="required__field">*</span>
                                                         <div class="position-relative">
-                                                            <input type="text" name="location" id="location" class="form-control @error('location') is-invalid @enderror" value="{{ old('location', $user->address->location ) }}" maxlength="100" placeholder="Enter Location">
+                                                            <input type="text" name="location" id="location" class="form-control @error('location') is-invalid @enderror" value="{{ old('location', $user->address->location ) }}" maxlength="100" placeholder="Enter Location" required>
                                                             <i class='bx bxs-edit-location input-icon position-absolute top-50 end-0 translate-middle-y me-3'></i>
                                                         </div>
                                                         @error('location')
@@ -320,8 +328,9 @@
                                                 <div class="col-sm-12 col-md-6 col-lg-4">
                                                     <div class="form-group mb-3">
                                                         <label for="postal_code" class="form-label">Postal Code</label>
+                                                        <span class="required__field">*</span>
                                                         <div class="position-relative">
-                                                            <input type="text" name="postal_code" id="postal_code" class="form-control @error('postal_code') is-invalid @enderror" value="{{ old('postal_code', $user->address->postal_code ) }}" maxlength="100" placeholder="Enter Postal Code">
+                                                            <input type="text" name="postal_code" id="postal_code" class="form-control @error('postal_code') is-invalid @enderror" value="{{ old('postal_code', $user->address->postal_code ) }}" maxlength="100" placeholder="Enter Postal Code" required>
                                                             <i class='bx bx-current-location input-icon position-absolute top-50 end-0 translate-middle-y me-3'></i>
                                                         </div>
                                                         @error('postal_code')
