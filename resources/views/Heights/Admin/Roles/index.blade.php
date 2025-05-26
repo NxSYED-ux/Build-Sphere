@@ -10,6 +10,18 @@
             margin-top: 45px;
         }
 
+        .btn-add {
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 120px;
+            font-size: 0.95rem;
+        }
+
         .modal-content{
             background: var(--modal-header-bg);
             color: var(--modal-text);
@@ -99,7 +111,9 @@
                             <div class="container mt-2">
                                 <div class="d-flex justify-content-between align-items-center mb-2">
                                     <h3 class="mb-1">Roles</h3>
-                                    <a href="#" class="btn float-end add_button" id="add_button"> <x-icon name="add" type="svg" class="" size="25" /></a>
+                                    <a href="#" class="btn btn-add btn-primary" id="add_button" title="Add New Role">
+                                        <i class="fas fa-user-plus me-2"></i> Add Role
+                                    </a>
                                 </div>
                                 <div class="card shadow p-3 mb-5 bg-body rounded" style="border: none;">
                                     <div class="card-body" style="overflow-x: auto;">
@@ -109,7 +123,6 @@
                                                     <th>#</th>
                                                     <th>Role Name</th>
                                                     <th>Description</th>
-                                                    <th>Status</th>
                                                     <th class="text-center" style="width: 100px;">Actions</th>
                                                 </tr>
                                             </thead>
@@ -119,7 +132,6 @@
                                                         <td>{{ $role->id }}</td>
                                                         <td>{{ $role->name }}</td>
                                                         <td>{{ $role->description }}</td>
-                                                        <td>{{ $role->status ? 'Active' : 'Inactive' }}</td>
                                                         <td class="text-center gap-2 d-flex justify-content-between align-items-center" style="width: 100px;">
                                                             <a href="{{ route('users.index', ['role_id' => $role->id]) }}" class="text-primary" data-bs-toggle="tooltip" data-bs-placement="top" title="Users">
                                                                 <x-icon name="view" type="icon" class="" size="20px" />
@@ -171,7 +183,7 @@
                     @csrf
                     <div class="modal-body" style="max-height: 400px; overflow-y: auto;">
                         <div class="row">
-                            <div class="col-md-6 mb-3">
+                            <div class="col-md-12 mb-3">
                                 <label for="name" class="form-label">Role Name</label>
                                 <span class="required__field">*</span><br>
                                 <div class="position-relative">
@@ -179,19 +191,6 @@
                                     <i class='bx bx-street-view input-icon position-absolute top-50 end-0 translate-middle-y me-3'></i>
                                 </div>
                                 @error('name')
-                                <div class="invalid-feedback">
-                                    {{ $message }}
-                                </div>
-                                @enderror
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="status" class="form-label">Status</label>
-                                <span class="required__field">*</span><br>
-                                <select class="form-select @error('status') is-invalid @enderror" id="status" name="status" required>
-                                    <option value="1" {{ old('status', 1) == 1 ? 'selected' : '' }}>Active</option>
-                                    <option value="0" {{ old('status', 1) == 0 ? 'selected' : '' }}>Inactive</option>
-                                </select>
-                                @error('status')
                                 <div class="invalid-feedback">
                                     {{ $message }}
                                 </div>
@@ -248,19 +247,12 @@
                         <input type="hidden" name="updated_at" id="edit_updated_at">
 
                         <div class="row">
-                            <div class="col-md-6 mb-3">
+                            <div class="col-md-12 mb-3">
                                 <label for="edit_name" class="form-label">Role Name <span class="text-danger">*</span></label>
                                 <div class="position-relative">
                                     <input type="text" class="form-control" id="edit_name" name="name" maxlength="20" placeholder="Role Name" required>
                                     <i class='bx bx-street-view input-icon position-absolute top-50 end-0 translate-middle-y me-3'></i>
                                 </div>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="edit_status" class="form-label">Status <span class="text-danger">*</span></label>
-                                <select class="form-select" id="edit_status" name="status" required>
-                                    <option value="1">Active</option>
-                                    <option value="0">Inactive</option>
-                                </select>
                             </div>
                             <div class="col-md-12 mb-3">
                                 <label for="edit_description" class="form-label">Description</label>
@@ -381,7 +373,6 @@
                                 // Populate role details
                                 document.getElementById("edit_name").value = data.role.name;
                                 document.getElementById("edit_description").value = data.role.description;
-                                document.getElementById("edit_status").value = data.role.status;
                                 document.getElementById("edit_role_id").value = data.role.id;
                                 document.getElementById("edit_updated_at").value = data.role.updated_at;
 
