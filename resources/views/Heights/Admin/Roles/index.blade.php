@@ -482,8 +482,8 @@
                                                 <i class="fas fa-users"></i>
                                             </a>
 
-                                            <a href="{{ route('role.permissions') }}"
-                                               class="action-btn permissions-btn"
+                                            <a href="{{ route('role.permissions', ['role_id' => $role->id]) }}"
+                                            class="action-btn permissions-btn"
                                                data-bs-toggle="tooltip"
                                                data-bs-placement="top"
                                                title="Manage Permissions">

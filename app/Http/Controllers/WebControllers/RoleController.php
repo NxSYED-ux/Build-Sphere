@@ -29,7 +29,7 @@ class RoleController extends Controller
     public function create()
     {
         try {
-            $permissions = Permission::get();
+            $permissions = Permission::all();
             return view('Heights.Admin.Roles.create', compact('permissions'));
         } catch (\Throwable $e) {
             Log::error('Roles create error: ' . $e->getMessage());
@@ -60,7 +60,8 @@ class RoleController extends Controller
                 'description' => $request->description,
             ]);
 
-            $rolePermissions = collect($request->permissions)->map(function ($permissionId) use ($user, $role) {
+            Log::info('Permissions name: ', $request->permissions);
+            $rolePermissions = collect($request->permissions)->map(function ($status, $permissionId) use ($user, $role) {
                 return [
                     'role_id' => $role->id,
                     'permission_id' => $permissionId,
@@ -109,7 +110,7 @@ class RoleController extends Controller
             'permissions' => 'required|array|min:1',
             'permissions.*' => 'required|integer|exists:permissions,id',
             'updated_at' => 'required'
-        ], [
+        ] , [
             'permissions.required' => 'At least one permission must be assigned to save the role.',
             'permissions.min' => 'At least one permission must be assigned to save the role.',
             'permissions.*.exists' => 'One or more selected permissions are invalid or may have been deleted while you were creating the role.',

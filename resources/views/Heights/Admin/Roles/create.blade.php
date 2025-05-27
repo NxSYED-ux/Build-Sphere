@@ -282,7 +282,7 @@
                                                     <label for="name" class="form-label">Name <span class="required__field">*</span></label>
                                                     <div class="position-relative">
                                                         <input type="text" name="name" id="name" class="form-control @error('name') is-invalid @enderror"
-                                                               value="{{ old('name') }}" maxlength="50" placeholder="Staff Name" required>
+                                                               value="{{ old('name') }}" maxlength="50" placeholder="Role Name" required>
                                                         <i class='bx bxs-user input-icon position-absolute top-50 end-0 translate-middle-y me-3'></i>
                                                     </div>
                                                     @error('name')
@@ -341,7 +341,7 @@
                                                                         @php
                                                                             $hasChildren = $permission->children->isNotEmpty();
                                                                             // Determine checked state - use old input if available, otherwise use permission status
-                                                                            $isChecked = array_key_exists($permission->id, $oldPermissions) ? (bool)$oldPermissions[$permission->id] : false;
+                                                                            $isChecked = array_key_exists($permission->id, $oldPermissions) ? (bool) $oldPermissions[$permission->id] : false;
                                                                         @endphp
 
                                                                         <div class="col-sm-12 mb-3 parent-permission">
@@ -353,7 +353,6 @@
                                                                                         {{ $permission->name }}
                                                                                     </label>
                                                                                     <div class="form-check form-switch">
-{{--                                                                                                <input type="hidden" name="permissions[{{ $permission->id }}]" value="0">--}}
                                                                                         <input class="form-check-input permission-toggle parent-toggle"
                                                                                                type="checkbox"
                                                                                                name="permissions[{{ $permission->id }}]"
@@ -370,8 +369,7 @@
                                                                                                 $childPermission = $permissionGroup->firstWhere('permission_id', $child->id);
                                                                                                 // Determine checked state for child
                                                                                                 $isChildChecked = array_key_exists($child->id, $oldPermissions)
-                                                                                                    ? (bool)$oldPermissions[$child->id]
-                                                                                                    : ($childPermission ? $childPermission->status : false);
+                                                                                                    ? (bool) $oldPermissions[$child->id] : false;
                                                                                             @endphp
                                                                                             <div class="permission-toggle-container child-permission">
                                                                                                 <label class="permission-label">
@@ -379,7 +377,6 @@
                                                                                                     {{ $child->name }}
                                                                                                 </label>
                                                                                                 <div class="form-check form-switch">
-{{--                                                                                                            <input type="hidden" name="permissions[{{ $child->id }}]" value="0">--}}
                                                                                                     <input class="form-check-input permission-toggle child-toggle"
                                                                                                            type="checkbox"
                                                                                                            name="permissions[{{ $child->id }}]"
@@ -408,7 +405,7 @@
                                     <!-- Submit Button -->
                                     <div class="d-flex justify-content-end mt-4">
                                         <button type="submit" class="btn btn-primary px-4">
-                                            <i class='bx bx-save me-1'></i> Create Staff
+                                            <i class='bx bx-save me-1'></i> Create Role
                                         </button>
                                     </div>
                                 </form>
@@ -434,10 +431,6 @@
                     childToggles.forEach(child => {
                         child.checked = false;
                         child.disabled = true;
-                        const hiddenInput = child.closest('.form-switch').querySelector('input[type="hidden"]');
-                        if (hiddenInput) {
-                            hiddenInput.value = "0";
-                        }
                     });
                 }
 
@@ -449,11 +442,6 @@
                     } else {
                         childToggles.forEach(child => {
                             child.checked = false;
-                            child.disabled = true;
-                            const hiddenInput = child.closest('.form-switch').querySelector('input[type="hidden"]');
-                            if (hiddenInput) {
-                                hiddenInput.value = "0";
-                            }
                         });
                     }
                 });
