@@ -35,6 +35,9 @@ class RolePermissionController extends Controller
                             $query->select('id', 'name', 'header', 'parent_id')
                                 ->with(['children' => function ($childQuery) use ($roleId) {
                                     $childQuery->select('id', 'name', 'parent_id')
+                                        ->whereHas('rolePermissions', function ($rolePermQuery) use ($roleId) {
+                                            $rolePermQuery->where('role_id', $roleId);
+                                        })
                                         ->with(['rolePermissions' => function ($rolePermQuery) use ($roleId) {
                                             $rolePermQuery->where('role_id', $roleId)->select('permission_id', 'status');
                                         }]);
@@ -62,7 +65,7 @@ class RolePermissionController extends Controller
             }
 
             return view('Heights.Admin.RolePermissions.index', compact('roles', 'permissions', 'roleId'));
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             Log::error('Failed to retrieve role permissions: ' . $e->getMessage());
             return redirect()->back()->with('error', 'An error occurred while fetching role permissions.');
         }
@@ -70,16 +73,17 @@ class RolePermissionController extends Controller
 
     public function toggleRolePermission(Request $request)
     {
-        $user = $request->user() ?? abort(401, 'Unauthorized');
-
         $request->validate([
             'permission_id' => 'required|integer|exists:permissions,id',
             'role_id' => 'required|integer|exists:roles,id',
             'status' => 'required|in:0,1',
         ]);
 
+        DB::beginTransaction();
+
         try {
-            DB::beginTransaction();
+
+            $user = $request->user();
 
             RolePermission::where([
                 ['role_id', '=', $request->role_id],
@@ -100,8 +104,9 @@ class RolePermissionController extends Controller
 
             return response()->json(['success' => true, 'message' => 'Permission updated successfully']);
 
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             DB::rollBack();
+            Log::error('Failed to update role permissions: ' . $e->getMessage());
             return response()->json(['success' => false, 'message' => 'Error updating permission'], 500);
         }
     }
