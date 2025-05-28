@@ -72,12 +72,6 @@ class BuildingLevelController extends Controller
         try {
             $user = $request->user() ?? abort(404, 'Unauthorized');
             $token = $request->attributes->get('token');
-            $levels = collect();
-
-            if (empty($token['organization_id']) || empty($token['role_name'])) {
-                return view('Heights.Owner.Levels.index', compact('levels'));
-            }
-
             $organization_id = $token['organization_id'];
 
             $ownerService = new OwnerFiltersService();
