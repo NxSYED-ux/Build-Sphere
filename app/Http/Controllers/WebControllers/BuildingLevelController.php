@@ -79,7 +79,12 @@ class BuildingLevelController extends Controller
             }
 
             $organization_id = $token['organization_id'];
-            $role_name = $token['role_name'];
+
+            $ownerService = new OwnerFiltersService();
+            $buildingIds = $ownerService->getAccessibleBuildingIds();
+
+
+            $search = $request->input('search');
             $buildingId = $request->input('building_id');
 
             $query = BuildingLevel::with(['building'])
