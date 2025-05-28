@@ -104,7 +104,9 @@ class BuildingLevelController extends Controller
             $buildings = $ownerService->buildings($buildingIds);
             $statuses = ['Approved', 'Rejected'];
 
-        } catch (\Exception $e) {
+            return view('Heights.Owner.Levels.index', compact('levels', 'buildings', 'statuses'));
+
+        } catch (\Throwable $e) {
             Log::error('Owner Index Error: ' . $e->getMessage());
             return back()->with('error', 'Something went wrong! Please try again.');
         }
