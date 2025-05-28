@@ -18,7 +18,7 @@ class RoleController extends Controller
     public function index()
     {
         try {
-            $roles = Role::all();
+            $roles = Role::withCount(['users', 'rolePermissions'])->get();
             return view('Heights.Admin.Roles.index', compact('roles'));
         } catch (\Throwable $exception) {
             Log::error('Roles index error: ' . $exception->getMessage());
@@ -87,7 +87,7 @@ class RoleController extends Controller
         try {
             $role = Role::select('id', 'name', 'description', 'updated_at')->findOrFail($id);
 
-            $rolePermissionIds = RolePermission::where('role_id', '=', $role->id)->pluck('permission_id');
+            $rolePermissionIds = RolePermission::where('role_id', '=', $role->id)->pluck('permission_id', 'permission_id')->toArray();
 
             $permissions = Permission::all();
 
@@ -139,7 +139,9 @@ class RoleController extends Controller
             ]);
 
             $existingPermissions = RolePermission::where('role_id', $roleId)->pluck('permission_id')->toArray();
-            $newPermissions = $request->permissions;
+            $newPermissions = array_keys($request->permissions);
+
+            Log::info('Permissions came from frontend: ', $newPermissions);
 
             $permissionsToAdd = array_diff($newPermissions, $existingPermissions);
             $permissionsToRemove = array_diff($existingPermissions, $newPermissions);

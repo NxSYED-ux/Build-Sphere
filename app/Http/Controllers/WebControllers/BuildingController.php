@@ -679,7 +679,7 @@ class BuildingController extends Controller
             $token = $request->attributes->get('token');
             $organization_id = $token['organization_id'];
 
-            $building = $this->validateOwnerBuildingAccess($request,$request->building_id);
+            $building = $this->validateOwnerBuildingAccess($request, $request->building_id);
 
             if(!$building instanceof Building){
                 return $building;
@@ -723,7 +723,7 @@ class BuildingController extends Controller
             $user = $request->user();
 
             $adminService = new AdminFiltersService();
-            $result = $adminService->checkBuildingAccess($request->bulding_id);
+            $result = $adminService->checkBuildingAccess($request->building_id);
 
             if (!$result['access']) {
                 return redirect()->back()->with('error', $result['message']);
@@ -778,7 +778,7 @@ class BuildingController extends Controller
             $user = $request->user();
 
             $adminService = new AdminFiltersService();
-            $result = $adminService->checkBuildingAccess($request->bulding_id);
+            $result = $adminService->checkBuildingAccess($request->building_id);
 
             if (!$result['access']) {
                 return redirect()->back()->with('error', $result['message']);
@@ -787,7 +787,7 @@ class BuildingController extends Controller
             $building = $result['building'];
 
             if($building->status === 'For Re-Approval'){
-                return redirect()->back()->with('error', 'Buildings under re-approval cannot be rejected.');
+                return redirect()->back()->with('error', 'Buildings under Re-Approval cannot be rejected.');
             }
 
             $building->update([
@@ -828,7 +828,7 @@ class BuildingController extends Controller
             $user = $request->user();
 
             $adminService = new AdminFiltersService();
-            $result = $adminService->checkBuildingAccess($request->bulding_id);
+            $result = $adminService->checkBuildingAccess($request->building_id);
 
             if (!$result['access']) {
                 return redirect()->back()->with('error', $result['message']);
@@ -851,8 +851,8 @@ class BuildingController extends Controller
                 true,
             ));
 
-            return redirect()->route('buildings.index')->with('success', 'Building rejected successfully.');
-        }catch (\Exception $e) {
+            return redirect()->route('buildings.index')->with('success', 'Remarks Reported successfully.');
+        }catch (\Throwable $e) {
             Log::error('Error in report Building Remarks: ' . $e->getMessage());
             return redirect()->back()->with('error', 'Something went wrong! Please try again.');
         }
