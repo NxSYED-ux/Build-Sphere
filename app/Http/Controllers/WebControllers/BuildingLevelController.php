@@ -46,9 +46,23 @@ class BuildingLevelController extends Controller
                 $levelsQuery->where('organization_id', $selectedOrganization);
             }
 
-            return view('Heights.Admin.Levels.index', compact('levels'));
-        } catch (\Exception $e) {
-            Log::error('Error in admin Index Levels' . $e->getMessage());
+            if ($selectedBuildingId) {
+                $levelsQuery->where('building_id', $selectedBuildingId);
+            }
+
+            if ($selectedStatus) {
+                $levelsQuery->where('status', $selectedStatus);
+            }
+
+            $levels = $levelsQuery->paginate(12);
+
+            $organizations = $adminService->organizations();
+            $buildings = $adminService->buildings();
+            $statuses = ['Approved', 'Rejected'];
+
+            return view('Heights.Admin.Levels.index', compact('levels', 'organizations', 'buildings', 'statuses' ));
+        } catch (\Throwable $e) {
+            Log::error('Error in adminIndex Levels: ' . $e->getMessage());
             return redirect()->back()->with('error', 'Something went wrong! Please try again.');
         }
     }
