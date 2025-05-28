@@ -96,8 +96,13 @@ class BuildingLevelController extends Controller
                 $query->whereIn('building_id', $managerBuildingIds);
             }
 
-            $levels = $query->get();
-            return view('Heights.Owner.Levels.index', compact('levels'));
+            if ($status) {
+                $levelQuery->where('status', $status);
+            }
+
+            $levels = $levelQuery->get();
+            $buildings = $ownerService->buildings($buildingIds);
+            $statuses = ['Approved', 'Rejected'];
 
         } catch (\Exception $e) {
             Log::error('Owner Index Error: ' . $e->getMessage());
