@@ -16,6 +16,7 @@ use App\Models\Transaction;
 use App\Models\User;
 use App\Notifications\DatabaseOnlyNotification;
 use App\Notifications\EmailNotification;
+use App\Services\SubscriptionService;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -57,39 +58,8 @@ class CheckOutController extends Controller
                 'selectedPackage',
                 'selectedCycle'
             ));
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             Log::error('Error fetching billing cycles: ' . $e->getMessage());
-            return redirect()->back()->with('error', 'Something went wrong. Please try again later.');
-        }
-    }
-
-
-    public function updatePlanAdminIndex(string $id)
-    {
-        try {
-            $organization = Organization::find($id);
-
-            if(!$organization) {
-                return redirect()->back()->with('error', 'Invalid organization');
-            }
-
-            $subscription = Subscription::where('organization_id', $organization->id)
-                ->where('source_name', 'plan')
-                ->first();
-
-            $organization_id = $organization->id;
-            $activePlanId = $subscription?->source_id;
-            $activeCycle = $subscription?->billing_cycle;
-            $planCycles = BillingCycle::pluck('duration_months');
-
-            return view('Heights.Admin.Plans.upgrade', compact(
-                'planCycles',
-                'activePlanId',
-                'activeCycle',
-                'organization_id'
-            ));
-        } catch (\Exception $e) {
-            Log::error('Error in Upgrade Plan Admin index: ' . $e->getMessage());
             return redirect()->back()->with('error', 'Something went wrong. Please try again later.');
         }
     }
@@ -98,15 +68,11 @@ class CheckOutController extends Controller
     {
         try {
             $token = $request->attributes->get('token');
-
-            if (empty($token['organization_id']) || empty($token['role_name'])) {
-                return response()->json(['error' => "Can't access this page, unless you are an organization owner."]);
-            }
-
             $organization_id = $token['organization_id'];
 
             $subscription = Subscription::where('organization_id', $organization_id)
                 ->where('source_name', 'plan')
+                ->where('subscription_status', 'Active')
                 ->first();
 
             $activePlanId = $subscription?->source_id;
@@ -118,7 +84,8 @@ class CheckOutController extends Controller
                 'activePlanId',
                 'activeCycle'
             ));
-        } catch (\Exception $e) {
+
+        } catch (\Throwable $e) {
             Log::error('Error in Upgrade Plan owner index: ' . $e->getMessage());
             return redirect()->back()->with('error', 'Something went wrong. Please try again later.');
         }
@@ -247,12 +214,14 @@ class CheckOutController extends Controller
     private function checkout(Request $request, $user, string $type, $organization_id, bool $complete = false)
     {
         try {
-            $plan = $this->getValidatedPlanWithBillingCycle($request->plan_id, $request->plan_cycle_id);
+            $subscriptionService = new SubscriptionService();
+            $plan = $subscriptionService->getValidatedPlanWithBillingCycle($request->plan_id, $request->plan_cycle_id);
+
             if (!$plan) {
                 return response()->json(['error' => 'The requested plan is currently unavailable due to administrative changes.'], 404);
             }
 
-            $planDetails = $this->getPlanDetailsWithTotalPrice($plan);
+            $planDetails = $subscriptionService->getPlanDetailsWithTotalPrice($plan);
 
             try {
                 Stripe::setApiKey(config('services.stripe.secret'));
@@ -295,7 +264,8 @@ class CheckOutController extends Controller
                 }
             } catch (CardException $e) {
                 Log::error('Stripe CardException: ' . $e->getMessage());
-                return $this->handleStripePaymentFailure($e, $plan, $request->plan_cycle, $request, $planDetails);
+                return $subscriptionService->handleStripePaymentFailure($e, $plan, $request->plan_cycle, $request, $planDetails);
+
             } catch (Exception $e) {
                 Log::error('General Stripe Error: ' . $e->getMessage());
                 return response()->json([
@@ -308,7 +278,7 @@ class CheckOutController extends Controller
             }
 
             if ($paymentIntent->status !== 'succeeded') {
-                return $this->handleStripePaymentFailure($paymentIntent, $plan, $request->plan_cycle, $request, $planDetails);
+                return $subscriptionService->handleStripePaymentFailure($paymentIntent, $plan, $request->plan_cycle, $request, $planDetails);
             }
 
             if ($type === 'create') {
@@ -319,104 +289,38 @@ class CheckOutController extends Controller
                 ]);
             }
 
-            try {
-                if ($type === 'create') {
-                    Organization::where('id', $organization_id)->update(['status' => 'Enable']);
+            if ($type === 'create') {
+                Organization::where('id', $organization_id)->update(['status' => 'Enable']);
 
-                    ProcessSuccessfulCheckout::dispatch(
-                        $user->id,
-                        $organization_id,
-                        $plan->id,
-                        $planDetails,
-                        $request->plan_cycle,
-                        $paymentIntent->id,
-                        now(),
-                        'Card'
-                    );
-                } else {
-                    $services = $planDetails['services'];
-                    $org_subscription = Subscription::where('organization_id', $organization_id)
-                        ->where('source_name', 'plan')->first();
+                ProcessSuccessfulCheckout::dispatch(
+                    $user->id,
+                    $organization_id,
+                    $plan->id,
+                    $planDetails,
+                    $request->plan_cycle,
+                    $paymentIntent->id,
+                    now(),
+                    'Card'
+                );
 
-                    if(!$org_subscription){
-                        Organization::where('id', $organization_id)->update(['status' => 'Enable']);
+            } else {
+                $result = $subscriptionService->handlePlanRenewalOrUpgrade(
+                    $user,
+                    $organization_id,
+                    $plan,
+                    $planDetails,
+                    $request->plan_cycle,
+                    $paymentIntent,
+                    'Card'
+                );
 
-                        ProcessSuccessfulCheckout::dispatch(
-                            $user->id,
-                            $organization_id,
-                            $plan->id,
-                            $planDetails,
-                            $request->plan_cycle,
-                            $paymentIntent->id,
-                            now(),
-                            'Card'
-                        );
-
-                        return response()->json(['success' => true]);
-                    }
-
-
-                    DB::beginTransaction();
-
-
-                    $org_subscription->update([
-                        'source_id' => $plan->id,
-                        'billing_cycle' => $request->plan_cycle,
-                        'subscription_status' => 'Active',
-                        'price_at_subscription' => $planDetails['total_price'],
-                        'currency_at_subscription' => $plan->currency,
-                        'ends_at' => now()->addMonths((int) $request->plan_cycle),
-                    ]);
-
-                    $transaction = Transaction::create([
-                        'transaction_title' => "{$plan->name} ({$request->plan_cycle} Months)",
-                        'transaction_category' => 'Renewal',
-                        'buyer_id' => $organization_id,
-                        'buyer_type' => 'organization',
-                        'seller_type' => 'platform',
-                        'payment_method' => 'Card',
-                        'gateway_payment_id' => $paymentIntent->id,
-                        'price' => $planDetails['total_price'],
-                        'currency' => $planDetails['currency'],
-                        'status' => 'Completed',
-                        'is_subscription' => true,
-                        'billing_cycle' => $request->plan_cycle . ' Months',
-                        'subscription_start_date' => now(),
-                        'subscription_end_date' => now()->addMonths((int) $request->plan_cycle),
-                        'source_id' => $org_subscription->id,
-                        'source_name' => 'subscription',
-                    ]);
-
-                    $whereServiceIds = array_column($services->toArray(), 'service_catalog_id');
-
-                    $existingServices = PlanSubscriptionItem::where('organization_id', $organization_id)
-                        ->whereIn('service_catalog_id', $whereServiceIds)
-                        ->get()
-                        ->keyBy('service_catalog_id');
-
-
-                    $result = $this->updatePlanServices($services, $existingServices, $plan, $organization_id, $paymentIntent);
-                    if ($result['error']) {
-                        DB::rollBack();
-                        Log::error('Error : ' . $result['error']);
-                        return response()->json(['error' => $result['message']], 400);
-                    }
-
-                    DB::commit();
-
-                    $this->sendPlanUpgradeNotifications($user, $plan, $transaction);
+                if (!empty($result['error'])) {
+                    return response()->json(['error' => $result['error']], 400);
                 }
-
-                return response()->json(['success' => true]);
-
-            }catch (\Throwable $e) {
-                DB::rollBack();
-                Log::error('DB Transaction Failed during checkout: ' . $e->getMessage());
-
-                return response()->json([
-                    'error' => 'Payment succeeded, but something went wrong while saving data. Please contact support.',
-                ], 500);
             }
+
+            return response()->json(['success' => true]);
+
         } catch (Exception $e) {
             Log::error('Error while Checkout Plan: ' . $e->getMessage());
 
@@ -425,265 +329,6 @@ class CheckOutController extends Controller
                 'error' => $e->getMessage(),
             ], 500);
         }
-    }
-
-
-    // Upgrade Plan Admin
-    public function adminUpgradePlan(Request $request)
-    {
-        $user = $request->user() ?? abort(403, 'Unauthorized action.');
-
-        $request->validate([
-            'plan_id' => 'required|exists:plans,id',
-            'plan_cycle_id' => 'required|exists:billing_cycles,id',
-            'plan_cycle' => 'required|integer',
-            'organization_id' => 'required|exists:organizations,id',
-        ]);
-
-        try {
-            $organization = Organization::findOrFail($request->organization_id);
-            $owner = $organization->owner;
-
-            $plan = $this->getValidatedPlanWithBillingCycle($request->plan_id, $request->plan_cycle_id);
-            if (!$plan) {
-                return redirect()->back()->withInput()->with('error', 'The requested plan is currently unavailable due to administrative changes.');
-            }
-
-            $planDetails = $this->getPlanDetailsWithTotalPrice($plan);
-            $services = $planDetails['services'];
-
-            $org_subscription = Subscription::where('organization_id', $organization->id)
-                ->where('source_name', 'plan')->first();
-
-            if (!$org_subscription) {
-                return redirect()->back()->withInput()->with('error', 'No organization subscription found for the selected organization.');
-            }
-
-            DB::beginTransaction();
-
-            $startDate = now();
-            $endDate = $startDate->copy()->addMonths((int) $request->plan_cycle);
-
-            $org_subscription->update([
-                'source_id' => $plan->id,
-                'billing_cycle' => $request->plan_cycle,
-                'subscription_status' => 'Active',
-                'price_at_subscription' => $planDetails['total_price'],
-                'currency_at_subscription' => $plan->currency,
-                'ends_at' => $endDate,
-            ]);
-
-            $transaction = Transaction::create([
-                'transaction_title' => "{$plan->name} ({$request->plan_cycle} Months)",
-                'transaction_category' => 'Renewal',
-                'buyer_id' => $organization->id,
-                'buyer_type' => 'organization',
-                'seller_type' => 'platform',
-                'payment_method' => 'Cash',
-                'gateway_payment_id' => null,
-                'price' => $planDetails['total_price'],
-                'currency' => $planDetails['currency'],
-                'status' => 'Completed',
-                'is_subscription' => true,
-                'billing_cycle' => $request->plan_cycle . ' Months',
-                'subscription_start_date' => $startDate,
-                'subscription_end_date' => $endDate,
-                'source_id' => $org_subscription->id,
-                'source_name' => 'subscription',
-            ]);
-
-            $whereServiceIds = array_column($services->toArray(), 'service_catalog_id');
-
-            $existingServices = PlanSubscriptionItem::where('organization_id', $organization->id)
-                ->whereIn('service_catalog_id', $whereServiceIds)
-                ->get()
-                ->keyBy('service_catalog_id');
-
-            $result = $this->updatePlanServices($services, $existingServices, $plan, $organization->id, null);
-            if ($result['error']) {
-                DB::rollBack();
-                return redirect()->back()->withInput()->with('error', $result['message']);
-            }
-
-            DB::commit();
-
-            $this->sendPlanUpgradeNotifications($owner, $plan, $transaction);
-
-            $logo = 'uploads/Notification/Light-theme-Logo.svg';
-
-            dispatch(new SendRoleNotification(
-                1,
-                $logo,
-                "Organization Plan Upgraded",
-                "{$organization->name} upgraded to {$plan->name} ({$request->plan_cycle} Months) by {$user->name}.",
-                ['web' => "admin/organizations/{$organization->id}/show"],
-
-                $user->id,
-                "Plan Upgraded for {$organization->name}",
-                "{$organization->name} has successfully upgraded to the {$plan->name} plan ({$request->plan_cycle} Months).",
-                ['web' => "admin/organizations/{$organization->id}/show"],
-            ));
-
-            return redirect()->route('organizations.show', $organization->id)->with('success', 'Organization plan upgraded successfully.');
-
-        }catch (\Throwable $e) {
-            DB::rollBack();
-            Log::error('Error in plan Upgrade Admin: ' . $e->getMessage());
-            return redirect()->back()->withInput()->with('error', 'Something went wrong. Please try again later.');
-        }
-    }
-
-
-    // Helper functions
-    private function getValidatedPlanWithBillingCycle($planId, $billingCycleId)
-    {
-        return Plan::where('id', $planId)
-            ->whereNotIn('status', ['Deleted', 'Inactive'])
-            ->whereHas('services', function ($query) use ($billingCycleId) {
-                $query->whereHas('prices', function ($priceQuery) use ($billingCycleId) {
-                    $priceQuery->where('billing_cycle_id', $billingCycleId);
-                });
-            })
-            ->with(['services' => function ($query) use ($billingCycleId) {
-                $query->with('serviceCatalog')
-                    ->whereHas('prices', function ($q) use ($billingCycleId) {
-                        $q->where('billing_cycle_id', $billingCycleId);
-                    })
-                    ->with(['prices' => function ($priceQuery) use ($billingCycleId) {
-                        $priceQuery->where('billing_cycle_id', $billingCycleId);
-                    }]);
-            }])
-            ->first();
-    }
-
-    private function getPlanDetailsWithTotalPrice($plan)
-    {
-        $totalPrice = 0;
-        $services = $plan->services->map(function ($service) use (&$totalPrice) {
-            $price = $service->prices->first();
-            if ($price) $totalPrice += $price->price;
-
-            return [
-                'service_id' => $service->id,
-                'service_catalog_id' => $service->serviceCatalog->id,
-                'service_name' => $service->serviceCatalog->title ?? '',
-                'service_description' => $service->serviceCatalog->description ?? '',
-                'service_quantity' => $service->quantity,
-                'service_meta' => $service->meta,
-                'subscription_id' => $service->subscription_id,
-            ];
-        });
-
-        return [
-            'plan_name' => $plan->name,
-            'plan_description' => $plan->description,
-            'currency' => $plan->currency,
-            'total_price' => $totalPrice,
-            'services' => $services,
-        ];
-    }
-
-    private function handleStripePaymentFailure($e, $plan, $planCycle, $request, $planDetails)
-    {
-        $error = method_exists($e, 'getError') ? $e->getError() : null;
-
-        Transaction::create([
-            'transaction_title' => "{$plan->name} ({$planCycle} Months)",
-            'transaction_category' => 'New',
-            'buyer_id' => $request->organization_id,
-            'buyer_type' => 'organization',
-            'seller_type' => 'platform',
-            'payment_method' => 'Card',
-            'gateway_payment_id' => $e->id ?? null,
-            'price' => $planDetails['total_price'],
-            'currency' => $planDetails['currency'],
-            'status' => 'Failed',
-            'source_id' => $plan->id,
-            'source_name' => 'plan',
-        ]);
-
-        return response()->json([
-            'error' => $error->message ?? 'Payment failed.',
-            'code' => $error->code ?? 'unknown_error',
-            'type' => $error->type ?? 'card_error',
-        ], 402);
-    }
-
-    private function updatePlanServices($services, $existingServices, $plan, $organization_id, $paymentIntent)
-    {
-        foreach ($services as $service) {
-            $existingService = $existingServices->get($service['service_catalog_id']);
-
-            if ($existingService) {
-                $serviceCatalog = PlanServiceCatalog::find($service['service_catalog_id']);
-                $parentId = $serviceCatalog?->parent_id;
-                $meta = $existingService->meta ?? [];
-
-                if ($parentId) {
-                    $parentPlanService = PlanService::where('service_catalog_id', $parentId)
-                        ->where('plan_id', $plan->id)
-                        ->select('quantity')
-                        ->first();
-
-                    if ($parentPlanService) {
-                        $meta['quantity'] = $parentPlanService->quantity;
-                    }
-                }
-
-                if ($service['service_quantity'] >= $existingService->used) {
-                    $existingService->update([
-                        'quantity' => $service['service_quantity'],
-                        'meta' => $meta,
-                    ]);
-                } else {
-                    $errorMessage = 'Selected Plan has fewer service items than the used service items.';
-
-                    if ($paymentIntent && isset($paymentIntent->charges->data[0]->id)) {
-                        try {
-                            $chargeId = $paymentIntent->charges->data[0]->id;
-                            Refund::create(['charge' => $chargeId]);
-                            $errorMessage .= ' Your payment has been refunded automatically. If you do not see the refund within a few minutes, please check with your bank or contact support.';
-                        } catch (\Exception $e) {
-                            Log::error('Stripe refund failed: ' . $e->getMessage());
-                            $errorMessage .= ' Refund attempt failed, please contact support.';
-                        }
-                    }
-
-                    DB::rollBack();
-                    return [
-                        'error' => true,
-                        'message' => $errorMessage
-                    ];
-                }
-            } else {
-                PlanSubscriptionItem::create([
-                    'organization_id' => $organization_id,
-                    'subscription_id' => $service['subscription_id'],
-                    'service_catalog_id' => $service['service_catalog_id'],
-                    'quantity' => $service['service_quantity'],
-                    'meta' => $service['service_meta'] ?? null,
-                ]);
-            }
-        }
-
-        return ['error' => false];
-    }
-
-    private function sendPlanUpgradeNotifications($user, $plan, $transaction)
-    {
-        $user->notify(new EmailNotification(
-            'uploads/Notification/Light-theme-Logo.svg',
-            'Plan Upgraded Successfully!',
-            "Dear {$user->name},<br>Your plan has been upgraded successfully! You now have access to additional features and enhanced capabilities. Start exploring your new benefits today through your dashboard.<br>Thank you for choosing us!",
-            ['web' => 'owner/dashboard']
-        ));
-
-        $user->notify(new DatabaseOnlyNotification(
-            'uploads/Notification/Transaction.jpg',
-            'Transaction Successful - Plan Upgraded',
-            "Great news, {$user->name}! Your payment for the <strong>{$plan->name}</strong> plan has been successfully processed. Your plan is now upgraded, unlocking all the exclusive features and benefits.",
-            ['web' => "owner/finance/{$transaction->id}/show"]
-        ));
     }
 
 }

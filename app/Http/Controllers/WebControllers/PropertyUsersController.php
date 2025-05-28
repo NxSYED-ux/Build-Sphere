@@ -29,22 +29,17 @@ class PropertyUsersController extends Controller
 {
     public function index(Request $request)
     {
-        $loggedUser = $request->user() ?? abort(403, 'Unauthorised Access');
-
         try {
             $users = collect();
             $buildings = collect();
             $units = collect();
             $types = ['Rented', 'Sold'];
 
+            $loggedUser = $request->user();
             $token = $request->attributes->get('token');
 
             $organizationId = $token['organization_id'] ?? null;
             $roleName = $token['role_name'] ?? null;
-
-            if (!$organizationId || !$roleName) {
-                return view('Heights.Owner.PropertyUsers.index', compact('users', 'buildings', 'units', 'types'));
-            }
 
             $buildingId = $request->input('building_id');
             $unitId = $request->input('unit_id');
@@ -111,7 +106,7 @@ class PropertyUsersController extends Controller
 
             return view('Heights.Owner.PropertyUsers.index', compact('users', 'buildings', 'units', 'types'));
 
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             Log::error('Error in Property Users index: ' . $e->getMessage());
             return back()->with('error', 'Something went wrong. Please try again.');
         }
@@ -119,14 +114,9 @@ class PropertyUsersController extends Controller
 
     public function show(Request $request, $id)
     {
-        $loggedUser = $request->user() ?? abort(403, 'Unauthorised Access');
         try {
+            $loggedUser = $request->user();
             $token = $request->attributes->get('token');
-
-            if (empty($token['organization_id'])) {
-                return back()->with('error', 'This information is restricted to authorized organization personnel only.');
-            }
-
             $organizationId = $token['organization_id'];
             $roleName = $token['role_name'] ?? null;
 
@@ -176,12 +166,12 @@ class PropertyUsersController extends Controller
             $types = ['Rented', 'Sold'];
             return view('Heights.Owner.PropertyUsers.show', compact('user', 'userUnits', 'buildings', 'units', 'types'));
 
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             Log::error("Error in Property Users show: " . $e->getMessage());
             return back()->with('error', 'Something went wrong. Please try again.');
         }
     }
-    
+
 
     public function Discontinue(Request $request){
 

@@ -20,6 +20,7 @@ use App\Models\Subscription;
 use App\Models\Transaction;
 use App\Models\User;
 use App\Notifications\DatabaseOnlyNotification;
+use App\Services\SubscriptionService;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -34,16 +35,17 @@ class OrganizationController extends Controller
     {
         try {
             $activeTab = 'Tab1';
-            $organizations = Organization::with('address', 'owner')->paginate(10);
+            $organizations = Organization::with('address', 'owner')->paginate(12);
             $dropdownData = DropdownType::with(['values.childs.childs'])->where('type_name', 'Country')->get(); // Country -> Province -> City
             $owners = User::where('role_id', 2)
                 ->whereNotIn('id', Organization::pluck('owner_id'))
+                ->orderBy('name', 'asc')
                 ->pluck('name', 'id');
 
             $planCycles = BillingCycle::pluck('duration_months');
 
             return view('Heights.Admin.Organizations.index', compact('organizations', 'activeTab', 'dropdownData', 'owners', 'planCycles'));
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             Log::error("Error in index method: " . $e->getMessage());
             return back()->with('error', 'An error occurred while fetching data.');
         }
@@ -53,8 +55,6 @@ class OrganizationController extends Controller
     // Store Function
     public function store(Request $request)
     {
-        $user = $request->user() ?? abort(401, 'Unauthorized action.');
-
         $request->validate([
             'name' => 'required|string|max:255|unique:organizations,name',
             'email' => 'required|string|email|max:255|unique:organizations,email',
@@ -75,62 +75,20 @@ class OrganizationController extends Controller
             'merchant_id.required_if' => 'The merchant ID is required when online payments are enabled.',
         ]);
 
-        $billing_cycle_id = $request->plan_cycle_id;
-
-        $plan = Plan::where('id', $request->plan_id)
-            ->whereNotIn('status', ['Deleted', 'Inactive'])
-            ->whereHas('services', function ($query) use ($billing_cycle_id) {
-                $query->with('serviceCatalog')
-                    ->whereHas('prices', function ($priceQuery) use ($billing_cycle_id) {
-                        $priceQuery->where('billing_cycle_id', $billing_cycle_id);
-                    });
-            })
-            ->with(['services' => function ($query) use ($billing_cycle_id) {
-                $query->with('serviceCatalog')
-                    ->whereHas('prices', function ($q) use ($billing_cycle_id) {
-                        $q->where('billing_cycle_id', $billing_cycle_id);
-                    })
-                    ->with(['prices' => function ($priceQuery) use ($billing_cycle_id) {
-                        $priceQuery->where('billing_cycle_id', $billing_cycle_id);
-                    }]);
-            }])
-            ->first();
-
-        if (!$plan) {
-            return redirect()->back()->withInput()->with('error', 'The requested plan is currently unavailable due to administrative changes.');
-        }
-
-        $totalPrice = 0;
-
-        $services = $plan->services->map(function ($service) use (&$totalPrice) {
-            $price = $service->prices->first();
-
-            if ($price) {
-                $totalPrice += $price->price;
-            }
-
-            return [
-                'service_id' => $service->id,
-                'service_catalog_id' => $service->serviceCatalog->id,
-                'service_name' => $service->serviceCatalog->title ?? '',
-                'service_description' => $service->serviceCatalog->description ?? '',
-                'service_quantity' => $service->quantity,
-            ];
-        });
-
-        $planDetails = [
-            'plan_name' => $plan->name,
-            'plan_description' => $plan->description,
-            'currency' => $plan->currency,
-            'total_price' => $totalPrice,
-            'services' => $services,
-        ];
-
         DB::beginTransaction();
 
         try {
+            $user = $request->user();
+            $subscriptionService = new SubscriptionService();
 
-            $logo = null;
+            $plan = $subscriptionService->getValidatedPlanWithBillingCycle($request->plan_id, $request->plan_cycle_id);
+
+            if (!$plan) {
+                return redirect()->back()->withInput()->with('error', 'The requested plan is currently unavailable due to administrative changes.');
+            }
+
+            $planDetails = $subscriptionService->getPlanDetailsWithTotalPrice($plan);
+
             if ($request->hasFile('organization_pictures')) {
                 $firstImage = $request->file('organization_pictures')[0] ?? null;
 
@@ -206,7 +164,7 @@ class OrganizationController extends Controller
 
             return redirect()->route('organizations.index')->with('success', 'Organization created successfully.');
 
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             DB::rollBack();
             Log::error('An error occurred while creating the organization: ' . $e->getMessage());
             return redirect()->back()->withInput()->with('error', 'Something went wrong. Try again later.');
@@ -251,11 +209,6 @@ class OrganizationController extends Controller
     public function ownerEdit(Request $request)
     {
         $token = $request->attributes->get('token');
-
-        if (empty($token['organization_id']) || empty($token['role_name'])) {
-            return redirect()->back()->with('error', "Can't access this page, unless you are an organization owner.");
-        }
-
         return $this->edit($token['organization_id'], 'owner');
     }
 
@@ -269,18 +222,11 @@ class OrganizationController extends Controller
     public function ownerUpdate(Request $request)
     {
         $token = $request->attributes->get('token');
-
-        if (empty($token['organization_id']) || empty($token['role_name'])) {
-            return redirect()->back()->with('error', "Can't access this page, unless you are an organization owner.");
-        }
-
         return $this->update($request, $token['organization_id'], 'owner');
     }
 
     private function update(Request $request, string $id, string $portal)
     {
-        $user = $request->user() ?? abort(404, 'Unauthorized action.');
-
         $request->validate([
             'name' => 'required|string|max:255|unique:organizations,name,' . $id . ',id',
             'email' => 'required|string|email|max:255|unique:organizations,email,' . $id . ',id',
@@ -296,6 +242,8 @@ class OrganizationController extends Controller
         ], [
             'merchant_id.required_if' => 'The merchant ID is required when online payments are enabled.',
         ]);
+
+        $user = $request->user();
 
         $organization = Organization::find($id);
         if (!$organization) return redirect()->back()->withInput()->with('error', 'Organization not found.');
@@ -366,7 +314,7 @@ class OrganizationController extends Controller
 
             return redirect()->route($route)->with('success', 'Organization updated successfully.');
 
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             DB::rollBack();
             Log::error('An error occurred while updating the organization: ' . $e->getMessage());
             return redirect()->back()->withInput()->with('error', 'Something went wrong. Try again later.');
@@ -378,10 +326,6 @@ class OrganizationController extends Controller
     public function organizationProfile(Request $request){
 
         $token = $request->attributes->get('token');
-
-        if (empty($token['organization_id']) || empty($token['role_name'])) {
-            return redirect()->back()->with('error', "Can't access this page, unless you are an organization owner.");
-        }
         return $this->show($token['organization_id'], 'owner');
     }
 
@@ -399,11 +343,6 @@ class OrganizationController extends Controller
     public function ownerUpdateLogo(Request $request)
     {
         $token = $request->attributes->get('token');
-
-        if (empty($token['organization_id']) || empty($token['role_name'])) {
-            return response()->json(['error' => "Can't access this page, unless you are an organization owner."]);
-        }
-
         return $this->updateLogo($request, $token['organization_id']);
     }
 
@@ -435,7 +374,7 @@ class OrganizationController extends Controller
                 'logo' => $imagePath,
             ]);
 
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             Log::error('Failed to update logo for organization ID ' . $id . ': ' . $e->getMessage());
             return response()->json(['success' => false, 'error' => 'Failed to update logo. Please try again later.'], 500);
         }
@@ -455,25 +394,19 @@ class OrganizationController extends Controller
     public function ownerOnlinePaymentStatus(Request $request)
     {
         $token = $request->attributes->get('token');
-
-        if (empty($token['organization_id'])) {
-            return response()->json(['error' => "Can't access this page, unless you are an organization owner."]);
-        }
-
         return $this->updateOnlinePaymentStatus($request, $token['organization_id'], 'owner');
     }
 
     private function updateOnlinePaymentStatus(Request $request, string $id, string $portal)
     {
-        $user = $request->user() ?? abort(404, 'Unauthorized action.');
-
         $request->validate([
             'is_online_payment_enabled' => 'required|in:0,1',
         ]);
 
-        try {
-            DB::beginTransaction();
+        DB::beginTransaction();
 
+        try {
+            $user = $request->user();
             $organization = Organization::where('id', $id)->sharedLock()->first();
 
             if (!$organization) {
@@ -526,78 +459,149 @@ class OrganizationController extends Controller
     }
 
 
+    // Upgrade Plan for Admin
+    public function adminUpgradePlanView(string $id)
+    {
+        try {
+            $organization = Organization::find($id);
+
+            if(!$organization) {
+                return redirect()->back()->with('error', 'Invalid organization');
+            }
+
+            $subscription = Subscription::where('organization_id', $organization->id)
+                ->where('source_name', 'plan')
+                ->latest('created_at')
+                ->first();
+
+            $organization_id = $organization->id;
+            $activePlanId = $subscription?->source_id;
+            $activeCycle = $subscription?->billing_cycle;
+            $planCycles = BillingCycle::pluck('duration_months');
+
+            return view('Heights.Admin.Plans.upgrade', compact(
+                'planCycles',
+                'activePlanId',
+                'activeCycle',
+                'organization_id'
+            ));
+        } catch (\Throwable $e) {
+            Log::error('Error in Upgrade Plan Admin index: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Something went wrong. Please try again later.');
+        }
+    }
+
+    public function adminUpgradePlan(Request $request)
+    {
+        $request->validate([
+            'plan_id' => 'required|exists:plans,id',
+            'plan_cycle_id' => 'required|exists:billing_cycles,id',
+            'plan_cycle' => 'required|integer',
+            'organization_id' => 'required|exists:organizations,id',
+        ]);
+
+        try {
+            $loggedUser = $request->user();
+
+            $subscriptionService = new SubscriptionService();
+            $organization = Organization::findOrFail($request->organization_id);
+            $owner = $organization->owner;
+
+            $plan = $subscriptionService->getValidatedPlanWithBillingCycle($request->plan_id, $request->plan_cycle_id);
+            if (!$plan) {
+                return redirect()->back()->withInput()->with('error', 'The requested plan is currently unavailable due to administrative changes.');
+            }
+
+            $planDetails = $subscriptionService->getPlanDetailsWithTotalPrice($plan);
+
+            $subscriptionService = new SubscriptionService();
+
+            $result = $subscriptionService->handlePlanRenewalOrUpgrade(
+                $owner,
+                $organization->id,
+                $plan,
+                $planDetails,
+                $request->plan_cycle,
+                null,
+                'Cash'
+            );
+
+            if (!empty($result['error'])) {
+                return redirect()->back()->withInput()->with('error', $result['error']);
+            }
+
+            $logo = 'uploads/Notification/Light-theme-Logo.svg';
+
+            dispatch(new SendRoleNotification(
+                1,
+                $logo,
+                "Organization Plan Upgraded",
+                "{$organization->name} upgraded to {$plan->name} ({$request->plan_cycle} Months) by {$loggedUser->name}.",
+                ['web' => "admin/organizations/{$organization->id}/show"],
+
+                $loggedUser->id,
+                "Plan Upgraded for {$organization->name}",
+                "{$organization->name} has successfully upgraded to the {$plan->name} plan ({$request->plan_cycle} Months).",
+                ['web' => "admin/organizations/{$organization->id}/show"],
+            ));
+
+            return redirect()->route('organizations.show', $organization->id)->with('success', 'Organization plan upgraded successfully.');
+
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            Log::error('Error in plan Upgrade Admin: ' . $e->getMessage());
+            return redirect()->back()->withInput()->with('error', 'Something went wrong. Please try again later.');
+        }
+    }
+
+
     // Payment Received
     public function planPaymentReceived(Request $request)
     {
-        $user = $request->user() ?? abort(403, 'Unauthorized action.');
-
         $request->validate([
             'id' => 'required|exists:organizations,id',
         ]);
 
         try {
-            DB::beginTransaction();
+            $loggedUser = $request->user();
+            $subscriptionService = new SubscriptionService();
 
             $organization = Organization::findOrFail($request->id);
+            $owner = $organization->owner;
 
             $planSubscription = Subscription::where('organization_id', $organization->id)
                 ->where('source_name', 'plan')
-                ->where('subscription_status', 'Active')
+                ->latest('created_at')
                 ->firstOrFail();
 
             $billingCycle = BillingCycle::where('duration_months', $planSubscription->billing_cycle)
                 ->firstOrFail();
 
-            $plan = $this->getValidatedPlanWithBillingCycle($planSubscription->source_id, $billingCycle->id);
+            $plan = $subscriptionService->getValidatedPlanWithBillingCycle($planSubscription->source_id, $billingCycle->id);
             if (!$plan) {
                 throw new \Exception('The requested plan is currently unavailable due to administrative changes.');
             }
 
-            $planDetails = $this->getPlanDetailsWithTotalPrice($plan);
-            $services = $planDetails['services'];
+            $planDetails = $subscriptionService->getPlanDetailsWithTotalPrice($plan);
+            $subscriptionService = new SubscriptionService();
 
-            if ($organization->status !== 'Enable') {
-                $organization->update(['status' => 'Enable']);
+            $result = $subscriptionService->handlePlanRenewalOrUpgrade(
+                $owner,
+                $organization->id,
+                $plan,
+                $planDetails,
+                $planSubscription->billing_cycle,
+                null,
+                'Cash',
+                false,
+                true
+            );
+
+            if (!empty($result['error'])) {
+                throw new \Exception($result['error']);
             }
 
-            $transaction = Transaction::create([
-                'transaction_title' => "{$plan->name} ({$billingCycle->duration_months} Months)",
-                'transaction_category' => 'Renewal',
-                'buyer_id' => $organization->id,
-                'buyer_type' => 'organization',
-                'seller_type' => 'platform',
-                'payment_method' => 'Cash',
-                'price' => $planDetails['total_price'],
-                'currency' => $planDetails['currency'],
-                'status' => 'Completed',
-                'is_subscription' => true,
-                'billing_cycle' => $billingCycle->duration_months . ' Months',
-                'subscription_start_date' => now(),
-                'subscription_end_date' => now()->addMonths($billingCycle->duration_months),
-                'source_id' => $planSubscription->id,
-                'source_name' => 'subscription',
-            ]);
-
-            $planSubscription->update([
-                'ends_at' => $planSubscription->ends_at->copy()->addMonths($billingCycle->duration_months),
-                'price_at_subscription' => $planDetails['total_price'],
-                'currency_at_subscription' => $planDetails['currency'],
-            ]);
-
-            $whereServiceIds = array_column($services->toArray(), 'service_catalog_id');
-
-            $existingServices = PlanSubscriptionItem::where('organization_id', $organization->id)
-                ->whereIn('service_catalog_id', $whereServiceIds)
-                ->get()
-                ->keyBy('service_catalog_id');
-
-            $result = $this->updatePlanServices($services, $existingServices, $plan, $organization->id, null);
-
-            if ($result['error']) {
-                throw new \Exception($result['message']);
-            }
-
-            DB::commit();
+            $transaction = $result['transaction'];
 
             dispatch(new OrganizationOwnerNotifications(
                 $organization->id,
@@ -607,7 +611,7 @@ class OrganizationController extends Controller
                 "owner/finance/{$transaction->id}/show",
                 false,
 
-                $user->id,
+                $loggedUser->id,
                 'Payment Successfully Marked as Received',
                 "Payment marked as received for {$organization->name}. Subscription renewed for {$billingCycle->duration_months} months.",
                 "admin/organizations/{$organization->id}/show",
@@ -616,7 +620,6 @@ class OrganizationController extends Controller
             return redirect()->back()->with('success', 'Marked as Payment Received successfully.');
 
         } catch (ModelNotFoundException $e) {
-            DB::rollBack();
             $errorMessage = match (true) {
                 $e->getModel() === Organization::class => 'Organization not found',
                 $e->getModel() === Subscription::class => 'No active subscription found',
@@ -626,7 +629,6 @@ class OrganizationController extends Controller
             return redirect()->back()->with('error', $errorMessage);
 
         } catch (\Throwable $e) {
-            DB::rollBack();
             return redirect()->back()->with('error', 'Payment processing failed: ' . $e->getMessage());
         }
     }
@@ -645,21 +647,15 @@ class OrganizationController extends Controller
     public function ownerCancelPlanSubscription(Request $request)
     {
         $token = $request->attributes->get('token');
-
-        if (empty($token['organization_id'])) {
-            return redirect()->back()->with('error', "Can't access this page, unless you are an organization owner.");
-        }
-
         return $this->cancelPlanSubscription($request, $token['organization_id'], 'owner');
     }
 
     private function cancelPlanSubscription(Request $request, string $id, string $portal)
     {
-        $user = $request->user() ?? abort(403, 'Unauthorized action.');
+        DB::beginTransaction();
 
         try {
-            DB::beginTransaction();
-
+            $user = $request->user();
             $organization = Organization::findOrFail($id);
 
             $planSubscription = Subscription::where('organization_id', $organization->id)
@@ -708,7 +704,7 @@ class OrganizationController extends Controller
             };
             return redirect()->back()->with('error', $errorMessage);
 
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             DB::rollBack();
             Log::error('Plan subscription cancellation failed: ' . $e->getMessage());
             return redirect()->back()->with('error', 'Plan cancellation failed: ' . $e->getMessage());
@@ -729,20 +725,15 @@ class OrganizationController extends Controller
     public function ownerResumePlanSubscription(Request $request)
     {
         $token = $request->attributes->get('token');
-
-        if (empty($token['organization_id'])) {
-            return redirect()->back()->with('error', "Can't access this page, unless you are an organization owner.");
-        }
-
         return $this->resumePlanSubscription($request, $token['organization_id'], 'owner');
     }
 
     private function resumePlanSubscription(Request $request, string $id, string $portal)
     {
-        $user = $request->user() ?? abort(403, 'Unauthorized action.');
+        DB::beginTransaction();
 
         try {
-            DB::beginTransaction();
+            $user = $request->user();
 
             $organization = Organization::findOrFail($id);
 
@@ -806,6 +797,7 @@ class OrganizationController extends Controller
         try {
             $subscription = Subscription::where('organization_id', $organization_id)
                 ->where('source_name', 'plan')
+                ->latest('created_at')
                 ->with([
                     'source',
                     'planSubscriptionItems:id,subscription_id,service_catalog_id,quantity,used',
@@ -852,121 +844,13 @@ class OrganizationController extends Controller
                 'usage' => $overallUsedPercentage,
             ];
 
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             Log::error('Error occurred while fetching current plan for organization ID ' . $organization_id . ': ' . $e->getMessage());
             return [
                 'subscription' => null,
                 'usage' => 0,
             ];
         }
-    }
-
-    private function getValidatedPlanWithBillingCycle($planId, $billingCycleId)
-    {
-        return Plan::where('id', $planId)
-            ->whereNotIn('status', ['Deleted', 'Inactive'])
-            ->whereHas('services', function ($query) use ($billingCycleId) {
-                $query->whereHas('prices', function ($priceQuery) use ($billingCycleId) {
-                    $priceQuery->where('billing_cycle_id', $billingCycleId);
-                });
-            })
-            ->with(['services' => function ($query) use ($billingCycleId) {
-                $query->with('serviceCatalog')
-                    ->whereHas('prices', function ($q) use ($billingCycleId) {
-                        $q->where('billing_cycle_id', $billingCycleId);
-                    })
-                    ->with(['prices' => function ($priceQuery) use ($billingCycleId) {
-                        $priceQuery->where('billing_cycle_id', $billingCycleId);
-                    }]);
-            }])
-            ->first();
-    }
-
-    private function getPlanDetailsWithTotalPrice($plan)
-    {
-        $totalPrice = 0;
-        $services = $plan->services->map(function ($service) use (&$totalPrice) {
-            $price = $service->prices->first();
-            if ($price) $totalPrice += $price->price;
-
-            return [
-                'service_id' => $service->id,
-                'service_catalog_id' => $service->serviceCatalog->id,
-                'service_name' => $service->serviceCatalog->title ?? '',
-                'service_description' => $service->serviceCatalog->description ?? '',
-                'service_quantity' => $service->quantity,
-                'service_meta' => $service->meta,
-                'subscription_id' => $service->subscription_id,
-            ];
-        });
-
-        return [
-            'plan_name' => $plan->name,
-            'plan_description' => $plan->description,
-            'currency' => $plan->currency,
-            'total_price' => $totalPrice,
-            'services' => $services,
-        ];
-    }
-
-    private function updatePlanServices($services, $existingServices, $plan, $organization_id, $paymentIntent)
-    {
-        foreach ($services as $service) {
-            $existingService = $existingServices->get($service['service_catalog_id']);
-
-            if ($existingService) {
-                $serviceCatalog = PlanServiceCatalog::find($service['service_catalog_id']);
-                $parentId = $serviceCatalog?->parent_id;
-                $meta = $existingService->meta ?? [];
-
-                if ($parentId) {
-                    $parentPlanService = PlanService::where('service_catalog_id', $parentId)
-                        ->where('plan_id', $plan->id)
-                        ->select('quantity')
-                        ->first();
-
-                    if ($parentPlanService) {
-                        $meta['quantity'] = $parentPlanService->quantity;
-                    }
-                }
-
-                if ($service['service_quantity'] >= $existingService->used) {
-                    $existingService->update([
-                        'quantity' => $service['service_quantity'],
-                        'meta' => $meta,
-                    ]);
-                } else {
-                    $errorMessage = 'Selected Plan has fewer service items than the used service items.';
-
-                    if ($paymentIntent && isset($paymentIntent->charges->data[0]->id)) {
-                        try {
-                            $chargeId = $paymentIntent->charges->data[0]->id;
-                            Refund::create(['charge' => $chargeId]);
-                            $errorMessage .= ' Your payment has been refunded automatically. If you do not see the refund within a few minutes, please check with your bank or contact support.';
-                        } catch (\Exception $e) {
-                            Log::error('Stripe refund failed: ' . $e->getMessage());
-                            $errorMessage .= ' Refund attempt failed, please contact support.';
-                        }
-                    }
-
-                    DB::rollBack();
-                    return [
-                        'error' => true,
-                        'message' => $errorMessage
-                    ];
-                }
-            } else {
-                PlanSubscriptionItem::create([
-                    'organization_id' => $organization_id,
-                    'subscription_id' => $service['subscription_id'],
-                    'service_catalog_id' => $service['service_catalog_id'],
-                    'quantity' => $service['service_quantity'],
-                    'meta' => $service['service_meta'] ?? null,
-                ]);
-            }
-        }
-
-        return ['error' => false];
     }
 
 
@@ -980,7 +864,7 @@ class OrganizationController extends Controller
 
             return response()->json(['buildings' => $buildings]);
 
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             Log::error('Error fetching buildings: ' . $e->getMessage());
             return response()->json(['error' => 'Something went wrong. Please try again.'], 500);
         }
@@ -1001,4 +885,5 @@ class OrganizationController extends Controller
 
         return response()->json(['success' => true]);
     }
+
 }

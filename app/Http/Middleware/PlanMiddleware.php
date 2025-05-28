@@ -18,10 +18,6 @@ class PlanMiddleware
             $token = $request->attributes->get('token');
             $user = $request->user();
 
-            if ($user->is_super_admin === 1) {
-                return $next($request);
-            }
-
             if (!$token || empty($token['organization_id'])) {
                 return $this->handleResponse(
                     $request,

@@ -19,11 +19,6 @@ class DropdownTypeController extends Controller
         return view('Heights.Admin.Dropdown.index', compact('types', 'values', 'activeTab'));
     }
 
-    public function create()
-    {
-        return redirect()->back();
-    }
-
     public function store(Request $request)
     {
         $validatedData = $request->validate([
@@ -40,11 +35,6 @@ class DropdownTypeController extends Controller
             Log::error('Error in creating drop down type : ' . $e->getMessage());
             return redirect()->back()->with('error', 'An error occurred while creating the Dropdown Type.');
         }
-    }
-
-    public function show(string $id)
-    {
-        return redirect()->back();
     }
 
     public function edit(string $id)
@@ -79,8 +69,4 @@ class DropdownTypeController extends Controller
         }
     }
 
-    public function destroy(string $id)
-    {
-        return redirect()->back();
-    }
 }

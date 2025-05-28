@@ -7,6 +7,7 @@ use App\Models\BuildingLevel;
 use App\Models\BuildingUnit;
 use App\Models\ManagerBuilding;
 use App\Models\StaffMember;
+use App\Models\User;
 
 class OwnerFiltersService
 {
@@ -56,6 +57,19 @@ class OwnerFiltersService
                 'message' => 'Access denied to this building'
             ];
         }
+        elseif ($role_name === 'Staff') {
+            $staffRecord = StaffMember::where('user_id', $user->id)
+                ->where('building_id', $buildingId)
+                ->first();
+
+            if (!$staffRecord) {
+                return [
+                    'access' => false,
+                    'message' => 'Access denied to this building'
+                ];
+            }
+        }
+
 
         return [
             'access' => true,
@@ -66,6 +80,15 @@ class OwnerFiltersService
     public function buildings($buildingIds)
     {
         return Building::whereIn('id', $buildingIds)
+            ->orderBy('name', 'asc')
+            ->select('id', 'name')
+            ->get();
+    }
+
+    public function approvedBuildings($buildingIds)
+    {
+        return Building::whereIn('id', $buildingIds)
+            ->whereIn('status', ['Approved', 'For Re-Approval'])
             ->orderBy('name', 'asc')
             ->select('id', 'name')
             ->get();
@@ -84,6 +107,19 @@ class OwnerFiltersService
         return BuildingUnit::whereIn('building_id', $buildingIds)
             ->orderBy('unit_name', 'asc')
             ->select('id', 'unit_name')
+            ->get();
+    }
+
+    public function users($notIn = [])
+    {
+        $user = request()->user();
+
+        return User::where('id', '!=', $user->id)
+            ->orderBy('name', 'asc')
+            ->when($notIn, function ($query) use ($notIn) {
+                return $query->whereNotIn('id', $notIn);
+            })
+            ->select('id', 'name', 'email')
             ->get();
     }
 

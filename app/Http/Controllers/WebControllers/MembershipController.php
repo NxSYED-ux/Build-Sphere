@@ -24,21 +24,14 @@ class MembershipController extends Controller
 {
     public function index(Request $request)
     {
-        $user = $request->user() ?? abort(404, 'Page not found');
-
         try {
-            $memberships = collect();
+            $user = $request->user();
             $buildings = collect();
             $units = collect();
             $types = ['Restaurant', 'Gym', 'Other'];
             $statuses = ['Draft', 'Published', 'Non Renewable', 'Archived'];
 
             $token = $request->attributes->get('token');
-
-            if (empty($token['organization_id']) || empty($token['role_name'])) {
-                return view('Heights.Owner.Memberships.index', compact('memberships', 'buildings', 'units', 'types', 'statuses'));
-            }
-
             $organization_id = $token['organization_id'];
             $role_name = $token['role_name'];
 
@@ -51,6 +44,7 @@ class MembershipController extends Controller
             $buildingsQuery = Building::where('organization_id', $organization_id)
                 ->whereIn('status', ['Approved', 'For Re-Approval'])
                 ->where('isFreeze', 0)
+                ->orderBy('name', 'asc')
                 ->select('id', 'name');
 
             $unitsQuery = BuildingUnit::where('organization_id', $organization_id)
@@ -58,6 +52,7 @@ class MembershipController extends Controller
                 ->where('availability_status', 'Available')
                 ->where('sale_or_rent', 'Not Available')
                 ->whereNotIn('unit_type', ['Room', 'Shop', 'Apartment'])
+                ->orderBy('unit_name', 'asc')
                 ->select('id', 'unit_name');
 
             if ($role_name === 'Manager') {
@@ -131,26 +126,21 @@ class MembershipController extends Controller
 
     public function create(Request $request)
     {
-        $user = $request->user() ?? abort(404, 'Page not found');
-
         try {
+            $user = $request->user();
             $buildings = collect();
             $types = ['Restaurant', 'Gym', 'Other'];
             $statuses = ['Draft', 'Published', 'Non Renewable'];
             $currency = ['PKR'];
 
             $token = $request->attributes->get('token');
-
-            if (empty($token['organization_id']) || empty($token['role_name'])) {
-                return view('Heights.Owner.Memberships.create', compact('buildings', 'types', 'statuses', 'currency'));
-            }
-
             $organization_id = $token['organization_id'];
             $role_name = $token['role_name'];
 
             $buildingsQuery = Building::where('organization_id', $organization_id)
                 ->whereIn('status', ['Approved', 'For Re-Approval'])
                 ->where('isFreeze', 0)
+                ->orderBy('name', 'asc')
                 ->select('id', 'name');
 
             if ($role_name === 'Manager') {
@@ -184,8 +174,6 @@ class MembershipController extends Controller
 
     public function store(Request $request)
     {
-        $user = request()->user() ?? abort(404, 'Unauthorized Action');
-
         $request->validate([
             'unit_id' => 'required|exists:buildingunits,id',
             'building_id' => 'required|exists:buildings,id',
@@ -200,19 +188,17 @@ class MembershipController extends Controller
             'category' => 'required|in:Gym,Restaurant,Other',
             'duration_months' => 'required|integer|min:1',
             'scans_per_day' => 'required|integer|min:1',
-            'currency' => 'nullable|string|max:10',
+            'currency' => 'required|string|max:10',
             'price' => 'required|numeric|min:0',
-            'original_price' => 'nullable|numeric|min:0',
-            'status' => 'in:Draft,Published,Non Renewable,Archived',
+            'original_price' => 'required|numeric|min:0',
+            'status' => 'required|in:Draft,Published,Non Renewable,Archived',
+        ] , [
+            'name.unique' => 'The membership name has already been taken for this unit.',
         ]);
 
         try {
+            $user = $request->user();
             $token = $request->attributes->get('token');
-
-            if (empty($token['organization_id']) || empty($token['role_name'])) {
-                return redirect()->back()->withInput()->with('error', 'Only organization related personals can perform this action.');
-            }
-
             $organization_id = $token['organization_id'];
             $role_name = $token['role_name'];
 
@@ -283,23 +269,18 @@ class MembershipController extends Controller
 
     public function edit(Request $request, $id)
     {
-        $user = $request->user() ?? abort(404, 'Page not found');
-
         try {
+            $user = $request->user();
             $types = ['Restaurant', 'Gym', 'Other'];
             $currency = ['PKR'];
             $token = $request->attributes->get('token');
-
-            if (empty($token['organization_id']) || empty($token['role_name'])) {
-                return redirect()->back()->with('error', 'Only organization-related personnel can perform this action.');
-            }
-
             $organization_id = $token['organization_id'];
             $role_name = $token['role_name'];
 
             $buildingsQuery = Building::where('organization_id', $organization_id)
                 ->whereIn('status', ['Approved', 'For Re-Approval'])
                 ->where('isFreeze', 0)
+                ->orderBy('name', 'asc')
                 ->select('id', 'name');
 
             $membership = Membership::where('id', $id)
@@ -349,8 +330,6 @@ class MembershipController extends Controller
 
     public function update(Request $request)
     {
-        $user = $request->user() ?? abort(404, 'Unauthorized Action');
-
         $request->validate([
             'id' => 'required|exists:memberships,id',
             'unit_id' => 'required|exists:buildingunits,id',
@@ -370,18 +349,15 @@ class MembershipController extends Controller
             'price' => 'required|numeric|min:0',
             'original_price' => 'nullable|numeric|min:0',
             'status' => 'in:Draft,Published,Non Renewable,Archived',
+        ] , [
+            'name.unique' => 'The membership name has already been taken for this unit.',
         ]);
 
+        DB::beginTransaction();
+
         try {
-            DB::beginTransaction();
-
+            $user = $request->user();
             $token = $request->attributes->get('token');
-
-            if (empty($token['organization_id']) || empty($token['role_name'])) {
-                DB::rollBack();
-                return redirect()->back()->withInput()->with('error', 'Only organization-related personnel can perform this action.');
-            }
-
             $organization_id = $token['organization_id'];
             $role_name = $token['role_name'];
 
@@ -481,15 +457,9 @@ class MembershipController extends Controller
 
     public function show(Request $request, $id)
     {
-        $user = $request->user() ?? abort(404, 'Unauthorized');
-
         try {
+            $user = $request->user();
             $token = $request->attributes->get('token');
-
-            if (empty($token['organization_id']) || empty($token['role_name'])) {
-                return redirect()->back()->with('error', 'Only organization-related personnel can perform this action.');
-            }
-
             $organization_id = $token['organization_id'];
             $role_name = $token['role_name'];
 
@@ -534,15 +504,9 @@ class MembershipController extends Controller
 
     public function assignMembershipView(Request $request, $id)
     {
-        $user = $request->user() ?? abort(404, 'Unauthorized');
-
         try {
+            $user = $request->user();
             $token = $request->attributes->get('token');
-
-            if (empty($token['organization_id']) || empty($token['role_name'])) {
-                return redirect()->back()->with('error', 'Only organization-related personnel can perform this action.');
-            }
-
             $organization_id = $token['organization_id'];
             $role_name = $token['role_name'];
 
@@ -579,6 +543,7 @@ class MembershipController extends Controller
             $availableUsers = User::where('id', '!=', $user->id)
                 ->whereNotIn('id', $assignedUserIds)
                 ->select('id', 'name', 'email')
+                ->orderBy('name', 'asc')
                 ->get();
 
             return view('Heights.Owner.Memberships.assign', compact('membership', 'availableUsers'));
@@ -592,8 +557,6 @@ class MembershipController extends Controller
 
     public function assignMembership(Request $request)
     {
-        $loggedUser = $request->user() ?? abort(404, 'Unauthorized');
-
         $request->validate([
             'membership_id' => 'required|exists:memberships,id',
             'user_id' => 'required|exists:users,id',
@@ -602,13 +565,8 @@ class MembershipController extends Controller
         try {
             DB::beginTransaction();
 
+            $loggedUser = $request->user();
             $token = $request->attributes->get('token');
-
-            if (empty($token['organization_id']) || empty($token['role_name'])) {
-                DB::rollBack();
-                return redirect()->back()->with('error', 'Only organization-related personnel can perform this action.');
-            }
-
             $organization_id = $token['organization_id'];
             $role_name = $token['role_name'];
 
@@ -684,12 +642,6 @@ class MembershipController extends Controller
 
         try {
             $token = $request->attributes->get('token');
-
-            if (empty($token['organization_id']) || empty($token['role_name'])) {
-                DB::rollBack();
-                return response()->json(['error' => 'Only organization-related personnel can perform this action.'], 403);
-            }
-
             $organization_id = $token['organization_id'];
             $requestedValue = (bool) $request->value;
 

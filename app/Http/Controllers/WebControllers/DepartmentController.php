@@ -30,7 +30,7 @@ class DepartmentController extends Controller
 
             return view('Heights.Owner.Departments.index', compact('departments'));
 
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             Log::error('Department Index Error: ' . $e->getMessage());
             return back()->with('error', 'Something went wrong! Please try again.');
         }
@@ -38,11 +38,8 @@ class DepartmentController extends Controller
 
     public function store(Request $request)
     {
-        $user = $request->user() ?? abort(403, 'Unauthorized action.');
+        $user = $request->user();
         $token = $request->attributes->get('token');
-        if (empty($token['organization_id'])) {
-            return redirect()->back()->with('error', "You can't perform this action.");
-        }
         $organization_id = $token['organization_id'];
 
         $request->validate([
@@ -74,7 +71,7 @@ class DepartmentController extends Controller
             ));
 
             return redirect()->back()->with('success', 'Department created successfully.');
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             Log::error('Error in Department store: ' . $e->getMessage());
             return redirect()->back()->with('error', 'Something went wrong! Please try again.');
         }
@@ -83,11 +80,6 @@ class DepartmentController extends Controller
     public function show(Request $request, Department $department)
     {
         $token = $request->attributes->get('token');
-
-        if (empty($token['organization_id'])) {
-            return redirect()->back()->with('error', "Access denied. Organization information is missing.");
-        }
-
         $organization_id = $token['organization_id'];
 
         if ($department->organization_id != $organization_id) {
@@ -96,7 +88,7 @@ class DepartmentController extends Controller
 
         $staffMembers = $department->staffMembers()
             ->with('user')
-            ->paginate(10);
+            ->paginate(12);
 
         $staffCount = $department->staffMembers()->count();
 
@@ -106,11 +98,6 @@ class DepartmentController extends Controller
     public function edit(Request $request, Department $department)
     {
         $token = $request->attributes->get('token');
-
-        if (empty($token['organization_id'])) {
-            return response()->json(['error' => "Access denied. Organization information is missing."], 403);
-        }
-
         $organization_id = $token['organization_id'];
 
         if ($department->organization_id != $organization_id) {
@@ -121,7 +108,7 @@ class DepartmentController extends Controller
             return response()->json([
                 'department' => $department,
             ]);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             Log::error('Error in Department Edit: ' . $e->getMessage());
             return response()->json(['error' => 'An unexpected error occurred while fetching the department data.'], 500);
         }
@@ -129,12 +116,8 @@ class DepartmentController extends Controller
 
     public function update(Request $request)
     {
-        $user = $request->user() ?? abort(403, 'Unauthorized');
+        $user = $request->user();
         $token = $request->attributes->get('token');
-
-        if (empty($token['organization_id'])) {
-            return redirect()->back()->with('error', "Access denied. Organization information is missing.");
-        }
         $organization_id = $token['organization_id'];
 
         $request->validate([
@@ -183,7 +166,7 @@ class DepartmentController extends Controller
             ));
 
             return redirect()->back()->with('success', 'Department updated successfully.');
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             DB::rollBack();
             Log::error('Error updating department: ' . $e->getMessage());
             return redirect()->back()->with('error', 'Something went wrong. Please try again later.');
@@ -192,12 +175,8 @@ class DepartmentController extends Controller
 
     public function destroy(Request $request)
     {
-        $user = $request->user() ?? abort(403, 'Unauthorized');
+        $user = $request->user();
         $token = $request->attributes->get('token');
-
-        if (empty($token['organization_id'])) {
-            return redirect()->back()->with('error', "Access denied. Organization information is missing.");
-        }
         $organization_id = $token['organization_id'];
 
         $request->validate([
@@ -234,4 +213,5 @@ class DepartmentController extends Controller
             return redirect()->back()->with('error', 'Something went wrong. Please try again later.');
         }
     }
+
 }

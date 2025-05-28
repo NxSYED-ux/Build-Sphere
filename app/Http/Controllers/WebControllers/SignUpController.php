@@ -22,7 +22,8 @@ use Stripe\Customer;
 
 class SignUpController extends Controller
 {
-    public function index(Request $request){
+    public function index(Request $request)
+    {
         $package = $request->query('package');
         $cycle = $request->query('cycle');
 
@@ -64,7 +65,8 @@ class SignUpController extends Controller
                 'success' => false,
                 'message' => $e->getMessage(),
             ]);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
+            Log::error('Error in sending OTP' . $e->getMessage());
             return response()->json(['message' => 'Failed to send OTP', 'details' => $e->getMessage()], 500);
         }
     }
@@ -92,12 +94,14 @@ class SignUpController extends Controller
             $record->update(['is_used' => 1]);
 
             return ['status' => true, 'message' => 'OTP verified successfully.'];
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
+            Log::error('Error verifying OTP: ' . $e->getMessage());
             return ['status' => false, 'message' => 'Something went wrong.', 'error' => $e->getMessage()];
         }
     }
 
-    public function register(Request $request){
+    public function register(Request $request)
+    {
         $request->validate([
             'otp' => ['required', 'numeric'],
 
@@ -214,7 +218,7 @@ class SignUpController extends Controller
                 'cycle' => $selectedCycle,
             ]);
 
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             DB::rollBack();
             Log::error('Failed to register: ' . $e->getMessage());
             return redirect()->back()->withInput()->with('error', 'Failed to register. Please try again.');

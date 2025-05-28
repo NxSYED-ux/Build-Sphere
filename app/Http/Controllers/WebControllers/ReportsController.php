@@ -13,13 +13,8 @@ use Illuminate\Support\Facades\Log;
 class ReportsController extends Controller
 {
     public function getOccupancyStats(Request $request){
-        $user = $request->user() ?? abort(403, 'Unauthorized action.');
+        $user = $request->user();
         $token = $request->attributes->get('token');
-
-        if (!$token || empty($token['organization_id']) || empty($token['role_name'])) {
-            return response()->json(['error' => 'Unauthorized'], 403);
-        }
-
         $organization_id = $token['organization_id'];
         $role_name = $token['role_name'];
 
@@ -28,13 +23,8 @@ class ReportsController extends Controller
 
     public function getOrgMonthlyFinancialStats(Request $request)
     {
-        $user = $request->user() ?? abort(403, 'Unauthorized action.');
+        $user = $request->user();
         $token = $request->attributes->get('token');
-
-        if (!$token || empty($token['organization_id']) || empty($token['role_name'])) {
-            return response()->json(['error' => 'Unauthorized'], 403);
-        }
-
         $organization_id = $token['organization_id'];
         $role_name = $token['role_name'];
 
@@ -46,11 +36,6 @@ class ReportsController extends Controller
     public function getManagerBuildingsMonthlyStats(Request $request, string $id)
     {
         $token = $request->attributes->get('token');
-
-        if (!$token || empty($token['organization_id'])) {
-            return response()->json(['error' => 'Unauthorized'], 403);
-        }
-
         $organization_id = $token['organization_id'];
 
         return $this->orgMonthlyStats($request, $organization_id, 'Manager', $id, 'staff_id');
@@ -59,11 +44,6 @@ class ReportsController extends Controller
     public function getManagerBuildingsOccupancyStats(Request $request, string $id)
     {
         $token = $request->attributes->get('token');
-
-        if (!$token || empty($token['organization_id'])) {
-            return response()->json(['error' => 'Unauthorized'], 403);
-        }
-
         $organization_id = $token['organization_id'];
 
         return $this->orgOccupancyStats($request, $organization_id, 'Manager', $id, 'staff_id');
@@ -104,7 +84,7 @@ class ReportsController extends Controller
                 'soldUnits' => $units['Sold'] ?? 0,
             ], 200);
 
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             Log::error('Error in occupancy chart: ' . $e->getMessage());
             return response()->json(['error' => 'Something went wrong. Please try again later.'], 500);
         }
@@ -193,7 +173,7 @@ class ReportsController extends Controller
 
             return response()->json($chartData);
 
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             Log::error('Financial chart data failed (Owner): ' . $e->getMessage());
             return response()->json(['error' => 'Failed to load chart data'], 500);
         }

@@ -13,7 +13,7 @@ class landingController extends Controller
     {
         try {
             $planCycles = BillingCycle::pluck('duration_months');
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             Log::error('Error fetching billing cycles: ' . $e->getMessage());
             $planCycles = collect();
         }

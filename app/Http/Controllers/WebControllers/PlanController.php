@@ -9,6 +9,7 @@ use App\Models\PlanService;
 use App\Models\PlanServiceCatalog;
 use App\Models\PlanServicePrice;
 use App\Models\Subscription;
+use App\Services\SubscriptionService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -83,7 +84,7 @@ class PlanController extends Controller
                 'selected_cycle' => $billing_cycle
             ]);
 
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             Log::error('Error fetching plans: ' . $e->getMessage());
             return redirect()->back()->with('error', 'Something went wrong while loading plans, Please try again later.');
         }
@@ -109,7 +110,7 @@ class PlanController extends Controller
                 'status' => ['Active', 'Inactive', 'Custom'],
             ]);
 
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             Log::error('Error loading plan creation form: ' . $e->getMessage());
             return redirect()->back()->with('error', 'Failed to load plan creation form. Please try again later.');
         }
@@ -136,9 +137,9 @@ class PlanController extends Controller
             'services.*.prices.*' => 'required|numeric|min:0',
         ]);
 
-        try {
-            DB::beginTransaction();
+        DB::beginTransaction();
 
+        try {
             $plan = Plan::create([
                 'name' => $validated['plan_name'],
                 'description' => $validated['plan_description'],
@@ -178,7 +179,7 @@ class PlanController extends Controller
 
             return redirect()->route('plans.index')->with('success', 'Plan created successfully');
 
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             DB::rollBack();
             Log::error('Error creating plan: ' . $e->getMessage());
             return back()->with('error', 'Failed to create plan. Please try again.');
@@ -189,6 +190,8 @@ class PlanController extends Controller
     public function show(Request $request, $id)
     {
         try {
+            $subscriptionService = new SubscriptionService();
+
             $selectedPlanCycle = $request->input('planCycle');
             $billing_cycles = BillingCycle::get();
             $billing_cycle = $billing_cycles->where('duration_months', $selectedPlanCycle)->first() ?? $billing_cycles->first();
@@ -197,67 +200,20 @@ class PlanController extends Controller
                 return redirect()->back()->with('error', 'Billing cycle not found.');
             }
 
-            $plan = Plan::where('id', $id)
-                ->where('status', '!=', 'Deleted')
-                ->whereHas('services', function ($query) use ($billing_cycle) {
-                    $query->with('serviceCatalog')
-                        ->whereHas('prices', function ($priceQuery) use ($billing_cycle) {
-                            $priceQuery->where('billing_cycle_id', $billing_cycle->id);
-                        });
-                })
-                ->with(['services' => function ($query) use ($billing_cycle) {
-                    $query->with('serviceCatalog')
-                        ->whereHas('prices', function ($q) use ($billing_cycle) {
-                            $q->where('billing_cycle_id', $billing_cycle->id);
-                        })
-                        ->with(['prices' => function ($priceQuery) use ($billing_cycle) {
-                            $priceQuery->where('billing_cycle_id', $billing_cycle->id);
-                        }]);
-                }])
-                ->first();
+            $plan = $subscriptionService->getValidatedPlanWithBillingCycle($id, $billing_cycle->id, ['Deleted']);
 
             if (!$plan) {
                 return redirect()->back()->with('error', 'Plan not found or does not match the billing cycle.');
             }
 
-            $totalPrice = 0;
-            $cycle = $billing_cycle->duration_months;
-
-            $services = $plan->services->map(function ($service) use (&$totalPrice, $cycle) {
-                $price = $service->prices->first();
-
-                if ($price) {
-                    $totalPrice += $price->price;
-                }
-
-                return [
-                    'service_id' => $service->id,
-                    'service_name' => $service->serviceCatalog->title,
-                    'service_description' => $service->serviceCatalog->description,
-                    'service_quantity' => $service->quantity,
-                    'price' => $price ? [
-                        'price' => $price->price,
-                        'billing_cycle' => $cycle,
-                    ] : null,
-                ];
-            });
-
-            $planDetails = [
-                'plan_id' => $plan->id,
-                'plan_name' => $plan->name,
-                'plan_description' => $plan->description,
-                'currency' => $plan->currency,
-                'total_price' => $totalPrice,
-                'services' => $services,
-            ];
+            $planDetails = $subscriptionService->getPlanDetailsWithTotalPrice($plan);
 
             $subscriptions = Subscription::where('source_name', 'plan')
                 ->where('source_id', $id)
-                ->where('billing_cycle', $cycle)
-                ->with('organization', 'organization.pictures')
+                ->where('billing_cycle', $billing_cycle->duration_months)
+                ->with('organization')
+                ->orderBy('created_at', 'desc')
                 ->get();
-
-            Log::info($subscriptions);
 
             return view('Heights.Admin.Plans.show', [
                 'planDetails' => $planDetails,
@@ -266,7 +222,7 @@ class PlanController extends Controller
                 'selected_cycle' => $billing_cycle
             ]);
 
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             Log::error('Error loading plan details: ' . $e->getMessage());
             return redirect()->back()->with('error', 'Failed to load plan details. Please try again later.');
         }
@@ -338,7 +294,7 @@ class PlanController extends Controller
                 'status' => ['Active', 'Inactive', 'Custom'],
             ]);
 
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             Log::error('Error loading plan edit form: ' . $e->getMessage());
             return redirect()->back()->with('error', 'Failed to load plan editing form. Please try again later.');
         }
@@ -445,7 +401,7 @@ class PlanController extends Controller
             DB::commit();
             return redirect()->route('plans.index')->with('success', 'Plan updated successfully');
 
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             DB::rollBack();
             Log::error('Error updating plan: ' . $e->getMessage());
             return back()->with('error', 'Failed to update plan. Please try again.');
@@ -490,15 +446,11 @@ class PlanController extends Controller
     public function organizationPlans(string $planCycle, Request $request)
     {
         $token = $request->attributes->get('token');
-
-        if (empty($token['organization_id'])) {
-            return response()->json(['error' => "Can't access this page, unless you are an organization owner."]);
-        }
-
         $organization_id = $token['organization_id'];
 
         $subscription = Subscription::where('organization_id', $organization_id)
             ->where('source_name', 'plan')
+            ->latest('created_at')
             ->first();
 
         $customPlanId = $subscription?->source_id;
@@ -573,7 +525,7 @@ class PlanController extends Controller
             });
 
             return response()->json(['plans' => $organizedPlans]);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             Log::error('Error fetching plans: ' . $e->getMessage());
 
             return response()->json([
@@ -582,4 +534,5 @@ class PlanController extends Controller
             ], 500);
         }
     }
+
 }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\WebControllers;
 
+use App\Events\UserPermissionUpdated;
 use App\Http\Controllers\Controller;
 use App\Models\Address;
 use App\Models\Building;
@@ -40,17 +41,13 @@ class hrController extends Controller
 
     private function index(Request $request, int $roleId)
     {
-        $user = $request->user() ?? abort(403, 'Unauthorized action.');
+        $user = $request->user();
 
         try {
             $token = $request->attributes->get('token');
-
-            if (empty($token['organization_id']) || empty($token['role_name'])) {
-                return redirect()->back()->with('error', 'This info is for Organization related personals');
-            }
-
             $organization_id = $token['organization_id'];
             $role_name = $token['role_name'];
+
             $search = $request->input('search');
             $selectedDepartment = $request->input('DepartmentId');
             $selectedBuilding = $request->input('BuildingId');
@@ -58,7 +55,8 @@ class hrController extends Controller
             $onlyBuildingIds = [];
             if ($role_name === 'Manager' && $roleId !== 3) {
                 $onlyBuildingIds = ManagerBuilding::where('user_id', $user->id)->pluck('building_id')->toArray();
-            } elseif ($role_name === 'Staff' && $roleId !== 3) {
+            }
+            elseif ($role_name === 'Staff' && $roleId !== 3) {
                 $staffRecord = StaffMember::where('user_id', $user->id)->first();
                 $onlyBuildingIds = $staffRecord ? [$staffRecord->building_id] : [];
             }
@@ -87,11 +85,13 @@ class hrController extends Controller
             if ($roleId === 4) {
                 $departments = Department::where('organization_id', $organization_id)
                     ->select('id', 'name')
+                    ->orderBy('name', 'asc')
                     ->get();
 
                 $buildings = Building::where('organization_id', $organization_id)
                     ->when(!empty($onlyBuildingIds), fn($q) => $q->whereIn('id', $onlyBuildingIds))
                     ->select('id', 'name')
+                    ->orderBy('name', 'asc')
                     ->get();
 
                 return view('Heights.Owner.HR.Staff.index', compact('staffMembers', 'buildings', 'departments'));
@@ -110,14 +110,9 @@ class hrController extends Controller
     // Create Functions & Store Functions
     public function staffCreate(Request $request)
     {
-        $user = $request->user() ?? abort(403, 'Unauthorized action.');
         try {
+            $user = $request->user();
             $token = $request->attributes->get('token');
-
-            if (empty($token['organization_id']) || empty($token['role_name'])) {
-                return redirect()->back()->with('error', 'This info is for Organization related personals');
-            }
-
             $organization_id = $token['organization_id'];
             $role_name = $token['role_name'];
 
@@ -137,17 +132,19 @@ class hrController extends Controller
             }
 
             $departments = Department::where('organization_id', $organization_id)
+                ->orderBy('name', 'asc')
                 ->pluck('name', 'id');
 
             $buildings = Building::where('organization_id', $organization_id)
                 ->when(!empty($onlyBuildingIds), fn($q) => $q->whereIn('id', $onlyBuildingIds))
+                ->orderBy('name', 'asc')
                 ->pluck('name', 'id');
 
             $permissions = RolePermission::where('role_id', 4)->get();
 
             return view('Heights.Owner.HR.Staff.create', compact('departments', 'buildings', 'permissions'));
 
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             Log::error('Error in staffCreate: ' . $e->getMessage());
 
             return redirect()->back()->with('error', 'Something went wrong while loading the staff creation form.');
@@ -156,13 +153,8 @@ class hrController extends Controller
 
     public function staffStore(Request $request)
     {
-        $loggedUser = $request->user() ?? abort(403, 'Unauthorized action.');
+        $loggedUser = $request->user();
         $token = $request->attributes->get('token');
-
-        if (empty($token['organization_id']) || empty($token['role_name'])) {
-            return redirect()->back()->with('error', 'This info is for Organization related personals');
-        }
-
         $organization_id = $token['organization_id'];
         $role_name = $token['role_name'];
 
@@ -271,7 +263,7 @@ class hrController extends Controller
             ));
 
             return redirect()->route('owner.staff.index')->with('success', 'Staff created successfully.');
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             DB::rollBack();
             Log::error('Error in Staff Create: ' . $e->getMessage());
             return redirect()->back()->withInput()->with('error', 'Something went wrong. Please try again.');
@@ -280,14 +272,9 @@ class hrController extends Controller
 
     public function managerCreate(Request $request)
     {
-        $user = $request->user() ?? abort(403, 'Unauthorized action.');
         try {
+            $user = $request->user();
             $token = $request->attributes->get('token');
-
-            if (empty($token['organization_id']) || empty($token['role_name'])) {
-                return redirect()->back()->with('error', 'This info is for Organization related personals');
-            }
-
             $organization_id = $token['organization_id'];
 
             $result = $this->checkServiceUsageLimit($organization_id, 2, 'Managers', $user->role_id);
@@ -298,13 +285,14 @@ class hrController extends Controller
 
             $buildings = Building::where('organization_id', $organization_id)
                 ->select('id', 'name')
+                ->orderBy('name', 'asc')
                 ->get();
 
             $permissions = RolePermission::where('role_id', 3)->get();
 
             return view('Heights.Owner.HR.Manager.create', compact('buildings', 'permissions'));
 
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             Log::error('Error in managerCreate: ' . $e->getMessage());
 
             return redirect()->back()->with('error', 'Something went wrong while loading the manager creation form.');
@@ -313,13 +301,8 @@ class hrController extends Controller
 
     public function managerStore(Request $request)
     {
-        $loggedUser = $request->user() ?? abort(403, 'Unauthorized action.');
+        $loggedUser = $request->user();
         $token = $request->attributes->get('token');
-
-        if (empty($token['organization_id'])) {
-            return redirect()->back()->with('error', 'This action is only for Organization owners.');
-        }
-
         $organization_id = $token['organization_id'];
 
         $request->validate([
@@ -416,7 +399,7 @@ class hrController extends Controller
             ));
 
             return redirect()->route('owner.managers.index')->with('success', 'Manager created successfully.');
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             DB::rollBack();
             Log::error('Error in Manager create: ' . $e->getMessage());
             return redirect()->back()->withInput()->with('error', 'Something went wrong. Please try again.');
@@ -428,14 +411,9 @@ class hrController extends Controller
     // Show Functions
     public function staffShow(Request $request, string $id)
     {
-        $user = $request->user() ?? abort(403, 'Unauthorized action.');
         try {
+            $user = $request->user();
             $token = $request->attributes->get('token');
-
-            if (empty($token['organization_id']) || empty($token['role_name'])) {
-                return redirect()->back()->with('error', 'Access denied: This section is restricted to organization personnel only.');
-            }
-
             $organization_id = $token['organization_id'];
             $role_name = $token['role_name'];
 
@@ -490,10 +468,11 @@ class hrController extends Controller
                 ->where('status', 'Approved')
                 ->when(!empty($onlyBuildingIds), fn($q) => $q->whereIn('building_id', $onlyBuildingIds))
                 ->select('id', 'unit_name')
+                ->orderBy('unit_name', 'asc')
                 ->get();
 
             return view('Heights.Owner.HR.Staff.show', compact('staffInfo', 'queries', 'units'));
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             Log::error('Error in staffShow: ' . $e->getMessage());
             return redirect()->back()->with('error', 'Something went wrong. Please try again later.');
         }
@@ -503,11 +482,6 @@ class hrController extends Controller
     {
         try {
             $token = $request->attributes->get('token');
-
-            if (empty($token['organization_id'])) {
-                return redirect()->back()->with('error', 'Access denied: This section is restricted to organization owner only.');
-            }
-
             $organization_id = $token['organization_id'];
 
             $staffInfo = StaffMember::with('user')->find($id);
@@ -516,30 +490,28 @@ class hrController extends Controller
                 return redirect()->back()->with('error', 'Invalid manager id');
             }
 
-            $managerBuildings =  ManagerBuilding::where('staff_id', $id)->with('building')->get();
+            $managerBuildings =  ManagerBuilding::where('staff_id', $id)
+                ->with('building')
+                ->get();
 
             $buildingIds = $managerBuildings->pluck('building_id')->toArray();
             $transactions = $this->managerBuildingsTransactions($organization_id, $buildingIds);
 
             return view('Heights.Owner.HR.Manager.show', compact('staffInfo', 'managerBuildings', 'transactions'));
-        }catch (\Exception $e) {
+
+        } catch (\Throwable $e) {
             Log::error('Error in managerShow: ' . $e->getMessage());
             return redirect()->back()->with('error', 'Something went wrong. Please try again later.');
         }
     }
 
 
-
     // Edit Functions & Update Functions
-    public function staffEdit(Request $request, string $id){
-        $user = $request->user() ?? abort(403, 'Unauthorized action.');
+    public function staffEdit(Request $request, string $id)
+    {
         try {
+            $user = $request->user();
             $token = $request->attributes->get('token');
-
-            if (empty($token['organization_id']) || empty($token['role_name'])) {
-                return redirect()->back()->with('error', 'This info is for Organization related personals');
-            }
-
             $organization_id = $token['organization_id'];
             $role_name = $token['role_name'];
 
@@ -566,10 +538,12 @@ class hrController extends Controller
             }
 
             $departments = Department::where('organization_id', $organization_id)
+                ->orderBy('name', 'asc')
                 ->pluck('name', 'id');
 
             $buildings = Building::where('organization_id', $organization_id)
                 ->when(!empty($onlyBuildingIds), fn($q) => $q->whereIn('id', $onlyBuildingIds))
+                ->orderBy('name', 'asc')
                 ->pluck('name', 'id');
 
 
@@ -589,7 +563,7 @@ class hrController extends Controller
 
             return view('Heights.Owner.HR.Staff.edit', compact('staffInfo', 'departments', 'buildings', 'permissions'));
 
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             Log::error('Error in staff Edit: ' . $e->getMessage());
 
             return redirect()->back()->with('error', 'Something went wrong. Please try again later.');
@@ -598,13 +572,8 @@ class hrController extends Controller
 
     public function staffUpdate(Request $request)
     {
-        $loggedUser = $request->user() ?? abort(403, 'Unauthorized action.');
+        $loggedUser = $request->user();
         $token = $request->attributes->get('token');
-
-        if (empty($token['organization_id']) || empty($token['role_name'])) {
-            return redirect()->back()->withInput()->with('error', 'This action is related to organization personals only.');
-        }
-
         $organization_id = $token['organization_id'];
         $role_name = $token['role_name'];
 
@@ -634,13 +603,13 @@ class hrController extends Controller
                 ->where('user_id', $loggedUser->id)
                 ->exists()
         ) {
-            return redirect()->back()->withInput()->with('error', 'You do not have access to add staff members of the selected building.');
+            return redirect()->back()->withInput()->with('error', 'You do not have access to update staff members of the selected building.');
         }
         elseif ($role_name === 'Staff'){
             $staffRecord = StaffMember::where('user_id', $loggedUser->id)->first();
 
             if (!$staffRecord || $staffRecord->building_id != $request->building_id) {
-                return redirect()->back()->withInput()->with('error', 'You do not have access to add staff members of the selected building.');
+                return redirect()->back()->withInput()->with('error', 'You do not have access to update staff members of the selected building.');
             }
         }
 
@@ -702,8 +671,10 @@ class hrController extends Controller
 
             DB::commit();
 
+            event(new UserPermissionUpdated($user->id));
+
             return redirect()->route('owner.staff.index')->with('success', 'Staff updated successfully.');
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             DB::rollBack();
             Log::error('Error in staff update: ' . $e->getMessage());
             return redirect()->back()->withInput()->with('error', 'Something went wrong. Please try again.');
@@ -714,13 +685,7 @@ class hrController extends Controller
     {
         try {
             $token = $request->attributes->get('token');
-
-            if (empty($token['organization_id']) || empty($token['role_name'])) {
-                return redirect()->back()->with('error', 'This info is for Organization related personals');
-            }
-
             $organization_id = $token['organization_id'];
-
             $staffInfo = StaffMember::with('user')->find($id);
 
             if (!$staffInfo || $staffInfo->organization_id != $organization_id) {
@@ -729,6 +694,7 @@ class hrController extends Controller
 
             $buildings = Building::where('organization_id', $organization_id)
                 ->select('id', 'name')
+                ->orderBy('name', 'asc')
                 ->get();
 
             $managerBuildings = ManagerBuilding::where('staff_id', $id)
@@ -751,7 +717,7 @@ class hrController extends Controller
 
             return view('Heights.Owner.HR.Manager.edit', compact('staffInfo', 'buildings', 'managerBuildings', 'permissions'));
 
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             Log::error('Error in manager edit: ' . $e->getMessage());
 
             return redirect()->back()->with('error', 'Something went wrong. Please try again later.');
@@ -761,11 +727,6 @@ class hrController extends Controller
     public function managerUpdate(Request $request)
     {
         $token = $request->attributes->get('token');
-
-        if (empty($token['organization_id'])) {
-            return redirect()->back()->with('error', 'This action is only for Organization owners.');
-        }
-
         $organization_id = $token['organization_id'];
 
         $request->validate([
@@ -849,8 +810,10 @@ class hrController extends Controller
 
             DB::commit();
 
+            event(new UserPermissionUpdated($user->id));
+
             return redirect()->route('owner.managers.index')->with('success', 'Manager updated successfully.');
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             DB::rollBack();
             Log::error('Error in Manager update: ' . $e->getMessage());
             return redirect()->back()->withInput()->with('error', 'Something went wrong. Please try again.');
@@ -863,15 +826,8 @@ class hrController extends Controller
     public function promotionGet(string $id, Request $request)
     {
         try {
-            $user = $request->user() ?? abort(403, 'Unauthorized action.');
+            $user = $request->user();
             $token = $request->attributes->get('token');
-
-            if (empty($token['organization_id'])) {
-                return response()->json([
-                    'error' => 'This action is only for Organization owners.'
-                ], 403);
-            }
-
             $organization_id = $token['organization_id'];
 
             $staffInfo = StaffMember::where('id', $id)->with('user')->first();
@@ -891,6 +847,7 @@ class hrController extends Controller
 
             $buildings = Building::where('organization_id', $organization_id)
                 ->select('id', 'name')
+                ->orderBy('name', 'asc')
                 ->get();
 
             $permissions = RolePermission::where('role_id', 3)->with('permission')->get();
@@ -900,7 +857,7 @@ class hrController extends Controller
                 'buildings' => $buildings,
                 'permissions' => $permissions
             ]);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             Log::error('Error in promotionGet: ' . $e->getMessage());
             return response()->json([
                 'error' => 'Something went wrong. Please try again later.'
@@ -910,15 +867,8 @@ class hrController extends Controller
 
     public function promotion(Request $request)
     {
-        $loggedUser = $request->user() ?? abort(403, 'Unauthorized action.');
+        $loggedUser = $request->user();
         $token = $request->attributes->get('token');
-
-        if (empty($token['organization_id'])) {
-            return response()->json([
-                'error' => 'This action is only for Organization owners.'
-            ], 403);
-        }
-
         $organization_id = $token['organization_id'];
 
         $request->validate([
@@ -1006,6 +956,8 @@ class hrController extends Controller
 
             DB::commit();
 
+            event(new UserPermissionUpdated($user->id));
+
             $loggedUser->notify(new DatabaseOnlyNotification(
                 $user->picture ?? 'uploads/Notification/Light-theme-Logo.svg',
                 'Staff Promoted Successfully',
@@ -1023,7 +975,7 @@ class hrController extends Controller
             return response()->json([
                 'message' => 'Staff promoted successfully.'
             ]);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             DB::rollBack();
             Log::error('Staff promotion failed: ' . $e->getMessage());
             return response()->json([
@@ -1038,15 +990,8 @@ class hrController extends Controller
     public function demotionGet(string $id, Request $request)
     {
         try {
-            $user = $request->user() ?? abort(403, 'Unauthorized action.');
+            $user = $request->user();
             $token = $request->attributes->get('token');
-
-            if (empty($token['organization_id'])) {
-                return response()->json([
-                    'error' => 'This action is only for Organization owners.'
-                ], 403);
-            }
-
             $organization_id = $token['organization_id'];
 
             $staffInfo = StaffMember::where('id', $id)->with('user')->first();
@@ -1065,9 +1010,11 @@ class hrController extends Controller
             }
 
             $departments = Department::where('organization_id', $organization_id)
+                ->orderBy('name', 'asc')
                 ->pluck('name', 'id');
 
             $buildings = Building::where('organization_id', $organization_id)
+                ->orderBy('name', 'asc')
                 ->pluck('name', 'id');
 
             $permissions = RolePermission::where('role_id', 4)->with('permission')->get();
@@ -1078,7 +1025,7 @@ class hrController extends Controller
                 'buildings' => $buildings,
                 'permissions' => $permissions
             ]);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             Log::error('Error in demotionGet: ' . $e->getMessage());
             return response()->json([
                 'error' => 'Something went wrong. Please try again later.'
@@ -1179,6 +1126,8 @@ class hrController extends Controller
 
             DB::commit();
 
+            event(new UserPermissionUpdated($user->id));
+
             $loggedUser->notify(new DatabaseOnlyNotification(
                 $user->picture ?? 'uploads/Notification/Light-theme-Logo.svg',
                 'Manager Demoted Successfully',
@@ -1196,7 +1145,7 @@ class hrController extends Controller
             return response()->json([
                 'message' => 'Manager demoted successfully.'
             ]);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             DB::rollBack();
             Log::error('Manager demotion failed: ' . $e->getMessage());
             return response()->json([
@@ -1211,11 +1160,6 @@ class hrController extends Controller
     public function staffHandleQueries(Request $request)
     {
         $token = $request->attributes->get('token');
-
-        if (empty($token['organization_id'])) {
-            return response()->json(['error' => 'This action is for organization related personals'], 403);
-        }
-
         $organization_id = $token['organization_id'];
 
         $request->validate([
@@ -1238,7 +1182,7 @@ class hrController extends Controller
 
             return response()->json(['success' => 'Query handling status updated successfully.'], 200);
 
-        }catch (\Exception $e) {
+        }catch (\Throwable $e) {
             Log::error('Error in staffHandleQueries: ' . $e->getMessage());
             return response()->json(['error' => 'Something went wrong. Please try again.'], 500);
         }
@@ -1250,11 +1194,6 @@ class hrController extends Controller
     public function staffDestroy(Request $request)
     {
         $token = $request->attributes->get('token');
-
-        if (empty($token['organization_id'])) {
-            return response()->json(['error' => 'This action is related to organization personals'], 403);
-        }
-
         $organization_id = $token['organization_id'];
 
         $request->validate([
@@ -1297,9 +1236,11 @@ class hrController extends Controller
 
             DB::commit();
 
+            event(new UserPermissionUpdated($user->id));
+
             return response()->json(['success' => 'Staff deleted successfully.'], 200);
 
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             DB::rollBack();
             Log::error('Error in staff destroy: ' . $e->getMessage());
             return response()->json(['error' => 'Something went wrong. Please try again.'], 500);
@@ -1309,11 +1250,6 @@ class hrController extends Controller
     public function managerDestroy(Request $request)
     {
         $token = $request->attributes->get('token');
-
-        if (empty($token['organization_id'])) {
-            return response()->json(['error' => 'This action is related to organization personals'], 403);
-        }
-
         $organization_id = $token['organization_id'];
 
         $request->validate([
@@ -1353,9 +1289,11 @@ class hrController extends Controller
 
             DB::commit();
 
+            event(new UserPermissionUpdated($user->id));
+
             return response()->json(['success' => 'Manager deleted successfully.'], 200);
 
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             DB::rollBack();
             Log::error('Error in manager destroy: ' . $e->getMessage());
             return response()->json(['error' => 'Something went wrong. Please try again.'], 500);

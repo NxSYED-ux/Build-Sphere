@@ -17,13 +17,6 @@ class DropdownValueController extends Controller
         return view('Heights.Admin.Dropdown.index', compact('types', 'values', 'activeTab'));
     }
 
-    public function create()
-    {
-        $types = DropdownType::with(['values', 'parent'])->get();
-        $values = DropdownValue::all();
-        return view('Heights.Admin.Dropdown.create', compact('types', 'values'));
-    }
-
     public function store(Request $request)
     {
         $validatedData = $request->validate([
@@ -47,11 +40,6 @@ class DropdownValueController extends Controller
         DropdownValue::create($validatedData);
 
         return redirect()->route('values.index')->with('success', 'Value added successfully.');
-    }
-
-    public function show(string $id)
-    {
-        return redirect()->back();
     }
 
     public function edit(string $id)
@@ -89,12 +77,8 @@ class DropdownValueController extends Controller
         return redirect()->route('values.index')->with('success', 'Value updated successfully.');
     }
 
-    public function destroy(string $id)
-    {
-        return redirect()->back();
-    }
 
-    protected function checkIfValueExists($value_name, $dropdown_type_id, $parent_value_id = null, $id = null)
+    private function checkIfValueExists($value_name, $dropdown_type_id, $parent_value_id = null, $id = null)
     {
         $query = DropdownValue::where('value_name', $value_name)
                             ->where('dropdown_type_id', $dropdown_type_id);
@@ -110,4 +94,5 @@ class DropdownValueController extends Controller
                         ->exists();
         }
     }
+
 }
