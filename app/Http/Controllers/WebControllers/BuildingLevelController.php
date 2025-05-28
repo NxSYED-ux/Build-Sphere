@@ -100,7 +100,7 @@ class BuildingLevelController extends Controller
                 $levelQuery->where('status', $status);
             }
 
-            $levels = $levelQuery->get();
+            $levels = $levelQuery->paginate(12);
             $buildings = $ownerService->buildings($buildingIds);
             $statuses = ['Approved', 'Rejected'];
 
