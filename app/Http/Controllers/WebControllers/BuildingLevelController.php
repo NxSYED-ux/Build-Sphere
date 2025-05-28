@@ -70,7 +70,6 @@ class BuildingLevelController extends Controller
     public function ownerIndex(Request $request)
     {
         try {
-            $user = $request->user() ?? abort(404, 'Unauthorized');
             $token = $request->attributes->get('token');
             $organization_id = $token['organization_id'];
 
