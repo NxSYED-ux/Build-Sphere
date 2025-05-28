@@ -141,8 +141,6 @@ class RoleController extends Controller
             $existingPermissions = RolePermission::where('role_id', $roleId)->pluck('permission_id')->toArray();
             $newPermissions = array_keys($request->permissions);
 
-            Log::info('Permissions came from frontend: ', $newPermissions);
-
             $permissionsToAdd = array_diff($newPermissions, $existingPermissions);
             $permissionsToRemove = array_diff($existingPermissions, $newPermissions);
 
