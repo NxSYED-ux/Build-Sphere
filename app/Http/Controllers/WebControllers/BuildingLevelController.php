@@ -87,12 +87,14 @@ class BuildingLevelController extends Controller
             $search = $request->input('search');
             $buildingId = $request->input('building_id');
 
-            $query = BuildingLevel::with(['building'])
-                ->whereHas('building', function ($q) use ($organization_id) {
-                    $q->where('organization_id', $organization_id);
-                })
-                ->when($buildingId, function ($query) use ($buildingId) {
-                    $query->where('building_id', $buildingId);
+            $levelQuery = BuildingLevel::with(['building'])
+                ->where('organization_id', $organization_id)
+                ->whereIn('building_id', $buildingIds);
+
+            if ($search) {
+                $levelQuery->where(function ($q) use ($search) {
+                    $q->where('name', 'like', '%' . $search . '%')
+                        ->orWhere('description', 'like', '%' . $search . '%');
                 });
 
             if ($role_name === 'Manager') {
