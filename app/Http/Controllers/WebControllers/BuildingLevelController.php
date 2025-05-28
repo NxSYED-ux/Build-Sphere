@@ -90,6 +90,7 @@ class BuildingLevelController extends Controller
                     $q->where('name', 'like', '%' . $search . '%')
                         ->orWhere('description', 'like', '%' . $search . '%');
                 });
+            }
 
             if ($buildingId) {
                 $levelQuery->where('building_id', $buildingId);
