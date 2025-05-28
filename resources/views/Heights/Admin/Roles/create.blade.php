@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Add User')
+@section('title', 'Add Role')
 
 @push('styles')
     <style>
@@ -249,11 +249,11 @@
 @section('content')
     <x-Admin.top-navbar :searchVisible="false" :breadcrumbLinks="[
             ['url' => route('admin_dashboard'), 'label' => 'Dashboard'],
-            ['url' => route('users.index'), 'label' => 'Users'],
-            ['url' => '', 'label' => 'Create user']
+            ['url' => route('roles.index'), 'label' => 'Roles'],
+            ['url' => '', 'label' => 'Create role']
         ]"
     />
-    <x-Admin.side-navbar :openSections="['AdminControl', 'UserManagement']" />
+    <x-Admin.side-navbar :openSections="['AdminControl', 'UserRoles']" />
     <x-error-success-model />
 
     <div id="main">
