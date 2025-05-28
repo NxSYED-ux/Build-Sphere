@@ -42,14 +42,9 @@ class BuildingLevelController extends Controller
                 });
             }
 
-            $levels = BuildingLevel::with(['building'])
-                ->whereHas('building', function ($query) {
-                    $query->whereNotIn('status', ['Under Processing', 'Rejected']);
-                })
-                ->when($buildingId, function ($query) use ($buildingId) {
-                    $query->where('building_id', $buildingId);
-                })
-                ->get();
+            if ($selectedOrganization) {
+                $levelsQuery->where('organization_id', $selectedOrganization);
+            }
 
             return view('Heights.Admin.Levels.index', compact('levels'));
         } catch (\Exception $e) {
