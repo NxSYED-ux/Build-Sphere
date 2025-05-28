@@ -22,7 +22,25 @@ class BuildingLevelController extends Controller
     public function adminIndex(Request $request)
     {
         try {
-            $buildingId = $request->input('building_id');
+            $adminService = new AdminFiltersService();
+            $allowedStatusesForBuilding = $adminService->getAllowedStatusesForBuilding();
+
+            $search = $request->input('search');
+            $selectedOrganization = $request->input('organization_id');
+            $selectedBuildingId = $request->input('building_id');
+            $selectedStatus = $request->input('status');
+
+            $levelsQuery = BuildingLevel::with('building')
+                ->whereHas('building', function ($query) use ($allowedStatusesForBuilding) {
+                    $query->whereIn('status', $allowedStatusesForBuilding);
+                });
+
+            if ($search) {
+                $levelsQuery->where(function ($q) use ($search) {
+                    $q->where('name', 'like', '%' . $search . '%')
+                        ->orWhere('description', 'like', '%' . $search . '%');
+                });
+            }
 
             $levels = BuildingLevel::with(['building'])
                 ->whereHas('building', function ($query) {
