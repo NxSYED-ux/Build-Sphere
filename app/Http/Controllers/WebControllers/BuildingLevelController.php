@@ -86,6 +86,7 @@ class BuildingLevelController extends Controller
 
             $search = $request->input('search');
             $buildingId = $request->input('building_id');
+            $status = $request->input('status');
 
             $levelQuery = BuildingLevel::with(['building'])
                 ->where('organization_id', $organization_id)
