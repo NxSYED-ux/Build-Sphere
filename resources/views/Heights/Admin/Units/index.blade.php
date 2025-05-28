@@ -551,16 +551,26 @@
                             </div>
 
                             <div class="filter-group">
-                                <label for="DepartmentId">Organization</label>
-                                <select name="DepartmentId" id="DepartmentId" class="form-select filter-select">
+                                <label for="organization_id">Organization</label>
+                                <select name="organization_id" id="organization_id" class="form-select filter-select">
                                     <option value="">All Organizations</option>
+                                    @foreach($organizations ?? [] as $organization)
+                                        <option value="{{ $organization->id }}" {{ request('organization_id') == $organization->id ? 'selected' : '' }}>
+                                            {{ $organization->name }}
+                                        </option>
+                                    @endforeach
                                 </select>
                             </div>
 
                             <div class="filter-group">
-                                <label for="BuildingId">Building</label>
-                                <select name="BuildingId" id="BuildingId" class="form-select filter-select">
-                                    <option value="">All Buildings</option>
+                                <label for="organization_id">Building</label>
+                                <select name="building_id" id="building_id" class="form-select filter-select">
+                                    <option value="">All buildings</option>
+                                    @foreach($buildings ?? [] as $building)
+                                        <option value="{{ $building->id }}" {{ request('building_id') == $building->id ? 'selected' : '' }}>
+                                            {{ $building->name }}
+                                        </option>
+                                    @endforeach
                                 </select>
                             </div>
 
@@ -742,7 +752,7 @@
 
                                 @if ($units && $units->count() > 0)
                                     <div class="mt-3">
-                                        {{ $units->links('pagination::bootstrap-5') }}
+                                        {{ $units->appends(request()->query())->links('pagination::bootstrap-5') }}
                                     </div>
                                 @endif
                             </div>

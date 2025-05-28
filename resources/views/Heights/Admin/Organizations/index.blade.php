@@ -16,41 +16,77 @@
             border-bottom: 1px solid var(--nav-tabs-inactive-border-color) !important; /* Corrected */
         }
         .nav-tabs .nav-link.active {
-            background-color: var(--nav-tabs-active-bg-color) !important; /* Change to your desired color */
+            background-color: var(--sidenavbar-body-color) !important; /* Change to your desired color */
             color: var(--nav-tabs-active-text-color) !important;
             border-bottom: 2px solid #008CFF !important; /* Corrected */
         }
 
-        /* DataTables Entries Dropdown */
-        .dataTables_wrapper .dataTables_length select {
-            background-color: var(--dataTable-paginate-menu-bg-color);
-            color: var(--dataTable-paginate-menu-text-color);
-            border: 1px solid var(--dataTable-paginate-menu-border-color);
+        /* View */
+        .btn-view {
+            background-color: rgba(52, 152, 219, 0.1);
+            color: #3498db;
+            border: 1px solid rgba(52, 152, 219, 0.2);
         }
-        .dataTables_wrapper .dataTables_length label {
-            color: var(--dataTable-paginate-menu-label-color);
+
+        .btn-view:hover {
+            background-color: rgba(52, 152, 219, 0.2);
+            color: #2980b9;
         }
-        /* DataTables Search Box */
-        .dataTables_wrapper .dataTables_filter input {
-            background-color: var(--dataTable-search-input-bg-color);
-            color: var(--dataTable-search-input-text-color);
-            border: 1px solid var(--dataTable-search-input-border-color);
+
+        /* Card View */
+        .organization-card-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
         }
-        .dataTables_wrapper .dataTables_filter label {
-            color: var(--dataTable-search-label-color);
+
+        .organization-card {
+            background: var(--body-background-color);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+            position: relative;
         }
-        .dataTables_filter input::placeholder {
-            color: var(--dataTable-search-placeholder-color); /* Standard */
+
+        .organization-card:hover {
+            transform: translateY(-5px);
         }
-        .dataTables_filter input::-webkit-input-placeholder {
-            color: var(--dataTable-search-placeholder-color); /* WebKit browsers */
+
+        /* ================ EMPTY STATE ================ */
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            background-color: var(--sidenavbar-body-color);
+            border-radius: 12px;
+            grid-column: 1 / -1;
         }
-        .dataTables_filter input::-moz-placeholder {
-            color: var(--dataTable-search-placeholder-color); /* Mozilla Firefox 19+ */
+
+        .empty-state-icon {
+            font-size: 3rem;
+            color: var(--sidenavbar-text-color);
+            margin-bottom: 15px;
         }
-        .dataTables_filter input:-ms-input-placeholder {
-            color: var(--dataTable-search-placeholder-color); /* Internet Explorer 10+ */
+
+        /* ================ VIEW TOGGLE ================ */
+        .grid-view-toggle {
+            display: flex;
+            align-items: center;
+            margin-right: 15px;
         }
+
+        .grid-view-toggle .btn {
+            padding: 0.375rem 0.75rem;
+        }
+
+        /* ================ TABLE VIEW ================ */
+        #tableView {
+            display: none;
+            margin-top: 0!important;
+            padding-top: 0 !important;
+        }
+
 
         /* Card Styles */
         .detail-card {
@@ -287,6 +323,19 @@
             z-index: 10; /* Adjust as needed */
         }
 
+         .status-badge-enable {
+             background-color: rgba(25, 135, 84, 0.1) !important;
+             color: #198754 !important;
+         }
+        .status-badge-disable {
+            background-color: rgba(255, 193, 7, 0.1) !important;
+            color: #ffc107 !important;
+        }
+        .status-badge-blocked {
+            background-color: rgba(220, 53, 69, 0.1) !important;
+            color: #dc3545 !important;
+        }
+
     </style>
 @endpush
 
@@ -329,78 +378,186 @@
                         <div class="tab-content mt-0" id="myTabContent">
                             <!-- Organization Tab -->
                             <div class="tab-pane fade {{ $activeTab === 'Tab1' ? 'show active' : '' }}" id="dropdwon-types" role="tabpanel" aria-labelledby="dropdwon-types-tab">
-                                <div class="card shadow px-3 pb-3 pt-0 mb-5 mt-0 bg-body rounded" style="border: none;">
-                                    <div class="card-body py-0" style="position: relative; overflow-x: auto;">
-                                        <div class="d-flex align-items-center position-absolute mt-0" style="top: 30px; left: 30px;">
-                                            <button class="btn btn-light" type="button" id="menu-icon" data-bs-toggle="dropdown" aria-expanded="false">
-                                                <x-icon name="export" type="icon" class="" size="20px" />
-                                            </button>
+                                <div class="card shadow p-1 mb-5 bg-body rounded" style="border: none; background-color: var(--sidenavbar-body-color) !important;">
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between align-items-center mb-4 tools-container">
+                                            <div class="grid-view-toggle me-3">
+                                                <span class="me-2">View:</span>
+                                                <div class="btn-group" role="group">
+                                                    <button type="button" class="btn btn-outline-secondary active" id="gridViewBtn">
+                                                        <i class='bx bx-grid-alt'></i>
+                                                    </button>
+                                                    <button type="button" class="btn btn-outline-secondary" id="tableViewBtn">
+                                                        <i class='bx bx-table'></i>
+                                                    </button>
+                                                </div>
+                                            </div>
 
-                                            <ul id="button-list" class="dropdown-menu dropdown-menu-end" style="position: absolute; top: 100%; left: 0;">
-                                                <li><button class="dropdown-item" type="button" id="copyButton">Copy</button></li>
-                                                <li><button class="dropdown-item" type="button" id="csvButton">CSV</button></li>
-                                                <li><button class="dropdown-item" type="button" id="excelButton">Excel</button></li>
-                                                <li><button class="dropdown-item" type="button" id="pdfButton">PDF</button></li>
-                                                <li><button class="dropdown-item" type="button" id="printButton">Print</button></li>
-                                            </ul>
+                                            <div class="dropdown">
+                                                <button class="btn btn-secondary dropdown-toggle" type="button" id="exportDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                                    <x-icon name="export" type="icon" class="me-1" size="16" />
+                                                    Export
+                                                </button>
+                                                <ul class="dropdown-menu" aria-labelledby="exportDropdown">
+                                                    <li><button class="dropdown-item" type="button" id="copyButton"><i class='bx bx-copy me-2'></i>Copy</button></li>
+                                                    <li><button class="dropdown-item" type="button" id="csvButton"><i class='bx bx-file me-2'></i>CSV</button></li>
+                                                    <li><button class="dropdown-item" type="button" id="excelButton"><i class='bx bx-spreadsheet me-2'></i>Excel</button></li>
+                                                    <li><button class="dropdown-item" type="button" id="pdfButton"><i class='bx bxs-file-pdf me-2'></i>PDF</button></li>
+                                                    <li><button class="dropdown-item" type="button" id="printButton"><i class='bx bx-printer me-2'></i>Print</button></li>
+                                                </ul>
+                                            </div>
                                         </div>
-                                        <table id="organizationTable" class="table shadow-sm table-hover table-striped">
-                                            <thead class="shadow">
-                                                <tr>
-                                                    <th>ID</th>
-                                                    <th>Picture</th>
-                                                    <th>Name</th>
-                                                    <th>Owner</th>
-                                                    <th>City</th>
-                                                    <th>Online Payment</th>
-                                                    <th>Status</th>
-                                                    <th class="text-center" style="width: 70px;">Actions</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                @forelse ($organizations ?? [] as $organization)
+
+                                        <!-- Card View -->
+                                        <div id="cardView">
+                                            <div class="card-body p-0">
+                                                    <div class="organization-card-container">
+                                                        @forelse($organizations ?? [] as $organization)
+                                                            <div class="organization-card">
+                                                                <div class="card h-100 border-0 shadow-sm hover-shadow transition-all" style="background-color: var(--body-background-color) !important;">
+                                                                    <div class="card-body">
+                                                                        <div class="d-flex align-items-start gap-3 mb-3">
+                                                                            <img src="{{ $organization->logo ? asset($organization->logo) : asset('img/organization_placeholder.png') }}"
+                                                                                 alt="Organization Picture"
+                                                                                 class="rounded-circle flex-shrink-0"
+                                                                                 width="60"
+                                                                                 height="60">
+                                                                            <div class="flex-grow-1">
+                                                                                <h5 class="mb-1">{{ $organization->name }}</h5>
+                                                                                <p class="small mb-1">
+                                                                                    <x-icon name="user" type="icon" class="me-1" size="14px" />
+                                                                                    {{ $organization->owner->name }}
+                                                                                </p>
+                                                                                <p class="small mb-0">
+                                                                                    <x-icon name="location" type="icon" class="me-1" size="14px" />
+                                                                                    {{ $organization->address->city ?? 'N/A' }}
+                                                                                </p>
+                                                                            </div>
+
+                                                                            <span class="badge status-badge-{{ strtolower($organization->status) }}">
+                                                                                {{ ucfirst($organization->status) }}
+                                                                            </span>
+                                                                        </div>
+
+                                                                        <div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top">
+                                                                            <div class="form-check form-switch">
+                                                                                <input type="hidden" name="is_online_payment_enabled" value="0">
+                                                                                <input class="form-check-input"
+                                                                                       type="checkbox"
+                                                                                       role="switch"
+                                                                                       id="enable_online_payments_{{ $organization->id }}"
+                                                                                       name="is_online_payment_enabled"
+                                                                                       value="{{ old('merchant_id', $organization->is_online_payment_enabled) }}"
+                                                                                       {{ old('is_online_payment_enabled', $organization->is_online_payment_enabled ?? false) ? 'checked' : '' }}
+                                                                                       onchange="updateOnlinePaymentStatus(this, '{{ $organization->id }}', '{{ $organization->payment_gateway_merchant_id }}')">
+                                                                                <label class="form-check-label small" for="enable_online_payments_{{ $organization->id }}">
+                                                                                    Online Payment
+                                                                                </label>
+                                                                            </div>
+
+                                                                            <div class="d-flex gap-2">
+                                                                                <a href="{{ route('organizations.show', ['organization' => $organization->id]) }}"
+                                                                                   class="btn btn-sm btn-outline-info rounded-circle p-2"
+                                                                                   data-bs-toggle="tooltip"
+                                                                                   data-bs-placement="top"
+                                                                                   title="View">
+                                                                                    <x-icon name="view" type="icon" size="16px" />
+                                                                                </a>
+                                                                                <a href="{{ route('organizations.edit', $organization->id) }}"
+                                                                                   class="btn btn-sm btn-outline-warning rounded-circle p-2"
+                                                                                   data-bs-toggle="tooltip"
+                                                                                   data-bs-placement="top"
+                                                                                   title="Edit">
+                                                                                    <x-icon name="edit" type="icon" size="16px" />
+                                                                                </a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        @empty
+                                                            <div class="col-12">
+                                                                <div class="empty-state">
+                                                                    <div class="empty-state-icon">
+                                                                        <i class='bx bxl-slack'></i>
+                                                                    </div>
+                                                                    <h4>No organizations Found</h4>
+                                                                    <p class="">There are no organizations to display. You can add a new organizations by clicking the "Add Organizations" Tab.</p>
+                                                                </div>
+                                                            </div>
+                                                        @endforelse
+                                                    </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Table View (Hidden by default) -->
+                                        <div id="tableView" style="display: none; margin-top: 0!important; padding-top: 0 !important;">
+                                            <div class="table-responsive">
+                                                <table id="organizationTable" class="table shadow-sm table-hover table-striped">
+                                                    <thead class="shadow">
                                                     <tr>
-                                                        <td>{{ $organization->id }}</td>
-                                                        <td>
-                                                            <img src="{{ $organization->logo ? asset($organization->logo) : asset('img/organization_placeholder.png') }}" alt="Organization Picture" class="rounded-circle" width="50" height="50">
-                                                        </td>
-                                                        <td>{{ $organization->name }}</td>
-                                                        <td>{{ $organization->owner->name }}</td>
-                                                        <td>{{ $organization->address->city ?? 'N/A' }}</td>
-                                                        <td class="text-center" style="width: 150px !important;">
-                                                            <div class="form-check form-switch m-0 d-flex justify-content-center">
-                                                                <input type="hidden" name="is_online_payment_enabled" value="0">
-                                                                <input class="form-check-input" type="checkbox" role="switch" id="enable_online_payments"
-                                                                       name="is_online_payment_enabled" value="{{ old('merchant_id', $organization->is_online_payment_enabled) }}"
-                                                                       style="transform: scale(1.3);"
-                                                                       {{ old('is_online_payment_enabled', $organization->is_online_payment_enabled ?? false) ? 'checked' : '' }}
-                                                                       onchange="updateOnlinePaymentStatus(this, '{{ $organization->id }}', '{{ $organization->payment_gateway_merchant_id }}')">
-                                                            </div>
-                                                        </td>
-                                                        <td>{{ $organization->status }}</td>
-                                                        <td class="text-center">
-                                                            <div class="d-flex justify-content-center align-items-center gap-3">
-                                                                <a href="{{ route('organizations.show', ['organization' => $organization->id]) }}" class="text-info" data-bs-toggle="tooltip" data-bs-placement="top" title="View">
-                                                                    <x-icon name="view" type="icon" class="" size="20px" />
-                                                                </a>
-                                                                <a href="{{ route('organizations.edit', $organization->id) }}" class="text-warning" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit">
-                                                                    <x-icon name="edit" type="icon" class="" size="20px" />
-                                                                </a>
-                                                            </div>
-                                                        </td>
+                                                        <th>ID</th>
+                                                        <th>Picture</th>
+                                                        <th>Name</th>
+                                                        <th>Owner</th>
+                                                        <th>City</th>
+                                                        <th>Online Payment</th>
+                                                        <th>Status</th>
+                                                        <th class="text-center" style="width: 70px;">Actions</th>
                                                     </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                    @forelse ($organizations ?? [] as $organization)
+                                                        <tr>
+                                                            <td>{{ $organization->id }}</td>
+                                                            <td>
+                                                                <img src="{{ $organization->logo ? asset($organization->logo) : asset('img/organization_placeholder.png') }}" alt="Organization Picture" class="rounded-circle" width="50" height="50">
+                                                            </td>
+                                                            <td>{{ $organization->name }}</td>
+                                                            <td>{{ $organization->owner->name }}</td>
+                                                            <td>{{ $organization->address->city ?? 'N/A' }}</td>
+                                                            <td class="text-center" style="width: 150px !important;">
+                                                                <div class="form-check form-switch m-0 d-flex justify-content-center">
+                                                                    <input type="hidden" name="is_online_payment_enabled" value="0">
+                                                                    <input class="form-check-input" type="checkbox" role="switch" id="enable_online_payments"
+                                                                           name="is_online_payment_enabled" value="{{ old('merchant_id', $organization->is_online_payment_enabled) }}"
+                                                                           style="transform: scale(1.3);"
+                                                                           {{ old('is_online_payment_enabled', $organization->is_online_payment_enabled ?? false) ? 'checked' : '' }}
+                                                                           onchange="updateOnlinePaymentStatus(this, '{{ $organization->id }}', '{{ $organization->payment_gateway_merchant_id }}')">
+                                                                </div>
+                                                            </td>
+                                                            <td>{{ $organization->status }}</td>
+                                                            <td class="text-center">
+                                                                <div class="d-flex justify-content-center align-items-center gap-3">
+                                                                    <a href="{{ route('organizations.show', ['organization' => $organization->id]) }}" class="text-info" data-bs-toggle="tooltip" data-bs-placement="top" title="View">
+                                                                        <x-icon name="view" type="icon" class="" size="20px" />
+                                                                    </a>
+                                                                    <a href="{{ route('organizations.edit', $organization->id) }}" class="text-warning" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit">
+                                                                        <x-icon name="edit" type="icon" class="" size="20px" />
+                                                                    </a>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
                                                     @empty
                                                         <tr>
                                                             <td colspan="9" class="text-center">No organizations found.</td>
                                                         </tr>
                                                     @endforelse
-                                            </tbody>
-                                            @if ($organizations)
-                                                <div class="mt-3 custom-pagination-wrapper">
-                                                    {{ $organizations->links('pagination::bootstrap-5') }}
-                                                </div>
-                                            @endif
-                                        </table>
+                                                    </tbody>
+                                                    @if ($organizations)
+                                                        <div class="mt-3 custom-pagination-wrapper">
+                                                            {{ $organizations->links('pagination::bootstrap-5') }}
+                                                        </div>
+                                                    @endif
+                                                </table>
+                                            </div>
+                                        </div>
+
+                                        @if ($organizations && $organizations->count() > 0)
+                                            <div class="mt-3">
+                                                {{ $organizations->appends(request()->query())->links('pagination::bootstrap-5') }}
+                                            </div>
+                                        @endif
                                     </div>
                                 </div>
                             </div>
@@ -714,17 +871,14 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
 
-    <!-- Data Tables Script -->
     <script>
         document.addEventListener("DOMContentLoaded", function () {
+            // Initialize DataTable for table view
             var table = new DataTable("#organizationTable", {
+                searching: false,
                 paging: false,
                 info: false,
                 dom: "Bfrtip",
-                lengthChange: false,
-                language: {
-                    searchPlaceholder: "Search organization..."
-                },
                 buttons: [
                     {
                         extend: "csv",
@@ -749,6 +903,26 @@
                 ]
             });
 
+            // View toggle functionality
+            const gridViewBtn = document.getElementById('gridViewBtn');
+            const tableViewBtn = document.getElementById('tableViewBtn');
+            const cardView = document.getElementById('cardView');
+            const tableView = document.getElementById('tableView');
+
+            gridViewBtn.addEventListener('click', function() {
+                this.classList.add('active');
+                tableViewBtn.classList.remove('active');
+                cardView.style.display = 'block';
+                tableView.style.display = 'none';
+            });
+
+            tableViewBtn.addEventListener('click', function() {
+                this.classList.add('active');
+                gridViewBtn.classList.remove('active');
+                cardView.style.display = 'none';
+                tableView.style.display = 'block';
+            });
+
             function triggerButton(buttonClass, logMessage) {
                 console.log(logMessage);
                 table.buttons(buttonClass).trigger();
@@ -770,8 +944,8 @@
                 triggerButton(".buttons-print", "Print Button clicked");
             });
 
-            document.getElementById("colvisButton")?.addEventListener("click", function () {
-                triggerButton(".buttons-colvis", "Column Visibility Button clicked");
+            document.getElementById("copyButton")?.addEventListener("click", function () {
+                triggerButton(".buttons-copy", "Copy Button clicked");
             });
         });
     </script>
