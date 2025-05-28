@@ -91,9 +91,8 @@ class BuildingLevelController extends Controller
                         ->orWhere('description', 'like', '%' . $search . '%');
                 });
 
-            if ($role_name === 'Manager') {
-                $managerBuildingIds = ManagerBuilding::where('user_id', $user->id)->pluck('building_id')->toArray();
-                $query->whereIn('building_id', $managerBuildingIds);
+            if ($buildingId) {
+                $levelQuery->where('building_id', $buildingId);
             }
 
             if ($status) {
