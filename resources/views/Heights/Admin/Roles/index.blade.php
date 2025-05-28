@@ -35,7 +35,7 @@
             border-radius: 12px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
             transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-            border: 1px solid var(--card-border);
+            border: 1px solid rgba(var(--color-blue), 0.3) !important;
             overflow: hidden;
             display: flex;
             flex-direction: column;
@@ -308,43 +308,51 @@
         }
 
         /* Search styles */
-        .search-container {
-            margin-bottom: 5px;
+        .filter-container {
             display: flex;
-            gap: 10px;
-            position: relative;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 5px;
+            background: var(--sidenavbar-body-color);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            align-items: flex-end;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+            min-width: 220px;
+        }
+
+        .filter-group label {
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--sidenavbar-text-color);
+            font-size: 0.9rem;
         }
 
         .search-input {
-            flex: 1;
-            padding: 12px 20px 12px 45px;
-            border-radius: 8px;
-            border: 1px solid var(--input-border);
-            background: #ffff;
-            color: var(--sidenavbar-text-color);
-            font-size: 0.95rem;
+            width: 100%;
+            padding: 10px 15px;
+            border-radius: 6px;
+            border: 1px solid #e0e0e0;
+            background-color: white;
             transition: all 0.3s ease;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
         }
 
-        .search-input:focus {
-            outline: none;
-            border-color: var(--color-blue);
-            box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.1), 0 4px 12px rgba(0,0,0,0.08);
+        .search-input {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23999' viewBox='0 0 16 16'%3E%3Cpath d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: 15px center;
+            background-size: 16px 16px;
+            padding-left: 40px;
         }
 
-        .search-icon {
-            position: absolute;
-            left: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--sidenavbar-text-color);
-            transition: all 0.3s ease;
-        }
-
-        .search-input:focus + .search-icon {
-            color: var(--color-blue);
-        }
 
         /* Badge styles */
         .role-badge {
@@ -439,10 +447,14 @@
                             </a>
                         </div>
 
-                        <div class="search-container">
-                            <i class="fas fa-search search-icon"></i>
-                            <input type="text" id="roleSearch" class="search-input" placeholder="Search roles by name or description...">
-                        </div>
+                        <form method="GET" id="filterForm" class="filter-container">
+                            <div class="filter-group">
+                                <label for="search">Search</label>
+                                <input type="text" name="search" id="roleSearch" class="search-input"
+                                       placeholder="Search by name or description"
+                                       value="{{ request('search') }}">
+                            </div>
+                        </form>
 
                         <div class="roles-container" id="rolesContainer">
                             @forelse($roles ?? [] as $role)

@@ -141,6 +141,7 @@
 @push('scripts')
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
 
             // Handle promote button clicks
             document.querySelectorAll('.demote-btn').forEach(button => {

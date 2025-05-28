@@ -592,7 +592,7 @@
 
                                 @if ($buildings && $buildings->count() > 0)
                                     <div class="mt-3">
-                                        {{ $buildings->links('pagination::bootstrap-5') }}
+                                        {{ $buildings->appends(request()->query())->links('pagination::bootstrap-5') }}
                                     </div>
                                 @endif
                             </div>

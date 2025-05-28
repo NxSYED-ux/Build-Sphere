@@ -654,7 +654,7 @@
 
                                 @if ($units && $units->count() > 0)
                                     <div class="mt-3">
-                                        {{ $units->links('pagination::bootstrap-5') }}
+                                        {{ $units->appends(request()->query())->links('pagination::bootstrap-5') }}
                                     </div>
                                 @endif
                             </div>

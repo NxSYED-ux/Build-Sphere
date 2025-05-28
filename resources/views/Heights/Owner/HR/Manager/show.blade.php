@@ -868,61 +868,98 @@
                     };
 
                     window.occupancyChartInstance = new Chart(ctx, {
-                        type: 'pie',
+                        type: 'doughnut',
                         data: chartData,
-                        plugins: [ChartDataLabels],
+                        plugins: [{
+                            id: 'centerTotal',
+                            beforeDraw: (chart) => {
+                                if (chart.config.options.centerTotal) {
+                                    const { ctx, chartArea: { width, height } } = chart;
+                                    ctx.restore();
+
+                                    // Calculate total
+                                    const total = chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
+
+                                    // Styling for center text
+                                    ctx.font = 'bold 30px "Inter", sans-serif';
+                                    ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--sidenavbar-text-color').trim(),
+                                    ctx.textAlign = 'center';
+                                    ctx.textBaseline = 'middle';
+
+                                    // Display total in center
+                                    ctx.fillText(total, width / 2, height / 2);
+                                    ctx.save();
+                                }
+                            }
+                        }, ChartDataLabels],
                         options: {
                             responsive: true,
                             maintainAspectRatio: false,
+                            cutout: '70%',
+                            centerTotal: true, // Custom flag to enable center total
                             plugins: {
                                 legend: {
                                     position: 'bottom',
-                                    labels: {
-                                        font: {
-                                            family: "'Inter', sans-serif",
-                                            size: 12
-                                        },
-                                        padding: 20,
-                                        usePointStyle: true
-                                    }
+                                    labels: { font: { family: "'Inter', sans-serif", size: 12 }, padding: 20 }
                                 },
                                 tooltip: {
-                                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                                    bodyFont: {
-                                        family: "'Inter', sans-serif",
-                                        size: 12
-                                    },
+                                    backgroundColor: 'rgba(0,0,0,0.9)',
+                                    bodyFont: { family: "'Inter', sans-serif", size: 12, weight: 'bold' },
                                     callbacks: {
-                                        label: function(context) {
-                                            const label = context.label || '';
-                                            const value = context.raw || 0;
-                                            const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                        label: (ctx) => {
+                                            const label = ctx.label || '';
+                                            const value = ctx.raw || 0;
+                                            const total = ctx.dataset.data.reduce((a, b) => a + b, 0);
                                             const percentage = Math.round((value / total) * 100);
                                             return `${label}: ${value} (${percentage}%)`;
                                         }
                                     }
                                 },
                                 datalabels: {
-                                    formatter: (value, context) => {
-                                        const total = context.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
-                                        const percentage = Math.round((value / total) * 100);
-                                        return `${value}\n(${percentage}%)`;
+                                    display: (ctx) => {
+                                        const total = ctx.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
+                                        const percentage = Math.round((ctx.dataset.data[ctx.dataIndex] / total) * 100);
+                                        return percentage >= 5; // Hide labels for segments <5%
+                                    },
+                                    formatter: (value, ctx) => {
+                                        const total = ctx.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
+                                        return `${Math.round((value / total) * 100)}%`; // Only show % inside segments
                                     },
                                     color: '#fff',
-                                    font: {
-                                        family: "'Inter', sans-serif",
-                                        size: 12,
-                                        weight: 'bold'
-                                    },
-                                    textAlign: 'center',
-                                    padding: 6,
-                                    textShadowColor: 'rgba(0,0,0,0.5)',
-                                    textShadowBlur: 3
+                                    font: { family: "'Inter', sans-serif", size: 12, weight: 'bold' },
+                                    textShadowBlur: 6,
+                                    textShadowColor: 'rgba(0,0,0,0.8)'
                                 }
                             },
                             animation: {
                                 animateScale: true,
-                                animateRotate: true
+                                animateRotate: true,
+                                duration: 1000
+                            },
+                            hover: {
+                                mode: 'nearest',
+                                intersect: false,
+                                animation: {
+                                    duration: 300,
+                                    easing: 'easeOutQuad'
+                                },
+                                onHover: (e, elements) => {
+                                    if (elements.length) {
+                                        const chart = e.chart;
+                                        const index = elements[0].index;
+
+                                        // Hover animation: Scale segment slightly
+                                        chart.setActiveElements([{ datasetIndex: 0, index }]);
+                                        chart.update();
+                                    }
+                                }
+                            },
+                            elements: {
+                                arc: {
+                                    hoverOffset: 10, // Pop-out effect on hover
+                                    borderWidth: 0,
+                                    borderRadius: 5 // Rounded edges for segments
+                                }
                             }
                         }
                     });
