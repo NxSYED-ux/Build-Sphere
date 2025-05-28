@@ -133,13 +133,20 @@
                                             <h5 class="section-header">
                                                 <i class='bx bxs-user-detail'></i> Select User
                                             </h5>
-{{--                                            <label for="user_id"><i class="fas fa-user mr-1"></i> Select User</label>--}}
+
                                             <select class="form-select" id="user_id" name="user_id" required>
                                                 <option value="">Select a user</option>
-                                                @foreach($availableUsers as $user)
-                                                    <option value="{{ $user->id }}" data-email="{{ $user->email }}">{{ $user->name }} ({{ $user->email }})</option>
-                                                @endforeach
+                                                @if(!empty($availableUsers) && count($availableUsers))
+                                                    @foreach($availableUsers as $user)
+                                                        <option value="{{ $user->id }}" data-email="{{ $user->email }}">
+                                                            {{ $user->name }} ({{ $user->email }})
+                                                        </option>
+                                                    @endforeach
+                                                @else
+                                                    <option value="" disabled>No user found</option>
+                                                @endif
                                             </select>
+
                                         </div>
 
                                         <div class="card mt-3 user-details-card details-card">

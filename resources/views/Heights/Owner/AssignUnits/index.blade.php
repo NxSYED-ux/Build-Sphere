@@ -345,15 +345,18 @@
                                         <div class="col-12">
                                             <div class="form-group mb-3">
                                                 <label for="user_id" class="form-label">Select User</label>
-                                                <select name="userId" id="user_id" class="form-select">
-                                                    <option value="">Select User</option>
-                                                    @forelse($users as $id => $name)
-                                                        <option value="{{ $id }}" {{ old('userId', $selectedUserId) == $id ? 'selected' : '' }}>
-                                                            {{ $name }}
-                                                        </option>
-                                                    @empty
-                                                        <option value="">No user found</option>
-                                                    @endforelse
+                                                <select class="form-select" id="user_id" name="userId" required>
+                                                    <option value="">Select a user</option>
+                                                    @if(!empty($users) && count($users))
+                                                        @foreach($users as $user)
+                                                            <option value="{{ $user->id }}" data-email="{{ $user->email }}"
+                                                                {{ old('userId') == $user->id ? 'selected' : '' }}>
+                                                                {{ $user->name }} ({{ $user->email }})
+                                                            </option>
+                                                        @endforeach
+                                                    @else
+                                                        <option value="" disabled>No user found</option>
+                                                    @endif
                                                 </select>
                                                 @error('userId')
                                                 <div class="text-danger small mt-1">{{ $message }}</div>

@@ -16,6 +16,7 @@ use App\Models\User;
 use App\Models\UserBuildingUnit;
 use App\Models\UserUnitPicture;
 use App\Notifications\CredentialsEmail;
+use App\Services\OwnerFiltersService;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -30,8 +31,8 @@ class AssignUnitController extends Controller
     public function index(Request $request)
     {
         try {
-            $user = $request->user() ?? abort(403, 'Unauthorized');
             $token = $request->attributes->get('token');
+            $organizationId = $token['organization_id'];
 
             $selectedBuildingId = null;
             $selectedUnitId = $request->input('unit_id');
@@ -41,38 +42,19 @@ class AssignUnitController extends Controller
                 ->where('type_name', 'Country')
                 ->get();
 
-            $users = User::where('id', '!=', $user->id)->pluck('name', 'id');
-            $buildings = collect();
-
-            if (empty($token['organization_id']) || empty($token['role_name'])) {
-                return view('Heights.Owner.AssignUnits.index', compact('selectedBuildingId', 'selectedUnitId', 'selectedUserId', 'users', 'buildings', 'dropdownData'));
-            }
-
-            $organizationId = $token['organization_id'];
-            $roleName = $token['role_name'];
-
-            $query = Building::where('organization_id', $organizationId)->whereNotIn('status', ['Rejected', 'Under Processing']);
-
-            if ($roleName === 'Manager') {
-                $managerBuildingIds = ManagerBuilding::where('user_id', $user->id)->pluck('building_id')->toArray();
-                $query->whereIn('id', $managerBuildingIds);
-
-            }elseif ($roleName === 'Staff'){
-                $staffRecord = StaffMember::where('user_id', $user->id)->first();
-                if ($staffRecord) {
-                    $selectedBuildingId = $staffRecord->building_id;
-                    $query->where('id', $selectedBuildingId);
-                }
-            }
-
-            $buildings = $query->get();
+            $ownerService = new OwnerFiltersService();
+            $users = $ownerService->users();
+            $buildingIds = $ownerService->getAccessibleBuildingIds();
+            $buildings = $ownerService->approvedBuildings($buildingIds);
 
             if($selectedUnitId){
                 $checkingSelectedUnit = BuildingUnit::where('id', $selectedUnitId)
                     ->where('sale_or_rent', '!=', 'Not Available')
                     ->where('availability_status', 'Available')
                     ->where('status', 'Approved')
+                    ->whereIn('building_id', $buildingIds)
                     ->first();
+
                 if(!$checkingSelectedUnit || $checkingSelectedUnit->organization_id != $organizationId){
                     return redirect()->back()->with('error', 'Invalid Unit ID');
                 }
@@ -81,7 +63,7 @@ class AssignUnitController extends Controller
             }
 
             return view('Heights.Owner.AssignUnits.index', compact('selectedBuildingId', 'selectedUnitId', 'selectedUserId', 'users', 'buildings', 'dropdownData'));
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             Log::error("Error in AssignUnits index: {$e->getMessage()}", ['exception' => $e]);
             return redirect()->back()->with('error', 'Something went wrong. Please try again.');
         }
@@ -89,16 +71,6 @@ class AssignUnitController extends Controller
 
     public function create(Request $request)
     {
-        $loggedUser = $request->user() ?? abort(403, 'Unauthorized');
-        $token = $request->attributes->get('token');
-
-        if (empty($token['organization_id']) || empty($token['role_name'])) {
-            return redirect()->back()->with('error', 'Organization Id is missing');
-        }
-
-        $organizationId = $token['organization_id'];
-        $roleName = $token['role_name'];
-
         $request->validate([
             'userId' => ['nullable', 'integer', 'exists:users,id'],
 
@@ -126,19 +98,17 @@ class AssignUnitController extends Controller
         DB::beginTransaction();
 
         try {
-            if ($roleName === 'Manager' && !ManagerBuilding::where('building_id', $request->buildingId)
-                    ->where('user_id', $loggedUser->id)
-                    ->exists()) {
-                DB::rollBack();
-                return redirect()->back()->withInput()->with('error', 'You do not have access to assign units of the selected building.');
-            }
-            elseif ($roleName === 'Staff'){
-                $staffRecord = StaffMember::where('user_id', $loggedUser->id)->first();
+            $loggedUser = $request->user();
+            $token = $request->attributes->get('token');
+            $organizationId = $token['organization_id'];
+            $roleName = $token['role_name'];
 
-                if (!$staffRecord || $staffRecord->building_id != $request->buildingId) {
-                    DB::rollBack();
-                    return redirect()->back()->withInput()->with('error', 'You do not have access to assign units of the selected building.');
-                }
+            $ownerService = new OwnerFiltersService();
+            $result = $ownerService->checkBuildingAccess($request->buildingId);
+
+            if(!$result['access']){
+                DB::rollBack();
+                return redirect()->back()->withInput($request->except('unitId'))->with('error', $result['message']);
             }
 
             try {
@@ -224,13 +194,15 @@ class AssignUnitController extends Controller
 
             return redirect()->back()->with('success', 'Unit assigned successfully.');
 
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             DB::rollBack();
             Log::error('Error in unit assignment : ' . $e->getMessage());
             return redirect()->back()->withInput()->with('error', 'Something went wrong. Please try again.');
         }
     }
 
+
+    // Helper Functions
     private function createUser($request)
     {
         $password = Str::random(8);
@@ -288,8 +260,7 @@ class AssignUnitController extends Controller
         return $user;
     }
 
-
-    private function unitAssignment_Transaction($user, $unit, $type, $paymentIntentId, $price, int $billing_cycle = 1, $currency = 'PKR')
+    private function unitAssignment_Transaction($user, $unit, $type, $paymentIntentId, $price, int $billing_cycle = 1, $currency = 'PKR', $paymentMethod = 'Cash')
     {
         $unit->update(['availability_status' => $type]);
 
@@ -337,7 +308,7 @@ class AssignUnitController extends Controller
             'buyer_type' => 'user',
             'seller_type' => 'organization',
             'seller_id' => $unit->organization_id,
-            'payment_method' => 'Cash',
+            'payment_method' => $paymentMethod,
             'gateway_payment_id' => $paymentIntentId,
             'price' => $assignedUnit->price,
             'currency' => $currency,
