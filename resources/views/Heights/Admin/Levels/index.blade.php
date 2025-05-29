@@ -602,40 +602,6 @@
                                     @enderror
                                 </div>
                             </div>
-
-                            <!--  -->
-                            <div class="col-12">
-                                <div class="form-group mb-3">
-                                    <label for="building_id">Building</label>
-                                    <span class="required__field">*</span><br>
-                                    <select class="form-select" id="edit_building_id" name="building_id" required>
-                                        <option value="" disabled {{ old('building_id') === null ? 'selected' : '' }}>Select Building</option>
-
-                                    </select>
-                                    @error('building_id')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                    @enderror
-                                </div>
-                            </div>
-
-                            <div class="col-12">
-                                <div class="form-group">
-                                    <label for="status">Status</label>
-                                    <span class="required__field">*</span><br>
-                                    <select name="status" id="edit_status" class="form-select" required>
-                                        <option value="Approved" {{ old('status') == 'Approved' ? 'selected' : '' }}>Approved</option>
-                                        <option value="Rejected" {{ old('status') == 'Rejected' ? 'selected' : '' }}>Rejected</option>
-                                    </select>
-                                    @error('status')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                    @enderror
-                                </div>
-                            </div>
-
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -753,24 +719,8 @@
                                 document.getElementById("edit_level_name").value = data.level?.level_name || "";
                                 document.getElementById("edit_description").value = data.level?.description || "";
                                 document.getElementById("edit_level_number").value = data.level.level_number !== undefined ? data.level.level_number : "";
-                                document.getElementById("edit_status").value = data.level?.status || "";
                                 document.getElementById("edit_organization_id").value = data.level?.organization_id || "";
                                 document.getElementById("edit_updated_at").value = data.level?.updated_at || "";
-
-                                const buildingSelect = document.getElementById("edit_building_id");
-                                buildingSelect.innerHTML = `<option value="" disabled>Select Building</option>`;
-
-                                if (Array.isArray(data.buildings) && data.buildings.length > 0) {
-                                    data.buildings.forEach(building => {
-                                        if (building && building.id && building.name) {
-                                            const isSelected = building.id === data.level?.building_id ? 'selected' : '';
-                                            buildingSelect.innerHTML += `<option value="${building.id}" ${isSelected} data-organization-id="${building.organization_id}">${building.name}</option>`;
-                                        }
-                                    });
-                                } else {
-                                    buildingSelect.innerHTML += `<option value="" disabled>No buildings available</option>`;
-                                }
-
 
                                 // Set form action dynamically
                                 const editForm = document.getElementById("editLevelForm");
