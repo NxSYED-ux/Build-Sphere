@@ -117,6 +117,9 @@ function applyPermissions() {
                 el.classList.add('hidden');
             }
         });
+        if (selector === '.switch-admin-portal-btn') {
+            document.body.classList.toggle('admin-portal-visible', shouldShow);
+        }
     };
 
     if (storedPermissions['Owner Portal']) {
