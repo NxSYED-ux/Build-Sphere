@@ -509,6 +509,31 @@
         .unit-img-border {
             border: 2px solid var(--modal-border);
         }
+
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .unit-card {
+            animation: fadeInUp 0.5s ease forwards;
+            opacity: 0;
+        }
+
+        .unit-card:nth-child(1) { animation-delay: 0.1s; }
+        .unit-card:nth-child(2) { animation-delay: 0.2s; }
+        .unit-card:nth-child(3) { animation-delay: 0.3s; }
+        .unit-card:nth-child(4) { animation-delay: 0.4s; }
+        .unit-card:nth-child(5) { animation-delay: 0.5s; }
+        .unit-card:nth-child(6) { animation-delay: 0.6s; }
+        .unit-card:nth-child(7) { animation-delay: 0.7s; }
+        .unit-card:nth-child(8) { animation-delay: 0.8s; }
     </style>
 @endpush
 
@@ -618,52 +643,50 @@
                                 <div id="cardView">
                                     <div class="unit-grid">
                                         @forelse($units ?? [] as $unit)
-                                            <div class="member-card">
-                                                <div class="card unit-card">
-                                                    <div class="card-img-container">
-                                                        @if(count($unit->pictures ?? []) > 0)
-                                                            <img src="{{ asset($unit->pictures[0]->file_path) }}" class="card-img-top" alt="Building Image">
-                                                        @else
-                                                            <img src="{{ asset('img/placeholder-img.jfif') }}" class="card-img-top" alt="Building Image">
-                                                        @endif
-                                                        <div class="unit-type-badge">
-                                                            {{ $unit->unit_type }}
-                                                        </div>
-                                                        <div class="unit-sale-rent-badge">
-                                                            {{ $unit->sale_or_rent }}
-                                                        </div>
-                                                        <div class="unit-price-tag">
-                                                            PKR {{ $unit->price ?? 'N/A' }}
-                                                        </div>
-                                                        <div class="unit-availability-tag">
-                                                            {{ $unit->availability_status ?? 'N/A' }}
-                                                        </div>
+                                            <div class="card unit-card">
+                                                <div class="card-img-container">
+                                                    @if(count($unit->pictures ?? []) > 0)
+                                                        <img src="{{ asset($unit->pictures[0]->file_path) }}" class="card-img-top" alt="Building Image">
+                                                    @else
+                                                        <img src="{{ asset('img/placeholder-img.jfif') }}" class="card-img-top" alt="Building Image">
+                                                    @endif
+                                                    <div class="unit-type-badge">
+                                                        {{ $unit->unit_type }}
                                                     </div>
-                                                    <div class="card-body">
-                                                        <div class="d-flex justify-content-between align-items-start">
-                                                            <h5 class="card-title">{{ $unit->unit_name }}</h5>
-                                                            <span class="badge badge-status
-                                                                @if($unit->status === 'Approved') badge-active
-                                                                @elseif($unit->status === 'Rejected') badge-inactive
-                                                                @else badge-inactive
-                                                                @endif">
-                                                                {{ $unit->status }}
-                                                            </span>
-                                                        </div>
-                                                        <p class="card-text"><i class='bx bxl-slack me-1'></i> {{ $unit->organization->name ?? 'N/A' }}</p>
-                                                        <p class="card-text"><i class='bx bx-buildings me-1'></i> {{ $unit->building->name ?? 'N/A' }}</p>
-                                                        <p class="card-text"><i class='bx bxs-layer me-1'></i> {{ $unit->level->level_name ?? 'N/A' }}</p>
+                                                    <div class="unit-sale-rent-badge">
+                                                        {{ $unit->sale_or_rent }}
+                                                    </div>
+                                                    <div class="unit-price-tag">
+                                                        PKR {{ $unit->price ?? 'N/A' }}
+                                                    </div>
+                                                    <div class="unit-availability-tag">
+                                                        {{ $unit->availability_status ?? 'N/A' }}
+                                                    </div>
+                                                </div>
+                                                <div class="card-body">
+                                                    <div class="d-flex justify-content-between align-items-start">
+                                                        <h5 class="card-title">{{ $unit->unit_name }}</h5>
+                                                        <span class="badge badge-status
+                                                            @if($unit->status === 'Approved') badge-active
+                                                            @elseif($unit->status === 'Rejected') badge-inactive
+                                                            @else badge-inactive
+                                                            @endif">
+                                                            {{ $unit->status }}
+                                                        </span>
+                                                    </div>
+                                                    <p class="card-text"><i class='bx bxl-slack me-1'></i> {{ $unit->organization->name ?? 'N/A' }}</p>
+                                                    <p class="card-text"><i class='bx bx-buildings me-1'></i> {{ $unit->building->name ?? 'N/A' }}</p>
+                                                    <p class="card-text"><i class='bx bxs-layer me-1'></i> {{ $unit->level->level_name ?? 'N/A' }}</p>
 
 
-                                                        <div class="action-buttons">
-                                                            <a href="javascript:void(0);" class="action-btn btn-add btn-view view-unit gap-1" data-id="{{ $unit->id }}" title="View">
-                                                                <i class='bx bx-show'></i> View
-                                                            </a>
+                                                    <div class="action-buttons">
+                                                        <a href="javascript:void(0);" class="action-btn btn-add btn-view view-unit gap-1" data-id="{{ $unit->id }}" title="View">
+                                                            <i class='bx bx-show'></i> View
+                                                        </a>
 
-                                                            <a href="{{ route('units.edit', $unit->id) }}" class="action-btn btn-add btn-edit gap-1 Admin-Building-Edit-Button hidden" title="Edit">
-                                                                <i class='bx bx-edit'></i> Edit
-                                                            </a>
-                                                        </div>
+                                                        <a href="{{ route('units.edit', $unit->id) }}" class="action-btn btn-add btn-edit gap-1 Admin-Building-Edit-Button hidden" title="Edit">
+                                                            <i class='bx bx-edit'></i> Edit
+                                                        </a>
                                                     </div>
                                                 </div>
                                             </div>

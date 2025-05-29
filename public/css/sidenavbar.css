@@ -21,10 +21,13 @@
     }
 
     .scrollable-content {
-        height: 83lvh;
+        height: 100lvh;
         overflow-y: auto;
         scrollbar-width: none;
         -ms-overflow-style: none;
+    }
+    body.admin-portal-visible .scrollable-content {
+        height: 83lvh;
     }
 
     .scrollable-content::-webkit-scrollbar {

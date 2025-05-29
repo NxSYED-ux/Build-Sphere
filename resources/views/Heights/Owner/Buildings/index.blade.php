@@ -370,6 +370,30 @@
                 flex: 1 1 calc(50% - 4px);
             }
         }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .building-card {
+            animation: fadeInUp 0.5s ease forwards;
+            opacity: 0;
+        }
+
+        .building-card:nth-child(1) { animation-delay: 0.1s; }
+        .building-card:nth-child(2) { animation-delay: 0.2s; }
+        .building-card:nth-child(3) { animation-delay: 0.3s; }
+        .building-card:nth-child(4) { animation-delay: 0.4s; }
+        .building-card:nth-child(5) { animation-delay: 0.5s; }
+        .building-card:nth-child(6) { animation-delay: 0.6s; }
+        .building-card:nth-child(7) { animation-delay: 0.7s; }
+        .building-card:nth-child(8) { animation-delay: 0.8s; }
     </style>
 @endpush
 
@@ -462,51 +486,49 @@
 
                                 <!-- Card View -->
                                 <div id="cardView">
-                                    <div class="row">
+                                    <div class="buildings-grid">
                                         @forelse($buildings ?? [] as $building)
-                                            <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12 mb-4">
-                                                <div class="card building-card h-100">
-                                                    <div class="card-img-container">
-                                                        @if(count($building->pictures ?? []) > 0)
-                                                            <img src="{{ asset($building->pictures[0]->file_path) }}" class="card-img-top" alt="Building Image">
-                                                        @else
-                                                            <img src="{{ asset('img/placeholder-img.jfif') }}" class="card-img-top" alt="Building Image">
-                                                        @endif
-                                                        <a href="{{ route('owner.levels.index', ['building_id' => $building->id]) }}" class="levels-btn" title="Levels">
-                                                            <i class='bx bxs-layer fs-5'></i>
-                                                        </a>
+                                            <div class="card building-card h-100">
+                                                <div class="card-img-container">
+                                                    @if(count($building->pictures ?? []) > 0)
+                                                        <img src="{{ asset($building->pictures[0]->file_path) }}" class="card-img-top" alt="Building Image">
+                                                    @else
+                                                        <img src="{{ asset('img/placeholder-img.jfif') }}" class="card-img-top" alt="Building Image">
+                                                    @endif
+                                                    <a href="{{ route('owner.levels.index', ['building_id' => $building->id]) }}" class="levels-btn" title="Levels">
+                                                        <i class='bx bxs-layer fs-5'></i>
+                                                    </a>
+                                                </div>
+                                                <div class="card-body">
+                                                    <div class="d-flex justify-content-between align-items-start">
+                                                        <h5 class="card-title">{{ $building->name }}</h5>
+                                                        <span class="badge badge-status
+                                                        @if($building->status === 'Under Review') badge-under-review
+                                                        @elseif($building->status === 'Approved') badge-active
+                                                        @elseif($building->status === 'Rejected') badge-inactive
+                                                        @else badge-inactive
+                                                        @endif">
+                                                        {{ $building->status }}
+                                                    </span>
                                                     </div>
-                                                    <div class="card-body">
-                                                        <div class="d-flex justify-content-between align-items-start">
-                                                            <h5 class="card-title">{{ $building->name }}</h5>
-                                                            <span class="badge badge-status
-                                                            @if($building->status === 'Under Review') badge-under-review
-                                                            @elseif($building->status === 'Approved') badge-active
-                                                            @elseif($building->status === 'Rejected') badge-inactive
-                                                            @else badge-inactive
-                                                            @endif">
-                                                            {{ $building->status }}
-                                                        </span>
-                                                        </div>
-                                                        <p class="card-text"><i class='bx bx-map me-1'></i> {{ $building->address->city ?? 'N/A' }}</p>
-                                                        <p class="card-text"><i class='bx bx-area me-1'></i> {{ $building->area ?? 'N/A' }} sqft</p>
+                                                    <p class="card-text"><i class='bx bx-map me-1'></i> {{ $building->address->city ?? 'N/A' }}</p>
+                                                    <p class="card-text"><i class='bx bx-area me-1'></i> {{ $building->area ?? 'N/A' }} sqft</p>
 
 
-                                                        <div class="action-buttons">
-                                                            @if($building->status === "Under Processing" || $building->status === "Reapproved")
-                                                                <a href="{{ route('owner.buildings.show', ['building' => $building->id]) }}" class="action-btn btn-add btn-view gap-1" title="Review">
-                                                                    <i class='bx bxs-right-top-arrow-circle'></i> Submit
-                                                                </a>
-                                                            @else
-                                                                <a href="{{ route('owner.buildings.show', ['building' => $building->id]) }}" class="action-btn btn-add btn-view gap-1" title="View">
-                                                                    <i class='bx bx-show'></i> View
-                                                                </a>
-                                                            @endif
-
-                                                            <a href="{{ route('owner.buildings.edit', $building->id) }}" class="action-btn btn-add btn-edit gap-1 Owner-Building-Edit-Button hidden" title="Edit">
-                                                                <i class='bx bx-edit'></i> Edit
+                                                    <div class="action-buttons">
+                                                        @if($building->status === "Under Processing" || $building->status === "Reapproved")
+                                                            <a href="{{ route('owner.buildings.show', ['building' => $building->id]) }}" class="action-btn btn-add btn-view gap-1" title="Review">
+                                                                <i class='bx bxs-right-top-arrow-circle'></i> Submit
                                                             </a>
-                                                        </div>
+                                                        @else
+                                                            <a href="{{ route('owner.buildings.show', ['building' => $building->id]) }}" class="action-btn btn-add btn-view gap-1" title="View">
+                                                                <i class='bx bx-show'></i> View
+                                                            </a>
+                                                        @endif
+
+                                                        <a href="{{ route('owner.buildings.edit', $building->id) }}" class="action-btn btn-add btn-edit gap-1 Owner-Building-Edit-Button hidden" title="Edit">
+                                                            <i class='bx bx-edit'></i> Edit
+                                                        </a>
                                                     </div>
                                                 </div>
                                             </div>
