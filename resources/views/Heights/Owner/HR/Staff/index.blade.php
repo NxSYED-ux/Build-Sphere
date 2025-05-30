@@ -383,27 +383,27 @@
                                         <label for="DepartmentId">Department</label>
                                         <select name="DepartmentId" id="DepartmentId" class="form-select filter-select">
                                             <option value="">All Departments</option>
-                                            @foreach($departments as $department)
+                                            @forelse($departments ?? [] as $department)
                                                 <option value="{{ $department->id }}" {{ request('DepartmentId') == $department->id ? 'selected' : '' }}>
                                                     {{ $department->name }}
                                                 </option>
-                                            @endforeach
+                                            @empty
+                                            @endforelse
                                         </select>
                                     </div>
 
-                                    @if(isset($buildings) && $buildings->count() > 0)
-                                        <div class="filter-group">
-                                            <label for="BuildingId">Building</label>
-                                            <select name="BuildingId" id="BuildingId" class="form-select filter-select">
-                                                <option value="">All Buildings</option>
-                                                @foreach($buildings as $building)
-                                                    <option value="{{ $building->id }}" {{ request('BuildingId') == $building->id ? 'selected' : '' }}>
-                                                        {{ $building->name }}
-                                                    </option>
-                                                @endforeach
-                                            </select>
-                                        </div>
-                                    @endif
+                                    <div class="filter-group">
+                                        <label for="BuildingId">Building</label>
+                                        <select name="BuildingId" id="BuildingId" class="form-select filter-select">
+                                            <option value="">All Buildings</option>
+                                            @forelse($buildings ?? [] as $building)
+                                                <option value="{{ $building->id }}" {{ request('BuildingId') == $building->id ? 'selected' : '' }}>
+                                                    {{ $building->name }}
+                                                </option>
+                                            @empty
+                                            @endforelse
+                                        </select>
+                                    </div>
 
                                     <div class="filter-buttons">
                                         <button type="button" class="btn btn-secondary flex-grow-1 d-flex align-items-center justify-content-center" onclick="resetFilters()">
