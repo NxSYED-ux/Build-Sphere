@@ -633,7 +633,7 @@
     />
 
     <!-- Side Navbar -->
-    <x-Owner.side-navbar :openSections="['Property Users']" />
+    <x-Owner.side-navbar :openSections="['PropertyUsers']" />
     <x-error-success-model />
 
     <div id="main">

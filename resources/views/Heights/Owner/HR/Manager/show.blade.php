@@ -467,7 +467,7 @@
     ]" />
 
     <!-- Side Navbar -->
-    <x-Owner.side-navbar :openSections="['Manager']" />
+    <x-Owner.side-navbar :openSections="['Managers']" />
 
     <!-- Error/Success Modal -->
     <x-error-success-model />

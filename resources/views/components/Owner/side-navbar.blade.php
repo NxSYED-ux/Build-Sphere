@@ -85,7 +85,7 @@
                 </div>
             </li>
 
-            <!-- Rentals -->
+            <!-- Property Users -->
             <li class="mb-1 hidden" id="OwnerRentals">
                 <div id="link-a">
                     <a href="{{ route('owner.property.users.index') }}" class="link-dark collapsed {{ in_array('PropertyUsers', $openSections) ? 'Link-background-color' : '' }} px-1" id="PropertyUsersbtn" >

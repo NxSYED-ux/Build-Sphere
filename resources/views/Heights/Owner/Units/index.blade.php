@@ -530,7 +530,7 @@
                                     </div>
 
                                     <div class="dropdown">
-                                        <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="exportDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <button class="btn btn-secondary dropdown-toggle" type="button" id="exportDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                                             <x-icon name="export" type="icon" class="me-1" size="16" />
                                             Export
                                         </button>
