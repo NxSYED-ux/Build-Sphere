@@ -98,6 +98,25 @@ class OwnerFiltersService
             ->get();
     }
 
+    public function organizationBuildings()
+    {
+        $token = request()->attributes->get('token');
+        $organization_id = $token['organization_id'];
+
+        return Building::where('organization_id', $organization_id)
+            ->select('id', 'name')
+            ->orderBy('name', 'asc')
+            ->get();
+    }
+
+    public function managerBuildings($managerStaffId)
+    {
+        return ManagerBuilding::where('staff_id', $managerStaffId)
+            ->with(['building:id,name'])
+            ->get();
+    }
+
+
     public function approvedBuildings($buildingIds)
     {
         return Building::whereIn('id', $buildingIds)
