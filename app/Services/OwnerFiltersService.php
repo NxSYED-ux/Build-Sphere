@@ -150,20 +150,26 @@ class OwnerFiltersService
             ->get();
     }
 
-    public function users($notIn = [])
+    public function users(bool $excludeAuthenticatedUser = true, array $notIn = [])
     {
-        $user = request()->user();
-
-        return User::where('id', '!=', $user->id)
+        $query = User::query()
             ->orderBy('name', 'asc')
-            ->when($notIn, function ($query) use ($notIn) {
-                return $query->whereNotIn('id', $notIn);
-            })
-            ->select('id', 'name', 'email')
-            ->get();
+            ->select('id', 'name', 'email');
+
+        if ($excludeAuthenticatedUser) {
+            $authenticatedUserId = request()->user()->id;
+            $query->where('id', '!=', $authenticatedUserId);
+        }
+
+        if (!empty($notIn)) {
+            $query->whereNotIn('id', $notIn);
+        }
+
+        return $query->get();
     }
 
-    public function availableUnitsOfBuilding($buildingId){
+    public function availableUnitsOfBuilding($buildingId)
+    {
         return BuildingUnit::select('id', 'unit_name')
             ->where('sale_or_rent', '!=', 'Not Available')
             ->where('availability_status', 'Available')
@@ -174,8 +180,8 @@ class OwnerFiltersService
             ->get();
     }
 
-    public function specificTypesOfUnitsOfBuilding($buildingId, $unit_type){
-
+    public function specificTypesOfUnitsOfBuilding($buildingId, $unit_type)
+    {
         return BuildingUnit::select('id', 'unit_name')
             ->where('sale_or_rent', 'Not Available')
             ->whereIn('unit_type', $unit_type)

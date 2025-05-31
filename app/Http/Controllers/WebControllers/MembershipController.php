@@ -41,6 +41,7 @@ class MembershipController extends Controller
                     'building:id,name'
                 ]);
 
+
             $buildingsQuery = Building::where('organization_id', $organization_id)
                 ->whereIn('status', ['Approved', 'For Re-Approval'])
                 ->where('isFreeze', 0)

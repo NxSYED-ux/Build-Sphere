@@ -39,7 +39,7 @@ class FinanceController extends Controller
             $buildingIds = $ownerService->getAccessibleBuildingIds();
             $buildings = $ownerService->buildings($buildingIds);
             $units  = $ownerService->units($buildingIds);
-            $users = $ownerService->users();
+            $users = $ownerService->users(false);
             $memberships = $ownerService->memberships($buildingIds);
 
 
