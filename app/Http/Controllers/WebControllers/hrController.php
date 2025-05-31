@@ -18,6 +18,7 @@ use App\Models\UserPermission;
 use App\Notifications\CredentialsEmail;
 use App\Notifications\DatabaseOnlyNotification;
 use App\Notifications\UserNotification;
+use App\Services\FinanceService;
 use App\Services\OwnerFiltersService;
 use App\Services\PermissionService;
 use App\Services\SubscriptionService;
@@ -433,7 +434,9 @@ class hrController extends Controller
             $managerBuildings = $ownerServices->managerBuildings($staffInfo->id);
 
             $buildingIds = $managerBuildings->pluck('building_id')->toArray();
-            $transactions = $this->managerBuildingsTransactions($organization_id, $buildingIds);
+
+            $financeService = new FinanceService();
+            $transactions = $financeService->getRecentBuildingTransactions($organization_id, $buildingIds);
 
             return view('Heights.Owner.HR.Manager.show', compact('staffInfo', 'managerBuildings', 'transactions'));
 
@@ -448,6 +451,7 @@ class hrController extends Controller
     public function staffEdit(Request $request, string $id)
     {
         try {
+            $currentUserId = $request->user()->id;
             $token = $request->attributes->get('token');
             $organization_id = $token['organization_id'];
 
@@ -455,6 +459,10 @@ class hrController extends Controller
 
             if (!$staffInfo || $staffInfo->organization_id != $organization_id) {
                 return redirect()->back()->with('error', 'Invalid staff id');
+            }
+
+            if ($staffInfo->user_id == $currentUserId) {
+                return redirect()->back()->with('error', 'You cannot edit your own staff record.');
             }
 
             $ownerServices = new OwnerFiltersService();
@@ -524,6 +532,12 @@ class hrController extends Controller
             if (!$staff) {
                 DB::rollBack();
                 return redirect()->back()->withInput()->with('error', 'Please refresh the page and try again.');
+            }
+
+            $currentUserId = $request->user()->id;
+            if ($staff->user_id == $currentUserId) {
+                DB::rollBack();
+                return redirect()->back()->with('error', 'You cannot update your own staff record.');
             }
 
             $user = $staff->user;
@@ -1174,39 +1188,6 @@ class hrController extends Controller
             Log::error('Error in manager destroy: ' . $e->getMessage());
             return response()->json(['error' => 'Something went wrong. Please try again.'], 500);
         }
-    }
-
-
-    public function managerBuildingsTransactions(string $organization_id, $managerBuildings)
-    {
-        $transactions = Transaction::whereIn('building_id', $managerBuildings)
-            ->where(function ($query) use ($organization_id) {
-                $query->where(function ($q) use ($organization_id) {
-                    $q->where('buyer_type', 'organization')
-                        ->where('buyer_id', $organization_id);
-                })->orWhere(function ($q) use ($organization_id) {
-                    $q->where('seller_type', 'organization')
-                        ->where('seller_id', $organization_id);
-                });
-            })
-            ->orderBy('created_at', 'desc')
-            ->limit(6)
-            ->get();
-
-        $history = $transactions->map(function ($txn) use ($organization_id) {
-            $isBuyer = $txn->buyer_type === 'organization' && $txn->buyer_id == $organization_id;
-
-            return [
-                'id' => $txn->id,
-                'title' => $txn->transaction_title,
-                'type' => $isBuyer ? $txn->buyer_transaction_type : $txn->seller_transaction_type,
-                'price' => number_format($txn->price, 2) . ' ' . $txn->currency,
-                'status' => $txn->status,
-                'created_at' => $txn->created_at->diffForHumans(),
-            ];
-        });
-
-        return $history;
     }
 
 }

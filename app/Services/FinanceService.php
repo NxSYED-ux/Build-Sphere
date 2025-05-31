@@ -2,12 +2,34 @@
 
 namespace App\Services;
 
+use App\Models\Transaction;
 use Carbon\Carbon;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 
 class FinanceService
 {
+    public function getRecentBuildingTransactions(string $organization_id, $buildingIds)
+    {
+        $transactions = Transaction::whereIn('building_id', $buildingIds)
+            ->where(function ($query) use ($organization_id) {
+                $query->where(function ($q) use ($organization_id) {
+                    $q->where('buyer_type', 'organization')
+                        ->where('buyer_id', $organization_id);
+                })->orWhere(function ($q) use ($organization_id) {
+                    $q->where('seller_type', 'organization')
+                        ->where('seller_id', $organization_id);
+                });
+            })
+            ->orderBy('created_at', 'desc')
+            ->limit(6)
+            ->get();
+
+        return $this->formatTransactionHistory($transactions, function ($txn) use ($organization_id) {
+            return $txn->buyer_type === 'organization' && $txn->buyer_id == $organization_id;
+        });
+    }
+    
     public function formatTransactionHistory( LengthAwarePaginator|Collection $transactions, callable $buyerCheckCallback = null)
     {
         $items = $transactions instanceof LengthAwarePaginator ? $transactions->items() : $transactions;
