@@ -149,7 +149,7 @@ class hrController extends Controller
 
             if(!$access['access']){
                 DB::rollBack();
-                return redirect()->back()->withInput($request->except('unitId'))->with('error', $access['message']);
+                return redirect()->back()->withInput()->with('error', $access['message']);
             }
 
             $organization_id = $access['organization_id'];
@@ -382,7 +382,7 @@ class hrController extends Controller
             $buildingIds = $ownerService->getAccessibleBuildingIds();
 
             $hasAccess = !in_array($staffInfo->building_id, $buildingIds);
-            if (!$hasAccess) {
+            if ($hasAccess) {
                 return redirect()->back()->with('error', 'Access denied: You do not manage this building or its staff.');
             }
 
@@ -461,7 +461,7 @@ class hrController extends Controller
             $buildingIds = $ownerServices->getAccessibleBuildingIds();
 
             $hasAccess = !in_array($staffInfo->building_id, $buildingIds);
-            if (!$hasAccess) {
+            if ($hasAccess) {
                 return redirect()->back()->with('error', 'Access denied: You do not manage this building or its staff.');
             }
 
