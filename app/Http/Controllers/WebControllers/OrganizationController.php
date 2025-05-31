@@ -37,6 +37,7 @@ class OrganizationController extends Controller
             $activeTab = 'Tab1';
             $organizations = Organization::with('address', 'owner')->paginate(12);
             $dropdownData = DropdownType::with(['values.childs.childs'])->where('type_name', 'Country')->get(); // Country -> Province -> City
+
             $owners = User::where('role_id', 2)
                 ->whereNotIn('id', Organization::pluck('owner_id'))
                 ->orderBy('name', 'asc')
@@ -136,8 +137,6 @@ class OrganizationController extends Controller
                 }
             }
 
-            DB::commit();
-
             ProcessSuccessfulCheckout::dispatch(
                 $organization->owner_id,
                 $organization->id,
@@ -161,6 +160,8 @@ class OrganizationController extends Controller
                 "{$organization->name} has been successfully added to the platform with the {$plan->name} plan by {$user->email}. The organization is now live and fully operational.",
                 ['web' => "admin/organizations/{$organization->id}/show"],
             ));
+
+            DB::commit();
 
             return redirect()->route('organizations.index')->with('success', 'Organization created successfully.');
 

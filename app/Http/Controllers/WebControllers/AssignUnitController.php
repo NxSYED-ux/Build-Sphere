@@ -16,6 +16,7 @@ use App\Models\User;
 use App\Models\UserBuildingUnit;
 use App\Models\UserUnitPicture;
 use App\Notifications\CredentialsEmail;
+use App\Services\AssignUnitService;
 use App\Services\OwnerFiltersService;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
@@ -31,6 +32,8 @@ class AssignUnitController extends Controller
     public function index(Request $request)
     {
         try {
+            $isOwner = $request->user()->id === 2;
+
             $token = $request->attributes->get('token');
             $organizationId = $token['organization_id'];
 
@@ -43,7 +46,7 @@ class AssignUnitController extends Controller
                 ->get();
 
             $ownerService = new OwnerFiltersService();
-            $users = $ownerService->users();
+            $users = $ownerService->users(!$isOwner);
             $buildingIds = $ownerService->getAccessibleBuildingIds();
             $buildings = $ownerService->approvedBuildings($buildingIds);
 
@@ -59,7 +62,7 @@ class AssignUnitController extends Controller
                     return redirect()->back()->with('error', 'Invalid Unit ID');
                 }
 
-                $selectedBuildingId = $checkingSelectedUnit?->building_id;
+                $selectedBuildingId = $checkingSelectedUnit->building_id;
             }
 
             return view('Heights.Owner.AssignUnits.index', compact('selectedBuildingId', 'selectedUnitId', 'selectedUserId', 'users', 'buildings', 'dropdownData'));
@@ -99,9 +102,6 @@ class AssignUnitController extends Controller
 
         try {
             $loggedUser = $request->user();
-            $token = $request->attributes->get('token');
-            $organizationId = $token['organization_id'];
-            $roleName = $token['role_name'];
 
             $ownerService = new OwnerFiltersService();
             $result = $ownerService->checkBuildingAccess($request->buildingId);
@@ -130,7 +130,8 @@ class AssignUnitController extends Controller
 
             $unit = BuildingUnit::find($request->unitId);
 
-            [$assignedUnit, $transaction] = $this->unitAssignment_Transaction($user, $unit, $request->type,null, $request->price, (int) $request->no_of_months);
+            $assignUnitService = new AssignUnitService();
+            [$assignedUnit, $transaction] = $assignUnitService->unitAssignment_Transaction($user, $unit, $request->type,null, $request->price, (int) $request->no_of_months);
 
             if ($request->hasFile('pictures')) {
                 foreach ($request->file('pictures') as $image) {
@@ -146,51 +147,16 @@ class AssignUnitController extends Controller
                 }
             }
 
+            $userId = $request->userId ?? $user->id;
+            $assignUnitService->sendUnitAssignmentNotifications(
+                $unit,
+                $transaction,
+                $userId,
+                $assignedUnit,
+                $loggedUser
+            );
+
             DB::commit();
-
-            $userHeading = "{$unit->unit_name} " . ($request->type === 'Sold' ? 'Purchased' : 'Rented') . " Successfully!";
-            $userMessage = "Congratulations! You have successfully " .
-                ($request->type === 'Sold' ? 'purchased' : 'rented') .
-                " {$unit->unit_name} for the price of {$request->price} PKR" .
-                ($request->type === 'Sold' ? '.' : " per {$request->no_of_months} month.");
-
-
-            dispatch( new UnitNotifications(
-                $organizationId,
-                $unit->id,
-                "{$unit->unit_name} Assigned Successfully by {$roleName}",
-                "{$unit->unit_name} has been {$request->type} successfully for Price: {$request->price} ",
-                "owner/units/{$unit->id}/show",
-
-                $loggedUser->id,
-                "{$unit->unit_name} Assigned Successfully",
-                "{$unit->unit_name} has been {$request->type} successfully for Price: {$request->price} ",
-                "owner/units/{$unit->id}/show",
-
-                $request->userId ?? $user->id,
-                $userHeading,
-                $userMessage,
-                "",
-            ));
-
-
-            dispatch(new UnitNotifications(
-                $organizationId,
-                $unit->id,
-                "Transaction Completed Successfully by {$roleName}",
-                "A payment of {$request->price} PKR has been successfully recorded for your {$request->type} of {$unit->unit_name}.",
-                "owner/finance/{$transaction->id}/show",
-
-                $loggedUser->id,
-                "Transaction Completed Successfully",
-                "A payment of {$request->price} PKR has been recorded for {$unit->unit_name}.",
-                "owner/finance/{$transaction->id}/show",
-
-                $request->userId ?? $user->id,
-                "Transaction Successful!",
-                "You have successfully made a payment of {$request->price} PKR for {$unit->unit_name}.",
-                "",
-            ));
 
             return redirect()->back()->with('success', 'Unit assigned successfully.');
 
@@ -258,70 +224,6 @@ class AssignUnitController extends Controller
         ));
 
         return $user;
-    }
-
-    private function unitAssignment_Transaction($user, $unit, $type, $paymentIntentId, $price, int $billing_cycle = 1, $currency = 'PKR', $paymentMethod = 'Cash')
-    {
-        $unit->update(['availability_status' => $type]);
-
-        $assignedUnit = UserBuildingUnit::create([
-            'user_id' => $user->id,
-            'unit_id' => $unit->id,
-            'building_id' => $unit->building_id,
-            'organization_id' => $unit->organization_id,
-            'type' => $type,
-            'price' => $price,
-            'billing_cycle' => $billing_cycle
-        ]);
-
-        $source_id = $assignedUnit->id;
-        $source_name = 'unit contract';
-
-        if ($type === 'Rented') {
-            $subscription = Subscription::create([
-                'customer_payment_id' => $user->customer_payment_id,
-                'building_id' => $unit->building_id,
-                'unit_id' => $unit->id,
-                'user_id' => $user->id,
-                'organization_id' => $unit->organization_id,
-                'source_id' => $source_id,
-                'source_name' => $source_name,
-                'billing_cycle' => $billing_cycle,
-                'subscription_status' => 'Active',
-                'price_at_subscription' => $assignedUnit->price,
-                'currency_at_subscription' => $currency,
-                'ends_at' => now()->addMonths($billing_cycle),
-            ]);
-
-            $source_id = $subscription->id;
-            $source_name = 'subscription';
-
-            $assignedUnit->update(['subscription_id' => $subscription->id]);
-        }
-
-        $transaction = Transaction::create([
-            'transaction_title' => $unit->unit_name,
-            'transaction_category' => 'New',
-            'building_id' => $unit->building_id,
-            'unit_id' => $unit->id,
-            'buyer_id' => $user->id,
-            'buyer_type' => 'user',
-            'seller_type' => 'organization',
-            'seller_id' => $unit->organization_id,
-            'payment_method' => $paymentMethod,
-            'gateway_payment_id' => $paymentIntentId,
-            'price' => $assignedUnit->price,
-            'currency' => $currency,
-            'status' => 'Completed',
-            'is_subscription' => $type === 'Rented',
-            'billing_cycle' => $type === 'Rented' ? "{$billing_cycle} Month" : null,
-            'subscription_start_date' => $type === 'Rented' ? now() : null,
-            'subscription_end_date' => $type === 'Rented' ? now()->addMonths($billing_cycle) : null,
-            'source_id' => $source_id,
-            'source_name' => $source_name,
-        ]);
-
-        return [$assignedUnit, $transaction];
     }
 
 }

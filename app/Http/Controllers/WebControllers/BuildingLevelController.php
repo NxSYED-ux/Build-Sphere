@@ -309,14 +309,10 @@ class BuildingLevelController extends Controller
 
     public function ownerUpdate(Request $request)
     {
-        $ownerService = new OwnerFiltersService();
-        $result = $ownerService->checkBuildingAccess($request->building_id);
+        $token = request()->attributes->get('token');
+        $organization_id = $token['organization_id'];
 
-        if(!$result['access']){
-            return redirect()->back()->with('error', $result['message']);
-        }
-
-        return $this->update($request, 'owner', $result['organization_id']);
+        return $this->update($request, 'owner', $organization_id);
     }
 
     private function update(Request $request, string $portal, $organization_id)
@@ -346,6 +342,15 @@ class BuildingLevelController extends Controller
 
             if ($portal === 'owner' && $token['organization_id'] !== $buildingLevel->organization_id) {
                 return redirect()->back()->withInput()->with('error', 'The selected level id is invalid.');
+            }
+
+            if($portal === 'owner'){
+                $ownerService = new OwnerFiltersService();
+                $result = $ownerService->checkBuildingAccess($buildingLevel->building_id);
+
+                if(!$result['access']){
+                    return redirect()->back()->with('error', $result['message']);
+                }
             }
 
             $exists = BuildingLevel::where('building_id', $buildingLevel->building_id)

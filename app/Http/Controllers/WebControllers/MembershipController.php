@@ -14,8 +14,11 @@ use App\Models\StaffMember;
 use App\Models\Subscription;
 use App\Models\Transaction;
 use App\Models\User;
+use App\Services\MembershipService;
+use App\Services\OwnerFiltersService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 
@@ -25,59 +28,22 @@ class MembershipController extends Controller
     public function index(Request $request)
     {
         try {
-            $user = $request->user();
-            $buildings = collect();
-            $units = collect();
+            $token = $request->attributes->get('token');
+            $organization_id = $token['organization_id'];
+
+            $ownerService = new OwnerFiltersService();
+            $buildingIds = $ownerService->getAccessibleBuildingIds();
+            $buildings = $ownerService->approvedBuildings($buildingIds);
+            $units = $ownerService->membershipsUnits($buildingIds);
             $types = ['Restaurant', 'Gym', 'Other'];
             $statuses = ['Draft', 'Published', 'Non Renewable', 'Archived'];
 
-            $token = $request->attributes->get('token');
-            $organization_id = $token['organization_id'];
-            $role_name = $token['role_name'];
-
             $membershipQuery = Membership::where('organization_id', $organization_id)
+                ->whereIn('building_id', $buildingIds)
                 ->with([
                     'unit:id,unit_name',
                     'building:id,name'
                 ]);
-
-
-            $buildingsQuery = Building::where('organization_id', $organization_id)
-                ->whereIn('status', ['Approved', 'For Re-Approval'])
-                ->where('isFreeze', 0)
-                ->orderBy('name', 'asc')
-                ->select('id', 'name');
-
-            $unitsQuery = BuildingUnit::where('organization_id', $organization_id)
-                ->where('status', 'Approved')
-                ->where('availability_status', 'Available')
-                ->where('sale_or_rent', 'Not Available')
-                ->whereNotIn('unit_type', ['Room', 'Shop', 'Apartment'])
-                ->orderBy('unit_name', 'asc')
-                ->select('id', 'unit_name');
-
-            if ($role_name === 'Manager') {
-                $managerBuildingIds = ManagerBuilding::where('user_id', $user->id)->pluck('building_id');
-
-                if ($managerBuildingIds->isEmpty()) {
-                    $memberships = collect();
-                    return view('Heights.Owner.Memberships.index', compact('memberships', 'buildings', 'units', 'types', 'statuses'));
-                }
-
-                $membershipQuery->whereIn('building_id', $managerBuildingIds);
-                $buildingsQuery->whereIn('id', $managerBuildingIds);
-                $unitsQuery->whereIn('building_id', $managerBuildingIds);
-
-            }elseif ($role_name === 'Staff'){
-                $staffRecord = StaffMember::where('user_id', $user->id)->first();
-                if ($staffRecord) {
-                    $staffBuildingId = $staffRecord->building_id;
-
-                    $membershipQuery->where('building_id', $staffBuildingId);
-                    $buildingsQuery->where('id', $staffBuildingId);
-                    $unitsQuery->where('building_id', $staffBuildingId);
-                }
-            }
 
             if ($request->filled('building_id')) {
                 $membershipQuery->where('building_id', $request->input('building_id'));
@@ -113,8 +79,6 @@ class MembershipController extends Controller
             }
 
             $memberships = $membershipQuery->orderBy('updated_at', 'desc')->paginate(12);
-            $buildings = $buildingsQuery->get();
-            $units = $unitsQuery->get();
 
             return view('Heights.Owner.Memberships.index', compact('memberships', 'buildings', 'units', 'types', 'statuses'));
 
@@ -124,45 +88,15 @@ class MembershipController extends Controller
         }
     }
 
-
-    public function create(Request $request)
+    public function create()
     {
         try {
-            $user = $request->user();
-            $buildings = collect();
+            $ownerService = new OwnerFiltersService();
+            $buildingIds = $ownerService->getAccessibleBuildingIds();
+            $buildings = $ownerService->approvedBuildings($buildingIds);
             $types = ['Restaurant', 'Gym', 'Other'];
             $statuses = ['Draft', 'Published', 'Non Renewable'];
             $currency = ['PKR'];
-
-            $token = $request->attributes->get('token');
-            $organization_id = $token['organization_id'];
-            $role_name = $token['role_name'];
-
-            $buildingsQuery = Building::where('organization_id', $organization_id)
-                ->whereIn('status', ['Approved', 'For Re-Approval'])
-                ->where('isFreeze', 0)
-                ->orderBy('name', 'asc')
-                ->select('id', 'name');
-
-            if ($role_name === 'Manager') {
-                $managerBuildingIds = ManagerBuilding::where('user_id', $user->id)->pluck('building_id');
-
-                if ($managerBuildingIds->isEmpty()) {
-                    return view('Heights.Owner.Memberships.create', compact('buildings', 'types', 'statuses', 'currency'));
-                }
-
-                $buildingsQuery->whereIn('id', $managerBuildingIds);
-            }
-            elseif ($role_name === 'Staff'){
-                $staffRecord = StaffMember::where('user_id', $user->id)->first();
-
-                if ($staffRecord) {
-                    $staffBuildingId = $staffRecord->building_id;
-                    $buildingsQuery->where('id', $staffBuildingId);
-                }
-            }
-
-            $buildings = $buildingsQuery->get();
 
             return view('Heights.Owner.Memberships.create', compact('buildings','types', 'statuses', 'currency'));
 
@@ -200,27 +134,20 @@ class MembershipController extends Controller
         try {
             $user = $request->user();
             $token = $request->attributes->get('token');
-            $organization_id = $token['organization_id'];
-            $role_name = $token['role_name'];
 
-            if ($role_name === 'Manager' && !ManagerBuilding::where('building_id', $request->building_id)
-                    ->where('user_id', $user->id)
-                    ->exists()) {
-                return redirect()->back()->withInput()->with('error', 'You do not have access to add memberships for the selected building.');
-            }
-            elseif ($role_name === 'Staff'){
-                $staffRecord = StaffMember::where('user_id', $user->id)->first();
+            $ownerService = new OwnerFiltersService();
+            $result = $ownerService->checkBuildingAccess($request->building_id);
 
-                if (!$staffRecord || $staffRecord->building_id != $request->building_id) {
-                    DB::rollBack();
-                    return redirect()->back()->withInput()->with('error', 'You do not have access to add memberships for the selected building.');
-                }
+            if(!$result['access']){
+                return redirect()->back()->withInput()->with('error', $result['message']);
             }
+
+            $organization_id = $result['organization_id'];
 
             $unit = BuildingUnit::where('id', $request->unit_id)
                 ->where('organization_id', $organization_id)->first();
 
-            if (!$unit || $unit->building_id !== (int)$request->building_id) {
+            if (!$unit || $unit->building_id !== (int) $request->building_id) {
                 return redirect()->back()->withInput()->with('error', 'Selected unit does not belong to the selected building.');
             }
 
@@ -271,21 +198,18 @@ class MembershipController extends Controller
     public function edit(Request $request, $id)
     {
         try {
-            $user = $request->user();
+            $ownerService = new OwnerFiltersService();
+            $buildingIds = $ownerService->getAccessibleBuildingIds();
+            $buildings = $ownerService->approvedBuildings($buildingIds);
             $types = ['Restaurant', 'Gym', 'Other'];
             $currency = ['PKR'];
+
             $token = $request->attributes->get('token');
             $organization_id = $token['organization_id'];
-            $role_name = $token['role_name'];
-
-            $buildingsQuery = Building::where('organization_id', $organization_id)
-                ->whereIn('status', ['Approved', 'For Re-Approval'])
-                ->where('isFreeze', 0)
-                ->orderBy('name', 'asc')
-                ->select('id', 'name');
 
             $membership = Membership::where('id', $id)
                 ->where('organization_id', $organization_id)
+                ->whereIn('building_id', $buildingIds)
                 ->with([
                     'unit:id,unit_name',
                     'building:id,name'
@@ -296,27 +220,6 @@ class MembershipController extends Controller
             }
 
             $statuses = ['Published', 'Non Renewable', $membership->status === 'Draft' ? 'Draft' : 'Archived'];
-
-            if ($role_name === 'Manager') {
-                $managerBuildingIds = ManagerBuilding::where('user_id', $user->id)->pluck('building_id')->toArray();
-
-                if (!in_array($membership->building_id, $managerBuildingIds)) {
-                    return redirect()->back()->with('error', 'You do not have access to edit this membership.');
-                }
-
-                $buildingsQuery->whereIn('id', $managerBuildingIds);
-            }
-            elseif ($role_name === 'Staff'){
-                $staffRecord = StaffMember::where('user_id', $user->id)->first();
-
-                if (!$staffRecord || $staffRecord->building_id != $membership->building_id) {
-                    return redirect()->back()->with('error', 'You do not have access to edit this membership.');
-                }
-
-                $buildingsQuery->where('id', $staffRecord->building_id);
-            }
-
-            $buildings = $buildingsQuery->get();
 
             return view('Heights.Owner.Memberships.edit', compact(
                 'membership', 'buildings', 'types', 'statuses', 'currency'
@@ -359,8 +262,16 @@ class MembershipController extends Controller
         try {
             $user = $request->user();
             $token = $request->attributes->get('token');
-            $organization_id = $token['organization_id'];
-            $role_name = $token['role_name'];
+
+            $ownerService = new OwnerFiltersService();
+            $result = $ownerService->checkBuildingAccess($request->building_id);
+
+            if(!$result['access']){
+                DB::rollBack();
+                return redirect()->back()->withInput()->with('error', $result['message']);
+            }
+
+            $organization_id = $result['organization_id'];
 
             $membership = Membership::where('id', $request->id)
                 ->where('organization_id', $organization_id)
@@ -371,24 +282,10 @@ class MembershipController extends Controller
                 return redirect()->back()->with('error', 'Membership not found.');
             }
 
-            if ($role_name === 'Manager' && !ManagerBuilding::where('building_id', $request->building_id)
-                    ->where('user_id', $user->id)->exists()) {
-                DB::rollBack();
-                return redirect()->back()->withInput()->with('error', 'You do not have access to edit memberships for the selected building.');
-            }
-            elseif ($role_name === 'Staff'){
-                $staffRecord = StaffMember::where('user_id', $user->id)->first();
-
-                if (!$staffRecord || $staffRecord->building_id != $request->building_id) {
-                    DB::rollBack();
-                    return redirect()->back()->withInput()->with('error', 'You do not have access to edit memberships for the selected building.');
-                }
-            }
-
             $unit = BuildingUnit::where('id', $request->unit_id)
                 ->where('organization_id', $organization_id)->first();
 
-            if (!$unit || $unit->building_id !== (int)$request->building_id) {
+            if (!$unit || $unit->building_id !== (int) $request->building_id) {
                 DB::rollBack();
                 return redirect()->back()->withInput()->with('error', 'Selected unit does not belong to the selected building.');
             }
@@ -396,6 +293,13 @@ class MembershipController extends Controller
             $imagePath = $membership->image;
             if ($request->hasFile('image')) {
                 $imagePath = $this->handleImageUpload($request);
+            }
+
+            if($membership->image){
+                $oldImagePath = public_path($membership->image);
+                if (File::exists($oldImagePath)) {
+                    File::delete($oldImagePath);
+                }
             }
 
             $membership->update([
@@ -455,14 +359,11 @@ class MembershipController extends Controller
         }
     }
 
-
     public function show(Request $request, $id)
     {
         try {
-            $user = $request->user();
             $token = $request->attributes->get('token');
             $organization_id = $token['organization_id'];
-            $role_name = $token['role_name'];
 
             $membership = Membership::where('id', $id)
                 ->where('organization_id', $organization_id)
@@ -478,20 +379,12 @@ class MembershipController extends Controller
                 return redirect()->back()->with('error', 'Membership not found.');
             }
 
-            if (
-                $role_name === 'Manager' &&
-                !ManagerBuilding::where('user_id', $user->id)
-                    ->where('building_id', $membership->building_id)
-                    ->exists()
-            ) {
-                return redirect()->back()->with('error', 'You do not have permission to view this membership.');
-            }
-            elseif ($role_name === 'Staff'){
-                $staffRecord = StaffMember::where('user_id', $user->id)->first();
+            $ownerService = new OwnerFiltersService();
+            $result = $ownerService->checkBuildingAccess($membership->building_id);
 
-                if (!$staffRecord || $staffRecord->building_id != $membership->building_id) {
-                    return redirect()->back()->with('error', 'You do not have permission to view this membership.');
-                }
+            if(!$result['access']){
+                DB::rollBack();
+                return redirect()->back()->withInput()->with('error', $result['message']);
             }
 
             return view('Heights.Owner.Memberships.show', compact('membership'));
@@ -506,10 +399,10 @@ class MembershipController extends Controller
     public function assignMembershipView(Request $request, $id)
     {
         try {
-            $user = $request->user();
+            $isOwner = request()->user()->id === 2;
+
             $token = $request->attributes->get('token');
             $organization_id = $token['organization_id'];
-            $role_name = $token['role_name'];
 
             $membership = Membership::where('id', $id)
                 ->where('organization_id', $organization_id)
@@ -521,31 +414,19 @@ class MembershipController extends Controller
                 return redirect()->back()->with('error', 'Membership not found.');
             }
 
-            if (
-                $role_name === 'Manager' &&
-                !ManagerBuilding::where('user_id', $user->id)
-                    ->where('building_id', $membership->building_id)
-                    ->exists()
-            ) {
-                return redirect()->back()->with('error', 'You do not have permission to assign this membership.');
-            }
-            elseif ($role_name === 'Staff'){
-                $staffRecord = StaffMember::where('user_id', $user->id)->first();
+            $ownerService = new OwnerFiltersService();
+            $result = $ownerService->checkBuildingAccess($membership->building_id);
 
-                if (!$staffRecord || $staffRecord->building_id != $membership->building_id) {
-                    return redirect()->back()->with('error', 'You do not have permission to assign this membership.');
-                }
+            if(!$result['access']){
+                return redirect()->back()->withInput()->with('error', $result['message']);
             }
 
             $assignedUserIds = MembershipUser::where('membership_id', $id)
                 ->where('status', 1)
-                ->pluck('user_id');
+                ->pluck('user_id')
+                ->toArray();
 
-            $availableUsers = User::where('id', '!=', $user->id)
-                ->whereNotIn('id', $assignedUserIds)
-                ->select('id', 'name', 'email')
-                ->orderBy('name', 'asc')
-                ->get();
+            $availableUsers = $ownerService->users(!$isOwner, $assignedUserIds);
 
             return view('Heights.Owner.Memberships.assign', compact('membership', 'availableUsers'));
 
@@ -569,7 +450,6 @@ class MembershipController extends Controller
             $loggedUser = $request->user();
             $token = $request->attributes->get('token');
             $organization_id = $token['organization_id'];
-            $role_name = $token['role_name'];
 
             $membership = Membership::where('id', $request->membership_id)
                 ->where('status', '!=', 'Archived')
@@ -581,22 +461,12 @@ class MembershipController extends Controller
                 return redirect()->back()->with('error', 'Membership not found.');
             }
 
-            if (
-                $role_name === 'Manager' &&
-                !ManagerBuilding::where('user_id', $loggedUser->id)
-                    ->where('building_id', $membership->building_id)
-                    ->exists()
-            ) {
-                DB::rollBack();
-                return redirect()->back()->with('error', 'You do not have permission to assign this membership.');
-            }
-            elseif ($role_name === 'Staff'){
-                $staffRecord = StaffMember::where('user_id', $loggedUser->id)->first();
+            $ownerService = new OwnerFiltersService();
+            $result = $ownerService->checkBuildingAccess($membership->building_id);
 
-                if (!$staffRecord || $staffRecord->building_id != $membership->building_id) {
-                    DB::rollBack();
-                    return redirect()->back()->with('error', 'You do not have permission to assign this membership.');
-                }
+            if(!$result['access']){
+                DB::rollBack();
+                return redirect()->back()->withInput()->with('error', $result['message']);
             }
 
             $alreadyAssigned = MembershipUser::where('membership_id', $membership->id)
@@ -616,11 +486,11 @@ class MembershipController extends Controller
                 return redirect()->back()->with('error', 'Selected User is invalid.');
             }
 
-            $transaction = $this->membershipAssignment_Transaction($user, $membership, null);
+            $membershipService = new MembershipService();
+            $transaction = $membershipService->membershipAssignment_Transaction($user, $membership);
+            $membershipService->sendMembershipSuccessNotifications($membership, $transaction, $user, $loggedUser);
 
             DB::commit();
-
-            $this->sendMembershipSuccessNotifications($membership->organization_id, $membership, $transaction, $user, $loggedUser);
 
             return redirect()->route('owner.memberships.index')->with('success', 'Membership assigned to user successfully.');
 
@@ -690,6 +560,7 @@ class MembershipController extends Controller
                 DB::commit();
 
                 return response()->json(['success' => 'Membership marked as featured successfully.']);
+
             } else {
                 $membership->mark_as_featured = 0;
                 $membership->save();
@@ -720,125 +591,6 @@ class MembershipController extends Controller
         $imagePath = 'uploads/memberships/images/' . $imageName;
         $image->move(public_path('uploads/memberships/images'), $imageName);
         return $imagePath;
-    }
-
-    private function membershipAssignment_Transaction($user, $membership, $paymentIntentId)
-    {
-        $source_id = $membership->id;
-        $source_name = 'membership';
-        $isSubscription = false;
-
-        if ($membership->status === 'Published') {
-            $subscription = Subscription::create([
-                'customer_payment_id' => $user->customer_payment_id,
-                'building_id' => $membership->building_id,
-                'unit_id' => $membership->unit_id,
-                'user_id' => $user->id,
-                'organization_id' => $membership->organization_id,
-                'source_id' => $source_id,
-                'source_name' => $source_name,
-                'billing_cycle' => $membership->duration_months,
-                'subscription_status' => 'Active',
-                'price_at_subscription' => $membership->price,
-                'currency_at_subscription' => $membership->currency,
-                'ends_at' => now()->addMonths($membership->duration_months),
-            ]);
-
-            $source_id = $subscription->id;
-            $source_name = 'subscription';
-            $isSubscription = true;
-        }
-
-        MembershipUser::create([
-            'user_id' => $user->id,
-            'membership_id' => $membership->id,
-            'subscription_id' => $isSubscription ? $source_id : null,
-            'quantity' => $membership->scans_per_day,
-            'used' => $membership->scans_per_day,
-        ]);
-
-        return Transaction::create([
-            'transaction_title' => "{$membership->name}",
-            'transaction_category' => 'New',
-            'building_id' => $membership->building_id,
-            'unit_id' => $membership->unit_id,
-            'buyer_id' => $user->id,
-            'buyer_type' => 'user',
-            'seller_type' => 'organization',
-            'seller_id' => $membership->organization_id,
-            'payment_method' => 'Cash',
-            'gateway_payment_id' => $paymentIntentId,
-            'price' => $membership->price,
-            'currency' => $membership->currency,
-            'status' => 'Completed',
-            'is_subscription' => $isSubscription,
-            'billing_cycle' => $isSubscription ? "{$membership->duration_months} Month" : null,
-            'subscription_start_date' => $isSubscription ? now() : null,
-            'subscription_end_date' => $isSubscription ? now()->addMonths($membership->duration_months) : null,
-            'source_id' => $source_id,
-            'source_name' => $source_name,
-        ]);
-    }
-
-    private function sendMembershipSuccessNotifications($organizationId, $membership, $transaction, $user, $loggedUser)
-    {
-        $userId = $user->id;
-        $billingCycle = $membership->duration_months ?? 1;
-        $price = $transaction->price ?? $membership->price;
-
-        $userHeading = "{$membership->name} Purchased Successfully!";
-        $userMessage = "Congratulations! You have successfully purchased the {$membership->name} "
-            . "for the price of {$price} PKR"
-            . ($membership->status === 'Non Renewable' ? '.' : " per {$billingCycle} month(s).");
-
-
-        $ownerHeading = "{$membership->name} sold successfully";
-        $ownerMessage = "{$membership->name} has been sold successfully for Price: {$price}";
-
-
-        $transactionHeading = "Transaction Completed Successfully";
-        $transactionMessage = "A payment of {$price} PKR has been successfully recorded for the sale of {$membership->name}.";
-
-        $userTransactionHeading = "Transaction Successful!";
-        $userTransactionMessage = "You have successfully made a payment of {$price} PKR for {$membership->name}.";
-
-
-        dispatch(new MembershipNotifications(
-            $organizationId,
-            $membership->id,
-            $ownerHeading,
-            $ownerMessage,
-            "owner/memberships/{$membership->id}/show",
-
-            $loggedUser->id,
-            $ownerHeading,
-            $ownerMessage,
-            "owner/memberships/{$membership->id}/show",
-
-            $userId,
-            $userHeading,
-            $userMessage,
-            "",
-        ));
-
-
-        dispatch(new MembershipNotifications(
-            $organizationId,
-            $membership->id,
-            $transactionHeading,
-            $transactionMessage,
-            "owner/finance/{$transaction->id}/show",
-
-            $loggedUser->id,
-            $transactionHeading,
-            $transactionMessage,
-            "owner/finance/{$transaction->id}/show",
-
-            $userId,
-            $userTransactionHeading,
-            $userTransactionMessage,
-            "",
-        ));
     }
 
 }

@@ -11,6 +11,8 @@ use App\Models\MembershipUser;
 use App\Models\Subscription;
 use App\Models\Transaction;
 use App\Models\UserBuildingUnit;
+use App\Services\AssignUnitService;
+use App\Services\MembershipService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -110,11 +112,18 @@ class CheckOutController extends Controller
             }
 
             $billing_Cycle = 1;
-            $transaction = $this->unitAssignment_Transaction($user, $unit, $paymentIntent->id, $request->price, $billing_Cycle);
+            $type = $unit->sale_or_rent === 'Sale' ? 'Sold' : 'Rented';
+
+            $assignUnitService = new AssignUnitService();
+            [$assignedUnit, $transaction] = $assignUnitService->unitAssignment_Transaction($user, $unit, $type, $paymentIntent->id, $request->price, $billing_Cycle, 'Card');
+            $assignUnitService->sendUnitAssignmentNotifications(
+                $unit,
+                $transaction,
+                $user->id,
+                $assignedUnit
+            );
 
             DB::commit();
-
-            $this->sendUnitSuccessNotifications($organization->id, $unit, $transaction, $billing_Cycle, $user);
 
             return response()->json([
                 'success' => true,
@@ -184,14 +193,19 @@ class CheckOutController extends Controller
                 ], 404);
             }
 
-            $organization = $unit->organization;
-
             $billing_Cycle = 1;
-            $transaction = $this->unitAssignment_Transaction($user, $unit, $paymentIntent->id, $request->price, $billing_Cycle);
+            $type = $unit->sale_or_rent === 'Sale' ? 'Sold' : 'Rented';
+
+            $assignUnitService = new AssignUnitService();
+            [$assignedUnit, $transaction] = $assignUnitService->unitAssignment_Transaction($user, $unit, $type, $paymentIntent->id, $request->price, $billing_Cycle, 'Card');
+            $assignUnitService->sendUnitAssignmentNotifications(
+                $unit,
+                $transaction,
+                $user->id,
+                $assignedUnit
+            );
 
             DB::commit();
-
-            $this->sendUnitSuccessNotifications($organization->id, $unit, $transaction, $billing_Cycle, $user);
 
             return response()->json([
                 'success' => true,
@@ -304,11 +318,11 @@ class CheckOutController extends Controller
                 ], 402);
             }
 
-            $transaction = $this->membershipAssignment_Transaction($user, $membershipData, $paymentIntent->id);
+            $membershipService = new MembershipService();
+            $transaction = $membershipService->membershipAssignment_Transaction($user, $membershipData, $paymentIntent->id, 'Card');
+            $membershipService->sendMembershipSuccessNotifications($membershipData, $transaction, $user);
 
             DB::commit();
-
-            $this->sendMembershipSuccessNotifications($organization->id, $membershipData, $transaction, $user);
 
             return response()->json([
                 'success' => true,
@@ -369,8 +383,6 @@ class CheckOutController extends Controller
                 ->with(['organization'])
                 ->first();
 
-            $organization = $membershipData->organization;
-
             if (!$membershipData) {
                 DB::rollBack();
                 return response()->json([
@@ -390,11 +402,11 @@ class CheckOutController extends Controller
                 ], 404);
             }
 
-            $transaction = $this->membershipAssignment_Transaction($user, $membershipData, $paymentIntent->id);
+            $membershipService = new MembershipService();
+            $transaction = $membershipService->membershipAssignment_Transaction($user, $membershipData, $paymentIntent->id, 'Card');
+            $membershipService->sendMembershipSuccessNotifications($membershipData, $transaction, $user);
 
             DB::commit();
-
-            $this->sendMembershipSuccessNotifications($organization->id, $membershipData, $transaction, $user);
 
             return response()->json([
                 'success' => true,
@@ -407,247 +419,6 @@ class CheckOutController extends Controller
             Log::error("Payment Finalization Error: " . $e->getMessage());
             return response()->json(['error' => 'Something went wrong after payment.'], 500);
         }
-    }
-
-
-    // Helper functions
-    private function unitAssignment_Transaction($user, $unit, $paymentIntentId, $price, $billing_cycle = 1, $currency = 'PKR')
-    {
-        $type = $unit->sale_or_rent === 'Sale' ? 'Sold' : 'Rented';
-        $unit->update(['availability_status' => $type]);
-
-        $assignedUnit = UserBuildingUnit::create([
-            'user_id' => $user->id,
-            'unit_id' => $unit->id,
-            'building_id' => $unit->building_id,
-            'organization_id' => $unit->organization_id,
-            'type' => $type,
-            'price' => $price,
-            'billing_cycle' => $billing_cycle
-        ]);
-
-        $source_id = $assignedUnit->id;
-        $source_name = 'unit contract';
-
-        if ($type === 'Rented') {
-            $subscription = Subscription::create([
-                'customer_payment_id' => $user->customer_payment_id,
-                'building_id' => $unit->building_id,
-                'unit_id' => $unit->id,
-                'user_id' => $user->id,
-                'organization_id' => $unit->organization_id,
-                'source_id' => $source_id,
-                'source_name' => $source_name,
-                'billing_cycle' => $billing_cycle,
-                'subscription_status' => 'Active',
-                'price_at_subscription' => $assignedUnit->price,
-                'currency_at_subscription' => $currency,
-                'ends_at' => now()->addMonths($billing_cycle),
-            ]);
-
-            $source_id = $subscription->id;
-            $source_name = 'subscription';
-
-            $assignedUnit->update(['subscription_id' => $subscription->id]);
-        }
-
-        return Transaction::create([
-            'transaction_title' => $unit->unit_name,
-            'transaction_category' => 'New',
-            'building_id' => $unit->building_id,
-            'unit_id' => $unit->id,
-            'buyer_id' => $user->id,
-            'buyer_type' => 'user',
-            'seller_type' => 'organization',
-            'seller_id' => $unit->organization_id,
-            'payment_method' => 'Card',
-            'gateway_payment_id' => $paymentIntentId,
-            'price' => $assignedUnit->price,
-            'currency' => $currency,
-            'status' => 'Completed',
-            'is_subscription' => $type === 'Rented',
-            'billing_cycle' => $type === 'Rented' ? "{$billing_cycle} Month" : null,
-            'subscription_start_date' => $type === 'Rented' ? now() : null,
-            'subscription_end_date' => $type === 'Rented' ? now()->addMonths($billing_cycle) : null,
-            'source_id' => $source_id,
-            'source_name' => $source_name,
-        ]);
-    }
-
-    private function sendUnitSuccessNotifications($organizationId, $unit, $transaction, $billing_cycle, $user)
-    {
-        $userId = $user->id;
-        $billingCycle = $billing_cycle ?? 1;
-        $isSold = $unit->availability_status === 'Sold';
-        $actionType = $isSold ? 'Purchased' : 'Rented';
-        $unitName = $unit->unit_name;
-        $unitPrice = number_format($unit->price);
-
-
-        $userHeading1 = "$unitName $actionType Successfully!";
-        $userMessage1 = "Congratulations! You have successfully " .
-            strtolower($actionType) . " $unitName for the price of PKR $unitPrice" .
-            ($isSold ? "." : " per $billingCycle month(s).");
-
-        dispatch(new UnitNotifications(
-            $organizationId,
-            $unit->id,
-            "$unitName {$unit->availability_status} successfully",
-            "$unitName has been {$unit->availability_status} successfully for Price: PKR $unitPrice.",
-            "owner/units/{$unit->id}/show",
-
-            null,
-            '',
-            '',
-            '',
-
-            $userId,
-            $userHeading1,
-            $userMessage1,
-            ""
-        ));
-
-
-        $userHeading2 = "Transaction Successful!";
-        $userMessage2 = "You have successfully made a payment of PKR $unitPrice for $unitName.";
-
-        dispatch(new UnitNotifications(
-            $organizationId,
-            $unit->id,
-            "Transaction Completed Successfully",
-            "A payment of PKR $unitPrice has been successfully recorded for your unit $unitName due to $actionType.",
-            "owner/finance/{$transaction->id}/show",
-
-            null,
-            '',
-            '',
-            '',
-
-            $userId,
-            $userHeading2,
-            $userMessage2,
-            ""
-        ));
-    }
-
-
-    private function membershipAssignment_Transaction($user, $membership, $paymentIntentId)
-    {
-        $source_id = $membership->id;
-        $source_name = 'membership';
-        $isSubscription = false;
-
-        if ($membership->status === 'Published') {
-            $subscription = Subscription::create([
-                'customer_payment_id' => $user->customer_payment_id,
-                'building_id' => $membership->building_id,
-                'unit_id' => $membership->unit_id,
-                'user_id' => $user->id,
-                'organization_id' => $membership->organization_id,
-                'source_id' => $source_id,
-                'source_name' => $source_name,
-                'billing_cycle' => $membership->duration_months,
-                'subscription_status' => 'Active',
-                'price_at_subscription' => $membership->price,
-                'currency_at_subscription' => $membership->currency,
-                'ends_at' => now()->addMonths($membership->duration_months),
-            ]);
-
-            $source_id = $subscription->id;
-            $source_name = 'subscription';
-            $isSubscription = true;
-        }
-
-        MembershipUser::create([
-            'user_id' => $user->id,
-            'membership_id' => $membership->id,
-            'subscription_id' => $isSubscription ? $source_id : null,
-            'quantity' => $membership->scans_per_day,
-            'used' => $membership->scans_per_day,
-        ]);
-
-        return Transaction::create([
-            'transaction_title' => "{$membership->name}",
-            'transaction_category' => 'New',
-            'building_id' => $membership->building_id,
-            'unit_id' => $membership->unit_id,
-            'buyer_id' => $user->id,
-            'buyer_type' => 'user',
-            'seller_type' => 'organization',
-            'seller_id' => $membership->organization_id,
-            'payment_method' => 'Card',
-            'gateway_payment_id' => $paymentIntentId,
-            'price' => $membership->price,
-            'currency' => $membership->currency,
-            'status' => 'Completed',
-            'is_subscription' => $isSubscription,
-            'billing_cycle' => $isSubscription ? "{$membership->duration_months} Month" : null,
-            'subscription_start_date' => $isSubscription ? now() : null,
-            'subscription_end_date' => $isSubscription ? now()->addMonths($membership->duration_months) : null,
-            'source_id' => $source_id,
-            'source_name' => $source_name,
-        ]);
-    }
-
-    private function sendMembershipSuccessNotifications($organizationId, $membership, $transaction, $user)
-    {
-        $userId = $user->id;
-        $billingCycle = $membership->duration_months ?? 1;
-        $price = $transaction->price ?? $membership->price;
-
-        $userHeading = "{$membership->name} Purchased Successfully!";
-        $userMessage = "Congratulations! You have successfully purchased the {$membership->name} "
-            . "for the price of {$price} PKR"
-            . ($membership->status === 'Non Renewable' ? '.' : " per {$billingCycle} month(s).");
-
-
-        $ownerHeading = "{$membership->name} sold successfully";
-        $ownerMessage = "{$membership->name} has been sold successfully for Price: {$price}";
-
-
-        $transactionHeading = "Transaction Completed Successfully";
-        $transactionMessage = "A payment of {$price} PKR has been successfully recorded for the sale of {$membership->name}.";
-
-        $userTransactionHeading = "Transaction Successful!";
-        $userTransactionMessage = "You have successfully made a payment of {$price} PKR for {$membership->name}.";
-
-
-        dispatch(new MembershipNotifications(
-            $organizationId,
-            $membership->id,
-            $ownerHeading,
-            $ownerMessage,
-            "owner/memberships/{$membership->id}/show",
-
-            null,
-            '',
-            '',
-            '',
-
-            $userId,
-            $userHeading,
-            $userMessage,
-            "",
-        ));
-
-
-        dispatch(new MembershipNotifications(
-            $organizationId,
-            $membership->id,
-            $transactionHeading,
-            $transactionMessage,
-            "owner/finance/{$transaction->id}/show",
-
-            null,
-            '',
-            '',
-            '',
-
-            $userId,
-            $userTransactionHeading,
-            $userTransactionMessage,
-            "",
-        ));
     }
 
 }

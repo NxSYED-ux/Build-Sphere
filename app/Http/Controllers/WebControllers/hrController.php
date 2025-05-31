@@ -447,6 +447,7 @@ class hrController extends Controller
     }
 
 
+
     // Edit Functions & Update Functions
     public function staffEdit(Request $request, string $id)
     {

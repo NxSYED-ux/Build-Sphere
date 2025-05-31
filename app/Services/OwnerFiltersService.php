@@ -142,6 +142,29 @@ class OwnerFiltersService
             ->get();
     }
 
+    public function rentedOrSoldUnits($buildingIds)
+    {
+        return BuildingUnit::select('id', 'unit_name')
+            ->where('availability_status', '!=', 'Available')
+            ->where('status', 'Approved')
+            ->whereIn('building_id', $buildingIds)
+            ->orderBy('unit_name', 'asc')
+            ->select('id', 'unit_name')
+            ->get();
+    }
+
+    public function membershipsUnits($buildingIds)
+    {
+        return BuildingUnit::whereIn('building_id', $buildingIds)
+            ->where('status', 'Approved')
+            ->where('availability_status', 'Available')
+            ->where('sale_or_rent', 'Not Available')
+            ->whereNotIn('unit_type', ['Room', 'Shop', 'Apartment'])
+            ->orderBy('unit_name', 'asc')
+            ->select('id', 'unit_name')
+            ->get();
+    }
+
     public function memberships($buildingIds)
     {
         return Membership::whereIn('building_id', $buildingIds)

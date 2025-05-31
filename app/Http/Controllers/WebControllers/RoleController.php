@@ -60,7 +60,6 @@ class RoleController extends Controller
                 'description' => $request->description,
             ]);
 
-            Log::info('Permissions name: ', $request->permissions);
             $rolePermissions = collect($request->permissions)->map(function ($status, $permissionId) use ($user, $role) {
                 return [
                     'role_id' => $role->id,
