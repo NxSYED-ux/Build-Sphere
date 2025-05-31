@@ -263,7 +263,7 @@ class UsersController extends Controller
     }
 
 
-    // Helper Functions
+    // Helper Functions.
     private function handleFileUpload(Request $request): ?string
     {
         $profileImage = $request->file('picture');
