@@ -622,6 +622,7 @@
     </div>
 @endsection
 
+@push('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const imageContainers = document.querySelectorAll('.membership-image-container');
@@ -661,3 +662,4 @@
         }
     }
 </script>
+@endpush
