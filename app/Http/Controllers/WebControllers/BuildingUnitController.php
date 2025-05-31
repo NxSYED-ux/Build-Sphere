@@ -516,13 +516,6 @@ class BuildingUnitController extends Controller
                 return redirect()->back()->with('error', 'Please refresh the page and try again.')->withInput();
             }
 
-            if ($portal === 'owner') {
-                $building = Building::where('id', $unit->building_id)->first();
-                if ($building->status === 'Approved') {
-                    $building->update(['status' => 'For Re-Approval']);
-                }
-            }
-
             if ($portal === 'owner' && $token['organization_id'] !== $unit->organization_id) {
                 DB::rollBack();
                 return redirect()->back()->with('error', 'The selected unit id is invalid.')->withInput();
@@ -585,6 +578,13 @@ class BuildingUnitController extends Controller
                     'used' => $newHighest,
                     'meta' => $meta
                 ]);
+
+                if ($portal === 'owner') {
+                    $building = Building::where('id', $unit->building_id)->first();
+                    if ($building->status === 'Approved') {
+                        $building->update(['status' => 'For Re-Approval']);
+                    }
+                }
             }
 
             $unit->update([
