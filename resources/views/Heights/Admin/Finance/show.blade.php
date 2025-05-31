@@ -185,7 +185,7 @@
 @endpush
 
 <!-- Top Navbar -->
-<x-Owner.top-navbar :searchVisible="false" :breadcrumbLinks="[
+<x-Admin.top-navbar :searchVisible="false" :breadcrumbLinks="[
             ['url' => route('admin_dashboard'), 'label' => 'Dashboard'],
             ['url' => route('finance.index'), 'label' => 'Finance'],
             ['url' => '', 'label' => 'Details']
@@ -193,7 +193,7 @@
 />
 
 <!-- Side Navbar -->
-<x-Owner.side-navbar :openSections="['Finance']" />
+<x-Admin.side-navbar :openSections="['Finance']" />
 <x-error-success-model />
 
 @section('content')

@@ -85,26 +85,163 @@
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
         }
 
+        .grid-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .grid-card {
+            background-color: var(--body-background-color);
+            border-radius: 10px;
+            padding: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
         .detail-grid {
             display: grid;
-            grid-template-columns: 120px 1fr;
-            gap: 1rem;
-            margin-bottom: 1rem;
+            grid-template-columns: 100px 1fr;
+            gap: 10px;
+            align-items: center;
         }
 
         .detail-label {
             font-weight: 600;
             color: var(--sidenavbar-text-color);
             opacity: 0.7;
-            align-self: center;
+            font-size: 0.9rem;
         }
 
         .detail-value {
+            font-weight: 500;
+            color: var(--sidenavbar-text-color);
+            word-break: break-word;
+        }
+
+        @media (max-width: 768px) {
+            .grid-details {
+                grid-template-columns: 1fr;
+            }
+
+            .detail-grid {
+                grid-template-columns: 1fr;
+                gap: 5px;
+            }
+
+            .detail-label {
+                margin-bottom: 0;
+            }
+        }
+
+        .user-details {
+            background-color: var(--body-background-color);
+            border-radius: 12px;
+            padding: 1.2rem .5rem;
+            margin-top: 1rem;
+        }
+
+        .user-details-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 0.78rem;
+        }
+
+        .user-detail-item {
+            display: flex;
+            flex-direction: column;
+            padding: 0.5rem;
+            background-color: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+        }
+
+        .user-detail-label {
+            font-size: 0.85rem;
             font-weight: 600;
             color: var(--sidenavbar-text-color);
-            padding: 0.5rem;
-            background-color: var(--body-background-color);
-            border-radius: 8px;
+            opacity: 0.7;
+            margin-bottom: 0.25rem;
+        }
+
+        .user-detail-value {
+            font-weight: 500;
+            color: var(--sidenavbar-text-color);
+            word-break: break-word;
+            min-height: 1.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .user-details-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .user-detail-item {
+                padding: 0.5rem;
+            }
+        }
+
+        .price-section {
+            margin: 0 .5rem;
+            padding-top: 1.5rem;
+        }
+
+        .price-grid {
+            display: grid;
+            grid-template-columns: 120px 1fr;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .price-label {
+            font-weight: 600;
+            color: var(--sidenavbar-text-color);
+            opacity: 0.7;
+            font-size: 1rem;
+        }
+
+        .price-value {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+        }
+
+        .price-display {
+            font-size: 1.75rem;
+            font-weight: 800;
+            color: var(--color-blue);
+            line-height: 1.2;
+        }
+
+        .original-price {
+            text-decoration: line-through;
+            color: var(--sidenavbar-text-color);
+            opacity: 0.5;
+            font-size: 1.1rem;
+        }
+
+        .discount-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.75rem;
+            background: linear-gradient(135deg, var(--success), #55EFC4);
+            color: white;
+            font-weight: 700;
+            border-radius: 20px;
+            font-size: 0.75rem;
+        }
+
+        @media (max-width: 768px) {
+            .price-grid {
+                grid-template-columns: 1fr;
+                gap: 0.5rem;
+            }
+
+            .price-value {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+            }
         }
 
         .empty-state {
@@ -346,25 +483,31 @@
                                             <img id="user_avatar" src="{{ asset('img/placeholder-profile.png') }}" class="user-avatar" alt="User Avatar">
                                         </div>
                                         <div class="user-details">
-                                            <div class="detail-grid">
-                                                <div class="detail-label">Full Name</div>
-                                                <div class="detail-value" id="user_name">-</div>
-                                            </div>
-                                            <div class="detail-grid">
-                                                <div class="detail-label">Email</div>
-                                                <div class="detail-value" id="user_email">-</div>
-                                            </div>
-                                            <div class="detail-grid">
-                                                <div class="detail-label">Phone</div>
-                                                <div class="detail-value" id="user_contact">-</div>
-                                            </div>
-                                            <div class="detail-grid">
-                                                <div class="detail-label">CNIC</div>
-                                                <div class="detail-value" id="user_cnic">-</div>
-                                            </div>
-                                            <div class="detail-grid">
-                                                <div class="detail-label">Location</div>
-                                                <div class="detail-value" id="user_city">-</div>
+                                            <div class="user-details-grid">
+                                                <div class="user-detail-item">
+                                                    <span class="user-detail-label">Full Name</span>
+                                                    <span class="user-detail-value" id="user_name">-</span>
+                                                </div>
+                                                <div class="user-detail-item">
+                                                    <span class="user-detail-label">Email</span>
+                                                    <span class="user-detail-value" id="user_email">-</span>
+                                                </div>
+                                                <div class="user-detail-item">
+                                                    <span class="user-detail-label">Phone</span>
+                                                    <span class="user-detail-value" id="user_contact">-</span>
+                                                </div>
+                                                <div class="user-detail-item">
+                                                    <span class="user-detail-label">CNIC</span>
+                                                    <span class="user-detail-value" id="user_cnic">-</span>
+                                                </div>
+                                                <div class="user-detail-item">
+                                                    <span class="user-detail-label">Gender</span>
+                                                    <span class="user-detail-value" id="user_gender">-</span>
+                                                </div>
+                                                <div class="user-detail-item">
+                                                    <span class="user-detail-label">City</span>
+                                                    <span class="user-detail-value" id="user_city">-</span>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -376,10 +519,21 @@
 
                 <div class="col-lg-6 mb-4">
                     <div class="card glass-container">
-                        <div class="card-header">
+                        <div class="card-header d-flex justify-content-between align-items-center" style="padding: 1.2rem 1.5rem">
                             <h2 class="card-title">
                                 <i class="fas fa-id-card-alt"></i> Membership Details
                             </h2>
+                            <div class="">
+                                @if($membership->status == 'Published')
+                                    <span class="status-badge status-published">{{ $membership->status }}</span>
+                                @elseif($membership->status == 'Draft')
+                                    <span class="status-badge status-draft">{{ $membership->status }}</span>
+                                @elseif($membership->status == 'Non Renewable')
+                                    <span class="status-badge status-non-renewable">{{ $membership->status }}</span>
+                                @else
+                                    <span class="status-badge">{{ $membership->status }}</span>
+                                @endif
+                            </div>
                         </div>
                         <div class="card-body">
                             <div class="text-center mb-4">
@@ -398,76 +552,78 @@
                                 <p class="mb-0">{{ $membership->description }}</p>
                             </div>
 
-                            <div class="detail-grid">
-                                <div class="detail-label">Category</div>
-                                <div class="detail-value">
-                                    {{ $membership->category }}
-                                    @if($membership->category === 'Other')
-                                        <div class="mt-1 small opacity-75">{{ $membership->type ?? 'N/A' }}</div>
-                                    @endif
+                            <div class="grid-details">
+                                <div class="grid-card">
+                                    <div class="detail-grid">
+                                        <div class="detail-label">Category</div>
+                                        <div class="detail-value">
+                                            {{ $membership->category }}
+                                            @if($membership->category === 'Other')
+                                                <div class="mt-1 small opacity-75">{{ $membership->type ?? 'N/A' }}</div>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="grid-card">
+                                    <div class="detail-grid">
+                                        <div class="detail-label">Building</div>
+                                        <div class="detail-value">{{ $membership->building->name ?? 'N/A' }}</div>
+                                    </div>
+                                </div>
+
+                                <div class="grid-card">
+                                    <div class="detail-grid">
+                                        <div class="detail-label">Unit</div>
+                                        <div class="detail-value">{{ $membership->unit->unit_name ?? 'N/A' }}</div>
+                                    </div>
+                                </div>
+
+                                <div class="grid-card">
+                                    <div class="detail-grid">
+                                        <div class="detail-label">Duration</div>
+                                        <div class="detail-value">{{ $membership->duration_months }} months</div>
+                                    </div>
+                                </div>
+
+                                <div class="grid-card">
+                                    <div class="detail-grid">
+                                        <div class="detail-label">Scans/Day</div>
+                                        <div class="detail-value">{{ $membership->scans_per_day }}</div>
+                                    </div>
+                                </div>
+
+                                <div class="grid-card">
+                                    <div class="detail-grid">
+                                        <div class="detail-label">URL</div>
+                                        <div class="detail-value">
+                                            @if($membership->url)
+                                                <a href="{{ $membership->url }}" target="_blank" class="text-primary">
+                                                    <i class="fas fa-external-link-alt me-1"></i> Visit Link
+                                                </a>
+                                            @else
+                                                N/A
+                                            @endif
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 
-                            <div class="detail-grid">
-                                <div class="detail-label">Building</div>
-                                <div class="detail-value">{{ $membership->building->name ?? 'N/A' }}</div>
-                            </div>
-
-                            <div class="detail-grid">
-                                <div class="detail-label">Unit</div>
-                                <div class="detail-value">{{ $membership->unit->unit_name ?? 'N/A' }}</div>
-                            </div>
-
-                            <div class="detail-grid">
-                                <div class="detail-label">Duration</div>
-                                <div class="detail-value">{{ $membership->duration_months }} months</div>
-                            </div>
-
-                            <div class="detail-grid">
-                                <div class="detail-label">Scans/Day</div>
-                                <div class="detail-value">{{ $membership->scans_per_day }}</div>
-                            </div>
-
-                            <div class="detail-grid">
-                                <div class="detail-label">Status</div>
-                                <div class="detail-value">
-                                    @if($membership->status == 'Published')
-                                        <span class="status-badge status-published">{{ $membership->status }}</span>
-                                    @elseif($membership->status == 'Draft')
-                                        <span class="status-badge status-draft">{{ $membership->status }}</span>
-                                    @elseif($membership->status == 'Non Renewable')
-                                        <span class="status-badge status-non-renewable">{{ $membership->status }}</span>
-                                    @else
-                                        <span class="status-badge">{{ $membership->status }}</span>
-                                    @endif
+                            <div class="price-section">
+                                <div class="detail-grid price-grid">
+                                    <div class="price-label">Price</div>
+                                    <div class="price-value">
+                                        <span class="price-display">{{ $membership->currency }} {{ number_format($membership->price, 2) }}</span>
+                                        @if($membership->original_price && $membership->original_price > $membership->price)
+                                            <span class="original-price">{{ $membership->currency }} {{ number_format($membership->original_price, 2) }}</span>
+                                            <span class="discount-badge">
+                                                {{ number_format(100 - ($membership->price / $membership->original_price * 100), 0) }}% OFF
+                                            </span>
+                                        @endif
+                                    </div>
                                 </div>
                             </div>
 
-                            <div class="detail-grid">
-                                <div class="detail-label">Price</div>
-                                <div class="detail-value">
-                                    <span class="price-display">{{ $membership->currency }} {{ number_format($membership->price, 2) }}</span>
-                                    @if($membership->original_price && $membership->original_price > $membership->price)
-                                        <span class="original-price">{{ $membership->currency }} {{ number_format($membership->original_price, 2) }}</span>
-                                        <span class="discount-badge">
-                                            {{ number_format(100 - ($membership->price / $membership->original_price * 100), 0) }}% OFF
-                                        </span>
-                                    @endif
-                                </div>
-                            </div>
-
-                            <div class="detail-grid">
-                                <div class="detail-label">URL</div>
-                                <div class="detail-value">
-                                    @if($membership->url)
-                                        <a href="{{ $membership->url }}" target="_blank" class="text-primary">
-                                            <i class="fas fa-external-link-alt me-1"></i> Visit Link
-                                        </a>
-                                    @else
-                                        N/A
-                                    @endif
-                                </div>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -517,6 +673,7 @@
                     document.getElementById('user_email').textContent = '-';
                     document.getElementById('user_contact').textContent = '-';
                     document.getElementById('user_cnic').textContent = '-';
+                    document.getElementById('user_gender').textContent = '-';
                     document.getElementById('user_city').textContent = '-';
                     assignBtn.disabled = true;
                     buttonText.style.display = 'inline-flex';
@@ -559,6 +716,7 @@
                         document.getElementById('user_email').textContent = user.email || '-';
                         document.getElementById('user_contact').textContent = user.phone_no || '-';
                         document.getElementById('user_cnic').textContent = user.cnic || '-';
+                        document.getElementById('user_gender').textContent = user.gender || '-';
                         document.getElementById('user_city').textContent = user.address?.city || '-';
 
                         // Update user image
