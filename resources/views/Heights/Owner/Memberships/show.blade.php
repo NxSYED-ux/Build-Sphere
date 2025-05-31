@@ -106,22 +106,23 @@
             align-items: center;
             background: #f8f9fa;
             position: relative;
-            /* Add these for the scrolling effect */
+            /* Fixed height for container */
             height: 400px;
         }
 
         .membership-image {
             width: 100%;
             height: auto;
+            min-height: 400px;
             object-fit: cover;
             display: block;
             /* Default state - no animation */
             transition: transform 0.3s ease;
         }
 
-        /* Add this class via JavaScript when image is taller than container */
+        /* Add this class via JavaScript when conditions are met */
         .membership-image.auto-scroll {
-            animation: scrollImage 20s linear infinite alternate;
+            animation: scrollImage 5s linear infinite alternate;
         }
 
         @keyframes scrollImage {
@@ -129,8 +130,15 @@
                 transform: translateY(0);
             }
             100% {
-                /* This will be calculated dynamically in JS based on image height */
-                transform: translateY(calc(-100% + 600px));
+                /* Will be overwritten by JavaScript */
+                transform: translateY(calc(-100% + 850px));
+            }
+        }
+
+        /* Disable animation on small screens */
+        @media (max-width: 768px) {
+            .membership-image.auto-scroll {
+                animation: none;
             }
         }
 
@@ -436,188 +444,194 @@
     <x-error-success-model />
 
     <div id="main">
-        <div class="container my-3 mx-2">
-            <!-- Main Membership Card -->
-            <div class="card shadow">
-                <div class="card-body">
-                    <!-- Membership Header -->
-                    <div class="membership-header">
-                        <div class="membership-title-container">
-                            <h1 class="membership-name">{{ $membership->name }}</h1>
-                            <div class="membership-meta">
+        <div class="container-fluid my-3 mx-2">
+            <div class="row">
+                <div class="col-12">
+                    <!-- Main Membership Card -->
+                    <div class="card shadow">
+                        <div class="card-body">
+                            <!-- Membership Header -->
+                            <div class="membership-header">
+                                <div class="membership-title-container">
+                                    <h1 class="membership-name">{{ $membership->name }}</h1>
+                                    <div class="membership-meta">
                                 <span class="meta-badge category-badge">
                                     <i class="fas fa-tag"></i>
                                     {{ $membership->category }}
                                 </span>
-                                <span class="meta-badge {{ $membership->status === 'Published' ? 'status-badge' : 'status-draft' }}">
+                                        <span class="meta-badge {{ $membership->status === 'Published' ? 'status-badge' : 'status-draft' }}">
                                     {{ $membership->status }}
                                 </span>
-                                @if($membership->mark_as_featured)
-                                    <span class="meta-badge featured-badge">
+                                        @if($membership->mark_as_featured)
+                                            <span class="meta-badge featured-badge">
                                         <i class="fas fa-star"></i> Featured
                                     </span>
-                                @endif
+                                        @endif
+                                    </div>
+                                </div>
+                                <div class="header-actions">
+                                    <a href="{{ route('owner.memberships.edit', $membership->id) }}" class="btn btn-primary">
+                                        <i class="fas fa-edit btn-icon"></i> Edit
+                                    </a>
+                                    <a href="{{ route('owner.memberships.index') }}" class="btn btn-secondary">
+                                        <i class="fas fa-arrow-left btn-icon"></i> Back
+                                    </a>
+                                </div>
                             </div>
-                        </div>
-                        <div class="header-actions">
-                            <a href="{{ route('owner.memberships.edit', $membership->id) }}" class="btn btn-primary">
-                                <i class="fas fa-edit btn-icon"></i> Edit
-                            </a>
-                            <a href="{{ route('owner.memberships.index') }}" class="btn btn-secondary">
-                                <i class="fas fa-arrow-left btn-icon"></i> Back
-                            </a>
-                        </div>
-                    </div>
 
-                    <!-- Membership Image -->
-                    <div class="membership-image-container">
-                        <img src="{{ $membership->image ? asset($membership->image) : asset('img/placeholder-profile.png') }}"
-                             alt="{{ $membership->name }}"
-                             class="membership-image">
-                    </div>
+                            <!-- Membership Image -->
+                            <div class="membership-image-container">
+                                <img src="{{ $membership->image ? asset($membership->image) : asset('img/placeholder-profile.png') }}"
+                                     alt="{{ $membership->name }}"
+                                     class="membership-image">
+                            </div>
 
-                    <!-- Key Information Grid -->
-                    <div class="key-info-grid">
-                        <div class="info-card">
-                            <div class="info-label">
-                                <i class="fas fa-building info-icon"></i>
-                                Building
-                            </div>
-                            <div class="info-value">
-                                {{ $membership->building->name ?? 'N/A' }}
-                            </div>
-                        </div>
+                            <!-- Key Information Grid -->
+                            <div class="key-info-grid">
+                                <div class="info-card">
+                                    <div class="info-label">
+                                        <i class="fas fa-building info-icon"></i>
+                                        Building
+                                    </div>
+                                    <div class="info-value">
+                                        {{ $membership->building->name ?? 'N/A' }}
+                                    </div>
+                                </div>
 
-                        <div class="info-card">
-                            <div class="info-label">
-                                <i class="fas fa-door-open info-icon"></i>
-                                Unit
-                            </div>
-                            <div class="info-value">
-                                {{ $membership->unit->unit_name ?? 'N/A' }}
-                            </div>
-                        </div>
+                                <div class="info-card">
+                                    <div class="info-label">
+                                        <i class="fas fa-door-open info-icon"></i>
+                                        Unit
+                                    </div>
+                                    <div class="info-value">
+                                        {{ $membership->unit->unit_name ?? 'N/A' }}
+                                    </div>
+                                </div>
 
-                        <div class="info-card">
-                            <div class="info-label">
-                                <i class="fas fa-qrcode info-icon"></i>
-                                Scans Per Day
-                            </div>
-                            <div class="info-value">
-                                {{ $membership->scans_per_day }}
-                            </div>
-                        </div>
+                                <div class="info-card">
+                                    <div class="info-label">
+                                        <i class="fas fa-qrcode info-icon"></i>
+                                        Scans Per Day
+                                    </div>
+                                    <div class="info-value">
+                                        {{ $membership->scans_per_day }}
+                                    </div>
+                                </div>
 
-                        <div class="info-card">
-                            <div class="info-label">
-                                <i class="fas fa-clock info-icon"></i>
-                                Duration
+                                <div class="info-card">
+                                    <div class="info-label">
+                                        <i class="fas fa-clock info-icon"></i>
+                                        Duration
+                                    </div>
+                                    <div class="info-value">
+                                        {{ $membership->duration_months }} months
+                                    </div>
+                                </div>
                             </div>
-                            <div class="info-value">
-                                {{ $membership->duration_months }} months
-                            </div>
-                        </div>
-                    </div>
 
-                    <!-- Pricing Section -->
-                    <h3 class="section-heading">
-                        <i class="fas fa-tags section-heading-icon"></i>
-                        Pricing Information
-                    </h3>
-                    <div class="info-card pricing-card">
-                        <div class="price-display">
-                            <span class="current-price">{{ number_format($membership->price, 2) }} {{ $membership->currency }}</span>
-                            @if($membership->original_price > $membership->price)
-                                <span class="original-price">{{ number_format($membership->original_price, 2) }} {{ $membership->currency }}</span>
-                                <span class="discount-badge">
+                            <!-- Pricing Section -->
+                            <h3 class="section-heading">
+                                <i class="fas fa-tags section-heading-icon"></i>
+                                Pricing Information
+                            </h3>
+                            <div class="info-card pricing-card">
+                                <div class="price-display">
+                                    <span class="current-price">{{ number_format($membership->price, 2) }} {{ $membership->currency }}</span>
+                                    @if($membership->original_price > $membership->price)
+                                        <span class="original-price">{{ number_format($membership->original_price, 2) }} {{ $membership->currency }}</span>
+                                        <span class="discount-badge">
                                     {{ round(100 - ($membership->price / $membership->original_price * 100)) }}% OFF
                                 </span>
-                            @endif
-                        </div>
-                        <div class="info-label" style="margin-top: 12px;">
-                            <i class="fas fa-info-circle info-icon"></i>
-                            Billed every {{ $membership->duration_months }} month(s)
+                                    @endif
+                                </div>
+                                <div class="info-label" style="margin-top: 12px;">
+                                    <i class="fas fa-info-circle info-icon"></i>
+                                    Billed every {{ $membership->duration_months }} month(s)
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </div>
 
-            <!-- Description Card -->
-            <div class="card shadow">
-                <div class="card-header border-bottom">
-                    <h3 class="section-heading" style="margin: 0;">
-                        <i class="fas fa-align-left section-heading-icon"></i>
-                        Description
-                    </h3>
-                </div>
-                <div class="card-body">
-                    <div class="description-content">
-                        {{ $membership->description ?? 'No description provided.' }}
+                    <!-- Description Card -->
+                    <div class="card shadow">
+                        <div class="card-header border-bottom">
+                            <h3 class="section-heading" style="margin: 0;">
+                                <i class="fas fa-align-left section-heading-icon"></i>
+                                Description
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="description-content">
+                                {{ $membership->description ?? 'No description provided.' }}
+                            </div>
+                        </div>
                     </div>
-                </div>
-            </div>
 
-            <!-- Subscribed Users Card -->
-            <div class="card shadow">
-                <div class="card-header">
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <h3 class="section-heading" style="margin: 0;">
-                            <i class="fas fa-users section-heading-icon"></i>
-                            Subscribed Users
-                        </h3>
-                        <span style="background: var(--color-blue); color: white; padding: 6px 12px; border-radius: 20px; font-size: 13px; font-weight: 500;">
+                    <!-- Subscribed Users Card -->
+                    <div class="card shadow">
+                        <div class="card-header">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <h3 class="section-heading" style="margin: 0;">
+                                    <i class="fas fa-users section-heading-icon"></i>
+                                    Subscribed Users
+                                </h3>
+                                <span style="background: var(--color-blue); color: white; padding: 6px 12px; border-radius: 20px; font-size: 13px; font-weight: 500;">
                             {{ $membership->membershipUsers->count() }} users
                         </span>
-                    </div>
-                </div>
-                <div class="card-body" style="padding: 0;">
-                    @if($membership->membershipUsers->count() > 0)
-                        <div style="overflow-x: auto;">
-                            <table class="users-table">
-                                <thead>
-                                <tr>
-                                    <th style="width: 30%;">User</th>
-                                    <th style="width: 30%;">Email</th>
-                                    <th style="width: 20%;">Contact</th>
-                                    <th style="width: 20%;">Status</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                @foreach($membership->membershipUsers as $user)
-                                    <tr>
-                                        <td>
-                                            <div class="user-name">
-                                                <img src="{{ $user->user->picture ? asset($user->user->picture) : asset('img/default-avatar.png') }}"
-                                                     class="user-avatar"
-                                                     alt="{{ $user->user->name ?? 'N/A' }}">
-                                                {{ $user->user->name ?? 'N/A' }}
-                                            </div>
-                                        </td>
-                                        <td>{{ $user->user->email ?? 'N/A' }}</td>
-                                        <td>{{ $user->user->phone_no ?? 'N/A' }}</td>
-                                        <td>
+                            </div>
+                        </div>
+                        <div class="card-body" style="padding: 0;">
+                            @if($membership->membershipUsers->count() > 0)
+                                <div style="overflow-x: auto;">
+                                    <table class="users-table">
+                                        <thead>
+                                        <tr>
+                                            <th style="width: 30%;">User</th>
+                                            <th style="width: 30%;">Email</th>
+                                            <th style="width: 20%;">Contact</th>
+                                            <th style="width: 20%;">Status</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        @foreach($membership->membershipUsers as $user)
+                                            <tr>
+                                                <td>
+                                                    <div class="user-name">
+                                                        <img src="{{ $user->user->picture ? asset($user->user->picture) : asset('img/default-avatar.png') }}"
+                                                             class="user-avatar"
+                                                             alt="{{ $user->user->name ?? 'N/A' }}">
+                                                        {{ $user->user->name ?? 'N/A' }}
+                                                    </div>
+                                                </td>
+                                                <td>{{ $user->user->email ?? 'N/A' }}</td>
+                                                <td>{{ $user->user->phone_no ?? 'N/A' }}</td>
+                                                <td>
                                                 <span class="user-status status-{{ $user->status === 1 ? 'active' : 'inactive' }}">
                                                     {{ $user->status === 1 ? 'Active' : 'Inactive' }}
                                                 </span>
-                                        </td>
-                                    </tr>
-                                @endforeach
-                                </tbody>
-                            </table>
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+                            @else
+                                <div class="empty-state">
+                                    <div class="empty-icon">
+                                        <i class="fas fa-user-slash"></i>
+                                    </div>
+                                    <h4 style="font-weight: 600; margin-bottom: 8px; color: var(--main-text-color);">No Subscribed Users</h4>
+                                    <p style="color: #888; max-width: 400px; margin: 0 auto;">
+                                        This membership plan doesn't have any subscribers yet.
+                                    </p>
+                                </div>
+                            @endif
                         </div>
-                    @else
-                        <div class="empty-state">
-                            <div class="empty-icon">
-                                <i class="fas fa-user-slash"></i>
-                            </div>
-                            <h4 style="font-weight: 600; margin-bottom: 8px; color: var(--main-text-color);">No Subscribed Users</h4>
-                            <p style="color: #888; max-width: 400px; margin: 0 auto;">
-                                This membership plan doesn't have any subscribers yet.
-                            </p>
-                        </div>
-                    @endif
+                    </div>
                 </div>
             </div>
+
+
         </div>
     </div>
 @endsection
@@ -625,39 +639,55 @@
 @push('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        const imageContainers = document.querySelectorAll('.membership-image-container');
+        // Only run if not on mobile
+        if (window.innerWidth > 768) {
+            const imageContainers = document.querySelectorAll('.membership-image-container');
 
-        imageContainers.forEach(container => {
-            const img = container.querySelector('.membership-image');
+            imageContainers.forEach(container => {
+                const img = container.querySelector('.membership-image');
 
-            // Check if image is loaded
-            if (img.complete) {
-                initScrollEffect(img, container);
-            } else {
-                img.addEventListener('load', () => initScrollEffect(img, container));
-            }
-        });
+                // Check if image is loaded
+                if (img.complete) {
+                    initScrollEffect(img, container);
+                } else {
+                    img.addEventListener('load', () => initScrollEffect(img, container));
+                }
+            });
+        }
     });
 
     function initScrollEffect(img, container) {
         const containerHeight = container.clientHeight;
         const imgHeight = img.clientHeight;
 
-        // Only apply effect if image is taller than container
-        if (imgHeight > containerHeight) {
+        // Only apply effect if image is significantly taller than container
+        if (imgHeight > containerHeight * 1.2) { // 20% taller threshold
             img.classList.add('auto-scroll');
 
             // Calculate the exact scroll distance needed
             const scrollDistance = imgHeight - containerHeight;
             img.style.setProperty('--scroll-distance', `-${scrollDistance}px`);
 
-            // Pause animation on hover
+            // Pause animation on hover for better UX
             container.addEventListener('mouseenter', () => {
                 img.style.animationPlayState = 'paused';
             });
 
             container.addEventListener('mouseleave', () => {
                 img.style.animationPlayState = 'running';
+            });
+
+            // Handle window resize
+            window.addEventListener('resize', () => {
+                if (window.innerWidth <= 768) {
+                    img.classList.remove('auto-scroll');
+                } else if (imgHeight > container.clientHeight * 1.2) {
+                    img.classList.add('auto-scroll');
+                    const newScrollDistance = img.clientHeight - container.clientHeight;
+                    img.style.setProperty('--scroll-distance', `-${newScrollDistance}px`);
+                } else {
+                    img.classList.remove('auto-scroll');
+                }
             });
         }
     }
