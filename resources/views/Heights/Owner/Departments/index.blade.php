@@ -10,6 +10,273 @@
             margin-top: 45px;
         }
 
+        .filter-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 25px;
+            background: var(--sidenavbar-body-color);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            align-items: flex-end;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+            min-width: 220px;
+        }
+
+        .filter-group label {
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--sidenavbar-text-color);
+            font-size: 0.9rem;
+        }
+
+        .filter-select, .search-input {
+            width: 100%;
+            padding: 10px 15px;
+            border-radius: 6px;
+            border: 1px solid #e0e0e0;
+            background-color: white;
+            transition: all 0.3s ease;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+
+        .search-input {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23999' viewBox='0 0 16 16'%3E%3Cpath d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: 15px center;
+            background-size: 16px 16px;
+            padding-left: 40px;
+        }
+
+        .filter-buttons {
+            display: flex;
+            gap: 12px;
+            margin-left: auto;
+            align-self: center;
+            margin-top: 30px;
+        }
+
+        .filter-buttons .btn {
+            padding: 10px 15px;
+            border-radius: 6px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 120px;
+        }
+
+        @media (max-width: 768px) {
+            .filter-group {
+                min-width: 100%;
+            }
+
+            .filter-buttons {
+                width: 100%;
+                margin-left: 0;
+                margin-top: 10px;
+            }
+
+            .filter-buttons .btn {
+                flex-grow: 1;
+            }
+        }
+
+        /* ================ VIEW TOGGLE ================ */
+        .grid-view-toggle {
+            display: flex;
+            align-items: center;
+            margin-right: 15px;
+        }
+
+        .grid-view-toggle .btn {
+            padding: 0.375rem 0.75rem;
+        }
+
+        /* ================ TABLE VIEW ================ */
+        #tableView {
+            display: none;
+            margin-top: 0!important;
+            padding-top: 0 !important;
+        }
+
+        /* Grid Layout */
+        .departments-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 0 -10px;
+        }
+
+        @media (max-width: 768px) {
+            .departments-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+
+        /* Department Cards */
+        .department-card {
+            transition: all 0.3s ease;
+            border-radius: 12px;
+            border: none;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            margin-bottom: 20px;
+            height: 100%;
+            background: var(--body-background-color);
+            color: var(--sidenavbar-text-color);
+        }
+
+        .department-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .department-card .card-header {
+            background: var(--body-background-color);
+            color: var(--sidenavbar-text-color);
+            border-bottom: none;
+            border-radius: 12px 12px 0 0 !important;
+            padding: 15px 20px;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .department-card .card-body {
+            background: var(--body-background-color);
+            padding: 20px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            border-radius: 0 0 12px 12px  !important;
+        }
+
+        .department-card .department-description {
+            color: var(--sidenavbar-text-color);
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin-bottom: 5px;
+            flex-grow: 1;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 4;
+            -webkit-box-orient: vertical;
+        }
+
+        .department-card .department-id {
+            font-size: 0.8rem;
+            color: var(--color-blue);
+            margin-bottom: 5px;
+        }
+
+        .department-card .action-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 0;
+            padding-top: 15px;
+        }
+
+        .department-card .action-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .department-card .action-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .department-card .btn-view {
+            background-color: rgba(13, 110, 253, 0.1);
+            color: #0d6efd;
+        }
+
+        .department-card .btn-view:hover {
+            background-color: rgba(13, 110, 253, 0.1);
+            color: #0d6efd;
+        }
+
+        .department-card .btn-edit {
+            background-color: rgba(255, 193, 7, 0.1);
+            color: #ffc107;
+        }
+
+        .department-card .btn-edit:hover {
+            background-color: rgba(255, 193, 7, 0.1);
+            color: #ffc107;
+        }
+
+        .department-card .btn-delete {
+            background-color: rgba(220, 53, 69, 0.1);
+            color: #dc3545;
+        }
+
+        .department-card .btn-delete:hover {
+            background-color: rgba(220, 53, 69, 0.1);
+            color: #dc3545;
+        }
+
+        .empty-state {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 40px;
+            border-radius: 12px;
+        }
+
+        .empty-state .empty-state-icon {
+            font-size: 3rem;
+            color: var(--sidenavbar-text-color);
+            margin-bottom: 10px;
+        }
+
+        .empty-state .empty-state-text {
+            color: var(--sidenavbar-text-color);
+            margin-bottom: 10px;
+        }
+
+        .empty-state p{
+            color: var(--sidenavbar-text-color);
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .department-card {
+            animation: fadeInUp 0.5s ease forwards;
+            opacity: 0;
+        }
+
+        .department-card:nth-child(1) { animation-delay: 0.1s; }
+        .department-card:nth-child(2) { animation-delay: 0.2s; }
+        .department-card:nth-child(3) { animation-delay: 0.3s; }
+        .department-card:nth-child(4) { animation-delay: 0.4s; }
+        .department-card:nth-child(5) { animation-delay: 0.5s; }
+        .department-card:nth-child(6) { animation-delay: 0.6s; }
+        .department-card:nth-child(7) { animation-delay: 0.7s; }
+        .department-card:nth-child(8) { animation-delay: 0.8s; }
+
         /* Model Windows */
         .modal-content{
             background: var(--modal-header-bg);
@@ -59,20 +326,118 @@
 
     <div id="main">
 
-        <section class="content mt-1 mb-3 mx-2">
+        <section class="content my-3 mx-2">
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-md-12">
-                        <div class="box">
-                            <div class="container mt-2">
-                                <div class="d-flex justify-content-between align-items-center mb-2">
-                                    <h3 class="mb-1">Departments</h3>
-                                    <a href="#" class="btn float-end add_button" id="Owner-Department-Add-Button"   data-bs-toggle="modal" data-bs-target="#createDepartmentModal" title="Add Level">
-                                        <x-icon name="add" type="svg" class="" size="25" />
-                                    </a>
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h3 class="mb-1">Departments</h3>
+                            <a href="#" class="btn btn-primary d-flex align-items-center Owner-Department-Add-Button" id="Owner-Department-Add-Button"   data-bs-toggle="modal" data-bs-target="#createDepartmentModal" title="Add Level">
+                                <x-icon name="add" type="svg" class="me-1" size="18" /> Department
+                            </a>
+                        </div>
+
+                        <!-- Filter Form -->
+                        <form method="GET" id="filterForm" class="filter-container">
+                            <div class="filter-group">
+                                <label for="search">Search</label>
+                                <input type="text" name="search" id="search" class="search-input"
+                                       placeholder="Search by name or description"
+                                       value="{{ request('search') }}">
+                            </div>
+                        </form>
+
+                        <div class="card shadow p-3 mb-5 bg-body rounded" style="border: none; background-color: var(--sidenavbar-body-color) !important;">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center mb-4 tools-container">
+                                    <div class="grid-view-toggle me-3">
+                                        <span class="me-2">View:</span>
+                                        <div class="btn-group" role="group">
+                                            <button type="button" class="btn btn-outline-secondary active" id="gridViewBtn">
+                                                <i class='bx bx-grid-alt'></i>
+                                            </button>
+                                            <button type="button" class="btn btn-outline-secondary" id="tableViewBtn">
+                                                <i class='bx bx-table'></i>
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <div class="dropdown">
+                                        <button class="btn btn-secondary dropdown-toggle" type="button" id="exportDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                            <x-icon name="export" type="icon" class="me-1" size="16" />
+                                            Export
+                                        </button>
+                                        <ul class="dropdown-menu" aria-labelledby="exportDropdown">
+                                            <li><button class="dropdown-item" type="button" id="copyButton"><i class='bx bx-copy me-2'></i>Copy</button></li>
+                                            <li><button class="dropdown-item" type="button" id="csvButton"><i class='bx bx-file me-2'></i>CSV</button></li>
+                                            <li><button class="dropdown-item" type="button" id="excelButton"><i class='bx bx-spreadsheet me-2'></i>Excel</button></li>
+                                            <li><button class="dropdown-item" type="button" id="pdfButton"><i class='bx bxs-file-pdf me-2'></i>PDF</button></li>
+                                            <li><button class="dropdown-item" type="button" id="printButton"><i class='bx bx-printer me-2'></i>Print</button></li>
+                                        </ul>
+                                    </div>
                                 </div>
-                                <div class="card shadow p-3 mb-5 bg-body rounded" style="border: none;">
-                                    <div class="card-body " style="overflow-x: auto;">
+
+                                <!-- Card View -->
+                                <div id="cardView">
+                                    <div class="departments-grid">
+                                        @forelse($departments ?? [] as $department)
+                                            <div class="card department-card">
+                                                <div class="card-header">
+                                                    <span>{{ $department->name }}</span>
+                                                    <span class="department-id">ID: {{ $department->id }}</span>
+                                                </div>
+                                                <div class="card-body">
+                                                    <p class="department-description">
+                                                        {{ $department->description ?? 'No description provided' }}
+                                                    </p>
+                                                    <div class="action-buttons  border-top">
+                                                        <a href="{{ route('owner.departments.show', ['department' => $department->id]) }}"
+                                                           class="btn btn-sm btn-view rounded-circle p-2"
+                                                           data-bs-toggle="tooltip"
+                                                           data-bs-placement="top"
+                                                           title="View">
+                                                            <x-icon name="view" type="icon" size="16px" />
+                                                        </a>
+                                                        <a href="#"
+                                                           class="btn btn-sm btn-edit rounded-circle p-2 Owner-Department-Edit-Button"
+                                                           data-id="{{ $department->id }}"
+                                                           data-bs-toggle="tooltip"
+                                                           data-bs-placement="top"
+                                                           title="Edit">
+                                                            <x-icon name="edit" type="icon" size="16px" />
+                                                        </a>
+                                                        <form action="{{ route('owner.departments.destroy', $department->id) }}"
+                                                              method="POST"
+                                                              class="d-inline"
+                                                              id="delete-department-form-{{ $department->id }}">
+                                                            @csrf
+                                                            @method('DELETE')
+                                                            <input type="hidden" name="id" value="{{ $department->id }}">
+                                                            <button type="button"
+                                                                    class="btn btn-sm btn-delete rounded-circle p-2 delete-department-btn"
+                                                                    title="Delete Department"
+                                                                    data-id="{{ $department->id }}">
+                                                                <x-icon name="delete" type="icon" size="16px" />
+                                                            </button>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        @empty
+                                            <div class="empty-state">
+                                                <div class="empty-state-icon">
+                                                    <i class='bx bx-sitemap'></i>
+                                                </div>
+                                                <h4 class="empty-state-text">No departments found</h4>
+                                                <p>There are currently no departments matching your search criteria. Try different search keyword or add a new department.</p>
+                                            </div>
+                                        @endforelse
+                                    </div>
+                                </div>
+
+                                <!-- Table View (Hidden by default) -->
+                                <div id="tableView" style="display: none; margin-top: 0!important; padding-top: 0 !important;">
+                                    <div class="table-responsive">
                                         <table id="LevelsTable" class="table shadow-sm table-hover table-striped">
                                             <thead class="shadow">
                                             <tr>
@@ -115,6 +480,7 @@
                                             </tbody>
                                         </table>
                                     </div>
+
                                 </div>
                             </div>
                         </div>
@@ -245,21 +611,81 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
 
-    <!-- Data Tables Script -->
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            new DataTable("#LevelsTable", {
-                pageLength: 10,
-                lengthMenu: [10, 20, 50, 100],
-                language: {
-                    paginate: {
-                        first: "First",
-                        last: "Last",
-                        next: "Next",
-                        previous: "Previous"
+            // Initialize DataTable for table view
+            var table = new DataTable("#LevelsTable", {
+                searching: false,
+                paging: false,
+                info: false,
+                dom: "Bfrtip",
+                buttons: [
+                    {
+                        extend: "csv",
+                        text: "CSV",
+                        className: "btn btn-secondary d-none"
                     },
-                    searchPlaceholder: "Search users..."
-                }
+                    {
+                        extend: "excel",
+                        text: "Excel",
+                        className: "btn btn-secondary d-none"
+                    },
+                    {
+                        extend: "pdf",
+                        text: "PDF",
+                        className: "btn btn-secondary d-none"
+                    },
+                    {
+                        extend: "print",
+                        text: "Print",
+                        className: "btn btn-secondary d-none"
+                    }
+                ]
+            });
+
+            // View toggle functionality
+            const gridViewBtn = document.getElementById('gridViewBtn');
+            const tableViewBtn = document.getElementById('tableViewBtn');
+            const cardView = document.getElementById('cardView');
+            const tableView = document.getElementById('tableView');
+
+            gridViewBtn.addEventListener('click', function() {
+                this.classList.add('active');
+                tableViewBtn.classList.remove('active');
+                cardView.style.display = 'block';
+                tableView.style.display = 'none';
+            });
+
+            tableViewBtn.addEventListener('click', function() {
+                this.classList.add('active');
+                gridViewBtn.classList.remove('active');
+                cardView.style.display = 'none';
+                tableView.style.display = 'block';
+            });
+
+            function triggerButton(buttonClass, logMessage) {
+                console.log(logMessage);
+                table.buttons(buttonClass).trigger();
+            }
+
+            document.getElementById("csvButton")?.addEventListener("click", function () {
+                triggerButton(".buttons-csv", "CSV Button clicked");
+            });
+
+            document.getElementById("excelButton")?.addEventListener("click", function () {
+                triggerButton(".buttons-excel", "Excel Button clicked");
+            });
+
+            document.getElementById("pdfButton")?.addEventListener("click", function () {
+                triggerButton(".buttons-pdf", "PDF Button clicked");
+            });
+
+            document.getElementById("printButton")?.addEventListener("click", function () {
+                triggerButton(".buttons-print", "Print Button clicked");
+            });
+
+            document.getElementById("copyButton")?.addEventListener("click", function () {
+                triggerButton(".buttons-copy", "Copy Button clicked");
             });
         });
     </script>

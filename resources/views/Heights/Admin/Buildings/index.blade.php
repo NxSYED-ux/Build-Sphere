@@ -548,14 +548,12 @@
                                                 </div>
                                             </div>
                                         @empty
-                                            <div class="col-12">
-                                                <div class="empty-state">
-                                                    <div class="empty-state-icon">
-                                                        <i class='bx bx-buildings'></i>
-                                                    </div>
-                                                    <h4>No Buildings Found</h4>
-                                                    <p class="">There are no buildings to display. You can add a new building by clicking the "Add Building" button.</p>
+                                            <div class="empty-state">
+                                                <div class="empty-state-icon">
+                                                    <i class='bx bx-buildings'></i>
                                                 </div>
+                                                <h4>No Buildings Found</h4>
+                                                <p class="">There are no buildings to display. You can add a new building by clicking the "Add Building" button.</p>
                                             </div>
                                         @endforelse
                                     </div>

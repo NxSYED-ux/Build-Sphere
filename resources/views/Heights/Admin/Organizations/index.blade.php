@@ -30,7 +30,11 @@
 
         .btn-view:hover {
             background-color: rgba(52, 152, 219, 0.2);
-            color: #2980b9;
+            color: #2980b9 !important;
+        }
+
+        .btn-outline-warning:hover{
+            color: #fff !important;
         }
 
         /* Card View */
@@ -481,7 +485,7 @@
 
                                                                             <div class="d-flex gap-2">
                                                                                 <a href="{{ route('organizations.show', ['organization' => $organization->id]) }}"
-                                                                                   class="btn btn-sm btn-outline-info rounded-circle p-2"
+                                                                                   class="btn btn-sm btn-view rounded-circle p-2"
                                                                                    data-bs-toggle="tooltip"
                                                                                    data-bs-placement="top"
                                                                                    title="View">

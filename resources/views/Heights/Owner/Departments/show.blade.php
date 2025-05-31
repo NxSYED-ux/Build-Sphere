@@ -55,7 +55,6 @@
             text-shadow: 0 2px 4px rgba(0,0,0,0.1);
             position: relative;
             display: inline-block;
-            font-family: 'Playfair Display', serif;
             color: var(--light-ivory);
         }
 
@@ -161,7 +160,7 @@
         }
 
         .section-header {
-            padding: 1rem 2rem;
+            padding: 0.7rem 2rem;
             border-bottom: 1px solid var(--soft-gray);
             display: flex;
             justify-content: space-between;
@@ -177,7 +176,6 @@
             display: flex;
             align-items: center;
             gap: 0.75rem;
-            font-family: 'Playfair Display', serif;
         }
 
         .section-title-icon {
@@ -198,18 +196,17 @@
         /* Team Members Grid */
         .team-members {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 1.5rem;
+            grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+            gap: 1rem;
             padding: 2rem;
         }
 
         .member-card {
             background: var(--body-background-color);
             border-radius: 12px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             overflow: hidden;
             transition: all 0.3s ease;
-            border: 1px solid var(--soft-gray);
             position: relative;
         }
 
@@ -219,14 +216,13 @@
             border-color: var(--mist-blue);
         }
 
-        .member-header {
-            padding: 1.5rem;
+        .member-card .member-header {
+            padding: 1.5rem 1.5rem 0.1rem 1.5rem;
             text-align: center;
-            border-bottom: 1px solid var(--soft-gray);
-            background: linear-gradient(to bottom, white 0%, var(--light-ivory) 100%);
+            background: linear-gradient(135deg, var(--body-background-color) 0%, var(--sidenavbar-body-color) 100%);
         }
 
-        .member-avatar {
+        .member-card .member-avatar {
             width: 100px;
             height: 100px;
             border-radius: 50%;
@@ -243,51 +239,98 @@
             border-color: var(--pale-blush);
         }
 
-        .member-name {
+        .member-card .member-name {
             font-weight: 700;
-            color: var(--dark-charcoal);
+            color: var(--sidenavbar-text-color);
             margin-bottom: 0.25rem;
             font-size: 1.1rem;
-            font-family: 'Playfair Display', serif;
         }
 
-        .member-position {
+        .member-card .member-position {
             color: var(--warm-taupe);
             font-size: 0.9rem;
             font-weight: 500;
         }
 
-        .member-details {
-            padding: 1.25rem;
+        .member-card .member-details {
+            padding: 1.25rem 1.25rem 0 1.25rem;
         }
 
-        .detail-item {
+        .member-card .detail-item {
             display: flex;
             align-items: center;
             gap: 0.75rem;
             margin-bottom: 0.75rem;
         }
 
-        .detail-icon {
+        .member-card .detail-icon {
             color: var(--sage-green);
             font-size: 1rem;
             width: 20px;
             text-align: center;
         }
 
-        .detail-text {
+        .member-card .detail-text {
             font-size: 0.9rem;
             color: var(--sidenavbar-text-color);
         }
 
+        .member-card .member-actions {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 10px 10px 10px;
+        }
+
+        .member-card .btn-member {
+            flex: 1;
+            margin: 4px;
+            padding: 8px 0;
+            border-radius: 5px;
+            font-size: 0.85rem;
+        }
+
+        .member-card .btn-add {
+            padding: 10px 10px !important;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 120px;
+            font-size: 0.95rem;
+        }
+
+        .member-card .btn-view {
+            background-color: rgba(52, 152, 219, 0.1);
+            color: #3498db !important;
+            border: 1px solid rgba(52, 152, 219, 0.2);
+        }
+
+        .member-card .btn-view:hover {
+            background-color: rgba(52, 152, 219, 0.2);
+            color: #2980b9;
+        }
+
+        .member-card .btn-edit {
+            background-color: rgba(46, 204, 113, 0.1);
+            color: green !important;
+            border: 1px solid rgba(46, 204, 113, 0.2);
+        }
+
+        .member-card .btn-edit:hover {
+            background-color: rgba(46, 204, 113, 0.2);
+            color: #27ae60;
+        }
+
         /* Empty State */
         .empty-team {
-            padding: 4rem 2rem;
+            padding: 2rem 2rem;
             text-align: center;
             grid-column: 1 / -1;
             background: var(--light-ivory);
             border-radius: 12px;
-            margin: 1rem;
+            margin: 0.5rem;
         }
 
         .empty-icon {
@@ -301,7 +344,6 @@
             font-weight: 600;
             color: var(--dark-charcoal);
             margin-bottom: 0.5rem;
-            font-family: 'Playfair Display', serif;
         }
 
         .empty-text {
@@ -312,7 +354,7 @@
         }
 
         .btn-invite {
-            background: var(--sage-green);
+            background: var(--color-blue);
             color: white;
             border-radius: 50px;
             padding: 0.6rem 1.75rem;
@@ -325,7 +367,8 @@
         }
 
         .btn-invite:hover {
-            background: var(--deep-teal);
+            background: var(--color-blue);
+            color: white;
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(135, 188, 141, 0.3);
         }
@@ -475,10 +518,106 @@
                 padding: 1.5rem;
             }
         }
+        .member-actions-dropdown {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 10;
+        }
+
+        .dropdown-toggle-btn {
+            background: transparent;
+            border: none;
+            color: var(--sidenavbar-text-color);
+            padding: 5px 8px;
+            transition: all 0.3s ease;
+        }
+
+        .dropdown-toggle-btn:hover {
+            background: rgba(0,0,0,0.05);
+            transform: scale(1.1);
+        }
+
+        .dropdown-menu {
+            border: none;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            border-radius: 8px;
+            background-color: var(--sidenavbar-body-color);
+            overflow: hidden;
+        }
+
+        .dropdown-item {
+            padding: 8px 16px;
+            font-size: 0.9rem;
+            color: var(--sidenavbar-text-color);
+            transition: all 0.2s ease;
+        }
+
+        .dropdown-item:hover {
+            color: var(--sidenavbar-text-color);
+            background-color: rgba(0,0,0,0.05);
+        }
+
+        .dropdown-item.delete-item:hover {
+            background-color: rgba(220, 53, 69, 0.1);
+        }
+
+        .dropdown-divider {
+            margin: 0.3rem 0;
+        }
+
+        .member-details .enable-query-toggle-btn {
+            position: relative;
+            display: inline-block;
+            width: 36px;
+            height: 18px;
+        }
+
+        .member-details .enable-query-toggle-btn input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .member-details .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #e0e0e0;
+            transition: .4s;
+            border-radius: 18px;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .member-details .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 14px;
+            width: 14px;
+            left: 2px;
+            bottom: 2px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+        }
+
+        .member-details input:checked + .toggle-slider {
+            background-color: #4CAF50;
+        }
+
+        .member-details input:checked + .toggle-slider:before {
+            transform: translateX(18px);
+        }
+
+        .member-details input:focus + .toggle-slider {
+            box-shadow: 0 0 1px #4CAF50;
+        }
     </style>
 
-    <!-- Include Playfair Display font -->
-{{--    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">--}}
 @endpush
 
 @section('content')
@@ -495,6 +634,7 @@
     <!-- Side Navbar -->
     <x-Owner.side-navbar :openSections="['Departments']" />
     <x-error-success-model />
+    <x-promote-to-manager />
 
     <div id="main">
         <section class="content mx-2 my-3">
@@ -544,71 +684,101 @@
 
                 <!-- Team Members Section -->
                 <div class="team-section">
-                    <div class="section-header">
+                    <div class="section-header d-flex justify-content-between align-items-center">
                         <h2 class="section-title">
                             <i class="fas fa-users section-title-icon"></i>
                             Our Team
                             <span class="team-count">{{ $staffCount }}</span>
                         </h2>
-
+                        <a href="{{ route('owner.staff.create') }}" class="btn btn-invite">
+                            <i class="fas fa-user-plus"></i> Add New Staff
+                        </a>
                     </div>
 
-                    @if($staffMembers->count() > 0)
-                        <div class="team-members">
-                            @foreach($staffMembers as $staffMember)
-                                <div class="member-card">
-                                    <div class="member-header">
-                                        <img src="{{ $staffMember->user->picture ? asset($staffMember->user->picture) : asset('img/placeholder-profile.png') }}"
-                                             alt="{{ $staffMember->user->name }}"
-                                             class="member-avatar"
-                                             onerror="this.src='{{ asset('img/placeholder-profile.png') }}'">
-                                        <h3 class="member-name">{{ $staffMember->user->name }}</h3>
-                                        <p class="member-position">{{ $staffMember->user->role_id === 3 ? 'Manager' : ($staffMember->user->role_id === 4 ? 'Team Member' : 'Team Member') }}
-                                        </p>
+                    <div class="team-members">
+                        @forelse($staffMembers ?? [] as $staffMember)
+                            <div class="member-card">
+                                <div class="member-header">
+                                    <img src="{{ $staffMember->user->picture ? asset($staffMember->user->picture) : asset('img/placeholder-profile.png') }}"
+                                         alt="{{ $staffMember->user->name }}"
+                                         class="member-avatar"
+                                         onerror="this.src='{{ asset('img/placeholder-profile.png') }}'">
+                                    <h3 class="member-name">{{ $staffMember->user->name }}</h3>
+                                    <p class="member-position">{{ $staffMember->user->role_id === 3 ? 'Manager' : ($staffMember->user->role_id === 4 ? 'Team Member' : 'Team Member') }}
+                                    </p>
+                                    <div class="dropdown member-actions-dropdown">
+                                        <button class="btn btn-sm dropdown-toggle-btn rounded-circle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                            <i class="fas fa-ellipsis-v fa-lg"></i>
+                                        </button>
+                                        <ul class="dropdown-menu dropdown-menu-end">
+                                            <li>
+                                                <a class="dropdown-item promote-item promote-btn"  href="#" data-staff-id="{{ $staffMember->id }}">
+                                                    <i class="fas fa-user-shield me-2"></i> Promote to Manager
+                                                </a>
+                                            </li>
+                                            <li><hr class="dropdown-divider"></li>
+                                            <li>
+                                                <a class="dropdown-item delete-item delete-member-btn text-danger" href="#" data-member-id="{{ $staffMember->id }}">
+                                                    <i class="fas fa-trash-alt me-2"></i> Delete Staff
+                                                </a>
+                                            </li>
+                                        </ul>
                                     </div>
-                                    <div class="member-details">
-                                        <div class="detail-item">
-                                            <i class="fas fa-envelope detail-icon"></i>
-                                            <div class="detail-text">
-                                                <a href="" style="color: var(--sage-green);">{{ $staffMember->user->email }}</a>
-                                            </div>
+                                </div>
+                                <div class="member-details">
+                                    <div class="detail-item">
+                                        <i class="fas fa-envelope detail-icon"></i>
+                                        <div class="detail-text">
+                                            <a href="" style="color: var(--sage-green);">{{ $staffMember->user->email }}</a>
                                         </div>
-                                        <div class="detail-item">
-                                            <i class="fas fa-phone detail-icon"></i>
-                                            <div class="detail-text">
-                                                {{ $staffMember->user->phone_no ?? 'Not provided' }}
-                                            </div>
+                                    </div>
+                                    <div class="detail-item">
+                                        <i class="fas fa-phone detail-icon"></i>
+                                        <div class="detail-text">
+                                            {{ $staffMember->user->phone_no ?? 'Not provided' }}
                                         </div>
-                                        <div class="detail-item">
-                                            <i class="fas fa-map-marker-alt detail-icon"></i>
-                                            <div class="detail-text">
-                                                {{ $staffMember->user->address ? $staffMember->user->address->city : 'Location not set' }}
-                                            </div>
+                                    </div>
+                                    <div class="detail-item">
+                                        <i class="fas fa-building detail-icon"></i>
+                                        <div class="detail-text">
+                                            {{ $staffMember->building ? $staffMember->building->name : 'Building not assigned' }}
                                         </div>
-                                        <div class="detail-item">
-                                            <i class="fas fa-building detail-icon"></i>
-                                            <div class="detail-text">
-                                                {{ $staffMember->building ? $staffMember->building->name : 'Building not assigned' }}
-                                            </div>
+                                    </div>
+                                    <div class="detail-item" style="display: flex; align-items: center;">
+                                        <i class="fas fa-award detail-icon"></i>
+                                        <div class="detail-text" style="display: flex; align-items: center; gap: 8px;">
+                                            <span title="Assign permission to accept or handle queries">Handle Queries</span>
+                                            <label class="enable-query-toggle-btn">
+                                                <input type="checkbox" class="enable-query-btn" data-staff-id="{{ $staffMember->id }}" {{ $staffMember->accept_queries ? 'checked' : '' }}>
+                                                <span class="toggle-slider"></span>
+                                            </label>
                                         </div>
                                     </div>
                                 </div>
-                            @endforeach
-                        </div>
-                    @else
-                        <div class="empty-team">
-                            <div class="empty-icon">
-                                <i class="fas fa-user-friends"></i>
+                                <div class="member-actions">
+                                    <a href="{{ route('owner.staff.show', $staffMember->id) }}" class="btn btn-add btn-sm btn-view btn-member gap-1" title="View Details">
+                                        <i class="fas fa-eye"></i> View
+                                    </a>
+                                    <a href="{{ route('owner.staff.edit', $staffMember->id) }}" class="btn btn-add btn-sm btn-edit btn-member gap-1" title="Edit Manager">
+                                        <i class="fas fa-edit"></i> Edit
+                                    </a>
+                                </div>
                             </div>
-                            <h3 class="empty-title">Let's Build Your Team</h3>
-                            <p class="empty-text">
-                                This department is like a garden waiting to bloom. Invite your first team member to begin cultivating something beautiful together.
-                            </p>
-                            <button class="btn-invite">
-                                <i class="fas fa-user-plus"></i> Invite First Member
-                            </button>
-                        </div>
-                    @endif
+                        @empty
+                            <div class="empty-team">
+                                <div class="empty-icon">
+                                    <i class="fas fa-user-friends"></i>
+                                </div>
+                                <h3 class="empty-title">Let's Build Your Team</h3>
+                                <p class="empty-text">
+                                    This department is like a garden waiting to bloom. Invite your first team member to begin cultivating something beautiful together.
+                                </p>
+                                <a href="{{ route('owner.staff.create') }}" class="btn btn-invite">
+                                    <i class="fas fa-user-plus"></i> Add New Staff
+                                </a>
+                            </div>
+                        @endforelse
+                    </div>
 
                 </div>
                 @if($staffMembers)
@@ -834,6 +1004,137 @@
                     title: message
                 });
             }
+        });
+
+        // Handle Accept Queries
+        document.addEventListener('DOMContentLoaded', function() {
+            document.body.addEventListener('change', function(e) {
+                if (e.target.classList.contains('enable-query-btn')) {
+                    const button = e.target;
+                    const staffId = button.dataset.staffId;
+                    const isChecked = button.checked ? 1 : 0;
+
+                    const queryUrl = "{{ route('owner.staff.handle.queries') }}";
+                    const originalHTML = button.nextElementSibling.innerHTML;
+                    button.nextElementSibling.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+                    button.disabled = true;
+
+                    fetch(queryUrl, {
+                        method: 'PUT',
+                        headers: {
+                            'Accept': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            'Content-Type': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest'
+                        },
+                        body: JSON.stringify({
+                            id: staffId,
+                            accept_query: isChecked
+                        })
+                    })
+                        .then(response => {
+                            if (!response.ok) {
+                                return response.json().then(err => { throw err; });
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Success!',
+                                text: data.success || 'Status updated successfully',
+                                timer: 2000,
+                                background: 'var(--body-background-color)',
+                                color: 'var(--sidenavbar-text-color)',
+                                showConfirmButton: false
+                            });
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error!',
+                                text: error.error || 'Something went wrong. Please try again.',
+                                timer: 2000,
+                                background: 'var(--body-background-color)',
+                                color: 'var(--sidenavbar-text-color)',
+                                showConfirmButton: true
+                            });
+                            // Revert the checkbox state
+                            button.checked = !button.checked;
+                        })
+                        .finally(() => {
+                            button.nextElementSibling.innerHTML = originalHTML;
+                            button.disabled = false;
+                        });
+                }
+            });
+        });
+
+        // Delete staff member
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll('.delete-member-btn').forEach(button => {
+                button.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const memberId = this.getAttribute('data-member-id');
+
+                    Swal.fire({
+                        title: 'Are you sure?',
+                        text: "You won't be able to revert this!",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Yes, delete it!',
+                        cancelButtonText: 'Cancel',
+                        background: 'var(--body-background-color)',
+                        color: 'var(--sidenavbar-text-color)',
+                        backdrop: true,
+                        allowOutsideClick: false,
+                        showClass: {
+                            popup: 'animate__animated animate__fadeInDown'
+                        },
+                        hideClass: {
+                            popup: 'animate__animated animate__fadeOutUp'
+                        }
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            Swal.fire({
+                                title: 'Deleting...',
+                                html: 'Please wait while we delete the staff member.',
+                                allowOutsideClick: false,
+                                didOpen: () => {
+                                    Swal.showLoading();
+                                },
+                                background: 'var(--body-background-color)',
+                                color: 'var(--sidenavbar-text-color)',
+                            });
+
+                            deleteStaffMember(memberId)
+                                .then(data => {
+                                    Swal.fire({
+                                        title: 'Deleted!',
+                                        text: data.success || 'Staff member has been deleted.',
+                                        icon: 'success',
+                                        background: 'var(--body-background-color)',
+                                        color: 'var(--sidenavbar-text-color)',
+                                    }).then(() => {
+                                        window.location.reload();
+                                    });
+                                })
+                                .catch(error => {
+                                    Swal.fire({
+                                        title: 'Error!',
+                                        text: error.message || error.error || 'An error occurred while deleting.',
+                                        icon: 'error',
+                                        background: 'var(--body-background-color)',
+                                        color: 'var(--sidenavbar-text-color)',
+                                    });
+                                });
+                        }
+                    });
+                });
+            });
         });
     </script>
 @endpush

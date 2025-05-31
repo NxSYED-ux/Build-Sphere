@@ -469,14 +469,15 @@
 
     <div id="main">
 
-        <section class="content  mt-1 mb-3 mx-2">
+        <section class="content  my-3 mx-2">
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-md-12">
                         <div class="d-flex justify-content-between align-items-center mb-2">
                             <h3 class="mb-1">Units</h3>
-                            <a href="{{ route('owner.units.create') }}" class="btn float-end Owner-Unit-Add-Button hidden add_button" data-bs-toggle="tooltip" data-bs-placement="top" title="Add Unit">
-                                <x-icon name="add" type="svg" class="" size="25" />
+                            <a href="{{ route('owner.units.create') }}" class="btn btn-primary d-flex align-items-center Owner-Unit-Add-Button hidden" data-bs-toggle="tooltip" data-bs-placement="top" title="Add Unit">
+                                <x-icon name="add" type="svg" class="me-1" size="18" />
+                                Add Unit
                             </a>
                         </div>
 
@@ -529,7 +530,7 @@
                                     </div>
 
                                     <div class="dropdown">
-                                        <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="exportDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <button class="btn btn-secondary dropdown-toggle" type="button" id="exportDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                                             <x-icon name="export" type="icon" class="me-1" size="16" />
                                             Export
                                         </button>

@@ -4,97 +4,284 @@
 
 @push('styles')
     <style>
+        :root {
+            --primary: #6C5CE7;
+            --primary-light: #A29BFE;
+            --secondary: #00CEFF;
+            --dark: #2D3436;
+            --light: #F5F6FA;
+            --success: #00B894;
+            --warning: #FDCB6E;
+            --danger: #D63031;
+            --card-bg: #FFFFFF;
+            --border: #DFE6E9;
+        }
+
         #main {
-            margin-top: 55px;
+            margin-top: 45px;
         }
-        .details-card {
-            border: 1px solid #e0e0e0;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-            transition: all 0.3s ease;
+
+        .glass-container {
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.18);
         }
-        .details-card:hover {
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+
+        .card {
+            border: none;
+            border-radius: 16px;
+            overflow: hidden;
+            background-color: var(--sidenavbar-body-color) !important;
+            transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
         }
+
         .card-header {
-            padding: 1rem 1.25rem;
-            border-bottom: 1px solid rgba(0,0,0,0.1);
-        }
-        .user-details-card .card-header {
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-        }
-        .membership-details-card .card-header {
-            background: linear-gradient(135deg, #e0f7fa 0%, #b2ebf2 100%);
-        }
-        table.table-details th {
-            width: 30%;
-            padding-left: 0;
-            color: #555;
-            font-weight: 500;
-        }
-        table.table-details td {
-            width: 70%;
-            color: #333;
-        }
-        #user_avatar {
-            object-fit: cover;
-            border: 3px solid #fff;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        .empty-state {
-            text-align: center;
-            padding: 2rem;
-            color: #777;
-        }
-        .empty-state i {
-            font-size: 3rem;
-            color: #ddd;
-            margin-bottom: 1rem;
-        }
-        .highlight-box {
-            background-color: #f8f9fa;
-            border-radius: 6px;
-            padding: 1rem;
-            margin-bottom: 1rem;
-        }
-        .feature-badge {
-            background-color: #ffc107;
-            color: #212529;
-        }
-        .price-display {
-            font-size: 1.2rem;
-            font-weight: 600;
-        }
-        .original-price {
-            text-decoration: line-through;
-            color: #999;
-        }
-        .discount-badge {
-            background-color: #28a745;
-            color: white;
-            font-size: 0.8rem;
-            padding: 0.2rem 0.5rem;
-            border-radius: 10px;
-            margin-left: 0.5rem;
+            padding: 1.5rem;
+            background-color: var(--sidenavbar-body-color);
+            border-bottom: 1px solid var(--border);
         }
 
-        .table-details th{
-            padding-left: 5px !important;
-        }
-
-        .section-header {
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 700;
             color: var(--sidenavbar-text-color);
-            font-weight: 500;
-            margin-bottom: 15px;
-            margin-right: 3px;
+            margin: 0;
             display: flex;
             align-items: center;
         }
-        .section-header i {
-            margin-right: 10px;
-            font-size: 1.2em;
+
+        .card-title i {
+            margin-right: 12px;
+            font-size: 1.5rem;
+            background: linear-gradient(135deg, var(--color-blue), var(--primary-light));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
+        .user-select {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .user-select:focus {
+            border-color: var(--primary-light);
+            box-shadow: 0 0 0 4px rgba(108, 92, 231, 0.1);
+            outline: none;
+        }
+
+        .user-avatar {
+            width: 120px;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 4px solid white;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: 120px 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            color: var(--sidenavbar-text-color);
+            opacity: 0.7;
+            align-self: center;
+        }
+
+        .detail-value {
+            font-weight: 600;
+            color: var(--sidenavbar-text-color);
+            padding: 0.5rem;
+            background-color: var(--body-background-color);
+            border-radius: 8px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem 2rem;
+        }
+
+        .empty-state-icon {
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, var(--color-blue), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .empty-state-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--sidenavbar-text-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .empty-state-text {
+            color: var(--sidenavbar-text-color);
+            opacity: 0.7;
+            font-size: 1rem;
+        }
+
+        .membership-image {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            border-radius: 12px;
+            margin-bottom: .2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .membership-highlight {
+            background: linear-gradient(135deg, rgba(108, 92, 231, 0.05), rgba(0, 206, 255, 0.05));
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .membership-name {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--sidenavbar-text-color);
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, var(--color-blue), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .feature-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.5rem 1rem;
+            background: linear-gradient(135deg, var(--warning), #FFEAA7);
+            color: #2D3436;
+            font-weight: 700;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            box-shadow: 0 4px 15px rgba(253, 203, 110, 0.3);
+        }
+
+        .price-display {
+            font-size: 1.75rem;
+            font-weight: 800;
+            color: var(--color-blue);
+        }
+
+        .original-price {
+            text-decoration: line-through;
+            color: var(--sidenavbar-text-color);
+            opacity: 0.5;
+            font-size: 1.1rem;
+            margin-left: 0.5rem;
+        }
+
+        .discount-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.75rem;
+            background: linear-gradient(135deg, var(--success), #55EFC4);
+            color: white;
+            font-weight: 700;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            margin-left: 0.75rem;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.5rem 1rem;
+            font-weight: 700;
+            border-radius: 20px;
+            font-size: 0.75rem;
+        }
+
+        .status-published {
+            background: linear-gradient(135deg, var(--success), #55EFC4);
+            color: white;
+        }
+
+        .status-draft {
+            background-color: rgba(45, 52, 54, 0.1);
+            color: var(--sidenavbar-text-color);
+        }
+
+        .status-non-renewable {
+            background: linear-gradient(135deg, var(--warning), #FFEAA7);
+            color: var(--sidenavbar-text-color);
+        }
+
+        .submit-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.8rem 2.5rem;
+            background: linear-gradient(135deg, var(--color-blue), var(--primary-light));
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 700;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            box-shadow: 0 10px 30px rgba(108, 92, 231, 0.3);
+            margin: 0.1rem auto 0;
+            width: 100%;
+            /*max-width: 300px;*/
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(108, 92, 231, 0.4);
+        }
+
+        .submit-btn:disabled {
+            background: linear-gradient(135deg, #B2B2B2, #D8D8D8);
+            box-shadow: none;
+            transform: none;
+            cursor: not-allowed;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 1.25rem;
+            height: 1.25rem;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 0.75rem;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .page-title {
+                font-size: 1.75rem;
+            }
+
+            .detail-grid {
+                grid-template-columns: 1fr;
+                gap: 0.5rem;
+            }
+
+            .detail-label {
+                margin-bottom: -0.5rem;
+            }
+        }
     </style>
 @endpush
 
@@ -109,195 +296,198 @@
     <x-error-success-model />
 
     <div id="main">
-        <div class="container-fluid">
+        <div class="container my-3 px-3">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <h4 >Assign Membership</h4>
+                <a href="{{ route('owner.memberships.index') }}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left me-2"></i> Back
+                </a>
+            </div>
+
             <div class="row">
-                <div class="col-md-12">
-                    <div class="mb-3 d-flex justify-content-between align-items-center">
-                        <h3 class="mb-1">Assign Membership</h3>
-                        <a href="{{ route('owner.memberships.index') }}" class="btn btn-secondary" title="Go Back">
-                            <i class="fas fa-arrow-left me-2"></i> Go Back
-                        </a>
-                    </div>
-
-                    <div class="card shadow-sm">
-
+                <div class="col-lg-6 mb-4">
+                    <div class="card glass-container">
+                        <div class="card-header">
+                            <h2 class="card-title">
+                                <i class="fas fa-user-tag"></i> Select User
+                            </h2>
+                        </div>
                         <div class="card-body">
-                            <form action="{{ route('owner.memberships.assign') }}" method="POST" enctype="multipart/form-data">
-                                @csrf
-                                <input type="hidden" name="membership_id" value="{{ $membership->id }}">
+                            <select class="user-select form-select mb-4" id="user_id" name="user_id" required>
+                                <option value="">Select a user to assign membership</option>
+                                @if(!empty($availableUsers) && count($availableUsers))
+                                    @foreach($availableUsers as $user)
+                                        <option value="{{ $user->id }}" data-email="{{ $user->email }}">
+                                            {{ $user->name }} ({{ $user->email }})
+                                        </option>
+                                    @endforeach
+                                @else
+                                    <option value="" disabled>No available users found</option>
+                                @endif
+                            </select>
 
-                                <div class="row">
-                                    <!-- Left Side - User Selection and Details -->
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <h5 class="section-header">
-                                                <i class='bx bxs-user-detail'></i> Select User
-                                            </h5>
-
-                                            <select class="form-select" id="user_id" name="user_id" required>
-                                                <option value="">Select a user</option>
-                                                @if(!empty($availableUsers) && count($availableUsers))
-                                                    @foreach($availableUsers as $user)
-                                                        <option value="{{ $user->id }}" data-email="{{ $user->email }}">
-                                                            {{ $user->name }} ({{ $user->email }})
-                                                        </option>
-                                                    @endforeach
-                                                @else
-                                                    <option value="" disabled>No user found</option>
-                                                @endif
-                                            </select>
-
+                            <div class="card glass-container mt-3">
+                                <div class="card-header" style="background-color: var(--body-background-color) !important;">
+                                    <h2 class="card-title">
+                                        <i class="fas fa-user-circle"></i> User Details
+                                    </h2>
+                                </div>
+                                <div class="card-body" style="background-color: var(--body-background-color) !important;">
+                                    <div id="user-empty-state" class="empty-state">
+                                        <div class="empty-state-icon">
+                                            <i class="fas fa-user-plus"></i>
                                         </div>
-
-                                        <div class="card mt-3 user-details-card details-card">
-                                            <div class="card-header">
-                                                <h6 class="mb-0"><i class="fas fa-user-circle" style="margin-right: 10px; font-size: 1.2rem;"></i>User Details</h6>
-                                            </div>
-                                            <div class="card-body">
-                                                <div id="user-empty-state" class="empty-state">
-                                                    <i class="fas fa-user-slash"></i>
-                                                    <h5>No User Selected</h5>
-                                                    <p class="mb-0">Select a user from the dropdown above to view details</p>
-                                                </div>
-
-                                                <div id="user-details-content" style="display: none;">
-                                                    <div class="text-center mb-3">
-                                                        <img id="user_avatar" src="{{ asset('img/placeholder-profile.png') }}" class="rounded-circle" width="120" height="120" alt="User Image">
-                                                    </div>
-                                                    <div class="table-responsive">
-                                                        <table class="table table-sm table-details">
-                                                            <tr>
-                                                                <th>Name:</th>
-                                                                <td id="user_name">-</td>
-                                                            </tr>
-                                                            <tr>
-                                                                <th>Email:</th>
-                                                                <td id="user_email">-</td>
-                                                            </tr>
-                                                            <tr>
-                                                                <th>Contact:</th>
-                                                                <td id="user_contact">-</td>
-                                                            </tr>
-                                                            <tr>
-                                                                <th>CNIC:</th>
-                                                                <td id="user_cnic">-</td>
-                                                            </tr>
-                                                            <tr>
-                                                                <th>City:</th>
-                                                                <td id="user_city">-</td>
-                                                            </tr>
-                                                        </table>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
+                                        <h3 class="empty-state-title">Select a User</h3>
+                                        <p class="empty-state-text">Choose a user from the dropdown to view details</p>
                                     </div>
 
-                                    <!-- Right Side - Membership Details -->
-                                    <div class="col-md-6">
-                                        <div class="card membership-details-card details-card">
-                                            <div class="card-header">
-                                                <h6 class="mb-0"><i class="fas fa-id-card" style="margin-right: 10px; font-size: 1.2rem;"></i>Membership Details</h6>
+                                    <div id="user-details-content" style="display: none;">
+                                        <div class="text-center mb-4">
+                                            <img id="user_avatar" src="{{ asset('img/placeholder-profile.png') }}" class="user-avatar" alt="User Avatar">
+                                        </div>
+                                        <div class="user-details">
+                                            <div class="detail-grid">
+                                                <div class="detail-label">Full Name</div>
+                                                <div class="detail-value" id="user_name">-</div>
                                             </div>
-                                            <div class="card-body">
-                                                <div class="text-center mb-3">
-                                                    <img src="{{ asset($membership->image) }}" class="img-fluid rounded" style="max-height: 120px;" alt="Membership Image">
-                                                </div>
-
-                                                <div class="highlight-box">
-                                                    <div class="d-flex justify-content-between align-items-center">
-                                                        <h5 class="mb-2 text-dark">{{ $membership->name }}</h5>
-                                                        @if($membership->mark_as_featured)
-                                                            <span class="badge feature-badge mb-2" style="color: #ffff !important;"><i class="fas fa-star mr-1"></i>Featured</span>
-                                                        @endif
-                                                    </div>
-
-                                                    <p class="text-muted mb-2">{{ $membership->description }}</p>
-
-                                                </div>
-
-                                                <div class="table-responsive">
-                                                    <table class="table table-sm table-details">
-                                                        <tr>
-                                                            <th>Category:</th>
-                                                            <td>
-                                                                {{ $membership->category }}
-                                                                @if($membership->category === 'Other')
-                                                                    <small class="text-muted">({{ $membership->type ?? 'N/A' }})</small>
-                                                                @endif
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <th>Building:</th>
-                                                            <td>{{ $membership->building->name ?? 'N/A' }}</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <th>Unit:</th>
-                                                            <td>{{ $membership->unit->unit_name ?? 'N/A' }}</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <th>Duration:</th>
-                                                            <td>{{ $membership->duration_months }} months</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <th>Scans/Day:</th>
-                                                            <td>{{ $membership->scans_per_day }}</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <th>Status:</th>
-                                                            <td>
-                                                                <span class="badge badge-{{
-                                                                    $membership->status == 'Published' ? 'success' :
-                                                                    ($membership->status == 'Draft' ? 'secondary' :
-                                                                    ($membership->status == 'Non Renewable' ? 'warning' : 'dark'))
-                                                                }}">
-                                                                    {{ $membership->status }}
-                                                                </span>
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <th>Price:</th>
-                                                            <td>
-                                                                <span class="price-display">{{ $membership->currency }} {{ number_format($membership->price, 2) }}</span>
-                                                                @if($membership->original_price && $membership->original_price > $membership->price)
-                                                                    <span class="original-price">{{ $membership->currency }} {{ number_format($membership->original_price, 2) }}</span>
-                                                                    <span class="discount-badge">
-                                                                        {{ number_format(100 - ($membership->price / $membership->original_price * 100), 0) }}% OFF
-                                                                    </span>
-                                                                @endif
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <th>URL:</th>
-                                                            <td>
-                                                                @if($membership->url)
-                                                                    <a href="{{ $membership->url }}" target="_blank" class="text-primary">
-                                                                        <i class="fas fa-external-link-alt mr-1" style="margin-right: 10px; font-size: 0.8rem;"></i>Visit
-                                                                    </a>
-                                                                @else
-                                                                    N/A
-                                                                @endif
-                                                            </td>
-                                                        </tr>
-                                                    </table>
-                                                </div>
+                                            <div class="detail-grid">
+                                                <div class="detail-label">Email</div>
+                                                <div class="detail-value" id="user_email">-</div>
+                                            </div>
+                                            <div class="detail-grid">
+                                                <div class="detail-label">Phone</div>
+                                                <div class="detail-value" id="user_contact">-</div>
+                                            </div>
+                                            <div class="detail-grid">
+                                                <div class="detail-label">CNIC</div>
+                                                <div class="detail-value" id="user_cnic">-</div>
+                                            </div>
+                                            <div class="detail-grid">
+                                                <div class="detail-label">Location</div>
+                                                <div class="detail-value" id="user_city">-</div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-
-                                <div class="row mt-4">
-                                    <div class="col-md-12 text-right">
-
-                                        <button type="submit" class="btn btn-primary w-100" id="assignBtn" disabled>
-                                            <i class="fas fa-user-check mr-1"></i> Assign Membership
-                                        </button>
-                                    </div>
-                                </div>
-                            </form>
+                            </div>
                         </div>
                     </div>
                 </div>
+
+                <div class="col-lg-6 mb-4">
+                    <div class="card glass-container">
+                        <div class="card-header">
+                            <h2 class="card-title">
+                                <i class="fas fa-id-card-alt"></i> Membership Details
+                            </h2>
+                        </div>
+                        <div class="card-body">
+                            <div class="text-center mb-4">
+                                <img src="{{ asset($membership->image) }}" class="membership-image" alt="Membership Image">
+                            </div>
+
+                            <div class="membership-highlight">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <h3 class="membership-name">{{ $membership->name }}</h3>
+                                    @if($membership->mark_as_featured)
+                                        <span class="feature-badge">
+                                            <i class="fas fa-star me-1"></i> FEATURED
+                                        </span>
+                                    @endif
+                                </div>
+                                <p class="mb-0">{{ $membership->description }}</p>
+                            </div>
+
+                            <div class="detail-grid">
+                                <div class="detail-label">Category</div>
+                                <div class="detail-value">
+                                    {{ $membership->category }}
+                                    @if($membership->category === 'Other')
+                                        <div class="mt-1 small opacity-75">{{ $membership->type ?? 'N/A' }}</div>
+                                    @endif
+                                </div>
+                            </div>
+
+                            <div class="detail-grid">
+                                <div class="detail-label">Building</div>
+                                <div class="detail-value">{{ $membership->building->name ?? 'N/A' }}</div>
+                            </div>
+
+                            <div class="detail-grid">
+                                <div class="detail-label">Unit</div>
+                                <div class="detail-value">{{ $membership->unit->unit_name ?? 'N/A' }}</div>
+                            </div>
+
+                            <div class="detail-grid">
+                                <div class="detail-label">Duration</div>
+                                <div class="detail-value">{{ $membership->duration_months }} months</div>
+                            </div>
+
+                            <div class="detail-grid">
+                                <div class="detail-label">Scans/Day</div>
+                                <div class="detail-value">{{ $membership->scans_per_day }}</div>
+                            </div>
+
+                            <div class="detail-grid">
+                                <div class="detail-label">Status</div>
+                                <div class="detail-value">
+                                    @if($membership->status == 'Published')
+                                        <span class="status-badge status-published">{{ $membership->status }}</span>
+                                    @elseif($membership->status == 'Draft')
+                                        <span class="status-badge status-draft">{{ $membership->status }}</span>
+                                    @elseif($membership->status == 'Non Renewable')
+                                        <span class="status-badge status-non-renewable">{{ $membership->status }}</span>
+                                    @else
+                                        <span class="status-badge">{{ $membership->status }}</span>
+                                    @endif
+                                </div>
+                            </div>
+
+                            <div class="detail-grid">
+                                <div class="detail-label">Price</div>
+                                <div class="detail-value">
+                                    <span class="price-display">{{ $membership->currency }} {{ number_format($membership->price, 2) }}</span>
+                                    @if($membership->original_price && $membership->original_price > $membership->price)
+                                        <span class="original-price">{{ $membership->currency }} {{ number_format($membership->original_price, 2) }}</span>
+                                        <span class="discount-badge">
+                                            {{ number_format(100 - ($membership->price / $membership->original_price * 100), 0) }}% OFF
+                                        </span>
+                                    @endif
+                                </div>
+                            </div>
+
+                            <div class="detail-grid">
+                                <div class="detail-label">URL</div>
+                                <div class="detail-value">
+                                    @if($membership->url)
+                                        <a href="{{ $membership->url }}" target="_blank" class="text-primary">
+                                            <i class="fas fa-external-link-alt me-1"></i> Visit Link
+                                        </a>
+                                    @else
+                                        N/A
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center">
+                <form action="{{ route('owner.memberships.assign') }}" method="POST" enctype="multipart/form-data">
+                    @csrf
+                    <input type="hidden" name="membership_id" value="{{ $membership->id }}">
+                    <input type="hidden" name="user_id" id="form_user_id" value="">
+
+                    <button type="submit" class="submit-btn" id="assignBtn" disabled>
+                        <span id="button-text">
+                            <i class="fas fa-user-check me-2"></i> Assign Membership
+                        </span>
+                        <span id="button-loading" style="display: none;">
+                            <span class="loading-spinner"></span> Processing...
+                        </span>
+                    </button>
+                </form>
             </div>
         </div>
     </div>
@@ -306,24 +496,31 @@
 @push('scripts')
     <script>
         document.addEventListener("DOMContentLoaded", function() {
+            const userIdSelect = document.getElementById('user_id');
+            const formUserId = document.getElementById('form_user_id');
+            const userDetailsContent = document.getElementById('user-details-content');
+            const userEmptyState = document.getElementById('user-empty-state');
+            const assignBtn = document.getElementById('assignBtn');
+            const buttonText = document.getElementById('button-text');
+            const buttonLoading = document.getElementById('button-loading');
 
             // Handle user selection change
-            document.getElementById('user_id').addEventListener('change', function() {
+            userIdSelect.addEventListener('change', function() {
                 const userId = this.value;
-                const userDetailsContent = document.getElementById('user-details-content');
-                const userEmptyState = document.getElementById('user-empty-state');
-                const assignBtn = document.getElementById('assignBtn');
+                formUserId.value = userId;
 
                 if (userId) {
                     // Show loading state
                     userEmptyState.style.display = 'none';
                     userDetailsContent.style.display = 'block';
-                    document.getElementById('user_name').innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading...';
+                    document.getElementById('user_name').innerHTML = '<span class="loading-spinner"></span> Loading...';
                     document.getElementById('user_email').textContent = '-';
                     document.getElementById('user_contact').textContent = '-';
                     document.getElementById('user_cnic').textContent = '-';
                     document.getElementById('user_city').textContent = '-';
                     assignBtn.disabled = true;
+                    buttonText.style.display = 'inline-flex';
+                    buttonLoading.style.display = 'none';
 
                     // Fetch user details
                     fetchUserDetails(userId);
@@ -354,7 +551,6 @@
                     })
                     .then(data => {
                         const user = data.user;
-                        const assignBtn = document.getElementById('assignBtn');
                         const placeholderImage = "{{ asset('img/placeholder-profile.png') }}";
                         const baseAssetPath = "{{ asset('/') }}";
 
@@ -374,12 +570,35 @@
                     })
                     .catch(error => {
                         console.error("Error fetching user details:", error);
-                        toastr.error('An error occurred while fetching user details');
-                        document.getElementById('user-empty-state').style.display = 'block';
-                        document.getElementById('user-details-content').style.display = 'none';
-                        document.getElementById('assignBtn').disabled = true;
+
+                        // Show error state
+                        userEmptyState.style.display = 'block';
+                        userDetailsContent.style.display = 'none';
+                        assignBtn.disabled = true;
+
+                        // Update empty state with error message
+                        const emptyStateIcon = userEmptyState.querySelector('.empty-state-icon');
+                        const emptyStateTitle = userEmptyState.querySelector('.empty-state-title');
+                        const emptyStateText = userEmptyState.querySelector('.empty-state-text');
+
+                        emptyStateIcon.innerHTML = '<i class="fas fa-exclamation-circle"></i>';
+                        emptyStateTitle.textContent = 'Error Loading User';
+                        emptyStateText.textContent = 'Please try selecting the user again';
                     });
             }
+
+            // Form submission handling
+            const form = document.querySelector('form');
+            form.addEventListener('submit', function(e) {
+                if (assignBtn.disabled) {
+                    e.preventDefault();
+                    return;
+                }
+
+                buttonText.style.display = 'none';
+                buttonLoading.style.display = 'inline-flex';
+                assignBtn.disabled = true;
+            });
         });
     </script>
 @endpush

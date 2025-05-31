@@ -380,20 +380,16 @@
         /* Action Buttons */
         .unit-card .action-buttons {
             display: flex;
-            margin-top: auto;
-            flex-wrap: wrap;
-            gap: 8px;
+            justify-content: space-between;
+            /*padding: 10px 10px;*/
         }
 
         .unit-card .action-btn {
-            flex: 1 1 calc(50% - 4px);
-            margin: 0;
+            flex: 1;
+            margin: 4px;
             padding: 8px 0;
             border-radius: 5px;
             font-size: 0.85rem;
-            text-align: center;
-            min-width: 100px;
-            transition: all 0.2s ease;
         }
 
         /* Special Button Styles */
@@ -637,7 +633,7 @@
     />
 
     <!-- Side Navbar -->
-    <x-Owner.side-navbar :openSections="['Property Users']" />
+    <x-Owner.side-navbar :openSections="['PropertyUsers']" />
     <x-error-success-model />
 
     <div id="main">
@@ -705,9 +701,9 @@
                                         </div>
 
                                         <div class="user-detail-row">
-                    <span class="user-detail-label">
-                        <i class="fas fa-venus-mars me-2"></i>Gender:
-                    </span>
+                                            <span class="user-detail-label">
+                                                <i class="fas fa-venus-mars me-2"></i>Gender:
+                                            </span>
                                             <span class="user-detail-value">{{ ucfirst($user->gender ?? 'N/A') }}</span>
                                         </div>
                                     </div>
@@ -824,10 +820,10 @@
                                         @endif
 
                                         <div class="action-buttons">
-                                            <a href="javascript:void(0);" class="action-btn btn-add btn-view view-unit gap-1" data-id="{{ $unit->id }}" title="View">
+                                            <a href="{{ route('owner.units.show', $unit->id) }}" class="action-btn btn-add btn-view view-unit gap-1" title="View">
                                                 <i class='bx bx-show'></i> View
                                             </a>
-                                            <form action="" method="POST" class="d-inline">
+                                            <form action="#" method="POST" class="d-inline">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" class="action-btn btn-add btn-danger gap-1" title="Delete" onclick="return confirm('Are you sure you want to delete this unit?')">

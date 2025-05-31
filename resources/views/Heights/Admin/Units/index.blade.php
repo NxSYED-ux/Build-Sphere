@@ -28,7 +28,7 @@
             display: flex;
             flex-direction: column;
             flex-grow: 1;
-            min-width: 220px;
+            min-width: 200px;
         }
 
         .filter-group label {
@@ -73,6 +73,22 @@
             align-items: center;
             justify-content: center;
             min-width: 120px;
+        }
+
+        @media (max-width: 768px) {
+            .filter-group {
+                min-width: 100%;
+            }
+
+            .filter-buttons {
+                width: 100%;
+                margin-left: 0;
+                margin-top: 10px;
+            }
+
+            .filter-buttons .btn {
+                flex-grow: 1;
+            }
         }
 
         th, td {
@@ -599,12 +615,19 @@
                                 </select>
                             </div>
 
+                            <div class="filter-group">
+                                <label for="type">Status</label>
+                                <select name="status" id="status" class="form-select filter-select">
+                                    <option value="">All Status</option>
+                                </select>
+                            </div>
+
                             <div class="filter-buttons">
                                 <button type="button" class="btn btn-secondary flex-grow-1 d-flex align-items-center justify-content-center" onclick="resetFilters()">
                                     <i class="fas fa-undo me-2"></i> Reset
                                 </button>
                                 <button type="submit" class="btn btn-primary flex-grow-1 d-flex align-items-center justify-content-center">
-                                    <i class="fas fa-filter me-2"></i> Apply Filters
+                                    <i class="fas fa-filter me-2"></i> Apply
                                 </button>
                             </div>
                         </form>
@@ -625,7 +648,7 @@
                                     </div>
 
                                     <div class="dropdown">
-                                        <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="exportDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <button class="btn btn-secondary dropdown-toggle" type="button" id="exportDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                                             <x-icon name="export" type="icon" class="me-1" size="16" />
                                             Export
                                         </button>

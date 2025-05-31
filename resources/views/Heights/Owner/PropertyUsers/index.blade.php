@@ -202,6 +202,8 @@
 
         .member-card:hover {
             transform: translateY(-5px);
+            box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+            border-color: #a5c4d4;
         }
 
         .member-header {
@@ -215,8 +217,14 @@
             height: 100px;
             border-radius: 50%;
             object-fit: cover;
-            border: 4px solid white;
+            border: 3px solid white;
             margin-bottom: 15px;
+        }
+
+        .member-card:hover .member-avatar{
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            border-color: #e8c7c8;
         }
 
         .member-name {
@@ -303,7 +311,7 @@
 
         .btn-edit {
             background-color: rgba(46, 204, 113, 0.1);
-            color: var(--sage-green);
+            color: #27ae60;
             border: 1px solid rgba(46, 204, 113, 0.2);
         }
 
@@ -417,6 +425,30 @@
             background-color: rgba(220, 53, 69, 0.1);
         }
 
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .member-card {
+            animation: fadeInUp 0.5s ease forwards;
+            opacity: 0;
+        }
+
+        .member-card:nth-child(1) { animation-delay: 0.1s; }
+        .member-card:nth-child(2) { animation-delay: 0.2s; }
+        .member-card:nth-child(3) { animation-delay: 0.3s; }
+        .member-card:nth-child(4) { animation-delay: 0.4s; }
+        .member-card:nth-child(5) { animation-delay: 0.5s; }
+        .member-card:nth-child(6) { animation-delay: 0.6s; }
+        .member-card:nth-child(7) { animation-delay: 0.7s; }
+        .member-card:nth-child(8) { animation-delay: 0.8s; }
+
     </style>
 @endpush
 
@@ -430,7 +462,7 @@
     />
 
     <!-- Side Navbar -->
-    <x-Owner.side-navbar :openSections="['Property Users']" />
+    <x-Owner.side-navbar :openSections="['PropertyUsers']" />
     <x-error-success-model />
 
     <div id="main">
@@ -441,6 +473,10 @@
                     <div class="col-md-12">
                         <div class="d-flex justify-content-between align-items-center mb-2">
                             <h3 class="mb-1">Property Users</h3>
+                            <a href="{{ route('owner.assignunits.index') }}" class="btn btn-primary">
+                                <i class="bx bxs-user-check me-1"></i>
+                                Assign Unit
+                            </a>
                         </div>
 
                         <!-- Filter Form -->
