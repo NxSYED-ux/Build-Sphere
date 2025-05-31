@@ -380,8 +380,9 @@
         /* Action Buttons */
         .unit-card .action-buttons {
             display: flex;
-            justify-content: space-between;
-            /*padding: 10px 10px;*/
+            margin-top: auto;
+            flex-wrap: wrap;
+            gap: 8px;
         }
 
         .unit-card .action-btn {
@@ -813,16 +814,17 @@
                                         <p class="card-text"><i class='bx bx-buildings me-1'></i> {{ $unit->building->name ?? 'N/A' }}</p>
                                         <p class="card-text"><i class='bx bxs-layer me-1'></i> {{ $unit->level->level_name ?? 'N/A' }}</p>
                                         @if($userUnit->type === 'Sold')
-                                        <p class="card-text"><i class='bx bx-calendar me-1'></i> Contract Date: {{ $userUnit->created_at ? \Carbon\Carbon::parse($userUnit->contract_date)->format('M d, Y') : 'N/A' }}</p>
+                                        <p class="card-text"><i class='bx bx-calendar me-1'></i> Contract Date: {{ $userUnit->created_at ? \Carbon\Carbon::parse($userUnit->created_at)->format('M d, Y') : 'N/A' }}</p>
                                         @elseif($userUnit->type === 'Rented')
-                                            <p class="card-text"><i class='bx bx-calendar me-1'></i> Start Date: {{ $userUnit->subscription->created_at ? \Carbon\Carbon::parse($userUnit->contract_date)->format('M d, Y') : 'N/A' }}</p>
-                                            <p class="card-text"><i class='bx bx-calendar me-1'></i> End Date: {{ $userUnit->subscription->ends_at ? \Carbon\Carbon::parse($userUnit->contract_date)->format('M d, Y') : 'N/A' }}</p>
+                                            <p class="card-text"><i class='bx bx-calendar me-1'></i> Start Date: {{ $userUnit->subscription->created_at ? \Carbon\Carbon::parse($userUnit->subscription->created_at)->format('M d, Y') : 'N/A' }}</p>
+                                            <p class="card-text"><i class='bx bx-calendar me-1'></i> End Date: {{ $userUnit->subscription->ends_at ? \Carbon\Carbon::parse($userUnit->subscription->ends_at)->format('M d, Y') : 'N/A' }}</p>
                                         @endif
 
                                         <div class="action-buttons">
                                             <a href="{{ route('owner.units.show', $unit->id) }}" class="action-btn btn-add btn-view view-unit gap-1" title="View">
                                                 <i class='bx bx-show'></i> View
                                             </a>
+                                            @if($userUnit->type === 'Rented')
                                             <form action="#" method="POST" class="d-inline">
                                                 @csrf
                                                 @method('DELETE')
@@ -830,6 +832,7 @@
                                                     <i class='bx bx-trash'></i> Delete
                                                 </button>
                                             </form>
+                                            @endif
 
 
                                         </div>

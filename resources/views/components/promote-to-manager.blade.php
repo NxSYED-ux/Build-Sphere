@@ -264,7 +264,7 @@
 
                                     <div class="mb-4">
                                         <h6 class="mb-3">Manager Permissions</h6>
-                                        ${renderPermissions(data.permissions || [])}
+                                        ${renderPermissions(data.permissions || {})}
                                     </div>
                                 </form>
                             </div>
@@ -283,118 +283,123 @@
                 if (!buildings.length) return '<p class="col-12">No buildings available</p>';
 
                 return buildings.map(building => `
-                    <div class="col-md-4 col-lg-3">
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox"
-                                   name="buildings[]"
-                                   value="${building.id}"
-                                   id="building-${building.id}"
-                                   ${building.id == currentBuildingId ? 'checked' : ''}>
-                            <label class="form-check-label" for="building-${building.id}">
-                                ${building.name || 'Unnamed Building'}
-                            </label>
-                        </div>
+        <div class="col-sm-12 col-md-6 col-xl-4">
+            <div class="form-group mb-3">
+                <div class="permission-toggle-container border">
+                    <label class="permission-label" for="building-${building.id}">
+                        <i class='bx bxs-check-circle permission-icon'></i>
+                        ${building.name || 'Unnamed Building'}
+                    </label>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input permission-toggle parent-toggle"
+                               type="checkbox"
+                               name="buildings[]"
+                               value="${building.id}"
+                               id="building-${building.id}"
+                               ${building.id == currentBuildingId ? 'checked' : ''}>
                     </div>
-                `).join('');
+                </div>
+            </div>
+        </div>
+    `).join('');
             }
 
             function renderPermissions(permissions) {
-                if (!permissions.length) return '<div class="text-center fw-bold">No permissions found.</div>';
-
-                const grouped = permissions.reduce((acc, perm) => {
-                    const header = perm.permission?.header || 'General Permissions';
-                    if (!acc[header]) acc[header] = [];
-                    acc[header].push(perm);
-                    return acc;
-                }, {});
+                // Check if permissions is an object and has keys
+                if (!permissions || typeof permissions !== 'object' || Object.keys(permissions).length === 0) {
+                    return '<div class="text-center fw-bold">No permissions found.</div>';
+                }
 
                 return `
-                    <div class="accordion" id="permissionsAccordion">
-                        ${Object.entries(grouped).map(([header, perms], index) => `
-                            <div class="accordion-item mb-3">
-                                <h6 class="accordion-header" id="heading${index}">
-                                    <button class="accordion-button collapsed" type="button"
-                                            data-bs-toggle="collapse" data-bs-target="#collapse${index}"
-                                            aria-expanded="false" aria-controls="collapse${index}">
-                                        <div class="d-flex align-items-center w-100">
-                                            <i class='bx bx-category-alt me-2'></i>
-                                            <span class="fw-bold">${header}</span>
-                                            <span class="badge bg-primary bg-opacity-10 text-primary ms-auto me-2">
-                                                ${perms.length} ${perms.length === 1 ? 'permission' : 'permissions'}
-                                            </span>
-                                        </div>
-                                    </button>
-                                </h6>
-                                <div id="collapse${index}" class="accordion-collapse collapse"
-                                     aria-labelledby="heading${index}" data-bs-parent="#permissionsAccordion">
-                                    <div class="accordion-body pt-2">
-                                        <div class="row">
-                                            ${renderPermissionGroup(perms)}
-                                        </div>
-                                    </div>
-                                </div>
+        <div class="accordion" id="permissionsAccordion">
+            ${Object.entries(permissions).map(([header, perms], index) => `
+                <div class="accordion-item mb-3">
+                    <h6 class="accordion-header" id="heading${index}">
+                        <button class="accordion-button collapsed" type="button"
+                                data-bs-toggle="collapse" data-bs-target="#collapse${index}"
+                                aria-expanded="false" aria-controls="collapse${index}">
+                            <div class="d-flex align-items-center w-100">
+                                <i class='bx bx-category-alt me-2'></i>
+                                <span class="fw-bold">${header}</span>
+                                <span class="badge bg-primary bg-opacity-10 text-primary ms-auto me-2">
+                                    ${perms.length} ${perms.length === 1 ? 'permission' : 'permissions'}
+                                </span>
                             </div>
-                        `).join('')}
+                        </button>
+                    </h6>
+                    <div id="collapse${index}" class="accordion-collapse collapse"
+                         aria-labelledby="heading${index}" data-bs-parent="#permissionsAccordion">
+                        <div class="accordion-body pt-2">
+                            <div class="row">
+                                ${renderPermissionGroup(perms)}
+                            </div>
+                        </div>
                     </div>
-                `;
+                </div>
+            `).join('')}
+        </div>
+    `;
             }
 
             function renderPermissionGroup(permissions) {
-                const parents = permissions.filter(p => !p.permission?.parent_id);
-
-                return parents.map(permission => {
-                    const children = permissions.filter(
-                        p => p.permission?.parent_id === permission.permission_id
-                    );
+                return permissions.map(permission => {
+                    const hasChildren = permission.children && permission.children.length > 0;
+                    const isParentEnabled = permission.status === 1;
 
                     return `
-                        <div class="col-sm-12 mb-3 parent-permission">
-                            <div class="permission-item-container">
-                                <div class="permission-toggle-container border-bottom ${children.length > 0 ? 'rounded-bottom-0' : 'rounded-bottom'}">
-                                    <label class="permission-label">
-                                        <i class='bx bxs-check-circle permission-icon'></i>
-                                        ${permission.permission?.name || 'Permission'}
-                                    </label>
-                                    <div class="form-check form-switch">
-                                        <input type="hidden" name="permissions[${permission.permission_id}]" value="0">
-                                        <input class="form-check-input permission-toggle parent-toggle"
-                                               type="checkbox"
-                                               name="permissions[${permission.permission_id}]"
-                                               value="1"
-                                               data-permission-id="${permission.permission_id}"
-                                               ${permission.status ? 'checked' : ''}>
-                                    </div>
-                                </div>
-                                ${children.length ? renderChildPermissions(children, permission) : ''}
-                            </div>
+            <div class="col-sm-12 mb-3 parent-permission">
+                <div class="permission-item-container">
+                    <div class="permission-toggle-container border-bottom ${hasChildren ? 'rounded-bottom-0' : 'rounded-bottom'}">
+                        <label class="permission-label">
+                            <i class='bx bxs-check-circle permission-icon'></i>
+                            ${permission.name || 'Permission'}
+                        </label>
+                        <div class="form-check form-switch">
+                            <input type="hidden" name="permissions[${permission.id}]" value="0">
+                            <input class="form-check-input permission-toggle parent-toggle"
+                                   type="checkbox"
+                                   name="permissions[${permission.id}]"
+                                   value="1"
+                                   data-permission-id="${permission.id}"
+                                   ${isParentEnabled ? 'checked' : ''}>
                         </div>
-                    `;
+                    </div>
+                    ${hasChildren ? renderChildPermissions(permission.children, permission) : ''}
+                </div>
+            </div>
+        `;
                 }).join('');
             }
 
-            function renderChildPermissions(children, parentPermission) {
+            function renderChildPermissions(children, parent) {
+                const isParentEnabled = parent.status === 1;
+
                 return `
-                    <div class="child-permissions">
-                        ${children.map(child => `
-                            <div class="permission-toggle-container child-permission">
-                                <label class="permission-label">
-                                    <i class='bx bx-radio-circle permission-icon'></i>
-                                    ${child.permission?.name || 'Child Permission'}
-                                </label>
-                                <div class="form-check form-switch">
-                                    <input type="hidden" name="permissions[${child.permission_id}]" value="0">
-                                    <input class="form-check-input permission-toggle child-toggle"
-                                           type="checkbox"
-                                           name="permissions[${child.permission_id}]"
-                                           value="1"
-                                           data-parent-id="${parentPermission.permission_id}"
-                                           ${parentPermission.status && child.status ? 'checked' : ''}
-                                           ${!parentPermission.status ? 'disabled' : ''}>
-                                </div>
-                            </div>
-                        `).join('')}
+        <div class="child-permissions">
+            ${children.map(child => {
+                    const isChildEnabled = child.status === 1;
+
+                    return `
+                    <div class="permission-toggle-container child-permission">
+                        <label class="permission-label">
+                            <i class='bx bx-radio-circle permission-icon'></i>
+                            ${child.name || 'Child Permission'}
+                        </label>
+                        <div class="form-check form-switch">
+                            <input type="hidden" name="permissions[${child.id}]" value="0">
+                            <input class="form-check-input permission-toggle child-toggle"
+                                   type="checkbox"
+                                   name="permissions[${child.id}]"
+                                   value="1"
+                                   data-parent-id="${parent.id}"
+                                   ${isParentEnabled && isChildEnabled ? 'checked' : ''}
+                                   ${!isParentEnabled ? 'disabled' : ''}>
+                        </div>
                     </div>
                 `;
+                }).join('')}
+        </div>
+    `;
             }
 
             function setupModalEvents(modal) {
@@ -447,7 +452,7 @@
 
                         const formData = new FormData(form);
 
-                        // Convert permissions object to array format expected by backend
+                        // Convert permissions to the correct format
                         const permissions = {};
                         form.querySelectorAll('input[name^="permissions["]').forEach(input => {
                             if (input.type === 'checkbox') {
@@ -456,20 +461,28 @@
                             }
                         });
 
-                        // Add permissions to form data
-                        formData.delete('permissions');
+                        // Create a new FormData with properly formatted data
+                        const postData = new FormData();
+                        postData.append('staff_id', formData.get('staff_id'));
+
+                        // Add buildings
+                        buildingCheckboxes.forEach(box => {
+                            postData.append('buildings[]', box.value);
+                        });
+
+                        // Add permissions
                         for (const [key, value] of Object.entries(permissions)) {
-                            formData.append(`permissions[${key}]`, value);
+                            postData.append(`permissions[${key}]`, value);
                         }
 
                         const response = await fetch(`{{ route('owner.staff.promote.store') }}`, {
                             method: "POST",
-                            body: formData,
+                            body: postData,
                             headers: {
                                 'Accept': 'application/json',
                                 'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                                'Content-Type': 'application/json',
                                 'X-Requested-With': 'XMLHttpRequest'
+                                // Remove Content-Type header - let browser set it with boundary
                             }
                         });
 

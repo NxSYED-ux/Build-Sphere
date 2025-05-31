@@ -387,9 +387,9 @@
                                                         <div class="form-group mb-3">
                                                             <label for="department_id" class="form-label">Department <span class="required__field">*</span></label>
                                                             <select class="form-select @error('department_id') is-invalid @enderror" id="department_id" name="department_id" required>
-                                                                <option value="" disabled {{ old('department_id', $staffInfo->department_id) === null ? 'selected' : '' }}>Select Department</option>
+                                                                <option value="" disabled {{ old('department_id') === null ? 'selected' : '' }}>Select Department</option>
                                                                 @foreach($departments as $department)
-                                                                    <option value="{{ $department->id }}" {{ old('department_id', $staffInfo->department_id) == $department->id ? 'selected' : '' }}>
+                                                                    <option value="{{ $department->id }}" {{ old('department_id') == $department->id ? 'selected' : '' }}>
                                                                         {{ $department->name }}
                                                                     </option>
                                                                 @endforeach
@@ -405,9 +405,9 @@
                                                         <div class="form-group mb-3">
                                                             <label for="building_id" class="form-label">Building <span class="required__field">*</span></label>
                                                             <select class="form-select @error('building_id') is-invalid @enderror" id="building_id" name="building_id" required>
-                                                                <option value="" disabled {{ old('building_id', $staffInfo->building_id) === null ? 'selected' : '' }}>Select Building</option>
+                                                                <option value="" disabled {{ old('building_id') === null ? 'selected' : '' }}>Select Building</option>
                                                                 @foreach($buildings as $building)
-                                                                    <option value="{{ $building->id }}" {{ old('building_id', $staffInfo->building_id) == $building->id ? 'selected' : '' }}>
+                                                                    <option value="{{ $building->id }}" {{ old('building_id') == $building->id ? 'selected' : '' }}>
                                                                         {{ $building->name }}
                                                                     </option>
                                                                 @endforeach

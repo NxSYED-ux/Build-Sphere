@@ -531,7 +531,10 @@
                 window.chartInstance.destroy();
             }
 
-            fetch(`{{ route('owner.finance.chart') }}?days=${days}`, {
+            const start_date = '';
+            const end_date = '';
+
+            fetch(`{{ route('owner.finance.chart') }}?days=${days}&start_date=${start_date}&end_date=${end_date}`, {
                 method: 'GET',
                 headers: {
                     'X-CSRF-TOKEN': '{{ csrf_token() }}',

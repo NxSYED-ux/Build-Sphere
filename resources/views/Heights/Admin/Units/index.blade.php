@@ -14,7 +14,7 @@
         .filter-container {
             display: flex;
             flex-wrap: wrap;
-            gap: 20px;
+            gap: 15px;
             margin-bottom: 25px;
             background: var(--sidenavbar-body-color);
             padding: 20px;
@@ -27,8 +27,8 @@
         .filter-group {
             display: flex;
             flex-direction: column;
-            flex-grow: 1;
-            min-width: 200px;
+            flex: 1 1 180px; /* Grow, shrink, with base width of 180px */
+            min-width: 0; /* Crucial for text overflow in flex children */
         }
 
         .filter-group label {
@@ -36,6 +36,9 @@
             font-weight: 600;
             color: var(--sidenavbar-text-color);
             font-size: 0.9rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .filter-select, .search-input {
@@ -46,6 +49,19 @@
             background-color: white;
             transition: all 0.3s ease;
             box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+            box-sizing: border-box; /* Include padding in width calculation */
+            max-width: 100%; /* Prevent overflow */
+        }
+
+        /* Fix for select elements with long options */
+        .filter-select {
+            padding-right: 32px;
+        }
+
+        .filter-select option {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .search-input {
@@ -59,9 +75,11 @@
         .filter-buttons {
             display: flex;
             gap: 12px;
+            margin-top: auto;
             margin-left: auto;
             align-self: center;
-            margin-top: 30px;
+            flex-shrink: 0;
+            min-width: 260px;
         }
 
         .filter-buttons .btn {
@@ -75,8 +93,19 @@
             min-width: 120px;
         }
 
+        @media (max-width: 992px) {
+            .filter-group {
+                flex: 1 1 150px; /* Adjust for medium screens */
+            }
+
+            .filter-buttons {
+                min-width: 240px;
+            }
+        }
+
         @media (max-width: 768px) {
             .filter-group {
+                flex: 1 1 100%; /* Full width on small screens */
                 min-width: 100%;
             }
 
@@ -84,6 +113,7 @@
                 width: 100%;
                 margin-left: 0;
                 margin-top: 10px;
+                min-width: auto;
             }
 
             .filter-buttons .btn {
@@ -288,7 +318,7 @@
 
         .btn-edit {
             background-color: rgba(46, 204, 113, 0.1);
-            color: var(--sage-green);
+            color: #27ae60;
             border: 1px solid rgba(46, 204, 113, 0.2);
         }
 
@@ -325,14 +355,13 @@
         .empty-state {
             text-align: center;
             padding: 40px;
-            background-color: #f8f9fa;
             border-radius: 12px;
             grid-column: 1 / -1;
         }
 
         .empty-state-icon {
             font-size: 3rem;
-            color: #bdc3c7;
+            color: var(--sidenavbar-text-color);
             margin-bottom: 15px;
         }
 
@@ -375,10 +404,6 @@
             .buildings-grid {
                 grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
             }
-
-            .filter-group {
-                min-width: 180px;
-            }
         }
 
         @media (max-width: 767.98px) {
@@ -388,19 +413,6 @@
 
             .unit-card .card-img-container {
                 height: 160px;
-            }
-
-            .filter-container {
-                flex-direction: column;
-            }
-
-            .filter-buttons {
-                margin-left: 0;
-                width: 100%;
-            }
-
-            .filter-buttons .btn {
-                flex: 1;
             }
         }
 
@@ -595,23 +607,25 @@
                                 <label for="organization_id">Organization</label>
                                 <select name="organization_id" id="organization_id" class="form-select filter-select">
                                     <option value="">All Organizations</option>
-                                    @foreach($organizations ?? [] as $organization)
+                                    @forelse($organizations ?? [] as $organization)
                                         <option value="{{ $organization->id }}" {{ request('organization_id') == $organization->id ? 'selected' : '' }}>
                                             {{ $organization->name }}
                                         </option>
-                                    @endforeach
+                                    @empty
+                                    @endforelse
                                 </select>
                             </div>
 
                             <div class="filter-group">
-                                <label for="organization_id">Building</label>
+                                <label for="building_id">Building</label>
                                 <select name="building_id" id="building_id" class="form-select filter-select">
                                     <option value="">All buildings</option>
-                                    @foreach($buildings ?? [] as $building)
+                                    @forelse($buildings ?? [] as $building)
                                         <option value="{{ $building->id }}" {{ request('building_id') == $building->id ? 'selected' : '' }}>
                                             {{ $building->name }}
                                         </option>
-                                    @endforeach
+                                    @empty
+                                    @endforelse
                                 </select>
                             </div>
 
@@ -619,6 +633,12 @@
                                 <label for="type">Status</label>
                                 <select name="status" id="status" class="form-select filter-select">
                                     <option value="">All Status</option>
+                                    @forelse($statuses ?? [] as $status)
+                                        <option value="{{ $status }}" {{ request('status') == $status ? 'selected' : '' }}>
+                                            {{ $status }}
+                                        </option>
+                                    @empty
+                                    @endforelse
                                 </select>
                             </div>
 
@@ -714,14 +734,12 @@
                                                 </div>
                                             </div>
                                         @empty
-                                            <div class="col-12">
-                                                <div class="empty-state">
-                                                    <div class="empty-state-icon">
-                                                        <i class='bx bx-building-house'></i>
-                                                    </div>
-                                                    <h4>No Units Found</h4>
-                                                    <p class="text-muted">There are no units to display. You can add a new unit by clicking the "Add Unit" button.</p>
+                                            <div class="empty-state">
+                                                <div class="empty-state-icon">
+                                                    <i class='bx bx-building-house'></i>
                                                 </div>
+                                                <h4>No Units Found</h4>
+                                                <p class="">There are no units to display. You can add a new unit by clicking the "Add Unit" button.</p>
                                             </div>
                                         @endforelse
                                     </div>

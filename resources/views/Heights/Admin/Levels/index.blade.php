@@ -377,11 +377,12 @@
                                 <label for="organization_id">Organization</label>
                                 <select name="organization_id" id="organization_id" class="form-select filter-select">
                                     <option value="">All Organizations</option>
-                                    @foreach($organizations ?? [] as $organization)
+                                    @forelse($organizations ?? [] as $organization)
                                         <option value="{{ $organization->id }}" {{ request('organization_id') == $organization->id ? 'selected' : '' }}>
                                             {{ $organization->name }}
                                         </option>
-                                    @endforeach
+                                    @empty
+                                    @endforelse
                                 </select>
                             </div>
 
@@ -389,11 +390,12 @@
                                 <label for="building_id">Building</label>
                                 <select name="building_id" id="building_id" class="form-select filter-select">
                                     <option value="">All buildings</option>
-                                    @foreach($buildings ?? [] as $building)
+                                    @forelse($buildings ?? [] as $building)
                                         <option value="{{ $building->id }}" {{ request('building_id') == $building->id ? 'selected' : '' }}>
                                             {{ $building->name }}
                                         </option>
-                                    @endforeach
+                                    @empty
+                                    @endforelse
                                 </select>
                             </div>
 

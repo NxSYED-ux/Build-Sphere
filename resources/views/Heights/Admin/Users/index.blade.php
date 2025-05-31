@@ -275,7 +275,7 @@
 
         .btn-edit {
             background-color: rgba(46, 204, 113, 0.1);
-            color: var(--sage-green);
+            color: #27ae60;
             border: 1px solid rgba(46, 204, 113, 0.2);
         }
 

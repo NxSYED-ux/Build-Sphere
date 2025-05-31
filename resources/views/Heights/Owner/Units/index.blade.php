@@ -272,7 +272,7 @@
 
         .btn-edit {
             background-color: rgba(46, 204, 113, 0.1);
-            color: var(--sage-green);
+            color: #27ae60;
             border: 1px solid rgba(46, 204, 113, 0.2);
         }
 
@@ -309,14 +309,13 @@
         .empty-state {
             text-align: center;
             padding: 40px;
-            background-color: #f8f9fa;
             border-radius: 12px;
             grid-column: 1 / -1;
         }
 
         .empty-state-icon {
             font-size: 3rem;
-            color: #bdc3c7;
+            color: var(--sidenavbar-text-color);
             margin-bottom: 15px;
         }
 
@@ -491,16 +490,28 @@
                             </div>
 
                             <div class="filter-group">
-                                <label for="DepartmentId">Organization</label>
-                                <select name="DepartmentId" id="DepartmentId" class="form-select filter-select">
-                                    <option value="">All Organizations</option>
+                                <label for="building_id">Building</label>
+                                <select name="building_id" id="building_id" class="form-select filter-select">
+                                    <option value="">All buildings</option>
+                                    @forelse($buildings ?? [] as $building)
+                                        <option value="{{ $building->id }}" {{ request('building_id') == $building->id ? 'selected' : '' }}>
+                                            {{ $building->name }}
+                                        </option>
+                                    @empty
+                                    @endforelse
                                 </select>
                             </div>
 
                             <div class="filter-group">
-                                <label for="BuildingId">Building</label>
-                                <select name="BuildingId" id="BuildingId" class="form-select filter-select">
-                                    <option value="">All Buildings</option>
+                                <label for="type">Status</label>
+                                <select name="status" id="status" class="form-select filter-select">
+                                    <option value="">All Status</option>
+                                    @forelse($statuses ?? [] as $status)
+                                        <option value="{{ $status }}" {{ request('status') == $status ? 'selected' : '' }}>
+                                            {{ $status }}
+                                        </option>
+                                    @empty
+                                    @endforelse
                                 </select>
                             </div>
 
@@ -595,14 +606,12 @@
                                                 </div>
                                             </div>
                                         @empty
-                                            <div class="col-12">
-                                                <div class="empty-state">
-                                                    <div class="empty-state-icon">
-                                                        <i class='bx bx-building-house'></i>
-                                                    </div>
-                                                    <h4>No Units Found</h4>
-                                                    <p class="text-muted">There are no units to display. You can add a new unit by clicking the "Add Unit" button.</p>
+                                            <div class="empty-state">
+                                                <div class="empty-state-icon">
+                                                    <i class='bx bx-building-house'></i>
                                                 </div>
+                                                <h4>No Units Found</h4>
+                                                <p class="">There are no units to display. You can add a new unit by clicking the "Add Unit" button.</p>
                                             </div>
                                         @endforelse
                                     </div>
