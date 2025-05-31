@@ -8,6 +8,7 @@ use App\Models\Building;
 use App\Models\BuildingLevel;
 use App\Models\BuildingUnit;
 use App\Models\Organization;
+use App\Models\Plan;
 use App\Models\Role;
 
 class AdminFiltersService
@@ -73,6 +74,13 @@ class AdminFiltersService
 
     public function roles(){
         return Role::select('id', 'name')
+            ->orderBy('name', 'asc')
+            ->get();
+    }
+
+    public function plans()
+    {
+        return Plan::select('id', 'name')
             ->orderBy('name', 'asc')
             ->get();
     }

@@ -5,7 +5,9 @@ namespace App\Services;
 use App\Models\Building;
 use App\Models\BuildingLevel;
 use App\Models\BuildingUnit;
+use App\Models\Department;
 use App\Models\ManagerBuilding;
+use App\Models\Membership;
 use App\Models\StaffMember;
 use App\Models\User;
 
@@ -77,6 +79,17 @@ class OwnerFiltersService
         ];
     }
 
+    public function departments()
+    {
+        $token = request()->attributes->get('token');
+        $organization_id = $token['organization_id'] ?? null;
+
+        return Department::where('organization_id', $organization_id)
+            ->orderBy('name', 'asc')
+            ->select('id', 'name')
+            ->get();
+    }
+
     public function buildings($buildingIds)
     {
         return Building::whereIn('id', $buildingIds)
@@ -110,6 +123,14 @@ class OwnerFiltersService
             ->get();
     }
 
+    public function memberships($buildingIds)
+    {
+        return Membership::whereIn('building_id', $buildingIds)
+            ->orderBy('name', 'asc')
+            ->select('id', 'name')
+            ->get();
+    }
+
     public function users($notIn = [])
     {
         $user = request()->user();
@@ -120,6 +141,28 @@ class OwnerFiltersService
                 return $query->whereNotIn('id', $notIn);
             })
             ->select('id', 'name', 'email')
+            ->get();
+    }
+
+    public function availableUnitsOfBuilding($buildingId){
+        return BuildingUnit::select('id', 'unit_name')
+            ->where('sale_or_rent', '!=', 'Not Available')
+            ->where('availability_status', 'Available')
+            ->where('status', 'Approved')
+            ->where('building_id', $buildingId)
+            ->orderBy('unit_name', 'asc')
+            ->select('id', 'unit_name')
+            ->get();
+    }
+
+    public function specificTypesOfUnitsOfBuilding($buildingId, $unit_type){
+
+        return BuildingUnit::select('id', 'unit_name')
+            ->where('sale_or_rent', 'Not Available')
+            ->whereIn('unit_type', $unit_type)
+            ->where('status', 'Approved')
+            ->where('building_id', $buildingId)
+            ->orderBy('unit_name', 'asc')
             ->get();
     }
 

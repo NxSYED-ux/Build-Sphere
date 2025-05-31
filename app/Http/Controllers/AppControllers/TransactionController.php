@@ -4,20 +4,17 @@ namespace App\Http\Controllers\AppControllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\Transaction;
-use Illuminate\Http\Request;
+use App\Services\FinanceService;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Log;
 
 
 class TransactionController extends Controller
 {
-    public function index(Request $request)
+    public function index()
     {
         try {
-            $user = $request->user();
-
-            if (!$user) {
-                return response()->json(['error' => 'User not authenticated.'], 401);
-            }
+            $user = request()->user();
 
             $transactions = Transaction::where(function ($query) use ($user) {
                 $query->where(function ($q) use ($user) {
@@ -25,39 +22,27 @@ class TransactionController extends Controller
                 })->orWhere(function ($q) use ($user) {
                     $q->where('seller_type', 'user')->where('seller_id', $user->id);
                 });
-            })->orderBy('created_at', 'desc')->get();
+            })
+                ->orderBy('created_at', 'desc')
+                ->get();
 
-
-            $history = $transactions->map(function ($txn) use ($user) {
-                $isBuyer = $txn->buyer_id === $user->id;
-
-                return [
-                    'id' => $txn->id,
-                    'title' => $txn->transaction_title,
-                    'type' => $isBuyer ? $txn->buyer_transaction_type : $txn->seller_transaction_type,
-                    'price' => number_format($txn->price, 2) . ' ' . $txn->currency,
-                    'status' => $txn->status,
-                    'payment_method' => $txn->payment_method,
-                    'created_at' => $txn->created_at->diffForHumans(),
-                ];
+            $financeService = new FinanceService();
+            $history = $financeService->formatTransactionHistory($transactions, function ($txn) use ($user) {
+                return $txn->buyer_type === 'user' && $txn->buyer_id === $user->id;
             });
 
             return response()->json(['history' => $history]);
 
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             Log::error('Transaction history fetch failed: ' . $e->getMessage());
             return response()->json(['error' => 'An error occurred while fetching transaction history.'], 500);
         }
     }
 
-    public function show(Request $request, $id)
+    public function show($id)
     {
         try {
-            $user = $request->user();
-
-            if (!$user) {
-                return response()->json(['error' => 'User not authenticated.'], 401);
-            }
+            $user = request()->user();
 
             $transaction = Transaction::where(function ($query) use ($user) {
                 $query->where(function ($q) use ($user) {
@@ -65,35 +50,25 @@ class TransactionController extends Controller
                 })->orWhere(function ($q) use ($user) {
                     $q->where('seller_type', 'user')->where('seller_id', $user->id);
                 });
-            })->where('id', $id)
-            ->first();
+            })->findOrFail($id);
 
 
-            if (!$transaction) {
-                return response()->json(['error' => 'Transaction not found.'], 404);
+            $isBuyer = $transaction->buyer_type === 'user' && $transaction->buyer_id === $user->id;
+            $isSeller = $transaction->seller_type === 'user' && $transaction->seller_id === $user->id;
+
+            if (!($isBuyer || $isSeller)) {
+                return redirect()->back()->with('error', 'Unauthorized access to transaction details.');
             }
 
-            $isBuyer = $transaction->buyer_id === $user->id;
-
-            $transactionDetail = [
-                'transaction_id' => $transaction->id,
-                'title' => $transaction->transaction_title,
-                'type' => $isBuyer ? $transaction->buyer_transaction_type : $transaction->seller_transaction_type,
-                'price' => number_format($transaction->price, 2) . ' ' . $transaction->currency,
-                'status' => $transaction->status,
-                'created_at' => $transaction->created_at->diffForHumans(),
-                'payment_method' => $transaction->payment_method,
-                'is_subscription' => $transaction->is_subscription,
-                'subscription_details' => [
-                    'start_date' => $transaction->subscription_start_date ? $transaction->subscription_start_date->format('Y-m-d H:i:s') : null,
-                    'end_date' => $transaction->subscription_end_date ? $transaction->subscription_end_date->format('Y-m-d H:i:s') : null,
-                    'billing_cycle' => $transaction->billing_cycle,
-                ],
-            ];
+            $financeService = new FinanceService();
+            $transactionDetail = $financeService->mapTransactionDetails($transaction, $isBuyer);
 
             return response()->json(['transaction' => $transactionDetail]);
 
-        } catch (\Exception $e) {
+        } catch (ModelNotFoundException $e) {
+            Log::error('Transaction details fetch failed: ' . $e->getMessage());
+            return response()->json(['error' => 'Transaction not found.'], 404);
+        } catch (\Throwable $e) {
             Log::error('Transaction details fetch failed: ' . $e->getMessage());
             return response()->json(['error' => 'An error occurred while fetching transaction details.'], 500);
         }

@@ -3,14 +3,16 @@
 namespace App\Http\Controllers\WebControllers;
 
 use App\Http\Controllers\Controller;
-use App\Models\Building;
 use App\Models\ManagerBuilding;
+use App\Models\Membership;
 use App\Models\Organization;
 use App\Models\Plan;
 use App\Models\Subscription;
 use App\Models\Transaction;
 use App\Models\UserBuildingUnit;
-use Illuminate\Database\Eloquent\Builder;
+use App\Services\AdminFiltersService;
+use App\Services\FinanceService;
+use App\Services\OwnerFiltersService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -22,40 +24,39 @@ class FinanceController extends Controller
     // Index
     public function ownerIndex(Request $request)
     {
-        $user = $request->user() ?? abort(403, 'Unauthorized action.');
         $token = $request->attributes->get('token');
-
-        if (!$token || empty($token['organization_id']) || empty($token['role_name'])) {
-            return redirect()->back()->with('error', 'This info is for Organization owners');
-        }
-
         $organization_id = $token['organization_id'];
-        $role_name = $token['role_name'];
+
+        $type = $request->input('type');
+        $selectedBuildingId = $request->input('building_id');
+        $selectedUnitId = $request->input('unit_id');
+        $selectedMembershipId = $request->input('membership_id');
+        $selectedUserId = $request->input('user_id');
+
 
         try {
+            $ownerService = new OwnerFiltersService();
+            $buildingIds = $ownerService->getAccessibleBuildingIds();
+            $buildings = $ownerService->buildings($buildingIds);
+            $units  = $ownerService->units($buildingIds);
+            $users = $ownerService->users();
+            $memberships = $ownerService->memberships($buildingIds);
+
+
             $transactionsQuery = Transaction::where(function ($query) use ($organization_id) {
-                $query->where('buyer_type', 'organization')->where('buyer_id', $organization_id)
-                    ->orWhere('seller_type', 'organization')->where('seller_id', $organization_id);
-            });
+                    $query->where('buyer_type', 'organization')->where('buyer_id', $organization_id)
+                        ->orWhere('seller_type', 'organization')->where('seller_id', $organization_id);
+                });
 
-            $buildingsQuery = Building::where('organization_id', $organization_id);
-
-            if ($role_name === 'Manager') {
-                $managerBuildingIds = ManagerBuilding::where('user_id', $user->id)->pluck('building_id')->toArray();
-                $transactionsQuery->whereIn('building_id', $managerBuildingIds);
-                $buildingsQuery->whereIn('id', $managerBuildingIds);
+            if(!(request()->user()->id === 2)){
+                $transactionsQuery->whereIn('building_id', $buildingIds);
             }
 
-            $buildings = $buildingsQuery->get();
-
-            // Type means Debit and Credit
-            if ($request->filled('type')) {
-                $type = $request->input('type');
+            if ($type) {
                 $transactionsQuery->where(function ($q) use ($type, $organization_id) {
                     $q->where(function ($inner) use ($type, $organization_id) {
                         $inner->where('buyer_type', 'organization')
-                            ->where('buyer_id', $organization_id)
-                            ->where('buyer_transaction_type', $type);
+                            ->where('buyer_id', $organization_id);
                     })->orWhere(function ($inner) use ($type, $organization_id) {
                         $inner->where('seller_type', 'organization')
                             ->where('seller_id', $organization_id)
@@ -64,9 +65,28 @@ class FinanceController extends Controller
                 });
             }
 
-            // Building Filter.
-            if ($request->filled('building_id')) {
-                $transactionsQuery->where('building_id', $request->input('building_id'));
+            if ($selectedUserId) {
+                $transactionsQuery->where(function ($q) use ($selectedUserId) {
+                    $q->where(function ($inner) use ($selectedUserId) {
+                        $inner->where('buyer_id', $selectedUserId)
+                            ->where('buyer_type', 'user');
+                    })->orWhere(function ($inner) use ($selectedUserId) {
+                        $inner->where('seller_id', $selectedUserId)
+                            ->where('seller_type', 'user');
+                    });
+                });
+            }
+
+            if ($selectedBuildingId) {
+                $transactionsQuery->where('building_id', $selectedBuildingId);
+            }
+
+            if ($selectedUnitId) {
+                $transactionsQuery->where('unit_id', $selectedUnitId);
+            }
+
+            if ($selectedMembershipId) {
+                $transactionsQuery->where('membership_id', $selectedMembershipId);
             }
 
             $transactions = $transactionsQuery->filterTransactions($request)
@@ -74,20 +94,12 @@ class FinanceController extends Controller
                 ->paginate(12)
                 ->appends($request->query());
 
-            $history = collect($transactions->items())->map(function ($txn) use ($organization_id) {
-                $isBuyer = $txn->buyer_type === 'organization' && $txn->buyer_id == $organization_id;
-
-                return [
-                    'id' => $txn->id,
-                    'title' => $txn->transaction_title,
-                    'type' => $isBuyer ? $txn->buyer_transaction_type : $txn->seller_transaction_type,
-                    'price' => number_format($txn->price, 2) . ' ' . $txn->currency,
-                    'status' => $txn->status,
-                    'created_at' => $txn->created_at->diffForHumans(),
-                ];
+            $financeService = new FinanceService();
+            $history = $financeService->formatTransactionHistory($transactions, function ($txn) use ($organization_id) {
+                return $txn->buyer_type === 'organization' && $txn->buyer_id == $organization_id;
             });
 
-            return view('Heights.Owner.Finance.index', compact('transactions', 'history', 'buildings'));
+            return view('Heights.Owner.Finance.index', compact('transactions', 'history', 'buildings', 'units', 'memberships', 'users'));
 
         } catch (\Exception $e) {
             Log::error('Transaction history fetch failed: ' . $e->getMessage());
@@ -98,14 +110,20 @@ class FinanceController extends Controller
     public function adminIndex(Request $request)
     {
         try {
+            $adminService = new AdminFiltersService();
+            $organizations = $adminService->organizations();
+            $plans = $adminService->plans();
+
+            $type = $request->input('type');
+            $selectedOrganizationId = $request->input('organization_id');
+            $selectedPlanId = request()->input('plan_id');
+
             $transactionsQuery = Transaction::where(function ($query) {
                 $query->where('seller_type', 'platform')
                     ->orWhere('buyer_type', 'platform');
             });
 
-            // Type means Debit and Credit
-            if ($request->filled('type')) {
-                $type = $request->input('type');
+            if ($type) {
                 $transactionsQuery->where(function ($q) use ($type) {
                     $q->where(function ($inner) use ($type) {
                         $inner->where('buyer_type', 'platform')
@@ -117,25 +135,34 @@ class FinanceController extends Controller
                 });
             }
 
+            if ($selectedOrganizationId) {
+                $transactionsQuery->where(function ($q) use ($selectedOrganizationId) {
+                    $q->where(function ($inner) use ($selectedOrganizationId) {
+                        $inner->where('buyer_id', $selectedOrganizationId)
+                            ->where('buyer_type', 'organization');
+                    })->orWhere(function ($inner) use ($selectedOrganizationId) {
+                        $inner->where('seller_id', $selectedOrganizationId)
+                            ->where('seller_type', 'organization');
+                    });
+                });
+            }
+
+            if ($selectedPlanId) {
+                $transactionsQuery->where('plan_id', $selectedPlanId);
+            }
+
             $transactions = $transactionsQuery->filterTransactions($request)
                 ->orderBy('created_at', 'desc')
                 ->paginate(12)
                 ->appends($request->query());
 
-            $history = collect($transactions->items())->map(function ($txn) {
-                $isPlatformBuyer = $txn->buyer_type === 'platform';
 
-                return [
-                    'id' => $txn->id,
-                    'title' => $txn->transaction_title,
-                    'type' => $isPlatformBuyer ? $txn->buyer_transaction_type : $txn->seller_transaction_type,
-                    'price' => number_format($txn->price, 2) . ' ' . $txn->currency,
-                    'status' => $txn->status,
-                    'created_at' => $txn->created_at->diffForHumans(),
-                ];
+            $financeService = new FinanceService();
+            $history = $financeService->formatTransactionHistory($transactions, function ($txn) {
+                return $txn->buyer_type === 'platform';
             });
 
-            return view('Heights.Admin.Finance.index', compact('transactions', 'history'));
+            return view('Heights.Admin.Finance.index', compact('transactions', 'history', 'plans', 'organizations'));
 
         } catch (\Exception $e) {
             Log::error('Transaction history fetch failed: ' . $e->getMessage());
@@ -148,29 +175,24 @@ class FinanceController extends Controller
     public function ownerShow($id, Request $request)
     {
         $token = $request->attributes->get('token');
-
-        if (!$token || empty($token['organization_id']) || empty($token['role_name'])) {
-            return redirect()->back()->with('error', 'This info is for Organization owners');
-        }
-
         $organization_id = $token['organization_id'];
-        $role_name = $token['role_name'];
 
         try {
+            $ownerService = new OwnerFiltersService();
+            $buildingIds = $ownerService->getAccessibleBuildingIds();
+
             $transaction = Transaction::findOrFail($id);
 
             $isOrgBuyer = $transaction->buyer_type === 'organization' && $transaction->buyer_id == $organization_id;
             $isOrgSeller = $transaction->seller_type === 'organization' && $transaction->seller_id == $organization_id;
 
             if (!($isOrgBuyer || $isOrgSeller)) {
-                return redirect()->route('owner.finance.index')->with('error', 'Unauthorized access to transaction details.');
+                return redirect()->back()->with('error', 'Unauthorized access to transaction details.');
             }
 
-            if ($role_name === 'Manager') {
-                $managerBuildingIds = ManagerBuilding::where('user_id', $request->user()->id)->pluck('building_id')->toArray();
-
-                if (!in_array($transaction->building_id, $managerBuildingIds)) {
-                    return redirect()->route('owner.finance.index')->with('error', 'Unauthorized access to this building\'s transaction.');
+            if(!(request()->user()->id === 2)){
+                if (!in_array($transaction->building_id, $buildingIds)) {
+                    return redirect()->back()->with('error', 'Unauthorized access to this building\'s transaction.');
                 }
             }
 
@@ -188,27 +210,17 @@ class FinanceController extends Controller
                 if ($source && $source->source_name === 'plan') {
                     $nested_source = Plan::find($source->source_id);
                 }
-                elseif ($source) {
+                elseif ($source && $source->source_name === 'unit contract') {
                     $nested_source = UserBuildingUnit::with(['unit', 'unit.pictures', 'user:id,name,picture,email'])
                         ->find($source->source_id);
                 }
+                elseif ($source && $source->source_name === 'membership') {
+                    $nested_source = Membership::find($source->source_id);
+                }
             }
 
-            $mappedTransaction = [
-                'transaction_id' => $transaction->id,
-                'title' => $transaction->transaction_title,
-                'type' => $isOrgBuyer ? $transaction->buyer_transaction_type : $transaction->seller_transaction_type,
-                'price' => number_format($transaction->price, 2) . ' ' . $transaction->currency,
-                'status' => $transaction->status,
-                'created_at' => $transaction->created_at->diffForHumans(),
-                'payment_method' => $transaction->payment_method,
-                'is_subscription' => $transaction->is_subscription,
-                'subscription_details' => [
-                    'start_date' => optional($transaction->subscription_start_date)->format('Y-m-d H:i:s'),
-                    'end_date' => optional($transaction->subscription_end_date)->format('Y-m-d H:i:s'),
-                    'billing_cycle' => $transaction->billing_cycle,
-                ],
-            ];
+            $financeService = new FinanceService();
+            $mappedTransaction = $financeService->mapTransactionDetails($transaction, $isOrgBuyer);
 
             return view('Heights.Owner.Finance.show', [
                 'transaction' => $mappedTransaction,
@@ -220,7 +232,7 @@ class FinanceController extends Controller
 
         } catch (\Throwable $e) {
             Log::error('Transaction detail fetch failed: ' . $e->getMessage());
-            return redirect()->route('owner.finance.index')->with('error', 'Transaction not found.');
+            return redirect()->back()->with('error', 'Transaction not found.');
         }
     }
 
@@ -233,7 +245,7 @@ class FinanceController extends Controller
             $isPlatformSeller = $transaction->seller_type === 'platform';
 
             if (!($isPlatformBuyer || $isPlatformSeller)) {
-                return redirect()->route('admin.finance.index')->with('error', 'Unauthorized access to transaction details.');
+                return redirect()->back()->with('error', 'Unauthorized access to transaction details.');
             }
 
             $source = null;
@@ -252,21 +264,8 @@ class FinanceController extends Controller
                 }
             }
 
-            $mappedTransaction = [
-                'transaction_id' => $transaction->id,
-                'title' => $transaction->transaction_title,
-                'type' => $isPlatformBuyer ? $transaction->buyer_transaction_type : $transaction->seller_transaction_type,
-                'price' => number_format($transaction->price, 2) . ' ' . $transaction->currency,
-                'status' => $transaction->status,
-                'created_at' => $transaction->created_at->diffForHumans(),
-                'payment_method' => $transaction->payment_method,
-                'is_subscription' => $transaction->is_subscription,
-                'subscription_details' => [
-                    'start_date' => optional($transaction->subscription_start_date)?->format('Y-m-d H:i:s'),
-                    'end_date' => optional($transaction->subscription_end_date)?->format('Y-m-d H:i:s'),
-                    'billing_cycle' => $transaction->billing_cycle,
-                ],
-            ];
+            $financeService = new FinanceService();
+            $mappedTransaction = $financeService->mapTransactionDetails($transaction, $isPlatformBuyer);
 
             return view('Heights.Admin.Finance.show', [
                 'transaction' => $mappedTransaction,
@@ -278,7 +277,7 @@ class FinanceController extends Controller
 
         } catch (\Throwable $e) {
             Log::error('Transaction detail fetch failed: ' . $e->getMessage());
-            return redirect()->route('admin.finance.index')->with('error', 'Transaction not found.');
+            return redirect()->back()->with('error', 'Transaction not found.');
         }
     }
 
@@ -287,11 +286,6 @@ class FinanceController extends Controller
     public function latestOrganizationTransactions(Request $request)
     {
         $token = $request->attributes->get('token');
-
-        if (!$token || empty($token['organization_id'])) {
-            return response()->json(['error' => 'This info is for Organization owners'], 401);
-        }
-
         $organization_id = $token['organization_id'];
 
         try {
@@ -308,17 +302,9 @@ class FinanceController extends Controller
                 ->limit(6)
                 ->get();
 
-            $history = $transactions->map(function ($txn) use ($organization_id) {
-                $isBuyer = $txn->buyer_type === 'organization' && $txn->buyer_id == $organization_id;
-
-                return [
-                    'id' => $txn->id,
-                    'title' => $txn->transaction_title,
-                    'type' => $isBuyer ? $txn->buyer_transaction_type : $txn->seller_transaction_type,
-                    'price' => number_format($txn->price, 2) . ' ' . $txn->currency,
-                    'status' => $txn->status,
-                    'created_at' => $txn->created_at->diffForHumans(),
-                ];
+            $financeService = new FinanceService();
+            $history = $financeService->formatTransactionHistory($transactions, function ($txn) use ($organization_id) {
+                return $txn->buyer_type === 'organization' && $txn->buyer_id == $organization_id;
             });
 
             return response()->json(['history' => $history]);
@@ -329,14 +315,8 @@ class FinanceController extends Controller
         }
     }
 
-    public function latestPlatformOrganizationTransactions(Request $request, string $organization_id)
+    public function latestPlatformOrganizationTransactions(string $organization_id)
     {
-        $user = $request->user() ?? abort(403, 'Unauthorized action.');
-
-        if (!$user->is_super_admin) {
-            return response()->json(['error' => 'This action is only for super admins.'], 403);
-        }
-
         try {
             $transactions = Transaction::where(function ($query) use ($organization_id) {
                 $query->where(function ($q) use ($organization_id) {
@@ -353,17 +333,9 @@ class FinanceController extends Controller
                 ->limit(4)
                 ->get();
 
-            $history = $transactions->map(function ($txn) {
-                $isPlatformBuyer = $txn->buyer_type === 'platform';
-
-                return [
-                    'id' => $txn->id,
-                    'title' => $txn->transaction_title,
-                    'type' => $isPlatformBuyer ? $txn->buyer_transaction_type : $txn->seller_transaction_type,
-                    'price' => number_format($txn->price, 2) . ' ' . $txn->currency,
-                    'status' => $txn->status,
-                    'created_at' => $txn->created_at->diffForHumans(),
-                ];
+            $financeService = new FinanceService();
+            $history = $financeService->formatTransactionHistory($transactions, function ($txn) {
+                return $txn->buyer_type === 'platform';
             });
 
             return response()->json(['history' => $history]);
@@ -414,35 +386,18 @@ class FinanceController extends Controller
                 ->where('status', 'Completed')
                 ->sum('price');
 
-            $previousProfit = $previousRevenue - $previousExpenses;
+            $financeService = new FinanceService();
+            $metrics = $financeService->prepareFinancialMetrics(
+                $currentRevenue,
+                $previousRevenue,
+                $currentExpenses,
+                $previousExpenses,
+                $currentProfit,
+                $selectedMonth,
+                $selectedYear
+            );
 
-            $revenueChange = $this->calculatePercentageChange($currentRevenue, $previousRevenue);
-            $expensesChange = $this->calculatePercentageChange($currentExpenses, $previousExpenses);
-            $profitChange = $this->calculatePercentageChange($currentProfit, $previousProfit);
-
-            $financialMetrics = [
-                'total_revenue' => [
-                    'value' => $currentRevenue,
-                    'change' => $revenueChange,
-                    'trend' => $revenueChange >= 0 ? 'up' : 'down'
-                ],
-                'total_expenses' => [
-                    'value' => $currentExpenses,
-                    'change' => $expensesChange,
-                    'trend' => $expensesChange <= 0 ? 'down' : 'up'
-                ],
-                'net_profit' => [
-                    'value' => $currentProfit,
-                    'change' => $profitChange,
-                    'trend' => $profitChange >= 0 ? 'up' : 'down'
-                ]
-            ];
-
-            return response()->json([
-                'financialMetrics' => $financialMetrics,
-                'selectedMonth' => $selectedMonth,
-                'selectedYear' => $selectedYear
-            ], 200);
+            return response()->json($metrics, 200);
 
         } catch (\Exception $e) {
             Log::error('Transaction history fetch failed (Admin): ' . $e->getMessage());
@@ -452,27 +407,22 @@ class FinanceController extends Controller
 
     public function ownerFinancialTrends(Request $request): JsonResponse
     {
-        $user = $request->user() ?? abort(403, 'Unauthorized action.');
-        $token = $request->attributes->get('token');
         $selectedMonth = (int) $request->input('month', now()->month);
         $selectedYear = (int) $request->input('year', now()->year);
 
-        if (!$token || empty($token['organization_id']) || empty($token['role_name'])) {
-            return response()->json(['error', 'This info is for Organization owners'], 400);
-        }
-
-        $organization_id = $token['organization_id'];
-        $role_name = $token['role_name'];
-
         try {
+            $token = $request->attributes->get('token');
+            $organization_id = $token['organization_id'];
+
             $startDate = Carbon::createFromDate($selectedYear, $selectedMonth, 1)->startOfMonth();
             $endDate = $startDate->copy()->endOfMonth();
 
             $financialQuery = Transaction::whereBetween('created_at', [$startDate, $endDate]);
 
-            if ($role_name === 'Manager') {
-                $managerBuildingIds = ManagerBuilding::where('user_id', $user->id)->pluck('building_id')->toArray();
-                $financialQuery->whereIn('building_id', $managerBuildingIds);
+            if (request()->user()->id !== 2) {
+                $ownerService = new OwnerFiltersService();
+                $buildingIds = $ownerService->getAccessibleBuildingIds();
+                $financialQuery->whereIn('building_id', $buildingIds);
             }
 
             // Current Period
@@ -506,35 +456,18 @@ class FinanceController extends Controller
                 ->where('status', 'Completed')
                 ->sum('price');
 
-            $previousProfit = $previousRevenue - $previousExpenses;
+            $financeService = new FinanceService();
+            $metrics = $financeService->prepareFinancialMetrics(
+                $currentRevenue,
+                $previousRevenue,
+                $currentExpenses,
+                $previousExpenses,
+                $currentProfit,
+                $selectedMonth,
+                $selectedYear
+            );
 
-            $revenueChange = $this->calculatePercentageChange($currentRevenue, $previousRevenue);
-            $expensesChange = $this->calculatePercentageChange($currentExpenses, $previousExpenses);
-            $profitChange = $this->calculatePercentageChange($currentProfit, $previousProfit);
-
-            $financialMetrics = [
-                'total_revenue' => [
-                    'value' => $currentRevenue,
-                    'change' => $revenueChange,
-                    'trend' => $revenueChange >= 0 ? 'up' : 'down'
-                ],
-                'total_expenses' => [
-                    'value' => $currentExpenses,
-                    'change' => $expensesChange,
-                    'trend' => $expensesChange <= 0 ? 'down' : 'up'
-                ],
-                'net_profit' => [
-                    'value' => $currentProfit,
-                    'change' => $profitChange,
-                    'trend' => $profitChange >= 0 ? 'up' : 'down'
-                ]
-            ];
-
-            return response()->json([
-                'financialMetrics' => $financialMetrics,
-                'selectedMonth' => $selectedMonth,
-                'selectedYear' => $selectedYear
-            ], 200);
+            return response()->json($metrics, 200);
 
         } catch (\Exception $e) {
             Log::error('Transaction history fetch failed (Owner): ' . $e->getMessage());
@@ -547,33 +480,15 @@ class FinanceController extends Controller
     public function adminFinancialChartData(Request $request)
     {
         try {
-            $days = (int) $request->input('days', 30);
-            $endDate = now()->endOfDay();
-            $startDate = now()->subDays($days)->startOfDay();
+            $financialService = new FinanceService();
 
-            $chartData = [
-                'labels' => [],
-                'datasets' => [
-                    [
-                        'label' => 'Revenue',
-                        'data' => [],
-                        'borderColor' => 'rgba(75, 192, 192, 1)',
-                        'backgroundColor' => 'rgba(75, 192, 192, 0.2)',
-                    ],
-                    [
-                        'label' => 'Expenses',
-                        'data' => [],
-                        'borderColor' => 'rgba(255, 99, 132, 1)',
-                        'backgroundColor' => 'rgba(255, 99, 132, 0.2)',
-                    ],
-                    [
-                        'label' => 'Profit',
-                        'data' => [],
-                        'borderColor' => 'rgba(54, 162, 235, 1)',
-                        'backgroundColor' => 'rgba(54, 162, 235, 0.2)',
-                    ]
-                ]
-            ];
+            [$startDate, $endDate] = $financialService->getDateRange(
+                $request->input('start_date'),
+                $request->input('end_date'),
+                $request->input('days', 30)
+            );
+
+            $chartData = $financialService->initializeFinancialChartSkeleton();
 
             $currentDate = $startDate->copy();
             while ($currentDate <= $endDate) {
@@ -606,53 +521,30 @@ class FinanceController extends Controller
 
     public function ownerFinancialChartData(Request $request)
     {
-        $user = $request->user() ?? abort(403, 'Unauthorized action.');
+        $isRestrictedToBuildings = request()->user()->id === 2;
         $token = $request->attributes->get('token');
 
-        if (!$token || empty($token['organization_id']) || empty($token['role_name'])) {
-            return response()->json(['error' => 'Unauthorized'], 403);
-        }
-
         $organization_id = $token['organization_id'];
-        $role_name = $token['role_name'];
-        $managerBuildingIds = null;
+        $buildingIds = [];
 
         try {
-            if ($role_name === 'Manager') {
-                $managerBuildingIds = ManagerBuilding::where('user_id', $user->id)
-                    ->pluck('building_id')
-                    ->toArray();
+            if ($isRestrictedToBuildings) {
+                $ownerService = new OwnerFiltersService();
+                $buildingIds = $ownerService->getAccessibleBuildingIds();
             }
 
-            $days = (int) $request->input('days', 30);
-            $endDate = now()->endOfDay();
-            $startDate = now()->subDays($days)->startOfDay();
+            $financialService = new FinanceService();
 
-            $chartData = [
-                'labels' => [],
-                'datasets' => [
-                    [
-                        'label' => 'Revenue',
-                        'data' => [],
-                        'borderColor' => 'rgba(75, 192, 192, 1)',
-                        'backgroundColor' => 'rgba(75, 192, 192, 0.2)',
-                    ],
-                    [
-                        'label' => 'Expenses',
-                        'data' => [],
-                        'borderColor' => 'rgba(255, 99, 132, 1)',
-                        'backgroundColor' => 'rgba(255, 99, 132, 0.2)',
-                    ],
-                    [
-                        'label' => 'Profit',
-                        'data' => [],
-                        'borderColor' => 'rgba(54, 162, 235, 1)',
-                        'backgroundColor' => 'rgba(54, 162, 235, 0.2)',
-                    ]
-                ]
-            ];
+            [$startDate, $endDate] = $financialService->getDateRange(
+                $request->input('start_date'),
+                $request->input('end_date'),
+                $request->input('days', 30)
+            );
+
+            $chartData = $financialService->initializeFinancialChartSkeleton();
 
             $currentDate = $startDate->copy();
+
             while ($currentDate <= $endDate) {
                 $chartData['labels'][] = $currentDate->format('M d');
 
@@ -660,8 +552,8 @@ class FinanceController extends Controller
                     ->where('seller_type', 'organization')
                     ->where('seller_id', $organization_id)
                     ->where('status', 'Completed')
-                    ->when($role_name === 'Manager', function($query) use ($managerBuildingIds) {
-                        return $query->whereIn('building_id', $managerBuildingIds);
+                    ->when($isRestrictedToBuildings, function($query) use ($buildingIds) {
+                        return $query->whereIn('building_id', $buildingIds);
                     })
                     ->sum('price');
 
@@ -669,8 +561,8 @@ class FinanceController extends Controller
                     ->where('buyer_type', 'organization')
                     ->where('buyer_id', $organization_id)
                     ->where('status', 'Completed')
-                    ->when($role_name === 'Manager', function($query) use ($managerBuildingIds) {
-                        return $query->whereIn('building_id', $managerBuildingIds);
+                    ->when($isRestrictedToBuildings, function($query) use ($buildingIds) {
+                        return $query->whereIn('building_id', $buildingIds);
                     })
                     ->sum('price');
 
@@ -683,21 +575,10 @@ class FinanceController extends Controller
 
             return response()->json($chartData);
 
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             Log::error('Financial chart data failed (Owner): ' . $e->getMessage());
             return response()->json(['error' => 'Failed to load chart data'], 500);
         }
-    }
-
-
-
-    // Helper Function
-    private function calculatePercentageChange($currentValue, $previousValue)
-    {
-        if ($previousValue == 0) {
-            return $currentValue > 0 ? 100 : ($currentValue < 0 ? -100 : 0);
-        }
-        return (($currentValue - $previousValue) / abs($previousValue)) * 100;
     }
 
 }

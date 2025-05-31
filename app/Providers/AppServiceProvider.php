@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Broadcasting\FCMChannel;
+use App\Models\Membership;
 use App\Models\Organization;
 use App\Models\Plan;
 use App\Models\Query;
@@ -47,6 +48,7 @@ class AppServiceProvider extends ServiceProvider
             'organization' => Organization::class,
             'staff member' => StaffMember::class,
             'query' => Query::class,
+            'membership' => Membership::class,
         ]);
     }
 }

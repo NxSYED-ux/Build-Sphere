@@ -620,16 +620,6 @@ INSERT INTO `subscriptions` (`id`, `customer_payment_id`, `user_id`, `organizati
 (7, 'cus_SB7pm6RSylJgce', 15, 1, 1, 1, 1, 'membership', '1', 'Active', 2999.00, 'PKR', NULL, '2025-06-18 05:39:23', '2025-05-18 05:39:23', '2025-05-18 05:39:23');
 
 
-INSERT INTO `transactions` (`id`, `transaction_title`, `transaction_category`, `buyer_id`, `buyer_type`, `buyer_transaction_type`, `seller_id`, `seller_type`, `seller_transaction_type`, `building_id`, `unit_id`, `payment_method`, `gateway_payment_id`, `price`, `currency`, `status`, `is_subscription`, `billing_cycle`, `subscription_start_date`, `subscription_end_date`, `source_id`, `source_name`, `created_at`, `updated_at`) VALUES
-(1, 'Pro (12 Months)', 'New', 1, 'organization', 'Debit', NULL, 'platform', 'Credit', NULL, NULL, 'Cash', NULL, 33660.00, 'PKR', 'Completed', 1, '12 Months', '2025-04-22 09:04:24', '2026-04-22 09:04:24', 1, 'subscription', '2025-04-22 09:04:27', '2025-04-22 09:04:27'),
-(2, 'Pro (12 Months)', 'New', 2, 'organization', 'Debit', NULL, 'platform', 'Credit', NULL, NULL, 'Cash', NULL, 33660.00, 'PKR', 'Completed', 1, '12 Months', '2025-04-22 09:04:24', '2026-04-22 09:04:24', 2, 'subscription', '2025-04-22 09:04:27', '2025-04-22 09:04:27'),
-(3, 'Pro (12 Months)', 'New', 3, 'organization', 'Debit', NULL, 'platform', 'Credit', NULL, NULL, 'Cash', NULL, 33660.00, 'PKR', 'Completed', 1, '12 Months', '2025-04-22 09:04:24', '2026-04-22 09:04:24', 3, 'subscription', '2025-04-22 09:04:27', '2025-04-22 09:04:27'),
-(4, 'Elite Fitness Pass', 'New', 13, 'user', 'Debit', 1, 'organization', 'Credit', 2, 2, 'Cash', NULL, 5999.00, 'PKR', 'Completed', 1, '1 Month', '2025-05-18 05:38:10', '2025-06-18 05:38:10', 4, 'subscription', '2025-05-18 05:38:10', '2025-05-18 05:38:10'),
-(5, 'Foodie Feast', 'New', 14, 'user', 'Debit', 1, 'organization', 'Credit', 1, 1, 'Cash', NULL, 2999.00, 'PKR', 'Completed', 1, '1 Month', '2025-05-18 05:38:24', '2025-06-18 05:38:24', 5, 'subscription', '2025-05-18 05:38:24', '2025-05-18 05:38:24'),
-(6, 'Elite Fitness Pass', 'New', 15, 'user', 'Debit', 1, 'organization', 'Credit', 2, 2, 'Cash', NULL, 5999.00, 'PKR', 'Completed', 1, '1 Month', '2025-05-18 05:39:07', '2025-06-18 05:39:07', 6, 'subscription', '2025-05-18 05:39:07', '2025-05-18 05:39:07'),
-(7, 'Foodie Feast', 'New', 15, 'user', 'Debit', 1, 'organization', 'Credit', 1, 1, 'Cash', NULL, 2999.00, 'PKR', 'Completed', 1, '1 Month', '2025-05-18 05:39:23', '2025-06-18 05:39:23', 7, 'subscription', '2025-05-18 05:39:23', '2025-05-18 05:39:23');
-
-
 INSERT INTO `plansubscriptionitems` (`id`, `organization_id`, `subscription_id`, `service_catalog_id`, `quantity`, `used`, `meta`, `created_at`, `updated_at`) VALUES
 (1, 1, 1, 1, 7, 3, '{\"quantity\":null}', '2025-04-22 14:04:27', '2025-04-22 14:04:27'),
 (2, 1, 1, 2, 5, 2, '{\"quantity\":null}', '2025-04-22 14:04:27', '2025-04-22 14:04:27'),
@@ -681,3 +671,13 @@ INSERT INTO `membership_users` (`id`, `user_id`, `membership_id`, `subscription_
 (2, 14, 1, 5, 1, 3, 3, '2025-05-18 05:32:21', '2025-05-18 05:32:21'),
 (3, 15, 2, 6, 1, 1, 1, '2025-05-18 06:30:54', '2025-05-18 06:30:54'),
 (4, 15, 1, 7, 1, 3, 3, '2025-05-18 06:32:21', '2025-05-18 06:32:21');
+
+
+INSERT INTO `transactions` (`id`, `transaction_title`, `transaction_category`, `buyer_id`, `buyer_type`, `buyer_transaction_type`, `seller_id`, `seller_type`, `seller_transaction_type`, `building_id`, `unit_id`, `membership_id`, `plan_id`, `payment_method`, `gateway_payment_id`, `price`, `currency`, `status`, `is_subscription`, `billing_cycle`, `subscription_start_date`, `subscription_end_date`, `source_id`, `source_name`, `created_at`, `updated_at`) VALUES
+(1, 'Pro (12 Months)', 'New', 1, 'organization', 'Debit', NULL, 'platform', 'Credit', NULL, NULL, NULL, 3, 'Cash', NULL, 33660.00, 'PKR', 'Completed', 1, '12 Months', '2025-04-22 04:04:24', '2026-04-22 04:04:24', 1, 'subscription', '2025-04-22 04:04:27', '2025-04-22 04:04:27'),
+(2, 'Pro (12 Months)', 'New', 2, 'organization', 'Debit', NULL, 'platform', 'Credit', NULL, NULL, NULL, 3, 'Cash', NULL, 33660.00, 'PKR', 'Completed', 1, '12 Months', '2025-04-22 04:04:24', '2026-04-22 04:04:24', 2, 'subscription', '2025-04-22 04:04:27', '2025-04-22 04:04:27'),
+(3, 'Pro (12 Months)', 'New', 3, 'organization', 'Debit', NULL, 'platform', 'Credit', NULL, NULL, NULL, 3, 'Cash', NULL, 33660.00, 'PKR', 'Completed', 1, '12 Months', '2025-04-22 04:04:24', '2026-04-22 04:04:24', 3, 'subscription', '2025-04-22 04:04:27', '2025-04-22 04:04:27'),
+(4, 'Elite Fitness Pass', 'New', 13, 'user', 'Debit', 1, 'organization', 'Credit', 2, 2, 2, NULL, 'Cash', NULL, 5999.00, 'PKR', 'Completed', 1, '1 Month', '2025-05-18 00:38:10', '2025-06-18 00:38:10', 4, 'subscription', '2025-05-18 00:38:10', '2025-05-18 00:38:10'),
+(5, 'Foodie Feast', 'New', 14, 'user', 'Debit', 1, 'organization', 'Credit', 1, 1, 1, NULL, 'Cash', NULL, 2999.00, 'PKR', 'Completed', 1, '1 Month', '2025-05-18 00:38:24', '2025-06-18 00:38:24', 5, 'subscription', '2025-05-18 00:38:24', '2025-05-18 00:38:24'),
+(6, 'Elite Fitness Pass', 'New', 15, 'user', 'Debit', 1, 'organization', 'Credit', 2, 2, 2, NULL, 'Cash', NULL, 5999.00, 'PKR', 'Completed', 1, '1 Month', '2025-05-18 00:39:07', '2025-06-18 00:39:07', 6, 'subscription', '2025-05-18 00:39:07', '2025-05-18 00:39:07'),
+(7, 'Foodie Feast', 'New', 15, 'user', 'Debit', 1, 'organization', 'Credit', 1, 1, 1, NULL, 'Cash', NULL, 2999.00, 'PKR', 'Completed', 1, '1 Month', '2025-05-18 00:39:23', '2025-06-18 00:39:23', 7, 'subscription', '2025-05-18 00:39:23', '2025-05-18 00:39:23');

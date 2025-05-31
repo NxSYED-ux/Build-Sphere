@@ -13,6 +13,7 @@ use App\Models\Organization;
 use App\Models\PlanSubscriptionItem;
 use App\Models\UnitPicture;
 use App\Models\UserBuildingUnit;
+use App\Services\AdminFiltersService;
 use App\Services\OwnerFiltersService;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\RedirectResponse;
@@ -21,6 +22,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
+use Monolog\Level;
 
 class BuildingUnitController extends Controller
 {
@@ -28,36 +30,51 @@ class BuildingUnitController extends Controller
     public function adminIndex(Request $request)
     {
         try {
+            $adminService = new AdminFiltersService();
+            $allowedStatusesForBuilding = $adminService->getAllowedStatusesForBuilding();
+
             $search = $request->input('search');
-            $levelId = $request->input('level_id');
+            $selectedOrganization = $request->input('organization_id');
+            $selectedBuildingId = $request->input('building_id');
+            $selectedLevelId = $request->input('level_id');
+            $selectedStatus = $request->input('status');
 
             $unitsQuery = BuildingUnit::with(['level', 'building', 'organization', 'pictures'])
-                ->whereHas('building', function ($query) {
-                    $query->whereNotIn('status', ['Under Processing', 'Rejected']);
+                ->whereHas('building', function ($query) use ($allowedStatusesForBuilding) {
+                    $query->whereIn('status', $allowedStatusesForBuilding);
                 });
 
-            if(!empty($search)){
+            if(!empty($search)) {
                 $unitsQuery->where(function ($query) use ($search) {
-                    $query->where('unit_name', 'LIKE', "%{$search}%")
-                        ->orWhereHas('level', function ($subQuery) use ($search) {
-                            $subQuery->where('level_name', 'LIKE', "%{$search}%");
-                        })
-                        ->orWhereHas('building', function ($subQuery) use ($search) {
-                            $subQuery->where('name', 'LIKE', "%{$search}%");
-                        })
-                        ->orWhereHas('organization', function ($subQuery) use ($search) {
-                            $subQuery->where('name', 'LIKE', "%{$search}%");
-                        });
+                    $query->where('unit_name', 'LIKE', "%{$search}%");
                 });
             }
 
-            if ($levelId) {
-                $unitsQuery->where('level_id', $levelId);
+            if ($selectedOrganization) {
+                $unitsQuery->where('organization_id', $selectedOrganization);
             }
 
-            $units = $unitsQuery->paginate(10)->appends(['search' => $search]);
+            if ($selectedBuildingId) {
+                $unitsQuery->where('building_id', $selectedBuildingId);
+            }
 
-            return view('Heights.Admin.Units.index', compact('units', 'search'));
+            if ($selectedLevelId) {
+                $unitsQuery->where('level_id', $selectedLevelId);
+            }
+
+            if ($selectedStatus) {
+                $unitsQuery->where('status', $selectedStatus);
+            }
+
+            $units = $unitsQuery->paginate(12);
+
+            $organizations = $adminService->organizations();
+            $buildings = $adminService->buildings();
+            $levels = $adminService->levels();
+            $statuses = ['Approved', 'Rejected'];
+
+
+            return view('Heights.Admin.Units.index', compact('units', 'organizations', 'buildings', 'levels', 'statuses'));
 
         } catch (\Throwable $e) {
             Log::error('Error fetching admin units: ' . $e->getMessage());
@@ -68,44 +85,45 @@ class BuildingUnitController extends Controller
     public function ownerIndex(Request $request)
     {
         try {
-            $user = $request->user();
             $token = $request->attributes->get('token');
-            $search = $request->input('search');
-
             $organization_id = $token['organization_id'];
-            $role_name = $token['role_name'];
-            $levelId = $request->input('level_id');
+
+            $ownerService = new OwnerFiltersService();
+            $buildingIds = $ownerService->getAccessibleBuildingIds();
+            $buildings = $ownerService->buildings($buildingIds);
+            $levels = $ownerService->levels($buildingIds);
+            $statuses = ['Approved', 'Rejected'];
+
+            $search = $request->input('search');
+            $selectedBuildingId = $request->input('building_id');
+            $selectedLevelId = $request->input('level_id');
+            $selectedStatus = $request->input('status');
 
             $unitsQuery = BuildingUnit::with(['level', 'building', 'organization', 'pictures'])
-                ->where('organization_id', $organization_id);
+                ->where('organization_id', $organization_id)
+                ->whereIn('building_id', $buildingIds);
 
             if (!empty($search)) {
                 $unitsQuery->where(function ($query) use ($search) {
-                    $query->where('unit_name', 'LIKE', "%{$search}%")
-                        ->orWhereHas('level', function ($subQuery) use ($search) {
-                            $subQuery->where('level_name', 'LIKE', "%{$search}%");
-                        })
-                        ->orWhereHas('building', function ($subQuery) use ($search) {
-                            $subQuery->where('name', 'LIKE', "%{$search}%");
-                        })
-                        ->orWhereHas('organization', function ($subQuery) use ($search) {
-                            $subQuery->where('name', 'LIKE', "%{$search}%");
-                        });
+                    $query->where('unit_name', 'LIKE', "%{$search}%");
                 });
             }
 
-            if ($role_name === 'Manager') {
-                $managerBuildingIds = ManagerBuilding::where('user_id', $user->id)->pluck('building_id')->toArray();
-                $unitsQuery->whereIn('building_id', $managerBuildingIds);
+            if ($selectedBuildingId) {
+                $unitsQuery->where('building_id', $selectedBuildingId);
             }
 
-            if ($levelId) {
-                $unitsQuery->where('level_id', $levelId);
+            if ($selectedLevelId) {
+                $unitsQuery->where('level_id', $selectedLevelId);
             }
 
-            $units = $unitsQuery->paginate(10);
+            if ($selectedStatus) {
+                $unitsQuery->where('status', $selectedStatus);
+            }
 
-            return view('Heights.Owner.Units.index', compact('units', 'search'));
+            $units = $unitsQuery->paginate(12);
+
+            return view('Heights.Owner.Units.index', compact('units', 'buildings', 'levels', 'statuses'));
 
         } catch (\Throwable $e) {
             Log::error('Error in ownerIndex: ' . $e->getMessage());
@@ -118,7 +136,8 @@ class BuildingUnitController extends Controller
     public function adminCreate()
     {
         try {
-            $organizations = Organization::where('status', 'Enable')->get();
+            $adminService = new AdminFiltersService();
+            $organizations = $adminService->organizations();
             $unitType = DropdownType::with(['values'])->where('type_name', 'Unit-type')->first();
             $unitTypes = $unitType ? $unitType->values : collect();
 
@@ -133,6 +152,7 @@ class BuildingUnitController extends Controller
     public function ownerCreate()
     {
         try {
+
             $unitType = DropdownType::with(['values'])->where('type_name', 'Unit-type')->first();
             $unitTypes = $unitType ? $unitType->values : collect();
             $buildings = $this->getBuildingsOwner();
@@ -152,7 +172,7 @@ class BuildingUnitController extends Controller
         $request->validate([
             'organization_id' => 'required|exists:organizations,id',
         ]);
-        return $this->store($request, 'admin',$request->organization_id,'Approved');
+        return $this->store($request, 'admin',$request->organization_id);
     }
 
     public function ownerStore(Request $request)
@@ -164,12 +184,13 @@ class BuildingUnitController extends Controller
             return redirect()->back()->withInput()->with('error', $result['message']);
         }
 
-        return $this->store($request, 'owner', $result['organization_id'], 'Rejected');
+        return $this->store($request, 'owner', $result['organization_id']);
     }
 
-    private function store(Request $request, string $portal, $organization_id, $status)
+    private function store(Request $request, string $portal, $organization_id)
     {
-        $user = $request->user() ?? abort(403, 'Unauthorized');
+        $user = $request->user();
+        $errorType = ($user->role_id === 2) ? 'plan_upgrade_error' : 'error';
         $token = $request->attributes->get('token');
 
         $validated = $request->validate([
@@ -193,120 +214,126 @@ class BuildingUnitController extends Controller
             'unit_name.unique' => 'This unit name is already in use for the selected building.',
         ]);
 
+        DB::beginTransaction();
+
         try {
-            return DB::transaction(function () use ($request, $portal, $organization_id, $user, $token, $validated, $status) {
+            $unit = BuildingUnit::create([
+                'unit_name' => $validated['unit_name'],
+                'unit_type' => $validated['unit_type'],
+                'price' => $validated['price'],
+                'description' => $validated['description'],
+                'sale_or_rent' => $validated['sale_or_rent'],
+                'area' => $validated['area'],
+                'level_id' => $validated['level_id'],
+                'building_id' => $validated['building_id'],
+                'organization_id' => $organization_id,
+                'status' => $portal === 'Admin' ? 'Approved' : 'Rejected',
+            ]);
 
-                $unit = BuildingUnit::create([
-                    'unit_name' => $validated['unit_name'],
-                    'unit_type' => $validated['unit_type'],
-                    'price' => $validated['price'],
-                    'description' => $validated['description'],
-                    'sale_or_rent' => $validated['sale_or_rent'],
-                    'area' => $validated['area'],
-                    'level_id' => $validated['level_id'],
-                    'building_id' => $validated['building_id'],
-                    'organization_id' => $organization_id,
-                    'status' => $status,
-                ]);
+            if ($request->hasFile('unit_pictures')) {
+                foreach ($request->file('unit_pictures') as $image) {
+                    $imageName = time() . '_' . $image->getClientOriginalName();
+                    $imagePath = 'uploads/units/images/' . $imageName;
+                    $image->move(public_path('uploads/units/images'), $imageName);
 
-                if ($request->hasFile('unit_pictures')) {
-                    foreach ($request->file('unit_pictures') as $image) {
-                        $imageName = time() . '_' . $image->getClientOriginalName();
-                        $imagePath = 'uploads/units/images/' . $imageName;
-                        $image->move(public_path('uploads/units/images'), $imageName);
-
-                        UnitPicture::create([
-                            'unit_id' => $unit->id,
-                            'file_path' => $imagePath,
-                            'file_name' => $imageName,
-                        ]);
-                    }
+                    UnitPicture::create([
+                        'unit_id' => $unit->id,
+                        'file_path' => $imagePath,
+                        'file_name' => $imageName,
+                    ]);
                 }
+            }
 
-                if($portal === 'owner'){
-                    $building = Building::where('id', $unit->building_id)->first();
-
-                    if($building->status === 'Approved') {
-                        $building->update([
-                            'status' => 'For Re-Approval',
-                        ]);
-                    }
+            if ($portal === 'owner') {
+                $building = Building::find($unit->building_id);
+                if ($building && $building->status === 'Approved') {
+                    $building->update(['status' => 'For Re-Approval']);
                 }
+            }
 
-                $subscriptionItem = PlanSubscriptionItem::where('organization_id', $organization_id)
-                    ->where('service_catalog_id', 5)
-                    ->lockForUpdate()
-                    ->first();
+            $subscriptionItem = PlanSubscriptionItem::where('organization_id', $organization_id)
+                ->where('service_catalog_id', 5)
+                ->lockForUpdate()
+                ->first();
 
-                if (!$subscriptionItem) {
-                    throw new \Exception('The current plan doesn\'t include unit management.');
+            if (!$subscriptionItem) {
+                DB::rollBack();
+                return redirect()->back()->with($errorType, 'The current plan doesn\'t include unit management. Upgrade the organization plan to add units.')->withInput();
+            }
+
+            $meta = $subscriptionItem->meta ?? ['quantity' => 0];
+            $quantity = $subscriptionItem->quantity ?? 0;
+            $metaQuantity = $meta['quantity'] ?? 0;
+
+            if ($quantity <= 0 || $metaQuantity <= 0) {
+                DB::rollBack();
+                return redirect()->back()->with($errorType, 'The current plan doesn\'t include unit management. Upgrade the organization plan to add units.')->withInput();
+            }
+
+            $currentBuildingUnits = $meta[$unit->building_id]['used'] ?? 0;
+            if ($currentBuildingUnits >= $quantity) {
+                DB::rollBack();
+                return redirect()->back()->with($errorType, 'Target building has reached its unit limit (max ' . $subscriptionItem->quantity . ' units). Upgrade the organization plan to add more units to that building.')->withInput();
+            }
+
+            if (!isset($meta[$unit->building_id])) {
+                $buildingCount = count(array_filter(array_keys($meta), 'is_int'));
+                if ($buildingCount >= $metaQuantity) {
+                    DB::rollBack();
+                    return redirect()->back()->with($errorType, 'Building limit reached for units. Upgrade the organization plan to add more buildings.')->withInput();
                 }
+            }
 
-                $meta = $subscriptionItem->meta ?? ['quantity' => 0];
+            $meta[$unit->building_id] = [
+                'used' => ($meta[$unit->building_id]['used'] ?? 0) + 1
+            ];
 
-                if ($subscriptionItem->quantity <= 0 || $meta['quantity'] <= 0) {
-                    throw new \Exception('The current plan doesn\'t include unit management. Please upgrade the plan.');
-                }
+            $newHighest = max(array_column(array_filter($meta, 'is_array'), 'used')) ?? 0;
+            $subscriptionItem->update([
+                'used' => $newHighest,
+                'meta' => $meta
+            ]);
 
-                $currentBuildingUnits = $meta[$unit->building_id]['used'] ?? 0;
-                if ($currentBuildingUnits >= $subscriptionItem->quantity) {
-                    throw new \Exception('This building has reached its unit limit (max ' . $subscriptionItem->quantity .' units).');
-                }
+            $route = $portal === 'admin' ? 'units.index' : 'owner.units.index';
+            $detailPath = "{$portal}/units/{$unit->id}/show";
 
-                if (!isset($meta[$unit->building_id])) {
-                    $buildingCount = count(array_filter(array_keys($meta), 'is_int'));
-                    if ($buildingCount >= $meta['quantity']) {
-                        throw new \Exception('Building limit reached for units. Upgrade the organization plan to add more buildings.');
-                    }
-                }
+            dispatch(new BuildingNotifications(
+                $organization_id,
+                $validated['building_id'],
+                "New Unit Created by " . ($portal === 'admin' ? 'Admin' : "{$token['role_name']} ({$user->name})"),
+                "The Unit '{$validated['unit_name']}' has been successfully created" . ($portal === 'admin' ? ' by admin' : ''),
+                "owner/units/{$unit->id}/show",
+                $user->id,
+                "New Unit Created",
+                "The Unit '{$validated['unit_name']}' has been successfully created.",
+                $detailPath,
+                $portal === 'admin'
+            ));
 
-                $meta[$unit->building_id] = [
-                    'used' => ($meta[$unit->building_id]['used'] ?? 0) + 1
-                ];
+            DB::commit();
 
-                $newHighest = max(array_column(array_filter($meta, 'is_array'), 'used')) ?? 0;
-                $subscriptionItem->update([
-                    'used' => $newHighest,
-                    'meta' => $meta
-                ]);
+            return redirect()->route($route)->with('success', 'Unit created successfully.');
 
-                $route = $portal === 'admin' ? 'units.index' : 'owner.units.index';
-                $detailPath = "{$portal}/units/{$unit->id}/show";
-
-                dispatch(new BuildingNotifications(
-                    $organization_id,
-                    $validated['building_id'],
-                    "New Unit Created by " . ($portal === 'admin' ? 'Admin' : "{$token['role_name']} ({$user->name})"),
-                    "The Unit '{$validated['unit_name']}' has been successfully created" . ($portal === 'admin' ? ' by admin' : ''),
-                    "owner/units/{$unit->id}/show",
-
-                    $user->id,
-                    "New Unit Created",
-                    "The Unit '{$validated['unit_name']}' has been successfully created.",
-                    $detailPath,
-                    $portal === 'admin'
-                ));
-
-                return redirect()->route($route)->with('success', 'Unit created successfully.');
-            });
         } catch (\Throwable $e) {
             DB::rollBack();
             Log::error('Unit Creation Failed: ' . $e->getMessage());
-
-            $errorType = $user->role_id === 2 ? 'plan_upgrade_error' : 'error';
-            return redirect()->back()->with($errorType, $e->getMessage())->withInput();
+            return redirect()->back()->with('error', 'Something went wrong. Please try again later.')->withInput();
         }
     }
 
 
-    //Show
+
+    // Show
     public function adminShow($id)
     {
         try {
+            $adminService = new AdminFiltersService();
+            $allowedStatusesForBuilding = $adminService->getAllowedStatusesForBuilding();
+
             $unit = BuildingUnit::with(['pictures', 'level', 'building', 'organization'])
                 ->where('id', $id)
-                ->whereHas('building', function ($query) {
-                    $query->whereNotIn('status', ['Under Processing', 'Rejected']);
+                ->whereHas('building', function ($query) use ($allowedStatusesForBuilding) {
+                    $query->whereIn('status', $allowedStatusesForBuilding);
                 })
                 ->first();
 
@@ -366,7 +393,8 @@ class BuildingUnitController extends Controller
     public function adminEdit($id)
     {
         try {
-            $allowedStatuses = ['Approved', 'For Re-Approval', 'Under Review'];
+            $adminService = new AdminFiltersService();
+            $allowedStatuses = $adminService->getAllowedStatusesForBuilding();
 
             $unit = BuildingUnit::where('id', $id)
                 ->whereHas('building', function ($query) use ($allowedStatuses) {
@@ -393,17 +421,28 @@ class BuildingUnitController extends Controller
         }
     }
 
-    public function ownerEdit(Request $request, $id)
+    public function ownerEdit($id)
     {
         try{
-            $token = $request->attributes->get('token');
-            $organization_id = $token['organization_id'];
-
             $unitType = DropdownType::with(['values'])->where('type_name', 'Unit-type')->first();
             $unitTypes = $unitType ? $unitType->values : collect();
 
             $unit = BuildingUnit::find($id);
-            if (!$unit || $organization_id !== $unit->organization_id) {
+
+            if (!$unit) {
+                return redirect()->back()->with('error', 'Invalid Unit Id');
+            }
+
+            $ownerService = new OwnerFiltersService();
+            $result = $ownerService->checkBuildingAccess($unit->building_id);
+
+            if (!$result['access']) {
+                return redirect()->back()->with('error', $result['message']);
+            }
+
+            $organization_id = $result['organization_id'];
+
+            if ($organization_id !== $unit->organization_id) {
                 return redirect()->back()->with('error', 'Invalid Unit Id');
             }
 
@@ -421,10 +460,7 @@ class BuildingUnitController extends Controller
     // Update
     public function adminUpdate(Request $request)
     {
-        $request->validate([
-            'organization_id' => 'required|exists:organizations,id',
-        ]);
-        return $this->update($request, 'admin',$request->organization_id);
+        return $this->update($request, 'admin');
     }
 
     public function ownerUpdate(Request $request)
@@ -436,12 +472,13 @@ class BuildingUnitController extends Controller
             return redirect()->back()->withInput()->with('error', $result['message']);
         }
 
-        return $this->update($request, 'owner', $result['organization_id']);
+        return $this->update($request, 'owner');
     }
 
-    private function update(Request $request, string $portal, $organization_id)
+    private function update(Request $request, string $portal)
     {
-        $user = $request->user() ?? abort(403, 'Unauthorized');
+        $user = $request->user();
+        $errorType = ($user->role_id === 2) ? 'plan_upgrade_error' : 'error';
         $token = $request->attributes->get('token');
 
         $validated = $request->validate([
@@ -467,122 +504,137 @@ class BuildingUnitController extends Controller
             'unit_name.unique' => 'This unit name is already in use for the selected building.',
         ]);
 
+        DB::beginTransaction();
         try {
-            return DB::transaction(function () use ($request, $portal, $organization_id, $user, $token, $validated) {
-                $unit = BuildingUnit::where([
-                    ['id', '=', $validated['unit_id']],
-                    ['updated_at', '=', $validated['updated_at']]
-                ])->lockForUpdate()->first();
+            $unit = BuildingUnit::where([
+                ['id', '=', $validated['unit_id']],
+                ['updated_at', '=', $validated['updated_at']]
+            ])->lockForUpdate()->first();
 
-                if (!$unit) {
-                    throw new \Exception('Please refresh the page and try again.');
+            if (!$unit) {
+                DB::rollBack();
+                return redirect()->back()->with('error', 'Please refresh the page and try again.')->withInput();
+            }
+
+            if ($portal === 'owner') {
+                $building = Building::where('id', $unit->building_id)->first();
+                if ($building->status === 'Approved') {
+                    $building->update(['status' => 'For Re-Approval']);
+                }
+            }
+
+            if ($portal === 'owner' && $token['organization_id'] !== $unit->organization_id) {
+                DB::rollBack();
+                return redirect()->back()->with('error', 'The selected unit id is invalid.')->withInput();
+            }
+
+            $oldBuildingId = $unit->building_id;
+            $buildingChanged = ($oldBuildingId != $validated['building_id']);
+
+            $oldLevelId = $unit->level_id;
+            $levelChanged = ($oldLevelId != $validated['level_id']);
+
+            if (($buildingChanged || $levelChanged) && $unit->status === 'Approved') {
+                DB::rollBack();
+                return redirect()->back()->with('error', "Can't change building or level of an Approved unit.")->withInput();
+            }
+
+            if ($buildingChanged) {
+                $subscriptionItem = PlanSubscriptionItem::where('organization_id', $unit->organization_id)
+                    ->where('service_catalog_id', 5)
+                    ->lockForUpdate()
+                    ->first();
+
+                if (!$subscriptionItem) {
+                    DB::rollBack();
+                    return redirect()->back()->with($errorType, 'The current plan doesn\'t include unit management. Upgrade the organization plan to add units.')->withInput();
                 }
 
-                if($portal === 'owner'){
-                    $building = Building::where('id', $unit->building_id)->first();
+                $meta = $subscriptionItem->meta ?? ['quantity' => 0];
+                $quantity = $subscriptionItem->quantity ?? 0;
+                $metaQuantity = $meta['quantity'] ?? 0;
 
-                    if($building->status === 'Approved') {
-                        $building->update([
-                            'status' => 'For Re-Approval',
-                        ]);
+                if ($quantity <= 0 || $metaQuantity <= 0) {
+                    DB::rollBack();
+                    return redirect()->back()->with($errorType, 'The current plan doesn\'t include unit management. Upgrade the organization plan to add units.')->withInput();
+                }
+
+                if (isset($meta[$oldBuildingId])) {
+                    $meta[$oldBuildingId]['used'] = max(0, $meta[$oldBuildingId]['used'] - 1);
+                    if ($meta[$oldBuildingId]['used'] <= 0) {
+                        unset($meta[$oldBuildingId]);
                     }
                 }
 
-                if ($portal === 'owner' && $token['organization_id'] !== $unit->organization_id) {
-                    throw new \Exception('The selected unit id is invalid.');
+                $buildingCount = count(array_filter(array_keys($meta), 'is_int'));
+                if (!isset($meta[$validated['building_id']]) && $buildingCount >= $meta['quantity']) {
+                    DB::rollBack();
+                    return redirect()->back()->with($errorType, 'Building limit reached. Upgrade the organization plan to add more building..')->withInput();
                 }
 
-                $oldBuildingId = $unit->building_id;
-                $buildingChanged = ($oldBuildingId != $validated['building_id']);
+                $newBuildingUnits = $meta[$validated['building_id']]['used'] ?? 0;
+                if ($newBuildingUnits >= $subscriptionItem->quantity) {
+                    DB::rollBack();
+                    return redirect()->back()->with($errorType, 'Target building has reached its unit limit (max ' . $subscriptionItem->quantity . ' units). Upgrade the organization plan to add more units to that building.')->withInput();
+                }
 
-                if ($buildingChanged) {
-                    $subscriptionItem = PlanSubscriptionItem::where('organization_id', $organization_id)
-                        ->where('service_catalog_id', 5)
-                        ->lockForUpdate()
-                        ->firstOrFail();
+                $meta[$validated['building_id']] = ['used' => $newBuildingUnits + 1];
 
-                    $meta = $subscriptionItem->meta ?? ['quantity' => 0];
+                $newHighest = max(array_column(array_filter($meta, 'is_array'), 'used')) ?? 0;
+                $subscriptionItem->update([
+                    'used' => $newHighest,
+                    'meta' => $meta
+                ]);
+            }
 
+            $unit->update([
+                'unit_name' => $validated['unit_name'],
+                'unit_type' => $validated['unit_type'],
+                'price' => $validated['price'],
+                'description' => $validated['description'],
+                'sale_or_rent' => $validated['sale_or_rent'],
+                'area' => $validated['area'],
+                'level_id' => $validated['level_id'],
+                'building_id' => $validated['building_id'],
+                'updated_at' => now(),
+            ]);
 
-                    if (isset($meta[$oldBuildingId])) {
-                        $meta[$oldBuildingId]['used'] = max(0, $meta[$oldBuildingId]['used'] - 1);
-                        if ($meta[$oldBuildingId]['used'] <= 0) {
-                            unset($meta[$oldBuildingId]);
-                        }
-                    }
+            if ($request->hasFile('unit_pictures')) {
+                foreach ($request->file('unit_pictures') as $image) {
+                    $imageName = time() . '_' . $image->getClientOriginalName();
+                    $imagePath = 'uploads/units/images/' . $imageName;
+                    $image->move(public_path('uploads/units/images'), $imageName);
 
-                    $buildingCount = count(array_filter(array_keys($meta), 'is_int'));
-                    if (!isset($meta[$validated['building_id']]) && $buildingCount >= $meta['quantity']) {
-                        throw new \Exception('Building limit reached. Cannot move unit to new building.');
-                    }
-
-                    $newBuildingUnits = $meta[$validated['building_id']]['used'] ?? 0;
-                    if ($newBuildingUnits >= $subscriptionItem->quantity) {
-                        throw new \Exception('Target building has reached its unit limit (max ' . $subscriptionItem->quantity . ' units).');
-                    }
-
-                    $meta[$validated['building_id']] = [
-                        'used' => $newBuildingUnits + 1
-                    ];
-
-                    $newHighest = max(array_column(array_filter($meta, 'is_array'), 'used')) ?? 0;
-                    $subscriptionItem->update([
-                        'used' => $newHighest,
-                        'meta' => $meta
+                    UnitPicture::create([
+                        'unit_id' => $unit->id,
+                        'file_path' => $imagePath,
+                        'file_name' => $imageName,
                     ]);
                 }
+            }
 
-                $unit->update([
-                    'unit_name' => $validated['unit_name'],
-                    'unit_type' => $validated['unit_type'],
-                    'price' => $validated['price'],
-                    'description' => $validated['description'],
-                    'sale_or_rent' => $validated['sale_or_rent'],
-                    'area' => $validated['area'],
-                    'level_id' => $validated['level_id'],
-                    'building_id' => $validated['building_id'],
-                    'updated_at' => now(),
-                ]);
+            $route = $portal === 'admin' ? 'units.index' : 'owner.units.index';
+            $detailPath = "{$portal}/units/{$unit->id}/show";
 
-                if ($request->hasFile('unit_pictures')) {
-                    foreach ($request->file('unit_pictures') as $image) {
-                        $imageName = time() . '_' . $image->getClientOriginalName();
-                        $imagePath = 'uploads/units/images/' . $imageName;
-                        $image->move(public_path('uploads/units/images'), $imageName);
+            dispatch(new BuildingNotifications(
+                $unit->organization_id,
+                $validated['building_id'],
+                "Unit Updated by " . ($portal === 'admin' ? 'Admin' : "{$token['role_name']} ({$user->name})"),
+                "The Unit '{$validated['unit_name']}' has been updated" . ($portal === 'admin' ? ' by admin' : ''),
+                "owner/units/{$unit->id}/show",
+                $user->id,
+                "Unit Updated",
+                "The Unit '{$validated['unit_name']}' has been updated with your changes.",
+                $detailPath,
+                $portal === 'admin'
+            ));
 
-                        UnitPicture::create([
-                            'unit_id' => $unit->id,
-                            'file_path' => $imagePath,
-                            'file_name' => $imageName,
-                        ]);
-                    }
-                }
-
-                $route = $portal === 'admin' ? 'units.index' : 'owner.units.index';
-                $detailPath = "{$portal}/units/{$unit->id}/show";
-
-                dispatch(new BuildingNotifications(
-                    $organization_id,
-                    $validated['building_id'],
-                    "Unit Updated by " . ($portal === 'admin' ? 'Admin' : "{$token['role_name']} ({$user->name})"),
-                    "The Unit '{$validated['unit_name']}' has been updated" . ($portal === 'admin' ? ' by admin' : ''),
-                    "owner/units/{$unit->id}/show",
-
-                    $user->id,
-                    "Unit Updated",
-                    "The Unit '{$validated['unit_name']}' has been updated with your changes.",
-                    $detailPath,
-                    $portal === 'admin'
-                ));
-
-                return redirect()->route($route)->with('success', 'Unit updated successfully.');
-            });
+            DB::commit();
+            return redirect()->route($route)->with('success', 'Unit updated successfully.');
         } catch (\Throwable $e) {
             DB::rollBack();
             Log::error("Unit Update Failed: " . $e->getMessage());
-
-            $errorType = $user->role_id === 2 ? 'plan_upgrade_error' : 'error';
-            return redirect()->back()->with($errorType, $e->getMessage())->withInput();
+            return redirect()->back()->with('error', 'Something went wrong please try again later.')->withInput();
         }
     }
 
@@ -673,27 +725,17 @@ class BuildingUnitController extends Controller
     // Get Building Available Units
     public function getAvailableBuildingUnits($building_id)
     {
-        $units = BuildingUnit::select('id', 'unit_name')
-            ->where('sale_or_rent', '!=', 'Not Available')
-            ->where('availability_status', 'Available')
-            ->where('status', 'Approved')
-            ->where('building_id', $building_id)
-            ->orderBy('unit_name', 'asc')
-            ->get();
+        $ownerService = new OwnerFiltersService();
+        $units = $ownerService->availableUnitsOfBuilding($building_id);
 
         return response()->json(['units' => $units]);
     }
 
     // Get Building Units by type
-    public function getBuildingUnitsByType ($building_id, $unit_type)
+    public function getBuildingUnitsByType($building_id, $unit_type)
     {
-        $units = BuildingUnit::select('id', 'unit_name')
-            ->where('sale_or_rent', 'Not Available')
-            ->where('unit_type', $unit_type)
-            ->where('status', 'Approved')
-            ->where('building_id', $building_id)
-            ->orderBy('unit_name', 'asc')
-            ->get();
+        $ownerService = new OwnerFiltersService();
+        $units = $ownerService->specificTypesOfUnitsOfBuilding($building_id, [$unit_type]);
 
         return response()->json(['units' => $units]);
     }

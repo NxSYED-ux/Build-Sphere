@@ -22,11 +22,9 @@ class DepartmentController extends Controller
     {
         try {
             $token = $request->attributes->get('token');
-
-            $departments = collect();
-            if (!empty($token['organization_id'])) {
-                $departments = Department::where('organization_id', $token['organization_id'])->get();
-            }
+            $departments = Department::withCount('staffMembers')
+                ->where('organization_id', $token['organization_id'])
+                ->get();
 
             return view('Heights.Owner.Departments.index', compact('departments'));
 
@@ -67,7 +65,7 @@ class DepartmentController extends Controller
                 null,
                 "New Department Created",
                 "The department '{$request->level_name}' has been successfully created.",
-                ['web' => "owner/departments/{$department->id}"]
+                ['web' => "owner/departments/{$department->id}/show"]
             ));
 
             return redirect()->back()->with('success', 'Department created successfully.');
@@ -77,9 +75,9 @@ class DepartmentController extends Controller
         }
     }
 
-    public function show(Request $request, Department $department)
+    public function show(Department $department)
     {
-        $token = $request->attributes->get('token');
+        $token = request()->attributes->get('token');
         $organization_id = $token['organization_id'];
 
         if ($department->organization_id != $organization_id) {

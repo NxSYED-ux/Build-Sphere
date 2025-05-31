@@ -77,6 +77,7 @@ class SubscriptionService
             $transaction = Transaction::create([
                 'transaction_title' => "{$plan->name} ({$planCycle} Months)",
                 'transaction_category' => $renewal ? 'Renewal' : 'Upgrade',
+                'plan_id' => $plan->id,
                 'buyer_id' => $organization_id,
                 'buyer_type' => 'organization',
                 'seller_type' => 'platform',
@@ -200,6 +201,31 @@ class SubscriptionService
             'code' => $error->code ?? 'unknown_error',
             'type' => $error->type ?? 'card_error',
         ], 402);
+    }
+
+    public function checkServiceUsageLimit($serviceId, $serviceName, bool $redirect = true)
+    {
+        $user = request()->user();
+        $token = request()->attributes->get('token');
+        $organization_id = $token['organization_id'];
+
+        $errorHeading = $user->role_id === 2 ? 'plan_upgrade_error' : 'error';
+
+        $subscriptionLimit = PlanSubscriptionItem::where('organization_id', $organization_id)
+            ->where('service_catalog_id', $serviceId)
+            ->first();
+
+        if (!$subscriptionLimit) {
+            $errorMessage = "The current plan doesn't include {$serviceName}. Please upgrade your plan to access this service.";
+            return $redirect ? redirect()->back()->with($errorHeading, $errorMessage) : [ 'success' => false];
+        }
+
+        if ($subscriptionLimit->used >= $subscriptionLimit->quantity) {
+            $errorMessage = "You have reached the {$serviceName} limit. Please upgrade your plan to add more.";
+            return $redirect ? redirect()->back()->with($errorHeading, $errorMessage) : [ 'success' => false];
+        }
+
+        return [ 'success' => true, 'subscriptionItem' => $subscriptionLimit ];
     }
 
 

@@ -18,6 +18,9 @@ use App\Models\UserPermission;
 use App\Notifications\CredentialsEmail;
 use App\Notifications\DatabaseOnlyNotification;
 use App\Notifications\UserNotification;
+use App\Services\OwnerFiltersService;
+use App\Services\PermissionService;
+use App\Services\SubscriptionService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -41,24 +44,20 @@ class hrController extends Controller
 
     private function index(Request $request, int $roleId)
     {
-        $user = $request->user();
+        $search = $request->input('search');
+        $selectedDepartment = $request->input('DepartmentId');
+        $selectedBuilding = $request->input('BuildingId');
 
         try {
             $token = $request->attributes->get('token');
             $organization_id = $token['organization_id'];
-            $role_name = $token['role_name'];
+            $buildingIds = [];
 
-            $search = $request->input('search');
-            $selectedDepartment = $request->input('DepartmentId');
-            $selectedBuilding = $request->input('BuildingId');
-
-            $onlyBuildingIds = [];
-            if ($role_name === 'Manager' && $roleId !== 3) {
-                $onlyBuildingIds = ManagerBuilding::where('user_id', $user->id)->pluck('building_id')->toArray();
-            }
-            elseif ($role_name === 'Staff' && $roleId !== 3) {
-                $staffRecord = StaffMember::where('user_id', $user->id)->first();
-                $onlyBuildingIds = $staffRecord ? [$staffRecord->building_id] : [];
+            if ($roleId === 4) {
+                $ownerServices = new OwnerFiltersService();
+                $buildingIds = $ownerServices->getAccessibleBuildingIds();
+                $departments = $ownerServices->departments();
+                $buildings = $ownerServices->buildings($buildingIds);
             }
 
             $staffMembers = StaffMember::where('organization_id', $organization_id)
@@ -73,8 +72,8 @@ class hrController extends Controller
                     }
                 })
                 ->when($selectedDepartment, fn($q) => $q->where('department_id', $selectedDepartment))
-                ->when(!empty($onlyBuildingIds), function ($q) use ($onlyBuildingIds) {
-                    $q->whereIn('building_id', $onlyBuildingIds);
+                ->when($roleId === 4, function ($q) use ($buildingIds) {
+                    $q->whereIn('building_id', $buildingIds);
                 })
                 ->when($selectedBuilding, function ($q) use ($selectedBuilding) {
                     $q->where('building_id', $selectedBuilding);
@@ -83,118 +82,80 @@ class hrController extends Controller
                 ->paginate(12);
 
             if ($roleId === 4) {
-                $departments = Department::where('organization_id', $organization_id)
-                    ->select('id', 'name')
-                    ->orderBy('name', 'asc')
-                    ->get();
-
-                $buildings = Building::where('organization_id', $organization_id)
-                    ->when(!empty($onlyBuildingIds), fn($q) => $q->whereIn('id', $onlyBuildingIds))
-                    ->select('id', 'name')
-                    ->orderBy('name', 'asc')
-                    ->get();
-
                 return view('Heights.Owner.HR.Staff.index', compact('staffMembers', 'buildings', 'departments'));
             }
 
             return view('Heights.Owner.HR.Manager.index', compact('staffMembers'));
 
         } catch (\Throwable $e) {
-            Log::error('Error fetching staff members: ' . $e->getMessage());
-            return redirect()->back()->with('error', 'Something went wrong while loading staff members.');
+            Log::error('Error fetching staff/Managers: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Something went wrong. Please try again later.');
         }
     }
 
 
 
     // Create Functions & Store Functions
-    public function staffCreate(Request $request)
+    public function staffCreate()
     {
         try {
-            $user = $request->user();
-            $token = $request->attributes->get('token');
-            $organization_id = $token['organization_id'];
-            $role_name = $token['role_name'];
-
-            $result = $this->checkServiceUsageLimit($organization_id, 3, 'Staff Management', $user->role_id);
+            $subscriptionService = new SubscriptionService();
+            $result = $subscriptionService->checkServiceUsageLimit(3, 'Staff Management');
 
             if ($result instanceof RedirectResponse) {
                 return $result;
             }
 
-            $onlyBuildingIds = [];
-            if ($role_name === 'Manager') {
-                $onlyBuildingIds = ManagerBuilding::where('user_id', $user->id)->pluck('building_id')->toArray();
-            }
-            elseif ($role_name === 'Staff'){
-                $staffRecord = StaffMember::where('user_id', $user->id)->first();
-                $onlyBuildingIds = [$staffRecord->building_id];
-            }
+            $ownerServices = new OwnerFiltersService();
+            $buildingIds = $ownerServices->getAccessibleBuildingIds();
+            $buildings = $ownerServices->buildings($buildingIds);
+            $departments = $ownerServices->departments();
 
-            $departments = Department::where('organization_id', $organization_id)
-                ->orderBy('name', 'asc')
-                ->pluck('name', 'id');
-
-            $buildings = Building::where('organization_id', $organization_id)
-                ->when(!empty($onlyBuildingIds), fn($q) => $q->whereIn('id', $onlyBuildingIds))
-                ->orderBy('name', 'asc')
-                ->pluck('name', 'id');
-
-            $permissions = RolePermission::where('role_id', 4)->get();
+            $permissionService = new PermissionService();
+            $permissions = $permissionService->getRolePermissionsWithChildren(4);
 
             return view('Heights.Owner.HR.Staff.create', compact('departments', 'buildings', 'permissions'));
 
         } catch (\Throwable $e) {
             Log::error('Error in staffCreate: ' . $e->getMessage());
-
             return redirect()->back()->with('error', 'Something went wrong while loading the staff creation form.');
         }
     }
 
     public function staffStore(Request $request)
     {
-        $loggedUser = $request->user();
-        $token = $request->attributes->get('token');
-        $organization_id = $token['organization_id'];
-        $role_name = $token['role_name'];
-
         $request->validate([
             'name' => ['bail', 'required', 'string', 'max:255'],
             'email' => ['bail', 'required', 'string', 'email', 'max:255', 'unique:users,email'],
-            'phone_no' => ['bail', 'nullable', 'string', 'max:20'],
-            'cnic' => ['bail', 'nullable', 'max:18', 'unique:users,cnic'],
-            'gender' => ['bail', 'nullable', 'in:Male,Female,Other'],
+            'phone_no' => ['bail', 'required', 'string', 'max:20'],
+            'cnic' => ['bail', 'required', 'max:18', 'unique:users,cnic'],
+            'gender' => ['bail', 'required', 'in:Male,Female,Other'],
             'date_of_birth' => ['bail', 'required', 'date'],
 
             'department_id' => ['bail', 'required', 'exists:departments,id'],
             'building_id' => ['bail', 'required', 'exists:buildings,id'],
-            'accept_query' => ['bail', 'nullable'],
+            'accept_query' => ['bail', 'required'],
 
-            'permissions' => ['bail', 'nullable', 'array'],
-            'permissions.*' => ['bail', 'nullable', 'integer'],
+            'permissions' => ['bail', 'required', 'array'],
+            'permissions.*' => ['bail', 'required', 'integer'],
         ]);
-
-        if (
-            $role_name === 'Manager' &&
-            !ManagerBuilding::where('building_id', $request->building_id)
-                ->where('user_id', $loggedUser->id)
-                ->exists()
-        ) {
-            return redirect()->back()->withInput()->with('error', 'You do not have access to add staff members of the selected building.');
-        }
-        elseif ($role_name === 'Staff'){
-            $staffRecord = StaffMember::where('user_id', $loggedUser->id)->first();
-
-            if (!$staffRecord || $staffRecord->building_id != $request->building_id) {
-                return redirect()->back()->withInput()->with('error', 'You do not have access to add staff members of the selected building.');
-            }
-        }
 
         $password = Str::random(8);
 
         DB::beginTransaction();
         try {
-            $result = $this->checkServiceUsageLimit($organization_id, 3, 'Staff Management', $loggedUser->role_id);
+            $ownerService = new OwnerFiltersService();
+            $access = $ownerService->checkBuildingAccess($request->building_id);
+
+            if(!$access['access']){
+                DB::rollBack();
+                return redirect()->back()->withInput($request->except('unitId'))->with('error', $access['message']);
+            }
+
+            $organization_id = $access['organization_id'];
+
+            $subscriptionService = new SubscriptionService();
+            $result = $subscriptionService->checkServiceUsageLimit(3, 'Staff Management');
 
             if ($result instanceof RedirectResponse) {
                 DB::rollBack();
@@ -270,25 +231,22 @@ class hrController extends Controller
         }
     }
 
-    public function managerCreate(Request $request)
+    public function managerCreate()
     {
         try {
-            $user = $request->user();
-            $token = $request->attributes->get('token');
-            $organization_id = $token['organization_id'];
-
-            $result = $this->checkServiceUsageLimit($organization_id, 2, 'Managers', $user->role_id);
+            $subscriptionService = new SubscriptionService();
+            $result = $subscriptionService->checkServiceUsageLimit(2, 'Managers');
 
             if ($result instanceof RedirectResponse) {
                 return $result;
             }
 
-            $buildings = Building::where('organization_id', $organization_id)
-                ->select('id', 'name')
-                ->orderBy('name', 'asc')
-                ->get();
+            $ownerServices = new OwnerFiltersService();
+            $buildingIds = $ownerServices->getAccessibleBuildingIds();
+            $buildings = $ownerServices->buildings($buildingIds);
 
-            $permissions = RolePermission::where('role_id', 3)->get();
+            $permissionService = new PermissionService();
+            $permissions = $permissionService->getRolePermissionsWithChildren(3);
 
             return view('Heights.Owner.HR.Manager.create', compact('buildings', 'permissions'));
 
@@ -301,20 +259,19 @@ class hrController extends Controller
 
     public function managerStore(Request $request)
     {
-        $loggedUser = $request->user();
         $token = $request->attributes->get('token');
         $organization_id = $token['organization_id'];
 
         $request->validate([
             'name' => ['bail', 'required', 'string', 'max:255'],
             'email' => ['bail', 'required', 'string', 'email', 'max:255', 'unique:users,email'],
-            'phone_no' => ['bail', 'nullable', 'string', 'max:20'],
-            'cnic' => ['bail', 'nullable', 'max:18', 'unique:users,cnic'],
-            'gender' => ['bail', 'nullable', 'in:Male,Female,Other'],
+            'phone_no' => ['bail', 'required', 'string', 'max:20'],
+            'cnic' => ['bail', 'required', 'max:18', 'unique:users,cnic'],
+            'gender' => ['bail', 'required', 'in:Male,Female,Other'],
             'date_of_birth' => ['bail', 'required', 'date'],
 
-            'permissions' => ['bail', 'nullable', 'array'],
-            'permissions.*' => ['bail', 'nullable', 'integer'],
+            'permissions' => ['bail', 'required', 'array'],
+            'permissions.*' => ['bail', 'required', 'integer'],
 
             'buildings' => ['bail', 'required', 'array'],
             'buildings.*' => ['bail', 'required', 'integer', 'exists:buildings,id'],
@@ -324,7 +281,8 @@ class hrController extends Controller
 
         DB::beginTransaction();
         try {
-            $result = $this->checkServiceUsageLimit($organization_id, 2, 'Managers', $loggedUser->role_id);
+            $subscriptionService = new SubscriptionService();
+            $result = $subscriptionService->checkServiceUsageLimit(2, 'Managers');
 
             if ($result instanceof RedirectResponse) {
                 DB::rollBack();
@@ -402,7 +360,7 @@ class hrController extends Controller
         } catch (\Throwable $e) {
             DB::rollBack();
             Log::error('Error in Manager create: ' . $e->getMessage());
-            return redirect()->back()->withInput()->with('error', 'Something went wrong. Please try again.');
+            return redirect()->back()->withInput()->with('error', 'Something went wrong. Please try again later.');
         }
     }
 
@@ -412,10 +370,8 @@ class hrController extends Controller
     public function staffShow(Request $request, string $id)
     {
         try {
-            $user = $request->user();
             $token = $request->attributes->get('token');
             $organization_id = $token['organization_id'];
-            $role_name = $token['role_name'];
 
             $staffInfo = StaffMember::with('user')->find($id);
 
@@ -423,23 +379,12 @@ class hrController extends Controller
                 return redirect()->back()->with('error', 'Invalid staff id');
             }
 
-            $onlyBuildingIds = [];
-            if ($role_name === 'Manager') {
-                $onlyBuildingIds = ManagerBuilding::where('user_id', $user->id)->pluck('building_id')->toArray();
-                $hasAccess = !in_array($staffInfo->building_id, $onlyBuildingIds);
+            $ownerService = new OwnerFiltersService();
+            $buildingIds = $ownerService->getAccessibleBuildingIds();
 
-                if (!$hasAccess) {
-                    return redirect()->back()->with('error', 'Access denied: You do not manage this building or its staff.');
-                }
-            }
-            elseif ($role_name === 'Staff'){
-                $staffRecord = StaffMember::where('user_id', $user->id)->first();
-
-                if (!$staffRecord || $staffRecord->building_id != $staffInfo->building_id) {
-                    return redirect()->back()->with('error', 'Access denied: You do not manage this building or its staff.');
-                }
-
-                $onlyBuildingIds = [$staffInfo->building_id];
+            $hasAccess = !in_array($staffInfo->building_id, $buildingIds);
+            if (!$hasAccess) {
+                return redirect()->back()->with('error', 'Access denied: You do not manage this building or its staff.');
             }
 
             $queries = $staffInfo->queries()
@@ -464,12 +409,7 @@ class hrController extends Controller
                 ->paginate(10)
                 ->appends($request->query());
 
-            $units = BuildingUnit::where('organization_id', $organization_id)
-                ->where('status', 'Approved')
-                ->when(!empty($onlyBuildingIds), fn($q) => $q->whereIn('building_id', $onlyBuildingIds))
-                ->select('id', 'unit_name')
-                ->orderBy('unit_name', 'asc')
-                ->get();
+            $units = $ownerService->units($buildingIds);
 
             return view('Heights.Owner.HR.Staff.show', compact('staffInfo', 'queries', 'units'));
         } catch (\Throwable $e) {
@@ -510,10 +450,8 @@ class hrController extends Controller
     public function staffEdit(Request $request, string $id)
     {
         try {
-            $user = $request->user();
             $token = $request->attributes->get('token');
             $organization_id = $token['organization_id'];
-            $role_name = $token['role_name'];
 
             $staffInfo = StaffMember::with('user')->find($id);
 
@@ -521,45 +459,19 @@ class hrController extends Controller
                 return redirect()->back()->with('error', 'Invalid staff id');
             }
 
-            $onlyBuildingIds = [];
-            if ($role_name === 'Manager') {
-                $onlyBuildingIds = ManagerBuilding::where('user_id', $user->id)->pluck('building_id')->toArray();
+            $ownerServices = new OwnerFiltersService();
+            $buildingIds = $ownerServices->getAccessibleBuildingIds();
 
-                if (!in_array($staffInfo->building_id, $onlyBuildingIds)) {
-                    return redirect()->back()->with('error', 'Access denied: You do not manage this building or its staff.');
-                }
-            }
-            elseif ($role_name === 'Staff'){
-                $staffRecord = StaffMember::where('user_id', $user->id)->first();
-
-                if (!$staffRecord || $staffRecord->building_id != $staffInfo->building_id) {
-                    return redirect()->back()->with('error', 'Access denied: You do not manage this building or its staff.');
-                }
+            $hasAccess = !in_array($staffInfo->building_id, $buildingIds);
+            if (!$hasAccess) {
+                return redirect()->back()->with('error', 'Access denied: You do not manage this building or its staff.');
             }
 
-            $departments = Department::where('organization_id', $organization_id)
-                ->orderBy('name', 'asc')
-                ->pluck('name', 'id');
+            $departments = $ownerServices->departments();
+            $buildings = $ownerServices->buildings($buildingIds);
 
-            $buildings = Building::where('organization_id', $organization_id)
-                ->when(!empty($onlyBuildingIds), fn($q) => $q->whereIn('id', $onlyBuildingIds))
-                ->orderBy('name', 'asc')
-                ->pluck('name', 'id');
-
-
-            $userPermissions = UserPermission::where('user_id', $staffInfo->user_id)
-                ->select('id', 'permission_id', 'status')
-                ->get();
-
-            $excludedPermissionIds = $userPermissions->pluck('permission_id');
-
-            $rolePermissions = RolePermission::where('role_id', 4)
-                ->whereNotIn('permission_id', $excludedPermissionIds)
-                ->select('id', 'permission_id', 'status')
-                ->get();
-
-            $permissions = $userPermissions->concat($rolePermissions)
-                ->sortBy('permission_id');
+            $permissionService = new PermissionService();
+            $permissions = $permissionService->getUserPermissionsWithChildren($staffInfo->user_id,4);
 
             return view('Heights.Owner.HR.Staff.edit', compact('staffInfo', 'departments', 'buildings', 'permissions'));
 
@@ -1301,6 +1213,39 @@ class hrController extends Controller
     }
 
 
+    public function managerBuildingsTransactions(string $organization_id, $managerBuildings)
+    {
+        $transactions = Transaction::whereIn('building_id', $managerBuildings)
+            ->where(function ($query) use ($organization_id) {
+                $query->where(function ($q) use ($organization_id) {
+                    $q->where('buyer_type', 'organization')
+                        ->where('buyer_id', $organization_id);
+                })->orWhere(function ($q) use ($organization_id) {
+                    $q->where('seller_type', 'organization')
+                        ->where('seller_id', $organization_id);
+                });
+            })
+            ->orderBy('created_at', 'desc')
+            ->limit(6)
+            ->get();
+
+        $history = $transactions->map(function ($txn) use ($organization_id) {
+            $isBuyer = $txn->buyer_type === 'organization' && $txn->buyer_id == $organization_id;
+
+            return [
+                'id' => $txn->id,
+                'title' => $txn->transaction_title,
+                'type' => $isBuyer ? $txn->buyer_transaction_type : $txn->seller_transaction_type,
+                'price' => number_format($txn->price, 2) . ' ' . $txn->currency,
+                'status' => $txn->status,
+                'created_at' => $txn->created_at->diffForHumans(),
+            ];
+        });
+
+        return $history;
+    }
+
+
 
     // Helper Function
     public function checkServiceUsageLimit($organization_id, $serviceId, $serviceName, $roleId, bool $redirect = true)
@@ -1322,38 +1267,6 @@ class hrController extends Controller
         }
 
         return [ 'success' => true, 'subscriptionItem' => $subscriptionLimit ];
-    }
-
-    public function managerBuildingsTransactions(string $organization_id, $managerBuildings)
-    {
-        $transactions = Transaction::whereIn('building_id', $managerBuildings)
-            ->where(function ($query) use ($organization_id) {
-            $query->where(function ($q) use ($organization_id) {
-                $q->where('buyer_type', 'organization')
-                    ->where('buyer_id', $organization_id);
-            })->orWhere(function ($q) use ($organization_id) {
-                $q->where('seller_type', 'organization')
-                    ->where('seller_id', $organization_id);
-            });
-        })
-            ->orderBy('created_at', 'desc')
-            ->limit(6)
-            ->get();
-
-        $history = $transactions->map(function ($txn) use ($organization_id) {
-            $isBuyer = $txn->buyer_type === 'organization' && $txn->buyer_id == $organization_id;
-
-            return [
-                'id' => $txn->id,
-                'title' => $txn->transaction_title,
-                'type' => $isBuyer ? $txn->buyer_transaction_type : $txn->seller_transaction_type,
-                'price' => number_format($txn->price, 2) . ' ' . $txn->currency,
-                'status' => $txn->status,
-                'created_at' => $txn->created_at->diffForHumans(),
-            ];
-        });
-
-        return $history;
     }
 
 }

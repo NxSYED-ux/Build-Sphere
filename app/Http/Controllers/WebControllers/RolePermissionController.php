@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Permission;
 use App\Models\Role;
 use App\Models\RolePermission;
+use App\Services\PermissionService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -26,42 +27,8 @@ class RolePermissionController extends Controller
             $roleId = $request->role_id ?? ($roles->isNotEmpty() ? $roles->first()->id : null);
 
             if ($roleId) {
-                $permissions = RolePermission::where('role_id', $roleId)
-                    ->whereHas('permission', function ($query) {
-                        $query->whereNull('parent_id');
-                    })
-                    ->with([
-                        'permission' => function ($query) use ($roleId) {
-                            $query->select('id', 'name', 'header', 'parent_id')
-                                ->with(['children' => function ($childQuery) use ($roleId) {
-                                    $childQuery->select('id', 'name', 'parent_id')
-                                        ->whereHas('rolePermissions', function ($rolePermQuery) use ($roleId) {
-                                            $rolePermQuery->where('role_id', $roleId);
-                                        })
-                                        ->with(['rolePermissions' => function ($rolePermQuery) use ($roleId) {
-                                            $rolePermQuery->where('role_id', $roleId)->select('permission_id', 'status');
-                                        }]);
-                                }]);
-                        }
-                    ])
-                    ->get()
-                    ->map(function ($rolePermission) {
-                        return [
-                            'id' => $rolePermission->permission->id ?? null,
-                            'name' => $rolePermission->permission->name ?? 'N/A',
-                            'status' => $rolePermission->status,
-                            'header' => $rolePermission->permission->header ?? 'No Header',
-                            'children' => $rolePermission->permission->children->map(function ($child) {
-                                return [
-                                    'id' => $child->id,
-                                    'name' => $child->name,
-                                    'parent_id' => $child->parent_id,
-                                    'status' => optional($child->rolePermissions->first())->status ?? 0,
-                                ];
-                            })
-                        ];
-                    })
-                    ->groupBy('header');
+                $permissionService = new PermissionService();
+                $permissions = $permissionService->getRolePermissionsWithChildren($roleId);
             }
 
             return view('Heights.Admin.RolePermissions.index', compact('roles', 'permissions', 'roleId'));

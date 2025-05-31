@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
@@ -18,8 +19,12 @@ class Transaction extends Model
         'seller_id',
         'seller_type',
         'seller_transaction_type',
+
         'building_id',
         'unit_id',
+        'membership_id',
+        'plan_id',
+
         'payment_method',
         'gateway_payment_id',
         'price',
@@ -56,12 +61,22 @@ class Transaction extends Model
 
     public function building(): BelongsTo
     {
-        return $this->belongsTo(Building::class);
+        return $this->belongsTo(Building::class, 'building_id', 'id');
     }
 
     public function unit(): BelongsTo
     {
-        return $this->belongsTo(BuildingUnit::class);
+        return $this->belongsTo(BuildingUnit::class, 'unit_id', 'id');
+    }
+
+    public function membership(): BelongsTo
+    {
+        return $this->belongsTo(Membership::class, 'membership_id', 'id');
+    }
+
+    public function plan(): BelongsTo
+    {
+        return $this->belongsTo(Plan::class, 'plan_id', 'id');
     }
 
     public function scopeFilterTransactions(Builder $query, $request): Builder
@@ -78,12 +93,20 @@ class Transaction extends Model
             $query->where('price', '<=', $request->input('max_price'));
         }
 
-        $days = is_numeric($request->input('date_range')) ? (int) $request->input('date_range') : 30;
-        $startDate = now()->subDays($days);
-        $endDate = now();
+        if ($request->filled('start_date') || $request->filled('end_date')) {
+            $startDate = $request->filled('start_date') ? Carbon::parse($request->input('start_date')) : now()->subDays(30);
+            $endDate = $request->filled('end_date') ? Carbon::parse($request->input('end_date')) : now();
+            $query->whereBetween('created_at', [$startDate, $endDate]);
 
-        $query->whereBetween('created_at', [$startDate, $endDate]);
+        } else {
+            $days = is_numeric($request->input('date_range')) ? (int) $request->input('date_range') : 30;
+            $startDate = now()->subDays($days);
+            $endDate = now();
+            $query->whereBetween('created_at', [$startDate, $endDate]);
+
+        }
 
         return $query;
     }
+
 }

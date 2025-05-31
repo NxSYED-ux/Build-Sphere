@@ -36,7 +36,7 @@ class BuildingLevelController extends Controller
 
             if ($search) {
                 $levelsQuery->where(function ($q) use ($search) {
-                    $q->where('name', 'like', '%' . $search . '%')
+                    $q->where('level_name', 'like', '%' . $search . '%')
                         ->orWhere('description', 'like', '%' . $search . '%');
                 });
             }
@@ -86,7 +86,7 @@ class BuildingLevelController extends Controller
 
             if ($search) {
                 $levelQuery->where(function ($q) use ($search) {
-                    $q->where('name', 'like', '%' . $search . '%')
+                    $q->where('level_name', 'like', '%' . $search . '%')
                         ->orWhere('description', 'like', '%' . $search . '%');
                 });
             }

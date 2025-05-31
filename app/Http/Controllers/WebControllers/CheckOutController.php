@@ -39,7 +39,7 @@ class CheckOutController extends Controller
             $organization = Organization::where('name', $request->organization_name)
                 ->first();
 
-            if (!$organization) {
+            if (!$organization || $organization->status !== 'Blocked') {
                 return redirect()->back()->with('error', 'Invalid request. Please try again or contact support if the issue persists.');
             }
 

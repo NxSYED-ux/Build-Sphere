@@ -12,7 +12,7 @@ return new class extends Migration
             $table->id();
 
             $table->string('transaction_title');
-            $table->string('transaction_category'); // New, Adjustment
+            $table->string('transaction_category'); // New, Adjustment, Renewal, Upgrade
 
             $table->unsignedBigInteger('buyer_id')->nullable();
             $table->string('buyer_type')->nullable();
@@ -25,6 +25,8 @@ return new class extends Migration
             // Fast tracking references (optional)
             $table->foreignId('building_id')->nullable()->constrained()->onDelete('cascade');
             $table->foreignId('unit_id')->nullable()->constrained('buildingunits')->onDelete('cascade');
+            $table->foreignId('membership_id')->nullable()->constrained()->onDelete('cascade');
+            $table->foreignId('plan_id')->nullable()->constrained()->onDelete('cascade');
 
             $table->string('payment_method')->default('Cash');
             $table->string('gateway_payment_id')->nullable();
@@ -52,6 +54,8 @@ return new class extends Migration
             $table->index(['source_id', 'source_name']);
             $table->index('building_id');
             $table->index('unit_id');
+            $table->index('membership_id');
+            $table->index('plan_id');
             $table->index('gateway_payment_id');
             $table->index('status');
         });
