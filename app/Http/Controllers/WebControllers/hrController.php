@@ -242,8 +242,7 @@ class hrController extends Controller
             }
 
             $ownerServices = new OwnerFiltersService();
-            $buildingIds = $ownerServices->getAccessibleBuildingIds();
-            $buildings = $ownerServices->buildings($buildingIds);
+            $buildings = $ownerServices->organizationBuildings();
 
             $permissionService = new PermissionService();
             $permissions = $permissionService->getRolePermissionsWithChildren(3);
@@ -430,9 +429,8 @@ class hrController extends Controller
                 return redirect()->back()->with('error', 'Invalid manager id');
             }
 
-            $managerBuildings =  ManagerBuilding::where('staff_id', $id)
-                ->with('building')
-                ->get();
+            $ownerServices = new OwnerFiltersService();
+            $managerBuildings = $ownerServices->managerBuildings($staffInfo->id);
 
             $buildingIds = $managerBuildings->pluck('building_id')->toArray();
             $transactions = $this->managerBuildingsTransactions($organization_id, $buildingIds);
@@ -484,11 +482,6 @@ class hrController extends Controller
 
     public function staffUpdate(Request $request)
     {
-        $loggedUser = $request->user();
-        $token = $request->attributes->get('token');
-        $organization_id = $token['organization_id'];
-        $role_name = $token['role_name'];
-
         $request->validate([
             'id' => 'required|exists:staffmembers,id',
 
@@ -509,24 +502,19 @@ class hrController extends Controller
             'updated_at' => 'required',
         ]);
 
-        if (
-            $role_name === 'Manager' &&
-            !ManagerBuilding::where('building_id', $request->building_id)
-                ->where('user_id', $loggedUser->id)
-                ->exists()
-        ) {
-            return redirect()->back()->withInput()->with('error', 'You do not have access to update staff members of the selected building.');
-        }
-        elseif ($role_name === 'Staff'){
-            $staffRecord = StaffMember::where('user_id', $loggedUser->id)->first();
-
-            if (!$staffRecord || $staffRecord->building_id != $request->building_id) {
-                return redirect()->back()->withInput()->with('error', 'You do not have access to update staff members of the selected building.');
-            }
-        }
-
         DB::beginTransaction();
         try {
+            $ownerService = new OwnerFiltersService();
+            $access = $ownerService->checkBuildingAccess($request->building_id);
+
+            if(!$access['access']){
+                DB::rollBack();
+                return redirect()->back()->withInput($request->except('unitId'))->with('error', $access['message']);
+            }
+
+            $organization_id = $access['organization_id'];
+
+
             $staff = StaffMember::where([
                 ['id', '=', $request->id],
                 ['updated_at', '=', $request->updated_at],
@@ -604,28 +592,12 @@ class hrController extends Controller
                 return redirect()->back()->with('error', 'Invalid manager id');
             }
 
-            $buildings = Building::where('organization_id', $organization_id)
-                ->select('id', 'name')
-                ->orderBy('name', 'asc')
-                ->get();
+            $ownerServices = new OwnerFiltersService();
+            $managerBuildings = $ownerServices->managerBuildings($staffInfo->id);
+            $buildings = $ownerServices->organizationBuildings();
 
-            $managerBuildings = ManagerBuilding::where('staff_id', $id)
-                ->with('building')
-                ->get();
-
-            $userPermissions = UserPermission::where('user_id', $staffInfo->user_id)
-                ->select('id', 'permission_id', 'status')
-                ->get();
-
-            $excludedPermissionIds = $userPermissions->pluck('permission_id');
-
-            $rolePermissions = RolePermission::where('role_id', 3)
-                ->whereNotIn('permission_id', $excludedPermissionIds)
-                ->select('id', 'permission_id', 'status')
-                ->get();
-
-            $permissions = $userPermissions->concat($rolePermissions)
-                ->sortBy('permission_id');
+            $permissionService = new PermissionService();
+            $permissions = $permissionService->getUserPermissionsWithChildren($staffInfo->user_id,3);
 
             return view('Heights.Owner.HR.Manager.edit', compact('staffInfo', 'buildings', 'managerBuildings', 'permissions'));
 
@@ -738,18 +710,19 @@ class hrController extends Controller
     public function promotionGet(string $id, Request $request)
     {
         try {
-            $user = $request->user();
             $token = $request->attributes->get('token');
             $organization_id = $token['organization_id'];
 
             $staffInfo = StaffMember::where('id', $id)->with('user')->first();
+
             if (!$staffInfo || $staffInfo->organization_id != $organization_id) {
                 return response()->json([
                     'error' => 'Invalid staff Id.'
                 ], 400);
             }
 
-            $result = $this->checkServiceUsageLimit($organization_id, 2, 'Managers', $user->role_id, false);
+            $subscriptionService = new SubscriptionService();
+            $result = $subscriptionService->checkServiceUsageLimit(2, 'Managers', false);
 
             if (!$result['success']) {
                 return response()->json([
@@ -757,12 +730,11 @@ class hrController extends Controller
                 ], 403);
             }
 
-            $buildings = Building::where('organization_id', $organization_id)
-                ->select('id', 'name')
-                ->orderBy('name', 'asc')
-                ->get();
+            $ownerServices = new OwnerFiltersService();
+            $buildings = $ownerServices->organizationBuildings();
 
-            $permissions = RolePermission::where('role_id', 3)->with('permission')->get();
+            $permissionService = new PermissionService();
+            $permissions = $permissionService->getRolePermissionsWithChildren(3);
 
             return response()->json([
                 'staffInfo' => $staffInfo,
@@ -785,8 +757,8 @@ class hrController extends Controller
 
         $request->validate([
             'staff_id' => ['bail', 'required', 'exists:staffmembers,id'],
-            'permissions' => ['bail', 'nullable', 'array'],
-            'permissions.*' => ['bail', 'nullable', 'integer'],
+            'permissions' => ['bail', 'required', 'array'],
+            'permissions.*' => ['bail', 'required', 'integer'],
             'buildings' => ['bail', 'required', 'array'],
             'buildings.*' => ['bail', 'required', 'integer', 'exists:buildings,id'],
         ]);
@@ -808,7 +780,8 @@ class hrController extends Controller
 
             $user = $staff->user;
 
-            $result = $this->checkServiceUsageLimit($organization_id, 2, 'Managers', $loggedUser->role_id, false);
+            $subscriptionService = new SubscriptionService();
+            $result = $subscriptionService->checkServiceUsageLimit(2, 'Managers', false);
 
             if (!$result['success']) {
                 DB::rollBack();
@@ -902,7 +875,6 @@ class hrController extends Controller
     public function demotionGet(string $id, Request $request)
     {
         try {
-            $user = $request->user();
             $token = $request->attributes->get('token');
             $organization_id = $token['organization_id'];
 
@@ -913,7 +885,8 @@ class hrController extends Controller
                 ], 400);
             }
 
-            $result = $this->checkServiceUsageLimit($organization_id, 3, 'Staff Management', $user->role_id, false);
+            $subscriptionService = new SubscriptionService();
+            $result = $subscriptionService->checkServiceUsageLimit(3, 'Staff Management', false);
 
             if (!$result['success']) {
                 return response()->json([
@@ -921,15 +894,12 @@ class hrController extends Controller
                 ], 403);
             }
 
-            $departments = Department::where('organization_id', $organization_id)
-                ->orderBy('name', 'asc')
-                ->pluck('name', 'id');
+            $ownerServices = new OwnerFiltersService();
+            $departments = $ownerServices->departments();
+            $buildings = $ownerServices->organizationBuildings();
 
-            $buildings = Building::where('organization_id', $organization_id)
-                ->orderBy('name', 'asc')
-                ->pluck('name', 'id');
-
-            $permissions = RolePermission::where('role_id', 4)->with('permission')->get();
+            $permissionService = new PermissionService();
+            $permissions = $permissionService->getRolePermissionsWithChildren(4);
 
             return response()->json([
                 'staffInfo' => $staffInfo,
@@ -947,15 +917,8 @@ class hrController extends Controller
 
     public function demotion(Request $request)
     {
-        $loggedUser = $request->user() ?? abort(403, 'Unauthorized action.');
+        $loggedUser = $request->user();
         $token = $request->attributes->get('token');
-
-        if (empty($token['organization_id'])) {
-            return response()->json([
-                'error' => 'This action is only for Organization owners.'
-            ], 403);
-        }
-
         $organization_id = $token['organization_id'];
 
         $request->validate([
@@ -963,8 +926,8 @@ class hrController extends Controller
             'building_id' => ['bail', 'required', 'exists:buildings,id'],
             'department_id' => ['bail', 'required', 'exists:departments,id'],
             'accept_query' => ['bail', 'nullable'],
-            'permissions' => ['bail', 'nullable', 'array'],
-            'permissions.*' => ['bail', 'nullable', 'integer'],
+            'permissions' => ['bail', 'required', 'array'],
+            'permissions.*' => ['bail', 'required', 'integer'],
         ]);
 
         DB::beginTransaction();
@@ -985,7 +948,8 @@ class hrController extends Controller
 
             $user = $staff->user;
 
-            $result = $this->checkServiceUsageLimit($organization_id, 3, 'Staff Management', $loggedUser->role_id, false);
+            $subscriptionService = new SubscriptionService();
+            $result = $subscriptionService->checkServiceUsageLimit(3, 'Staff Management', false);
 
             if (!$result['success']) {
                 DB::rollBack();
@@ -1243,30 +1207,6 @@ class hrController extends Controller
         });
 
         return $history;
-    }
-
-
-
-    // Helper Function
-    public function checkServiceUsageLimit($organization_id, $serviceId, $serviceName, $roleId, bool $redirect = true)
-    {
-        $errorHeading = $roleId === 2 ? 'plan_upgrade_error' : 'error';
-
-        $subscriptionLimit = PlanSubscriptionItem::where('organization_id', $organization_id)
-            ->where('service_catalog_id', $serviceId)
-            ->first();
-
-        if (!$subscriptionLimit) {
-            $errorMessage = "The current plan doesn't include {$serviceName}. Please upgrade your plan to access this service.";
-            return $redirect ? redirect()->back()->with($errorHeading, $errorMessage) : [ 'success' => false];
-        }
-
-        if ($subscriptionLimit->used >= $subscriptionLimit->quantity) {
-            $errorMessage = "You have reached the {$serviceName} limit. Please upgrade your plan to add more.";
-            return $redirect ? redirect()->back()->with($errorHeading, $errorMessage) : [ 'success' => false];
-        }
-
-        return [ 'success' => true, 'subscriptionItem' => $subscriptionLimit ];
     }
 
 }
