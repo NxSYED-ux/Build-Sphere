@@ -342,36 +342,39 @@
         }
 
         /* Users Table */
-        .image-info-container .users-table {
+        .users-table {
             width: 100%;
             border-collapse: separate;
             border-spacing: 0;
         }
 
-        .image-info-container .users-table th {
+        .users-table thead tr{
+            background-color: var(--sidenavbar-body-color) !important;
+        }
+
+        .users-table th {
             text-align: left;
             padding: 14px 20px;
             font-size: 13px;
-            color: #666;
+            color: var(--sidenavbar-text-color);
             font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.3px;
+            /*letter-spacing: 0.3px;*/
             border-bottom: 1px solid #f0f0f0;
             background: #fafafa;
         }
 
-        .image-info-container .users-table td {
+        .users-table td {
             padding: 14px 20px;
             border-bottom: 1px solid #f0f0f0;
             vertical-align: middle;
             background: white;
         }
 
-        .image-info-container .users-table tr:first-child td {
+        .users-table tr:first-child td {
             border-top: 1px solid #f0f0f0;
         }
 
-        .image-info-container .user-avatar {
+        .user-avatar {
             width: 36px;
             height: 36px;
             border-radius: 50%;
@@ -379,13 +382,13 @@
             margin-right: 12px;
         }
 
-        .image-info-container .user-name {
+        .user-name {
             display: flex;
             align-items: center;
             font-weight: 500;
         }
 
-        .image-info-container .user-status {
+        .user-status {
             padding: 6px 12px;
             border-radius: 12px;
             font-size: 12px;
@@ -431,25 +434,6 @@
         .btn-icon {
             margin-right: 8px;
             font-size: 14px;
-        }
-
-        .btn-edit {
-            background: var(--color-blue);
-            color: white;
-        }
-
-        .btn-edit:hover {
-            background: rgba(var(--color-blue), 0.9);
-        }
-
-        .btn-back {
-            background: white;
-            color: #444;
-            border-color: #e0e0e0;
-        }
-
-        .btn-back:hover {
-            background: #f5f5f5;
         }
 
         /* Section Headings */
@@ -668,11 +652,14 @@
 
                     <!-- Description Card -->
                     <div class="card shadow">
-                        <div class="card-header border-bottom">
+                        <div class="card-header border-bottom d-flex justify-content-between align-items-center">
                             <h3 class="section-heading" style="margin: 0;">
                                 <i class="fas fa-align-left section-heading-icon"></i>
                                 Description
                             </h3>
+                            <a href="{{ route('owner.memberships.assign.view', $membership->id) }}" class="btn btn-primary">
+                                <i class="bx bxs-user-check btn-icon fs-5"></i> Assign Membership
+                            </a>
                         </div>
                         <div class="card-body">
                             <div class="description-content">
@@ -683,13 +670,13 @@
 
                     <!-- Subscribed Users Card -->
                     <div class="card shadow">
-                        <div class="card-header">
+                        <div class="card-header border-bottom-0">
                             <div style="display: flex; justify-content: space-between; align-items: center;">
                                 <h3 class="section-heading" style="margin: 0;">
                                     <i class="fas fa-users section-heading-icon"></i>
                                     Subscribed Users
                                 </h3>
-                                <span style="background: var(--color-blue); color: white; padding: 6px 12px; border-radius: 20px; font-size: 13px; font-weight: 500;">
+                                <span style="background: var(--color-blue); color: white !important; padding: 6px 12px; border-radius: 20px; font-size: 13px; font-weight: 500;">
                             {{ $membership->membershipUsers->count() }} users
                         </span>
                             </div>
@@ -700,9 +687,13 @@
                                     <table class="users-table">
                                         <thead>
                                         <tr>
-                                            <th style="width: 40%;">User</th>
-                                            <th style="width: 40%;">Email</th>
-                                            <th style="width: 20%;">Contact</th>
+                                            <th>User</th>
+                                            <th>Email</th>
+                                            <th>Contact</th>
+                                            <th>Start Date</th>
+                                            <th>End Date</th>
+                                            <th>Cancel</th>
+                                            <th>Mark Payment Received</th>
                                         </tr>
                                         </thead>
                                         <tbody>
@@ -711,13 +702,17 @@
                                                 <td>
                                                     <div class="user-name">
                                                         <img src="{{ $user->user->picture ? asset($user->user->picture) : asset('img/default-avatar.png') }}"
-                                                             class="user-avatar" style="width: 100px; height: 100px;"
+                                                             class="user-avatar"
                                                              alt="{{ $user->user->name ?? 'N/A' }}">
                                                         {{ $user->user->name ?? 'N/A' }}
                                                     </div>
                                                 </td>
                                                 <td>{{ $user->user->email ?? 'N/A' }}</td>
                                                 <td>{{ $user->user->phone_no ?? 'N/A' }}</td>
+                                                <td>{{ $user->subscription->created_at ? \Carbon\Carbon::parse($user->subscription->created_at)->format('M d, Y') : 'N/A' }}</td>
+                                                <td>{{ $user->subscription->ends_at ? \Carbon\Carbon::parse($user->subscription->ends_at)->format('M d, Y') : 'N/A' }}</td>
+                                                <td>Cancel</td>
+                                                <td>Marked</td>
                                             </tr>
                                         @endforeach
                                         </tbody>
