@@ -1,4 +1,3 @@
-
 <li class="nav-item dropdown no-arrow mx-2 px-2">
     <a class="nav-link dropdown-toggle dropdown-toggle-no-arrow position-relative" href="#" id="alertsDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
         <svg width="20" height="25" viewBox="0 0 14 18" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -16,10 +15,27 @@
                 Notifications
             </h5>
             <div class="d-flex align-items-center">
-                <a href="" id="deleteSelected" class=" me-2" style="display: none;">
-                    <i class="fas fa-trash text-danger"></i>
-                </a>
-                <button class="btn-close px-3" aria-label="Close"></button>
+                <button class="btn btn-link text-dark p-0 mx-2" type="button" id="notificationActionsBtn">
+                    <i class="fas fa-ellipsis-v"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Selection Actions Panel (hidden by default) -->
+        <div class="notification-actions px-3 py-2 border-bottom bg-light" id="notificationActions" style="display: none;">
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="selectAllCheckbox">
+                    <label class="form-check-label small" for="selectAllCheckbox">Select All</label>
+                </div>
+                <div>
+                    <button class="btn btn-sm btn-outline-danger me-2" id="deleteSelectedBtn" disabled>
+                        <i class="fas fa-trash me-1"></i> Delete
+                    </button>
+                    <button class="btn btn-sm btn-outline-primary" id="markReadSelectedBtn" disabled>
+                        <i class="fas fa-envelope-open me-1"></i> Mark as Read
+                    </button>
+                </div>
             </div>
         </div>
 
@@ -38,10 +54,208 @@
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             let selectedNotifications = [];
+            let selectionMode = false;
+
+            // Toggle selection mode when three-dot button is clicked
+            document.getElementById('notificationActionsBtn').addEventListener('click', function(e) {
+                e.stopPropagation();
+                toggleSelectionMode();
+            });
+
+            function toggleSelectionMode() {
+                selectionMode = !selectionMode;
+                const actionsPanel = document.getElementById('notificationActions');
+                actionsPanel.style.display = selectionMode ? 'block' : 'none';
+
+                // Show/hide checkboxes
+                document.querySelectorAll('.notification-checkbox-container').forEach(el => {
+                    el.style.display = selectionMode ? 'block' : 'none';
+                });
+
+                // Clear selection when exiting selection mode
+                if (!selectionMode) {
+                    selectedNotifications = [];
+                    document.getElementById('selectAllCheckbox').checked = false;
+                    updateActionButtons();
+                }
+            }
+
+            // Update action buttons based on selection count
+            function updateActionButtons() {
+                const deleteBtn = document.getElementById('deleteSelectedBtn');
+                const markReadBtn = document.getElementById('markReadSelectedBtn');
+
+                if (selectedNotifications.length > 0) {
+                    deleteBtn.disabled = false;
+                    markReadBtn.disabled = false;
+                } else {
+                    deleteBtn.disabled = true;
+                    markReadBtn.disabled = true;
+                }
+            }
+
+            // Select/Deselect all checkbox
+            document.getElementById('selectAllCheckbox').addEventListener('change', function() {
+                const checkboxes = document.querySelectorAll('.notification-checkbox');
+                selectedNotifications = [];
+
+                checkboxes.forEach(checkbox => {
+                    checkbox.checked = this.checked;
+                    if (this.checked) {
+                        selectedNotifications.push(checkbox.value);
+                    }
+                });
+                updateActionButtons();
+            });
+
+            // Individual checkbox change handler
+            function handleCheckboxChange() {
+                const notificationId = this.value;
+                if (this.checked) {
+                    if (!selectedNotifications.includes(notificationId)) {
+                        selectedNotifications.push(notificationId);
+                    }
+                } else {
+                    selectedNotifications = selectedNotifications.filter(id => id !== notificationId);
+                    document.getElementById('selectAllCheckbox').checked = false;
+                }
+                updateActionButtons();
+            }
+
+            // Delete selected notifications
+            document.getElementById('deleteSelectedBtn').addEventListener('click', function(e) {
+                e.preventDefault(); // Prevent default behavior
+                e.stopPropagation(); // Stop event bubbling
+
+                if (selectedNotifications.length === 0) return;
+
+                // Keep notification menu open by preventing Bootstrap's default close behavior
+                const dropdown = document.getElementById('alertsDropdown');
+                const dropdownInstance = bootstrap.Dropdown.getInstance(dropdown);
+
+                // Show centered confirmation SweetAlert
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "You won't be able to revert this!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, delete them!',
+                    position: 'center', // Center the alert
+                    backdrop: true, // Show backdrop
+                    allowOutsideClick: false // Prevent closing by clicking outside
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        fetch("{{ route('notifications.remove-batch') }}", {
+                            method: "POST",
+                            headers: {
+                                "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                                "Content-Type": "application/json"
+                            },
+                            body: JSON.stringify({ notification_ids: selectedNotifications })
+                        })
+                            .then(response => {
+                                if (!response.ok) throw new Error("Failed to delete notifications");
+                                return response.json();
+                            })
+                            .then(() => {
+                                // Remove deleted notifications from UI
+                                selectedNotifications.forEach(id => {
+                                    const element = document.querySelector(`.notification-item[data-id="${id}"]`);
+                                    if (element) element.remove();
+                                });
+
+                                // Reset selection
+                                selectedNotifications = [];
+                                document.getElementById('selectAllCheckbox').checked = false;
+                                updateActionButtons();
+
+                                // Check if all notifications are deleted
+                                if (document.querySelectorAll('.notification-item').length === 0) {
+                                    document.getElementById('notificationList').innerHTML =
+                                        '<p class="text-muted text-center small" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">No new notifications</p>';
+                                }
+
+                                // Update unread count
+                                updateUnreadCount();
+
+                                // Re-open the notification menu if it was closed
+                                if (!dropdown.classList.contains('show')) {
+                                    dropdownInstance.show();
+                                }
+
+                                // Show success SweetAlert
+                                Swal.fire({
+                                    title: 'Deleted!',
+                                    text: 'Your notifications have been deleted.',
+                                    icon: 'success',
+                                    position: 'center',
+                                    timer: 1500,
+                                    showConfirmButton: false
+                                });
+                            })
+                            .catch(error => {
+                                console.error("Error:", error);
+                                // Re-open the notification menu if it was closed
+                                if (!dropdown.classList.contains('show')) {
+                                    dropdownInstance.show();
+                                }
+
+                                Swal.fire({
+                                    title: 'Error!',
+                                    text: 'Failed to delete notifications.',
+                                    icon: 'error',
+                                    position: 'center'
+                                });
+                            });
+                    } else {
+                        // Re-open the notification menu if it was closed
+                        if (!dropdown.classList.contains('show')) {
+                            dropdownInstance.show();
+                        }
+                    }
+                });
+            });
+
+            // Mark selected as read
+            {{--document.getElementById('markReadSelectedBtn').addEventListener('click', function() {--}}
+            {{--    if (selectedNotifications.length === 0) return;--}}
+
+            {{--    fetch("{{ route('notifications.mark-selected-as-read') }}", {--}}
+            {{--        method: "POST",--}}
+            {{--        headers: {--}}
+            {{--            "X-CSRF-TOKEN": "{{ csrf_token() }}",--}}
+            {{--            "Content-Type": "application/json"--}}
+            {{--        },--}}
+            {{--        body: JSON.stringify({ notification_ids: selectedNotifications })--}}
+            {{--    })--}}
+            {{--        .then(response => {--}}
+            {{--            if (!response.ok) throw new Error("Failed to mark notifications as read");--}}
+            {{--            return response.json();--}}
+            {{--        })--}}
+            {{--        .then(() => {--}}
+            {{--            selectedNotifications.forEach(id => {--}}
+            {{--                const element = document.querySelector(`.notification-item[data-id="${id}"]`);--}}
+            {{--                if (element) {--}}
+            {{--                    element.classList.remove('unread');--}}
+            {{--                    const heading = element.querySelector('.notification-item-heading');--}}
+            {{--                    if (heading) heading.classList.remove('fw-bold');--}}
+            {{--                }--}}
+            {{--            });--}}
+
+            {{--            // Reset selection--}}
+            {{--            selectedNotifications = [];--}}
+            {{--            document.getElementById('selectAllCheckbox').checked = false;--}}
+            {{--            updateActionButtons();--}}
+
+            {{--            // Update badge count--}}
+            {{--            updateUnreadCount();--}}
+            {{--        })--}}
+            {{--        .catch(error => console.error("Error:", error));--}}
+            {{--});--}}
 
             function fetchNotifications() {
-                console.log("Notification Function is calling");
-
                 fetch("{{ route('notifications') }}", {
                     method: "GET",
                     headers: {
@@ -50,7 +264,6 @@
                 })
                     .then(response => response.json())
                     .then(data => {
-                        console.log(data);
                         const notificationList = document.getElementById("notificationList");
                         notificationList.innerHTML = "";
 
@@ -61,10 +274,10 @@
                                 notificationList.innerHTML += `
                                 <div class="d-flex align-items-center p-2 border-bottom notification-item ${notification.read_at ? '' : 'unread'}"
                                     data-id="${notification.id}">
-                                    <div class="form-check me-2">
-                                        <input class="form-check-input notification-checkbox" type="checkbox"
-                                            value="${notification.id}" id="notif-${notification.id}">
-                                    </div>
+                                    <div class="form-check me-2 notification-checkbox-container" style="display: none;">
+                            		<input class="form-check-input notification-checkbox" type="checkbox"
+                                	    value="${notification.id}" id="notif-${notification.id}">
+                        	    </div>
                                     <a class="d-flex align-items-center text-decoration-none flex-grow-1 notification-link"
                                         ${notification.data.link.web ? `href="${notification.read_at ? window.location.origin + '/' + notification.data.link.web : 'javascript:void(0);'}"` : ''}
                                         onclick="${notification.read_at ? '' : `markNotificationAsRead('${notification.id}', '${window.location.origin}/${notification.data.link.web}')`}">
@@ -81,25 +294,14 @@
                                 </div>
                             `;
                             });
+
+                            // Add event listeners to checkboxes after they're created
+                            document.querySelectorAll('.notification-checkbox').forEach(checkbox => {
+                                checkbox.addEventListener('change', handleCheckboxChange);
+                            });
                         } else {
                             notificationList.innerHTML = '<p class="text-muted text-center small" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">No new notifications</p>';
                         }
-
-                        // Add event listeners to checkboxes
-                        document.querySelectorAll('.notification-checkbox').forEach(checkbox => {
-                            checkbox.addEventListener('change', function() {
-                                const notificationId = this.value;
-                                if (this.checked) {
-                                    selectedNotifications.push(notificationId);
-                                } else {
-                                    selectedNotifications = selectedNotifications.filter(id => id !== notificationId);
-                                }
-
-                                // Show/hide delete button based on selection
-                                const deleteBtn = document.getElementById('deleteSelected');
-                                deleteBtn.style.display = selectedNotifications.length > 0 ? 'block' : 'none';
-                            });
-                        });
                     })
                     .catch(error => console.error("Error fetching notifications:", error));
             }
@@ -119,96 +321,57 @@
                 return "Just now";
             }
 
-            // Fetch notifications on dropdown click
-            document.getElementById("alertsDropdown").addEventListener("click", fetchNotifications);
 
-            // Delete selected notifications
-            document.getElementById("deleteSelected").addEventListener("click", function() {
-                if (selectedNotifications.length === 0) return;
 
-                {{--if (confirm("Are you sure you want to delete the selected notifications?")) {--}}
-                {{--    fetch("{{ route('notifications.delete') }}", {--}}
-                {{--        method: "POST",--}}
-                {{--        headers: {--}}
-                {{--            "X-CSRF-TOKEN": "{{ csrf_token() }}",--}}
-                {{--            "Content-Type": "application/json"--}}
-                {{--        },--}}
-                {{--        body: JSON.stringify({ notification_ids: selectedNotifications })--}}
-                {{--    })--}}
-                {{--        .then(response => {--}}
-                {{--            if (!response.ok) {--}}
-                {{--                throw new Error("Failed to delete notifications");--}}
-                {{--            }--}}
-                {{--            return response.json();--}}
-                {{--        })--}}
-                {{--        .then(() => {--}}
-                {{--            // Remove deleted notifications from UI--}}
-                {{--            selectedNotifications.forEach(id => {--}}
-                {{--                const element = document.querySelector(`.notification-item[data-id="${id}"]`);--}}
-                {{--                if (element) element.remove();--}}
-                {{--            });--}}
-
-                {{--            // Reset selection--}}
-                {{--            selectedNotifications = [];--}}
-                {{--            document.getElementById('deleteSelected').style.display = 'none';--}}
-
-                {{--            // Check if all notifications are deleted--}}
-                {{--            if (document.querySelectorAll('.notification-item').length === 0) {--}}
-                {{--                document.getElementById('notificationList').innerHTML =--}}
-                {{--                    '<p class="text-muted text-center small" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">No new notifications</p>';--}}
-                {{--            }--}}
-                {{--        })--}}
-                {{--        .catch(error => console.error("Error:", error));--}}
-                {{--}--}}
-            });
-        });
-    </script>
-
-    <script>
-        document.getElementById("markAllAsRead").addEventListener("click", function (event) {
-            event.preventDefault();
-            event.stopPropagation();
-
-            fetch("{{ route('notifications.mark-all-as-read') }}", {
-                method: "POST",
-                headers: {
-                    "X-CSRF-TOKEN": "{{ csrf_token() }}",
-                    "Content-Type": "application/json",
-                    'X-Requested-With': 'XMLHttpRequest'
-                }
-            })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error("Failed to mark notifications as read");
+            function updateUnreadCount() {
+                fetch("{{ route('notifications.unread.count') }}", {
+                    method: "GET",
+                    headers: {
+                        "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                        "Content-Type": "application/json",
+                        'X-Requested-With': 'XMLHttpRequest'
                     }
-                    return response.json();
                 })
-                .then(() => {
-                    setTimeout(() => {
-                        let notifications = document.querySelectorAll(".notification-item-div");
-                        if (notifications.length === 0) {
-                            console.log("Notifications list is empty.");
-                            return;
-                        }
-                        notifications.forEach(notification => {
-                            let heading = notification.querySelector(".notification-item-heading");
-                            if (heading) {
-                                heading.classList.remove("fw-bold");
-                                notification.closest('.notification-item').classList.remove('unread');
-                            }
-                        });
-
+                    .then(response => response.json())
+                    .then(data => {
                         const notificationBadge = document.getElementById('notification-badge');
                         const notificationBadge2 = document.getElementById('notification-badge2');
-                        notificationBadge.style.display = 'none';
-                        notificationBadge2.style.display = 'none';
-                    }, 0);
-                })
-                .catch(error => console.error("Error:", error));
-        });
-    </script>
+                        notificationBadge.style.display = data.count > 0 ? 'block' : 'none';
+                        notificationBadge2.style.display = data.count > 0 ? 'block' : 'none';
+                    })
+                    .catch(error => console.error("Error:", error));
+            }
 
-    <script>
+            document.getElementById("alertsDropdown").addEventListener("click", fetchNotifications);
+
+            document.getElementById("markAllAsRead").addEventListener("click", function (event) {
+                event.preventDefault();
+                event.stopPropagation();
+
+                fetch("{{ route('notifications.mark-all-as-read') }}", {
+                    method: "POST",
+                    headers: {
+                        "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                        "Content-Type": "application/json",
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                    .then(response => {
+                        if (!response.ok) throw new Error("Failed to mark notifications as read");
+                        return response.json();
+                    })
+                    .then(() => {
+                        document.querySelectorAll(".notification-item").forEach(item => {
+                            item.classList.remove('unread');
+                            const heading = item.querySelector(".notification-item-heading");
+                            if (heading) heading.classList.remove("fw-bold");
+                        });
+                        updateUnreadCount();
+                    })
+                    .catch(error => console.error("Error:", error));
+            });
+        });
+
         function markNotificationAsRead(notificationId, redirectUrl) {
             if (!notificationId || !redirectUrl) {
                 return;
@@ -251,39 +414,3 @@
         }
     </script>
 @endpush
-
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        function fetchUnreadNotifications() {
-
-            fetch({{ route('notifications.unread.count') }}, {
-                method: "GET",
-                headers: {
-                    "X-CSRF-TOKEN": "{{ csrf_token() }}",
-                    "Content-Type": "application/json",
-                    'X-Requested-With': 'XMLHttpRequest'
-                }
-            })
-                .then(response => response.json())
-                .then(data => {
-                    const notificationBadge = document.getElementById('notification-badge');
-                    const notificationBadge2 = document.getElementById('notification-badge2');
-                    if (data.count > 0) {
-                        notificationBadge.style.display = 'block';
-                        notificationBadge2.style.display = 'block';
-                    } else {
-                        notificationBadge.style.display = 'none';
-                        notificationBadge2.style.display = 'none';
-                    }
-                })
-                .catch(error => {
-                    console.error("Error fetching notifications:", error);
-                });
-        }
-
-        fetchUnreadNotifications();
-    });
-</script>
-
-
-
