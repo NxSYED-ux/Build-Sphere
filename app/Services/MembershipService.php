@@ -10,7 +10,7 @@ use App\Models\Transaction;
 
 class MembershipService
 {
-    public function membershipAssignment_Transaction($user, $membership, $paymentIntentId = null, $paymentThrough = 'Cash')
+    public function membershipAssignment_Transaction($user, $membership, $paymentIntentId = null, $paymentThrough = 'Cash', $purpose = null, $userMembershipRecord = null, $existingSubscriptionRecord = null)
     {
         $source_id = $membership->id;
         $source_name = 'membership';
@@ -37,17 +37,37 @@ class MembershipService
             $isSubscription = true;
         }
 
-        MembershipUser::create([
-            'user_id' => $user->id,
-            'membership_id' => $membership->id,
-            'subscription_id' => $isSubscription ? $source_id : null,
-            'quantity' => $membership->scans_per_day,
-            'used' => $membership->scans_per_day,
-        ]);
+        if ($purpose){
+            if($existingSubscriptionRecord) {
+                $existingSubscriptionRecord->update([
+                    'subscription_status' => 'Ended',
+                    'ends_at' => now(),
+                ]);
+            }
 
-        return Transaction::create([
+            $endsAt = $userMembershipRecord->ends_at;
+            $newEndsAt = $endsAt && $endsAt->isFuture() ? $endsAt->copy()->addMonths($membership->duration_months) : now()->addMonths($membership->duration_months);
+
+            $userMembershipRecord->update([
+                'subscription_id' => $isSubscription ? $source_id : null,
+                'ends_at' => $newEndsAt,
+                'quantity' => $membership->scans_per_day,
+            ]);
+        }
+        else{
+            MembershipUser::create([
+                'user_id' => $user->id,
+                'membership_id' => $membership->id,
+                'subscription_id' => $isSubscription ? $source_id : null,
+                'quantity' => $membership->scans_per_day,
+                'used' => $membership->scans_per_day,
+                'ends_at' => now()->addMonths($membership->duration_months),
+            ]);
+        }
+
+        $transactionData = [
             'transaction_title' => "{$membership->name}",
-            'transaction_category' => 'New',
+            'transaction_category' => $purpose ? 'Renew' : 'New',
             'building_id' => $membership->building_id,
             'unit_id' => $membership->unit_id,
             'buyer_id' => $user->id,
@@ -65,7 +85,9 @@ class MembershipService
             'subscription_end_date' => $isSubscription ? now()->addMonths($membership->duration_months) : null,
             'source_id' => $source_id,
             'source_name' => $source_name,
-        ]);
+        ];
+
+        return Transaction::create($transactionData);
     }
 
     public function sendMembershipSuccessNotifications($membership, $transaction, $user, $loggedUser = null)

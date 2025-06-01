@@ -582,6 +582,54 @@ class MembershipController extends Controller
     }
 
 
+    public function markAsPaymentReceived(Request $request)
+    {
+        $request->validate([
+            'user_membership_id' => 'required|exists:membership_users,id',
+        ]);
+
+        $loggedUser = request()->user();
+
+        DB::beginTransaction();
+
+        try {
+            $membershipUser = MembershipUser::with('membership', 'user')->findOrFail($request->user_membership_id);
+            $user = $membershipUser->user;
+            $membership = $membershipUser->membership;
+
+            $existingSubscription = Subscription::find($membershipUser->subscription_id);
+
+            $membershipService = new MembershipService();
+            $transaction = $membershipService->membershipAssignment_Transaction(
+                $user,
+                $membership,
+                null,
+                'Cash',
+                'renewal',
+                $membershipUser,
+                $existingSubscription
+            );
+
+            $membershipService->sendMembershipSuccessNotifications($membership, $transaction, $user, $loggedUser);
+
+            DB::commit();
+
+            return response()->json([
+                'message' => 'Payment marked as received and transaction recorded.',
+                'transaction' => $transaction,
+            ]);
+
+        } catch (\Throwable $e) {
+            DB::rollback();
+            Log::error('Membership payment failed: ' . $e->getMessage());
+            return response()->json([
+                'message' => 'Failed to mark payment as received.',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+
 
     // Helper Functions
     private function handleImageUpload(Request $request): string

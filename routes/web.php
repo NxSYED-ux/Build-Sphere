@@ -389,11 +389,11 @@ Route::prefix('owner')->middleware(['auth.jwt'])->group(function () {
             Route::get('/{membership}/edit', [MembershipController::class , 'edit'])->name('owner.memberships.edit');
             Route::put('/', [MembershipController::class , 'update'])->name('owner.memberships.update');
             Route::get('/{membership}/show', [MembershipController::class , 'show'])->name('owner.memberships.show');
-
             Route::get('/{membership}/assign', [MembershipController::class , 'assignMembershipView'])->name('owner.memberships.assign.view');
             Route::post('/assign', [MembershipController::class , 'assignMembership'])->name('owner.memberships.assign');
-
             Route::put('/toggle-featured', [MembershipController::class, 'toggleFeatured'])->name('owner.memberships.toggle.featured');
+            Route::post('/mark-payment-received', [MembershipController::class, 'markAsPaymentReceived'])->name('owner.memberships.planPaymentReceived');
+
         });
 
         Route::prefix('property_users')->group(function () {
