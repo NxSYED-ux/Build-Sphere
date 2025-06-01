@@ -19,15 +19,6 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 
 
-Route::get('/test-permissions', function () {
-    Log::info("Triggering UserPermissionUpdated event for user 2.");
-    event(new UserPermissionUpdated(2));
-    return 'ok';
-});
-
-
-
-
 // Without Authentication
 
 Route::get('/values-by-type/{type}', [DropdownController::class, 'getDropdownValuesByType']);
