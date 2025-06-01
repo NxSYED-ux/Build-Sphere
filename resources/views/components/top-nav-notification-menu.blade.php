@@ -15,14 +15,14 @@
                 Notifications
             </h5>
             <div class="d-flex align-items-center">
-                <button class="btn btn-link text-dark p-0 mx-2" type="button" id="notificationActionsBtn">
-                    <i class="fas fa-ellipsis-v"></i>
+                <button class="btn btn-link text-dark p-0 mx-2 rounded" type="button" id="notificationActionsBtn" style="">
+                    <i class="fas fa-ellipsis-v" style="font-size: 18px;color: var(--sidenavbar-text-color);width: 30px; height: 20px;"></i>
                 </button>
             </div>
         </div>
 
         <!-- Selection Actions Panel (hidden by default) -->
-        <div class="notification-actions px-3 py-2 border-bottom bg-light" id="notificationActions" style="display: none;">
+        <div class="notification-actions px-3 py-2 border-bottom" id="notificationActions" style="display: none;">
             <div class="d-flex justify-content-between align-items-center">
                 <div class="form-check">
                     <input class="form-check-input" type="checkbox" id="selectAllCheckbox">
@@ -33,7 +33,7 @@
                         <i class="fas fa-trash me-1"></i> Delete
                     </button>
                     <button class="btn btn-sm btn-outline-primary" id="markReadSelectedBtn" disabled>
-                        <i class="fas fa-envelope-open me-1"></i> Mark as Read
+                        <i class="fas fa-envelope-open me-1"></i> Mark Read
                     </button>
                 </div>
             </div>
@@ -256,6 +256,7 @@
             {{--});--}}
 
             function fetchNotifications() {
+                document.getElementById('notificationActions').style.display = 'none';
                 fetch("{{ route('notifications') }}", {
                     method: "GET",
                     headers: {
@@ -275,9 +276,9 @@
                                 <div class="d-flex align-items-center p-2 border-bottom notification-item ${notification.read_at ? '' : 'unread'}"
                                     data-id="${notification.id}">
                                     <div class="form-check me-2 notification-checkbox-container" style="display: none;">
-                            		<input class="form-check-input notification-checkbox" type="checkbox"
-                                	    value="${notification.id}" id="notif-${notification.id}">
-                        	    </div>
+                                        <input class="form-check-input notification-checkbox" type="checkbox"
+                                            value="${notification.id}" id="notif-${notification.id}">
+                                    </div>
                                     <a class="d-flex align-items-center text-decoration-none flex-grow-1 notification-link"
                                         ${notification.data.link.web ? `href="${notification.read_at ? window.location.origin + '/' + notification.data.link.web : 'javascript:void(0);'}"` : ''}
                                         onclick="${notification.read_at ? '' : `markNotificationAsRead('${notification.id}', '${window.location.origin}/${notification.data.link.web}')`}">
