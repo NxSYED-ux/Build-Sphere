@@ -46,7 +46,7 @@
         .membership-name {
             font-size: 26px;
             font-weight: 700;
-            color: var(--main-text-color);
+            color: var(--sidenavbar-text-color);
             margin: 0 0 8px 0;
             line-height: 1.3;
         }
@@ -94,29 +94,33 @@
             margin-left: 16px;
         }
 
-        /* Image Section */
-        /* Updated Image Section */
-        .membership-image-container {
+        /* Container for image and info grid */
+        .image-info-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
             margin-bottom: 24px;
+        }
+
+        /* Image Section */
+        .membership-image-container {
             border-radius: 10px;
             overflow: hidden;
-            max-height: 400px;
+            max-height: 320px;
             display: flex;
             justify-content: center;
             align-items: center;
             background: #f8f9fa;
             position: relative;
-            /* Fixed height for container */
-            height: 400px;
+            height: 320px;
         }
 
         .membership-image {
             width: 100%;
             height: auto;
-            min-height: 400px;
+            min-height: 320px;
             object-fit: cover;
             display: block;
-            /* Default state - no animation */
             transition: transform 0.3s ease;
         }
 
@@ -131,7 +135,7 @@
             }
             100% {
                 /* Will be overwritten by JavaScript */
-                transform: translateY(calc(-100% + 850px));
+                transform: translateY(calc(-100% + 400px));
             }
         }
 
@@ -146,9 +150,9 @@
         /* Key Info Grid */
         .key-info-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            grid-template-columns: repeat(2, minmax(240px, 1fr));
             gap: 16px;
-            margin-bottom: 24px;
+            align-content: start;
         }
 
         .info-card {
@@ -157,6 +161,7 @@
             padding: 18px;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
             border: 1px solid #f0f0f0;
+            min-width: 240px;
         }
 
         .info-label {
@@ -171,6 +176,7 @@
         .info-value {
             font-size: 18px;
             font-weight: 600;
+            margin-left: 30px;
             color: var(--sidenavbar-text-color);
             line-height: 1.4;
         }
@@ -183,87 +189,166 @@
             text-align: center;
         }
 
-        /* Pricing Section */
-        .pricing-card {
-            background: linear-gradient(135deg, var(--body-background-color) 0%, var(--sidenavbar-body-color) 100%);
-            border: 1px solid #e0e8ff;
-            position: relative;
-            overflow: hidden;
+        /* Responsive adjustments */
+        @media (max-width: 992px) {
+            .image-info-container {
+                grid-template-columns: 1fr;
+            }
+
+            .key-info-grid {
+                grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            }
+        }
+        /* Price Overlay Styles */
+        .price-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.4) 60%, transparent 100%);
+            padding: 30px 20px 20px;
+            color: white;
+            border-bottom-left-radius: 10px;
+            border-bottom-right-radius: 10px;
         }
 
-        .pricing-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 80px;
-            height: 80px;
-            background: rgba(var(--color-blue), 0.05);
-            border-radius: 50%;
-            transform: translate(40px, -40px);
+        .price-content {
+            max-width: 100%;
         }
 
         .price-display {
             display: flex;
-            align-items: flex-end;
-            margin-bottom: 6px;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 8px;
         }
 
         .current-price {
-            font-size: 30px;
+            font-size: 28px;
             font-weight: 700;
-            color: var(--color-blue);
-            line-height: 1;
+            color: #fff;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.3);
         }
 
         .original-price {
-            font-size: 16px;
+            font-size: 18px;
             text-decoration: line-through;
-            color: var(--sidenavbar-text-color);
-            margin-left: 10px;
-            margin-bottom: 4px;
+            color: rgba(255,255,255,0.7);
+            font-weight: 500;
         }
 
         .discount-badge {
-            background: #10b981;
-            color: white;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 12px;
+            background: var(--color-blue);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 14px;
             font-weight: 600;
-            margin-left: 10px;
-            line-height: 1;
+            color: white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
         }
 
-        /* Subscription Dates */
-        .dates-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-            gap: 16px;
+        .billing-info i {
+            font-size: 16px;
         }
 
-        .date-card {
-            background: var(--body-background-color);
-            border-radius: 10px;
-            padding: 18px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+        /* Add this to your existing image container */
+        .membership-image-container {
+            position: relative; /* Required for absolute positioning of overlay */
         }
 
+        /* Toggle Switch Styles */
+        .image-info-container .featured-toggle-card {
+            position: relative;
+        }
+
+        .image-info-container .featured-toggle-card .info-value {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .image-info-container .switch {
+            position: relative;
+            display: inline-block;
+            width: 36px;
+            height: 18px;
+        }
+
+        .image-info-container .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .image-info-container .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .image-info-container .slider:before {
+            position: absolute;
+            content: "";
+            height: 14px;
+            width: 14px;
+            left: 2px;
+            bottom: 2px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        .image-info-container input:checked + .slider {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+        }
+
+        .image-info-container input:checked + .slider:before {
+            transform: translateX(18px);
+        }
+
+        .image-info-container .featured-status {
+            font-size: 16px;
+            font-weight: 500;
+            color: var(--sidenavbar-text-color);
+        }
+
+        /* Add glow effect when featured is active */
+        .image-info-container input:checked ~ .featured-status {
+            color: var(--color-blue);
+            font-weight: 600;
+        }
+
+        /* Loading state */
+        .image-info-container .switch .fa-spinner {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 10px;
+        }
         /* Description */
-        .description-content {
+        .image-info-container .description-content {
             line-height: 1.7;
             color: var(--sidenavbar-text-color);
             font-size: 15px;
         }
 
         /* Users Table */
-        .users-table {
+        .image-info-container .users-table {
             width: 100%;
             border-collapse: separate;
             border-spacing: 0;
         }
 
-        .users-table th {
+        .image-info-container .users-table th {
             text-align: left;
             padding: 14px 20px;
             font-size: 13px;
@@ -275,18 +360,18 @@
             background: #fafafa;
         }
 
-        .users-table td {
+        .image-info-container .users-table td {
             padding: 14px 20px;
             border-bottom: 1px solid #f0f0f0;
             vertical-align: middle;
             background: white;
         }
 
-        .users-table tr:first-child td {
+        .image-info-container .users-table tr:first-child td {
             border-top: 1px solid #f0f0f0;
         }
 
-        .user-avatar {
+        .image-info-container .user-avatar {
             width: 36px;
             height: 36px;
             border-radius: 50%;
@@ -294,13 +379,13 @@
             margin-right: 12px;
         }
 
-        .user-name {
+        .image-info-container .user-name {
             display: flex;
             align-items: center;
             font-weight: 500;
         }
 
-        .user-status {
+        .image-info-container .user-status {
             padding: 6px 12px;
             border-radius: 12px;
             font-size: 12px;
@@ -371,7 +456,7 @@
         .section-heading {
             font-size: 18px;
             font-weight: 600;
-            color: var(--main-text-color);
+            color: var(--sidenavbar-text-color);
             margin: 32px 0 16px 0;
             display: flex;
             align-items: center;
@@ -456,7 +541,7 @@
                                     <h1 class="membership-name">{{ $membership->name }}</h1>
                                     <div class="membership-meta">
                                 <span class="meta-badge category-badge">
-                                    <i class="fas fa-tag"></i>
+                                    <i class="fas fa-tag me-1"></i>
                                     {{ $membership->category }}
                                 </span>
                                         <span class="meta-badge {{ $membership->status === 'Published' ? 'status-badge' : 'status-draft' }}">
@@ -479,74 +564,103 @@
                                 </div>
                             </div>
 
-                            <!-- Membership Image -->
-                            <div class="membership-image-container">
-                                <img src="{{ $membership->image ? asset($membership->image) : asset('img/placeholder-profile.png') }}"
-                                     alt="{{ $membership->name }}"
-                                     class="membership-image">
-                            </div>
+                            <div class="image-info-container">
+                                <!-- Left Half - Image with Price Overlay -->
+                                <div class="membership-image-container">
+                                    <img src="{{ $membership->image ? asset($membership->image) : asset('img/placeholder-profile.png') }}"
+                                         alt="{{ $membership->name }}"
+                                         class="membership-image">
 
-                            <!-- Key Information Grid -->
-                            <div class="key-info-grid">
-                                <div class="info-card">
-                                    <div class="info-label">
-                                        <i class="fas fa-building info-icon"></i>
-                                        Building
-                                    </div>
-                                    <div class="info-value">
-                                        {{ $membership->building->name ?? 'N/A' }}
+                                    <!-- Price Overlay -->
+                                    <div class="price-overlay">
+                                        <div class="price-content">
+                                            <div class="price-display">
+                                                <span class="current-price">{{ number_format($membership->price, 2) }} {{ $membership->currency }}</span>
+                                                @if($membership->original_price > $membership->price)
+                                                    <span class="original-price">{{ number_format($membership->original_price, 2) }} {{ $membership->currency }}</span>
+                                                    <span class="discount-badge">
+                                                        {{ round(100 - ($membership->price / $membership->original_price * 100)) }}% OFF
+                                                    </span>
+                                                @endif
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
 
-                                <div class="info-card">
-                                    <div class="info-label">
-                                        <i class="fas fa-door-open info-icon"></i>
-                                        Unit
+                                <!-- Right Half - Key Information Grid -->
+                                <div class="key-info-grid">
+                                    <div class="info-card">
+                                        <div class="info-label">
+                                            <i class="fas fa-building info-icon"></i>
+                                            Building
+                                        </div>
+                                        <div class="info-value">
+                                            {{ $membership->building->name ?? 'N/A' }}
+                                        </div>
                                     </div>
-                                    <div class="info-value">
-                                        {{ $membership->unit->unit_name ?? 'N/A' }}
-                                    </div>
-                                </div>
 
-                                <div class="info-card">
-                                    <div class="info-label">
-                                        <i class="fas fa-qrcode info-icon"></i>
-                                        Scans Per Day
+                                    <div class="info-card">
+                                        <div class="info-label">
+                                            <i class="fas fa-door-open info-icon"></i>
+                                            Unit
+                                        </div>
+                                        <div class="info-value">
+                                            {{ $membership->unit->unit_name ?? 'N/A' }}
+                                        </div>
                                     </div>
-                                    <div class="info-value">
-                                        {{ $membership->scans_per_day }}
-                                    </div>
-                                </div>
 
-                                <div class="info-card">
-                                    <div class="info-label">
-                                        <i class="fas fa-clock info-icon"></i>
-                                        Duration
+                                    <div class="info-card">
+                                        <div class="info-label">
+                                            <i class="fas fa-qrcode info-icon"></i>
+                                            Scans Per Day
+                                        </div>
+                                        <div class="info-value">
+                                            {{ $membership->scans_per_day }}
+                                        </div>
                                     </div>
-                                    <div class="info-value">
-                                        {{ $membership->duration_months }} months
-                                    </div>
-                                </div>
-                            </div>
 
-                            <!-- Pricing Section -->
-                            <h3 class="section-heading">
-                                <i class="fas fa-tags section-heading-icon"></i>
-                                Pricing Information
-                            </h3>
-                            <div class="info-card pricing-card">
-                                <div class="price-display">
-                                    <span class="current-price">{{ number_format($membership->price, 2) }} {{ $membership->currency }}</span>
-                                    @if($membership->original_price > $membership->price)
-                                        <span class="original-price">{{ number_format($membership->original_price, 2) }} {{ $membership->currency }}</span>
-                                        <span class="discount-badge">
-                                    {{ round(100 - ($membership->price / $membership->original_price * 100)) }}% OFF
-                                </span>
-                                    @endif
-                                </div>
-                                <div class="info-label" style="margin-top: 12px;">
-                                    <i class="fas fa-info-circle info-icon"></i>
-                                    Billed every {{ $membership->duration_months }} month(s)
+                                    <div class="info-card">
+                                        <div class="info-label">
+                                            <i class="fas fa-clock info-icon"></i>
+                                            Duration
+                                        </div>
+                                        <div class="info-value">
+                                            {{ $membership->duration_months }} months
+                                        </div>
+                                    </div>
+
+                                    <!-- Featured Toggle Card -->
+                                    <div class="info-card featured-toggle-card">
+                                        <div class="info-label">
+                                            <i class="fas fa-star info-icon"></i>
+                                            Featured
+                                        </div>
+                                        <div class="info-value">
+                                            <label class="switch">
+                                                <input type="checkbox" class="featured-toggle"
+                                                       data-membership-id="{{ $membership->id }}"
+                                                    {{ $membership->mark_as_featured ? 'checked' : '' }}>
+                                                <span class="slider"></span>
+                                            </label>
+                                            <span class="featured-status">{{ $membership->mark_as_featured ? 'Featured' : 'Not Featured' }}</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="info-card">
+                                        <div class="info-label">
+                                            <i class="fas fa-external-link-alt info-icon"></i>
+                                            URL
+                                        </div>
+                                        <div class="info-value">
+                                            @if($membership->url)
+                                                <a href="{{ $membership->url }}" target="_blank" class="text-primary">
+                                                    Visit Link
+                                                </a>
+                                            @else
+                                                N/A
+                                            @endif
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -586,10 +700,9 @@
                                     <table class="users-table">
                                         <thead>
                                         <tr>
-                                            <th style="width: 30%;">User</th>
-                                            <th style="width: 30%;">Email</th>
+                                            <th style="width: 40%;">User</th>
+                                            <th style="width: 40%;">Email</th>
                                             <th style="width: 20%;">Contact</th>
-                                            <th style="width: 20%;">Status</th>
                                         </tr>
                                         </thead>
                                         <tbody>
@@ -598,18 +711,13 @@
                                                 <td>
                                                     <div class="user-name">
                                                         <img src="{{ $user->user->picture ? asset($user->user->picture) : asset('img/default-avatar.png') }}"
-                                                             class="user-avatar"
+                                                             class="user-avatar" style="width: 100px; height: 100px;"
                                                              alt="{{ $user->user->name ?? 'N/A' }}">
                                                         {{ $user->user->name ?? 'N/A' }}
                                                     </div>
                                                 </td>
                                                 <td>{{ $user->user->email ?? 'N/A' }}</td>
                                                 <td>{{ $user->user->phone_no ?? 'N/A' }}</td>
-                                                <td>
-                                                <span class="user-status status-{{ $user->status === 1 ? 'active' : 'inactive' }}">
-                                                    {{ $user->status === 1 ? 'Active' : 'Inactive' }}
-                                                </span>
-                                                </td>
                                             </tr>
                                         @endforeach
                                         </tbody>
@@ -620,7 +728,7 @@
                                     <div class="empty-icon">
                                         <i class="fas fa-user-slash"></i>
                                     </div>
-                                    <h4 style="font-weight: 600; margin-bottom: 8px; color: var(--main-text-color);">No Subscribed Users</h4>
+                                    <h4 style="font-weight: 600; margin-bottom: 8px; color: var(--sidenavbar-text-color);">No Subscribed Users</h4>
                                     <p style="color: #888; max-width: 400px; margin: 0 auto;">
                                         This membership plan doesn't have any subscribers yet.
                                     </p>
@@ -692,4 +800,95 @@
         }
     }
 </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            document.body.addEventListener('change', function(e) {
+                if (e.target.classList.contains('featured-toggle')) {
+                    const toggle = e.target;
+                    const membershipId = toggle.dataset.membershipId;
+                    const isChecked = toggle.checked;
+                    const statusElement = toggle.closest('.info-value').querySelector('.featured-status');
+
+                    // Store original state in case we need to revert
+                    const originalState = statusElement.textContent;
+                    const originalSliderHTML = toggle.nextElementSibling.innerHTML;
+
+                    // Show loading state
+                    toggle.nextElementSibling.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+                    toggle.disabled = true;
+                    statusElement.textContent = 'Updating...';
+
+                    fetch("{{ route('owner.memberships.toggle.featured') }}", {
+                        method: 'PUT',
+                        headers: {
+                            'Accept': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            'Content-Type': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest'
+                        },
+                        body: JSON.stringify({
+                            membership_id: membershipId,
+                            value: isChecked ? 1 : 0
+                        })
+                    })
+                        .then(response => {
+                            if (!response.ok) {
+                                return response.json().then(err => {
+                                    throw new Error(
+                                        err.message ||
+                                        err.error ||
+                                        'Request failed with status ' + response.status
+                                    );
+                                });
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            if (data.redirect) {
+                                window.location.href = data.redirect;
+                                return;
+                            }
+
+                            // Update status text
+                            statusElement.textContent = isChecked ? 'Featured' : 'Regular';
+
+                            // Show success message
+                            const successMessage = data.success || 'Membership featured status updated';
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Success!',
+                                text: successMessage,
+                                timer: 2000,
+                                background: 'var(--body-background-color)',
+                                color: 'var(--sidenavbar-text-color)',
+                                showConfirmButton: false
+                            });
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+
+                            // Revert UI to previous state
+                            toggle.checked = !isChecked;
+                            statusElement.textContent = originalState;
+
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error!',
+                                text: error.message || 'Something went wrong. Please try again.',
+                                timer: 2000,
+                                background: 'var(--body-background-color)',
+                                color: 'var(--sidenavbar-text-color)',
+                                showConfirmButton: true
+                            });
+                        })
+                        .finally(() => {
+                            // Restore slider
+                            toggle.nextElementSibling.innerHTML = originalSliderHTML;
+                            toggle.disabled = false;
+                        });
+                }
+            });
+        });
+    </script>
 @endpush

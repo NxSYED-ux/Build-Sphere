@@ -347,6 +347,10 @@
     <script src="{{ asset('js/firebase-messaging-compat.js') }}"></script>
 
     <script>
+        window.loginRoute = "{{ route('login') }}";
+    </script>
+
+    <script>
         function getMeta(name) {
             return document.querySelector(`meta[name="${name}"]`)?.getAttribute('content') || '';
         }

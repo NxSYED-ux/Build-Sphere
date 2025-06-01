@@ -13,6 +13,9 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     const isSuperAdmin = parseInt(superAdminMeta.content);
+    window.roleId = roleMeta ? parseInt(roleMeta.content) : null;
+
+
 
     if (isSuperAdmin === 1) {
         showAllPermissionBlocks();
@@ -121,6 +124,14 @@ function applyPermissions() {
             document.body.classList.toggle('admin-portal-visible', shouldShow);
         }
     };
+
+    const noOwnerAccess = !storedPermissions['Owner Portal'];
+    const noAdminAccess = !storedPermissions['Admin Portal'];
+
+    if (noOwnerAccess && noAdminAccess)  {
+        window.location.href = window.loginRoute;
+    }
+
 
     if (storedPermissions['Owner Portal']) {
         const hasBuildingAccess = ['Owner Buildings', 'Owner Levels', 'Owner Units']
