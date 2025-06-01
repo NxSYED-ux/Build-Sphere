@@ -4,21 +4,24 @@ document.addEventListener("DOMContentLoaded", function() {
     const userMeta = document.querySelector('meta[name="user-id"]');
     const roleMeta = document.querySelector('meta[name="role-id"]');
     const superAdminMeta = document.querySelector('meta[name="is-super-admin"]');
+    const isLinked = document.querySelector('meta[name="isLinked"]');
 
     const pusherKeyMeta = document.querySelector('meta[name="pusher-key"]');
     const pusherClusterMeta = document.querySelector('meta[name="pusher-cluster"]');
 
-    if (!csrfMeta || !userMeta || !roleMeta || !superAdminMeta || !pusherKeyMeta) {
+    if (!csrfMeta || !userMeta || !roleMeta || !superAdminMeta || !pusherKeyMeta || !isLinked) {
         return;
     }
 
     const isSuperAdmin = parseInt(superAdminMeta.content);
     window.roleId = roleMeta ? parseInt(roleMeta.content) : null;
 
-
+    const linkedToOrg = parseInt(isLinked.content);
+    window.linkedToOrganization = linkedToOrg === 1;
 
     if (isSuperAdmin === 1) {
         showAllPermissionBlocks();
+        toggleVisibility(".switch-owner-portal-btn",  linkedToOrganization);
         return;
     }
 
@@ -109,29 +112,46 @@ function handleRolePermissionUpdate(data) {
     applyPermissions();
 }
 
+const toggleVisibility = (selector, shouldShow) => {
+    document.querySelectorAll(selector).forEach(el => {
+        if (shouldShow) {
+            el.classList.remove('hidden');
+        } else {
+            el.classList.add('hidden');
+        }
+    });
+    if (selector === '.switch-admin-portal-btn') {
+        document.body.classList.toggle('admin-portal-visible', shouldShow);
+    }
+};
+
 function applyPermissions() {
     const storedPermissions = JSON.parse(localStorage.getItem("userPermissions")) || {};
 
-    const toggleVisibility = (selector, shouldShow) => {
-        document.querySelectorAll(selector).forEach(el => {
-            if (shouldShow) {
-                el.classList.remove('hidden');
-            } else {
-                el.classList.add('hidden');
-            }
-        });
-        if (selector === '.switch-admin-portal-btn') {
-            document.body.classList.toggle('admin-portal-visible', shouldShow);
-        }
-    };
+    const notOwnerAccess = !storedPermissions['Owner Portal'];
+    const notAdminAccess = !storedPermissions['Admin Portal'];
 
-    const noOwnerAccess = !storedPermissions['Owner Portal'];
-    const noAdminAccess = !storedPermissions['Admin Portal'];
+    const match = window.location.pathname.toLowerCase().match(/^\/(owner|admin)\//);
+    const currentPortal = match ? match[1] : null;
+    const isAdminPortal = currentPortal === 'admin';
+    const isOwnerPortal = currentPortal === 'owner';
 
-    if (noOwnerAccess && noAdminAccess)  {
+    if ( notOwnerAccess && notAdminAccess) {
         window.location.href = window.loginRoute;
     }
+    else if (isAdminPortal && notAdminAccess) {
+        window.location.href = window.ownerRoute;
+    }
+    else if ( isOwnerPortal && notOwnerAccess) {
+        window.location.href = window.adminRoute;
+    }
 
+    if (notOwnerAccess) {
+        toggleVisibility(".switch-owner-portal-btn", false);
+    }
+    else if (notAdminAccess) {
+        toggleVisibility(".switch-admin-portal-btn", false);
+    }
 
     if (storedPermissions['Owner Portal']) {
         const hasBuildingAccess = ['Owner Buildings', 'Owner Levels', 'Owner Units']
@@ -158,7 +178,7 @@ function applyPermissions() {
         toggleVisibility("#OwnerStaff", storedPermissions['Owner Portal'].includes('Owner Staff'));
         toggleVisibility("#OwnerReports", storedPermissions['Owner Portal'].includes('Owner Reports'));
 
-        toggleVisibility(".switch-owner-portal-btn", storedPermissions['Owner Portal'].length > 0);
+        toggleVisibility(".switch-owner-portal-btn", linkedToOrganization);
     }
 
     if (storedPermissions['Admin Portal']) {
@@ -190,7 +210,7 @@ function applyPermissions() {
         toggleVisibility("#AdminOrganizations", storedPermissions['Admin Portal'].includes('Organizations'));
         toggleVisibility("#AdminReports", storedPermissions['Admin Portal'].includes('Admin Reports'));
 
-        toggleVisibility(".switch-admin-portal-btn", storedPermissions['Admin Portal'].length > 0);
+        toggleVisibility(".switch-admin-portal-btn", true);
     }
 }
 
@@ -203,13 +223,13 @@ function watchLocalStorage() {
 }
 
 function showAllPermissionBlocks() {
+
     const allSelectors = [
         ".switch-admin-portal-btn",
         "#OwnerBuildingss", "#OwnerBuildings", "#OwnerLevels", "#OwnerUnits",
         "#OwnerAssignUnits", "#OwnerBuildingsTree", "#OwnerRentals", ".Owner-Building-Add-Button", ".Owner-Building-Edit-Button", ".Owner-Level-Add-Button", ".Owner-Level-Edit-Button", ".Owner-Unit-Add-Button", ".Owner-Unit-Edit-Button",
         "#OwnerDepartments", "#OwnerMemberships", "#OwnerStaff", "#OwnerReports",
 
-        ".switch-owner-portal-btn",
         "#AdminControls", "#AdminUserManagement", "#AdminUserRoles", "#AdminRolePermissions", "#AdminDropdowns",
         "#AdminBuildingss", "#AdminBuildings", "#AdminLevels", "#AdminUnits",
         ".Admin-Building-Add-Button", ".Admin-Building-Edit-Button", ".Admin-Level-Add-Button", ".Admin-Level-Edit-Button", ".Admin-Unit-Add-Button", ".Admin-Unit-Edit-Button",

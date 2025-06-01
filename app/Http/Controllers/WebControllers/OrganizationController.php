@@ -20,6 +20,7 @@ use App\Models\Subscription;
 use App\Models\Transaction;
 use App\Models\User;
 use App\Notifications\DatabaseOnlyNotification;
+use App\Services\AdminFiltersService;
 use App\Services\SubscriptionService;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
@@ -859,8 +860,10 @@ class OrganizationController extends Controller
     public function getBuildingsAdmin($id)
     {
         try {
+            $adminService = new AdminFiltersService();
+            $allowedStatuses = $adminService->getAllowedStatusesForBuilding();
             $buildings = Building::where('organization_id', $id)
-                ->whereNotIn('status', ['Under Processing', 'Under Review', 'Rejected'])
+                ->whereIn('status', $allowedStatuses)
                 ->pluck('name', 'id');
 
             return response()->json(['buildings' => $buildings]);

@@ -293,12 +293,12 @@ class MembershipController extends Controller
             $imagePath = $membership->image;
             if ($request->hasFile('image')) {
                 $imagePath = $this->handleImageUpload($request);
-            }
 
-            if($membership->image){
-                $oldImagePath = public_path($membership->image);
-                if (File::exists($oldImagePath)) {
-                    File::delete($oldImagePath);
+                if($imagePath && $membership->image){
+                    $oldImagePath = public_path($membership->image);
+                    if (File::exists($oldImagePath)) {
+                        File::delete($oldImagePath);
+                    }
                 }
             }
 

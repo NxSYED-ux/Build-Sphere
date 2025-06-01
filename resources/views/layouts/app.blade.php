@@ -33,6 +33,7 @@
     <meta name="user-id" content="{{ auth()->id() }}">
     <meta name="role-id" content="{{ auth()->user()->role_id }}">
     <meta name="is-super-admin" content="{{ auth()->user()->is_super_admin }}">
+    <meta name="isLinked" content="{{ auth()->user()->organization || auth()->user()->staffMember ? '1' : '0' }}">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <!-- Firebase Meta Tags -->
@@ -336,11 +337,9 @@
     <!-- Include jQuery library -->
     <script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>
     <script src="{{ asset('jquery/jquery-3.7.1.min.js') }}"></script>
+
     <!-- Include SweetAlert2 JS from CDN -->
     <script src="{{ asset('js/sweetalert.js') }}"></script>
-
-
-
 
     <!-- Firebase SDKs -->
     <script src="{{ asset('js/firebase-app-compat.js') }}"></script>
@@ -348,6 +347,8 @@
 
     <script>
         window.loginRoute = "{{ route('login') }}";
+        window.adminRoute =  "{{ route('admin_dashboard') }}";
+        window.ownerRoute = "{{ route('owner_manager_dashboard') }}";
     </script>
 
     <script>

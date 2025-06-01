@@ -149,6 +149,7 @@ class User extends Authenticatable implements JWTSubject
     {
         return $this->hasOne(StaffMember::class, 'user_id', 'id');
     }
+
     public function createdStaffMembers()
     {
         return $this->hasMany(StaffMember::class, 'created_by', 'id');
