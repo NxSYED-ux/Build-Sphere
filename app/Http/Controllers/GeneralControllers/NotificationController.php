@@ -120,6 +120,27 @@ class NotificationController extends Controller
         }
     }
 
+    public function removeBatch(Request $request)
+    {
+        $request->validate([
+            'notification_ids' => 'required|array',
+            'notification_ids.*' => 'required|uuid',
+        ]);
 
+        try {
+            $user = $request->user();
+
+            $user->notifications()
+                ->whereIn('id', $request->notification_ids)
+                ->delete();
+
+            return response()->json(['message' => 'Selected notifications have been removed successfully.']);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Failed to remove selected notifications.',
+                'details' => $e->getMessage(),
+            ], 500);
+        }
+    }
 
 }

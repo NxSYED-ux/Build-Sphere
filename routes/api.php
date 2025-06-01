@@ -56,6 +56,7 @@ Route::middleware(['auth.jwt'])->group(function () {
         Route::post('/mark-all-as-unread', [NotificationController::class, 'markAsUnRead'])->name('notifications.mark-all-as-unread');
         Route::post('/remove-all', [NotificationController::class, 'removeAll'])->name('notifications.remove-all');
         Route::post('/remove-single', [NotificationController::class, 'removeSingle'])->name('notifications.remove-single');
+        Route::post('/remove-batch', [NotificationController::class, 'removeBatch'])->name('notifications.remove-batch');
 
     });
 
