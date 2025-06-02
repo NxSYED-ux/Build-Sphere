@@ -141,9 +141,58 @@ class PropertyUsersController extends Controller
         }
     }
 
+    public function updateContractStatus(Request $request)
+    {
+        $request->validate([
+            'contract_id' => 'required|exists:userbuildingunits,id',
+            'value' => 'required|in:0,1',
+        ], [
+            'contract_id.required' => 'The contract ID is required.',
+            'contract_id.exists' => 'The selected contract does not exist.',
+            'value.required' => 'The contract status value is required.',
+            'value.in' => 'The contract status must be either 0 (Discontinue) or 1 (Continue).',
+        ]);
 
-    public function Discontinue(Request $request){
+        try {
+            $requestedAction = (int)$request->value === 1 ? 'continued' : 'discontinued';
 
+            $contract = UserBuildingUnit::where('id', $request->contract_id)
+                ->where('contract_status', 1)
+                ->first();
+
+            if (!$contract) {
+                return response()->json([
+                    'error' => 'The specified contract is either inactive or does not exist.'
+                ], 404);
+            }
+
+            if ($contract->type === 'Sold') {
+                return response()->json([
+                    'error' => 'This contract cannot be modified because the unit has already been sold.'
+                ], 404);
+            }
+
+            if ((int)$contract->renew_canceled === (int)$request->value) {
+                return response()->json([
+                    'error' => "The contract is already marked as $requestedAction."
+                ], 400);
+            }
+
+            $contract->contract_status = $request->value;
+            $contract->save();
+
+            return response()->json([
+                'message' => "The contract has been successfully $requestedAction."
+            ], 200);
+
+        } catch (\Throwable $e) {
+            Log::error('Error while updating contract status: ' . $e->getMessage());
+
+            return response()->json([
+                'error' => 'An unexpected error occurred while updating the contract. Please try again later.'
+            ], 500);
+        }
     }
+
 
 }
