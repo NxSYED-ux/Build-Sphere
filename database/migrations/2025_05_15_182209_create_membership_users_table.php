@@ -17,6 +17,7 @@ return new class extends Migration
             $table->boolean('status')->default(true);
             $table->integer('quantity')->default(1);
             $table->integer('used')->default(0);
+            $table->dateTime('ends_at');
 
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();

@@ -108,7 +108,8 @@ Route::prefix('admin')->middleware(['auth.jwt'])->group(function () {
         Route::post('/', [UsersController::class, 'store'])->name('users.store');
         Route::get('/{user}', [UsersController::class, 'show'])->name('users.show');
         Route::get('/{user}/edit', [UsersController::class, 'edit'])->name('users.edit');
-        Route::put('/', [UsersController::class, 'update'])->name('users.update');
+        Route::put('/', [UsersController::class, 'adminUpdate'])->name('users.update');
+        Route::put('/toggle-status', [UsersController::class, 'toggleStatus'])->name('user.toggleStatus');
 
     });
 
@@ -389,17 +390,19 @@ Route::prefix('owner')->middleware(['auth.jwt'])->group(function () {
             Route::get('/{membership}/edit', [MembershipController::class , 'edit'])->name('owner.memberships.edit');
             Route::put('/', [MembershipController::class , 'update'])->name('owner.memberships.update');
             Route::get('/{membership}/show', [MembershipController::class , 'show'])->name('owner.memberships.show');
-
             Route::get('/{membership}/assign', [MembershipController::class , 'assignMembershipView'])->name('owner.memberships.assign.view');
             Route::post('/assign', [MembershipController::class , 'assignMembership'])->name('owner.memberships.assign');
-
             Route::put('/toggle-featured', [MembershipController::class, 'toggleFeatured'])->name('owner.memberships.toggle.featured');
+            Route::post('/mark-payment-received', [MembershipController::class, 'markAsPaymentReceived'])->name('owner.memberships.planPaymentReceived');
+
         });
 
         Route::prefix('property_users')->group(function () {
 
             Route::get('/', [PropertyUsersController::class , 'index'])->name('owner.property.users.index');
             Route::get('/{user}/show', [PropertyUsersController::class , 'show'])->name('owner.property.users.show');
+            Route::get('/{user}/edit', [UsersController::class, 'ownerEdit'])->name('owner.property.users.edit');
+            Route::put('/', [UsersController::class, 'ownerUpdate'])->name('owner.property.users.update');
 
         });
 

@@ -666,11 +666,11 @@ INSERT INTO `memberships` (`id`, `organization_id`, `building_id`, `unit_id`, `i
 
 
 
-INSERT INTO `membership_users` (`id`, `user_id`, `membership_id`, `subscription_id`, `status`, `quantity`, `used`, `created_at`, `updated_at`) VALUES
-(1, 13, 2, 4, 1, 1, 1, '2025-05-18 05:30:54', '2025-05-18 05:30:54'),
-(2, 14, 1, 5, 1, 3, 3, '2025-05-18 05:32:21', '2025-05-18 05:32:21'),
-(3, 15, 2, 6, 1, 1, 1, '2025-05-18 06:30:54', '2025-05-18 06:30:54'),
-(4, 15, 1, 7, 1, 3, 3, '2025-05-18 06:32:21', '2025-05-18 06:32:21');
+INSERT INTO `membership_users` (`id`, `user_id`, `membership_id`, `subscription_id`, `status`, `quantity`, `used`, `ends_at`, `created_at`, `updated_at`) VALUES
+(1, 13, 2, 4, 1, 1, 1, '2025-06-17', '2025-05-18 00:30:54', '2025-06-01 19:51:03'),
+(2, 14, 1, 5, 1, 3, 3, '2025-06-17', '2025-05-18 00:32:21', '2025-06-01 19:51:03'),
+(3, 15, 2, 6, 1, 1, 1, '2025-06-17', '2025-05-18 01:30:54', '2025-06-01 19:51:03'),
+(4, 15, 1, 7, 1, 3, 3, '2025-06-17', '2025-05-18 01:32:21', '2025-06-01 19:51:03');
 
 
 INSERT INTO `transactions` (`id`, `transaction_title`, `transaction_category`, `buyer_id`, `buyer_type`, `buyer_transaction_type`, `seller_id`, `seller_type`, `seller_transaction_type`, `building_id`, `unit_id`, `membership_id`, `plan_id`, `payment_method`, `gateway_payment_id`, `price`, `currency`, `status`, `is_subscription`, `billing_cycle`, `subscription_start_date`, `subscription_end_date`, `source_id`, `source_name`, `created_at`, `updated_at`) VALUES

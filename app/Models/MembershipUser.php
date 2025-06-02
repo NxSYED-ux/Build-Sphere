@@ -15,8 +15,10 @@ class MembershipUser extends Model
         'user_id',
         'membership_id',
         'subscription_id',
+
         'quantity',
         'used',
+        'ends_at'
     ];
 
     // Belongs to relations

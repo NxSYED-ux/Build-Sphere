@@ -8,6 +8,7 @@ use App\Http\Controllers\AppControllers\ListingController;
 use App\Http\Controllers\AppControllers\MembershipController;
 use App\Http\Controllers\AppControllers\MyPropertiesController;
 use App\Http\Controllers\AppControllers\QueryController;
+use App\Http\Controllers\AppControllers\SubscriptionController;
 use App\Http\Controllers\AppControllers\TransactionController;
 use App\Http\Controllers\GeneralControllers\AuthController;
 use App\Http\Controllers\GeneralControllers\CardController;
@@ -16,15 +17,6 @@ use App\Http\Controllers\GeneralControllers\NotificationController;
 use App\Http\Controllers\GeneralControllers\ProfileController;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
-
-
-Route::get('/test-permissions', function () {
-    Log::info("Triggering UserPermissionUpdated event for user 2.");
-    event(new UserPermissionUpdated(2));
-    return 'ok';
-});
-
-
 
 
 // Without Authentication
@@ -97,6 +89,7 @@ Route::middleware(['auth.jwt'])->group(function () {
         Route::middleware('check.permission:Show My Properties,json')->group(function () {
             Route::get('/my_properties', [MyPropertiesController::class, 'showMyProperties']);
             Route::get('/my_properties/{id}', [MyPropertiesController::class, 'myPropertyDetails']);
+            Route::put('/rental/toggle', [SubscriptionController::class, 'toggleRentalContractStatus']);
         });
 
         Route::middleware('check.permission:Log Queries,json')->group(function () {
@@ -135,6 +128,7 @@ Route::middleware(['auth.jwt'])->group(function () {
             Route::get('/{id}/my-show', [MembershipController::class, 'myMembershipShow']);
             Route::get('/past', [MembershipController::class, 'pastMemberships']);
             Route::post('/redeem', [MembershipController::class, 'redeem']);
+            Route::put('/my/toggle', [SubscriptionController::class, 'toggleMembershipStatus']);
 
             Route::post('/checkout', [CheckOutController::class, 'membershipsOnlinePayment']);
             Route::post('/complete/checkout', [CheckOutController::class, 'completeMembershipPayment']);
