@@ -404,6 +404,8 @@ Route::prefix('owner')->middleware(['auth.jwt'])->group(function () {
             Route::get('/{user}/edit', [UsersController::class, 'ownerEdit'])->name('owner.property.users.edit');
             Route::put('/', [UsersController::class, 'ownerUpdate'])->name('owner.property.users.update');
             Route::put('/contract-status', [PropertyUsersController::class, 'updateContractStatus'])->name('owner.property.users.contractStatus');
+            Route::get('/{id}/contract', [PropertyUsersController::class, 'editContract'])->name('owner.property.users.contract.edit');
+            Route::put('/contract', [PropertyUsersController::class, 'updateContract'])->name('owner.property.users.contract.update');
 
         });
 
