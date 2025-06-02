@@ -9,6 +9,7 @@ use App\Models\Role;
 use App\Models\User;
 use App\Notifications\CredentialsEmail;
 use App\Services\AdminFiltersService;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
@@ -171,24 +172,96 @@ class UsersController extends Controller
         }
     }
 
-    public function edit(string $id)
+    public function edit(string $id, string $portal = 'admin')
     {
         try {
-            $adminService = new AdminFiltersService();
-            $roles = $adminService->roles();
             $user = User::with('role', 'address')->findOrFail($id);
+
+            if ($user->is_verified === 1) {
+                DB::rollBack();
+                return redirect()->back()->with('error', 'You cannot edit a verified user account.');
+            }
+
             $dropdownData = DropdownType::with(['values.childs.childs'])
                 ->where('type_name', 'Country')
                 ->get();
 
-            return view('Heights.Admin.Users.edit', compact('user', 'roles', 'dropdownData'));
+
+            if ($portal == 'admin') {
+                $adminService = new AdminFiltersService();
+                $roles = $adminService->roles();
+                return view('Heights.Admin.Users.edit', compact('user', 'roles', 'dropdownData'));
+            }
+
+            return view('Heights.Owner.PropertyUsers.edit', compact('user', 'dropdownData'));
+        } catch (ModelNotFoundException $e) {
+            return redirect()->back()->with('error', 'User not found.');
         } catch (\Throwable $e) {
             Log::error('User edit failed: ' . $e->getMessage());
             return redirect()->route('users.index')->with('error', 'Something went wrong while loading the edit form. Please try again.');
         }
     }
 
-    public function update(Request $request)
+    public function adminUpdate(Request $request)
+    {
+        $request->validate([
+            'role_id' => 'required|exists:roles,id'
+        ]);
+
+        return $this->update($request, $request, 'users.index');
+    }
+
+    public function toggleStatus(Request $request)
+    {
+        $request->validate([
+            'id' => 'required'
+        ]);
+
+        try {
+            $user = User::findOrFail($request->id);
+            $user->status = $user->status === 1 ? 0 : 1;
+            $user->save();
+
+            return response()->json([
+                'message' => 'User status updated successfully.',
+                'new_status' => $user->status,
+            ]);
+
+        } catch (\Throwable $e) {
+            Log::error('User status update failed: ' . $e->getMessage());
+
+            return response()->json([
+                'error' => 'Failed to toggle user status.',
+            ], 500);
+        }
+    }
+
+
+
+    // Property Users Functions
+    public function ownerEdit(string $id)
+    {
+        return $this->edit($id, 'owner');
+    }
+
+    public function ownerUpdate(Request $request)
+    {
+        return $this->update($request, null,'owner.property.users.index');
+    }
+
+
+
+    // Helper Functions.
+    private function handleFileUpload(Request $request): ?string
+    {
+        $profileImage = $request->file('picture');
+        $profileImageName = time() . '_' . $profileImage->getClientOriginalName();
+        $profileImagePath = 'uploads/users/images/' . $profileImageName;
+        $profileImage->move(public_path('uploads/users/images'), $profileImageName);
+        return $profileImagePath;
+    }
+
+    private function update(Request $request, string $roleId, string $redirectRoute)
     {
         $request->validate([
             'user_id' => 'required|integer|exists:users,id',
@@ -198,14 +271,12 @@ class UsersController extends Controller
             'cnic' => 'required|string|max:18|unique:users,cnic,' . $request->user_id . ',id',
             'gender' => ['required', 'in:Male,Female,Other'],
             'picture' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'role_id' => 'required|exists:roles,id',
             'date_of_birth' => 'required|date',
             'location' => 'required|string|max:255',
             'country' => 'required|string|max:50',
             'province' => 'required|string|max:50',
             'city' => 'required|string|max:50',
             'postal_code' => 'required|string|max:50',
-            'status' => 'required|integer|in:0,1',
             'updated_at' => 'required',
         ]);
 
@@ -220,6 +291,11 @@ class UsersController extends Controller
             if (!$user) {
                 DB::rollBack();
                 return redirect()->back()->with('error', 'Please refresh the page and try again.');
+            }
+
+            if ($user->is_verified === 1) {
+                DB::rollBack();
+                return redirect()->back()->with('error', 'You cannot make changes to a verified user account.');
             }
 
             $address = Address::findOrFail($user->address_id);
@@ -239,8 +315,7 @@ class UsersController extends Controller
                 'cnic' => $request->cnic,
                 'gender' => $request->gender,
                 'picture' => $profileImagePath ?? $user->picture,
-                'role_id' => $request->role_id,
-                'status' => $request->status,
+                'role_id' => $roleId ?? $user->role_id,
                 'date_of_birth' => $request->date_of_birth,
                 'updated_at' => now()
             ]);
@@ -254,23 +329,12 @@ class UsersController extends Controller
             ]);
 
             DB::commit();
-            return redirect()->route('users.index')->with('success', 'User updated successfully.');
+            return redirect()->route($redirectRoute)->with('success', 'User updated successfully.');
         } catch (\Throwable $e) {
             DB::rollBack();
             Log::error('Error updating user: ' . $e->getMessage());
             return redirect()->back()->with('error', 'Failed to update user. Please try again.');
         }
-    }
-
-
-    // Helper Functions.
-    private function handleFileUpload(Request $request): ?string
-    {
-        $profileImage = $request->file('picture');
-        $profileImageName = time() . '_' . $profileImage->getClientOriginalName();
-        $profileImagePath = 'uploads/users/images/' . $profileImageName;
-        $profileImage->move(public_path('uploads/users/images'), $profileImageName);
-        return $profileImagePath;
     }
 
 }
