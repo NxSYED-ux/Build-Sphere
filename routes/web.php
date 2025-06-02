@@ -403,6 +403,7 @@ Route::prefix('owner')->middleware(['auth.jwt'])->group(function () {
             Route::get('/{user}/show', [PropertyUsersController::class , 'show'])->name('owner.property.users.show');
             Route::get('/{user}/edit', [UsersController::class, 'ownerEdit'])->name('owner.property.users.edit');
             Route::put('/', [UsersController::class, 'ownerUpdate'])->name('owner.property.users.update');
+            Route::put('/contract-status', [PropertyUsersController::class, 'updateContractStatus'])->name('owner.property.users.contractStatus');
 
         });
 

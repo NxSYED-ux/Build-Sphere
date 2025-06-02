@@ -99,7 +99,6 @@ class PropertyUsersController extends Controller
     {
         $unitId = $request->input('unit_id');
         $buildingId = $request->input('building_id');
-        $type = $request->input('type');
 
         try {
             $token = $request->attributes->get('token');
@@ -128,10 +127,9 @@ class PropertyUsersController extends Controller
                 ->where('contract_status', 1)
                 ->when($unitId, fn($q) => $q->where('unit_id', $unitId))
                 ->when($buildingId, fn($q) => $q->where('building_id', $buildingId))
-                ->when($type, fn($q) => $q->where('type', $type))
                 ->whereIn('building_id', $buildingIds)
                 ->with(['building', 'unit'])
-                ->paginate(12);
+                ->get();
 
             return view('Heights.Owner.PropertyUsers.show', compact('user', 'userUnits', 'buildings', 'units', 'types'));
 
@@ -194,5 +192,82 @@ class PropertyUsersController extends Controller
         }
     }
 
+    public function updateContract(Request $request)
+    {
+        $request->validate([
+            'contract_id' => 'required|exists:userbuildingunits,id',
+            'billing_cycle' => 'required|integer|min:1',
+            'price' => 'required|numeric|min:0',
+        ]);
+
+        try {
+            $authenticatedUserId = $request->user()->id;
+            $contract = UserBuildingUnit::with('user')
+                ->where('id', $request->contract_id)
+                ->where('contract_status', 1)
+                ->first();
+
+            $contractUser = $contract?->user;
+
+            if (!$contract) {
+                return redirect()->back()->with('error', 'The contract you are trying to update is not available or has been deactivated.');
+            }
+
+            if ($authenticatedUserId === $contractUser->id) {
+                return redirect()->back()->with('error', "You cannot update your own contract due to business policy.");
+            }
+
+            if ($contract->type === 'Sold') {
+                return redirect()->back()->with('error', 'You cannot edit this contract because the unit is sold.');
+            }
+
+            $contract->update([
+                'billing_cycle' => $request->billing_cycle,
+                'price' => $request->price,
+
+            ]);
+
+            return redirect()->back()->with('success', 'Contract updated successfully.');
+
+        } catch (\Throwable $e) {
+            Log::error('Error editing contract: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'An unexpected error occurred while updating the contract.');
+        }
+    }
+
+    public function editContract($id)
+    {
+        try {
+            $authenticatedUserId = request()->user()->id;
+
+            $contract = UserBuildingUnit::with('user')
+                ->where('id', $id)
+                ->where('contract_status', 1)
+                ->first();
+
+            if (!$contract) {
+                return response()->json([
+                    'error' => 'The contract you are trying to edit is not available or has been deactivated.'
+                ], 404);
+            }
+
+            if ($authenticatedUserId === $contract->user->id) {
+                return response()->json([
+                    'error' => 'You cannot edit your own contract due to business policy.'
+                ], 403);
+            }
+
+            return response()->json([
+                'contract' => $contract
+            ], 200);
+
+        } catch (\Throwable $e) {
+            Log::error('Error editing contract: ' . $e->getMessage());
+
+            return response()->json([
+                'error' => 'An unexpected error occurred while retrieving the contract.'
+            ], 500);
+        }
+    }
 
 }
