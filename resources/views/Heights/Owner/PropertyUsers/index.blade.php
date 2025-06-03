@@ -580,7 +580,7 @@
                                         <a href="{{ route('owner.property.users.show', $user->id) }}" class="btn btn-add btn-sm btn-view view-user btn-member gap-1" title="View Details">
                                             <i class="fas fa-eye"></i> View
                                         </a>
-                                        <a href="javascript:void(0);" class="btn btn-add btn-sm btn-edit btn-member gap-1" title="Edit Manager">
+                                        <a href="{{ route('owner.property.users.edit', $user->id) }}" class="btn btn-add btn-sm btn-edit btn-member gap-1" title="Edit Manager">
                                             <i class="fas fa-edit"></i> Edit
                                         </a>
                                     </div>

@@ -296,7 +296,7 @@
             font-size: 12px;
             font-weight: 600;
         }
-        .unit-sale-rent-badge {
+        .unit-status-badge {
             position: absolute;
             top: 15px;
             right: 15px;
@@ -335,7 +335,7 @@
             flex: 1;
             display: flex;
             flex-direction: column;
-            background-color: var(--sidenavbar-body-color);
+            background-color: var(--body-background-color);
         }
 
         .unit-card .card-title {
@@ -382,7 +382,7 @@
             display: flex;
             margin-top: auto;
             flex-wrap: wrap;
-            gap: 8px;
+            gap: 2px;
         }
 
         .unit-card .action-btn {
@@ -402,7 +402,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            min-width: 110px;
+            min-width: 100px;
             font-size: 0.95rem !important;
             text-decoration: none;
         }
@@ -416,7 +416,7 @@
             align-items: center;
             justify-content: center;
             min-width: 100px;
-            font-size: 0.7rem !important;
+            font-size: 14px !important;
             text-decoration: none;
         }
 
@@ -453,16 +453,28 @@
             color: #c0392b;
         }
 
-        .btn-warning {
-            background-color: rgba(241, 196, 15, 0.1);
-            color: #f39c12;
-            border: 1px solid rgba(241, 196, 15, 0.2);
+        .btn-discontinue {
+            background-color: #f39c12;
+            color: #ffff;
+            border: 1px solid #f39c12;
         }
 
-        .btn-warning:hover {
-            background-color: rgba(241, 196, 15, 0.2);
+        .btn-discontinue:hover {
+            background-color: #f39c12;
             color: #d35400;
         }
+
+        .btn-continue {
+            background-color: rgba(46, 204, 113, 0.2);
+            color: #ffff;
+            border: 1px solid rgba(46, 204, 113, 0.2);
+        }
+
+        .btn-continue:hover {
+            background-color: rgba(46, 204, 113, 0.2);
+            color: #27ae60;
+        }
+
 
         /* Levels Button */
         .unit-card .levels-btn {
@@ -519,6 +531,109 @@
             display: none;
             margin-top: 0!important;
             padding-top: 0 !important;
+        }
+
+        /* ================ TABS STYLES ================ */
+        .nav-tabs {
+            border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+            /*margin-bottom: 25px;*/
+            display: flex;
+            gap: 5px;
+        }
+
+        .nav-tabs .nav-link {
+            border: none;
+            color: var(--sidenavbar-text-color);
+            font-weight: 600;
+            padding: 12px 24px;
+            margin-right: 0;
+            border-radius: 8px 8px 0 0;
+            transition: all 0.3s ease;
+            position: relative;
+            background: rgba(0, 0, 0, 0.03);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            border-bottom: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            opacity: 0.8;
+        }
+
+        .nav-tabs .nav-link:hover {
+            color: var(--color-blue);
+            background: rgba(0, 0, 0, 0.05);
+            opacity: 1;
+            transform: translateY(-2px);
+        }
+
+        .nav-tabs .nav-link.active {
+            color: var(--color-blue);
+            background: var(--sidenavbar-body-color);
+            border-color: rgba(0, 0, 0, 0.05);
+            border-bottom-color: var(--sidenavbar-body-color);
+            opacity: 1;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            position: relative;
+            z-index: 1;
+        }
+
+        .nav-tabs .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--color-blue);
+            border-radius: 2px 2px 0 0;
+        }
+
+        .nav-tabs .nav-link .badge {
+            font-size: 0.7rem;
+            padding: 4px 6px;
+            background: rgba(0, 0, 0, 0.1);
+            color: inherit;
+            font-weight: 700;
+        }
+
+        .nav-tabs .nav-link.active .badge {
+            background: var(--color-blue);
+            color: white;
+        }
+
+        .tab-content {
+            position: relative;
+            background-color: var(--sidenavbar-body-color);
+            padding: 5px 20px 20px 20px;
+            border-radius: 0 0 8px 8px;
+            z-index: 0;
+        }
+
+        .tab-pane {
+            animation: fadeIn 0.4s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* For dark mode compatibility */
+        @media (prefers-color-scheme: dark) {
+            .nav-tabs .nav-link {
+                background: rgba(255, 255, 255, 0.05);
+                border-color: rgba(255, 255, 255, 0.1);
+            }
+
+            .nav-tabs .nav-link:hover {
+                background: rgba(255, 255, 255, 0.1);
+            }
+
+            .nav-tabs .nav-link.active {
+                background: var(--sidenavbar-body-color);
+                border-color: rgba(255, 255, 255, 0.1);
+                border-bottom-color: var(--sidenavbar-body-color);
+            }
         }
 
         /* ================ RESPONSIVE ADJUSTMENTS ================ */
@@ -672,32 +787,32 @@
                                 <div class="user-details-grid">
                                     <div class="user-details-column">
                                         <div class="user-detail-row">
-                    <span class="user-detail-label">
-                        <i class="fas fa-envelope me-2"></i>Email:
-                    </span>
+                                            <span class="user-detail-label">
+                                                <i class="fas fa-envelope me-2"></i>Email:
+                                            </span>
                                             <span class="user-detail-value">{{ $user->email ?? 'N/A' }}</span>
                                         </div>
 
                                         <div class="user-detail-row">
-                    <span class="user-detail-label">
-                        <i class="fas fa-phone me-2"></i>Phone:
-                    </span>
+                                            <span class="user-detail-label">
+                                                <i class="fas fa-phone me-2"></i>Phone:
+                                            </span>
                                             <span class="user-detail-value">{{ $user->phone_no ?? 'N/A' }}</span>
                                         </div>
 
                                         <div class="user-detail-row">
-                    <span class="user-detail-label">
-                        <i class="fas fa-id-card me-2"></i>CNIC:
-                    </span>
+                                            <span class="user-detail-label">
+                                                <i class="fas fa-id-card me-2"></i>CNIC:
+                                            </span>
                                             <span class="user-detail-value">{{ $user->cnic ?? 'N/A' }}</span>
                                         </div>
                                     </div>
 
                                     <div class="user-details-column">
                                         <div class="user-detail-row">
-                    <span class="user-detail-label">
-                        <i class="fas fa-city me-2"></i>City:
-                    </span>
+                                            <span class="user-detail-label">
+                                                <i class="fas fa-city me-2"></i>City:
+                                            </span>
                                             <span class="user-detail-value">{{ $user->address->city ?? 'N/A' }}</span>
                                         </div>
 
@@ -712,9 +827,9 @@
                             </div>
                         </div>
 
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <h3 class="mb-1">User Units</h3>
-                    </div>
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h3 class="mb-1">User Units</h3>
+                        </div>
 
                         <!-- Filter Form -->
                         <form method="GET" id="filterForm" class="filter-container">
@@ -742,18 +857,6 @@
                                 </select>
                             </div>
 
-                            <div class="filter-group">
-                                <label for="type">Types</label>
-                                <select name="type" id="type" class="form-select filter-select">
-                                    <option value="">All Type</option>
-                                    @foreach($types as $type)
-                                        <option value="{{ $type }}" {{ request('$type') == $type ? 'selected' : '' }}>
-                                            {{ $type }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
-
                             <div class="filter-buttons">
                                 <button type="button" class="btn btn-secondary flex-grow-1 d-flex align-items-center justify-content-center" onclick="resetFilters()">
                                     <i class="fas fa-undo me-2"></i> Reset
@@ -764,101 +867,163 @@
                             </div>
                         </form>
 
-                        <div class="unit-grid">
-                            @forelse($userUnits ?? [] as $userUnit)
-                                @php
-                                    $unit = $userUnit->unit;
-                                    $contractType = $userUnit->contract_type;
-                                @endphp
-                                <div class="unit-card">
-                                    <div class="card-img-container">
-                                        @if(count($unit->pictures ?? []) > 0)
-                                            <img src="{{ asset($unit->pictures[0]->file_path) }}" class="card-img-top" alt="Unit Image">
-                                        @else
-                                            <img src="{{ asset('img/placeholder-img.jfif') }}" class="card-img-top" alt="Unit Image">
-                                        @endif
-                                        <div class="unit-type-badge">
-                                            {{ $unit->unit_type ?? 'N/A' }}
-                                        </div>
-{{--                                        <div class="unit-sale-rent-badge">--}}
-{{--                                            --}}
-{{--                                        </div>--}}
-                                        <div class="unit-price-tag">
-                                            PKR {{ $unit->price ?? 'N/A' }}
-                                        </div>
-                                        <div class="unit-availability-tag">
-                                            {{ $unit->availability_status ?? 'N/A' }}
-                                        </div>
-                                    </div>
-                                    <div class="card-body">
-                                        <div class="d-flex justify-content-between align-items-start">
-                                            <h5 class="card-title">{{ $unit->unit_name ?? 'N/A' }}</h5>
-                                            @if($userUnit->type === 'Rented')
-                                                @if($userUnit->renew_canceled === 0)
-                                                    <form action="" method="POST" class="d-inline">
-                                                        @csrf
-                                                        <button type="submit" class="action-btn rented-status-btn btn-warning gap-1" title="Discontinue" onclick="return confirm('Are you sure you want to discontinue this rental?')">
-                                                            <i class='bx bx-pause'></i> Discontinue
-                                                        </button>
-                                                    </form>
-                                                @else
-                                                    <form action="" method="POST" class="d-inline">
-                                                        @csrf
-                                                        <button type="submit" class="action-btn rented-status-btn btn-edit gap-1" title="Continue" onclick="return confirm('Are you sure you want to continue this rental?')">
-                                                            <i class='bx bx-play'></i> Continue
-                                                        </button>
-                                                    </form>
-                                                @endif
-                                            @endif
-                                        </div>
-                                        <p class="card-text"><i class='bx bx-buildings me-1'></i> {{ $unit->building->name ?? 'N/A' }}</p>
-                                        <p class="card-text"><i class='bx bxs-layer me-1'></i> {{ $unit->level->level_name ?? 'N/A' }}</p>
-                                        @if($userUnit->type === 'Sold')
-                                        <p class="card-text"><i class='bx bx-calendar me-1'></i> Contract Date: {{ $userUnit->created_at ? \Carbon\Carbon::parse($userUnit->created_at)->format('M d, Y') : 'N/A' }}</p>
-                                        @elseif($userUnit->type === 'Rented')
-                                            <p class="card-text"><i class='bx bx-calendar me-1'></i> Start Date: {{ $userUnit->subscription->created_at ? \Carbon\Carbon::parse($userUnit->subscription->created_at)->format('M d, Y') : 'N/A' }}</p>
-                                            <p class="card-text"><i class='bx bx-calendar me-1'></i> End Date: {{ $userUnit->subscription->ends_at ? \Carbon\Carbon::parse($userUnit->subscription->ends_at)->format('M d, Y') : 'N/A' }}</p>
-                                        @endif
+                        <!-- Tabs Navigation -->
+                        <ul class="nav nav-tabs" id="unitsTab" role="tablist">
+                            @php
+                                $hasRented = $userUnits->where('type', 'Rented')->count() > 0;
+                                $hasSold = $userUnits->where('type', 'Sold')->count() > 0;
+                                $defaultTab = $hasRented ? 'rented' : ($hasSold ? 'sold' : 'rented');
+                            @endphp
 
-                                        <div class="action-buttons">
-                                            <a href="{{ route('owner.units.show', $unit->id) }}" class="action-btn btn-add btn-view view-unit gap-1" title="View">
-                                                <i class='bx bx-show'></i> View
-                                            </a>
-                                            @if($userUnit->type === 'Rented')
-                                            <form action="#" method="POST" class="d-inline">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="action-btn btn-add btn-danger gap-1" title="Delete" onclick="return confirm('Are you sure you want to delete this unit?')">
-                                                    <i class='bx bx-trash'></i> Delete
-                                                </button>
-                                            </form>
-                                            @endif
+                            @if($hasRented)
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link {{ $defaultTab === 'rented' ? 'active' : '' }}" id="rented-tab" data-bs-toggle="tab" data-bs-target="#rented" type="button" role="tab" aria-controls="rented" aria-selected="{{ $defaultTab === 'rented' ? 'true' : 'false' }}">
+                                        Rented Units ({{ $userUnits->where('type', 'Rented')->count() }})
+                                    </button>
+                                </li>
+                            @endif
 
+                            @if($hasSold)
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link {{ $defaultTab === 'sold' ? 'active' : '' }}" id="sold-tab" data-bs-toggle="tab" data-bs-target="#sold" type="button" role="tab" aria-controls="sold" aria-selected="{{ $defaultTab === 'sold' ? 'true' : 'false' }}">
+                                        Sold Units ({{ $userUnits->where('type', 'Sold')->count() }})
+                                    </button>
+                                </li>
+                            @endif
+                        </ul>
 
-                                        </div>
+                        <!-- Tabs Content -->
+                        <div class="tab-content" id="unitsTabContent">
+                            @if($hasRented)
+                                <div class="tab-pane fade {{ $defaultTab === 'rented' ? 'show active' : '' }}" id="rented" role="tabpanel" aria-labelledby="rented-tab">
+                                    <div class="unit-grid">
+                                        @forelse($userUnits->where('type', 'Rented') as $userUnit)
+                                            @php
+                                                $unit = $userUnit->unit;
+                                                $contractType = $userUnit->contract_type;
+                                            @endphp
+                                            <div class="unit-card">
+                                                <div class="card-img-container">
+                                                    @if(count($unit->pictures ?? []) > 0)
+                                                        <img src="{{ asset($unit->pictures[0]->file_path) }}" class="card-img-top" alt="Unit Image">
+                                                    @else
+                                                        <img src="{{ asset('img/placeholder-img.jfif') }}" class="card-img-top" alt="Unit Image">
+                                                    @endif
+                                                    <div class="unit-type-badge">
+                                                        {{ $unit->unit_type ?? 'N/A' }}
+                                                    </div>
+                                                    <div class="unit-status-badge">
+                                                        @if($userUnit->renew_canceled === 1)
+                                                            <button type="button" class="action-btn rented-status-btn btn-discontinue gap-1" title="Discontinue" onclick="updateContractStatus({{ $userUnit->id }}, 1)">
+                                                                <i class='bx bx-pause'></i> Discontinue
+                                                            </button>
+                                                        @else
+                                                            <button type="button" class="action-btn rented-status-btn btn-continue gap-1" title="Continue" onclick="updateContractStatus({{ $userUnit->id }}, 0)">
+                                                                <i class='bx bx-play'></i> Continue
+                                                            </button>
+                                                        @endif
+                                                    </div>
+                                                    <div class="unit-price-tag">
+                                                        PKR {{ $unit->price ?? 'N/A' }}
+                                                    </div>
+                                                    <div class="unit-availability-tag">
+                                                        {{ $unit->availability_status ?? 'N/A' }}
+                                                    </div>
+                                                </div>
+                                                <div class="card-body">
+                                                    <div class="d-flex justify-content-between align-items-center">
+                                                        <h5 class="card-title">{{ $unit->unit_name ?? 'N/A' }}</h5>
+
+                                                    </div>
+                                                    <p class="card-text"><i class='bx bx-buildings me-1'></i> {{ $unit->building->name ?? 'N/A' }}</p>
+                                                    <p class="card-text"><i class='bx bxs-layer me-1'></i> {{ $unit->level->level_name ?? 'N/A' }}</p>
+                                                    <p class="card-text"><i class='bx bx-calendar me-1'></i> Start Date: {{ $userUnit->subscription->created_at ? \Carbon\Carbon::parse($userUnit->subscription->created_at)->format('M d, Y') : 'N/A' }}</p>
+                                                    <p class="card-text"><i class='bx bx-calendar me-1'></i> End Date: {{ $userUnit->subscription->ends_at ? \Carbon\Carbon::parse($userUnit->subscription->ends_at)->format('M d, Y') : 'N/A' }}</p>
+
+                                                    <div class="action-buttons">
+                                                        <a href="{{ route('owner.units.show', $unit->id) }}" class="action-btn btn-add btn-view view-unit gap-1" title="View">
+                                                            <i class='bx bx-show'></i> View
+                                                        </a>
+                                                        <form action="#" method="POST" class="d-inline">
+                                                            @csrf
+                                                            @method('DELETE')
+                                                            <button type="submit" class="action-btn btn-add btn-danger gap-1" title="Delete" onclick="return confirm('Are you sure you want to delete this unit?')">
+                                                                <i class='bx bx-trash'></i> Delete
+                                                            </button>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        @empty
+                                            <div class="col-12">
+                                                <div class="empty-state">
+                                                    <div class="empty-state-icon">
+                                                        <i class='bx bx-building-house'></i>
+                                                    </div>
+                                                    <h4>No Rented Units Found</h4>
+                                                    <p class="text-muted">This user doesn't have any rented units associated with your organization.</p>
+                                                </div>
+                                            </div>
+                                        @endforelse
                                     </div>
                                 </div>
-                            @empty
-                                <div class="col-12">
-                                    <div class="empty-state">
-                                        <div class="empty-state-icon">
-                                            <i class='bx bx-building-house'></i>
-                                        </div>
-                                        <h4>No Units Found</h4>
-                                        <p class="text-muted">This user doesn't have any rented or sold units associated with your organization.</p>
+                            @endif
+
+                            @if($hasSold)
+                                <div class="tab-pane fade {{ $defaultTab === 'sold' ? 'show active' : '' }}" id="sold" role="tabpanel" aria-labelledby="sold-tab">
+                                    <div class="unit-grid">
+                                        @forelse($userUnits->where('type', 'Sold') as $userUnit)
+                                            @php
+                                                $unit = $userUnit->unit;
+                                                $contractType = $userUnit->contract_type;
+                                            @endphp
+                                            <div class="unit-card">
+                                                <div class="card-img-container">
+                                                    @if(count($unit->pictures ?? []) > 0)
+                                                        <img src="{{ asset($unit->pictures[0]->file_path) }}" class="card-img-top" alt="Unit Image">
+                                                    @else
+                                                        <img src="{{ asset('img/placeholder-img.jfif') }}" class="card-img-top" alt="Unit Image">
+                                                    @endif
+                                                    <div class="unit-type-badge">
+                                                        {{ $unit->unit_type ?? 'N/A' }}
+                                                    </div>
+                                                    <div class="unit-price-tag">
+                                                        PKR {{ $unit->price ?? 'N/A' }}
+                                                    </div>
+                                                    <div class="unit-availability-tag">
+                                                        {{ $unit->availability_status ?? 'N/A' }}
+                                                    </div>
+                                                </div>
+                                                <div class="card-body">
+                                                    <div class="d-flex justify-content-between align-items-start">
+                                                        <h5 class="card-title">{{ $unit->unit_name ?? 'N/A' }}</h5>
+                                                    </div>
+                                                    <p class="card-text"><i class='bx bx-buildings me-1'></i> {{ $unit->building->name ?? 'N/A' }}</p>
+                                                    <p class="card-text"><i class='bx bxs-layer me-1'></i> {{ $unit->level->level_name ?? 'N/A' }}</p>
+                                                    <p class="card-text"><i class='bx bx-calendar me-1'></i> Contract Date: {{ $userUnit->created_at ? \Carbon\Carbon::parse($userUnit->created_at)->format('M d, Y') : 'N/A' }}</p>
+
+                                                    <div class="action-buttons">
+                                                        <a href="{{ route('owner.units.show', $unit->id) }}" class="action-btn btn-add btn-view view-unit gap-1" title="View">
+                                                            <i class='bx bx-show'></i> View
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        @empty
+                                            <div class="col-12">
+                                                <div class="empty-state">
+                                                    <div class="empty-state-icon">
+                                                        <i class='bx bx-building-house'></i>
+                                                    </div>
+                                                    <h4>No Sold Units Found</h4>
+                                                    <p class="text-muted">This user doesn't have any sold units associated with your organization.</p>
+                                                </div>
+                                            </div>
+                                        @endforelse
                                     </div>
                                 </div>
-                            @endforelse
-
-
+                            @endif
                         </div>
-                        <!-- Pagination -->
-                        @if ($userUnits)
-                            <div class="mt-4">
-                                {{ $userUnits->appends(request()->query())->links('pagination::bootstrap-5') }}
-                            </div>
-                        @endif
-
 
                     </div>
                 </div>
@@ -869,6 +1034,11 @@
 @endsection
 
 @push('scripts')
+    <script>
+        function resetFilters() {
+            window.location.href = '{{ route('owner.property.users.show', $user->id) }}';
+        }
+    </script>
     <script>
         // View toggle functionality
         document.getElementById('gridViewBtn').addEventListener('click', function() {
@@ -885,14 +1055,6 @@
             document.getElementById('gridViewBtn').classList.remove('active');
         });
 
-        // Reset filters
-        function resetFilters() {
-            document.getElementById('search').value = '';
-            document.getElementById('contract_type').value = '';
-            document.getElementById('status').value = '';
-            document.getElementById('filterForm').submit();
-        }
-
         // View unit modal (you'll need to implement this)
         document.querySelectorAll('.view-unit').forEach(button => {
             button.addEventListener('click', function() {
@@ -901,5 +1063,70 @@
                 console.log('View unit:', unitId);
             });
         });
+
+        // Initialize Bootstrap tabs if needed
+        if (typeof bootstrap !== 'undefined') {
+            var tabElms = document.querySelectorAll('button[data-bs-toggle="tab"]');
+            tabElms.forEach(function(tabEl) {
+                new bootstrap.Tab(tabEl);
+            });
+        }
+    </script>
+
+    <script>
+        async function updateContractStatus(contractId, value) {
+            const action = value === 1 ? 'discontinue' : 'continue';
+
+            try {
+                const result = await Swal.fire({
+                    title: 'Are you sure?',
+                    text: `Are you sure you want to ${action} this rental?`,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: `Yes, ${action} it!`
+                });
+
+                if (result.isConfirmed) {
+                    const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+
+                    const response = await fetch('{{ route("owner.property.users.contractStatus") }}', {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': csrfToken,
+                            'X-Requested-With': 'XMLHttpRequest'
+                        },
+                        body: JSON.stringify({
+                            contract_id: contractId,
+                            value: value
+                        })
+                    });
+
+                    const data = await response.json();
+
+                    if (!response.ok) {
+                        throw new Error(data.error || 'Failed to update contract status');
+                    }
+
+                    await Swal.fire({
+                        title: 'Success!',
+                        text: data.message,
+                        icon: 'success',
+                        confirmButtonText: 'OK'
+                    });
+
+                    window.location.reload();
+                }
+            } catch (error) {
+                Swal.fire({
+                    title: 'Error!',
+                    text: error.message || 'An unexpected error occurred',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+            }
+        }
     </script>
 @endpush

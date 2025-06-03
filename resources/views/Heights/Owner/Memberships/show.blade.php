@@ -692,7 +692,6 @@
                                             <th>Contact</th>
                                             <th>Start Date</th>
                                             <th>End Date</th>
-                                            <th>Cancel</th>
                                             <th>Mark Payment Received</th>
                                         </tr>
                                         </thead>
@@ -711,8 +710,12 @@
                                                 <td>{{ $user->user->phone_no ?? 'N/A' }}</td>
                                                 <td>{{ $user->subscription->created_at ? \Carbon\Carbon::parse($user->subscription->created_at)->format('M d, Y') : 'N/A' }}</td>
                                                 <td>{{ $user->subscription->ends_at ? \Carbon\Carbon::parse($user->subscription->ends_at)->format('M d, Y') : 'N/A' }}</td>
-                                                <td>Cancel</td>
-                                                <td>Marked</td>
+                                                <td>
+                                                    <button class="btn btn-primary mark-payment-received"
+                                                            data-user-membership-id="{{ $user->id }}">
+                                                        Mark Payment
+                                                    </button>
+                                                </td>
                                             </tr>
                                         @endforeach
                                         </tbody>
@@ -740,6 +743,74 @@
 @endsection
 
 @push('scripts')
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add event listeners to all mark payment buttons
+            document.querySelectorAll('.mark-payment-received').forEach(button => {
+                button.addEventListener('click', function() {
+                    const userMembershipId = this.getAttribute('data-user-membership-id');
+
+                    // Show confirmation dialog
+                    Swal.fire({
+                        title: 'Are you sure?',
+                        text: "You want to mark this payment as received?",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Yes, mark as received!'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            // Prepare the request data
+                            const requestData = {
+                                user_membership_id: userMembershipId,
+                                _token: '{{ csrf_token() }}' // CSRF token for Laravel
+                            };
+
+                            // Make the fetch request
+                            fetch("{{ route('owner.memberships.planPaymentReceived') }}", {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'Accept': 'application/json',
+                                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                                },
+                                body: JSON.stringify(requestData)
+                            })
+                                .then(response => {
+                                    if (!response.ok) {
+                                        throw new Error('Network response was not ok');
+                                    }
+                                    return response.json();
+                                })
+                                .then(data => {
+                                    if (data.message) {
+                                        Swal.fire(
+                                            'Success!',
+                                            data.message,
+                                            'success'
+                                        );
+                                        // Optional: reload the page or update the UI
+                                        // window.location.reload();
+                                    } else {
+                                        throw new Error('Unexpected response format');
+                                    }
+                                })
+                                .catch(error => {
+                                    console.error('Error:', error);
+                                    Swal.fire(
+                                        'Error!',
+                                        error.message || 'Failed to mark payment as received.',
+                                        'error'
+                                    );
+                                });
+                        }
+                    });
+                });
+            });
+        });
+    </script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         // Only run if not on mobile
