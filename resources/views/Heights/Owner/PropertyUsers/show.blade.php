@@ -914,11 +914,11 @@
                                                     </div>
                                                     <div class="unit-status-badge">
                                                         @if($userUnit->renew_canceled === 1)
-                                                            <button type="button" class="action-btn rented-status-btn btn-discontinue gap-1" title="Discontinue" onclick="updateContractStatus({{ $userUnit->id }}, 1)">
+                                                            <button type="button" class="action-btn rented-status-btn btn-discontinue gap-1" title="Discontinue" onclick="updateContractStatus({{ $userUnit->id }}, 0)">
                                                                 <i class='bx bx-pause'></i> Discontinue
                                                             </button>
                                                         @else
-                                                            <button type="button" class="action-btn rented-status-btn btn-continue gap-1" title="Continue" onclick="updateContractStatus({{ $userUnit->id }}, 0)">
+                                                            <button type="button" class="action-btn rented-status-btn btn-continue gap-1" title="Continue" onclick="updateContractStatus({{ $userUnit->id }}, 1)">
                                                                 <i class='bx bx-play'></i> Continue
                                                             </button>
                                                         @endif
@@ -933,12 +933,20 @@
                                                 <div class="card-body">
                                                     <div class="d-flex justify-content-between align-items-center">
                                                         <h5 class="card-title">{{ $unit->unit_name ?? 'N/A' }}</h5>
-
+                                                        <a href="#"
+                                                           class="btn btn-sm btn-warning contract-edit-btn rounded-circle py-1 px-0"  data-contract-id="{{ $userUnit->id }}"  style="color: #fff !important;"
+                                                           data-bs-toggle="tooltip"
+                                                           data-bs-placement="top"
+                                                           title="Edit">
+                                                            <x-icon name="edit" type="icon" size="16px" />
+                                                        </a>
                                                     </div>
                                                     <p class="card-text"><i class='bx bx-buildings me-1'></i> {{ $unit->building->name ?? 'N/A' }}</p>
                                                     <p class="card-text"><i class='bx bxs-layer me-1'></i> {{ $unit->level->level_name ?? 'N/A' }}</p>
+                                                    <p class="card-text"><i class='bx bx-time me-1'></i> Billing Cycle: {{ $userUnit->subscription->billing_cycle ?? 'N/A' }} Month</p>
                                                     <p class="card-text"><i class='bx bx-calendar me-1'></i> Start Date: {{ $userUnit->subscription->created_at ? \Carbon\Carbon::parse($userUnit->subscription->created_at)->format('M d, Y') : 'N/A' }}</p>
-                                                    <p class="card-text"><i class='bx bx-calendar me-1'></i> End Date: {{ $userUnit->subscription->ends_at ? \Carbon\Carbon::parse($userUnit->subscription->ends_at)->format('M d, Y') : 'N/A' }}</p>
+                                                    <p class="card-text"><i class='bx bx-calendar me-1'></i> Next Billing: {{ $userUnit->subscription->ends_at ? \Carbon\Carbon::parse($userUnit->subscription->ends_at)->format('M d, Y') : 'N/A' }}</p>
+                                                    <p class="card-text"><i class='bx bx-money me-1'></i> Next Billing Amount: {{ $unit->price ?? 'N/A' }}</p>
 
                                                     <div class="action-buttons">
                                                         <a href="{{ route('owner.units.show', $unit->id) }}" class="action-btn btn-add btn-view view-unit gap-1" title="View">
@@ -1085,7 +1093,9 @@
                     showCancelButton: true,
                     confirmButtonColor: '#3085d6',
                     cancelButtonColor: '#d33',
-                    confirmButtonText: `Yes, ${action} it!`
+                    confirmButtonText: `Yes, ${action} it!`,
+                    background: 'var(--body-background-color)',
+                    color: 'var(--sidenavbar-text-color)',
                 });
 
                 if (result.isConfirmed) {
@@ -1114,7 +1124,9 @@
                         title: 'Success!',
                         text: data.message,
                         icon: 'success',
-                        confirmButtonText: 'OK'
+                        confirmButtonText: 'OK',
+                        background: 'var(--body-background-color)',
+                        color: 'var(--sidenavbar-text-color)',
                     });
 
                     window.location.reload();
@@ -1124,9 +1136,143 @@
                     title: 'Error!',
                     text: error.message || 'An unexpected error occurred',
                     icon: 'error',
-                    confirmButtonText: 'OK'
+                    confirmButtonText: 'OK',
+                    background: 'var(--body-background-color)',
+                    color: 'var(--sidenavbar-text-color)',
                 });
             }
         }
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Handle contract edit button clicks
+            document.querySelectorAll('.contract-edit-btn').forEach(button => {
+                button.addEventListener('click', async function(e) {
+                    e.preventDefault();
+
+                    // Get the contract ID
+                    const contractId = this.getAttribute('data-contract-id') ||
+                        this.closest('[data-contract-id]')?.getAttribute('data-contract-id');
+
+                    if (!contractId) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Contract ID not found',
+                            confirmButtonColor: '#3085d6',
+                            background: 'var(--body-background-color)',
+                            color: 'var(--sidenavbar-text-color)',
+                        });
+                        return;
+                    }
+
+                    try {
+
+                        // Make the fetch request
+                        const response = await fetch(`{{ route('owner.property.users.contract.edit', ':id') }}`.replace(':id', contractId), {
+                            headers: {
+                                'Accept': 'application/json',
+                                'X-Requested-With': 'XMLHttpRequest'
+                            }
+                        });
+
+                        // Close loading SweetAlert
+                        Swal.close();
+
+                        if (!response.ok) {
+                            const errorData = await response.json();
+                            throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+                        }
+
+                        const data = await response.json();
+
+                        if (data.error) {
+                            throw new Error(data.error);
+                        }
+
+                        // Create and show the edit modal
+                        showEditContractModal(data.contract);
+
+                    } catch (error) {
+                        console.error('Error fetching contract:', error);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: error.message || 'Failed to load contract details',
+                            confirmButtonColor: '#3085d6',
+                            background: 'var(--body-background-color)',
+                            color: 'var(--sidenavbar-text-color)',
+                        });
+                    }
+                });
+            });
+
+            // Function to show the edit contract modal
+            function showEditContractModal(contract) {
+                // Create modal HTML
+                const modalHtml = `
+            <div class="modal fade" id="editContractModal" tabindex="-1" aria-labelledby="editContractModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-md modal-dialog-centered">
+                    <div class="modal-content" style="background-color: var(--body-card-bg);">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="editContractModalLabel" style="color: var(--sidenavbar-text-color)">Edit Contract</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="editContractForm" method="POST" action="{{ route('owner.property.users.contract.update') }}">
+                                @csrf
+                                    @method('PUT')
+                                    <input type="hidden" name="contract_id" value="${contract.id}">
+
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="billingCycle" class="form-label">Billing Cycle (months)</label>
+                                        <input type="number" class="form-control" id="billingCycle" name="billing_cycle"
+                                               value="${contract.billing_cycle}" min="1" required>
+                                    </div>
+
+                                    <div class="col-md-6 mb-3">
+                                        <label for="price" class="form-label">Price</label>
+                                        <input type="number" class="form-control" id="price" name="price"
+                                               value="${contract.price}" min="0" step="0.01" required>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button type="submit" form="editContractForm" class="btn btn-primary" id="saveContractChanges">Save Changes</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+
+                // Add modal to DOM
+                const modalContainer = document.createElement('div');
+                modalContainer.innerHTML = modalHtml;
+                document.body.appendChild(modalContainer);
+
+                // Initialize modal
+                const modal = new bootstrap.Modal(document.getElementById('editContractModal'));
+                modal.show();
+
+                // Handle form submission
+                document.getElementById('editContractForm').addEventListener('submit', function(e) {
+                    // Show loading state
+                    const saveButton = document.getElementById('saveContractChanges');
+                    saveButton.disabled = true;
+                    saveButton.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Saving...';
+
+                    // The form will submit normally and the page will refresh
+                });
+
+                // Clean up modal when closed
+                document.getElementById('editContractModal').addEventListener('hidden.bs.modal', function() {
+                    modalContainer.remove();
+                });
+            }
+        });
     </script>
 @endpush

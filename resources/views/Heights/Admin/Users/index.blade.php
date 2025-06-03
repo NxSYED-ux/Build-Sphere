@@ -366,6 +366,64 @@
             z-index: 10;
         }
 
+        .member-actions-dropdown .enable-query-toggle-btn {
+            position: relative;
+            display: inline-block;
+            width: 36px;
+            height: 18px;
+        }
+
+        .member-actions-dropdown .enable-query-toggle-btn input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .member-actions-dropdown .status-text{
+            color: var(--sidenavbar-text-color) !important;
+        }
+
+        .member-actions-dropdown .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #e0e0e0;
+            transition: .4s;
+            border-radius: 18px;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .member-actions-dropdown .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 14px;
+            width: 14px;
+            left: 2px;
+            bottom: 2px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+        }
+
+        .member-actions-dropdown input:checked + .toggle-slider {
+            background-color: #4CAF50;
+        }
+
+        .member-actions-dropdown input:checked + .toggle-slider:before {
+            transform: translateX(18px);
+        }
+
+        .member-actions-dropdown input:focus + .toggle-slider {
+            box-shadow: 0 0 1px #4CAF50;
+        }
+
+
+        /**/
+
         .dropdown-toggle-btn {
             background: transparent;
             border: none;
@@ -514,11 +572,13 @@
                                             <button class="btn btn-sm dropdown-toggle-btn rounded-circle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                                                 <i class="fas fa-ellipsis-v fa-lg"></i>
                                             </button>
-                                            <ul class="dropdown-menu dropdown-menu-end">
-                                                <li>
-                                                    <a class="dropdown-item delete-item delete-member-btn text-danger" href="#" data-member-id="{{ $user->id }}">
-                                                        <i class="fas fa-trash-alt me-2"></i> Delete User
-                                                    </a>
+                                            <ul class="dropdown-menu dropdown-menu-end" style="padding: 0.5rem;">
+                                                <li class="px-3 py-2 d-flex align-items-center justify-content-between" onclick="event.stopPropagation()">
+                                                    <span class="me-2 status-text">{{ $user->status === 1 ? 'Active' : 'Inactive' }}</span>
+                                                    <label class="enable-query-toggle-btn">
+                                                        <input type="checkbox" class="status-toggle" data-user-id="{{ $user->id }}" {{ $user->status === 1 ? 'checked' : '' }}>
+                                                        <span class="toggle-slider"></span>
+                                                    </label>
                                                 </li>
                                             </ul>
                                         </div>
@@ -690,6 +750,97 @@
                         .catch(error => {
                             console.error("Error:", error);
                         });
+                });
+            });
+        });
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.status-toggle').forEach(toggle => {
+                toggle.addEventListener('change', function() {
+                    const userId = this.dataset.userId;
+                    const isActive = this.checked;
+                    const card = this.closest('.member-card');
+                    const statusText = this.closest('.dropdown-menu').querySelector('.status-text');
+                    const statusIndicator = card.querySelector('.member-card-status');
+
+                    // Store original state in case we need to revert
+                    const originalState = this.checked;
+
+                    // Show confirmation dialog
+                    Swal.fire({
+                        title: 'Confirm Status Change',
+                        text: `Are you sure you want to set this user to ${isActive ? 'Active' : 'Inactive'}?`,
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Yes, update it!',
+                        background: 'var(--body-background-color)',
+                        color: 'var(--sidenavbar-text-color)',
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            // Proceed with the status change
+                            fetch('{{ route("user.toggleStatus") }}', {
+                                method: 'PUT',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                    'Accept': 'application/json'
+                                },
+                                body: JSON.stringify({
+                                    id: userId
+                                })
+                            })
+                                .then(response => {
+                                    if (!response.ok) {
+                                        throw new Error('Network response was not ok');
+                                    }
+                                    return response.json();
+                                })
+                                .then(data => {
+                                    // Update the status text
+                                    statusText.textContent = data.new_status ? 'Active' : 'Inactive';
+
+                                    // Update the status indicator in the card
+                                    if (statusIndicator) {
+                                        statusIndicator.classList.remove('bg-success', 'bg-danger');
+                                        statusIndicator.classList.add(data.new_status ? 'bg-success' : 'bg-danger');
+                                    }
+
+                                    // Show success message
+                                    Swal.fire(
+                                        'Updated!',
+                                        'User status has been updated.',
+                                        'success'
+                                    );
+                                    Swal.fire({
+                                        title: 'Updated!',
+                                        text: `User Status set to ${isActive ? 'Active' : 'Inactive'} Successfuly!`,
+                                        icon: 'success',
+                                        confirmButtonColor: '#3085d6',
+                                        background: 'var(--body-background-color)',
+                                        color: 'var(--sidenavbar-text-color)',
+                                    })
+                                })
+                                .catch(error => {
+                                    console.error('Error:', error);
+                                    // Revert the toggle if there's an error
+                                    this.checked = originalState;
+                                    Swal.fire({
+                                        title: 'Error!',
+                                        text: `Failed to update user status.`,
+                                        icon: 'error',
+                                        background: 'var(--body-background-color)',
+                                        color: 'var(--sidenavbar-text-color)',
+                                    })
+                                });
+                        } else {
+                            // User cancelled - revert the toggle
+                            this.checked = !originalState;
+                        }
+                    });
                 });
             });
         });
