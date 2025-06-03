@@ -16,6 +16,11 @@ class MembershipService
         $source_name = 'membership';
         $isSubscription = false;
 
+        if ($purpose){
+            $endsAt = $userMembershipRecord->ends_at;
+            $newEndsAt = $endsAt && $endsAt->isFuture() ? $endsAt->copy()->addMonths($membership->duration_months) : now()->addMonths($membership->duration_months);
+        }
+
         if ($membership->status === 'Published') {
             $subscription = Subscription::create([
                 'customer_payment_id' => $user->customer_payment_id,
@@ -29,7 +34,7 @@ class MembershipService
                 'subscription_status' => 'Active',
                 'price_at_subscription' => $membership->price,
                 'currency_at_subscription' => $membership->currency,
-                'ends_at' => now()->addMonths($membership->duration_months),
+                'ends_at' => $newEndsAt ?? now()->addMonths($membership->duration_months),
             ]);
 
             $source_id = $subscription->id;
@@ -45,14 +50,13 @@ class MembershipService
                 ]);
             }
 
-            $endsAt = $userMembershipRecord->ends_at;
-            $newEndsAt = $endsAt && $endsAt->isFuture() ? $endsAt->copy()->addMonths($membership->duration_months) : now()->addMonths($membership->duration_months);
-
             $userMembershipRecord->update([
                 'subscription_id' => $isSubscription ? $source_id : null,
                 'ends_at' => $newEndsAt,
                 'quantity' => $membership->scans_per_day,
             ]);
+
+
         }
         else{
             MembershipUser::create([
