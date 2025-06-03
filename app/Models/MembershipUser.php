@@ -21,6 +21,10 @@ class MembershipUser extends Model
         'ends_at'
     ];
 
+    protected $casts = [
+        'ends_at' => 'date:Y-m-d',
+    ];
+
     // Belongs to relations
     public function user()
     {
