@@ -46,7 +46,7 @@ class MembershipService
             }
 
             $endsAt = $userMembershipRecord->ends_at;
-            $newEndsAt = $endsAt && $endsAt->isFuture() ? $endsAt->copy()->addMonths($membership->duration_months) : now()->addMonths($membership->duration_months);
+            $newEndsAt = $endsAt && $endsAt > now() ? $endsAt->copy()->addMonths($membership->duration_months) : now()->addMonths($membership->duration_months);
 
             $userMembershipRecord->update([
                 'subscription_id' => $isSubscription ? $source_id : null,

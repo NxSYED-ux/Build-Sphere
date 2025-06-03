@@ -16,9 +16,9 @@ class ReportsController extends Controller
         $user = $request->user();
         $token = $request->attributes->get('token');
         $organization_id = $token['organization_id'];
-        $role_name = $token['role_name'];
+        $role_id = $token['role_id'];
 
-        return $this->orgOccupancyStats($request, $organization_id, $role_name, $user->id, 'user_id');
+        return $this->orgOccupancyStats($request, $organization_id, $role_id, $user->id, 'user_id');
     }
 
     public function getOrgMonthlyFinancialStats(Request $request)
@@ -26,9 +26,9 @@ class ReportsController extends Controller
         $user = $request->user();
         $token = $request->attributes->get('token');
         $organization_id = $token['organization_id'];
-        $role_name = $token['role_name'];
+        $role_id = $token['role_id'];
 
-        return $this->orgMonthlyStats($request, $organization_id, $role_name, $user->id, 'user_id');
+        return $this->orgMonthlyStats($request, $organization_id, $role_id, $user->id, 'user_id');
     }
 
 
@@ -38,7 +38,7 @@ class ReportsController extends Controller
         $token = $request->attributes->get('token');
         $organization_id = $token['organization_id'];
 
-        return $this->orgMonthlyStats($request, $organization_id, 'Manager', $id, 'staff_id');
+        return $this->orgMonthlyStats($request, $organization_id, 3, $id, 'staff_id');
     }
 
     public function getManagerBuildingsOccupancyStats(Request $request, string $id)
@@ -46,21 +46,21 @@ class ReportsController extends Controller
         $token = $request->attributes->get('token');
         $organization_id = $token['organization_id'];
 
-        return $this->orgOccupancyStats($request, $organization_id, 'Manager', $id, 'staff_id');
+        return $this->orgOccupancyStats($request, $organization_id, 3, $id, 'staff_id');
     }
 
 
     // Helper function
-    private function orgOccupancyStats(Request $request, string $organization_id, string $role_name, string $id, string $trackOn)
+    private function orgOccupancyStats(Request $request, string $organization_id, int $roleId, string $id, string $trackOn)
     {
+        $building_id = $request->input('buildingId');
+
         try {
-            $building_id = $request->input('buildingId');
+            $buildingIds = [];
+            if ($roleId === 3) {
+                $buildingIds = ManagerBuilding::where($trackOn, $id)->pluck('building_id')->toArray();
 
-            $managerBuildingIds = [];
-            if ($role_name === 'Manager') {
-                $managerBuildingIds = ManagerBuilding::where($trackOn, $id)->pluck('building_id')->toArray();
-
-                if ($building_id && !in_array($building_id, $managerBuildingIds)) {
+                if ($building_id && !in_array($building_id, $buildingIds)) {
                     return response()->json(['error' => 'You do not have access to this building.'], 403);
                 }
             }
@@ -68,9 +68,9 @@ class ReportsController extends Controller
             $units = BuildingUnit::where('organization_id', $organization_id)
                 ->when($building_id, function ($query) use ($building_id) {
                     $query->where('building_id', $building_id);
-                }, function ($query) use ($role_name, $managerBuildingIds) {
-                    if ($role_name === 'Manager') {
-                        $query->whereIn('building_id', $managerBuildingIds);
+                }, function ($query) use ($roleId, $buildingIds) {
+                    if ($roleId === 3) {
+                        $query->whereIn('building_id', $buildingIds);
                     }
                 })
                 ->select('availability_status')
@@ -90,18 +90,18 @@ class ReportsController extends Controller
         }
     }
 
-    private function orgMonthlyStats(Request $request, string $organization_id, string $role_name, string $id, string $trackOn)
+    private function orgMonthlyStats(Request $request, string $organization_id, int $roleId, string $id, string $trackOn)
     {
+        $selectedBuildingId = $request->input('buildingId');
         try {
-            $managerBuildingIds = null;
-            $selectedBuildingId = $request->input('buildingId');
 
-            if ($role_name === 'Manager') {
-                $managerBuildingIds = ManagerBuilding::where($trackOn, $id)
+            $buildingIds = [];
+            if ($roleId === 3) {
+                $buildingIds = ManagerBuilding::where($trackOn, $id)
                     ->pluck('building_id')
                     ->toArray();
 
-                if ($selectedBuildingId && !in_array($selectedBuildingId, $managerBuildingIds)) {
+                if ($selectedBuildingId && !in_array($selectedBuildingId, $buildingIds)) {
                     return response()->json(['error' => 'Unauthorized building access'], 403);
                 }
             }
@@ -147,8 +147,8 @@ class ReportsController extends Controller
                     ->when($selectedBuildingId, function ($query) use ($selectedBuildingId) {
                         return $query->where('building_id', $selectedBuildingId);
                     })
-                    ->when($role_name === 'Manager' && !$selectedBuildingId, function ($query) use ($managerBuildingIds) {
-                        return $query->whereIn('building_id', $managerBuildingIds);
+                    ->when($roleId === 3 && !$selectedBuildingId, function ($query) use ($buildingIds) {
+                        return $query->whereIn('building_id', $buildingIds);
                     })
                     ->sum('price');
 
@@ -159,8 +159,8 @@ class ReportsController extends Controller
                     ->when($selectedBuildingId, function ($query) use ($selectedBuildingId) {
                         return $query->where('building_id', $selectedBuildingId);
                     })
-                    ->when($role_name === 'Manager' && !$selectedBuildingId, function ($query) use ($managerBuildingIds) {
-                        return $query->whereIn('building_id', $managerBuildingIds);
+                    ->when($roleId === 3 && !$selectedBuildingId, function ($query) use ($buildingIds) {
+                        return $query->whereIn('building_id', $buildingIds);
                     })
                     ->sum('price');
 
