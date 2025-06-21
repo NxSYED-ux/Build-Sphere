@@ -390,7 +390,7 @@
         }
 
         /* ================ */
-        /* Building Stats Cards */
+        /* Building Stats Cards - Light Theme */
         /* ================ */
         .building-stats-cards {
             display: flex;
@@ -401,46 +401,72 @@
 
         .building-stat-card {
             flex: 1;
-            min-width: 200px;
-            background: var(--sidenavbar-body-color);
-            border-radius: 16px;
+            min-width: 300px;
+            background-color: var(--body-background-color);
+            border-radius: 8px;
             padding: 1.5rem;
             display: flex;
             align-items: center;
-            gap: 1rem;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            gap: 1.25rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            border: 1px solid #e9ecef;
+            position: relative;
+            overflow: hidden;
         }
 
         .building-stat-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            border-color: #dee2e6;
         }
 
         .stat-icon {
             font-size: 1.75rem;
-            color: #fff;
-            width: 50px;
-            height: 50px;
-            background: rgba(0, 128, 128, 0.1);
-            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            background-color: rgba(108, 117, 125, 0.1);
+            border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
+            flex-shrink: 0;
+            transition: all 0.3s ease;
+        }
+
+        .building-stat-card:hover .stat-icon {
+            color: var(--sidenavbar-text-color);
+            transform: scale(1.05);
         }
 
         .stat-content h3 {
-            font-size: 0.9rem;
-            color: #fff;
-            margin-bottom: 0.25rem;
+            font-size: 1rem;
+            color: var(--sidenavbar-text-color);
+            margin-bottom: 0.5rem;
             font-weight: 600;
         }
 
         .stat-content p {
-            font-size: 1.25rem;
+            font-size: 1.75rem;
             font-weight: 700;
-            color: #fff;
+            color: var(--sidenavbar-text-color);
             margin: 0;
+            line-height: 1;
+        }
+
+        .stat-description {
+            display: block;
+            font-size: 0.8rem;
+            color: var(--sidenavbar-text-color);
+            margin-top: 0.25rem;
+            font-weight: 400;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .building-stats-cards {
+                grid-template-columns: 1fr;
+            }
         }
 
         /* ================ */
@@ -474,9 +500,9 @@
                 margin: 0 auto;
             }
 
-            .building-stats-cards {
-                flex-direction: column;
-            }
+            /*.building-stats-cards {*/
+            /*    flex-direction: column;*/
+            /*}*/
 
             .building-stat-card {
                 width: 100%;
@@ -650,33 +676,75 @@
 
                         <!-- New: 3 Cards Row (below hero section) -->
                         <div class="building-stats-cards">
-                            <div class="building-stat-card" style="background-color: #87CEEB !important;">
-                                <div class="stat-icon">
-                                    <i class="bx bx-layer"></i>
+                            <!-- Level Card -->
+                            <div class="building-stat-card" style="border-left: 4px solid #6f42c1;">
+                                <div class="stat-icon" style="color: #6f42c1;">
+                                    <i class="fas fa-layer-group"></i>
                                 </div>
                                 <div class="stat-content">
                                     <h3>Levels</h3>
                                     <p>4</p>
+                                    <span class="stat-description">Total building floors</span>
                                 </div>
                             </div>
 
-                            <div class="building-stat-card" style="background-color: #FA8072 !important;">
-                                <div class="stat-icon">
-                                    <i class="fas fa-cube"></i>
+                            <!-- Units Card -->
+                            <div class="building-stat-card" style="border-left: 4px solid #20c997;">
+                                <div class="stat-icon" style="color: #20c997;">
+                                    <i class="fas fa-home"></i>
                                 </div>
                                 <div class="stat-content">
                                     <h3>Units</h3>
                                     <p>10</p>
+                                    <span class="stat-description">Total units</span>
                                 </div>
                             </div>
 
-                            <div class="building-stat-card" style="background-color: #66CDAA !important;">
-                                <div class="stat-icon">
-                                    <i class="fas fa-building"></i>
+                            <!-- Memberships Card -->
+                            <div class="building-stat-card" style="border-left: 4px solid #fd7e14;">
+                                <div class="stat-icon" style="color: #fd7e14;">
+                                    <i class="fas fa-users"></i>
                                 </div>
                                 <div class="stat-content">
-                                    <h3>Organization</h3>
-                                    <p>{{ $building->organization->name ?? 'N/A' }}</p>
+                                    <h3>Memberships</h3>
+                                    <p>0</p>
+                                    <span class="stat-description">Available Memberships</span>
+                                </div>
+                            </div>
+
+                            <!-- Available Units Card -->
+                            <div class="building-stat-card" style="border-left: 4px solid #6610f2;">
+                                <div class="stat-icon" style="color: #6610f2;">
+                                    <i class="fas fa-door-open"></i>
+                                </div>
+                                <div class="stat-content">
+                                    <h3>Available Units</h3>
+                                    <p>4</p>
+                                    <span class="stat-description">Ready for rent/sale</span>
+                                </div>
+                            </div>
+
+                            <!-- Rented Units Card -->
+                            <div class="building-stat-card" style="border-left: 4px solid #0dcaf0;">
+                                <div class="stat-icon" style="color: #0dcaf0;">
+                                    <i class="fas fa-key"></i>
+                                </div>
+                                <div class="stat-content">
+                                    <h3>Rented Units</h3>
+                                    <p>10</p>
+                                    <span class="stat-description">Currently occupied</span>
+                                </div>
+                            </div>
+
+                            <!-- Sold Units Card -->
+                            <div class="building-stat-card" style="border-left: 4px solid #d63384;">
+                                <div class="stat-icon" style="color: #d63384;">
+                                    <i class="fas fa-handshake"></i>
+                                </div>
+                                <div class="stat-content">
+                                    <h3>Sold Units</h3>
+                                    <p>2</p>
+                                    <span class="stat-description">Ownership transferred</span>
                                 </div>
                             </div>
                         </div>

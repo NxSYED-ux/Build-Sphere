@@ -464,7 +464,7 @@
                     @csrf
                     <div class="modal-body">
 
-                        <div class="row my-0 py-2">
+                        <div class="row my-0 py-1">
                             <div class="col-12">
                                 <div class="form-group mb-3">
                                     <label for="level_name">Level Name</label>
@@ -495,7 +495,7 @@
                             <div class="col-12">
                                 <div class="form-group mb-3">
                                     <label for="description">Description</label>
-                                    <input type="text" name="description" id="description" class="form-control @error('description') is-invalid @enderror" value="{{ old('description') }}" maxlength="50" placeholder="Description">
+                                    <textarea name="description" id="description" class="form-control @error('description') is-invalid @enderror" rows="2" maxlength="50" placeholder="Description">{{ old('description') }}</textarea>
                                     @error('description')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
@@ -546,7 +546,7 @@
                     <input type="hidden" name="updated_at" id="edit_updated_at">
                     <input type="hidden" name="level_id" id="edit_level_id">
                     <div class="modal-body">
-                        <div class="row mb-4">
+                        <div class="row my-0 py-1">
                             <div class="col-12">
                                 <div class="form-group mb-3">
                                     <label for="level_name">Level Name</label>
@@ -577,25 +577,8 @@
                             <div class="col-12">
                                 <div class="form-group mb-3">
                                     <label for="description">Description</label>
-                                    <input type="text" name="description" id="edit_description" class="form-control @error('description') is-invalid @enderror" value="{{ old('description') }}" maxlength="50" placeholder="Description">
+                                    <textarea name="description" id="edit_description" class="form-control @error('description') is-invalid @enderror" rows="2" maxlength="50" placeholder="Description">{{ old('description') }}</textarea>
                                     @error('description')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                    @enderror
-                                </div>
-                            </div>
-
-                            <!--  -->
-                            <div class="col-12">
-                                <div class="form-group mb-3">
-                                    <label for="building_id">Building</label>
-                                    <span class="required__field">*</span><br>
-                                    <select class="form-select" id="edit_building_id" name="building_id" required>
-                                        <option value="" disabled {{ old('building_id') === null ? 'selected' : '' }}>Select Building</option>
-
-                                    </select>
-                                    @error('building_id')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
                                     </span>
@@ -733,21 +716,6 @@
                                 document.getElementById("edit_description").value = data.level?.description || "";
                                 document.getElementById("edit_level_number").value = data.level?.level_number !== undefined ? data.level.level_number : "";
                                 document.getElementById("edit_updated_at").value = data.level?.updated_at || "";
-
-                                const buildingSelect = document.getElementById("edit_building_id");
-                                buildingSelect.innerHTML = `<option value="" disabled>Select Building</option>`;
-
-                                if (Array.isArray(data.buildings) && data.buildings.length > 0) {
-                                    data.buildings.forEach(building => {
-                                        if (building && building.id && building.name) {
-                                            const isSelected = building.id === data.level?.building_id ? 'selected' : '';
-                                            buildingSelect.innerHTML += `<option value="${building.id}" ${isSelected}>${building.name}</option>`;
-                                        }
-                                    });
-                                } else {
-                                    buildingSelect.innerHTML += `<option value="" disabled>No buildings available</option>`;
-                                }
-
 
                                 // Set form action dynamically
                                 const editForm = document.getElementById("editLevelForm");

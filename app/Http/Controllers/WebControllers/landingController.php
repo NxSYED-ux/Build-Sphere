@@ -23,4 +23,14 @@ class landingController extends Controller
         return view('landing-views.index', compact('planCycles', 'selectedPlanCycle'));
     }
 
+    public function aboutUs()
+    {
+        return view('landing-views.aboutUs');
+    }
+
+    public function contactUs()
+    {
+        return view('landing-views.contactUs');
+    }
+
 }

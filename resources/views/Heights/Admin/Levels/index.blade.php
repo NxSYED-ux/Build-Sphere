@@ -480,7 +480,7 @@
                     @csrf
                     <div class="modal-body">
 
-                        <div class="row my-0 py-2">
+                        <div class="row my-0 py-1">
                             <div class="col-12">
                                 <div class="form-group mb-3">
                                     <label for="level_name">Level Name</label>
@@ -508,18 +508,6 @@
                                 </div>
                             </div>
 
-                            <div class="col-12">
-                                <div class="form-group mb-3">
-                                    <label for="description">Description</label>
-                                    <input type="text" name="description" id="description" class="form-control @error('description') is-invalid @enderror" value="{{ old('description') }}" maxlength="50" placeholder="Description">
-                                    @error('description')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                    @enderror
-                                </div>
-                            </div>
-
                             <!--  -->
                             <div class="col-12">
                                 <div class="form-group mb-3">
@@ -529,6 +517,18 @@
                                         <option value="" disabled {{ old('building_id') === null ? 'selected' : '' }}>Select Building</option>
                                     </select>
                                     @error('building_id')
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <div class="form-group mb-3">
+                                    <label for="description">Description</label>
+                                    <textarea name="description" id="description" class="form-control @error('description') is-invalid @enderror" rows="2" maxlength="50" placeholder="Description">{{ old('description') }}</textarea>
+                                    @error('description')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
                                     </span>
@@ -565,7 +565,7 @@
                     <input type="hidden" name="level_id" id="edit_level_id">
                     <input type="hidden" name="organization_id" id="edit_organization_id">
                     <div class="modal-body">
-                        <div class="row mb-4">
+                        <div class="row my-0 py-1">
                             <div class="col-12">
                                 <div class="form-group mb-3">
                                     <label for="level_name">Level Name</label>
@@ -596,7 +596,7 @@
                             <div class="col-12">
                                 <div class="form-group mb-3">
                                     <label for="description">Description</label>
-                                    <input type="text" name="description" id="edit_description" class="form-control @error('description') is-invalid @enderror" value="{{ old('description') }}" maxlength="50" placeholder="Description">
+                                    <textarea name="description" id="edit_description" class="form-control @error('description') is-invalid @enderror" rows="2" maxlength="50" placeholder="Description">{{ old('description') }}</textarea>
                                     @error('description')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
@@ -604,6 +604,7 @@
                                     @enderror
                                 </div>
                             </div>
+
                         </div>
                     </div>
                     <div class="modal-footer">

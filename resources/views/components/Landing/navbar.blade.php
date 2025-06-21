@@ -59,8 +59,8 @@
         <!-- Desktop Menu -->
         <div class="hidden lg:flex lg:gap-x-12">
             <a href="{{ route('index') }}" class="text-sm font-semibold text-gray-900 ">Home</a>
-            <a href="#" class="text-sm font-semibold text-gray-900 ">About Us</a>
-            <a href="#" class="text-sm font-semibold text-gray-900 ">Contact Us</a>
+            <a href="{{ route('about') }}" class="text-sm font-semibold text-gray-900 ">About Us</a>
+            <a href="{{ route('contact') }}" class="text-sm font-semibold text-gray-900 ">Contact Us</a>
         </div>
 
         <!-- Mobile Menu Button -->

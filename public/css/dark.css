@@ -62,6 +62,7 @@
 
     --body-background-color: var(--color-gray);
     --main-background-color: var(--color-gray);
+    --main-background-color2: var(--color-gray);
     --main-text-color: var(--color-white);
 
     --body-card-bg: var(--color-dark-gray);

@@ -54,6 +54,7 @@
 
     --body-background-color: var(--color-white);
     --main-background-color: var(--color-white);
+    --main-background-color2: var(--color-light-gray);
     --main-text-color: var(--color-black);
 
     --body-card-bg: var(--color-white);

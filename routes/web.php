@@ -40,6 +40,8 @@ Route::prefix('')->group(function () {
 
     Route::get('/', [landingController::class, 'index'])->name('index');
     Route::get('/index', [landingController::class, 'index']);
+    Route::get('/about', [landingController::class, 'aboutUs'])->name('about');
+    Route::get('/contact', [landingController::class, 'contactUs'])->name('contact');
     Route::get('/plans/active/{planCycle}', [PlanController::class, 'activePlans'])->name('plans');
 
 });
@@ -74,6 +76,14 @@ Route::prefix('admin')->middleware(['auth.jwt'])->group(function () {
 
         Route::get('/', [AdminDashboardController::class, 'index'])->name('admin_dashboard');
         Route::get('/data', [AdminDashboardController::class, 'data'])->name('admin_dashboard.data');
+
+        Route::get('/stats', [AdminDashboardController::class, 'getStats'])->name('admin.dashboard.stats');
+        Route::get('/subscriptions', [AdminDashboardController::class, 'getSubscriptionPlans'])->name('admin.dashboard.subscription.plans');
+        Route::get('/approvals', [AdminDashboardController::class, 'getApprovalRequests'])->name('admin.dashboard.approval.requests');
+        Route::get('/revenue-growth', [AdminDashboardController::class, 'getRevenueGrowth'])->name('admin.dashboard.revenue.growth');
+        Route::get('/plan-popularity', [AdminDashboardController::class, 'getPlanPopularity'])->name('admin.dashboard.plan.popularity');
+        Route::get('/subscription-distribution', [AdminDashboardController::class, 'getSubscriptionDistribution'])->name('admin.dashboard.subscription.distribution');
+        Route::get('/approval-timeline', [AdminDashboardController::class, 'getApprovalTimeline'])->name('admin.dashboard.approval.timeline');
 
     });
 
