@@ -18,6 +18,9 @@ return new class extends Migration
             $table->decimal('area', 10, 2);
             $table->year('construction_year')->nullable();
             $table->tinyInteger('isFreeze')->default(0);
+            $table->timestamp('review_submitted_at')->nullable();
+            $table->timestamp('approved_at')->nullable();
+            $table->timestamp('rejected_at')->nullable();
 
             $table->foreignId('organization_id')->constrained()->onDelete('cascade');
             $table->foreignId('address_id')->unique()->constrained('address')->onDelete('cascade');

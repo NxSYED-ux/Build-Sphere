@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-
 use App\Jobs\MembershipNotifications;
 use App\Models\MembershipUser;
 use App\Models\Subscription;
@@ -45,7 +44,7 @@ class MembershipService
         if ($purpose){
             if($existingSubscriptionRecord) {
                 $existingSubscriptionRecord->update([
-                    'subscription_status' => 'Ended',
+                    'subscription_status' => 'Expired',
                     'ends_at' => now(),
                 ]);
             }
@@ -94,7 +93,7 @@ class MembershipService
         return Transaction::create($transactionData);
     }
 
-    public function sendMembershipSuccessNotifications($membership, $transaction, $user, $loggedUser = null)
+    public function sendMembershipSuccessNotifications($membership, $transaction, $user, $loggedUser = null): void
     {
         $userId = $user->id;
         $billingCycle = $membership->duration_months ?? 1;

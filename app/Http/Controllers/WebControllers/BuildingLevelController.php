@@ -191,6 +191,7 @@ class BuildingLevelController extends Controller
                     if($building->status === 'Approved') {
                         $building->update([
                             'status' => 'For Re-Approval',
+                            'review_submitted_at' => now(),
                         ]);
                     }
                 }

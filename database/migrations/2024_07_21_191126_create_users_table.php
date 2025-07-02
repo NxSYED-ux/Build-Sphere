@@ -24,6 +24,7 @@ return new class extends Migration
             $table->tinyInteger('status')->default(1);
             $table->text('reset_token')->nullable();
             $table->string('customer_payment_id')->nullable()->index();
+            $table->dateTime('last_login')->nullable();
 
             $table->unsignedInteger('role_id'); $table->foreign('role_id')->references('id')->on('roles')->onDelete('cascade');
             $table->foreignId('address_id')->unique()->constrained('address')->onDelete('cascade');

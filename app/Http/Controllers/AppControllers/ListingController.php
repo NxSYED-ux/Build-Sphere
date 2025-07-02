@@ -5,6 +5,7 @@ namespace App\Http\Controllers\AppControllers;
 use App\Http\Controllers\Controller;
 use App\Models\Building;
 use App\Models\Organization;
+use App\Models\UserPropertyInteraction;
 use Illuminate\Http\Request;
 use App\Models\BuildingUnit;
 use Illuminate\Support\Facades\Log;
@@ -15,6 +16,7 @@ class ListingController extends Controller
     public function homePageListings(Request $request)
     {
         try {
+            $user = $request->user();
             $search = $request->query('search');
             $minPrice = $request->query('minPrice');
             $maxPrice = $request->query('maxPrice');
@@ -72,11 +74,14 @@ class ListingController extends Controller
                 });
             }
 
-            $availableUnits = $query
-                ->whereHas('level')
+            if ($user && !$search && !$unitType && !$city && !$saleOrRent) {
+                $this->applyUserBasedSuggestions($query, $user->id);
+            }
+
+            $query->whereHas('level')
                 ->whereHas('level.building', function ($buildingQuery) {
                     $buildingQuery->whereIn('status', ['Approved', 'For Re-Approval'])
-                                    ->where('isFreeze', 0);
+                        ->where('isFreeze', 0);
                 })
                 ->whereHas('level.building.address')
                 ->with([
@@ -93,9 +98,10 @@ class ListingController extends Controller
                         $query->select('unit_id', 'file_path');
                     }
                 ])
-                ->select('id', 'unit_name', 'unit_type', 'price', 'area', 'sale_or_rent', 'availability_status', 'level_id')
-                ->orderBy('updated_at', 'DESC')
-                ->get();
+                ->select('id', 'unit_name', 'unit_type', 'price', 'area', 'sale_or_rent', 'availability_status', 'level_id');
+
+            $query->orderByDesc('updated_at');
+            $availableUnits = $query->get();
 
             return response()->json([
                 'units' => $availableUnits,
@@ -135,6 +141,19 @@ class ListingController extends Controller
 
             if (!$unitDetails) {
                 return response()->json(['error' => 'This unit is no longer available.'], 410);
+            }
+
+            $user = request()->user();
+            if ($user) {
+                UserPropertyInteraction::updateOrCreate(
+                    [
+                        'user_id' => $user->id,
+                        'unit_id' => $unitDetails->id
+                    ],
+                    [
+                        'timestamp' => now()
+                    ]
+                );
             }
 
             return response()->json([ 'unitDetails' => $unitDetails ]);
@@ -225,4 +244,69 @@ class ListingController extends Controller
             return response()->json(['error' => 'An error occurred while fetching specific Building Units.'], 500);
         }
     }
+
+
+    // Helper Functions
+    private function applyUserBasedSuggestions($query, int $userId): void
+    {
+        $interactionWeights = [
+            'view' => 1,
+            'favorite' => 3,
+            'almost purchased' => 5,
+            'purchased' => 7,
+        ];
+
+        $interactions = UserPropertyInteraction::where('user_id', $userId)
+            ->orderByDesc('timestamp')
+            ->limit(50)
+            ->get();
+
+
+        $carry = 0;
+        foreach ($interactions as $item) {
+            $carry += $interactionWeights[$item->interaction_type] ?? 0;
+        }
+        $score = $carry;
+
+        if ($score < 15) {
+            return;
+        }
+
+        $unitScores = [];
+
+        foreach ($interactions as $interaction) {
+            $weight = $interactionWeights[$interaction->interaction_type] ?? 0;
+            if ($weight > 0) {
+                $unitScores[$interaction->unit_id] = ($unitScores[$interaction->unit_id] ?? 0) + $weight;
+            }
+        }
+
+        if (empty($unitScores)) return;
+
+        arsort($unitScores);
+        $topUnitIds = array_keys(array_slice($unitScores, 0, 20));
+
+        $preferredUnits = BuildingUnit::whereIn('id', $topUnitIds)
+            ->where('sale_or_rent', '!=', 'Not Available')
+            ->get();
+
+        $inferredUnitTypes = $preferredUnits->pluck('unit_type')->unique()->toArray();
+        $inferredSaleRent = $preferredUnits->pluck('sale_or_rent')->unique()->toArray();
+        $avgPrices = $preferredUnits->groupBy('sale_or_rent')->map(fn($group) => $group->pluck('price')->avg());
+
+        $query->whereIn('unit_type', $inferredUnitTypes)
+            ->whereIn('sale_or_rent', $inferredSaleRent);
+
+        $query->where(function ($q) use ($avgPrices) {
+            foreach ($avgPrices as $type => $avg) {
+                if ($avg) {
+                    $q->orWhere(function ($inner) use ($type, $avg) {
+                        $inner->where('sale_or_rent', $type)
+                            ->whereBetween('price', [$avg * 0.65, $avg * 1.3]);
+                    });
+                }
+            }
+        });
+    }
+
 }

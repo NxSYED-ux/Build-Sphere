@@ -5,217 +5,309 @@ namespace App\Http\Controllers\WebControllers;
 use App\Http\Controllers\Controller;
 use App\Models\Building;
 use App\Models\Organization;
+use App\Models\Plan;
+use App\Models\Subscription;
+use App\Models\Transaction;
 use App\Models\User;
+use App\Services\AdminFiltersService;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 
 class AdminDashboardController extends Controller
 {
-    //
-    public function index(){
-
-        return view('Heights.Admin.Dashboard.admin_dashboard');
-
+    // Note: Month should be in YYYY-MM format in all month filters & year must be in YYYY
+    public function index()
+    {
+        $adminService = new AdminFiltersService();
+        $plans = $adminService->plans();
+        $organizations = $adminService->organizations();
+        return view('Heights.Admin.Dashboard.admin_dashboard', compact('plans', 'organizations'));
     }
 
-    public function data()
+
+    // Month Filter
+    public function getMonthlyStats(Request $request)
     {
-        $buildings = Building::count();
-        $organizations = Organization::count();
-        $owners = User::where('role_id',2)->count();
-        $buildingsForApproval = Building::whereIn('status', ['Under Review', 'Reapproved'])->count();
+        $month = $request->input('month');
+        $start = $month ? Carbon::parse($month)->startOfMonth() : now()->startOfMonth();
+        $end = $month ? Carbon::parse($month)->endOfMonth() : now()->endOfMonth();
+
+        $totalOrganizations = Organization::count();
+        $newOrganizationsThisMonth = Organization::whereBetween('created_at', [$start, $end])->count();
+        $orgProgress = $totalOrganizations > 0 ? round(($newOrganizationsThisMonth / $totalOrganizations) * 100, 1) : 0;
+
+        $totalUsers = User::count();
+        $activeUsersThisMonth = User::whereBetween('last_login', [$start, $end])->count();
+        $userProgress = $totalUsers > 0 ? round(($activeUsersThisMonth / $totalUsers) * 100, 1) : 0;
+
+        $totalPendingBuildings = Building::whereIn('status', ['Under Review', 'For Re-Approval'])->count();
+        $pendingBuildingsThisMonth = Building::whereIn('status', ['Under Review', 'For Re-Approval'])
+            ->whereBetween('review_submitted_at', [$start, $end])
+            ->count();
+        $buildingProgress = $totalPendingBuildings > 0 ? round(($pendingBuildingsThisMonth / $totalPendingBuildings) * 100, 1) : 0;
+
+        $currentMonthRevenue = Transaction::where('seller_type', 'platform')
+            ->where('status', 'Completed')
+            ->whereBetween('created_at', [$start, $end])
+            ->sum('price');
+
+        $previousStart = Carbon::parse($start)->subMonthNoOverflow()->startOfMonth();
+        $previousEnd = Carbon::parse($start)->subMonthNoOverflow()->endOfMonth();
+
+        $previousMonthRevenue = Transaction::where('seller_type', 'platform')
+            ->where('status', 'Completed')
+            ->whereBetween('created_at', [$previousStart, $previousEnd])
+            ->sum('price');
+
+        $revenueGrowth = $previousMonthRevenue == 0
+            ? ($currentMonthRevenue > 0 ? 100 : 0)
+            : round((($currentMonthRevenue - $previousMonthRevenue) / $previousMonthRevenue) * 100, 1);
 
         return response()->json([
             'counts' => [
-                'buildings' => $buildings,
-                'organizations' => $organizations,
-                'owners' => $owners,
-                'buildingsForApproval' => $buildingsForApproval,
+                'totalOrganizations' => $totalOrganizations,
+                'newOrganizationsThisMonth' => $newOrganizationsThisMonth,
+                'totalUsers' => $totalUsers,
+                'activeUsersThisMonth' => $activeUsersThisMonth,
+                'totalPendingBuildings' => $totalPendingBuildings,
+                'pendingBuildingsThisMonth' => $pendingBuildingsThisMonth,
             ],
+            'revenue' => [
+                'currentMonth' => $currentMonthRevenue,
+                'previousMonth' => $previousMonthRevenue,
+                'growth' => $revenueGrowth
+            ],
+            'progress' => [
+                'organization' => $orgProgress,
+                'user' => $userProgress,
+                'building' => $buildingProgress,
+            ]
         ]);
     }
 
-    protected function applyDateRange($data, $range, $customStart = null, $customEnd = null)
-    {
-        $now = Carbon::now();
-        $filteredData = $data;
 
-        if ($range === '7days') {
-            $filteredData = array_slice($data, -7);
-        } elseif ($range === '30days') {
-            $filteredData = array_slice($data, -12); // Last 30 days (using months for sample)
-        } elseif ($range === '90days') {
-            $filteredData = array_slice($data, -3); // Last 3 months
-        } elseif ($range === 'custom' && $customStart && $customEnd) {
-            // For sample data, we'll just return a portion
-            $filteredData = array_slice($data, 3, 6); // Middle portion for demo
-        }
-
-        return $filteredData;
-    }
-
-    public function getStats(Request $request)
-    {
-        // Simulate filtered counts based on request
-        $range = $request->input('range', 'all');
-
-        $data = [
-            'totalOrganizations' => $range === '7days' ? 15 : ($range === '30days' ? 45 : 125),
-            'totalOwners' => $range === '7days' ? 32 : ($range === '30days' ? 142 : 342),
-            'pendingApprovals' => $range === '7days' ? 3 : ($range === '30days' ? 8 : 18),
-            'totalRevenue' => $range === '7days' ? 5250 : ($range === '30days' ? 18750 : 48750)
-        ];
-
-        return response()->json($data);
-    }
-
+    // Plan & Month filter
+    // Note: Treating 'Canceled' as active until 'ends_at' passes
     public function getSubscriptionPlans(Request $request)
     {
-        $range = $request->input('range', '30days');
-        $planType = $request->input('plantype', 'all');
+        $plan_id = $request->input('plan');
 
-        // Base data
-        $data = [
-            'active' => 89,
-            'expired' => 12,
-            'trial' => 23,
-            'trend' => [
-                'labels' => ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
-                'values' => [12, 19, 15, 22]
+        $month = $request->input('month');
+        $start = $month ? Carbon::parse($month)->startOfMonth() : now()->startOfMonth();
+        $end = $month ? Carbon::parse($month)->endOfMonth() : now()->endOfMonth();
+        $days = $start->diffInDays($end) + 1;
+
+        $previousStart = $start->copy()->subDays($days);
+        $previousEnd = $start->copy()->subDay();
+
+        $active = Subscription::where('subscription_status', '!=', 'Trial')
+            ->where('created_at', '<=', $end)
+            ->where('ends_at', '>=', $start)
+            ->where('source_name', 'plan')
+            ->when($plan_id, fn($q) => $q->where('source_id', $plan_id))
+            ->count();
+
+        $activePrev = Subscription::where('subscription_status', '!=', 'Trial')
+            ->where('created_at', '<=', $previousEnd)
+            ->where('ends_at', '>=', $previousStart)
+            ->where('source_name', 'plan')
+            ->when($plan_id, fn($q) => $q->where('source_id', $plan_id))
+            ->count();
+
+        $trial = Subscription::where('subscription_status', 'Trial')
+            ->where('created_at', '<=', $end)
+            ->where('ends_at', '>=', $start)
+            ->where('source_name', 'plan')
+            ->when($plan_id, fn($q) => $q->where('source_id', $plan_id))
+            ->count();
+
+        $trialPrev = Subscription::where('subscription_status', 'Trial')
+            ->where('created_at', '<=', $previousEnd)
+            ->where('ends_at', '>=', $previousStart)
+            ->where('source_name', 'plan')
+            ->when($plan_id, fn($q) => $q->where('source_id', $plan_id))
+            ->count();
+
+        $expired = Subscription::where('subscription_status', 'Expired')
+            ->whereBetween('updated_at', [$start, $end])
+            ->where('source_name', 'plan')
+            ->when($plan_id, fn($q) => $q->where('source_id', $plan_id))
+            ->count();
+
+        $expiredPrev = Subscription::where('subscription_status', 'Expired')
+            ->whereBetween('updated_at', [$previousStart, $previousEnd])
+            ->where('source_name', 'plan')
+            ->when($plan_id, fn($q) => $q->where('source_id', $plan_id))
+            ->count();
+
+        $getGrowth = function ($current, $previous) {
+            if ($previous == 0 && $current == 0) return 0;
+            if ($previous == 0) return 100;
+            return round((($current - $previous) / $previous) * 100, 1);
+        };
+
+        return response()->json([
+            'active' => $active,
+            'activeTrials' => $trial,
+            'expired' => $expired,
+            'growth' => [
+                'active' => $getGrowth($active, $activePrev),
+                'activeTrials' => $getGrowth($trial, $trialPrev),
+                'expired' => $getGrowth($expired, $expiredPrev),
             ]
-        ];
-
-        // Apply "filters" to sample data
-        if ($planType !== 'all') {
-            $data['active'] = round($data['active'] * ($planType === 'premium' ? 0.3 : 0.7));
-            $data['expired'] = round($data['expired'] * ($planType === 'premium' ? 0.2 : 0.8));
-            $data['trial'] = round($data['trial'] * ($planType === 'premium' ? 0.1 : 0.9));
-        }
-
-        if ($range === '7days') {
-            $data['trend']['values'] = array_slice($data['trend']['values'], -2);
-            $data['trend']['labels'] = array_slice($data['trend']['labels'], -2);
-        }
-
-        return response()->json($data);
+        ]);
     }
 
+
+    // organization & month filter
     public function getApprovalRequests(Request $request)
     {
-        $range = $request->input('range', '30days');
-        $status = $request->input('status', 'all');
-        $type = $request->input('type', 'all');
+        $organization_id = $request->input('organization');
 
-        $baseData = [
-            'pending' => 18,
-            'approved' => 156,
-            'rejected' => 9
+        $month = $request->input('month');
+        $start = $month ? Carbon::parse($month)->startOfMonth() : now()->startOfMonth();
+        $end = $month ? Carbon::parse($month)->endOfMonth() : now()->endOfMonth();
+
+        $prevStart = $start->copy()->subMonthNoOverflow()->startOfMonth();
+        $prevEnd = $start->copy()->subMonthNoOverflow()->endOfMonth();
+
+        $current = [
+            'pending' => Building::whereIn('status', ['Under Review', 'For Re-Approval'])
+                ->whereBetween('review_submitted_at', [$start, $end])
+                ->when($organization_id, fn($q) => $q->where('organization_id', $organization_id))
+                ->count(),
+
+            'approved' => Building::where('status', 'Approved')
+                ->whereBetween('approved_at', [$start, $end])
+                ->when($organization_id, fn($q) => $q->where('organization_id', $organization_id))
+                ->count(),
+
+            'rejected' => Building::where('status', 'Rejected')
+                ->whereBetween('rejected_at', [$start, $end])
+                ->when($organization_id, fn($q) => $q->where('organization_id', $organization_id))
+                ->count(),
         ];
 
-        // Apply type filter simulation
-        if ($type !== 'all') {
-            $multiplier = match($type) {
-                'building' => 0.6,
-                'organization' => 0.3,
-                'user' => 0.1,
-                default => 1
-            };
+        $previous = [
+            'pending' => Building::whereIn('status', ['Under Review', 'For Re-Approval'])
+                ->whereBetween('review_submitted_at', [$prevStart, $prevEnd])
+                ->when($organization_id, fn($q) => $q->where('organization_id', $organization_id))
+                ->count(),
 
-            foreach ($baseData as $key => $value) {
-                $baseData[$key] = round($value * $multiplier);
-            }
-        }
+            'approved' => Building::where('status', 'Approved')
+                ->whereBetween('approved_at', [$prevStart, $prevEnd])
+                ->when($organization_id, fn($q) => $q->where('organization_id', $organization_id))
+                ->count(),
 
-        // Apply status filter simulation
-        if ($status !== 'all') {
-            $filteredData = [
-                'pending' => $status === 'pending' ? $baseData['pending'] : 0,
-                'approved' => $status === 'approved' ? $baseData['approved'] : 0,
-                'rejected' => $status === 'rejected' ? $baseData['rejected'] : 0
-            ];
+            'rejected' => Building::where('status', 'Rejected')
+                ->whereBetween('rejected_at', [$prevStart, $prevEnd])
+                ->when($organization_id, fn($q) => $q->where('organization_id', $organization_id))
+                ->count(),
+        ];
 
-            return response()->json($filteredData);
-        }
+        $growth = [
+            'pending' => $previous['pending'] == 0 ? null :
+                round((($current['pending'] - $previous['pending']) / $previous['pending']) * 100, 2),
 
-        // Apply date range simulation
-        if ($range === '7days') {
-            foreach ($baseData as $key => $value) {
-                $baseData[$key] = round($value * 0.25);
-            }
-        } elseif ($range === '90days') {
-            foreach ($baseData as $key => $value) {
-                $baseData[$key] = round($value * 1.5);
-            }
-        }
+            'approved' => $previous['approved'] == 0 ? null :
+                round((($current['approved'] - $previous['approved']) / $previous['approved']) * 100, 2),
 
-        return response()->json($baseData);
+            'rejected' => $previous['rejected'] == 0 ? null :
+                round((($current['rejected'] - $previous['rejected']) / $previous['rejected']) * 100, 2),
+        ];
+
+        return response()->json([
+            'counts' => $current,
+            'growth' => $growth,
+        ]);
     }
 
+
+    // plan & year filter
     public function getRevenueGrowth(Request $request)
     {
-        $range = $request->input('range', '12months');
-        $revenueType = $request->input('revenuetype', 'all');
+        $year = $request->input('year', now()->year);
+        $plan_id = $request->input('plan');
 
-        $labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-        $revenue = [12000, 19000, 15000, 18000, 21000, 25000, 22000, 24000, 23000, 26000, 28000, 30000];
-        $growthRate = [0, 58.3, -21.1, 20, 16.7, 19, -12, 9.1, -4.2, 13, 7.7, 7.1];
+        $prevDecStart = Carbon::create($year - 1, 12, 1)->startOfMonth();
+        $prevDecEnd = Carbon::create($year - 1, 12, 1)->endOfMonth();
 
-        // Apply date range
-        if ($range === '3months') {
-            $labels = array_slice($labels, -3);
-            $revenue = array_slice($revenue, -3);
-            $growthRate = array_slice($growthRate, -3);
-        } elseif ($range === '6months') {
-            $labels = array_slice($labels, -6);
-            $revenue = array_slice($revenue, -6);
-            $growthRate = array_slice($growthRate, -6);
+        $prevDecemberRevenue = Transaction::where('status', 'Completed')
+            ->when($plan_id, fn($q) => $q->where('plan_id', $plan_id))
+            ->whereBetween('created_at', [$prevDecStart, $prevDecEnd])
+            ->sum('price');
+
+        $revenues = [];
+
+        foreach (range(1, 12) as $month) {
+            $start = Carbon::create($year, $month, 1)->startOfMonth();
+            $end = Carbon::create($year, $month, 1)->endOfMonth();
+
+            $total = Transaction::where('status', 'Completed')
+                ->when($plan_id, fn($q) => $q->where('plan_id', $plan_id))
+                ->whereBetween('created_at', [$start, $end])
+                ->sum('price');
+
+            $revenues[] = $total;
         }
 
-        // Apply revenue type simulation
-        if ($revenueType !== 'all') {
-            $multiplier = match($revenueType) {
-                'subscription' => 0.7,
-                'service' => 0.2,
-                'other' => 0.1,
-                default => 1
-            };
+        $allRevenues = array_merge([$prevDecemberRevenue], $revenues);
 
-            $revenue = array_map(fn($val) => round($val * $multiplier), $revenue);
+        $growthRate = [];
+        for ($i = 1; $i < count($allRevenues); $i++) {
+            $prev = $allRevenues[$i - 1];
+            $curr = $allRevenues[$i];
+            $rate = $prev == 0 ? 0 : round((($curr - $prev) / $prev) * 100, 1);
+            $growthRate[] = $rate;
         }
+
+        $labels = collect(range(1, 12))
+            ->map(fn($m) => Carbon::create()->month($m)->format('M'))
+            ->toArray();
 
         return response()->json([
             'labels' => $labels,
-            'revenue' => $revenue,
+            'revenue' => $revenues,
             'growthRate' => $growthRate
         ]);
     }
 
+
+    // start & end filter
     public function getPlanPopularity(Request $request)
     {
-        $range = $request->input('range', '30days');
-        $status = $request->input('status', 'all');
+        $start = $request->input('start') ? Carbon::parse($request->input('start'))->startOfDay() : now()->subDays(30)->startOfDay();
+        $end = $request->input('end') ? Carbon::parse($request->input('end'))->endOfDay() : now()->endOfDay();
 
-        $labels = ['Basic', 'Standard', 'Premium', 'Enterprise'];
-        $values = [35, 45, 15, 5];
-
-        // Apply status filter simulation
-        if ($status !== 'all') {
-            $multiplier = match($status) {
-                'active' => [0.8, 0.9, 0.7, 0.6],
-                'expired' => [0.1, 0.05, 0.2, 0.3],
-                'trial' => [0.1, 0.05, 0.1, 0.1],
-                default => [1, 1, 1, 1]
-            };
-
-            $values = array_map(fn($val, $mult) => round($val * $mult), $values, $multiplier);
+        if ($start->gt($end)) {
+            return response()->json([
+                'error' => 'Start date cannot be after end date.'
+            ], 422);
         }
 
-        // Apply date range simulation
-        if ($range === '7days') {
-            $values = array_map(fn($val) => round($val * 0.2), $values);
-        } elseif ($range === '90days') {
-            $values = array_map(fn($val) => round($val * 1.3), $values);
+        $plans = Plan::select('id', 'name')->get();
+
+        if ($plans->isEmpty()) {
+            return response()->json([
+                'labels' => [],
+                'values' => [],
+                'data' => [
+                    'datasets' => [[
+                        'data' => [],
+                        'backgroundColor' => []
+                    ]]
+                ]
+            ]);
         }
+
+        $labels = $plans->pluck('name')->toArray();
+
+        $values = $plans->map(function ($plan) use ($start, $end) {
+            return Subscription::where('source_name', 'plan')
+                ->where('source_id', $plan->id)
+                ->whereBetween('created_at', [$start, $end])
+                ->count();
+        })->toArray();
 
         return response()->json([
             'labels' => $labels,
@@ -229,49 +321,45 @@ class AdminDashboardController extends Controller
         ]);
     }
 
+
+    // plan & year filter
     public function getSubscriptionDistribution(Request $request)
     {
-        $range = $request->input('range', '12months');
-        $planType = $request->input('plantype', 'all');
+        $year = $request->input('year', now()->year);
+        $plan_id = $request->input('plan');
 
-        $labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-        $active = [45, 60, 55, 70, 85, 90, 80, 75, 82, 88, 92, 95];
-        $expired = [15, 10, 15, 10, 5, 5, 10, 15, 8, 7, 3, 2];
-        $trial = [5, 8, 12, 15, 18, 20, 15, 12, 10, 8, 5, 3];
+        $subscriptions = Subscription::whereYear('updated_at', $year)
+            ->where('source_name', 'plan')
+            ->whereIn('subscription_status', ['Expired', 'Canceled'])
+            ->when($plan_id, fn($q) => $q->where('source_id', $plan_id))
+            ->select('id', 'subscription_status', 'updated_at')
+            ->get();
 
-        // Apply date range
-        if ($range === '3months') {
-            $labels = array_slice($labels, -3);
-            $active = array_slice($active, -3);
-            $expired = array_slice($expired, -3);
-            $trial = array_slice($trial, -3);
-        } elseif ($range === '6months') {
-            $labels = array_slice($labels, -6);
-            $active = array_slice($active, -6);
-            $expired = array_slice($expired, -6);
-            $trial = array_slice($trial, -6);
-        }
+        $labels = collect(range(1, 12))
+            ->map(fn($m) => Carbon::create()->month($m)->format('M'))
+            ->toArray();
 
-        // Apply plan type simulation
-        if ($planType !== 'all') {
-            $multiplier = match($planType) {
-                'basic' => [0.9, 0.1, 0.1],
-                'standard' => [0.1, 0.8, 0.1],
-                'premium' => [0.05, 0.1, 0.8],
-                'enterprise' => [0.05, 0.05, 0.9],
-                default => [1, 1, 1]
-            };
+        $active = [];
+        $expired = [];
+        $canceled = [];
 
-            $active = array_map(fn($val) => round($val * $multiplier[0]), $active);
-            $expired = array_map(fn($val) => round($val * $multiplier[1]), $expired);
-            $trial = array_map(fn($val) => round($val * $multiplier[2]), $trial);
+        foreach (range(1, 12) as $month) {
+            $active[] = Subscription::whereYear('created_at', $year)
+                ->whereMonth('created_at', $month)
+                ->where('source_name', 'plan')
+                ->when($plan_id, fn($q) => $q->where('source_id', $plan_id))
+                ->count();
+
+            $monthly = $subscriptions->filter(fn($sub) => Carbon::parse($sub->updated_at)->month == $month);
+            $expired[] = $monthly->where('subscription_status', 'Expired')->count();
+            $canceled[] = $monthly->where('subscription_status', 'Canceled')->count();
         }
 
         return response()->json([
             'labels' => $labels,
             'active' => $active,
             'expired' => $expired,
-            'trial' => $trial,
+            'canceled' => $canceled,
             'datasets' => [
                 [
                     'label' => 'Active',
@@ -284,49 +372,39 @@ class AdminDashboardController extends Controller
                     'backgroundColor' => 'rgba(255, 99, 132, 0.7)'
                 ],
                 [
-                    'label' => 'Trial',
-                    'data' => $trial,
+                    'label' => 'Canceled',
+                    'data' => $canceled,
                     'backgroundColor' => 'rgba(255, 205, 86, 0.7)'
                 ]
             ]
         ]);
     }
 
+
+    // year filter
     public function getApprovalTimeline(Request $request)
     {
-        $range = $request->input('range', '12months');
-        $requestType = $request->input('requesttype', 'all');
+        $year = $request->input('year', now()->year);
 
-        $labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-        $pending = [10, 15, 12, 8, 5, 7, 12, 15, 18, 20, 15, 10];
-        $approved = [20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75];
-        $rejected = [5, 3, 8, 5, 2, 3, 5, 8, 5, 3, 2, 1];
+        $months = collect(range(1, 12))
+            ->map(fn($m) => Carbon::create()->month($m)->format('M'));
 
-        // Apply date range
-        if ($range === '3months') {
-            $labels = array_slice($labels, -3);
-            $pending = array_slice($pending, -3);
-            $approved = array_slice($approved, -3);
-            $rejected = array_slice($rejected, -3);
-        } elseif ($range === '6months') {
-            $labels = array_slice($labels, -6);
-            $pending = array_slice($pending, -6);
-            $approved = array_slice($approved, -6);
-            $rejected = array_slice($rejected, -6);
-        }
+        $records = Building::whereYear('review_submitted_at', $year)->get();
 
-        // Apply request type simulation
-        if ($requestType !== 'all') {
-            $multiplier = match($requestType) {
-                'building' => [0.7, 0.6, 0.5],
-                'organization' => [0.2, 0.3, 0.3],
-                'user' => [0.1, 0.1, 0.2],
-                default => [1, 1, 1]
-            };
+        $grouped = $records->groupBy(fn($item) => Carbon::parse($item->review_submitted_at)->month);
 
-            $pending = array_map(fn($val) => round($val * $multiplier[0]), $pending);
-            $approved = array_map(fn($val) => round($val * $multiplier[1]), $approved);
-            $rejected = array_map(fn($val) => round($val * $multiplier[2]), $rejected);
+        $pending = [];
+        $approved = [];
+        $rejected = [];
+        $labels = [];
+
+        foreach (range(1, 12) as $month) {
+            $labels[] = $months[$month - 1];
+            $monthRecords = $grouped->get($month, collect());
+
+            $pending[] = $monthRecords->whereIn('status', ['Under Review', 'For Re-Approval'])->count();
+            $approved[] = $monthRecords->where('status', 'Approved')->count();
+            $rejected[] = $monthRecords->where('status', 'Rejected')->count();
         }
 
         return response()->json([

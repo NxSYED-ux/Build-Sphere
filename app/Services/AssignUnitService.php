@@ -6,6 +6,7 @@ use App\Jobs\UnitNotifications;
 use App\Models\Subscription;
 use App\Models\Transaction;
 use App\Models\UserBuildingUnit;
+use App\Models\UserPropertyInteraction;
 
 class AssignUnitService
 {
@@ -69,6 +70,17 @@ class AssignUnitService
             'source_id' => $source_id,
             'source_name' => $source_name,
         ]);
+
+        UserPropertyInteraction::updateOrCreate(
+            [
+                'user_id' => $user->id,
+                'unit_id' => $unit->id,
+                'interaction_type' => 'purchased'
+            ],
+            [
+                'timestamp' => now()
+            ]
+        );
 
         return [$assignedUnit, $transaction];
     }

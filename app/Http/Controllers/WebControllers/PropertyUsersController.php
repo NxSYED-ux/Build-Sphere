@@ -139,7 +139,7 @@ class PropertyUsersController extends Controller
         }
     }
 
-    public function updateContractStatus(Request $request)
+    public function updateRenewStatus(Request $request)
     {
         $request->validate([
             'contract_id' => 'required|exists:userbuildingunits,id',
@@ -152,7 +152,7 @@ class PropertyUsersController extends Controller
         ]);
 
         try {
-            $requestedAction = (int)$request->value === 1 ? 'continued' : 'discontinued';
+            $requestedAction = (int) $request->value === 1 ? 'discontinued' : 'continued';
 
             $contract = UserBuildingUnit::where('id', $request->contract_id)
                 ->where('contract_status', 1)
@@ -176,7 +176,7 @@ class PropertyUsersController extends Controller
                 ], 400);
             }
 
-            $contract->contract_status = $request->value;
+            $contract->renew_canceled = $request->value;
             $contract->save();
 
             return response()->json([

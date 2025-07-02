@@ -4,6 +4,7 @@ namespace App\Http\Controllers\AppControllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\Favorite;
+use App\Models\UserPropertyInteraction;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -90,6 +91,17 @@ class FavouritesController extends Controller
                 'unit_id' => $request->unit_id,
             ]);
 
+            UserPropertyInteraction::updateOrCreate(
+                [
+                    'user_id' => $user->id,
+                    'unit_id' => $request->unit_id,
+                    'interaction_type' => 'favourite'
+                ],
+                [
+                    'timestamp' => now()
+                ]
+            );
+
             return response()->json(['message' => 'Favorite added successfully.'], 201);
         } catch (\Exception $e) {
             Log::error("Error in insertFavorite: " . $e->getMessage());
@@ -119,6 +131,12 @@ class FavouritesController extends Controller
             }
 
             $existingFavorite->delete();
+
+            UserPropertyInteraction::where([
+                'user_id' => $user->id,
+                'unit_id' => $unit_id,
+                'interaction_type' => 'favourite',
+            ])->delete();
 
             return response()->json(['message' => 'Favorite deleted successfully.']);
         } catch (\Exception $e) {

@@ -247,7 +247,10 @@ class BuildingUnitController extends Controller
             if ($portal === 'owner') {
                 $building = Building::find($unit->building_id);
                 if ($building && $building->status === 'Approved') {
-                    $building->update(['status' => 'For Re-Approval']);
+                    $building->update([
+                        'status' => 'For Re-Approval',
+                        'review_submitted_at' => now()
+                    ]);
                 }
             }
 
@@ -406,9 +409,7 @@ class BuildingUnitController extends Controller
                 return redirect()->back()->with('error', 'Invalid unit Id');
             }
 
-            $organizations = Organization::where('status', 'Enable')
-                ->orWhere('id', $unit->organization_id)
-                ->get();
+            $organizations = Organization::where('id', $unit->organization_id)->get();
 
             $unitType = DropdownType::with(['values'])->where('type_name', 'Unit-type')->first();
             $unitTypes = $unitType ? $unitType->values : collect();

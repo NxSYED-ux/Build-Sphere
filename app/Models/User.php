@@ -31,6 +31,7 @@ class User extends Authenticatable implements JWTSubject
         'is_verified',
         'status',
         'customer_payment_id',
+        'last_login',
 
         'updated_at',
     ];
@@ -44,6 +45,7 @@ class User extends Authenticatable implements JWTSubject
     protected $casts = [
         'password' => 'hashed',
         'date_of_birth' => 'date:Y-m-d',
+        'last_login' => 'datetime',
     ];
 
     // Belongs to Relations

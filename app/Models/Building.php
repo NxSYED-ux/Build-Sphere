@@ -20,11 +20,23 @@ class Building extends Model
         'status', //1 for approved, 2 for  under_review,3 for rejected, 4 for under processing, 5 for reapproved
         'area',
         'construction_year',
+        'review_submitted_at',
+        'isFreeze',
+        'approved_at',
+        'rejected_at',
         'address_id',
         'organization_id',
     ];
 
     public $timestamps = true;
+
+    protected $casts = [
+        'review_submitted_at' => 'datetime',
+        'isFreeze' => 'boolean',
+        'approved_at' => 'datetime',
+        'rejected_at' => 'datetime',
+    ];
+
 
     // Belongs to Relations:
     public function organization()

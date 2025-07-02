@@ -51,12 +51,12 @@ class SubscriptionService
         DB::beginTransaction();
 
         try{
-            if ($org_subscription->subscription_status === 'Ended'){
+            if ($org_subscription->subscription_status === 'Expired'){
                 Organization::where('id', $organization_id)->update(['status' => 'Enable']);
             }
             else{
                 $org_subscription->update([
-                    'subscription_status' => 'Ended',
+                    'subscription_status' => 'Expired',
                     'ends_at' => now(),
                 ]);
             }

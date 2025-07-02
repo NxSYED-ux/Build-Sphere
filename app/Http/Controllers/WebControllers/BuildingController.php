@@ -636,8 +636,13 @@ class BuildingController extends Controller
                 return $building;
             }
 
+            if($building->status !== 'Under Processing'){
+                return redirect()->back()->with('error', 'This building cannot be submitted. It is already under review or approved.');
+            }
+
             $building->update([
                 'status' => 'Under Review',
+                'review_submitted_at' => now(),
             ]);
 
             $message = "{$building->name} has been submitted successfully for approval to Admin";
@@ -660,7 +665,7 @@ class BuildingController extends Controller
                 "admin/buildings/{$building->id}/show",
             ));
 
-            return redirect()->route('owner.buildings.index')->with('success', 'Building Submitted successfully.');
+            return redirect()->back()->with('success', 'Building Submitted successfully.');
         } catch (\Throwable $e) {
             Log::error('Error in submit building: ' . $e->getMessage());
             return redirect()->back()->with('error', 'Something went wrong! Please try again.');
@@ -685,6 +690,10 @@ class BuildingController extends Controller
                 return $building;
             }
 
+            if(!($building->status === 'Under Review' || $building->status === 'For Re-Approval')){
+                return redirect()->back()->with('error', 'This building has already been approved or rejected. Approval reminders are only allowed for buildings under review.');
+            }
+
             dispatch(new BuildingNotifications(
                 $organization_id,
                 $building->id,
@@ -703,7 +712,7 @@ class BuildingController extends Controller
                 "admin/buildings/{$building->id}/show",
             ));
 
-            return redirect()->route('owner.buildings.index')->with('success', 'Admin Remaindered successfully.');
+            return redirect()->back()->with('success', 'Admin Remaindered successfully.');
         }catch (\Exception $e) {
             Log::error('Error in submit building: ' . $e->getMessage());
             return redirect()->back()->with('error', 'Something went wrong! Please try again.');
@@ -726,14 +735,21 @@ class BuildingController extends Controller
             $result = $adminService->checkBuildingAccess($request->building_id);
 
             if (!$result['access']) {
+                DB::rollBack();
                 return redirect()->back()->with('error', $result['message']);
             }
 
             $building = $result['building'];
 
+            if(!($building->status === 'Under Review' || $building->status === 'For Re-Approval')){
+                DB::rollBack();
+                return redirect()->back()->with('error', 'This building cannot be approved because it is not currently under review or up for re-approval.');
+            }
+
             $building->update([
                 'status' => 'Approved',
                 'remarks' => $request->remarks ?? null,
+                'approved_at' => now(),
             ]);
 
             $building->levels()->update(['status' => 'Approved']);
@@ -758,7 +774,7 @@ class BuildingController extends Controller
                 true,
             ));
 
-            return redirect()->route('buildings.index')->with('success', 'Building Approved Successfully.');
+            return redirect()->back()->with('success', 'Building Approved Successfully.');
 
         } catch (\Throwable $e) {
             DB::rollBack();
@@ -786,13 +802,14 @@ class BuildingController extends Controller
 
             $building = $result['building'];
 
-            if($building->status === 'For Re-Approval'){
-                return redirect()->back()->with('error', 'Buildings under Re-Approval cannot be rejected.');
+            if($building->status !== 'Under Review'){
+                return redirect()->back()->with('error', 'Only buildings currently under review can be rejected.');
             }
 
             $building->update([
                 'status' => 'Rejected',
                 'remarks' => $request->remarks,
+                'rejected_at' => now(),
             ]);
 
             dispatch(new BuildingNotifications(
@@ -836,6 +853,10 @@ class BuildingController extends Controller
 
             $building = $result['building'];
 
+            if ($building->status !== 'For Re-Approval') {
+                return redirect()->back()->with('error', 'Remarks can only be reported for buildings under re-approval.');
+            }
+
             dispatch(new BuildingNotifications(
                 $building->organization_id,
                 $building->id,
@@ -851,7 +872,7 @@ class BuildingController extends Controller
                 true,
             ));
 
-            return redirect()->route('buildings.index')->with('success', 'Remarks Reported successfully.');
+            return redirect()->back()->with('success', 'Remarks Reported successfully.');
         }catch (\Throwable $e) {
             Log::error('Error in report Building Remarks: ' . $e->getMessage());
             return redirect()->back()->with('error', 'Something went wrong! Please try again.');

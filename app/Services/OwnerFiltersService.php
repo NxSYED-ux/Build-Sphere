@@ -115,8 +115,7 @@ class OwnerFiltersService
             ->with(['building:id,name'])
             ->get();
     }
-
-
+    
     public function approvedBuildings($buildingIds)
     {
         return Building::whereIn('id', $buildingIds)

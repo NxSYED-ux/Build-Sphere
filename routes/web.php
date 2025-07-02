@@ -75,9 +75,8 @@ Route::prefix('admin')->middleware(['auth.jwt'])->group(function () {
     Route::prefix('dashboard')->group(function () {
 
         Route::get('/', [AdminDashboardController::class, 'index'])->name('admin_dashboard');
-        Route::get('/data', [AdminDashboardController::class, 'data'])->name('admin_dashboard.data');
 
-        Route::get('/stats', [AdminDashboardController::class, 'getStats'])->name('admin.dashboard.stats');
+        Route::get('/stats', [AdminDashboardController::class, 'getMonthlyStats'])->name('admin.dashboard.stats');
         Route::get('/subscriptions', [AdminDashboardController::class, 'getSubscriptionPlans'])->name('admin.dashboard.subscription.plans');
         Route::get('/approvals', [AdminDashboardController::class, 'getApprovalRequests'])->name('admin.dashboard.approval.requests');
         Route::get('/revenue-growth', [AdminDashboardController::class, 'getRevenueGrowth'])->name('admin.dashboard.revenue.growth');
@@ -422,7 +421,7 @@ Route::prefix('owner')->middleware(['auth.jwt'])->group(function () {
             Route::get('/{user}/show', [PropertyUsersController::class , 'show'])->name('owner.property.users.show');
             Route::get('/{user}/edit', [UsersController::class, 'ownerEdit'])->name('owner.property.users.edit');
             Route::put('/', [UsersController::class, 'ownerUpdate'])->name('owner.property.users.update');
-            Route::put('/contract-status', [PropertyUsersController::class, 'updateContractStatus'])->name('owner.property.users.contractStatus');
+            Route::put('/contract-status', [PropertyUsersController::class, 'updateRenewStatus'])->name('owner.property.users.contractStatus');
             Route::get('/{id}/contract', [PropertyUsersController::class, 'editContract'])->name('owner.property.users.contract.edit');
             Route::put('/contract', [PropertyUsersController::class, 'updateContract'])->name('owner.property.users.contract.update');
 

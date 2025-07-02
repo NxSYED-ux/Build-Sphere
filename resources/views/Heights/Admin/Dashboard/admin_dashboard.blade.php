@@ -66,10 +66,6 @@
             background: linear-gradient(135deg, var(--accent), #FFA07A);
         }
 
-        .bg-gradient-purple {
-            background: linear-gradient(135deg, #6f42c1, #9b6bcc);
-        }
-
         .icon-container {
             font-size: 2.5rem;
             opacity: 0.2;
@@ -135,12 +131,6 @@
             gap: 10px;
         }
 
-        .currentDate {
-            font-size: 12px;
-            color: var(--sidenavbar-text-color);
-            margin-right: 15px;
-        }
-
         .btn-details {
             background: var(--primary);
             color: white;
@@ -185,7 +175,7 @@
         .data-value {
             font-size: 24px;
             font-weight: 700;
-            color: var(--primary);
+            color: var(--sidenavbar-text-color);
             margin-bottom: 5px;
         }
 
@@ -244,11 +234,6 @@
             font-weight: 600;
             margin: 0;
             color: var(--sidenavbar-text-color);
-        }
-
-        .chart-legend {
-            display: flex;
-            flex-wrap: wrap;
         }
 
         .legend-item {
@@ -370,7 +355,7 @@
         .filter-panel h5 {
             margin-top: 0;
             margin-bottom: 15px;
-            color: var(--primary);
+            color: var(--sidenavbar-text-color);
         }
 
         .filter-group {
@@ -447,11 +432,6 @@
                 align-items: flex-start;
             }
 
-            .chart-legend {
-                margin-top: 10px;
-                flex-wrap: wrap;
-            }
-
             .card-actions {
                 margin-top: 10px;
             }
@@ -459,7 +439,7 @@
 
         /* Main content adjustments */
         #main {
-            /*padding: 20px;*/
+
         }
 
         .content-wrapper {
@@ -488,33 +468,33 @@
                         <section class="content">
                             <!-- Stats Cards Row -->
                             <div class="row my-3">
-                                <!-- Total Organizations Card -->
+                                <!-- Organizations Created Card -->
                                 <div class="col-md-3 col-sm-6 mb-4">
                                     <div class="stats-card bg-gradient-primary">
                                         <div class="icon-container">
                                             <i class="bx bxs-business"></i>
                                         </div>
                                         <div class="stats-content">
-                                            <h3 id="totalOrganizations">0</h3>
-                                            <p>Total Organizations</p>
+                                            <h3 id="totalOrganizations">0 / 0</h3>
+                                            <p>Organizations Created</p>
                                         </div>
-                                        <div class="progress-indicator">
+                                        <div id="org-progress" class="progress-indicator">
                                             <div class="progress-bar" style="width: 75%"></div>
                                         </div>
                                     </div>
                                 </div>
 
-                                <!-- Total Owners Card -->
+                                <!-- Active Users Card -->
                                 <div class="col-md-3 col-sm-6 mb-4">
                                     <div class="stats-card bg-gradient-info">
                                         <div class="icon-container">
                                             <i class="bx bx-user"></i>
                                         </div>
                                         <div class="stats-content">
-                                            <h3 id="totalOwners">0</h3>
-                                            <p>Total Owners</p>
+                                            <h3 id="totalUsers">0 / 0</h3>
+                                            <p>Active Users</p>
                                         </div>
-                                        <div class="progress-indicator">
+                                        <div id="user-progress" class="progress-indicator">
                                             <div class="progress-bar" style="width: 60%"></div>
                                         </div>
                                     </div>
@@ -527,41 +507,43 @@
                                             <i class="bx bx-buildings"></i>
                                         </div>
                                         <div class="stats-content">
-                                            <h3 id="pendingApprovals">0</h3>
+                                            <h3 id="pendingApprovals">0 / 0</h3>
                                             <p>Pending Approvals</p>
                                         </div>
-                                        <div class="progress-indicator">
+                                        <div id="building-progress" class="progress-indicator">
                                             <div class="progress-bar" style="width: 45%"></div>
                                         </div>
                                     </div>
                                 </div>
 
-                                <!-- Total Revenue Card -->
+                                <!-- Monthly Revenue Card -->
                                 <div class="col-md-3 col-sm-6 mb-4">
                                     <div class="stats-card bg-gradient-success">
                                         <div class="icon-container">
                                             <i class="bx bx-dollar"></i>
                                         </div>
                                         <div class="stats-content">
-                                            <h3 id="totalRevenue">$0</h3>
-                                            <p>Total Revenue</p>
+                                            <h3 id="totalRevenue">PKR 0</h3>
+                                            <p>Monthly Revenue</p>
                                         </div>
-                                        <div class="progress-indicator">
-                                            <div class="progress-bar" style="width: 85%"></div>
+                                        <div id="revenue-progress" class="progress-indicator">
+                                            <div class="progress-bar" style="width: 90%"></div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- Data Cards Row -->
+                            <!-- 1st Charts Row -->
                             <div class="row my-3">
+
                                 <!-- Subscription Plans Summary -->
                                 <div class="col-md-6 mb-4">
                                     <div class="advanced-data-card">
                                         <div class="card-header">
                                             <h3>Subscription Plans</h3>
                                             <div class="card-actions">
-                                                <span class="currentDate"></span>
+                                                <span class="currentMonth" id="currentMonthChart1"></span>
+                                                <span class="currentPlan" id="currentPlanChart1">All Plans</span>
                                                 <div class="chart-controls">
                                                     <button class="chart-btn reload-btn" data-chart="subscription">
                                                         <i class="bx bx-refresh"></i>
@@ -572,7 +554,6 @@
                                                         <span class="tooltip">Chart Settings</span>
                                                     </button>
                                                 </div>
-                                                <button class="btn-details">View All <i class="bx bx-chevron-right"></i></button>
                                             </div>
                                         </div>
                                         <div class="card-body">
@@ -580,61 +561,68 @@
                                                 <div class="flipper">
                                                     <div class="chart-container">
                                                         <div class="data-grid">
-                                                            <div class="data-item">
+                                                            <div class="data-item" data-type="active">
                                                                 <div class="data-value" id="activeSubscriptions">0</div>
                                                                 <div class="data-label">Active</div>
-                                                                <div class="data-trend up">
-                                                                    <i class="bx bx-up-arrow-alt"></i> 12%
-                                                                </div>
+                                                                <div class="data-trend"><span>-</span></div>
                                                             </div>
-                                                            <div class="data-item">
+                                                            <div class="data-item" data-type="expired">
                                                                 <div class="data-value" id="expiredSubscriptions">0</div>
                                                                 <div class="data-label">Expired</div>
-                                                                <div class="data-trend down">
-                                                                    <i class="bx bx-down-arrow-alt"></i> 5%
-                                                                </div>
+                                                                <div class="data-trend"><span>-</span></div>
                                                             </div>
-                                                            <div class="data-item">
+                                                            <div class="data-item" data-type="trial">
                                                                 <div class="data-value" id="trialSubscriptions">0</div>
-                                                                <div class="data-label">Trial</div>
-                                                                <div class="data-trend up">
-                                                                    <i class="bx bx-up-arrow-alt"></i> 8%
-                                                                </div>
+                                                                <div class="data-label">Active Trials</div>
+                                                                <div class="data-trend"><span>-</span></div>
                                                             </div>
                                                         </div>
+
                                                         <div class="mini-chart-container pb-0 mb-0">
                                                             <canvas id="subscriptionTrendChart"></canvas>
                                                         </div>
                                                     </div>
                                                     <div class="filter-panel">
                                                         <h5>Subscription Plans Filters</h5>
-                                                        <div class="filter-group">
-                                                            <label for="subscriptionDateRange">Date Range</label>
-                                                            <select id="subscriptionDateRange" class="form-select">
-                                                                <option value="7days">Last 7 Days</option>
-                                                                <option value="30days" selected>Last 30 Days</option>
-                                                                <option value="90days">Last 90 Days</option>
-                                                                <option value="custom">Custom Range</option>
+                                                        <div class="filter-group" data-chart="subscription">
+                                                            <label for="filterYear">Year</label>
+                                                            <select id="filterYear" class="form-select">
+                                                                @for ($y = now()->year; $y >= now()->year - 5; $y--)
+                                                                    <option value="{{ $y }}" {{ $y == now()->year ? 'selected' : '' }}>{{ $y }}</option>
+                                                                @endfor
                                                             </select>
                                                         </div>
-                                                        <div class="filter-group" id="subscriptionCustomRange" style="display: none;">
-                                                            <label for="subscriptionStartDate">Start Date</label>
-                                                            <input type="date" id="subscriptionStartDate">
-                                                            <label for="subscriptionEndDate">End Date</label>
-                                                            <input type="date" id="subscriptionEndDate">
-                                                        </div>
-                                                        <div class="filter-group">
-                                                            <label for="subscriptionPlanType">Plan Type</label>
-                                                            <select id="subscriptionPlanType" class="form-select">
-                                                                <option value="all">All Plans</option>
-                                                                <option value="basic">Basic</option>
-                                                                <option value="standard">Standard</option>
-                                                                <option value="premium">Premium</option>
-                                                                <option value="enterprise">Enterprise</option>
+
+                                                        <div class="filter-group" data-chart="subscription">
+                                                            <label for="filterMonth">Month</label>
+                                                            <select id="filterMonth" class="form-select">
+                                                                @foreach (range(1, 12) as $m)
+                                                                    @php
+                                                                        $val = str_pad($m, 2, '0', STR_PAD_LEFT);
+                                                                    @endphp
+                                                                    <option value="{{ $val }}" {{ $m == now()->month ? 'selected' : '' }}>
+                                                                        {{ \Carbon\Carbon::create()->month($m)->format('F') }}
+                                                                    </option>
+                                                                @endforeach
                                                             </select>
                                                         </div>
+
+                                                        <div class="filter-group" data-chart="subscription">
+                                                            <label for="filterPlan">Plan Type</label>
+                                                            <select id="filterPlan" class="form-select" {{ empty($plans) || $plans->isEmpty() ? 'disabled' : '' }}>
+                                                                <option value="">All Plans</option>
+                                                                @if (!empty($plans) && $plans->isNotEmpty())
+                                                                    @foreach ($plans as $plan)
+                                                                        <option value="{{ $plan->id }}">{{ $plan->name }}</option>
+                                                                    @endforeach
+                                                                @else
+                                                                    <option disabled>No plans available</option>
+                                                                @endif
+                                                            </select>
+                                                        </div>
+
                                                         <div class="filter-actions">
-                                                            <button class="btn-filter btn-cancel">Cancel</button>
+                                                            <button class="btn-filter btn-cancel" id="btn-cancel-chart1">Cancel</button>
                                                             <button class="btn-filter btn-apply">Apply Filters</button>
                                                         </div>
                                                     </div>
@@ -650,7 +638,8 @@
                                         <div class="card-header">
                                             <h3>Approval Requests</h3>
                                             <div class="card-actions">
-                                                <span class="currentDate"></span>
+                                                <span class="currentMonth" id="currentMonthChart2"></span>
+                                                <span class="currentOrganization" id="currentOrganizationChart2">All Organizations</span>
                                                 <div class="chart-controls">
                                                     <button class="chart-btn reload-btn" data-chart="approval">
                                                         <i class="bx bx-refresh"></i>
@@ -669,26 +658,20 @@
                                                 <div class="flipper">
                                                     <div class="chart-container">
                                                         <div class="data-grid">
-                                                            <div class="data-item">
+                                                            <div class="data-item" data-type="pending">
                                                                 <div class="data-value" id="pendingRequests">0</div>
                                                                 <div class="data-label">Pending</div>
-                                                                <div class="data-trend up">
-                                                                    <i class="bx bx-up-arrow-alt"></i> 15%
-                                                                </div>
+                                                                <div class="data-trend"><span>-</span></div>
                                                             </div>
-                                                            <div class="data-item">
+                                                            <div class="data-item" data-type="approved">
                                                                 <div class="data-value" id="approvedRequests">0</div>
                                                                 <div class="data-label">Approved</div>
-                                                                <div class="data-trend up">
-                                                                    <i class="bx bx-up-arrow-alt"></i> 20%
-                                                                </div>
+                                                                <div class="data-trend"><span>-</span></div>
                                                             </div>
-                                                            <div class="data-item">
+                                                            <div class="data-item" data-type="rejected">
                                                                 <div class="data-value" id="rejectedRequests">0</div>
                                                                 <div class="data-label">Rejected</div>
-                                                                <div class="data-trend down">
-                                                                    <i class="bx bx-down-arrow-alt"></i> 5%
-                                                                </div>
+                                                                <div class="data-trend"><span>-</span></div>
                                                             </div>
                                                         </div>
                                                         <div class="donut-chart-container">
@@ -697,41 +680,44 @@
                                                     </div>
                                                     <div class="filter-panel">
                                                         <h5>Approval Requests Filters</h5>
-                                                        <div class="filter-group">
-                                                            <label for="approvalDateRange">Date Range</label>
-                                                            <select id="approvalDateRange" class="form-select">
-                                                                <option value="7days">Last 7 Days</option>
-                                                                <option value="30days" selected>Last 30 Days</option>
-                                                                <option value="90days">Last 90 Days</option>
-                                                                <option value="custom">Custom Range</option>
+                                                        <div class="filter-group" data-chart="approval">
+                                                            <label for="filterYear">Year</label>
+                                                            <select id="filterYear" class="form-select">
+                                                                @for ($y = now()->year; $y >= now()->year - 5; $y--)
+                                                                    <option value="{{ $y }}" {{ $y == now()->year ? 'selected' : '' }}>{{ $y }}</option>
+                                                                @endfor
                                                             </select>
                                                         </div>
-                                                        <div class="filter-group" id="approvalCustomRange" style="display: none;">
-                                                            <label for="approvalStartDate">Start Date</label>
-                                                            <input type="date" id="approvalStartDate">
-                                                            <label for="approvalEndDate">End Date</label>
-                                                            <input type="date" id="approvalEndDate">
-                                                        </div>
-                                                        <div class="filter-group">
-                                                            <label for="approvalStatus">Status</label>
-                                                            <select id="approvalStatus" class="form-select">
-                                                                <option value="all">All Statuses</option>
-                                                                <option value="pending">Pending</option>
-                                                                <option value="approved">Approved</option>
-                                                                <option value="rejected">Rejected</option>
+
+                                                        <div class="filter-group" data-chart="approval">
+                                                            <label for="filterMonth">Month</label>
+                                                            <select id="filterMonth" class="form-select">
+                                                                @foreach (range(1, 12) as $m)
+                                                                    @php
+                                                                        $val = str_pad($m, 2, '0', STR_PAD_LEFT);
+                                                                    @endphp
+                                                                    <option value="{{ $val }}" {{ $m == now()->month ? 'selected' : '' }}>
+                                                                        {{ \Carbon\Carbon::create()->month($m)->format('F') }}
+                                                                    </option>
+                                                                @endforeach
                                                             </select>
                                                         </div>
-                                                        <div class="filter-group">
-                                                            <label for="approvalType">Request Type</label>
-                                                            <select id="approvalType" class="form-select">
-                                                                <option value="all">All Types</option>
-                                                                <option value="building">Building</option>
-                                                                <option value="organization">Organization</option>
-                                                                <option value="user">User</option>
+
+                                                        <div class="filter-group" data-chart="approval">
+                                                            <label for="filterPlan">Plan Type</label>
+                                                            <select id="filterOrganizationChart2" class="form-select" {{ empty($organizations) || $organizations->isEmpty() ? 'disabled' : '' }}>
+                                                                <option value="">All Organizations</option>
+                                                                @if (!empty($organizations) && $organizations->isNotEmpty())
+                                                                    @foreach ($organizations as $organization)
+                                                                        <option value="{{ $organization->id }}">{{ $organization->name }}</option>
+                                                                    @endforeach
+                                                                @else
+                                                                    <option disabled>No organizations available</option>
+                                                                @endif
                                                             </select>
                                                         </div>
                                                         <div class="filter-actions">
-                                                            <button class="btn-filter btn-cancel">Cancel</button>
+                                                            <button class="btn-filter btn-cancel" id="btn-cancel-chart2">Cancel</button>
                                                             <button class="btn-filter btn-apply">Apply Filters</button>
                                                         </div>
                                                     </div>
@@ -740,9 +726,10 @@
                                         </div>
                                     </div>
                                 </div>
+
                             </div>
 
-                            <!-- Charts Row -->
+                            <!-- 2nd Charts Row -->
                             <div class="row">
                                 <!-- Monthly Revenue Growth -->
                                 <div class="col-md-6 mb-4">
@@ -751,6 +738,8 @@
                                             <h4>Monthly Revenue Growth</h4>
                                             <div class="card-actions">
                                                 <div class="chart-controls">
+                                                    <span class="currentYear" id="currentYearChart3">{{ now()->year }}</span>
+                                                    <span class="currentPlan" id="currentPlanChart3">All Plans</span>
                                                     <button class="chart-btn reload-btn" data-chart="revenue">
                                                         <i class="bx bx-refresh"></i>
                                                         <span class="tooltip">Reload Data</span>
@@ -761,45 +750,41 @@
                                                     </button>
                                                 </div>
                                             </div>
-                                            <div class="chart-legend">
-                                                <span class="legend-item"><i class="bx bx-line-chart"></i> Revenue</span>
-                                                <span class="legend-item"><i class="bx bx-trending-up"></i> Growth Rate</span>
-                                            </div>
                                         </div>
-                                        <div class="flip-container" id="revenueFlipContainer">
-                                            <div class="flipper">
-                                                <div class="chart-container">
-                                                    <canvas id="revenueLineChart"></canvas>
-                                                </div>
-                                                <div class="filter-panel">
-                                                    <h5>Revenue Growth Filters</h5>
-                                                    <div class="filter-group">
-                                                        <label for="revenueDateRange">Date Range</label>
-                                                        <select id="revenueDateRange" class="form-select">
-                                                            <option value="3months">Last 3 Months</option>
-                                                            <option value="6months">Last 6 Months</option>
-                                                            <option value="12months" selected>Last 12 Months</option>
-                                                            <option value="custom">Custom Range</option>
-                                                        </select>
+                                        <div class="card-body">
+                                            <div class="flip-container" id="revenueFlipContainer">
+                                                <div class="flipper">
+                                                    <div class="chart-container">
+                                                        <canvas id="revenueLineChart"></canvas>
                                                     </div>
-                                                    <div class="filter-group" id="revenueCustomRange" style="display: none;">
-                                                        <label for="revenueStartDate">Start Date</label>
-                                                        <input type="date" id="revenueStartDate">
-                                                        <label for="revenueEndDate">End Date</label>
-                                                        <input type="date" id="revenueEndDate">
-                                                    </div>
-                                                    <div class="filter-group">
-                                                        <label for="revenueType">Revenue Type</label>
-                                                        <select id="revenueType" class="form-select">
-                                                            <option value="all">All Revenue</option>
-                                                            <option value="subscription">Subscriptions</option>
-                                                            <option value="service">Services</option>
-                                                            <option value="other">Other</option>
-                                                        </select>
-                                                    </div>
-                                                    <div class="filter-actions">
-                                                        <button class="btn-filter btn-cancel">Cancel</button>
-                                                        <button class="btn-filter btn-apply">Apply Filters</button>
+                                                    <div class="filter-panel">
+                                                        <h5>Revenue Growth Filters</h5>
+                                                        <div class="filter-group" data-chart="revenue">
+                                                            <label for="filterYear">Year</label>
+                                                            <select id="filterYear" class="form-select">
+                                                                @for ($y = now()->year; $y >= now()->year - 5; $y--)
+                                                                    <option value="{{ $y }}" {{ $y == now()->year ? 'selected' : '' }}>{{ $y }}</option>
+                                                                @endfor
+                                                            </select>
+                                                        </div>
+
+                                                        <div class="filter-group" data-chart="revenue">
+                                                            <label for="filterPlan">Plan Type</label>
+                                                            <select id="filterPlan" class="form-select" {{ empty($plans) || $plans->isEmpty() ? 'disabled' : '' }}>
+                                                                <option value="">All Plans</option>
+                                                                @if (!empty($plans) && $plans->isNotEmpty())
+                                                                    @foreach ($plans as $plan)
+                                                                        <option value="{{ $plan->id }}">{{ $plan->name }}</option>
+                                                                    @endforeach
+                                                                @else
+                                                                    <option disabled>No plans available</option>
+                                                                @endif
+                                                            </select>
+                                                        </div>
+                                                        <div class="filter-actions">
+                                                            <button class="btn-filter btn-cancel" id="btn-cancel-chart3">Cancel</button>
+                                                            <button class="btn-filter btn-apply">Apply Filters</button>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -813,6 +798,10 @@
                                         <div class="chart-header">
                                             <h4>Plan Popularity</h4>
                                             <div class="card-actions">
+                                                <span class="currentStart" id="currentStartChart4">{{ strtoupper(now()->subDays(30)->format('d F Y')) }}</span>
+                                                <span class="separator"> - </span>
+                                                <span class="currentEnd" id="currentEndChart4">{{ strtoupper(now()->format('d F Y')) }}</span>
+                                                <span class="legend-item"><i class="bx bx-pie-chart-alt"></i> By Subscriptions</span>
                                                 <div class="chart-controls">
                                                     <button class="chart-btn reload-btn" data-chart="plan">
                                                         <i class="bx bx-refresh"></i>
@@ -824,44 +813,32 @@
                                                     </button>
                                                 </div>
                                             </div>
-                                            <div class="chart-legend">
-                                                <span class="legend-item"><i class="bx bx-pie-chart-alt"></i> By Subscriptions</span>
-                                            </div>
                                         </div>
-                                        <div class="flip-container" id="planFlipContainer">
-                                            <div class="flipper">
-                                                <div class="chart-container">
-                                                    <canvas id="planPieChart"></canvas>
-                                                </div>
-                                                <div class="filter-panel">
-                                                    <h5>Plan Popularity Filters</h5>
-                                                    <div class="filter-group">
-                                                        <label for="planDateRange">Date Range</label>
-                                                        <select id="planDateRange" class="form-select">
-                                                            <option value="7days">Last 7 Days</option>
-                                                            <option value="30days" selected>Last 30 Days</option>
-                                                            <option value="90days">Last 90 Days</option>
-                                                            <option value="custom">Custom Range</option>
-                                                        </select>
+                                        <div class="card-body">
+                                            <div class="flip-container" id="planFlipContainer">
+                                                <div class="flipper">
+                                                    <div class="chart-container">
+                                                        <canvas id="planPieChart"></canvas>
                                                     </div>
-                                                    <div class="filter-group" id="planCustomRange" style="display: none;">
-                                                        <label for="planStartDate">Start Date</label>
-                                                        <input type="date" id="planStartDate">
-                                                        <label for="planEndDate">End Date</label>
-                                                        <input type="date" id="planEndDate">
-                                                    </div>
-                                                    <div class="filter-group">
-                                                        <label for="planStatus">Subscription Status</label>
-                                                        <select id="planStatus" class="form-select">
-                                                            <option value="all">All Statuses</option>
-                                                            <option value="active">Active</option>
-                                                            <option value="expired">Expired</option>
-                                                            <option value="trial">Trial</option>
-                                                        </select>
-                                                    </div>
-                                                    <div class="filter-actions">
-                                                        <button class="btn-filter btn-cancel">Cancel</button>
-                                                        <button class="btn-filter btn-apply">Apply Filters</button>
+                                                    <div class="filter-panel">
+                                                        <h5>Plan Popularity Filters</h5>
+                                                        @php
+                                                            $today = now()->toDateString();
+                                                            $thirtyDaysAgo = now()->subDays(30)->toDateString();
+                                                        @endphp
+
+                                                        <div class="filter-group" data-chart="plan">
+                                                            <label for="filterStart">Start Date</label>
+                                                            <input type="date" id="filterStart" value="{{ $thirtyDaysAgo }}">
+
+                                                            <label for="filterEnd">End Date</label>
+                                                            <input type="date" id="filterEnd" value="{{ $today }}">
+                                                        </div>
+
+                                                        <div class="filter-actions">
+                                                            <button class="btn-filter btn-cancel" id="btn-cancel-chart4">Cancel</button>
+                                                            <button class="btn-filter btn-apply">Apply Filters</button>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -870,7 +847,7 @@
                                 </div>
                             </div>
 
-                            <!-- Second Charts Row -->
+                            <!-- 3rd Charts Row -->
                             <div class="row">
                                 <!-- Subscription Plan Distribution -->
                                 <div class="col-md-6 mb-4">
@@ -878,6 +855,8 @@
                                         <div class="chart-header">
                                             <h4>Subscription Plan Distribution</h4>
                                             <div class="card-actions">
+                                                <span class="currentYear" id="currentYearChart5">{{ now()->year }}</span>
+                                                <span class="currentPlan" id="currentPlanChart5">All Plans</span>
                                                 <div class="chart-controls">
                                                     <button class="chart-btn reload-btn" data-chart="distribution">
                                                         <i class="bx bx-refresh"></i>
@@ -889,47 +868,41 @@
                                                     </button>
                                                 </div>
                                             </div>
-                                            <div class="chart-legend">
-                                                <span class="legend-item active"><i class="bx bx-square"></i> Active</span>
-                                                <span class="legend-item expired"><i class="bx bx-square"></i> Expired</span>
-                                                <span class="legend-item trial"><i class="bx bx-square"></i> Trial</span>
-                                            </div>
                                         </div>
-                                        <div class="flip-container" id="distributionFlipContainer">
-                                            <div class="flipper">
-                                                <div class="chart-container">
-                                                    <canvas id="subscriptionBarChart"></canvas>
-                                                </div>
-                                                <div class="filter-panel">
-                                                    <h5>Subscription Distribution Filters</h5>
-                                                    <div class="filter-group">
-                                                        <label for="distributionDateRange">Date Range</label>
-                                                        <select id="distributionDateRange" class="form-select">
-                                                            <option value="3months">Last 3 Months</option>
-                                                            <option value="6months">Last 6 Months</option>
-                                                            <option value="12months" selected>Last 12 Months</option>
-                                                            <option value="custom">Custom Range</option>
-                                                        </select>
+                                        <div class="card-body">
+                                            <div class="flip-container" id="distributionFlipContainer">
+                                                <div class="flipper">
+                                                    <div class="chart-container">
+                                                        <canvas id="subscriptionBarChart"></canvas>
                                                     </div>
-                                                    <div class="filter-group" id="distributionCustomRange" style="display: none;">
-                                                        <label for="distributionStartDate">Start Date</label>
-                                                        <input type="date" id="distributionStartDate">
-                                                        <label for="distributionEndDate">End Date</label>
-                                                        <input type="date" id="distributionEndDate">
-                                                    </div>
-                                                    <div class="filter-group">
-                                                        <label for="distributionPlanType">Plan Type</label>
-                                                        <select id="distributionPlanType" class="form-select">
-                                                            <option value="all">All Plans</option>
-                                                            <option value="basic">Basic</option>
-                                                            <option value="standard">Standard</option>
-                                                            <option value="premium">Premium</option>
-                                                            <option value="enterprise">Enterprise</option>
-                                                        </select>
-                                                    </div>
-                                                    <div class="filter-actions">
-                                                        <button class="btn-filter btn-cancel">Cancel</button>
-                                                        <button class="btn-filter btn-apply">Apply Filters</button>
+                                                    <div class="filter-panel">
+                                                        <h5>Subscription Distribution Filters</h5>
+                                                        <div class="filter-group" data-chart="distribution">
+                                                            <label for="filterYear">Year</label>
+                                                            <select id="filterYear" class="form-select">
+                                                                @for ($y = now()->year; $y >= now()->year - 5; $y--)
+                                                                    <option value="{{ $y }}" {{ $y == now()->year ? 'selected' : '' }}>{{ $y }}</option>
+                                                                @endfor
+                                                            </select>
+                                                        </div>
+
+                                                        <div class="filter-group" data-chart="distribution">
+                                                            <label for="filterPlan">Plan Type</label>
+                                                            <select id="filterPlan" class="form-select" {{ empty($plans) || $plans->isEmpty() ? 'disabled' : '' }}>
+                                                                <option value="">All Plans</option>
+                                                                @if (!empty($plans) && $plans->isNotEmpty())
+                                                                    @foreach ($plans as $plan)
+                                                                        <option value="{{ $plan->id }}">{{ $plan->name }}</option>
+                                                                    @endforeach
+                                                                @else
+                                                                    <option disabled>No plans available</option>
+                                                                @endif
+                                                            </select>
+                                                        </div>
+                                                        <div class="filter-actions">
+                                                            <button class="btn-filter btn-cancel" id="btn-cancel-chart5">Cancel</button>
+                                                            <button class="btn-filter btn-apply">Apply Filters</button>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -943,6 +916,8 @@
                                         <div class="chart-header">
                                             <h4>Approval Status Timeline</h4>
                                             <div class="card-actions">
+                                                <span class="currentYear" id="currentYearChart6">{{ now()->year }}</span>
+                                                <span class="currentOrganization" id="currentOrganizationChart6">All Organizations</span>
                                                 <div class="chart-controls">
                                                     <button class="chart-btn reload-btn" data-chart="timeline">
                                                         <i class="bx bx-refresh"></i>
@@ -954,46 +929,41 @@
                                                     </button>
                                                 </div>
                                             </div>
-                                            <div class="chart-legend">
-                                                <span class="legend-item pending"><i class="bx bx-square"></i> Pending</span>
-                                                <span class="legend-item approved"><i class="bx bx-square"></i> Approved</span>
-                                                <span class="legend-item rejected"><i class="bx bx-square"></i> Rejected</span>
-                                            </div>
                                         </div>
-                                        <div class="flip-container" id="timelineFlipContainer">
-                                            <div class="flipper">
-                                                <div class="chart-container">
-                                                    <canvas id="approvalTimelineChart"></canvas>
-                                                </div>
-                                                <div class="filter-panel">
-                                                    <h5>Approval Timeline Filters</h5>
-                                                    <div class="filter-group">
-                                                        <label for="timelineDateRange">Date Range</label>
-                                                        <select id="timelineDateRange" class="form-select">
-                                                            <option value="3months">Last 3 Months</option>
-                                                            <option value="6months">Last 6 Months</option>
-                                                            <option value="12months" selected>Last 12 Months</option>
-                                                            <option value="custom">Custom Range</option>
-                                                        </select>
+                                        <div class="card-body">
+                                            <div class="flip-container" id="timelineFlipContainer">
+                                                <div class="flipper">
+                                                    <div class="chart-container">
+                                                        <canvas id="approvalTimelineChart"></canvas>
                                                     </div>
-                                                    <div class="filter-group" id="timelineCustomRange" style="display: none;">
-                                                        <label for="timelineStartDate">Start Date</label>
-                                                        <input type="date" id="timelineStartDate">
-                                                        <label for="timelineEndDate">End Date</label>
-                                                        <input type="date" id="timelineEndDate">
-                                                    </div>
-                                                    <div class="filter-group">
-                                                        <label for="timelineRequestType">Request Type</label>
-                                                        <select id="timelineRequestType" class="form-select">
-                                                            <option value="all">All Types</option>
-                                                            <option value="building">Building</option>
-                                                            <option value="organization">Organization</option>
-                                                            <option value="user">User</option>
-                                                        </select>
-                                                    </div>
-                                                    <div class="filter-actions">
-                                                        <button class="btn-filter btn-cancel">Cancel</button>
-                                                        <button class="btn-filter btn-apply">Apply Filters</button>
+                                                    <div class="filter-panel">
+                                                        <h5>Approval Timeline Filters</h5>
+                                                        <div class="filter-group" data-chart="timeline">
+                                                            <label for="filterYear">Year</label>
+                                                            <select id="filterYear" class="form-select">
+                                                                @for ($y = now()->year; $y >= now()->year - 5; $y--)
+                                                                    <option value="{{ $y }}" {{ $y == now()->year ? 'selected' : '' }}>{{ $y }}</option>
+                                                                @endfor
+                                                            </select>
+                                                        </div>
+
+                                                        <div class="filter-group" data-chart="timeline">
+                                                            <label for="filterPlan">Plan Type</label>
+                                                            <select id="filterOrganizationChart2" class="form-select" {{ empty($organizations) || $organizations->isEmpty() ? 'disabled' : '' }}>
+                                                                <option value="">All Organizations</option>
+                                                                @if (!empty($organizations) && $organizations->isNotEmpty())
+                                                                    @foreach ($organizations as $organization)
+                                                                        <option value="{{ $organization->id }}">{{ $organization->name }}</option>
+                                                                    @endforeach
+                                                                @else
+                                                                    <option disabled>No organizations available</option>
+                                                                @endif
+                                                            </select>
+                                                        </div>
+                                                        <div class="filter-actions">
+                                                            <button class="btn-filter btn-cancel" id="btn-cancel-chart6">Cancel</button>
+                                                            <button class="btn-filter btn-apply">Apply Filters</button>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -1021,14 +991,15 @@
             // Initialize all charts
             let subscriptionTrendChart, approvalDonutChart, revenueLineChart, planPieChart, subscriptionBarChart, approvalTimelineChart;
 
-            // Current date display
-            const monthNames = ["JANUARY", "FEBRUARY", "MARCH", "APRIL", "MAY", "JUNE", "JULY", "AUGUST", "SEPTEMBER", "OCTOBER", "NOVEMBER", "DECEMBER"];
-            const currentDate = new Date();
-            const currentMonth = currentDate.getMonth();
-            const currentYear = currentDate.getFullYear();
+            //Current date display
+            const dateObj = new Date();
+            const formattedDate = new Intl.DateTimeFormat('en-US', {
+                year: 'numeric',
+                month: 'long'
+            }).format(dateObj);
 
-            document.querySelectorAll('.currentDate').forEach(el => {
-                el.textContent = `${monthNames[currentMonth]} ${currentYear}`;
+            document.querySelectorAll('.currentMonth').forEach(el => {
+                el.textContent = formattedDate;
             });
 
             // Initialize charts with empty data
@@ -1036,7 +1007,7 @@
                 // 1. Subscription Trend Mini Chart
                 const subscriptionTrendCtx = document.getElementById('subscriptionTrendChart').getContext('2d');
                 subscriptionTrendChart = new Chart(subscriptionTrendCtx, {
-                    type: 'line',
+                    type: 'doughnut',
                     data: { labels: [], datasets: [] },
                     options: { responsive: true, maintainAspectRatio: false }
                 });
@@ -1099,7 +1070,7 @@
                 fetchApprovalTimelineData();
             }
 
-            // 1. Fetch Stats Data (Total Organizations, Owners, Pending Approvals, Revenue)
+            // Fetch Stats Data
             function fetchStatsData() {
                 fetch(`{{ route('admin.dashboard.stats') }}`, {
                     method: 'GET',
@@ -1111,16 +1082,42 @@
                 })
                     .then(response => response.json())
                     .then(data => {
-                        document.getElementById('totalOrganizations').textContent = data.totalOrganizations || '0';
-                        document.getElementById('totalOwners').textContent = data.totalOwners || '0';
-                        document.getElementById('pendingApprovals').textContent = data.pendingApprovals || '0';
-                        document.getElementById('totalRevenue').textContent = `$${data.totalRevenue || '0'}`;
+                        document.getElementById('totalOrganizations').textContent = `${data.counts.newOrganizationsThisMonth} / ${data.counts.totalOrganizations}`;
+                        document.getElementById('totalUsers').textContent = `${data.counts.activeUsersThisMonth} / ${data.counts.totalUsers}`;
+                        document.getElementById('pendingApprovals').textContent = `${data.counts.pendingBuildingsThisMonth} / ${data.counts.totalPendingBuildings}`;
+                        document.getElementById('totalRevenue').textContent = `PKR ${(data.revenue.currentMonth || 0).toLocaleString()}`;
+
+                        document.querySelector('#org-progress .progress-bar').style.width = `${data.progress.organization || 0}%`;
+                        document.querySelector('#user-progress .progress-bar').style.width = `${data.progress.user || 0}%`;
+                        document.querySelector('#building-progress .progress-bar').style.width = `${data.progress.building || 0}%`;
+
+                        const revenueProgressBar = document.querySelector('#revenue-progress .progress-bar');
+                        const revenueGrowth = data.revenue.growth ?? 0;
+                        const revenueWidth = Math.min(Math.abs(revenueGrowth), 100);
+
+                        revenueProgressBar.style.width = `${revenueWidth}%`;
+                        revenueProgressBar.style.backgroundColor = revenueGrowth >= 0 ? 'white' : '#e57373';
                     })
                     .catch(error => console.error('Error fetching stats:', error));
             }
 
-            // 2. Fetch Subscription Data
-            function fetchSubscriptionData(params = {}) {
+            // 1. Fetch Subscription Data
+            function fetchSubscriptionData() {
+                const filterPanel = document.querySelector('.filter-group[data-chart="subscription"]').closest('.filter-panel');
+                const yearSelect = filterPanel.querySelector('select[id^="filterYear"]');
+                const monthSelect = filterPanel.querySelector('select[id^="filterMonth"]');
+                const planSelect = filterPanel.querySelector('select[id^="filterPlan"]');
+
+
+                const year = yearSelect ? yearSelect.value : null;
+                const month = monthSelect ? monthSelect.value : null;
+                const selectedPlan = planSelect ? planSelect.value : null;
+                const selectedMonth = `${year}-${month}`;
+
+                params = {}
+                params.month = selectedMonth;
+                params.plan = selectedPlan;
+
                 const queryString = new URLSearchParams(params).toString();
                 fetch(`{{ route('admin.dashboard.subscription.plans') }}?${queryString}`, {
                     method: 'GET',
@@ -1136,24 +1133,55 @@
                         document.getElementById('expiredSubscriptions').textContent = data.expired || '0';
                         document.getElementById('trialSubscriptions').textContent = data.trial || '0';
 
-                        // Update subscription trend chart
-                        subscriptionTrendChart.data.labels = data.trend.labels || [];
+                        // Handle growth arrows
+                        updateGrowthTrend('active', data.growth.active);
+                        updateGrowthTrend('expired', data.growth.expired);
+                        updateGrowthTrend('trial', data.growth.trial);
+
+                        subscriptionTrendChart.data.labels = ['Active', 'Expired', 'Active Trials'];
                         subscriptionTrendChart.data.datasets = [{
-                            label: 'New Subscriptions',
-                            data: data.trend.values || [],
-                            borderColor: '#184E83',
-                            backgroundColor: 'rgba(24, 78, 131, 0.1)',
-                            borderWidth: 2,
-                            tension: 0.4,
-                            fill: true
+                            data: [data.active || 0, data.expired || 0, data.trial || 0],
+                            backgroundColor: ['rgba(75, 192, 192, 1)', 'rgba(255, 99, 132, 1)', 'rgba(255, 205, 86, 1)'],
+                            borderWidth: 0
                         }];
+
+                        // Updating the Labels
+                        let planName = planSelect.options[planSelect.selectedIndex].text || null;
+
+                        const dateObj = new Date(`${selectedMonth}-01`);
+                        const formattedDate = new Intl.DateTimeFormat('en-US', {
+                            year: 'numeric',
+                            month: 'long'
+                        }).format(dateObj);
+
+                        const [month, year] = formattedDate.split(' ');
+
+                        document.getElementById('currentMonthChart1').textContent = `${month.toUpperCase()} ${year}`;
+                        document.getElementById('currentPlanChart1').textContent = planName;
+
+                        // Updating the chart
                         subscriptionTrendChart.update();
                     })
                     .catch(error => console.error('Error fetching subscription data:', error));
             }
 
-            // 3. Fetch Approval Data
-            function fetchApprovalData(params = {}) {
+            // 2. Fetch Approval Data
+            function fetchApprovalData() {
+                const filterPanel = document.querySelector('.filter-group[data-chart="approval"]').closest('.filter-panel');
+                const yearSelect = filterPanel.querySelector('select[id^="filterYear"]');
+                const monthSelect = filterPanel.querySelector('select[id^="filterMonth"]');
+                const organizationSelect = filterPanel.querySelector('select[id^="filterOrganization"]');
+
+                const year = yearSelect ? yearSelect.value : null;
+                const month = monthSelect ? monthSelect.value : null;
+                const selectedOrganization = organizationSelect ? organizationSelect.value : null;
+                const selectedMonth = `${year}-${month}`;
+
+                params = {}
+                params.month = selectedMonth;
+                params.organization = selectedOrganization;
+
+
                 const queryString = new URLSearchParams(params).toString();
                 fetch(`{{ route('admin.dashboard.approval.requests') }}?${queryString}`, {
                     method: 'GET',
@@ -1165,24 +1193,55 @@
                 })
                     .then(response => response.json())
                     .then(data => {
-                        document.getElementById('pendingRequests').textContent = data.pending || '0';
-                        document.getElementById('approvedRequests').textContent = data.approved || '0';
-                        document.getElementById('rejectedRequests').textContent = data.rejected || '0';
+                        document.getElementById('pendingRequests').textContent = data.counts.pending || '0';
+                        document.getElementById('approvedRequests').textContent = data.counts.approved || '0';
+                        document.getElementById('rejectedRequests').textContent = data.counts.rejected || '0';
 
-                        // Update approval donut chart
+                        updateGrowthTrend('pending', data.growth.pending);
+                        updateGrowthTrend('approved', data.growth.approved);
+                        updateGrowthTrend('rejected', data.growth.rejected);
+
                         approvalDonutChart.data.labels = ['Pending', 'Approved', 'Rejected'];
                         approvalDonutChart.data.datasets = [{
-                            data: [data.pending || 0, data.approved || 0, data.rejected || 0],
-                            backgroundColor: ['#36A2EB', '#4BC0C0', '#FF6384'],
+                            data: [data.counts.pending || 0, data.counts.approved || 0, data.counts.rejected || 0],
+                            backgroundColor: ['rgba(255, 205, 86, 1)', 'rgba(75, 192, 192, 1)', 'rgba(255, 99, 132, 1)'],
                             borderWidth: 0
                         }];
+
+                        // Updating the Labels
+                        let organizationName = organizationSelect.options[organizationSelect.selectedIndex].text || null;
+
+                        const dateObj = new Date(`${selectedMonth}-01`);
+                        const formattedDate = new Intl.DateTimeFormat('en-US', {
+                            year: 'numeric',
+                            month: 'long'
+                        }).format(dateObj);
+
+                        const [month, year] = formattedDate.split(' ');
+
+                        document.getElementById('currentMonthChart2').textContent = `${month.toUpperCase()} ${year}`;
+                        document.getElementById('currentOrganizationChart2').textContent = organizationName;
+
+                        // Updating the Chart
                         approvalDonutChart.update();
                     })
                     .catch(error => console.error('Error fetching approval data:', error));
             }
 
-            // 4. Fetch Revenue Data
-            function fetchRevenueData(params = {}) {
+            // 3. Fetch Revenue Data
+            function fetchRevenueData() {
+                const filterPanel = document.querySelector('.filter-group[data-chart="revenue"]').closest('.filter-panel');
+                const yearSelect = filterPanel.querySelector('select[id^="filterYear"]');
+                const planSelect = filterPanel.querySelector('select[id^="filterPlan"]');
+
+
+                const selectedYear = yearSelect ? yearSelect.value : null;
+                const selectedPlan = planSelect ? planSelect.value : null;
+
+                params = {}
+                params.year = selectedYear;
+                params.plan = selectedPlan;
+
                 const queryString = new URLSearchParams(params).toString();
                 fetch(`{{ route('admin.dashboard.revenue.growth') }}?${queryString}`, {
                     method: 'GET',
@@ -1217,13 +1276,37 @@
                                 yAxisID: 'y1'
                             }
                         ];
+
+                        // Updating the Labels
+                        let planName = planSelect.options[planSelect.selectedIndex].text || null;
+
+                        document.getElementById('currentYearChart3').textContent = selectedYear;
+                        document.getElementById('currentPlanChart3').textContent = planName;
+
+                        // Updating the chart
                         revenueLineChart.update();
                     })
                     .catch(error => console.error('Error fetching revenue data:', error));
             }
 
-            // 5. Fetch Plan Popularity Data
-            function fetchPlanPopularityData(params = {}) {
+            // 4. Fetch Plan Popularity Data
+            function fetchPlanPopularityData() {
+                const filterPanel = document.querySelector('.filter-group[data-chart="plan"]').closest('.filter-panel');
+                const startInput = filterPanel.querySelector('input[id^="filterStart"]');
+                const endInput = filterPanel.querySelector('input[id^="filterEnd"]');
+
+                const startDate = new Date(startInput.value);
+                const endDate = new Date(endInput.value);
+
+                if (startInput.value && endInput.value && startDate > endDate) {
+                    alert("Start Date cannot be after End Date.");
+                    return false;
+                }
+
+                params = {}
+                params.start = startInput.value;
+                params.end = endInput.value;
+
                 const queryString = new URLSearchParams(params).toString();
                 fetch(`{{ route('admin.dashboard.plan.popularity') }}?${queryString}`, {
                     method: 'GET',
@@ -1235,20 +1318,47 @@
                 })
                     .then(response => response.json())
                     .then(data => {
-                        // Update plan pie chart
                         planPieChart.data.labels = data.labels || [];
                         planPieChart.data.datasets = [{
                             data: data.values || [],
                             backgroundColor: ['#36A2EB', '#4BC0C0', '#FFCE56', '#FF6384'],
                             borderWidth: 0
                         }];
+
+                        // Update Label
+                        const formatDate = (dateString) => {
+                            const date = new Date(dateString);
+                            return date.toLocaleDateString('en-GB', {
+                                day: '2-digit',
+                                month: 'long',
+                                year: 'numeric'
+                            }).toUpperCase();
+                        };
+
+                        document.getElementById('currentStartChart4').textContent = formatDate(startInput.value);
+                        document.getElementById('currentEndChart4').textContent = formatDate(endInput.value);
+
+
+                        // Update Chart
                         planPieChart.update();
                     })
                     .catch(error => console.error('Error fetching plan popularity data:', error));
             }
 
-            // 6. Fetch Subscription Distribution Data
-            function fetchSubscriptionDistributionData(params = {}) {
+            // 5. Fetch Subscription Distribution Data
+            function fetchSubscriptionDistributionData() {
+                const filterPanel = document.querySelector('.filter-group[data-chart="distribution"]').closest('.filter-panel');
+                const yearSelect = filterPanel.querySelector('select[id^="filterYear"]');
+                const planSelect = filterPanel.querySelector('select[id^="filterPlan"]');
+
+
+                const selectedYear = yearSelect ? yearSelect.value : null;
+                const selectedPlan = planSelect ? planSelect.value : null;
+
+                params = {}
+                params.year = selectedYear;
+                params.plan = selectedPlan;
+
                 const queryString = new URLSearchParams(params).toString();
                 fetch(`{{ route('admin.dashboard.subscription.distribution') }}?${queryString}`, {
                     method: 'GET',
@@ -1260,11 +1370,10 @@
                 })
                     .then(response => response.json())
                     .then(data => {
-                        // Update subscription bar chart
                         subscriptionBarChart.data.labels = data.labels || [];
                         subscriptionBarChart.data.datasets = [
                             {
-                                label: 'Active',
+                                label: 'Activated',
                                 data: data.active || [],
                                 backgroundColor: 'rgba(75, 192, 192, 0.7)',
                                 borderColor: 'rgba(75, 192, 192, 1)',
@@ -1280,7 +1389,7 @@
                                 borderRadius: 4
                             },
                             {
-                                label: 'Trial',
+                                label: 'Trials',
                                 data: data.trial || [],
                                 backgroundColor: 'rgba(255, 205, 86, 0.7)',
                                 borderColor: 'rgba(255, 205, 86, 1)',
@@ -1288,13 +1397,32 @@
                                 borderRadius: 4
                             }
                         ];
+
+                        // Updating the Labels
+                        let planName = planSelect.options[planSelect.selectedIndex].text || null;
+
+                        document.getElementById('currentYearChart5').textContent = selectedYear;
+                        document.getElementById('currentPlanChart5').textContent = planName;
+
+                        // Update Plan
                         subscriptionBarChart.update();
                     })
                     .catch(error => console.error('Error fetching subscription distribution data:', error));
             }
 
-            // 7. Fetch Approval Timeline Data
-            function fetchApprovalTimelineData(params = {}) {
+            // 6. Fetch Approval Timeline Data
+            function fetchApprovalTimelineData() {
+                const filterPanel = document.querySelector('.filter-group[data-chart="timeline"]').closest('.filter-panel');
+                const yearSelect = filterPanel.querySelector('select[id^="filterYear"]');
+                const organizationSelect = filterPanel.querySelector('select[id^="filterOrganization"]');
+
+                const selectedYear = yearSelect ? yearSelect.value : null;
+                const selectedOrganization = organizationSelect ? organizationSelect.value : null;
+
+                params = {}
+                params.year = selectedYear;
+                params.organization = selectedOrganization;
+
                 const queryString = new URLSearchParams(params).toString();
                 fetch(`{{ route('admin.dashboard.approval.timeline') }}?${queryString}`, {
                     method: 'GET',
@@ -1306,7 +1434,6 @@
                 })
                     .then(response => response.json())
                     .then(data => {
-                        // Update approval timeline chart
                         approvalTimelineChart.data.labels = data.labels || [];
                         approvalTimelineChart.data.datasets = [
                             {
@@ -1337,60 +1464,71 @@
                                 fill: true
                             }
                         ];
+
+                        // Updating the Labels
+                        let organizationName = organizationSelect.options[organizationSelect.selectedIndex].text || null;
+
+                        document.getElementById('currentYearChart6').textContent = selectedYear;
+                        document.getElementById('currentOrganizationChart6').textContent = organizationName;
+
+                        // Update Chart
                         approvalTimelineChart.update();
                     })
                     .catch(error => console.error('Error fetching approval timeline data:', error));
             }
 
-            // Helper function to get filter params from a panel
-            function getFilterParams(panelId) {
-                const panel = document.querySelector(`#${panelId} .filter-panel`);
-                if (!panel) return {};
+            // Helper function to set the trends
+            function updateGrowthTrend(type, value) {
+                const container = document.querySelector(`.data-item[data-type="${type}"]`);
+                if (!container) return;
 
-                const params = {};
+                const trendDiv = container.querySelector('.data-trend');
+                if (!trendDiv) return;
 
-                // Date range handling
-                const dateRangeSelect = panel.querySelector('select[id$="DateRange"]');
-                if (dateRangeSelect) {
-                    const dateRangeValue = dateRangeSelect.value;
-                    if (dateRangeValue === 'custom') {
-                        const startDate = panel.querySelector('input[id$="StartDate"]').value;
-                        const endDate = panel.querySelector('input[id$="EndDate"]').value;
-                        if (startDate) params.start_date = startDate;
-                        if (endDate) params.end_date = endDate;
-                    } else {
-                        params.range = dateRangeValue;
-                    }
+                // Reset all previous state
+                trendDiv.classList.remove('text-success', 'text-danger', 'text-muted', 'up', 'down');
+
+                if (value === 0 || value === null || typeof value !== 'number') {
+                    trendDiv.innerHTML = `<span>-</span>`;
+                    return;
                 }
 
-                // Other filters
-                panel.querySelectorAll('select:not([id$="DateRange"])').forEach(select => {
-                    if (select.value && select.value !== 'all') {
-                        const paramName = select.id.replace(/DateRange|StartDate|EndDate/g, '').toLowerCase();
-                        params[paramName] = select.value;
-                    }
-                });
+                const absValue = Math.abs(value).toFixed(1);
+                const isPositive = value > 0;
+                const isNegative = value < 0;
+                const isBadGrowth = ['expired', 'canceled', 'rejected'].includes(type) ? isPositive : isNegative;
 
-                return params;
+                const iconClass = isPositive ? 'bx-up-arrow-alt' : 'bx-down-arrow-alt';
+                const textClass = isBadGrowth ? 'text-danger' : 'text-success';
+                const directionClass = isPositive ? 'up' : 'down';
+
+                trendDiv.classList.add(textClass, directionClass);
+                trendDiv.innerHTML = `<i class="bx ${iconClass}"></i> ${absValue}%`;
             }
 
-            // Chart controls functionality
+            // Setting button in charts
             document.querySelectorAll('.settings-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
+                btn.addEventListener('click', function () {
                     const chartType = this.getAttribute('data-chart');
                     const container = document.getElementById(`${chartType}FlipContainer`);
                     container.classList.add('flipped');
+
+                    // Disable the related reload button
+                    const reloadBtn = document.querySelector(`.reload-btn[data-chart="${chartType}"]`);
+                    if (reloadBtn) {
+                        reloadBtn.disabled = true;
+                        reloadBtn.classList.add('disabled');
+                    }
                 });
             });
 
+            // Reload button in charts
             document.querySelectorAll('.reload-btn').forEach(btn => {
                 btn.addEventListener('click', function() {
                     const chartType = this.getAttribute('data-chart');
-                    // Show loading indicator
                     const originalHTML = this.innerHTML;
                     this.innerHTML = '<i class="bx bx-loader bx-spin"></i>';
 
-                    // Reload the appropriate data
                     const reloadFunctions = {
                         'subscription': fetchSubscriptionData,
                         'approval': fetchApprovalData,
@@ -1420,28 +1558,16 @@
                 });
             });
 
-            // Cancel button in filter panels
-            document.querySelectorAll('.btn-cancel').forEach(btn => {
-                btn.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    const container = this.closest('.flip-container');
-                    container.classList.remove('flipped');
-                });
-            });
-
             // Apply button in filter panels
             document.querySelectorAll('.btn-apply').forEach(btn => {
                 btn.addEventListener('click', function(e) {
                     e.preventDefault();
                     const container = this.closest('.flip-container');
                     const chartType = container.id.replace('FlipContainer', '');
-                    const params = getFilterParams(container.id);
 
-                    // Show loading
                     const originalHTML = this.innerHTML;
                     this.innerHTML = 'Applying...';
 
-                    // Apply filters to the appropriate chart
                     const filterFunctions = {
                         'subscription': fetchSubscriptionData,
                         'approval': fetchApprovalData,
@@ -1452,7 +1578,7 @@
                     };
 
                     if (filterFunctions[chartType]) {
-                        filterFunctions[chartType](params);
+                        filterFunctions[chartType]();
                     }
 
                     // Close panel and reset button
@@ -1460,31 +1586,17 @@
                         container.classList.remove('flipped');
                         this.innerHTML = originalHTML;
 
-                        // Show success in reload button tooltip
                         const reloadBtn = document.querySelector(`.reload-btn[data-chart="${chartType}"]`);
                         if (reloadBtn) {
+                            reloadBtn.disabled = false;
+                            reloadBtn.classList.remove('disabled');
+
                             const tooltip = reloadBtn.querySelector('.tooltip');
                             if (tooltip) {
                                 tooltip.textContent = 'Filters applied!';
-                                setTimeout(() => {
-                                    tooltip.textContent = 'Reload Data';
-                                }, 2000);
                             }
                         }
                     }, 500);
-                });
-            });
-
-            // Show/hide custom date range inputs
-            document.querySelectorAll('select[id$="DateRange"]').forEach(select => {
-                select.addEventListener('change', function() {
-                    const containerId = this.id.replace('DateRange', 'CustomRange');
-                    const customRangeContainer = document.getElementById(containerId);
-                    if (this.value === 'custom') {
-                        customRangeContainer.style.display = 'block';
-                    } else {
-                        customRangeContainer.style.display = 'none';
-                    }
                 });
             });
 
@@ -1495,6 +1607,130 @@
                     alert(`Viewing details for: ${cardTitle}`);
                 });
             });
+
+            // Cancel button in filter panels
+            document.querySelectorAll('.btn-cancel').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const container = this.closest('.flip-container');
+                    container.classList.remove('flipped');
+
+                    const chartType = container.id.replace('FlipContainer', '');
+                    const reloadBtn = document.querySelector(`.reload-btn[data-chart="${chartType}"]`);
+                    if (reloadBtn) {
+                        reloadBtn.disabled = false;
+                        reloadBtn.classList.remove('disabled');
+                    }
+                });
+            });
+
+            const monthNames = [
+                'january', 'february', 'march', 'april', 'may', 'june',
+                'july', 'august', 'september', 'october', 'november', 'december'
+            ];
+
+            const formatToInputDate = (text) => {
+                const [day, monthName, year] = text.split(' ');
+                const monthIndex = monthNames.indexOf(monthName.toLowerCase()) + 1;
+                const mm = String(monthIndex).padStart(2, '0');
+                const dd = day.padStart(2, '0');
+                return `${year}-${mm}-${dd}`;
+            };
+
+            const cancelButtonHandler = (chartNumber, config) => {
+                document.querySelectorAll(`#btn-cancel-chart${chartNumber}`).forEach(button => {
+                    button.addEventListener('click', function () {
+                        const container = document.querySelector(`.filter-group[data-chart="${config.chartKey}"]`)?.closest('.filter-panel');
+                        if (!container) return;
+
+                        if (config.yearSpanId) {
+                            const yearSelect = container.querySelector('select[id^="filterYear"]');
+                            const yearText = document.getElementById(config.yearSpanId)?.textContent.trim();
+                            if (yearSelect && yearText) yearSelect.value = yearText;
+                        }
+
+                        if (config.monthSpanId) {
+                            const monthSelect = container.querySelector('select[id^="filterMonth"]');
+                            const monthText = document.getElementById(config.monthSpanId)?.textContent.trim();
+                            if (monthSelect && monthText) {
+                                const [monthNameRaw, year] = monthText.split(' ');
+                                const monthIndex = monthNames.indexOf(monthNameRaw.trim().toLowerCase()) + 1;
+                                const formattedMonth = String(monthIndex).padStart(2, '0');
+                                monthSelect.value = formattedMonth;
+
+                                const yearSelect = container.querySelector('select[id^="filterYear"]');
+                                if (yearSelect) yearSelect.value = year;
+                            }
+                        }
+
+                        if (config.startSpanId && config.endSpanId) {
+                            const startInput = container.querySelector('input[id^="filterStart"]');
+                            const endInput = container.querySelector('input[id^="filterEnd"]');
+                            const startText = document.getElementById(config.startSpanId)?.textContent.trim();
+                            const endText = document.getElementById(config.endSpanId)?.textContent.trim();
+
+                            if (startInput && startText) startInput.value = formatToInputDate(startText);
+                            if (endInput && endText) endInput.value = formatToInputDate(endText);
+                        }
+
+                        if (config.selectPrefix && config.spanId) {
+                            const spanText = document.getElementById(config.spanId)?.textContent.trim();
+                            const select = container.querySelector(`select[id^="${config.selectPrefix}"]`);
+                            if (select && spanText) {
+                                for (let option of select.options) {
+                                    if (option.text.trim().toLowerCase() === spanText.toLowerCase()) {
+                                        select.value = option.value;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    });
+                });
+            };
+
+            cancelButtonHandler(1, {
+                chartKey: 'subscription',
+                monthSpanId: 'currentMonthChart1',
+                spanId: 'currentPlanChart1',
+                selectPrefix: 'filterPlan'
+            });
+
+            cancelButtonHandler(2, {
+                chartKey: 'approval',
+                monthSpanId: 'currentMonthChart2',
+                spanId: 'currentOrganizationChart2',
+                selectPrefix: 'filterOrganization'
+            });
+
+            cancelButtonHandler(3, {
+                chartKey: 'revenue',
+                yearSpanId: 'currentYearChart3',
+                spanId: 'currentPlanChart3',
+                selectPrefix: 'filterPlan'
+            });
+
+            cancelButtonHandler(4, {
+                chartKey: 'plan',
+                startSpanId: 'currentStartChart4',
+                endSpanId: 'currentEndChart4'
+            });
+
+            cancelButtonHandler(5, {
+                chartKey: 'distribution',
+                yearSpanId: 'currentYearChart5',
+                spanId: 'currentPlanChart5',
+                selectPrefix: 'filterPlan'
+            });
+
+            cancelButtonHandler(6, {
+                chartKey: 'timeline',
+                yearSpanId: 'currentYearChart6',
+                spanId: 'currentOrganizationChart6',
+                selectPrefix: 'filterOrganization'
+            });
+
         });
     </script>
+
 @endpush
