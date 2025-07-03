@@ -41,8 +41,9 @@
 
         .change_password_button:hover{
             border: 1px solid #008CFF;
-            color: #008CFF;
-            background-color: #fff;
+            color: white;
+            background-color: #008CFF;
+            opacity: 0.9;
         }
 
         .submit-btn{

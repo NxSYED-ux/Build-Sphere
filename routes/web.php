@@ -398,6 +398,22 @@ Route::prefix('owner')->middleware(['auth.jwt'])->group(function () {
             Route::get('/occupancy-stats', [ReportsController::class , 'getOccupancyStats'])->name('owner.reports.occupancy.stats');
             Route::get('/monthly/financial/stats', [ReportsController::class , 'getOrgMonthlyFinancialStats'])->name('owner.reports.monthlyFinancial.stats');
 
+            Route::prefix('buildings')->group(function () {
+                Route::get('/', function () { return view('Heights.Owner.Reports.buildings'); })->name('owner.reports.buildings');
+                Route::get('/2', function () { return view('Heights.Owner.Reports.buildings2'); })->name('owner.reports.buildings2');
+                Route::get('/3', function () { return view('Heights.Owner.Reports.buildings3'); })->name('owner.reports.buildings3');
+                Route::get('/4', function () { return view('Heights.Owner.Reports.buildings4'); })->name('owner.reports.buildings4');
+
+                Route::get('/metrics', [ReportsController::class, 'getMetrics'])->name('owner.reports.buildings.metrics');
+                Route::get('/income-expense', [ReportsController::class, 'getIncomeExpense'])->name('owner.reports.buildings.income-expense');
+                Route::get('/income-sources', [ReportsController::class, 'getIncomeSources'])->name('owner.reports.buildings.income-sources');
+                Route::get('/expense-categories', [ReportsController::class, 'getExpenseCategories'])->name('owner.reports.buildings.expense-categories');
+                Route::get('/occupancy', [ReportsController::class, 'getOccupancy'])->name('owner.reports.buildings.occupancy');
+                Route::get('/staff', [ReportsController::class, 'getStaff'])->name('owner.reports.buildings.staff');
+                Route::get('/memberships', [ReportsController::class, 'getMemberships'])->name('owner.reports.buildings.memberships');
+                Route::get('/maintenance', [ReportsController::class, 'getMaintenance'])->name('owner.reports.buildings.maintenance');
+                Route::get('/transactions', [ReportsController::class, 'getTransactions'])->name('owner.reports.buildings.transactions');
+            });
         });
 
         Route::prefix('memberships')->group(function () {

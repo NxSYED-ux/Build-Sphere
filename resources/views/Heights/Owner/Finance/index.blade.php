@@ -407,14 +407,6 @@
                                                     @endif
                                                 </select>
                                             </div>
-                                            <div class="col-md-3">
-                                                <label class="form-label">Min Amount (PKR)</label>
-                                                <input type="number" name="min_price" class="form-control" placeholder="0" value="{{ request('min_price') }}" >
-                                            </div>
-                                            <div class="col-md-3">
-                                                <label class="form-label">Max Amount (PKR)</label>
-                                                <input type="number" name="max_price" class="form-control" placeholder="100000" value="{{ request('max_price') }}">
-                                            </div>
 
                                             <div class="col-md-6 d-flex align-items-end">
                                                 <div class="d-flex w-100 justify-content-between gap-2">
@@ -426,17 +418,6 @@
                                                     </button>
                                                 </div>
                                             </div>
-
-{{--                                            <div class="col-md-3">--}}
-{{--                                                <a href="{{ route('owner.finance.index') }}" class="btn btn-secondary  py-2 flex-grow-1 w-100 d-flex align-items-center justify-content-center">--}}
-{{--                                                    <i class="fas fa-undo me-2"></i> Reset--}}
-{{--                                                </a>--}}
-{{--                                            </div>--}}
-{{--                                            <div class="col-md-3">--}}
-{{--                                                <button class="btn btn-primary  flex-grow-1 w-100  py-2 d-flex align-items-center justify-content-center">--}}
-{{--                                                    <i class="fas fa-filter me-2"></i> Apply Filters--}}
-{{--                                                </button>--}}
-{{--                                            </div>--}}
                                         </div>
                                     </div>
                                 </form>

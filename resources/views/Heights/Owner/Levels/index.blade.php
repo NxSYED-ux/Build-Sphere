@@ -452,7 +452,7 @@
         </section>
     </div>
 
-    <!-- Create Dropdwon Type Modal -->
+    <!-- Create Level Modal -->
     <div class="modal fade" id="createLevelModal" tabindex="-1" aria-labelledby="createLevelModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-md modal-dialog-centered">
             <div class="modal-content">
@@ -492,11 +492,15 @@
                                 </div>
                             </div>
 
+                            <!--  -->
                             <div class="col-12">
                                 <div class="form-group mb-3">
-                                    <label for="description">Description</label>
-                                    <textarea name="description" id="description" class="form-control @error('description') is-invalid @enderror" rows="2" maxlength="50" placeholder="Description">{{ old('description') }}</textarea>
-                                    @error('description')
+                                    <label for="building_id">Building</label>
+                                    <span class="required__field">*</span><br>
+                                    <select class="form-select" id="building_id" name="building_id" required>
+                                        <option value="" disabled selected>Loading buildings...</option>
+                                    </select>
+                                    @error('building_id')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
                                     </span>
@@ -504,15 +508,11 @@
                                 </div>
                             </div>
 
-                            <!--  -->
                             <div class="col-12">
                                 <div class="form-group mb-3">
-                                    <label for="building_id">Building</label>
-                                    <span class="required__field">*</span><br>
-                                    <select class="form-select" id="building_id" name="building_id"  required>
-                                        <option value="" disabled {{ old('building_id') === null ? 'selected' : '' }}>Select Building</option>
-                                    </select>
-                                    @error('building_id')
+                                    <label for="description">Description</label>
+                                    <textarea name="description" id="description" class="form-control @error('description') is-invalid @enderror" rows="2" maxlength="50" placeholder="Description">{{ old('description') }}</textarea>
+                                    @error('description')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
                                     </span>
@@ -532,7 +532,7 @@
         </div>
     </div>
 
-    <!-- Edit Dropdown Value Modal -->
+    <!-- Edit Level Modal -->
     <div class="modal fade" id="editLevelModal" tabindex="-1" aria-labelledby="editLevelModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-md modal-dialog-centered">
             <div class="modal-content">
@@ -643,7 +643,9 @@
             // Show the 'Create Level' modal
             document.getElementById("Owner-Level-Add-Button").addEventListener("click", function (e) {
                 e.preventDefault();
-                let createModal = new bootstrap.Modal(document.getElementById("createLevelModal"));
+                const createModal = new bootstrap.Modal(document.getElementById("createLevelModal"), {
+                    focus: false
+                });
                 createModal.show();
 
                 // Perform AJAX request to get buildings
@@ -651,40 +653,55 @@
             });
 
             function fetchBuildings() {
+                console.log('Fetching buildings...');
+
                 fetch("{{ route('owner.levels.create') }}", {
                     method: 'GET',
                     headers: {
+                        'Accept': 'application/json',
                         'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                        'Content-Type': 'application/json',
                         'X-Requested-With': 'XMLHttpRequest'
                     }
                 })
-                    .then(response => response.json())
-                    .then(data => {
-                        const buildingSelect = document.getElementById('building_id');
-                        buildingSelect.innerHTML = '<option value="" disabled selected>Select Building</option>';
+                    .then(response => {
+                        console.log('Response status:', response.status);
+                        if (!response.ok) throw new Error('Network response was not ok');
+                        return response.json();
+                    })
+                    .then(buildings => {
+                        console.log('Buildings data:', buildings);
 
-                        if (!data || data.length === 0) {
-                            const option = document.createElement('option');
-                            option.value = "";
-                            option.textContent = "No buildings available";
-                            option.disabled = true;
-                            buildingSelect.appendChild(option);
+                        const buildingSelect = document.querySelector('#createLevelModal #building_id');
+                        if (!buildingSelect) {
+                            console.error('Building select not found in modal');
                             return;
                         }
 
-                        data.forEach(building => {
-                            if (building && building.id && building.name) {
-                                const option = document.createElement('option');
-                                option.value = building.id;
-                                option.textContent = building.name;
-                                buildingSelect.appendChild(option);
-                            }
+                        // Clear and rebuild options
+                        buildingSelect.innerHTML = '';
+
+                        // Add default option
+                        const defaultOption = new Option('Select Building', '', true, true);
+                        defaultOption.disabled = true;
+                        buildingSelect.appendChild(defaultOption);
+
+                        // Add building options
+                        buildings.forEach(building => {
+                            const option = new Option(building.name, building.id);
+                            buildingSelect.appendChild(option);
                         });
+
+                        console.log('Buildings dropdown populated');
                     })
                     .catch(error => {
-                        console.error('Error fetching buildings:', error);
-                        alert("Failed to fetch buildings. Please try again.");
+                        console.error('Error:', error);
+                        const buildingSelect = document.querySelector('#createLevelModal #building_id');
+                        if (buildingSelect) {
+                            buildingSelect.innerHTML = '';
+                            const errorOption = new Option('Error loading buildings', '', false, false);
+                            errorOption.disabled = true;
+                            buildingSelect.appendChild(errorOption);
+                        }
                     });
             }
 

@@ -254,7 +254,7 @@
                                                             <div class="form-group mb-3">
                                                                 <label for="name">Name</label>
                                                                 <span class="required__field">*</span><br>
-                                                                <input type="text" name="name" id="name" class="form-control @error('name') is-invalid @enderror" value="{{ old('name') }}" maxlength="50" placeholder="Building Name" required>
+                                                                <input type="text" name="name" id="name" class="form-control @error('name') is-invalid @enderror" value="{{ old('name') }}" maxlength="50" placeholder="e.g. J Heights" required>
                                                                 @error('name')
                                                                 <span class="invalid-feedback" role="alert">
                                                                         <strong>{{ $message }}</strong>
@@ -287,9 +287,9 @@
                                                         <!-- Area -->
                                                         <div class="col-sm-12 col-md-6 col-lg-6">
                                                             <div class="form-group mb-3">
-                                                                <label for="area">Area</label>
+                                                                <label for="area">Area (sq ft)</label>
                                                                 <span class="required__field">*</span><br>
-                                                                <input type="number" name="area" id="area" class="form-control @error('area') is-invalid @enderror" value="{{ old('area') }}" placeholder="1234" required>
+                                                                <input type="number" name="area" id="area" class="form-control @error('area') is-invalid @enderror" value="{{ old('area') }}" placeholder="e.g. 2500" required>
                                                                 @error('area')
                                                                 <span class="invalid-feedback" role="alert">
                                                                         <strong>{{ $message }}</strong>
@@ -303,7 +303,7 @@
                                                             <div class="form-group mb-3">
                                                                 <label for="construction_year">Construction Year</label>
                                                                 <span class="required__field">*</span><br>
-                                                                <input type="number" name="construction_year" id="construction_year" class="form-control @error('construction_year') is-invalid @enderror" value="{{ old('construction_year') }}" placeholder="2024" required>
+                                                                <input type="number" name="construction_year" id="construction_year" class="form-control @error('construction_year') is-invalid @enderror" value="{{ old('construction_year') }}" placeholder="i.e. 2020" required>
                                                                 @error('construction_year')
                                                                 <span class="invalid-feedback" role="alert">
                                                                         <strong>{{ $message }}</strong>
@@ -358,7 +358,7 @@
                                                             <div class="form-group mb-3">
                                                                 <label for="postal_code">Postal Code</label>
                                                                 <span class="required__field">*</span><br>
-                                                                <input type="text" name="postal_code" id="postal_code" class="form-control @error('postal_code') is-invalid @enderror" value="{{ old('postal_code') }}" maxlength="100" placeholder="Enter Postal Code" required>
+                                                                <input type="text" name="postal_code" id="postal_code" class="form-control @error('postal_code') is-invalid @enderror" value="{{ old('postal_code') }}" maxlength="100" placeholder="e.g. 12345" required>
                                                                 @error('postal_code')
                                                                 <span class="invalid-feedback" role="alert">
                                                                         <strong>{{ $message }}</strong>
@@ -372,7 +372,7 @@
                                                             <div class="form-group mb-3">
                                                                 <label for="location">Location</label>
                                                                 <span class="required__field">*</span><br>
-                                                                <input type="text" name="location" id="location" class="form-control @error('location') is-invalid @enderror" value="{{ old('location') }}" maxlength="100" placeholder="Enter Location" required>
+                                                                <input type="text" name="location" id="location" class="form-control @error('location') is-invalid @enderror" value="{{ old('location') }}" maxlength="100" placeholder="e.g. 123 Main Street" required>
                                                                 @error('location')
                                                                 <span class="invalid-feedback" role="alert">
                                                                         <strong>{{ $message }}</strong>
