@@ -18,11 +18,13 @@ class MembershipUser extends Model
 
         'quantity',
         'used',
-        'ends_at'
+        'ends_at',
+        'status',
     ];
 
     protected $casts = [
         'ends_at' => 'date:Y-m-d',
+        'status' => 'boolean',
     ];
 
     // Belongs to relations

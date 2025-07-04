@@ -3,101 +3,179 @@
 namespace App\Http\Controllers\WebControllers;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use App\Models\BuildingUnit;
+use App\Models\StaffMember;
+use App\Models\Subscription;
+use App\Models\UserBuildingUnit;
+use App\Services\OwnerFiltersService;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class OwnerDashboardController extends Controller
 {
-    //
-    public function index(){
-
-        return view('Heights.Owner.Dashboard.owner_dashboard');
-
-    }
-
-    protected function parseDateRange($range)
+    public function index()
     {
-        $now = Carbon::now();
+        try {
+            $ownerService = new OwnerFiltersService();
+            $buildingIds = $ownerService->getAccessibleBuildingIds();
+            $buildings = $ownerService->buildings($buildingIds);
+            $units = $ownerService->units($buildingIds);
+            $memberships = $ownerService->memberships($buildingIds);
 
-        switch ($range) {
-            case '7days':
-                return [$now->copy()->subDays(7), $now];
-            case '30days':
-                return [$now->copy()->subDays(30), $now];
-            case '90days':
-                return [$now->copy()->subDays(90), $now];
-            case 'custom':
-                // Will be handled by the specific methods
-                return null;
-            default:
-                return [$now->copy()->startOfMonth(), $now];
+            return view('Heights.Owner.Dashboard.owner_dashboard', compact('buildings', 'units', 'memberships'));
+        } catch (\Throwable $e) {
+            Log::error('Error in Owner Dashboard: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Something went wrong. Please try again later.');
         }
     }
 
-    // Get dashboard stats
-    public function getStats(Request $request)
+    public function getStats()
     {
-        $range = $request->input('range', 'all');
+        try {
+            $ownerService = new OwnerFiltersService();
+            $buildingIds = $ownerService->getAccessibleBuildingIds();
 
-        $data = [
-            'totalBuildings' => $range === '7days' ? 2 : ($range === '30days' ? 5 : 12),
-            'totalUnits' => $range === '7days' ? 15 : ($range === '30days' ? 45 : 120),
-            'totalStaff' => $range === '7days' ? 5 : ($range === '30days' ? 15 : 30),
-            'totalRevenue' => $range === '7days' ? 5250 : ($range === '30days' ? 18750 : 48750),
-            'totalExpense' => $range === '7days' ? 3200 : ($range === '30days' ? 12500 : 32500),
-            'netProfit' => $range === '7days' ? 2050 : ($range === '30days' ? 6250 : 16250)
-        ];
+            $totalBuildings = count($buildingIds);
+            $totalUnits = BuildingUnit::whereIn('building_id', $buildingIds)->count();
+            $totalStaff = StaffMember::whereIn('building_id', $buildingIds)->count();
 
-        return response()->json($data);
+            return response()->json([
+                'totalBuildings' => $totalBuildings,
+                'totalUnits' => $totalUnits,
+                'totalStaff' => $totalStaff,
+            ]);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'message' => 'Failed to fetch stats.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 
-    // Get unit occupancy data
+
     public function getUnitOccupancy(Request $request)
     {
-        $range = $request->input('range', '30days');
-        $buildingId = $request->input('building', 'all');
+        try {
+            $month = $request->input('month');
+            $start = $month ? Carbon::parse($month)->startOfMonth() : now()->startOfMonth();
+            $end = $month ? Carbon::parse($month)->endOfMonth() : now()->endOfMonth();
 
-        // Base data
-        $data = [
-            'rented' => 75,
-            'sold' => 15,
-            'available' => 30,
-            'trend' => [
-                'labels' => ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
-                'values' => [15, 22, 18, 25]
-            ]
-        ];
+            $previousStart = (clone $start)->subMonth()->startOfMonth();
+            $previousEnd = (clone $start)->subMonth()->endOfMonth();
 
-        // Apply building filter simulation
-        if ($buildingId !== 'all') {
-            $multiplier = match($buildingId) {
-                'building1' => 0.4,
-                'building2' => 0.3,
-                'building3' => 0.3,
-                default => 1
-            };
+            $building_id = $request->input('building');
+            $ownerService = new OwnerFiltersService();
+            $accessibleBuildingIds = $ownerService->getAccessibleBuildingIds();
 
-            $data['rented'] = round($data['rented'] * $multiplier);
-            $data['sold'] = round($data['sold'] * $multiplier);
-            $data['available'] = round($data['available'] * $multiplier);
-
-            foreach ($data['trend']['values'] as &$value) {
-                $value = round($value * $multiplier);
+            if ($building_id && !in_array($building_id, $accessibleBuildingIds)) {
+                return response()->json([
+                    'message' => 'You do not have access to the selected building.'
+                ], 403);
             }
-        }
 
-        // Apply date range simulation
-        if ($range === '7days') {
-            $data['trend']['values'] = array_slice($data['trend']['values'], -2);
-            $data['trend']['labels'] = array_slice($data['trend']['labels'], -2);
-        } elseif ($range === '90days') {
-            $data['rented'] = round($data['rented'] * 1.5);
-            $data['sold'] = round($data['sold'] * 1.5);
-            $data['available'] = round($data['available'] * 1.5);
-        }
+            $buildingIds = $building_id ? [$building_id] : $accessibleBuildingIds;
 
-        return response()->json($data);
+            $unitIdsTillCurrentEnd = BuildingUnit::whereIn('building_id', $buildingIds)
+                ->where('sale_or_rent', '!=', 'Not Available')
+                ->where('created_at', '<=', $end)
+                ->pluck('id')
+                ->toArray();
+
+            $soldUnitTillCurrentPeriod = UserBuildingUnit::whereIn('unit_id', $unitIdsTillCurrentEnd)
+                ->where('contract_status', 1)
+                ->where('type', 'Sold')
+                ->whereDate('created_at', '<=', $end)
+                ->pluck('unit_id')
+                ->unique()
+                ->toArray();
+
+            $rentedUnits = Subscription::where('source_name', 'unit contract')
+                ->whereIn('unit_id', $unitIdsTillCurrentEnd)
+                ->whereIn('building_id', $buildingIds)
+                ->where(function ($q) use ($start) {
+                    $q->whereNull('ends_at')
+                        ->orWhereDate('ends_at', '>=', $start);
+                })
+                ->where('created_at', '<=', $end)
+                ->pluck('unit_id')
+                ->unique()
+                ->toArray();
+
+//            $soldUnits = UserBuildingUnit::whereIn('unit_id', $unitIdsTillCurrentEnd)
+//                ->where('contract_status', 1)
+//                ->where('type', 'Sold')
+//                ->whereBetween('created_at', [$start, $end])
+//                ->pluck('unit_id')
+//                ->unique()
+//                ->toArray();
+
+            $currentOccupiedUnitIds = array_unique(array_merge($rentedUnits, $soldUnitTillCurrentPeriod));
+            $available = count($unitIdsTillCurrentEnd) - count($currentOccupiedUnitIds);
+            $rentedUnitsInCurrentPeriod = count($rentedUnits);
+            $soldUnitsInCurrentPeriod = count($soldUnitTillCurrentPeriod);
+
+            $unitIdsTillPreviousEnd = BuildingUnit::whereIn('building_id', $buildingIds)
+                ->where('sale_or_rent', '!=', 'Not Available')
+                ->where('created_at', '<=', $previousEnd)
+                ->pluck('id')
+                ->toArray();
+
+            $soldUnitTillPreviousPeriod = UserBuildingUnit::whereIn('unit_id', $unitIdsTillPreviousEnd)
+                ->where('contract_status', 1)
+                ->where('type', 'Sold')
+                ->whereDate('created_at', '<=', $previousEnd)
+                ->pluck('unit_id')
+                ->unique()
+                ->toArray();
+
+            $prevRentedUnits = Subscription::where('source_name', 'unit contract')
+                ->whereIn('unit_id', $unitIdsTillPreviousEnd)
+                ->whereIn('building_id', $buildingIds)
+                ->where(function ($q) use ($previousStart) {
+                    $q->whereNull('ends_at')
+                        ->orWhereDate('ends_at', '>=', $previousStart);
+                })
+                ->where('created_at', '<=', $previousEnd)
+                ->pluck('unit_id')
+                ->unique()
+                ->toArray();
+
+//            $prevSoldUnits = UserBuildingUnit::whereIn('unit_id', $unitIdsTillPreviousEnd)
+//                ->where('contract_status', 1)
+//                ->where('type', 'Sold')
+//                ->whereBetween('created_at', [$previousStart, $previousEnd])
+//                ->pluck('unit_id')
+//                ->unique()
+//                ->toArray();
+
+            $prevOccupiedUnitIds = array_unique(array_merge($prevRentedUnits, $soldUnitTillPreviousPeriod));
+            $prevAvailable = count($unitIdsTillPreviousEnd) - count($prevOccupiedUnitIds);
+            $prevRentedCount = count($prevRentedUnits);
+            $prevSoldCount = count($soldUnitTillPreviousPeriod);
+
+            $rentedGrowth = $this->calculateGrowth($rentedUnitsInCurrentPeriod, $prevRentedCount);
+            $soldGrowth = $this->calculateGrowth($soldUnitsInCurrentPeriod, $prevSoldCount);
+            $availableGrowth = $this->calculateGrowth($available, $prevAvailable);
+
+            return response()->json([
+                'available' => max($available, 0),
+                'rented' => $rentedUnitsInCurrentPeriod,
+                'sold' => $soldUnitsInCurrentPeriod,
+                'growth' => [
+                    'available' => $availableGrowth,
+                    'rented' => $rentedGrowth,
+                    'sold' => $soldGrowth,
+                ]
+            ]);
+        } catch (\Throwable $e) {
+            Log::error('Error in Owner Dashboard (Unit Occupancy): ' . $e->getMessage());
+            return response()->json([
+                'message' => 'An error occurred while calculating occupancy.'
+            ], 500);
+        }
     }
+
 
     // Get membership plans data
     public function getMembershipPlans(Request $request)
@@ -141,53 +219,97 @@ class OwnerDashboardController extends Controller
         return response()->json($data);
     }
 
-    // Get unit status data
+
     public function getUnitStatus(Request $request)
     {
-        $range = $request->input('range', '12months');
-        $buildingId = $request->input('building', 'all');
+        try {
+            $year = $request->input('year', now()->year);
 
-        $labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-        $rented = [25, 30, 28, 35, 40, 45, 42, 40, 43, 46, 48, 50];
-        $sold = [10, 8, 12, 10, 7, 5, 8, 10, 7, 5, 3, 2];
-        $available = [15, 12, 10, 5, 3, 0, 0, 0, 0, 0, 0, 0];
+            $building_id = $request->input('building');
+            $ownerService = new OwnerFiltersService();
+            $accessibleBuildingIds = $ownerService->getAccessibleBuildingIds();
 
-        // Apply building filter simulation
-        if ($buildingId !== 'all') {
-            $multiplier = match($buildingId) {
-                'building1' => 0.4,
-                'building2' => 0.3,
-                'building3' => 0.3,
-                default => 1
-            };
+            if ($building_id && !in_array($building_id, $accessibleBuildingIds)) {
+                return response()->json([
+                    'message' => 'You do not have access to the selected building.'
+                ], 403);
+            }
 
-            $rented = array_map(fn($val) => round($val * $multiplier), $rented);
-            $sold = array_map(fn($val) => round($val * $multiplier), $sold);
-            $available = array_map(fn($val) => round($val * $multiplier), $available);
+            $buildingIds = $building_id ? [$building_id] : $accessibleBuildingIds;
+
+            $units = BuildingUnit::whereIn('building_id', $buildingIds)
+                ->where('sale_or_rent', '!=', 'Not Available')
+                ->whereYear('created_at', '<=', $year)
+                ->get(['id', 'created_at']);
+
+            $unitIds = $units->pluck('id')->toArray();
+
+            $soldContracts = UserBuildingUnit::whereIn('unit_id', $unitIds)
+                ->where('contract_status', 1)
+                ->where('type', 'Sold')
+                ->get(['unit_id', 'created_at']);
+
+            $subscriptions = Subscription::where('source_name', 'unit contract')
+                ->whereIn('unit_id', $unitIds)
+                ->whereIn('building_id', $buildingIds)
+                ->get(['unit_id', 'created_at', 'ends_at']);
+
+            $labels = collect(range(1, 12))->map(fn($m) => Carbon::create()->month($m)->format('F'))->toArray();
+            $availableData = $rentedData = $soldData = array_fill(0, 12, 0);
+
+            foreach (range(1, 12) as $month) {
+                $monthStart = Carbon::create($year, $month)->startOfMonth();
+                $monthEnd = Carbon::create($year, $month)->endOfMonth();
+
+                $monthlyUnits = $units->filter(fn($unit) => $unit->created_at <= $monthEnd)->pluck('id')->toArray();
+
+                $monthlySold = $soldContracts
+                    ->filter(fn($s) => in_array($s->unit_id, $monthlyUnits) && $s->created_at <= $monthEnd)
+                    ->pluck('unit_id')
+                    ->unique()
+                    ->toArray();
+
+                $soldCount = $soldContracts
+                    ->filter(fn($s) => in_array($s->unit_id, $monthlyUnits) && $s->created_at->between($monthStart, $monthEnd))
+                    ->pluck('unit_id')
+                    ->unique()
+                    ->count();
+
+                $monthlyRented = $subscriptions
+                    ->filter(fn($s) => in_array($s->unit_id, $monthlyUnits) && (is_null($s->ends_at) || $s->ends_at >= $monthStart) && ($s->created_at <= $monthEnd))
+                    ->pluck('unit_id')
+                    ->unique()
+                    ->toArray();
+
+                $rentedCount = $subscriptions
+                    ->filter(fn($s) => in_array($s->unit_id, $monthlyUnits) && $s->created_at->between($monthStart, $monthEnd))
+                    ->pluck('unit_id')
+                    ->unique()
+                    ->count();
+
+                $occupied = array_unique(array_merge($monthlyRented, $monthlySold));
+                $available = count($monthlyUnits) - count($occupied);
+
+                $availableData[$month - 1] = max($available, 0);
+                $rentedData[$month - 1] = $rentedCount;
+                $soldData[$month - 1] = $soldCount;
+            }
+
+            return response()->json([
+                'labels' => $labels,
+                'available' => $availableData,
+                'rented' => $rentedData,
+                'sold' => $soldData,
+            ]);
+        } catch (\Throwable $e) {
+            Log::error('Error in Owner Dashboard (Monthly Chart): ' . $e->getMessage());
+            return response()->json([
+                'message' => 'An error occurred while preparing the monthly occupancy chart.'
+            ], 500);
         }
-
-        // Apply date range
-        if ($range === '3months') {
-            $labels = array_slice($labels, -3);
-            $rented = array_slice($rented, -3);
-            $sold = array_slice($sold, -3);
-            $available = array_slice($available, -3);
-        } elseif ($range === '6months') {
-            $labels = array_slice($labels, -6);
-            $rented = array_slice($rented, -6);
-            $sold = array_slice($sold, -6);
-            $available = array_slice($available, -6);
-        }
-
-        return response()->json([
-            'labels' => $labels,
-            'rented' => $rented,
-            'sold' => $sold,
-            'available' => $available
-        ]);
     }
 
-    // Get staff distribution data
+
     public function getStaffDistribution(Request $request)
     {
         $range = $request->input('range', 'all');
@@ -224,7 +346,7 @@ class OwnerDashboardController extends Controller
         ]);
     }
 
-    // Get income vs expense data
+
     public function getIncomeExpense(Request $request)
     {
         $range = $request->input('range', '12months');
@@ -265,7 +387,7 @@ class OwnerDashboardController extends Controller
         ]);
     }
 
-    // Get membership plan usage data
+
     public function getMembershipPlanUsage(Request $request)
     {
         $range = $request->input('range', '30days');
@@ -297,4 +419,121 @@ class OwnerDashboardController extends Controller
             'values' => $values
         ]);
     }
+
+
+    private function calculateGrowth(int $current, int $previous): float
+    {
+        if ($previous > 0) {
+            return round((($current - $previous) / $previous) * 100, 2);
+        }
+
+        return $current > 0 ? 100.0 : 0.0;
+    }
+
+//    public function getUnitStatus(Request $request)
+//    {
+//        try {
+//            $start = $request->input('start') ? Carbon::parse($request->input('start'))->startOfDay() : now()->subDays(30)->startOfDay();
+//            $end = $request->input('end') ? Carbon::parse($request->input('end'))->endOfDay() : now()->endOfDay();
+//
+//            $building_id = $request->input('building');
+//            $ownerService = new OwnerFiltersService();
+//            $accessibleBuildingIds = $ownerService->getAccessibleBuildingIds();
+//
+//            if ($building_id && !in_array($building_id, $accessibleBuildingIds)) {
+//                return response()->json([
+//                    'message' => 'You do not have access to the selected building.'
+//                ], 403);
+//            }
+//
+//            $buildingIds = $building_id ? [$building_id] : $accessibleBuildingIds;
+//
+//            $units = BuildingUnit::whereIn('building_id', $buildingIds)
+//                ->where('sale_or_rent', '!=', 'Not Available')
+//                ->where('created_at', '<=', $end)
+//                ->get(['id', 'created_at']);
+//
+//            $unitIds = $units->pluck('id')->toArray();
+//
+//            $soldContracts = UserBuildingUnit::whereIn('unit_id', $unitIds)
+//                ->where('contract_status', 1)
+//                ->where('type', 'Sold')
+//                ->get(['unit_id', 'created_at']);
+//
+//            $subscriptions = Subscription::where('source_name', 'unit contract')
+//                ->whereIn('unit_id', $unitIds)
+//                ->whereIn('building_id', $buildingIds)
+//                ->get(['unit_id', 'created_at', 'ends_at']);
+//
+//            $totalDays = $start->diffInDays($end) + 1;
+//            $segments = min($totalDays, 15);
+//            $daysPerSegment = max(1, ceil($totalDays / $segments));
+//
+//            $labels = [];
+//            $availableData = $rentedData = $soldData = [];
+//
+//            $segmentStart = $start->copy();
+//            while ($segmentStart->lte($end)) {
+//                $segmentEnd = $segmentStart->copy()->addDays($daysPerSegment - 1)->endOfDay();
+//                if ($segmentEnd->gt($end)) {
+//                    $segmentEnd = $end->copy()->endOfDay();
+//                }
+//
+//                $label = $segmentStart->isSameDay($segmentEnd)
+//                    ? $segmentStart->format('d M')
+//                    : $segmentStart->format('d M') . ' - ' . $segmentEnd->format('d M');
+//
+//                $labels[] = $label;
+//
+//                $segmentUnits = $units->filter(fn($u) => $u->created_at <= $segmentEnd)->pluck('id')->toArray();
+//
+//                $segmentSold = $soldContracts
+//                    ->filter(fn($s) => in_array($s->unit_id, $segmentUnits) && $s->created_at <= $segmentEnd)
+//                    ->pluck('unit_id')
+//                    ->unique()
+//                    ->toArray();
+//
+//                $soldCount = $soldContracts
+//                    ->filter(fn($s) => in_array($s->unit_id, $segmentUnits) && $s->created_at->between($segmentStart, $segmentEnd))
+//                    ->pluck('unit_id')
+//                    ->unique()
+//                    ->count();
+//
+//                $segmentRented = $subscriptions
+//                    ->filter(fn($s) => in_array($s->unit_id, $segmentUnits) && (is_null($s->ends_at) || $s->ends_at >= $segmentStart) && ($s->created_at <= $segmentEnd))
+//                    ->pluck('unit_id')
+//                    ->unique()
+//                    ->toArray();
+//
+//                $rentedCount = $subscriptions
+//                    ->filter(fn($s) => in_array($s->unit_id, $segmentUnits) && $s->created_at->between($segmentStart, $segmentEnd))
+//                    ->pluck('unit_id')
+//                    ->unique()
+//                    ->count();
+//
+//                $occupied = array_unique(array_merge($segmentRented, $segmentSold));
+//                $available = count($segmentUnits) - count($occupied);
+//
+//                $availableData[] = max($available, 0);
+//                $rentedData[] = $rentedCount;
+//                $soldData[] = $soldCount;
+//
+//                $segmentStart = $segmentEnd->copy()->addSecond();
+//            }
+//
+//            return response()->json([
+//                'labels' => $labels,
+//                'available' => $availableData,
+//                'rented' => $rentedData,
+//                'sold' => $soldData,
+//            ]);
+//        } catch (\Throwable $e) {
+//            Log::error('Error in Owner Dashboard (Segmented Status): ' . $e->getMessage());
+//            return response()->json([
+//                'message' => 'An error occurred while preparing the unit occupancy chart.'
+//            ], 500);
+//        }
+//    }
+
+
 }

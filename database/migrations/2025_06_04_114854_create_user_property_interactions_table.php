@@ -12,7 +12,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->nullable()->constrained()->onDelete('cascade');
             $table->foreignId('unit_id')->nullable()->constrained('buildingunits')->onDelete('cascade');
-            $table->enum('interaction_type', ['view', 'favourite', 'contact'])->default('view');
+            $table->enum('interaction_type', ['view', 'favourite', 'purchased'])->default('view');
             $table->timestamp('timestamp')->useCurrent();
 
             $table->index(['user_id', 'unit_id']);

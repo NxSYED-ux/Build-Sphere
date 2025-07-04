@@ -29,7 +29,7 @@ class FinanceService
             return $txn->buyer_type === 'organization' && $txn->buyer_id == $organization_id;
         });
     }
-    
+
     public function formatTransactionHistory( LengthAwarePaginator|Collection $transactions, callable $buyerCheckCallback = null)
     {
         $items = $transactions instanceof LengthAwarePaginator ? $transactions->items() : $transactions;
@@ -69,7 +69,7 @@ class FinanceService
                 'trend' => $expensesChange <= 0 ? 'down' : 'up'
             ],
             'net_profit' => [
-                'value' => $currentProfit,
+                'value' => $currentProfit < 0 ? '(' . number_format(abs($currentProfit)) . ')' : $currentProfit,
                 'change' => $profitChange,
                 'trend' => $profitChange >= 0 ? 'up' : 'down'
             ]

@@ -49,12 +49,19 @@ class MembershipService
                 ]);
             }
 
-            $userMembershipRecord->update([
+            MembershipUser::create([
+                'user_id' => $userMembershipRecord->user_id,
+                'membership_id' => $userMembershipRecord->membership_id,
                 'subscription_id' => $isSubscription ? $source_id : null,
-                'ends_at' => $newEndsAt,
                 'quantity' => $membership->scans_per_day,
+                'used' => $membership->scans_per_day,
+                'ends_at' => $newEndsAt,
             ]);
 
+            $userMembershipRecord->update([
+                'ends_at' => now(),
+                'status' => 0,
+            ]);
 
         }
         else{
@@ -85,7 +92,7 @@ class MembershipService
             'is_subscription' => $isSubscription,
             'billing_cycle' => $isSubscription ? "{$membership->duration_months} Month" : null,
             'subscription_start_date' => $isSubscription ? now() : null,
-            'subscription_end_date' => $isSubscription ? now()->addMonths($membership->duration_months) : null,
+            'subscription_end_date' => $isSubscription ? ($newEndsAt ?? now()->addMonths($membership->duration_months)) : null,
             'source_id' => $source_id,
             'source_name' => $source_name,
         ];

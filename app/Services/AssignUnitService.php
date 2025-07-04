@@ -10,9 +10,15 @@ use App\Models\UserPropertyInteraction;
 
 class AssignUnitService
 {
-    public function unitAssignment_Transaction($user, $unit, $type, $paymentIntentId, $price, int $billing_cycle = 1, $paymentMethod = 'Cash', $currency = 'PKR')
+    public function unitAssignment_Transaction($user, $unit, $type, $paymentIntentId, $price, int $billing_cycle = 1, $paymentMethod = 'Cash', $currency = 'PKR', $purpose = null, $currentUnitContract = null, $existingSubscriptionRecord = null)
     {
-        $unit->update(['availability_status' => $type]);
+        if ($purpose){
+            $endsAt = $existingSubscriptionRecord->ends_at;
+            $newEndsAt = $endsAt && $endsAt->isFuture() ? $endsAt->copy()->addMonths($currentUnitContract->billing_cycle) : now()->addMonths($currentUnitContract->billing_cycle);
+        }
+        else{
+            $unit->update(['availability_status' => $type]);
+        }
 
         $assignedUnit = UserBuildingUnit::create([
             'user_id' => $user->id,
@@ -40,7 +46,7 @@ class AssignUnitService
                 'subscription_status' => 'Active',
                 'price_at_subscription' => $assignedUnit->price,
                 'currency_at_subscription' => $currency,
-                'ends_at' => now()->addMonths($billing_cycle),
+                'ends_at' => $purpose ? $newEndsAt : now()->addMonths($billing_cycle),
             ]);
 
             $source_id = $subscription->id;
@@ -49,9 +55,20 @@ class AssignUnitService
             $assignedUnit->update(['subscription_id' => $subscription->id]);
         }
 
+        if ($purpose){
+            $existingSubscriptionRecord->update([
+                'subscription_status' => 'Expired',
+                'ends_at' => now(),
+            ]);
+
+            $currentUnitContract->update([
+                'contract_status' => 0,
+            ]);
+        }
+
         $transaction = Transaction::create([
             'transaction_title' => $unit->unit_name,
-            'transaction_category' => 'New',
+            'transaction_category' => $purpose ? 'Renew' : 'New',
             'building_id' => $assignedUnit->building_id,
             'unit_id' => $assignedUnit->unit_id,
             'buyer_id' => $user->id,
@@ -66,7 +83,7 @@ class AssignUnitService
             'is_subscription' => $type === 'Rented',
             'billing_cycle' => $type === 'Rented' ? "{$billing_cycle} Month" : null,
             'subscription_start_date' => $type === 'Rented' ? now() : null,
-            'subscription_end_date' => $type === 'Rented' ? now()->addMonths($billing_cycle) : null,
+            'subscription_end_date' => $type === 'Rented' ? ($newEndsAt ?? now()->addMonths($billing_cycle)) : null,
             'source_id' => $source_id,
             'source_name' => $source_name,
         ]);

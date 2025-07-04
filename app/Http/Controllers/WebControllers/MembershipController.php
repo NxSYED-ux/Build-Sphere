@@ -370,7 +370,9 @@ class MembershipController extends Controller
                 ->with([
                     'unit:id,unit_name,building_id',
                     'building:id,name',
-                    'membershipUsers',
+                    'membershipUsers' => function ($query) {
+                        $query->where('status', 1);
+                    },
                     'membershipUsers.user',
                 ])
                 ->first();

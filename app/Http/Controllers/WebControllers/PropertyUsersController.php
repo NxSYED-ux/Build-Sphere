@@ -16,6 +16,7 @@ use App\Models\User;
 use App\Models\UserBuildingUnit;
 use App\Models\UserUnitPicture;
 use App\Notifications\CredentialsEmail;
+use App\Services\AssignUnitService;
 use App\Services\OwnerFiltersService;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
@@ -266,6 +267,65 @@ class PropertyUsersController extends Controller
 
             return response()->json([
                 'error' => 'An unexpected error occurred while retrieving the contract.'
+            ], 500);
+        }
+    }
+
+    public function markAsPaymentReceived(Request $request)
+    {
+        $request->validate([
+            'user_unit_id' => 'required|exists:userbuildingunit,id',
+        ]);
+
+        $loggedUser = request()->user();
+
+        DB::beginTransaction();
+
+        try {
+            $currentUnitContract = UserBuildingUnit::with('unit', 'user')->findOrFail($request->user_unit_id);
+
+            if ($currentUnitContract->type === 'Sold') {
+                return response()->json([
+                    'message' => 'This unit is already marked as Sold. Payment cannot be processed.'
+                ], 422);
+            }
+
+            $user = $currentUnitContract->user;
+            $unit = $currentUnitContract->unit;
+
+            $existingSubscription = Subscription::find($currentUnitContract->subscription_id);
+
+            $assignmentUnitService = new AssignUnitService();
+            $transaction = $assignmentUnitService->unitAssignment_Transaction(
+                $user,
+                $unit,
+                $currentUnitContract->type,
+                null,
+                $currentUnitContract->price,
+                $currentUnitContract->billing_cycle,
+                'Cash',
+                'PKR',
+                'renewal',
+                $currentUnitContract,
+                $existingSubscription,
+            );
+
+            $assignmentUnitService->sendUnitAssignmentNotifications($unit, $transaction, $user->id, $currentUnitContract, $loggedUser);
+
+            DB::commit();
+
+            return response()->json([
+                'message' => 'Payment marked as received and transaction recorded.',
+                'transaction' => $transaction,
+            ]);
+
+        } catch (\Throwable $e) {
+            DB::rollback();
+            Log::error('Rental payment failed: ' . $e->getMessage());
+
+            return response()->json([
+                'message' => 'Failed to mark payment as received.',
+                'error' => $e->getMessage(),
             ], 500);
         }
     }

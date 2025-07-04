@@ -421,6 +421,16 @@
             transform: rotateY(180deg);
         }
 
+        .currentMonth,
+        .currentYear,
+        .currentPlan,
+        .currentOrganization,
+        .currentStart,
+        .currentEnd {
+            font-size: 12px;
+            color: var(--sidenavbar-text-color);
+        }
+
         /* Responsive Adjustments */
         @media (max-width: 768px) {
             .data-grid {
@@ -580,6 +590,10 @@
 
                                                         <div class="mini-chart-container pb-0 mb-0">
                                                             <canvas id="subscriptionTrendChart"></canvas>
+                                                            <div id="subscriptionError"
+                                                                 class="text-center text-danger"
+                                                                 style="display: none; position: absolute; top: 45%; left: 50%; transform: translate(-50%, -50%); z-index: 2;">
+                                                            </div>
                                                         </div>
                                                     </div>
                                                     <div class="filter-panel">
@@ -676,6 +690,10 @@
                                                         </div>
                                                         <div class="donut-chart-container">
                                                             <canvas id="approvalDonutChart"></canvas>
+                                                            <div id="approvalError"
+                                                                 class="text-center text-danger"
+                                                                 style="display: none; position: absolute; top: 45%; left: 50%; transform: translate(-50%, -50%); z-index: 2;">
+                                                            </div>
                                                         </div>
                                                     </div>
                                                     <div class="filter-panel">
@@ -704,7 +722,7 @@
                                                         </div>
 
                                                         <div class="filter-group" data-chart="approval">
-                                                            <label for="filterPlan">Plan Type</label>
+                                                            <label for="filterPlan">Select Organization</label>
                                                             <select id="filterOrganizationChart2" class="form-select" {{ empty($organizations) || $organizations->isEmpty() ? 'disabled' : '' }}>
                                                                 <option value="">All Organizations</option>
                                                                 @if (!empty($organizations) && $organizations->isNotEmpty())
@@ -756,6 +774,10 @@
                                                 <div class="flipper">
                                                     <div class="chart-container">
                                                         <canvas id="revenueLineChart"></canvas>
+                                                        <div id="revenueError"
+                                                             class="text-center text-danger"
+                                                             style="display: none; position: absolute; top: 45%; left: 50%; transform: translate(-50%, -50%); z-index: 2;">
+                                                        </div>
                                                     </div>
                                                     <div class="filter-panel">
                                                         <h5>Revenue Growth Filters</h5>
@@ -819,6 +841,10 @@
                                                 <div class="flipper">
                                                     <div class="chart-container">
                                                         <canvas id="planPieChart"></canvas>
+                                                        <div id="planError"
+                                                             class="text-center text-danger"
+                                                             style="display: none; position: absolute; top: 45%; left: 50%; transform: translate(-50%, -50%); z-index: 2;">
+                                                        </div>
                                                     </div>
                                                     <div class="filter-panel">
                                                         <h5>Plan Popularity Filters</h5>
@@ -874,6 +900,10 @@
                                                 <div class="flipper">
                                                     <div class="chart-container">
                                                         <canvas id="subscriptionBarChart"></canvas>
+                                                        <div id="distributionError"
+                                                             class="text-center text-danger"
+                                                             style="display: none; position: absolute; top: 45%; left: 50%; transform: translate(-50%, -50%); z-index: 2;">
+                                                        </div>
                                                     </div>
                                                     <div class="filter-panel">
                                                         <h5>Subscription Distribution Filters</h5>
@@ -935,6 +965,10 @@
                                                 <div class="flipper">
                                                     <div class="chart-container">
                                                         <canvas id="approvalTimelineChart"></canvas>
+                                                        <div id="timelineError"
+                                                             class="text-center text-danger"
+                                                             style="display: none; position: absolute; top: 45%; left: 50%; transform: translate(-50%, -50%); z-index: 2;">
+                                                        </div>
                                                     </div>
                                                     <div class="filter-panel">
                                                         <h5>Approval Timeline Filters</h5>
@@ -948,7 +982,7 @@
                                                         </div>
 
                                                         <div class="filter-group" data-chart="timeline">
-                                                            <label for="filterPlan">Plan Type</label>
+                                                            <label for="filterPlan">Select Organization</label>
                                                             <select id="filterOrganizationChart2" class="form-select" {{ empty($organizations) || $organizations->isEmpty() ? 'disabled' : '' }}>
                                                                 <option value="">All Organizations</option>
                                                                 @if (!empty($organizations) && $organizations->isNotEmpty())
@@ -990,17 +1024,6 @@
         document.addEventListener("DOMContentLoaded", function () {
             // Initialize all charts
             let subscriptionTrendChart, approvalDonutChart, revenueLineChart, planPieChart, subscriptionBarChart, approvalTimelineChart;
-
-            //Current date display
-            const dateObj = new Date();
-            const formattedDate = new Intl.DateTimeFormat('en-US', {
-                year: 'numeric',
-                month: 'long'
-            }).format(dateObj);
-
-            document.querySelectorAll('.currentMonth').forEach(el => {
-                el.textContent = formattedDate;
-            });
 
             // Initialize charts with empty data
             function initCharts() {
@@ -1080,7 +1103,10 @@
                         'X-Requested-With': 'XMLHttpRequest'
                     }
                 })
-                    .then(response => response.json())
+                    .then(async response => {
+                        if (!response.ok) throw response;
+                        return response.json();
+                    })
                     .then(data => {
                         document.getElementById('totalOrganizations').textContent = `${data.counts.newOrganizationsThisMonth} / ${data.counts.totalOrganizations}`;
                         document.getElementById('totalUsers').textContent = `${data.counts.activeUsersThisMonth} / ${data.counts.totalUsers}`;
@@ -1127,7 +1153,10 @@
                         'X-Requested-With': 'XMLHttpRequest'
                     }
                 })
-                    .then(response => response.json())
+                    .then(async response => {
+                        if (!response.ok) throw response;
+                        return response.json();
+                    })
                     .then(data => {
                         document.getElementById('activeSubscriptions').textContent = data.active || '0';
                         document.getElementById('expiredSubscriptions').textContent = data.expired || '0';
@@ -1162,7 +1191,9 @@
                         // Updating the chart
                         subscriptionTrendChart.update();
                     })
-                    .catch(error => console.error('Error fetching subscription data:', error));
+                    .catch(error => {
+                        showChartError(error, subscriptionTrendChart, 'subscriptionError');
+                    });
             }
 
             // 2. Fetch Approval Data
@@ -1191,7 +1222,10 @@
                         'X-Requested-With': 'XMLHttpRequest'
                     }
                 })
-                    .then(response => response.json())
+                    .then(async response => {
+                        if (!response.ok) throw response;
+                        return response.json();
+                    })
                     .then(data => {
                         document.getElementById('pendingRequests').textContent = data.counts.pending || '0';
                         document.getElementById('approvedRequests').textContent = data.counts.approved || '0';
@@ -1225,7 +1259,9 @@
                         // Updating the Chart
                         approvalDonutChart.update();
                     })
-                    .catch(error => console.error('Error fetching approval data:', error));
+                    .catch(error => {
+                        showChartError(error, approvalDonutChart, 'approvalError');
+                    });
             }
 
             // 3. Fetch Revenue Data
@@ -1251,9 +1287,11 @@
                         'X-Requested-With': 'XMLHttpRequest'
                     }
                 })
-                    .then(response => response.json())
+                    .then(async response => {
+                        if (!response.ok) throw response;
+                        return response.json();
+                    })
                     .then(data => {
-                        // Update revenue line chart
                         revenueLineChart.data.labels = data.labels || [];
                         revenueLineChart.data.datasets = [
                             {
@@ -1286,7 +1324,9 @@
                         // Updating the chart
                         revenueLineChart.update();
                     })
-                    .catch(error => console.error('Error fetching revenue data:', error));
+                    .catch(error => {
+                        showChartError(error, revenueLineChart, 'revenueError');
+                    });
             }
 
             // 4. Fetch Plan Popularity Data
@@ -1316,7 +1356,10 @@
                         'X-Requested-With': 'XMLHttpRequest'
                     }
                 })
-                    .then(response => response.json())
+                    .then(async response => {
+                        if (!response.ok) throw response;
+                        return response.json();
+                    })
                     .then(data => {
                         planPieChart.data.labels = data.labels || [];
                         planPieChart.data.datasets = [{
@@ -1342,7 +1385,9 @@
                         // Update Chart
                         planPieChart.update();
                     })
-                    .catch(error => console.error('Error fetching plan popularity data:', error));
+                    .catch(error => {
+                        showChartError(error, planPieChart, 'planError');
+                    });
             }
 
             // 5. Fetch Subscription Distribution Data
@@ -1368,7 +1413,10 @@
                         'X-Requested-With': 'XMLHttpRequest'
                     }
                 })
-                    .then(response => response.json())
+                    .then(async response => {
+                        if (!response.ok) throw response;
+                        return response.json();
+                    })
                     .then(data => {
                         subscriptionBarChart.data.labels = data.labels || [];
                         subscriptionBarChart.data.datasets = [
@@ -1407,7 +1455,9 @@
                         // Update Plan
                         subscriptionBarChart.update();
                     })
-                    .catch(error => console.error('Error fetching subscription distribution data:', error));
+                    .catch(error => {
+                        showChartError(error, subscriptionBarChart, 'distributionError');
+                    });
             }
 
             // 6. Fetch Approval Timeline Data
@@ -1432,7 +1482,10 @@
                         'X-Requested-With': 'XMLHttpRequest'
                     }
                 })
-                    .then(response => response.json())
+                    .then(async response => {
+                        if (!response.ok) throw response;
+                        return response.json();
+                    })
                     .then(data => {
                         approvalTimelineChart.data.labels = data.labels || [];
                         approvalTimelineChart.data.datasets = [
@@ -1474,7 +1527,9 @@
                         // Update Chart
                         approvalTimelineChart.update();
                     })
-                    .catch(error => console.error('Error fetching approval timeline data:', error));
+                    .catch(error => {
+                        showChartError(error, approvalTimelineChart, 'timelineError');
+                    });
             }
 
             // Helper function to set the trends
@@ -1506,6 +1561,37 @@
                 trendDiv.innerHTML = `<i class="bx ${iconClass}"></i> ${absValue}%`;
             }
 
+            // Helper function to show the error in the chart
+            function showChartError(error, chartInstance, errorElementId) {
+                const errorDiv = document.getElementById(errorElementId);
+                let message = 'Unexpected error occurred.';
+
+                if (error instanceof Response) {
+                    error.json().then(json => {
+                        message = json.message || message;
+                        displayError(message);
+                    }).catch(() => displayError(message));
+                } else if (error instanceof Error && error.message) {
+                    message = error.message;
+                    displayError(message);
+                } else {
+                    displayError(message);
+                }
+
+                function displayError(msg) {
+                    if (errorDiv) {
+                        errorDiv.textContent = msg;
+                        errorDiv.style.display = 'block';
+                    }
+
+                    if (chartInstance) {
+                        chartInstance.data.labels = [];
+                        chartInstance.data.datasets = [];
+                        chartInstance.update();
+                    }
+                }
+            }
+
             // Setting button in charts
             document.querySelectorAll('.settings-btn').forEach(btn => {
                 btn.addEventListener('click', function () {
@@ -1528,6 +1614,12 @@
                     const chartType = this.getAttribute('data-chart');
                     const originalHTML = this.innerHTML;
                     this.innerHTML = '<i class="bx bx-loader bx-spin"></i>';
+
+                    const errorDiv = document.getElementById(chartType + 'Error');
+                    if (errorDiv) {
+                        errorDiv.textContent = '';
+                        errorDiv.style.display = 'none';
+                    }
 
                     const reloadFunctions = {
                         'subscription': fetchSubscriptionData,
@@ -1567,6 +1659,12 @@
 
                     const originalHTML = this.innerHTML;
                     this.innerHTML = 'Applying...';
+
+                    const errorDiv = document.getElementById(chartType + 'Error');
+                    if (errorDiv) {
+                        errorDiv.textContent = '';
+                        errorDiv.style.display = 'none';
+                    }
 
                     const filterFunctions = {
                         'subscription': fetchSubscriptionData,

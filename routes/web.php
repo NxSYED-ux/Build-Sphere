@@ -234,6 +234,7 @@ Route::prefix('owner')->middleware(['auth.jwt'])->group(function () {
         Route::get('/', [OwnerDashboardController::class, 'index'])->name('owner_manager_dashboard');
 
         Route::get('/stats', [OwnerDashboardController::class, 'getStats'])->name('owner_manager_dashboard.stats');
+        Route::get('/finance-stats', [FinanceController::class, 'ownerFinancialTrends'])->name('owner_manager_dashboard.finance.stats');
         Route::get('/unit-occupancy', [OwnerDashboardController::class, 'getUnitOccupancy'])->name('owner_manager_dashboard.unit.occupancy');
         Route::get('/membership-plans', [OwnerDashboardController::class, 'getMembershipPlans'])->name('owner_manager_dashboard.membership.plans');
         Route::get('/unit-status', [OwnerDashboardController::class, 'getUnitStatus'])->name('owner_manager_dashboard.unit.status');
@@ -440,6 +441,7 @@ Route::prefix('owner')->middleware(['auth.jwt'])->group(function () {
             Route::put('/contract-status', [PropertyUsersController::class, 'updateRenewStatus'])->name('owner.property.users.contractStatus');
             Route::get('/{id}/contract', [PropertyUsersController::class, 'editContract'])->name('owner.property.users.contract.edit');
             Route::put('/contract', [PropertyUsersController::class, 'updateContract'])->name('owner.property.users.contract.update');
+            Route::post('/mark-payment-received', [PropertyUsersController::class, 'markAsPaymentReceived'])->name('owner.property.users.rentalPaymentReceived');
 
         });
 

@@ -444,13 +444,19 @@ class FinanceController extends Controller
             $previousStartDate = $startDate->copy()->subMonth()->startOfMonth();
             $previousEndDate = $startDate->copy()->subMonth()->endOfMonth();
 
-            $previousRevenue = Transaction::whereBetween('created_at', [$previousStartDate, $previousEndDate])
+            $previousQuery = Transaction::whereBetween('created_at', [$previousStartDate, $previousEndDate]);
+
+            if (request()->user()->id !== 2) {
+                $previousQuery->whereIn('building_id', $buildingIds);
+            }
+
+            $previousRevenue = $previousQuery->clone()
                 ->where('seller_type', 'organization')
                 ->where('seller_id', $organization_id)
                 ->where('status', 'Completed')
                 ->sum('price');
 
-            $previousExpenses = Transaction::whereBetween('created_at', [$previousStartDate, $previousEndDate])
+            $previousExpenses = $previousQuery->clone()
                 ->where('buyer_type', 'organization')
                 ->where('buyer_id', $organization_id)
                 ->where('status', 'Completed')
