@@ -793,7 +793,7 @@
                                                 <div class="flipper">
                                                     <div class="chart-container">
                                                         <canvas id="unitStatusChart"></canvas>
-                                                        <div id="unitStatusChartError"
+                                                        <div id="unitStatusError"
                                                              class="text-center text-danger"
                                                              style="display: none; position: absolute; top: 45%; left: 50%; transform: translate(-50%, -50%); z-index: 2;">
                                                         </div>
@@ -1181,7 +1181,7 @@
                     .catch(error => console.error('Error fetching stats:', error));
             }
 
-            // 2. Fetch Unit Occupancy Data
+            // 1. Fetch Unit Occupancy Data
             function fetchUnitOccupancyData() {
                 const filterPanel = document.querySelector('.filter-group[data-chart="occupancy"]').closest('.filter-panel');
                 const yearSelect = filterPanel.querySelector('select[id^="filterYear"]');
@@ -1250,7 +1250,7 @@
                     });
             }
 
-            // 3. Fetch Membership Data
+            // 2. Fetch Membership Data
             function fetchMembershipData(params = {}) {
                 const queryString = new URLSearchParams(params).toString();
                 fetch(`{{ route('owner_manager_dashboard.membership.plans') }}?${queryString}`, {
@@ -1286,8 +1286,20 @@
                     .catch(error => console.error('Error fetching membership data:', error));
             }
 
-            // 4. Fetch Unit Status Data
-            function fetchUnitStatusData(params = {}) {
+            // 3. Fetch Unit Status Data
+            function fetchUnitStatusData() {
+                const filterPanel = document.querySelector('.filter-group[data-chart="unitStatus"]').closest('.filter-panel');
+                const yearSelect = filterPanel.querySelector('select[id^="filterYear"]');
+                const buildingSelect = filterPanel.querySelector('select[id^="filterBuilding"]');
+
+
+                const selectedYear = yearSelect ? yearSelect.value : null;
+                const selectedBuilding = buildingSelect ? buildingSelect.value : null;
+
+                params = {}
+                params.year = selectedYear;
+                params.building = selectedBuilding;
+
                 const queryString = new URLSearchParams(params).toString();
                 fetch(`{{ route('owner_manager_dashboard.unit.status') }}?${queryString}`, {
                     method: 'GET',
@@ -1302,7 +1314,6 @@
                         return response.json();
                     })
                     .then(data => {
-                        // Update unit status chart
                         unitStatusChart.data.labels = data.labels || [];
                         unitStatusChart.data.datasets = [
                             {
@@ -1330,12 +1341,22 @@
                                 borderRadius: 4
                             }
                         ];
+
+                        // Updating the Labels
+                        let buildingName = buildingSelect.options[buildingSelect.selectedIndex].text || null;
+
+                        document.getElementById('currentYearChart3').textContent = selectedYear;
+                        document.getElementById('currentBuildingChart3').textContent = buildingName;
+
+                        // Update Chart
                         unitStatusChart.update();
                     })
-                    .catch(error => console.error('Error fetching unit status data:', error));
+                    .catch(error => {
+                        showChartError(error, unitStatusChart, 'unitStatusError');
+                    });
             }
 
-            // 5. Fetch Staff Distribution Data
+            // 4. Fetch Staff Distribution Data
             function fetchStaffDistributionData(params = {}) {
                 const queryString = new URLSearchParams(params).toString();
                 fetch(`{{ route('owner_manager_dashboard.staff.distribution') }}?${queryString}`, {
@@ -1363,7 +1384,7 @@
                     .catch(error => console.error('Error fetching staff distribution data:', error));
             }
 
-            // 6. Fetch Income vs Expense Data
+            // 5. Fetch Income vs Expense Data
             function fetchIncomeExpenseData(params = {}) {
                 const queryString = new URLSearchParams(params).toString();
                 fetch(`{{ route('owner_manager_dashboard.income.expense') }}?${queryString}`, {
@@ -1406,7 +1427,7 @@
                     .catch(error => console.error('Error fetching income vs expense data:', error));
             }
 
-            // 7. Fetch Membership Plan Data
+            // 6. Fetch Membership Plan Data
             function fetchMembershipPlanData(params = {}) {
                 const queryString = new URLSearchParams(params).toString();
                 fetch(`{{ route('owner_manager_dashboard.membership.plan.usage') }}?${queryString}`, {
@@ -1524,12 +1545,12 @@
                     }
 
                     const reloadFunctions = {
-                        'subscription': fetchSubscriptionData,
-                        'approval': fetchApprovalData,
-                        'revenue': fetchRevenueData,
-                        'plan': fetchPlanPopularityData,
-                        'distribution': fetchSubscriptionDistributionData,
-                        'timeline': fetchApprovalTimelineData
+                        'occupancy': fetchUnitOccupancyData,
+                        'membership': fetchMembershipData,
+                        'unitStatus': fetchUnitStatusData,
+                        'staff': fetchStaffDistributionData,
+                        'incomeExpense': fetchIncomeExpenseData,
+                        'membershipPlan': fetchMembershipPlanData
                     };
 
                     if (reloadFunctions[chartType]) {
@@ -1569,12 +1590,12 @@
                     }
 
                     const filterFunctions = {
-                        'subscription': fetchSubscriptionData,
-                        'approval': fetchApprovalData,
-                        'revenue': fetchRevenueData,
-                        'plan': fetchPlanPopularityData,
-                        'distribution': fetchSubscriptionDistributionData,
-                        'timeline': fetchApprovalTimelineData
+                        'occupancy': fetchUnitOccupancyData,
+                        'membership': fetchMembershipData,
+                        'unitStatus': fetchUnitStatusData,
+                        'staff': fetchStaffDistributionData,
+                        'incomeExpense': fetchIncomeExpenseData,
+                        'membershipPlan': fetchMembershipPlanData
                     };
 
                     if (filterFunctions[chartType]) {
