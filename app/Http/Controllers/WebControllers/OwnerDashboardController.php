@@ -197,7 +197,7 @@ class OwnerDashboardController extends Controller
                 ], 403);
             }
 
-            $buildingIds = $building_id ? [$building_id] : [$accessibleBuildingIds];
+            $buildingIds = $building_id ? [$building_id] : $accessibleBuildingIds;
             $validMemberships = $ownerService->memberships($buildingIds);
             $accessibleMemberships = $validMemberships->pluck('id')->toArray();
 

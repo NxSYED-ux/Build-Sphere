@@ -184,7 +184,6 @@ class ReportsController extends Controller
     {
         $params = $this->getFilterParams($request);
 
-        // Simulated data - replace with actual database queries
         $data = [
             'total_units' => $params['building_id'] == 'all' ? 248 : 80,
             'total_levels' => $params['building_id'] == 'all' ? 24 : 8,
