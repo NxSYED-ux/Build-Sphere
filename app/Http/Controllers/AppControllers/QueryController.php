@@ -403,7 +403,7 @@ class QueryController extends Controller
                 return response()->json(['error' => 'Year is required for monthly stats'], 400);
             }
 
-            $statuses = DB::table('queries')->distinct()->pluck('status')->toArray();
+            $statuses = Query::distinct()->pluck('status')->toArray();
 
             $statusCases = collect($statuses)->map(function ($status) {
                 return "SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) AS `$status`";
@@ -414,8 +414,7 @@ class QueryController extends Controller
                 $selectFields .= ", " . $statusCases;
             }
 
-            $query = DB::table('queries')
-                ->selectRaw($selectFields, $statuses)
+            $query = Query::selectRaw($selectFields, $statuses)
                 ->where('staff_member_id', $staffMemberId)
                 ->whereYear('updated_at', $year);
 
@@ -470,7 +469,7 @@ class QueryController extends Controller
             $year = $request->query('year');
             $month = $request->query('month');
 
-            $statuses = DB::table('queries')->distinct()->pluck('status')->toArray();
+            $statuses = Query::distinct()->pluck('status')->toArray();
 
             $statusCases = collect($statuses)->map(function ($status) {
                 return "SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) AS `$status`";
@@ -481,8 +480,7 @@ class QueryController extends Controller
                 $selectFields .= ", " . $statusCases;
             }
 
-            $query = DB::table('queries')
-                ->selectRaw($selectFields, $statuses)
+            $query = Query::selectRaw($selectFields, $statuses)
                 ->where('staff_member_id', $staffMemberId);
 
             if ($year) {

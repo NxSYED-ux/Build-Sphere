@@ -138,35 +138,13 @@
         .currentMonth,
         .currentYear,
         .currentBuilding,
-        .currentUnit,
+        .currentSource,
         .currentMembership,
+        .currentName,
         .currentStart,
         .currentEnd {
             font-size: 12px;
             color: var(--sidenavbar-text-color);
-        }
-
-        .btn-details {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            display: flex;
-            align-items: center;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .btn-details:hover {
-            background: var(--primary-light);
-            transform: translateX(3px);
-        }
-
-        .btn-details i {
-            margin-left: 5px;
-            font-size: 14px;
         }
 
         .card-body {
@@ -251,37 +229,17 @@
             color: var(--sidenavbar-text-color);
         }
 
+        .legend-item {
+            font-size: 12px;
+            color: var(--sidenavbar-text-color);
+            margin-left: 15px;
+            display: flex;
+            align-items: center;
+        }
+
         .legend-item i {
             margin-right: 5px;
             font-size: 14px;
-        }
-
-        .legend-item.rented i {
-            color: #4BC0C0;
-        }
-
-        .legend-item.sold i {
-            color: #FF6384;
-        }
-
-        .legend-item.available i {
-            color: #FFCD56;
-        }
-
-        .legend-item.active i {
-            color: #4BC0C0;
-        }
-
-        .legend-item.expired i {
-            color: #FF6384;
-        }
-
-        .legend-item.managers i {
-            color: #36A2EB;
-        }
-
-        .legend-item.staff i {
-            color: #9966FF;
         }
 
         .chart-container {
@@ -473,7 +431,7 @@
                 <div class="col-12">
                     <div class="content-wrapper" style="min-height: 751px;">
                         <section class="content-header mt-3">
-                            <h3 class="dashboard_Header">Owner Dashboard</h3>
+                            <h3 class="dashboard_Header">Dashboard</h3>
                         </section>
 
                         <section class="content">
@@ -621,7 +579,7 @@
                                                         </div>
                                                         <div class="donut-chart-container">
                                                             <canvas id="unitOccupancyChart"></canvas>
-                                                            <div id="unitOccupancyChartError"
+                                                            <div id="occupancyError"
                                                                  class="text-center text-danger"
                                                                  style="display: none; position: absolute; top: 45%; left: 50%; transform: translate(-50%, -50%); z-index: 2;">
                                                             </div>
@@ -681,9 +639,10 @@
                                 <div class="col-md-6 mb-4">
                                     <div class="advanced-data-card">
                                         <div class="card-header">
-                                            <h3>Membership Plans</h3>
+                                            <h3>Membership Subscriptions</h3>
                                             <div class="card-actions">
-                                                <span class="currentDate"></span>
+                                                <span class="currentMonth" id="currentMonthChart2"></span>
+                                                <span class="currentMembership" id="currentMembershipChart2">All Memberships</span>
                                                 <div class="chart-controls">
                                                     <button class="chart-btn reload-btn" data-chart="membership">
                                                         <i class="bx bx-refresh"></i>
@@ -694,7 +653,6 @@
                                                         <span class="tooltip">Chart Settings</span>
                                                     </button>
                                                 </div>
-                                                <button class="btn-details">Manage <i class="bx bx-chevron-right"></i></button>
                                             </div>
                                         </div>
                                         <div class="card-body">
@@ -702,60 +660,70 @@
                                                 <div class="flipper">
                                                     <div class="chart-container">
                                                         <div class="data-grid">
-                                                            <div class="data-item">
+                                                            <div class="data-item" data-type="active">
                                                                 <div class="data-value" id="activeMemberships">0</div>
                                                                 <div class="data-label">Active</div>
-                                                                <div class="data-trend up">
-                                                                    <i class="bx bx-up-arrow-alt"></i> 15%
-                                                                </div>
+                                                                <div class="data-trend"><span>-</span></div>
                                                             </div>
-                                                            <div class="data-item">
+                                                            <div class="data-item" data-type="expired">
                                                                 <div class="data-value" id="expiredMemberships">0</div>
                                                                 <div class="data-label">Expired</div>
-                                                                <div class="data-trend down">
-                                                                    <i class="bx bx-down-arrow-alt"></i> 10%
-                                                                </div>
+                                                                <div class="data-trend"><span>-</span></div>
                                                             </div>
-                                                            <div class="data-item">
-                                                                <div class="data-value" id="planUsage">0%</div>
-                                                                <div class="data-label">Plan Usage</div>
-                                                                <div class="data-trend up">
-                                                                    <i class="bx bx-up-arrow-alt"></i> 5%
-                                                                </div>
+                                                            <div class="data-item" data-type="usage">
+                                                                <div class="data-value" id="usage">0%</div>
+                                                                <div class="data-label">Usage</div>
                                                             </div>
                                                         </div>
                                                         <div class="mini-chart-container">
                                                             <canvas id="membershipTrendChart"></canvas>
+                                                            <div id="membershipError"
+                                                                 class="text-center text-danger"
+                                                                 style="display: none; position: absolute; top: 45%; left: 50%; transform: translate(-50%, -50%); z-index: 2;">
+                                                            </div>
                                                         </div>
                                                     </div>
                                                     <div class="filter-panel">
-                                                        <h5>Membership Plans Filters</h5>
-                                                        <div class="filter-group">
-                                                            <label for="membershipDateRange">Date Range</label>
-                                                            <select id="membershipDateRange" class="form-select">
-                                                                <option value="7days">Last 7 Days</option>
-                                                                <option value="30days" selected>Last 30 Days</option>
-                                                                <option value="90days">Last 90 Days</option>
-                                                                <option value="custom">Custom Range</option>
+                                                        <h5>Membership Subscriptions Filters</h5>
+                                                        <div class="filter-group" data-chart="membership">
+                                                            <label for="filterYear">Year</label>
+                                                            <select id="filterYear" class="form-select">
+                                                                @for ($y = now()->year; $y >= now()->year - 5; $y--)
+                                                                    <option value="{{ $y }}" {{ $y == now()->year ? 'selected' : '' }}>{{ $y }}</option>
+                                                                @endfor
                                                             </select>
                                                         </div>
-                                                        <div class="filter-group" id="membershipCustomRange" style="display: none;">
-                                                            <label for="membershipStartDate">Start Date</label>
-                                                            <input type="date" id="membershipStartDate">
-                                                            <label for="membershipEndDate">End Date</label>
-                                                            <input type="date" id="membershipEndDate">
-                                                        </div>
-                                                        <div class="filter-group">
-                                                            <label for="membershipPlanType">Plan Type</label>
-                                                            <select id="membershipPlanType" class="form-select">
-                                                                <option value="all">All Plans</option>
-                                                                <option value="basic">Basic</option>
-                                                                <option value="premium">Premium</option>
-                                                                <option value="enterprise">Enterprise</option>
+
+                                                        <div class="filter-group" data-chart="membership">
+                                                            <label for="filterMonth">Month</label>
+                                                            <select id="filterMonth" class="form-select">
+                                                                @foreach (range(1, 12) as $m)
+                                                                    @php
+                                                                        $val = str_pad($m, 2, '0', STR_PAD_LEFT);
+                                                                    @endphp
+                                                                    <option value="{{ $val }}" {{ $m == now()->month ? 'selected' : '' }}>
+                                                                        {{ \Carbon\Carbon::create()->month($m)->format('F') }}
+                                                                    </option>
+                                                                @endforeach
                                                             </select>
                                                         </div>
+
+                                                        <div class="filter-group" data-chart="membership">
+                                                            <label for="filterMembership">Select Membership</label>
+                                                            <select id="filterMembership" class="form-select" {{ empty($memberships) || $memberships->isEmpty() ? 'disabled' : '' }}>
+                                                                <option value="">All Memberships</option>
+                                                                @if (!empty($memberships) && $memberships->isNotEmpty())
+                                                                    @foreach ($memberships as $membership)
+                                                                        <option value="{{ $membership->id }}">{{ $membership->name }}</option>
+                                                                    @endforeach
+                                                                @else
+                                                                    <option disabled>No Memberships available</option>
+                                                                @endif
+                                                            </select>
+                                                        </div>
+
                                                         <div class="filter-actions">
-                                                            <button class="btn-filter btn-cancel">Cancel</button>
+                                                            <button class="btn-filter btn-cancel" id="btn-cancel-chart2">Cancel</button>
                                                             <button class="btn-filter btn-apply">Apply Filters</button>
                                                         </div>
                                                     </div>
@@ -840,6 +808,10 @@
                                         <div class="chart-header">
                                             <h4>Staff Distribution</h4>
                                             <div class="card-actions">
+                                                <span class="currentStart" id="currentStartChart4">{{ strtoupper(now()->subDays(30)->format('d F Y')) }}</span>
+                                                <span class="separator"> - </span>
+                                                <span class="currentEnd" id="currentEndChart4">{{ strtoupper(now()->format('d F Y')) }}</span>
+                                                <span class="currentBuilding" id="currentBuildingChart4">All Buildings</span>
                                                 <div class="chart-controls">
                                                     <button class="chart-btn reload-btn" data-chart="staff">
                                                         <i class="bx bx-refresh"></i>
@@ -857,35 +829,44 @@
                                                 <div class="flipper">
                                                     <div class="chart-container">
                                                         <canvas id="staffDistributionChart"></canvas>
+                                                        <div id="staffError"
+                                                             class="text-center text-danger"
+                                                             style="display: none; position: absolute; top: 45%; left: 50%; transform: translate(-50%, -50%); z-index: 2;">
+                                                        </div>
                                                     </div>
                                                     <div class="filter-panel">
                                                         <h5>Staff Distribution Filters</h5>
-                                                        <div class="filter-group">
-                                                            <label for="staffDateRange">Date Range</label>
-                                                            <select id="staffDateRange" class="form-select">
-                                                                <option value="3months">Last 3 Months</option>
-                                                                <option value="6months">Last 6 Months</option>
-                                                                <option value="12months" selected>Last 12 Months</option>
-                                                                <option value="custom">Custom Range</option>
+                                                        @php
+                                                            $today = now()->toDateString();
+                                                            $thirtyDaysAgo = now()->subDays(30)->toDateString();
+                                                        @endphp
+
+                                                        <div class="filter-group" data-chart="plan">
+                                                            <label for="filterStart">Start Date</label>
+                                                            <input type="date" id="filterStart" value="{{ $thirtyDaysAgo }}">
+                                                        </div>
+
+                                                        <div class="filter-group" data-chart="plan">
+                                                            <label for="filterEnd">End Date</label>
+                                                            <input type="date" id="filterEnd" value="{{ $today }}">
+                                                        </div>
+
+                                                        <div class="filter-group" data-chart="staff">
+                                                            <label for="filterBuilding">Select Building</label>
+                                                            <select id="filterBuilding" class="form-select" {{ empty($buildings) || $buildings->isEmpty() ? 'disabled' : '' }}>
+                                                                <option value="">All Buildings</option>
+                                                                @if (!empty($buildings) && $buildings->isNotEmpty())
+                                                                    @foreach ($buildings as $building)
+                                                                        <option value="{{ $building->id }}">{{ $building->name }}</option>
+                                                                    @endforeach
+                                                                @else
+                                                                    <option disabled>No Building available</option>
+                                                                @endif
                                                             </select>
                                                         </div>
-                                                        <div class="filter-group" id="staffCustomRange" style="display: none;">
-                                                            <label for="staffStartDate">Start Date</label>
-                                                            <input type="date" id="staffStartDate">
-                                                            <label for="staffEndDate">End Date</label>
-                                                            <input type="date" id="staffEndDate">
-                                                        </div>
-                                                        <div class="filter-group">
-                                                            <label for="staffBuilding">Building</label>
-                                                            <select id="staffBuilding" class="form-select">
-                                                                <option value="all">All Buildings</option>
-                                                                <option value="building1">Building 1</option>
-                                                                <option value="building2">Building 2</option>
-                                                                <option value="building3">Building 3</option>
-                                                            </select>
-                                                        </div>
+
                                                         <div class="filter-actions">
-                                                            <button class="btn-filter btn-cancel">Cancel</button>
+                                                            <button class="btn-filter btn-cancel" id="btn-cancel-chart4">Cancel</button>
                                                             <button class="btn-filter btn-apply">Apply Filters</button>
                                                         </div>
                                                     </div>
@@ -904,6 +885,9 @@
                                         <div class="chart-header">
                                             <h4>Monthly Income vs Expenses</h4>
                                             <div class="card-actions">
+                                                <span class="currentYear" id="currentYearChart5">{{ now()->year }}</span>
+                                                <span class="currentSource" id="currentSourceChart5">All Sources</span>
+                                                <span class="currentName" id="currentNameChart5"></span>
                                                 <div class="chart-controls">
                                                     <button class="chart-btn reload-btn" data-chart="incomeExpense">
                                                         <i class="bx bx-refresh"></i>
@@ -921,35 +905,81 @@
                                                 <div class="flipper">
                                                     <div class="chart-container">
                                                         <canvas id="incomeExpenseChart"></canvas>
+                                                        <div id="incomeExpenseError"
+                                                             class="text-center text-danger"
+                                                             style="display: none; position: absolute; top: 45%; left: 50%; transform: translate(-50%, -50%); z-index: 2;">
+                                                        </div>
                                                     </div>
                                                     <div class="filter-panel">
                                                         <h5>Income vs Expenses Filters</h5>
-                                                        <div class="filter-group">
-                                                            <label for="incomeExpenseDateRange">Date Range</label>
-                                                            <select id="incomeExpenseDateRange" class="form-select">
-                                                                <option value="3months">Last 3 Months</option>
-                                                                <option value="6months">Last 6 Months</option>
-                                                                <option value="12months" selected>Last 12 Months</option>
-                                                                <option value="custom">Custom Range</option>
+                                                        <div class="filter-group" data-chart="incomeExpense">
+                                                            <label for="filterYear">Year</label>
+                                                            <select id="filterYear" class="form-select">
+                                                                @for ($y = now()->year; $y >= now()->year - 5; $y--)
+                                                                    <option value="{{ $y }}" {{ $y == now()->year ? 'selected' : '' }}>{{ $y }}</option>
+                                                                @endfor
                                                             </select>
                                                         </div>
-                                                        <div class="filter-group" id="incomeExpenseCustomRange" style="display: none;">
-                                                            <label for="incomeExpenseStartDate">Start Date</label>
-                                                            <input type="date" id="incomeExpenseStartDate">
-                                                            <label for="incomeExpenseEndDate">End Date</label>
-                                                            <input type="date" id="incomeExpenseEndDate">
-                                                        </div>
-                                                        <div class="filter-group">
-                                                            <label for="incomeExpenseBuilding">Building</label>
-                                                            <select id="incomeExpenseBuilding" class="form-select">
-                                                                <option value="all">All Buildings</option>
-                                                                <option value="building1">Building 1</option>
-                                                                <option value="building2">Building 2</option>
-                                                                <option value="building3">Building 3</option>
+
+                                                        <div class="filter-group" data-chart="incomeExpense">
+                                                            <label for="filterSource">Select Source</label>
+                                                            <select id="filterSource" class="form-select">
+                                                                <option value="">All Sources</option>
+                                                                <option value="Rent">Rent</option>
+                                                                <option value="Sale">Sale</option>
+                                                                <option value="Membership">Membership</option>
+                                                                <option value="Facility">Facility</option>
+                                                                <option value="Request">Maintenance Request</option>
+                                                                @if(auth()->user()->role_id == 2)
+                                                                    <option value="Charges">Platform charges</option>
+                                                                @endif
                                                             </select>
                                                         </div>
+
+                                                        <div class="filter-group" data-chart="incomeExpense" style="display: none;">
+                                                            <label for="filterMembership">Select Membership</label>
+                                                            <select id="filterMembership" class="form-select" {{ empty($memberships) || $memberships->isEmpty() ? 'disabled' : '' }}>
+                                                                <option value="">All Memberships</option>
+                                                                @if (!empty($memberships) && $memberships->isNotEmpty())
+                                                                    @foreach ($memberships as $membership)
+                                                                        <option value="{{ $membership->id }}">{{ $membership->name }}</option>
+                                                                    @endforeach
+                                                                @else
+                                                                    <option disabled>No Memberships available</option>
+                                                                @endif
+                                                            </select>
+                                                        </div>
+
+                                                        <div class="filter-group" data-chart="incomeExpense" style="display: none;">
+                                                            <label for="filterUnit">Select Unit</label>
+                                                            <select id="filterUnit" class="form-select" {{ empty($units) || $units->isEmpty() ? 'disabled' : '' }}>
+                                                                <option value="">All Units</option>
+                                                                @if (!empty($units) && $units->isNotEmpty())
+                                                                    @foreach ($units as $unit)
+                                                                        <option value="{{ $unit->id }}">{{ $unit->unit_name }}</option>
+                                                                    @endforeach
+                                                                @else
+                                                                    <option disabled>No Units available</option>
+                                                                @endif
+                                                            </select>
+                                                        </div>
+
+                                                        <div class="filter-group" data-chart="incomeExpense" style="display: none;">
+                                                            <label for="filterFacility">Select Facility</label>
+                                                            <select id="filterFacility" class="form-select" {{ empty($membershipsUnits) || $membershipsUnits->isEmpty() ? 'disabled' : '' }}>
+                                                                <option value="">All Facilities</option>
+                                                                @if (!empty($membershipsUnits) && $membershipsUnits->isNotEmpty())
+                                                                    @foreach ($membershipsUnits as $membershipsUnit)
+                                                                        <option value="{{ $membershipsUnit->id }}">{{ $membershipsUnit->unit_name }}</option>
+                                                                    @endforeach
+                                                                @else
+                                                                    <option disabled>No Facilities Available</option>
+                                                                @endif
+                                                            </select>
+                                                        </div>
+
                                                         <div class="filter-actions">
-                                                            <button class="btn-filter btn-cancel">Cancel</button>
+                                                            <button class="btn-filter btn-cancel" id="btn-cancel-chart5">Cancel</button>
                                                             <button class="btn-filter btn-apply">Apply Filters</button>
                                                         </div>
                                                     </div>
@@ -963,8 +993,10 @@
                                 <div class="col-md-6 mb-4">
                                     <div class="chart-card">
                                         <div class="chart-header">
-                                            <h4>Membership Plan Usage</h4>
+                                            <h4>Membership Distribution</h4>
                                             <div class="card-actions">
+                                                <span class="currentMonth" id="currentMonthChart6"></span>
+                                                <span class="legend-item"><i class="bx bx-pie-chart-alt"></i> By Subscriptions</span>
                                                 <div class="chart-controls">
                                                     <button class="chart-btn reload-btn" data-chart="membershipPlan">
                                                         <i class="bx bx-refresh"></i>
@@ -982,34 +1014,38 @@
                                                 <div class="flipper">
                                                     <div class="chart-container">
                                                         <canvas id="membershipPlanChart"></canvas>
+                                                        <div id="membershipPlanError"
+                                                             class="text-center text-danger"
+                                                             style="display: none; position: absolute; top: 45%; left: 50%; transform: translate(-50%, -50%); z-index: 2;">
+                                                        </div>
                                                     </div>
                                                     <div class="filter-panel">
                                                         <h5>Membership Plan Filters</h5>
-                                                        <div class="filter-group">
-                                                            <label for="membershipPlanDateRange">Date Range</label>
-                                                            <select id="membershipPlanDateRange" class="form-select">
-                                                                <option value="7days">Last 7 Days</option>
-                                                                <option value="30days" selected>Last 30 Days</option>
-                                                                <option value="90days">Last 90 Days</option>
-                                                                <option value="custom">Custom Range</option>
+                                                        <div class="filter-group" data-chart="membershipPlan">
+                                                            <label for="filterYear">Year</label>
+                                                            <select id="filterYear" class="form-select">
+                                                                @for ($y = now()->year; $y >= now()->year - 5; $y--)
+                                                                    <option value="{{ $y }}" {{ $y == now()->year ? 'selected' : '' }}>{{ $y }}</option>
+                                                                @endfor
                                                             </select>
                                                         </div>
-                                                        <div class="filter-group" id="membershipPlanCustomRange" style="display: none;">
-                                                            <label for="membershipPlanStartDate">Start Date</label>
-                                                            <input type="date" id="membershipPlanStartDate">
-                                                            <label for="membershipPlanEndDate">End Date</label>
-                                                            <input type="date" id="membershipPlanEndDate">
-                                                        </div>
-                                                        <div class="filter-group">
-                                                            <label for="membershipPlanStatus">Status</label>
-                                                            <select id="membershipPlanStatus" class="form-select">
-                                                                <option value="all">All Statuses</option>
-                                                                <option value="active">Active</option>
-                                                                <option value="expired">Expired</option>
+
+                                                        <div class="filter-group" data-chart="membershipPlan">
+                                                            <label for="filterMonth">Month</label>
+                                                            <select id="filterMonth" class="form-select">
+                                                                @foreach (range(1, 12) as $m)
+                                                                    @php
+                                                                        $val = str_pad($m, 2, '0', STR_PAD_LEFT);
+                                                                    @endphp
+                                                                    <option value="{{ $val }}" {{ $m == now()->month ? 'selected' : '' }}>
+                                                                        {{ \Carbon\Carbon::create()->month($m)->format('F') }}
+                                                                    </option>
+                                                                @endforeach
                                                             </select>
                                                         </div>
+
                                                         <div class="filter-actions">
-                                                            <button class="btn-filter btn-cancel">Cancel</button>
+                                                            <button class="btn-filter btn-cancel" id="btn-cancel-chart6">Cancel</button>
                                                             <button class="btn-filter btn-apply">Apply Filters</button>
                                                         </div>
                                                     </div>
@@ -1047,8 +1083,12 @@
                 month: 'long'
             }).format(dateObj);
 
+            const [month, year] = formattedDate.split(' ');
+            const capitalMonthDate = `${month.toUpperCase()} ${year}`;
+
+            // Update all elements with .currentMonth
             document.querySelectorAll('.currentMonth').forEach(el => {
-                el.textContent = formattedDate;
+                el.textContent = capitalMonthDate;
             });
 
             // Initialize charts with empty data
@@ -1064,7 +1104,7 @@
                 // 2. Membership Trend Mini Chart
                 const membershipTrendCtx = document.getElementById('membershipTrendChart').getContext('2d');
                 membershipTrendChart = new Chart(membershipTrendCtx, {
-                    type: 'line',
+                    type: 'doughnut',
                     data: { labels: [], datasets: [] },
                     options: { responsive: true, maintainAspectRatio: false }
                 });
@@ -1113,11 +1153,11 @@
                 fetchStatsData();
                 fetchFinanceData();
                 fetchUnitOccupancyData();
-                fetchMembershipData();
+                fetchMembershipSubscriptionsData();
                 fetchUnitStatusData();
                 fetchStaffDistributionData();
                 fetchIncomeExpenseData();
-                fetchMembershipPlanData();
+                fetchMembershipDistributionData();
             }
 
             // Fetch Stats Data (Total Buildings, Units, Staff)
@@ -1246,14 +1286,29 @@
                         unitOccupancyChart.update();
                     })
                     .catch(error => {
-                        showChartError(error, unitOccupancyChart, 'unitOccupancyChartError');
+                        showChartError(error, unitOccupancyChart, 'occupancyError');
                     });
             }
 
-            // 2. Fetch Membership Data
-            function fetchMembershipData(params = {}) {
+            // 2. Fetch Membership Subscriptions
+            function fetchMembershipSubscriptionsData() {
+                const filterPanel = document.querySelector('.filter-group[data-chart="membership"]').closest('.filter-panel');
+                const yearSelect = filterPanel.querySelector('select[id^="filterYear"]');
+                const monthSelect = filterPanel.querySelector('select[id^="filterMonth"]');
+                const membershipSelect = filterPanel.querySelector('select[id^="filterMembership"]');
+
+
+                const year = yearSelect ? yearSelect.value : null;
+                const month = monthSelect ? monthSelect.value : null;
+                const selectedMembership = membershipSelect ? membershipSelect.value : null;
+                const selectedMonth = `${year}-${month}`;
+
+                params = {}
+                params.month = selectedMonth;
+                params.membership = selectedMembership;
+
                 const queryString = new URLSearchParams(params).toString();
-                fetch(`{{ route('owner_manager_dashboard.membership.plans') }}?${queryString}`, {
+                fetch(`{{ route('owner_manager_dashboard.membership.subscription') }}?${queryString}`, {
                     method: 'GET',
                     headers: {
                         'X-CSRF-TOKEN': '{{ csrf_token() }}',
@@ -1268,22 +1323,39 @@
                     .then(data => {
                         document.getElementById('activeMemberships').textContent = data.active || '0';
                         document.getElementById('expiredMemberships').textContent = data.expired || '0';
-                        document.getElementById('planUsage').textContent = `${data.usage || '0'}%`;
+                        document.getElementById('usage').textContent = `${data.usage || '0'}%`;
 
-                        // Update membership trend chart
-                        membershipTrendChart.data.labels = data.trend.labels || [];
+                        // Handle growth arrows
+                        updateGrowthTrend('active', data.growth.active);
+                        updateGrowthTrend('expired', data.growth.expired);
+
+                        membershipTrendChart.data.labels = ['Active', 'Expired'];
                         membershipTrendChart.data.datasets = [{
-                            label: 'New Memberships',
-                            data: data.trend.values || [],
-                            borderColor: '#184E83',
-                            backgroundColor: 'rgba(24, 78, 131, 0.1)',
-                            borderWidth: 2,
-                            tension: 0.4,
-                            fill: true
+                            data: [data.active || 0, data.expired || 0],
+                            backgroundColor: ['rgba(75, 192, 192, 1)', 'rgba(255, 99, 132, 1)'],
+                            borderWidth: 0
                         }];
+
+                        // Updating the Labels
+                        let membershipName = membershipSelect.options[membershipSelect.selectedIndex].text || null;
+
+                        const dateObj = new Date(`${selectedMonth}-01`);
+                        const formattedDate = new Intl.DateTimeFormat('en-US', {
+                            year: 'numeric',
+                            month: 'long'
+                        }).format(dateObj);
+
+                        const [month, year] = formattedDate.split(' ');
+
+                        document.getElementById('currentMonthChart2').textContent = `${month.toUpperCase()} ${year}`;
+                        document.getElementById('currentMembershipChart2').textContent = membershipName;
+
+                        // Update Chart
                         membershipTrendChart.update();
                     })
-                    .catch(error => console.error('Error fetching membership data:', error));
+                    .catch(error => {
+                        showChartError(error, membershipTrendChart, 'membershipError');
+                    });
             }
 
             // 3. Fetch Unit Status Data
@@ -1357,7 +1429,26 @@
             }
 
             // 4. Fetch Staff Distribution Data
-            function fetchStaffDistributionData(params = {}) {
+            function fetchStaffDistributionData() {
+                const filterPanel = document.querySelector('.filter-group[data-chart="staff"]').closest('.filter-panel');
+                const startInput = filterPanel.querySelector('input[id^="filterStart"]');
+                const endInput = filterPanel.querySelector('input[id^="filterEnd"]');
+                const buildingSelect = filterPanel.querySelector('select[id^="filterBuilding"]');
+
+                const startDate = new Date(startInput.value);
+                const endDate = new Date(endInput.value);
+                const selectedBuilding = buildingSelect ? buildingSelect.value : null;
+
+                if (startInput.value && endInput.value && startDate > endDate) {
+                    alert("Start Date cannot be after End Date.");
+                    return false;
+                }
+
+                params = {}
+                params.start = startInput.value;
+                params.end = endInput.value;
+                params.building = selectedBuilding;
+
                 const queryString = new URLSearchParams(params).toString();
                 fetch(`{{ route('owner_manager_dashboard.staff.distribution') }}?${queryString}`, {
                     method: 'GET',
@@ -1372,20 +1463,77 @@
                         return response.json();
                     })
                     .then(data => {
-                        // Update staff distribution chart
-                        staffDistributionChart.data.labels = ['Managers', 'Other Staff'];
+                        staffDistributionChart.data.labels = data.labels || [];
                         staffDistributionChart.data.datasets = [{
-                            data: [data.managers || 0, data.staff || 0],
-                            backgroundColor: ['#36A2EB', '#9966FF'],
+                            data: data.data || [],
+                            backgroundColor: generateColors(staffDistributionChart.data.labels.length),
                             borderWidth: 0
                         }];
+
+                        // Updating the Labels
+                        let buildingName = buildingSelect.options[buildingSelect.selectedIndex].text || null;
+
+                        const formatDate = (dateString) => {
+                            const date = new Date(dateString);
+                            return date.toLocaleDateString('en-GB', {
+                                day: '2-digit',
+                                month: 'long',
+                                year: 'numeric'
+                            }).toUpperCase();
+                        };
+
+                        document.getElementById('currentStartChart4').textContent = formatDate(startInput.value);
+                        document.getElementById('currentEndChart4').textContent = formatDate(endInput.value);
+                        document.getElementById('currentBuildingChart4').textContent = buildingName;
+
+                        // Update Chart
                         staffDistributionChart.update();
                     })
-                    .catch(error => console.error('Error fetching staff distribution data:', error));
+                    .catch(error => {
+                        showChartError(error, staffDistributionChart, 'staffError');
+                    });
             }
 
             // 5. Fetch Income vs Expense Data
-            function fetchIncomeExpenseData(params = {}) {
+            function fetchIncomeExpenseData() {
+                const filterPanel = document.querySelector('.filter-group[data-chart="incomeExpense"]').closest('.filter-panel');
+                const yearSelect = filterPanel.querySelector('select[id^="filterYear"]');
+                const sourceSelect = filterPanel.querySelector('select[id^="filterSource"]');
+                const membershipSelect = filterPanel.querySelector('select[id^="filterMembership"]');
+                const unitSelect = filterPanel.querySelector('select[id^="filterUnit"]');
+                const facilitySelect = filterPanel.querySelector('select[id^="filterFacility"]');
+
+                const selectedYear = yearSelect ? yearSelect.value : null;
+                const selectedSource = sourceSelect ? sourceSelect.value : null;
+
+                let selectedSourceId = null;
+                let selectedSourceName = '';
+
+                if (selectedSource === 'Membership') {
+                    if (membershipSelect) {
+                        selectedSourceId = membershipSelect.value || null;
+                        selectedSourceName = membershipSelect.options[membershipSelect.selectedIndex]?.text || null;
+                    }
+                } else if (selectedSource === 'Rent' || selectedSource === 'Sale' || selectedSource === 'Request') {
+                    if (unitSelect) {
+                        selectedSourceId = unitSelect.value || null;
+                        selectedSourceName = unitSelect.options[unitSelect.selectedIndex]?.text || null;
+                    }
+                } else if (selectedSource === 'Facility') {
+                    if (facilitySelect) {
+                        selectedSourceId = facilitySelect.value || null;
+                        selectedSourceName = facilitySelect.options[facilitySelect.selectedIndex]?.text || null;
+                    }
+                }
+
+                params = {}
+                params.year = selectedYear;
+                params.source = selectedSource;
+
+                if (selectedSourceId !== null) {
+                    params.source_id = selectedSourceId;
+                }
+
                 const queryString = new URLSearchParams(params).toString();
                 fetch(`{{ route('owner_manager_dashboard.income.expense') }}?${queryString}`, {
                     method: 'GET',
@@ -1400,7 +1548,6 @@
                         return response.json();
                     })
                     .then(data => {
-                        // Update income vs expense chart
                         incomeExpenseChart.data.labels = data.labels || [];
                         incomeExpenseChart.data.datasets = [
                             {
@@ -1422,15 +1569,38 @@
                                 fill: true
                             }
                         ];
+
+                        // Updating the Labels
+                        let source = sourceSelect.options[sourceSelect.selectedIndex].text || null;
+
+                        document.getElementById('currentYearChart5').textContent = selectedYear;
+                        document.getElementById('currentSourceChart5').textContent = source;
+                        document.getElementById('currentNameChart5').textContent = selectedSourceName;
+
+                        // Update Chart
                         incomeExpenseChart.update();
                     })
-                    .catch(error => console.error('Error fetching income vs expense data:', error));
+                    .catch(error => {
+                        showChartError(error, incomeExpenseChart, 'incomeExpenseError');
+                    });
             }
 
-            // 6. Fetch Membership Plan Data
-            function fetchMembershipPlanData(params = {}) {
+            // 6. Fetch Membership Distribution Data
+            function fetchMembershipDistributionData() {
+                const filterPanel = document.querySelector('.filter-group[data-chart="membershipPlan"]').closest('.filter-panel');
+                const yearSelect = filterPanel.querySelector('select[id^="filterYear"]');
+                const monthSelect = filterPanel.querySelector('select[id^="filterMonth"]');
+
+
+                const year = yearSelect ? yearSelect.value : null;
+                const month = monthSelect ? monthSelect.value : null;
+                const selectedMonth = `${year}-${month}`;
+
+                params = {}
+                params.month = selectedMonth;
+
                 const queryString = new URLSearchParams(params).toString();
-                fetch(`{{ route('owner_manager_dashboard.membership.plan.usage') }}?${queryString}`, {
+                fetch(`{{ route('owner_manager_dashboard.membership.subscription.distribution') }}?${queryString}`, {
                     method: 'GET',
                     headers: {
                         'X-CSRF-TOKEN': '{{ csrf_token() }}',
@@ -1443,16 +1613,30 @@
                         return response.json();
                     })
                     .then(data => {
-                        // Update membership plan chart
                         membershipPlanChart.data.labels = data.labels || [];
                         membershipPlanChart.data.datasets = [{
                             data: data.values || [],
-                            backgroundColor: ['#36A2EB', '#4BC0C0', '#9966FF', '#FFCE56'],
+                            backgroundColor: generateColors(membershipPlanChart.data.labels.length),
                             borderWidth: 0
                         }];
+
+                        // Updating the Labels
+                        const dateObj = new Date(`${selectedMonth}-01`);
+                        const formattedDate = new Intl.DateTimeFormat('en-US', {
+                            year: 'numeric',
+                            month: 'long'
+                        }).format(dateObj);
+
+                        const [month, year] = formattedDate.split(' ');
+
+                        document.getElementById('currentMonthChart6').textContent = `${month.toUpperCase()} ${year}`;
+
+                        // Update Chart
                         membershipPlanChart.update();
                     })
-                    .catch(error => console.error('Error fetching membership plan data:', error));
+                    .catch(error => {
+                        showChartError(error, membershipPlanChart, 'membershipPlanError');
+                    });
             }
 
             // Helper function to set the trends
@@ -1474,7 +1658,7 @@
                 const absValue = Math.abs(value).toFixed(1);
                 const isPositive = value > 0;
                 const isNegative = value < 0;
-                const isBadGrowth = ['available'].includes(type) ? isPositive : isNegative;
+                const isBadGrowth = ['available', 'expired'].includes(type) ? isPositive : isNegative;
 
                 const iconClass = isPositive ? 'bx-up-arrow-alt' : 'bx-down-arrow-alt';
                 const textClass = isBadGrowth ? 'text-danger' : 'text-success';
@@ -1515,6 +1699,43 @@
                 }
             }
 
+            // Helper function to create colors
+            function generateColors(count, seed = Math.random() * 360) {
+                const colors = [];
+                const goldenAngle = 137.5;
+
+                for (let i = 0; i < count; i++) {
+                    const hue = (seed + i * goldenAngle) % 360;
+
+                    const saturation = 70;
+                    const lightness = 60;
+
+                    const h = hue / 360;
+                    const s = saturation / 100;
+                    const l = lightness / 100;
+
+                    const c = (1 - Math.abs(2 * l - 1)) * s;
+                    const x = c * (1 - Math.abs((h * 6) % 2 - 1));
+                    const m = l - c / 2;
+
+                    let r, g, b;
+                    if (h < 1/6) [r, g, b] = [c, x, 0];
+                    else if (h < 2/6) [r, g, b] = [x, c, 0];
+                    else if (h < 3/6) [r, g, b] = [0, c, x];
+                    else if (h < 4/6) [r, g, b] = [0, x, c];
+                    else if (h < 5/6) [r, g, b] = [x, 0, c];
+                    else [r, g, b] = [c, 0, x];
+
+                    r = Math.round((r + m) * 255);
+                    g = Math.round((g + m) * 255);
+                    b = Math.round((b + m) * 255);
+
+                    colors.push(`rgb(${r}, ${g}, ${b})`);
+                }
+
+                return colors;
+            }
+
             // Setting button in charts
             document.querySelectorAll('.settings-btn').forEach(btn => {
                 btn.addEventListener('click', function () {
@@ -1546,11 +1767,11 @@
 
                     const reloadFunctions = {
                         'occupancy': fetchUnitOccupancyData,
-                        'membership': fetchMembershipData,
+                        'membership': fetchMembershipSubscriptionsData,
                         'unitStatus': fetchUnitStatusData,
                         'staff': fetchStaffDistributionData,
                         'incomeExpense': fetchIncomeExpenseData,
-                        'membershipPlan': fetchMembershipPlanData
+                        'membershipPlan': fetchMembershipDistributionData
                     };
 
                     if (reloadFunctions[chartType]) {
@@ -1591,11 +1812,11 @@
 
                     const filterFunctions = {
                         'occupancy': fetchUnitOccupancyData,
-                        'membership': fetchMembershipData,
+                        'membership': fetchMembershipSubscriptionsData,
                         'unitStatus': fetchUnitStatusData,
                         'staff': fetchStaffDistributionData,
                         'incomeExpense': fetchIncomeExpenseData,
-                        'membershipPlan': fetchMembershipPlanData
+                        'membershipPlan': fetchMembershipDistributionData
                     };
 
                     if (filterFunctions[chartType]) {
@@ -1644,6 +1865,184 @@
                     }
                 });
             });
+
+            // To Display the units or memberships on the change of source
+            document.getElementById('filterSource').addEventListener('change', () => {
+                const sourceSelect = document.getElementById('filterSource');
+
+                const filterPanel = document.querySelector('.filter-group[data-chart="incomeExpense"]').closest('.filter-panel');
+                const membershipGroup = filterPanel.querySelector('.filter-group select[id^="filterMembership"]').closest('.filter-group');
+                const unitGroup = filterPanel.querySelector('.filter-group select[id^="filterUnit"]').closest('.filter-group');
+                const facilityGroup = filterPanel.querySelector('select[id^="filterFacility"]').closest('.filter-group');
+
+                const selectedValue = sourceSelect.value;
+
+                membershipGroup.style.display = 'none';
+                unitGroup.style.display = 'none';
+                facilityGroup.style.display = 'none';
+
+                if (selectedValue === 'Membership') {
+                    membershipGroup.style.display = '';
+                } else if (selectedValue === 'Rent' || selectedValue === 'Sale' || selectedValue === 'Request') {
+                    unitGroup.style.display = '';
+                } else if (selectedValue === 'Facility') {
+                    facilityGroup.style.display = '';
+                }
+            });
+
+            const monthNames = [
+                'january', 'february', 'march', 'april', 'may', 'june',
+                'july', 'august', 'september', 'october', 'november', 'december'
+            ];
+
+            const formatToInputDate = (text) => {
+                const [day, monthName, year] = text.split(' ');
+                const monthIndex = monthNames.indexOf(monthName.toLowerCase()) + 1;
+                const mm = String(monthIndex).padStart(2, '0');
+                const dd = day.padStart(2, '0');
+                return `${year}-${mm}-${dd}`;
+            };
+
+            const cancelButtonHandler = (chartNumber, config) => {
+                document.querySelectorAll(`#btn-cancel-chart${chartNumber}`).forEach(button => {
+                    button.addEventListener('click', function () {
+                        const container = document.querySelector(`.filter-group[data-chart="${config.chartKey}"]`)?.closest('.filter-panel');
+                        if (!container) return;
+
+                        if (config.yearSpanId) {
+                            const yearSelect = container.querySelector('select[id^="filterYear"]');
+                            const yearText = document.getElementById(config.yearSpanId)?.textContent.trim();
+                            if (yearSelect && yearText) yearSelect.value = yearText;
+                        }
+
+                        if (config.monthSpanId) {
+                            const monthSelect = container.querySelector('select[id^="filterMonth"]');
+                            const monthText = document.getElementById(config.monthSpanId)?.textContent.trim();
+                            if (monthSelect && monthText) {
+                                const [monthNameRaw, year] = monthText.split(' ');
+                                const monthIndex = monthNames.indexOf(monthNameRaw.trim().toLowerCase()) + 1;
+                                monthSelect.value = String(monthIndex).padStart(2, '0');
+
+                                const yearSelect = container.querySelector('select[id^="filterYear"]');
+                                if (yearSelect) yearSelect.value = year;
+                            }
+                        }
+
+                        if (config.startSpanId && config.endSpanId) {
+                            const startInput = container.querySelector('input[id^="filterStart"]');
+                            const endInput = container.querySelector('input[id^="filterEnd"]');
+                            const startText = document.getElementById(config.startSpanId)?.textContent.trim();
+                            const endText = document.getElementById(config.endSpanId)?.textContent.trim();
+
+                            if (startInput && startText) startInput.value = formatToInputDate(startText);
+                            if (endInput && endText) endInput.value = formatToInputDate(endText);
+                        }
+
+                        if (config.selectPrefix && config.spanId) {
+                            const spanText = document.getElementById(config.spanId)?.textContent.trim();
+                            const select = container.querySelector(`select[id^="${config.selectPrefix}"]`);
+                            if (select && spanText) {
+                                for (let option of select.options) {
+                                    if (option.text.trim().toLowerCase() === spanText.toLowerCase()) {
+                                        select.value = option.value;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    });
+                });
+            };
+
+            cancelButtonHandler(1, {
+                chartKey: 'occupancy',
+                monthSpanId: 'currentMonthChart1',
+                spanId: 'currentBuildingChart1',
+                selectPrefix: 'filterBuilding'
+            });
+
+            cancelButtonHandler(2, {
+                chartKey: 'membership',
+                monthSpanId: 'currentMonthChart2',
+                spanId: 'currentMembershipChart2',
+                selectPrefix: 'filterMembership'
+            });
+
+            cancelButtonHandler(3, {
+                chartKey: 'unitStatus',
+                yearSpanId: 'currentYearChart3',
+                spanId: 'currentBuildingChart3',
+                selectPrefix: 'filterBuilding'
+            });
+
+            cancelButtonHandler(4, {
+                chartKey: 'staff',
+                startSpanId: 'currentStartChart4',
+                endSpanId: 'currentEndChart4',
+                spanId: 'currentBuildingChart4',
+                selectPrefix: 'filterBuilding'
+            });
+
+            cancelButtonHandler(5, {
+                chartKey: 'incomeExpense',
+                yearSpanId: 'currentYearChart5',
+                spanId: 'currentSourceChart5',
+                selectPrefix: 'filterSource'
+            });
+
+            cancelButtonHandler(6, {
+                chartKey: 'membershipPlan',
+                monthSpanId: 'currentMonthChart6'
+            });
+
+            document.getElementById('btn-cancel-chart5').addEventListener('click', () => {
+                const filterPanel = document.querySelector('.filter-group[data-chart="incomeExpense"]')?.closest('.filter-panel');
+                const membershipSelect = filterPanel.querySelector('select[id^="filterMembership"]');
+                const unitSelect = filterPanel.querySelector('select[id^="filterUnit"]');
+                const facilitySelect = filterPanel.querySelector('select[id^="filterFacility"]');
+
+                const currentSource = document.getElementById('currentSourceChart5')?.textContent.trim();
+                const currentName = document.getElementById('currentNameChart5')?.textContent.trim();
+
+                if (currentSource === 'Membership') {
+                    const option = [...membershipSelect.options].find(opt => opt.text.trim() === currentName);
+                    if (option) membershipSelect.value = option.value;
+                    membershipSelect.closest('.filter-group').style.display = '';
+                    unitSelect.closest('.filter-group').style.display = 'none';
+                    unitSelect.value = '';
+                    facilitySelect.closest('.filter-group').style.display = 'none';
+                    facilitySelect.value = '';
+
+                } else if (currentSource === 'Rent' || currentSource === 'Sale' || currentSource === 'Maintenance Request') {
+                    const option = [...unitSelect.options].find(opt => opt.text.trim() === currentName);
+                    if (option) unitSelect.value = option.value;
+                    unitSelect.closest('.filter-group').style.display = '';
+                    membershipSelect.closest('.filter-group').style.display = 'none';
+                    membershipSelect.value = '';
+                    facilitySelect.closest('.filter-group').style.display = 'none';
+                    facilitySelect.value = '';
+
+                } else if (currentSource === 'Facility') {
+                    const option = [...facilitySelect.options].find(opt => opt.text.trim() === currentName);
+                    if (option) facilitySelect.value = option.value;
+                    facilitySelect.closest('.filter-group').style.display = '';
+                    membershipSelect.closest('.filter-group').style.display = 'none';
+                    membershipSelect.value = '';
+                    unitSelect.closest('.filter-group').style.display = 'none';
+                    unitSelect.value = '';
+
+                } else {
+                    membershipSelect.closest('.filter-group').style.display = 'none';
+                    membershipSelect.value = '';
+                    unitSelect.closest('.filter-group').style.display = 'none';
+                    unitSelect.value = '';
+                    facilitySelect.closest('.filter-group').style.display = 'none';
+                    facilitySelect.value = '';
+
+                }
+
+            });
+
         });
     </script>
 @endpush

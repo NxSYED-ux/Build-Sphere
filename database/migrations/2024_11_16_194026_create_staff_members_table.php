@@ -19,6 +19,7 @@ return new class extends Migration
             $table->decimal('salary',8,1)->default(0);
             $table->unsignedInteger('active_load')->default(0);
             $table->tinyInteger('accept_queries')->default(1);
+            $table->timestamp('joined_at')->nullable();
             $table->tinyInteger('status')->default(1);
 
             $table->foreignId('created_by')->nullable()->constrained('users')->onDelete('set null');

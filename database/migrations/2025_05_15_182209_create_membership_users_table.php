@@ -24,10 +24,25 @@ return new class extends Migration
 
             $table->unique(['user_id', 'membership_id', 'subscription_id']);
         });
+
+        Schema::create('membership_usage_logs', function (Blueprint $table) {
+            $table->id();
+
+            $table->foreignId('membership_user_id')->constrained('membership_users')->onDelete('cascade');
+            $table->date('usage_date');
+            $table->integer('used')->default(1);
+
+            $table->timestamp('created_at')->useCurrent();
+            $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
+
+            $table->unique(['membership_user_id', 'usage_date']);
+        });
+
     }
 
     public function down(): void
     {
+        Schema::dropIfExists('membership_usage_logs');
         Schema::dropIfExists('membership_users');
     }
 };

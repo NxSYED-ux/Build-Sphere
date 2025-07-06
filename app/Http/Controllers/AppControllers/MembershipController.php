@@ -4,9 +4,11 @@ namespace App\Http\Controllers\AppControllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\Membership;
+use App\Models\MembershipUsageLog;
 use App\Models\MembershipUser;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Tymon\JWTAuth\Exceptions\TokenExpiredException;
 use Tymon\JWTAuth\Exceptions\TokenInvalidException;
@@ -323,6 +325,16 @@ class MembershipController extends Controller
             }
 
             $userMembership->decrement('used');
+
+            MembershipUsageLog::updateOrCreate(
+                [
+                    'membership_user_id' => $userMembership->id,
+                    'usage_date' => Carbon::today()->toDateString(),
+                ],
+                [
+                    'used' => DB::raw('used + 1')
+                ]
+            );
 
             return response()->json([
                 'success' => true,

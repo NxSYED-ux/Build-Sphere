@@ -195,6 +195,7 @@ class hrController extends Controller
                 'building_id' => $request->building_id,
                 'department_id' => $request->department_id,
                 'accept_queries' => $request->accept_query ?? 0,
+                'joined_at' => now()
             ]);
 
             $original = RolePermission::where('role_id', 4)->pluck('status', 'permission_id');
@@ -319,6 +320,7 @@ class hrController extends Controller
                 'user_id' => $user->id,
                 'organization_id' => $organization_id,
                 'accept_queries' => 0,
+                'joined_at' => now()
             ]);
 
             foreach (request('buildings') as $buildingId) {
@@ -543,10 +545,16 @@ class hrController extends Controller
 
             $user = $staff->user;
 
+            $updateJoiningDate = false;
+            if ((int) $staff->building_id !== (int) $request->building_id || (int) $staff->department_id !== (int) $request->department_id) {
+                $updateJoiningDate = true;
+            }
+
             $staff->update([
                 'building_id' => $request->building_id,
                 'department_id' => $request->department_id,
                 'accept_queries' => $request->accept_query ?? 0,
+                'joined_at' => $updateJoiningDate ? now() : $staff->joined_at,
             ]);
 
             $user->update([
@@ -983,6 +991,7 @@ class hrController extends Controller
                 'department_id' => $request->department_id,
                 'building_id' => $request->building_id,
                 'accept_queries' => $request->accept_query ?? 0,
+                'joined_at' => now()
             ]);
 
             ManagerBuilding::where('user_id', $user->id)->delete();

@@ -236,11 +236,11 @@ Route::prefix('owner')->middleware(['auth.jwt'])->group(function () {
         Route::get('/stats', [OwnerDashboardController::class, 'getStats'])->name('owner_manager_dashboard.stats');
         Route::get('/finance-stats', [FinanceController::class, 'ownerFinancialTrends'])->name('owner_manager_dashboard.finance.stats');
         Route::get('/unit-occupancy', [OwnerDashboardController::class, 'getUnitOccupancy'])->name('owner_manager_dashboard.unit.occupancy');
-        Route::get('/membership-plans', [OwnerDashboardController::class, 'getMembershipPlans'])->name('owner_manager_dashboard.membership.plans');
+        Route::get('/membership-plans', [OwnerDashboardController::class, 'getMembershipSubscriptionStats'])->name('owner_manager_dashboard.membership.subscription');
         Route::get('/unit-status', [OwnerDashboardController::class, 'getUnitStatus'])->name('owner_manager_dashboard.unit.status');
         Route::get('/staff-distribution', [OwnerDashboardController::class, 'getStaffDistribution'])->name('owner_manager_dashboard.staff.distribution');
         Route::get('/income-expense', [OwnerDashboardController::class, 'getIncomeExpense'])->name('owner_manager_dashboard.income.expense');
-        Route::get('/membership-plan-usage', [OwnerDashboardController::class, 'getMembershipPlanUsage'])->name('owner_manager_dashboard.membership.plan.usage');
+        Route::get('/membership-plan-usage', [OwnerDashboardController::class, 'getMembershipDistribution'])->name('owner_manager_dashboard.membership.subscription.distribution');
 
     });
 

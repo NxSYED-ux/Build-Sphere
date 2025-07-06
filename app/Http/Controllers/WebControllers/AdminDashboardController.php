@@ -138,13 +138,13 @@ class AdminDashboardController extends Controller
                 ->count();
 
             $expired = Subscription::where('subscription_status', 'Expired')
-                ->whereBetween('updated_at', [$start, $end])
+                ->whereBetween('ends_at', [$start, $end])
                 ->where('source_name', 'plan')
                 ->when($plan_id, fn($q) => $q->where('source_id', $plan_id))
                 ->count();
 
             $expiredPrev = Subscription::where('subscription_status', 'Expired')
-                ->whereBetween('updated_at', [$previousStart, $previousEnd])
+                ->whereBetween('ends_at', [$previousStart, $previousEnd])
                 ->where('source_name', 'plan')
                 ->when($plan_id, fn($q) => $q->where('source_id', $plan_id))
                 ->count();
@@ -322,8 +322,7 @@ class AdminDashboardController extends Controller
                     'values' => [],
                     'data' => [
                         'datasets' => [[
-                            'data' => [],
-                            'backgroundColor' => []
+                            'data' => []
                         ]]
                     ]
                 ]);
@@ -344,7 +343,6 @@ class AdminDashboardController extends Controller
                 'data' => [
                     'datasets' => [[
                         'data' => $values,
-                        'backgroundColor' => ['#36A2EB', '#4BC0C0', '#FFCE56', '#FF6384']
                     ]]
                 ]
             ]);

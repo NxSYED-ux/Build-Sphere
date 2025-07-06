@@ -472,7 +472,7 @@
                 <div class="col-12">
                     <div class="content-wrapper" style="min-height: 751px;">
                         <section class="content-header mt-3">
-                            <h3 class="dashboard_Header">Admin Dashboard</h3>
+                            <h3 class="dashboard_Header">Dashboard</h3>
                         </section>
 
                         <section class="content">
@@ -856,7 +856,9 @@
                                                         <div class="filter-group" data-chart="plan">
                                                             <label for="filterStart">Start Date</label>
                                                             <input type="date" id="filterStart" value="{{ $thirtyDaysAgo }}">
+                                                        </div>
 
+                                                        <div class="filter-group" data-chart="plan">
                                                             <label for="filterEnd">End Date</label>
                                                             <input type="date" id="filterEnd" value="{{ $today }}">
                                                         </div>
@@ -1024,6 +1026,21 @@
         document.addEventListener("DOMContentLoaded", function () {
             // Initialize all charts
             let subscriptionTrendChart, approvalDonutChart, revenueLineChart, planPieChart, subscriptionBarChart, approvalTimelineChart;
+
+            //Current Month display
+            const dateObj = new Date();
+            const formattedDate = new Intl.DateTimeFormat('en-US', {
+                year: 'numeric',
+                month: 'long'
+            }).format(dateObj);
+
+            const [month, year] = formattedDate.split(' ');
+            const capitalMonthDate = `${month.toUpperCase()} ${year}`;
+
+            // Update all elements with .currentMonth
+            document.querySelectorAll('.currentMonth').forEach(el => {
+                el.textContent = capitalMonthDate;
+            });
 
             // Initialize charts with empty data
             function initCharts() {
@@ -1364,7 +1381,7 @@
                         planPieChart.data.labels = data.labels || [];
                         planPieChart.data.datasets = [{
                             data: data.values || [],
-                            backgroundColor: ['#36A2EB', '#4BC0C0', '#FFCE56', '#FF6384'],
+                            backgroundColor: generateColors(data.labels.length),
                             borderWidth: 0
                         }];
 
@@ -1592,6 +1609,44 @@
                 }
             }
 
+            // Helper function to create colors
+            function generateColors(count, seed = Math.random() * 360) {
+                const colors = [];
+                const goldenAngle = 137.5;
+
+                for (let i = 0; i < count; i++) {
+                    const hue = (seed + i * goldenAngle) % 360;
+
+                    const saturation = 70;
+                    const lightness = 60;
+
+                    const h = hue / 360;
+                    const s = saturation / 100;
+                    const l = lightness / 100;
+
+                    const c = (1 - Math.abs(2 * l - 1)) * s;
+                    const x = c * (1 - Math.abs((h * 6) % 2 - 1));
+                    const m = l - c / 2;
+
+                    let r, g, b;
+                    if (h < 1/6) [r, g, b] = [c, x, 0];
+                    else if (h < 2/6) [r, g, b] = [x, c, 0];
+                    else if (h < 3/6) [r, g, b] = [0, c, x];
+                    else if (h < 4/6) [r, g, b] = [0, x, c];
+                    else if (h < 5/6) [r, g, b] = [x, 0, c];
+                    else [r, g, b] = [c, 0, x];
+
+                    r = Math.round((r + m) * 255);
+                    g = Math.round((g + m) * 255);
+                    b = Math.round((b + m) * 255);
+
+                    colors.push(`rgb(${r}, ${g}, ${b})`);
+                }
+
+                return colors;
+            }
+
+
             // Setting button in charts
             document.querySelectorAll('.settings-btn').forEach(btn => {
                 btn.addEventListener('click', function () {
@@ -1753,8 +1808,7 @@
                             if (monthSelect && monthText) {
                                 const [monthNameRaw, year] = monthText.split(' ');
                                 const monthIndex = monthNames.indexOf(monthNameRaw.trim().toLowerCase()) + 1;
-                                const formattedMonth = String(monthIndex).padStart(2, '0');
-                                monthSelect.value = formattedMonth;
+                                monthSelect.value = String(monthIndex).padStart(2, '0');
 
                                 const yearSelect = container.querySelector('select[id^="filterYear"]');
                                 if (yearSelect) yearSelect.value = year;

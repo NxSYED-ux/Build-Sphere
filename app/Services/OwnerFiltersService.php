@@ -8,6 +8,7 @@ use App\Models\BuildingUnit;
 use App\Models\Department;
 use App\Models\ManagerBuilding;
 use App\Models\Membership;
+use App\Models\Query;
 use App\Models\StaffMember;
 use App\Models\User;
 
@@ -115,7 +116,7 @@ class OwnerFiltersService
             ->with(['building:id,name'])
             ->get();
     }
-    
+
     public function approvedBuildings($buildingIds)
     {
         return Building::whereIn('id', $buildingIds)
@@ -147,6 +148,15 @@ class OwnerFiltersService
             ->where('availability_status', '!=', 'Available')
             ->where('status', 'Approved')
             ->whereIn('building_id', $buildingIds)
+            ->orderBy('unit_name', 'asc')
+            ->select('id', 'unit_name')
+            ->get();
+    }
+
+    public function allUnitsExceptMembershipUnits($buildingIds)
+    {
+        return BuildingUnit::whereIn('building_id', $buildingIds)
+            ->where('sale_or_rent', '!=', 'Not Available')
             ->orderBy('unit_name', 'asc')
             ->select('id', 'unit_name')
             ->get();

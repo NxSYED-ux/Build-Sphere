@@ -20,12 +20,16 @@ class StaffMember extends Model
         'organization_id',
 
         'salary',
+        'joined_at',
         'active_load',
         'accept_queries',
         'status',
     ];
 
-    public $timestamps = true;
+    protected $casts = [
+        'joined_at' => 'datetime',
+    ];
+
 
     // Belongs to Relations
     public function user()
@@ -57,6 +61,11 @@ class StaffMember extends Model
     public function queries()
     {
         return $this->hasMany(Query::class, 'staff_member_id', 'id');
+    }
+
+    public function managerBuildings()
+    {
+        return $this->hasMany(ManagerBuilding::class, 'staff_id', 'id');
     }
 
     protected static function booted()

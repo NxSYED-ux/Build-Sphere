@@ -4,12 +4,17 @@ namespace App\Http\Controllers\WebControllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\BuildingUnit;
+use App\Models\Membership;
+use App\Models\MembershipUsageLog;
+use App\Models\MembershipUser;
 use App\Models\StaffMember;
 use App\Models\Subscription;
+use App\Models\Transaction;
 use App\Models\UserBuildingUnit;
 use App\Services\OwnerFiltersService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class OwnerDashboardController extends Controller
@@ -20,10 +25,11 @@ class OwnerDashboardController extends Controller
             $ownerService = new OwnerFiltersService();
             $buildingIds = $ownerService->getAccessibleBuildingIds();
             $buildings = $ownerService->buildings($buildingIds);
-            $units = $ownerService->units($buildingIds);
+            $units = $ownerService->allUnitsExceptMembershipUnits($buildingIds);
+            $membershipsUnits = $ownerService->membershipsUnits($buildingIds);
             $memberships = $ownerService->memberships($buildingIds);
 
-            return view('Heights.Owner.Dashboard.owner_dashboard', compact('buildings', 'units', 'memberships'));
+            return view('Heights.Owner.Dashboard.owner_dashboard', compact('buildings', 'units', 'membershipsUnits', 'memberships'));
         } catch (\Throwable $e) {
             Log::error('Error in Owner Dashboard: ' . $e->getMessage());
             return redirect()->back()->with('error', 'Something went wrong. Please try again later.');
@@ -52,7 +58,6 @@ class OwnerDashboardController extends Controller
             ], 500);
         }
     }
-
 
     public function getUnitOccupancy(Request $request)
     {
@@ -176,49 +181,112 @@ class OwnerDashboardController extends Controller
         }
     }
 
-
-    // Get membership plans data
-    public function getMembershipPlans(Request $request)
+    public function getMembershipSubscriptionStats(Request $request)
     {
-        $range = $request->input('range', '30days');
-        $planType = $request->input('plan_type', 'all');
+        try {
+            $building_id = $request->input('building');
+            $membership_id = $request->input('membership');
+            $month = $request->input('month');
 
-        // Base data
-        $data = [
-            'active' => 65,
-            'expired' => 12,
-            'usage' => 75,
-            'trend' => [
-                'labels' => ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
-                'values' => [10, 15, 18, 22]
-            ]
-        ];
+            $ownerService = new OwnerFiltersService();
+            $accessibleBuildingIds = $ownerService->getAccessibleBuildingIds();
 
-        // Apply plan type filter simulation
-        if ($planType !== 'all') {
-            $multiplier = match($planType) {
-                'basic' => 0.5,
-                'premium' => 0.3,
-                'enterprise' => 0.2,
-                default => 1
+            if ($building_id && !in_array($building_id, $accessibleBuildingIds)) {
+                return response()->json([
+                    'message' => 'You do not have access to the selected building.'
+                ], 403);
+            }
+
+            $buildingIds = $building_id ? [$building_id] : [$accessibleBuildingIds];
+            $validMemberships = $ownerService->memberships($buildingIds);
+            $accessibleMemberships = $validMemberships->pluck('id')->toArray();
+
+            if ($membership_id && !in_array($membership_id, $accessibleMemberships)) {
+                return response()->json([
+                    'message' => 'You do not have access to the selected membership record.'
+                ], 403);
+            }
+
+            $membershipIds = $membership_id ? [$membership_id] : $accessibleMemberships;
+
+            $start = $month ? Carbon::parse($month)->startOfMonth() : now()->startOfMonth();
+            $end = $month ? Carbon::parse($month)->endOfMonth() : now()->endOfMonth();
+
+            $previousStart = (clone $start)->subMonth()->startOfMonth();
+            $previousEnd = (clone $start)->subMonth()->endOfMonth();
+
+            $baseQuery = MembershipUser::whereIn('membership_id', $membershipIds);
+
+            $activeCurrent = (clone $baseQuery)
+                ->where('status', 1)
+                ->where('created_at', '<=', $end)
+                ->where('ends_at', '>=', $start)
+                ->count();
+
+
+            $expiredCurrent = (clone $baseQuery)
+                ->where('status', 0)
+                ->whereBetween('ends_at', [$start, $end])
+                ->count();
+
+            $activePrevious = (clone $baseQuery)
+                ->where('status', 1)
+                ->where('created_at', '<=', $previousEnd)
+                ->where('ends_at', '>=', $previousStart)
+                ->count();
+
+            $expiredPrevious = (clone $baseQuery)
+                ->where('status', 0)
+                ->whereBetween('ends_at', [$previousStart, $previousEnd])
+                ->count();
+
+
+            // Current Month Usage
+            $membershipUserIds = (clone $baseQuery)->pluck('id');
+            $totalUsed = MembershipUsageLog::whereIn('membership_user_id', $membershipUserIds)
+                ->whereBetween('usage_date', [$start, $end])
+                ->sum('used');
+
+            $today = now();
+            if ($end->lessThan($today)) {
+                $monthEndForCalc = $end;
+            } elseif ($start->greaterThan($today)) {
+                $monthEndForCalc = null;
+            } else {
+                $monthEndForCalc = $today;
+            }
+
+            $daysPassed = $monthEndForCalc ? $start->diffInDays($monthEndForCalc) + 1 : 0;
+            $totalQuantity = (clone $baseQuery)
+                ->where('ends_at', '>=', $start)
+                ->where('created_at', '<=', $end)
+                ->sum('quantity');
+
+            $allowedUsage = $totalQuantity * $daysPassed;
+            $usagePercent = $allowedUsage > 0 ? round(($totalUsed / $allowedUsage) * 100, 1) : 0;
+
+            $getGrowth = function ($current, $previous) {
+                if ($previous == 0 && $current == 0) return 0;
+                if ($previous == 0) return 100;
+                return round((($current - $previous) / $previous) * 100, 1);
             };
 
-            $data['active'] = round($data['active'] * $multiplier);
-            $data['expired'] = round($data['expired'] * $multiplier);
-        }
+            return response()->json([
+                'active' => $activeCurrent,
+                'expired' => $expiredCurrent,
+                'usage' => $usagePercent,
+                'growth' => [
+                    'active' => $getGrowth($activeCurrent, $activePrevious),
+                    'expired' => $getGrowth($expiredCurrent, $expiredPrevious),
+                ]
+            ]);
 
-        // Apply date range simulation
-        if ($range === '7days') {
-            $data['trend']['values'] = array_slice($data['trend']['values'], -2);
-            $data['trend']['labels'] = array_slice($data['trend']['labels'], -2);
-        } elseif ($range === '90days') {
-            $data['active'] = round($data['active'] * 1.3);
-            $data['expired'] = round($data['expired'] * 1.3);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'message' => $e->getMessage(),
+            ], 500);
         }
-
-        return response()->json($data);
     }
-
 
     public function getUnitStatus(Request $request)
     {
@@ -309,118 +377,281 @@ class OwnerDashboardController extends Controller
         }
     }
 
-
     public function getStaffDistribution(Request $request)
     {
-        $range = $request->input('range', 'all');
-        $buildingId = $request->input('building', 'all');
+        try {
+            $buildingId = $request->input('building');
 
-        $managers = 8;
-        $staff = 22;
+            $ownerService = new OwnerFiltersService();
+            $accessibleBuildingIds = $ownerService->getAccessibleBuildingIds();
+            $departments = $ownerService->departments();
+            $departmentsMap = $departments->pluck('name', 'id')->toArray();
 
-        // Apply building filter simulation
-        if ($buildingId !== 'all') {
-            $multiplier = match($buildingId) {
-                'building1' => 0.4,
-                'building2' => 0.3,
-                'building3' => 0.3,
-                default => 1
-            };
+            $buildingIds = $buildingId ? [$buildingId] : $accessibleBuildingIds;
 
-            $managers = round($managers * $multiplier);
-            $staff = round($staff * $multiplier);
+            $start = Carbon::parse($request->input('start', now()->subDays(29)))->startOfDay();
+            $end = Carbon::parse($request->input('end', now()))->endOfDay();
+
+            $staffGrouped = StaffMember::query()
+                ->whereNotNull('department_id')
+                ->whereBetween('joined_at', [$start, $end])
+                ->whereIn('building_id', $buildingIds)
+                ->select('department_id', DB::raw('COUNT(*) as total'))
+                ->groupBy('department_id')
+                ->get();
+
+            $whereIds = $buildingId ? [$buildingId] : $accessibleBuildingIds;
+
+            $managerCount = StaffMember::with('managerBuildings')
+                ->whereNull('department_id')
+                ->whereBetween('joined_at', [$start, $end])
+                ->whereHas('managerBuildings', function ($q) use ($whereIds) {
+                    $q->whereIn('building_id', $whereIds);
+                })->count();
+
+
+            $labels = [];
+            $dataMap = [];
+
+            foreach ($departmentsMap as $id => $name) {
+                $labels[] = $name;
+                $dataMap[$id] = 0;
+            }
+
+            foreach ($staffGrouped as $item) {
+                $dataMap[$item->department_id] = $item->total;
+            }
+
+            $data = [];
+            foreach ($departmentsMap as $id => $name) {
+                $data[] = $dataMap[$id];
+            }
+
+            $labels[] = 'Manager';
+            $data[] = $managerCount;
+
+            return response()->json([
+                'labels' => $labels,
+                'data' => $data,
+            ]);
+
+        } catch (\Throwable $e) {
+            Log::error('Error in Owner Dashboard (getStaffDistribution): ' . $e->getMessage());
+            return response()->json([
+                'message' => $e->getMessage(),
+            ], 500);
         }
-
-        // Apply date range simulation
-        if ($range === '7days') {
-            $managers = round($managers * 0.2);
-            $staff = round($staff * 0.2);
-        } elseif ($range === '90days') {
-            $managers = round($managers * 1.3);
-            $staff = round($staff * 1.3);
-        }
-
-        return response()->json([
-            'managers' => $managers,
-            'staff' => $staff
-        ]);
     }
-
 
     public function getIncomeExpense(Request $request)
     {
-        $range = $request->input('range', '12months');
-        $buildingId = $request->input('building', 'all');
+        try {
+            $year = $request->input('year', now()->year);
+            $building_id = $request->input('building');
+            $source = strtolower($request->input('source'));
+            $source_id = $request->input('source_id');
+            $organization_id = 1;
 
-        $labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-        $income = [8500, 12000, 9500, 11000, 13500, 16000, 14000, 15500, 14500, 17000, 18500, 20000];
-        $expenses = [5000, 7500, 6000, 7000, 9000, 11000, 9500, 10000, 9000, 11500, 12500, 13500];
+            $roleId = request()->user()->role_id;
 
-        // Apply building filter simulation
-        if ($buildingId !== 'all') {
-            $multiplier = match($buildingId) {
-                'building1' => 0.4,
-                'building2' => 0.3,
-                'building3' => 0.3,
-                default => 1
-            };
+            if ($roleId !== 2) {
+                $ownerService = new OwnerFiltersService();
+                $accessibleBuildingIds = $ownerService->getAccessibleBuildingIds();
 
-            $income = array_map(fn($val) => round($val * $multiplier), $income);
-            $expenses = array_map(fn($val) => round($val * $multiplier), $expenses);
+                if ($building_id && !in_array($building_id, $accessibleBuildingIds)) {
+                    return response()->json([
+                        'message' => 'You do not have access to the selected building.'
+                    ], 403);
+                }
+            }
+
+            $query = Transaction::query()->whereYear('created_at', $year);
+
+            $incomeQuery = clone $query;
+            $incomeQuery->where('seller_type', 'organization')
+                ->where('seller_id', $organization_id)
+                ->when($roleId !== 2, fn($q) => $q->whereIn('building_id', $accessibleBuildingIds))
+                ->when($building_id, fn($q) => $q->where('building_id', $building_id));
+
+            $expenseQuery = clone $query;
+            $expenseQuery->where('buyer_type', 'organization')
+                ->where('buyer_id', $organization_id)
+                ->when($roleId !== 2, fn($q) => $q->whereIn('building_id', $accessibleBuildingIds))
+                ->when($building_id, fn($q) => $q->where('building_id', $building_id));
+
+            switch ($source) {
+                case 'membership':
+                    if ($source_id) {
+                        $incomeQuery->where('membership_id', $source_id);
+                        $expenseQuery->where('membership_id', $source_id);
+                    } else {
+                        $incomeQuery->whereNotNull('membership_id');
+                        $expenseQuery->whereNotNull('membership_id');
+                    }
+                    break;
+
+                case 'request':
+                    $incomeQuery->where('source_name', 'query');
+                    $expenseQuery->where('source_name', 'query');
+
+                    if ($source_id) {
+                        $incomeQuery->where('unit_id', $source_id);
+                        $expenseQuery->where('unit_id', $source_id);
+                    } else {
+                        $incomeQuery->whereNotNull('unit_id');
+                        $expenseQuery->whereNotNull('unit_id');
+                    }
+                    break;
+
+                case 'sale':
+                    $incomeQuery->where('source_name', 'unit contract');
+                    $expenseQuery->where('source_name', 'unit contract');
+
+                    if ($source_id) {
+                        $incomeQuery->where('unit_id', $source_id);
+                        $expenseQuery->where('unit_id', $source_id);
+                    } else {
+                        $incomeQuery->whereNotNull('unit_id');
+                        $expenseQuery->whereNotNull('unit_id');
+                    }
+                    break;
+
+                case 'rent':
+                    $incomeQuery->where('source_name', 'subscription')
+                        ->whereExists(function ($query) use ($source_id) {
+                            $query->select(DB::raw(1))
+                                ->from('subscriptions')
+                                ->whereColumn('subscriptions.id', 'transactions.source_id')
+                                ->where('subscriptions.source_name', 'unit contract')
+                                ->when($source_id, function ($q) use ($source_id) {
+                                    $q->where('subscriptions.unit_id', $source_id);
+                                });
+                        });
+
+                    $expenseQuery->where('source_name', 'subscription')
+                        ->whereExists(function ($query) use ($source_id) {
+                            $query->select(DB::raw(1))
+                                ->from('subscriptions')
+                                ->whereColumn('subscriptions.id', 'transactions.source_id')
+                                ->where('subscriptions.source_name', 'unit contract')
+                                ->when($source_id, function ($q) use ($source_id) {
+                                    $q->where('subscriptions.unit_id', $source_id);
+                                });
+                        });
+                    break;
+
+                case 'facility':
+                    $facilityFilter = function ($q) use ($source_id) {
+                        if ($source_id) {
+                            $q->where('unit_id', $source_id);
+                        } else {
+                            $q->whereNotNull('unit_id');
+                        }
+
+                        $q->whereNotNull('membership_id')
+                            ->where(function ($q2) {
+                                $q2->where('source_name', 'membership')
+                                    ->orWhere('source_name', 'subscription');
+                            });
+                    };
+
+                    $incomeQuery->where($facilityFilter);
+                    $expenseQuery->where($facilityFilter);
+                    break;
+
+                case 'charges':
+                    $incomeQuery->whereRaw('1 = 0'); // Force no income results
+                    $expenseQuery->where('seller_type', 'platform');
+                    break;
+            }
+
+            $incomeData = $incomeQuery->selectRaw('MONTH(created_at) as month, SUM(price) as total')
+                ->groupBy('month')
+                ->pluck('total', 'month');
+
+            $expenseData = $expenseQuery->selectRaw('MONTH(created_at) as month, SUM(price) as total')
+                ->groupBy('month')
+                ->pluck('total', 'month');
+
+            $income = [];
+            $expenses = [];
+            for ($i = 1; $i <= 12; $i++) {
+                $income[] = round($incomeData[$i] ?? 0, 2);
+                $expenses[] = round($expenseData[$i] ?? 0, 2);
+            }
+
+            $labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+            return response()->json([
+                'labels' => $labels,
+                'income' => $income,
+                'expenses' => $expenses
+            ]);
+        } catch (\Throwable $e) {
+            Log::error('Error in getIncomeExpense: ' . $e->getMessage());
+
+            return response()->json([
+                'message' => 'Failed to retrieve income and expense data.',
+                'error' => $e->getMessage()
+            ], 500);
         }
-
-        // Apply date range
-        if ($range === '3months') {
-            $labels = array_slice($labels, -3);
-            $income = array_slice($income, -3);
-            $expenses = array_slice($expenses, -3);
-        } elseif ($range === '6months') {
-            $labels = array_slice($labels, -6);
-            $income = array_slice($income, -6);
-            $expenses = array_slice($expenses, -6);
-        }
-
-        return response()->json([
-            'labels' => $labels,
-            'income' => $income,
-            'expenses' => $expenses
-        ]);
     }
 
-
-    public function getMembershipPlanUsage(Request $request)
+    public function getMembershipDistribution(Request $request)
     {
-        $range = $request->input('range', '30days');
-        $status = $request->input('status', 'all');
+        try {
+            $month = $request->input('month');
+            $building_id = $request->input('building');
 
-        $labels = ['Basic', 'Premium', 'Enterprise', 'Custom'];
-        $values = [45, 30, 15, 10];
+            $ownerService = new OwnerFiltersService();
+            $accessibleBuildingIds = $ownerService->getAccessibleBuildingIds();
 
-        // Apply status filter simulation
-        if ($status !== 'all') {
-            $multiplier = match($status) {
-                'active' => [0.8, 0.7, 0.6, 0.5],
-                'expired' => [0.2, 0.3, 0.4, 0.5],
-                default => [1, 1, 1, 1]
-            };
+            if ($building_id && !in_array($building_id, $accessibleBuildingIds)) {
+                return response()->json([
+                    'message' => 'You do not have access to the selected building.'
+                ], 403);
+            }
 
-            $values = array_map(fn($val, $mult) => round($val * $mult), $values, $multiplier);
+            $buildingIds = $building_id ? [$building_id] : $accessibleBuildingIds;
+
+            $validMemberships = $ownerService->memberships($buildingIds);
+            $accessibleMemberships = $validMemberships->pluck('id')->toArray();
+
+            $start = $month ? Carbon::parse($month)->startOfMonth() : now()->startOfMonth();
+            $end = $month ? Carbon::parse($month)->endOfMonth() : now()->endOfMonth();
+
+            $grouped = MembershipUser::query()
+                ->whereBetween('created_at', [$start, $end])
+                ->whereIn('membership_id', $accessibleMemberships)
+                ->select('membership_id', DB::raw('COUNT(*) as total'))
+                ->groupBy('membership_id')
+                ->get();
+
+            $membershipNames = Membership::whereIn('id', $grouped->pluck('membership_id'))->pluck('name', 'id');
+
+            $labels = [];
+            $values = [];
+
+            foreach ($grouped as $item) {
+                $labels[] = $membershipNames[$item->membership_id] ?? 'Unknown';
+                $values[] = $item->total;
+            }
+
+            return response()->json([
+                'labels' => $labels,
+                'values' => $values,
+            ]);
+
+        } catch (\Throwable $e) {
+            Log::error('Error in getMembershipDistribution: ' . $e->getMessage());
+            return response()->json([
+                'message' => $e->getMessage(),
+            ], 500);
         }
-
-        // Apply date range simulation
-        if ($range === '7days') {
-            $values = array_map(fn($val) => round($val * 0.2), $values);
-        } elseif ($range === '90days') {
-            $values = array_map(fn($val) => round($val * 1.3), $values);
-        }
-
-        return response()->json([
-            'labels' => $labels,
-            'values' => $values
-        ]);
     }
 
 
+    // Helper Function
     private function calculateGrowth(int $current, int $previous): float
     {
         if ($previous > 0) {
@@ -534,6 +765,5 @@ class OwnerDashboardController extends Controller
 //            ], 500);
 //        }
 //    }
-
 
 }
