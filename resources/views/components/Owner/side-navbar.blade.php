@@ -1,9 +1,4 @@
-
 @props(['openSections' => []])
-
-@php
-    $permissions = json_decode(request('permissions', '{}'), true);
-@endphp
 
 <!-- &times; -->
 <div id="mySidenav" class="sidenav" >
@@ -49,10 +44,9 @@
                 <div id="link-a">
                     <a href="#"
                         class="link-dark link-toggle collapsed d-flex justify-content-between align-items-center"
-                        data-bs-toggle="collapse" data-bs-target="#Buildings" aria-expanded="{{ in_array('Buildings', $openSections) ? 'true' : 'false' }}"
-                        onclick="toggleSection('Buildings')">
+                        data-bs-toggle="collapse" data-bs-target="#Buildings" aria-expanded="{{ in_array('Buildings', $openSections) ? 'true' : 'false' }}">
                         <span class="d-flex align-items-center">
-                            <i class="bx bx-buildings icons"></i> <!-- Adjusted with spacing -->
+                            <i class="bx bx-buildings icons"></i>
                             <span>Buildings</span>
                         </span>
                         <i class="fa fa-chevron-left  chevron-icon" style="cursor: pointer;"></i>
@@ -72,7 +66,7 @@
             <!-- Assign Units -->
             <li class="mb-1 hidden" id="OwnerAssignUnits">
                 <div id="link-a">
-                    <a href="{{ route('owner.assignunits.index') }}" class="link-dark collapsed {{ in_array('Assign-Units', $openSections) ? 'Link-background-color' : '' }} px-1" id="BuildingsTreebtn" >
+                    <a href="{{ route('owner.assignunits.index') }}" class="link-dark collapsed {{ in_array('Assign-Units', $openSections) ? 'Link-background-color' : '' }} px-1">
                     <i class="bx bxs-user-check icons"></i> Assign Units </a>
                 </div>
             </li>
@@ -80,7 +74,7 @@
             <!-- Buildings Tree -->
             <li class="mb-1 hidden"  id="OwnerBuildingsTree">
                 <div id="link-a">
-                    <a href="{{ route('owner.buildings.tree') }}" class="link-dark collapsed {{ in_array('Buildings-Tree', $openSections) ? 'Link-background-color' : '' }} px-1" id="BuildingsTreebtn" >
+                    <a href="{{ route('owner.buildings.tree') }}" class="link-dark collapsed {{ in_array('Buildings-Tree', $openSections) ? 'Link-background-color' : '' }} px-1">
                     <i class="bx bx-network-chart icons"></i> Buildings Tree </a>
                 </div>
             </li>
@@ -88,7 +82,7 @@
             <!-- Property Users -->
             <li class="mb-1 hidden" id="OwnerRentals">
                 <div id="link-a">
-                    <a href="{{ route('owner.property.users.index') }}" class="link-dark collapsed {{ in_array('PropertyUsers', $openSections) ? 'Link-background-color' : '' }} px-1" id="PropertyUsersbtn" >
+                    <a href="{{ route('owner.property.users.index') }}" class="link-dark collapsed {{ in_array('PropertyUsers', $openSections) ? 'Link-background-color' : '' }} px-1">
                         <i class="bx bxs-business icons"></i> PropertyUsers </a>
                 </div>
             </li>
@@ -96,7 +90,7 @@
             <!-- Memberships -->
             <li class="mb-1 hidden" id="OwnerMemberships">
                 <div id="link-a">
-                    <a href="{{ route('owner.memberships.index') }}" class="link-dark collapsed {{ in_array('Memberships', $openSections) ? 'Link-background-color' : '' }} px-1" id="Membershipsbtn" >
+                    <a href="{{ route('owner.memberships.index') }}" class="link-dark collapsed {{ in_array('Memberships', $openSections) ? 'Link-background-color' : '' }} px-1">
                     <i class='bx bxs-credit-card-front icons' ></i> Memberships </a>
                 </div>
             </li>
@@ -104,7 +98,7 @@
             <!-- Department -->
             <li class="mb-1 hidden" id="OwnerDepartments">
                 <div id="link-a">
-                    <a href="{{ route('owner.departments.index') }}" class="link-dark collapsed {{ in_array('Departments', $openSections) ? 'Link-background-color' : '' }} px-1" id="Departmentsbtn" >
+                    <a href="{{ route('owner.departments.index') }}" class="link-dark collapsed {{ in_array('Departments', $openSections) ? 'Link-background-color' : '' }} px-1">
                     <i class='bx bx-sitemap icons'></i> Departments </a>
                 </div>
             </li>
@@ -112,7 +106,7 @@
             <!-- Staff -->
             <li class="mb-1 hidden" id="OwnerStaff">
                 <div id="link-a">
-                    <a href="{{ route('owner.staff.index') }}" class="link-dark collapsed {{ in_array('Staff', $openSections) ? 'Link-background-color' : '' }} px-1"  >
+                    <a href="{{ route('owner.staff.index') }}" class="link-dark collapsed {{ in_array('Staff', $openSections) ? 'Link-background-color' : '' }} px-1">
                     <i class="bx bx-id-card icons"></i> Staff </a>
                 </div>
             </li>
@@ -128,7 +122,7 @@
             <!-- Finance -->
             <li class="mb-1" id="OwnerFinance">
                 <div id="link-a">
-                    <a href="{{ route('owner.finance.index') }}" class="link-dark collapsed {{ in_array('Finance', $openSections) ? 'Link-background-color' : '' }} px-1" id="Financebtn" >
+                    <a href="{{ route('owner.finance.index') }}" class="link-dark collapsed {{ in_array('Finance', $openSections) ? 'Link-background-color' : '' }} px-1">
                         <i class="bx bx-money icons"></i> Finance </a>
                 </div>
             </li>
@@ -138,8 +132,7 @@
                 <div id="link-a">
                     <a href="#"
                        class="link-dark link-toggle collapsed d-flex justify-content-between align-items-center"
-                       data-bs-toggle="collapse" data-bs-target="#OwnerReports" aria-expanded="{{ in_array('Reports', $openSections) ? 'true' : 'false' }}"
-                       onclick="toggleSection('OwnerReports')">
+                       data-bs-toggle="collapse" data-bs-target="#OwnerReports" aria-expanded="{{ in_array('Reports', $openSections) ? 'true' : 'false' }}">
                         <span class="d-flex align-items-center">
                             <i class="bx bxs-pie-chart-alt-2 icons"></i>
                             <span>Reports</span>
@@ -157,7 +150,6 @@
             </li>
 
         </ul>
-
     </div>
 
     <div class="d-flex justify-content-center align-items-center text-center switch-portal-btn-container hidden switch-admin-portal-btn">
@@ -167,144 +159,142 @@
     </div>
 </div>
 
-<script>
-    document.querySelector('.closebtn').addEventListener('mouseover', function () {
-        this.querySelector('i').classList.replace('bx-menu-alt-right', 'bx-menu');
-    });
+@push('scripts')
+    <script>
+        document.querySelector('.closebtn').addEventListener('mouseover', function () {
+            this.querySelector('i').classList.replace('bx-menu-alt-right', 'bx-menu');
+        });
 
-    document.querySelector('.closebtn').addEventListener('mouseout', function () {
-        this.querySelector('i').classList.replace('bx-menu', 'bx-menu-alt-right');
-    });
+        document.querySelector('.closebtn').addEventListener('mouseout', function () {
+            this.querySelector('i').classList.replace('bx-menu', 'bx-menu-alt-right');
+        });
+    </script>
 
-
-</script>
-
-<script>
-    window.addEventListener("load", function () {
-        if (window.innerWidth >= 768) { // Check if the screen width is equal to or greater than 768px (considered "md" or greater)
-            document.getElementById("mySidenav").style.width = "250px";
-            document.getElementById("main").style.marginLeft = "250px";
-            document.getElementById("navbar_top").style.marginLeft = "250px";
-            var togglerElement = document.getElementById("sidenav_toggler");
-            if (togglerElement) {
-                togglerElement.style.display = 'none';
+    <script>
+        window.addEventListener("load", function () {
+            if (window.innerWidth >= 768) {
+                document.getElementById("mySidenav").style.width = "250px";
+                document.getElementById("main").style.marginLeft = "250px";
+                document.getElementById("navbar_top").style.marginLeft = "250px";
+                var togglerElement = document.getElementById("sidenav_toggler");
+                if (togglerElement) {
+                    togglerElement.style.display = 'none';
+                }
             }
-        }
-    });
+        });
 
 
-    function openNav() {
-        // Check if the screen width is greater than a certain threshold (e.g., 768px)
-        if (window.innerWidth > 768) {
-            document.getElementById("mySidenav").style.width = "250px";
-            document.getElementById("main").style.marginLeft = "250px";
-            document.getElementById("navbar_top").style.marginLeft = "250px";
-            var togglerElement = document.getElementById("sidenav_toggler");
-            var topNavLogo = document.getElementById("top-nav-logo");
-            var closeBtn = document.getElementsByClassName("closebtn")[0];
-            if (togglerElement) {
-                togglerElement.style.display = 'none';
-            }
-            if(closeBtn){
-                closeBtn.style.display = 'block';
-            }
-            topNavLogo.style.display = 'none';
+        function openNav() {
+            if (window.innerWidth > 768) {
+                document.getElementById("mySidenav").style.width = "250px";
+                document.getElementById("main").style.marginLeft = "250px";
+                document.getElementById("navbar_top").style.marginLeft = "250px";
+                var togglerElement = document.getElementById("sidenav_toggler");
+                var topNavLogo = document.getElementById("top-nav-logo");
+                var closeBtn = document.getElementsByClassName("closebtn")[0];
+                if (togglerElement) {
+                    togglerElement.style.display = 'none';
+                }
+                if(closeBtn){
+                    closeBtn.style.display = 'block';
+                }
+                topNavLogo.style.display = 'none';
 
-            document.body.classList.remove("sidebar-closed");
-        } else {
-            // For smaller screens, only open the sidebar without changing main's margin
-            document.getElementById("mySidenav").style.width = "250px";
-            document.getElementById("main").style.marginLeft = "0";
-            document.getElementById("navbar_top").style.marginLeft = "250px";
-            var togglerElement = document.getElementById("sidenav_toggler");
-            var topNavLogo = document.getElementById("top-nav-logo");
-            var closeBtn = document.getElementsByClassName("closebtn")[0];
-            if (togglerElement) {
-                togglerElement.style.display = 'none';
-            }
-            if(closeBtn){
-                closeBtn.style.display = 'block';
-            }
-            topNavLogo.style.display = 'none';
-
-            document.body.classList.remove("sidebar-closed");
-        }
-    }
-
-    function closeNav() {
-        if (window.innerWidth > 768) {
-            document.getElementById("mySidenav").style.width = "0";
-            document.getElementById("main").style.marginLeft = "0";
-            document.getElementById("navbar_top").style.marginLeft = "0";
-
-            var togglerElement = document.getElementById("sidenav_toggler");
-            var topNavLogo = document.getElementById("top-nav-logo");
-            var closeBtn = document.getElementsByClassName("closebtn")[0];
-
-            if (togglerElement) {
-                togglerElement.style.display = 'block';
-            }
-            if (closeBtn) {
-                closeBtn.style.display = 'none';
-            }
-            topNavLogo.style.display = 'block';
-
-            // Add class to body when sidebar is closed
-            document.body.classList.add("sidebar-closed");
-        } else {
-            document.getElementById("mySidenav").style.width = "0";
-            document.getElementById("main").style.marginLeft = "0";
-            document.getElementById("navbar_top").style.marginLeft = "0";
-
-            var togglerElement = document.getElementById("sidenav_toggler");
-            var topNavLogo = document.getElementById("top-nav-logo");
-            var closeBtn = document.getElementsByClassName("closebtn")[0];
-
-            if (togglerElement) {
-                togglerElement.style.display = 'block';
-            }
-            if (closeBtn) {
-                closeBtn.style.display = 'none';
-            }
-            topNavLogo.style.display = 'block';
-
-            // Add class to body when sidebar is closed
-            document.body.classList.add("sidebar-closed");
-        }
-    }
-</script>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        // Get all collapse toggle links with chevrons
-        const toggleLinks = document.querySelectorAll('[data-bs-toggle="collapse"]');
-
-        toggleLinks.forEach(link => {
-            const targetId = link.getAttribute('data-bs-target'); // Get the collapse target
-            const targetElement = document.querySelector(targetId);
-            const chevronIcon = link.querySelector('.chevron-icon');
-
-            // Check initial state of collapse and set chevron accordingly
-            if (targetElement.classList.contains('show')) {
-                chevronIcon.classList.remove('fa-chevron-left');
-                chevronIcon.classList.add('fa-chevron-down');
+                document.body.classList.remove("sidebar-closed");
             } else {
-                chevronIcon.classList.remove('fa-chevron-down');
-                chevronIcon.classList.add('fa-chevron-left');
+                // For smaller screens
+                document.getElementById("mySidenav").style.width = "250px";
+                document.getElementById("main").style.marginLeft = "0";
+                document.getElementById("navbar_top").style.marginLeft = "250px";
+                var togglerElement = document.getElementById("sidenav_toggler");
+                var topNavLogo = document.getElementById("top-nav-logo");
+                var closeBtn = document.getElementsByClassName("closebtn")[0];
+                if (togglerElement) {
+                    togglerElement.style.display = 'none';
+                }
+                if(closeBtn){
+                    closeBtn.style.display = 'block';
+                }
+                topNavLogo.style.display = 'none';
+
+                document.body.classList.remove("sidebar-closed");
             }
+        }
 
-            // Add event listeners for collapse events
-            targetElement.addEventListener('show.bs.collapse', () => {
-                chevronIcon.classList.remove('fa-chevron-left');
-                chevronIcon.classList.add('fa-chevron-down');
-            });
+        function closeNav() {
+            if (window.innerWidth > 768) {
+                document.getElementById("mySidenav").style.width = "0";
+                document.getElementById("main").style.marginLeft = "0";
+                document.getElementById("navbar_top").style.marginLeft = "0";
 
-            targetElement.addEventListener('hide.bs.collapse', () => {
-                chevronIcon.classList.remove('fa-chevron-down');
-                chevronIcon.classList.add('fa-chevron-left');
+                var togglerElement = document.getElementById("sidenav_toggler");
+                var topNavLogo = document.getElementById("top-nav-logo");
+                var closeBtn = document.getElementsByClassName("closebtn")[0];
+
+                if (togglerElement) {
+                    togglerElement.style.display = 'block';
+                }
+                if (closeBtn) {
+                    closeBtn.style.display = 'none';
+                }
+                topNavLogo.style.display = 'block';
+
+                document.body.classList.add("sidebar-closed");
+            } else {
+                document.getElementById("mySidenav").style.width = "0";
+                document.getElementById("main").style.marginLeft = "0";
+                document.getElementById("navbar_top").style.marginLeft = "0";
+
+                var togglerElement = document.getElementById("sidenav_toggler");
+                var topNavLogo = document.getElementById("top-nav-logo");
+                var closeBtn = document.getElementsByClassName("closebtn")[0];
+
+                if (togglerElement) {
+                    togglerElement.style.display = 'block';
+                }
+                if (closeBtn) {
+                    closeBtn.style.display = 'none';
+                }
+                topNavLogo.style.display = 'block';
+
+                // Add class to body when sidebar is closed
+                document.body.classList.add("sidebar-closed");
+            }
+        }
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Get all collapse toggle links with chevrons
+            const toggleLinks = document.querySelectorAll('[data-bs-toggle="collapse"]');
+
+            toggleLinks.forEach(link => {
+                const targetId = link.getAttribute('data-bs-target'); // Get the collapse target
+                const targetElement = document.querySelector(targetId);
+                const chevronIcon = link.querySelector('.chevron-icon');
+
+                // Check initial state of collapse and set chevron accordingly
+                if (targetElement.classList.contains('show')) {
+                    chevronIcon.classList.remove('fa-chevron-left');
+                    chevronIcon.classList.add('fa-chevron-down');
+                } else {
+                    chevronIcon.classList.remove('fa-chevron-down');
+                    chevronIcon.classList.add('fa-chevron-left');
+                }
+
+                // Add event listeners for collapse events
+                targetElement.addEventListener('show.bs.collapse', () => {
+                    chevronIcon.classList.remove('fa-chevron-left');
+                    chevronIcon.classList.add('fa-chevron-down');
+                });
+
+                targetElement.addEventListener('hide.bs.collapse', () => {
+                    chevronIcon.classList.remove('fa-chevron-down');
+                    chevronIcon.classList.add('fa-chevron-left');
+                });
             });
         });
-    });
 
+    </script>
 
-</script>
+@endpush

@@ -13,19 +13,24 @@
         right: 0;
         background: var(--sidenavbar-body-color) !important;
         overflow-x: hidden;
-        overflow-y: auto;
+        overflow-y: hidden; /* Changed from auto to hidden */
         transition: 0.3s;
         font-weight: 300;
         align-items: center;
         transition: 0.2s ease;
+        display: flex;
+        flex-direction: column;
     }
 
+
     .scrollable-content {
-        height: 100lvh;
+        flex: 1;
         overflow-y: auto;
         scrollbar-width: none;
         -ms-overflow-style: none;
+        width: 100%;
     }
+
     body.admin-portal-visible .scrollable-content {
         height: 83lvh;
     }
@@ -35,6 +40,8 @@
     }
 
     .switch-portal-btn-container {
+        width: 100%;
+        flex-shrink: 0;
         padding: 1rem;
         position: sticky;
         bottom: 0;

@@ -604,7 +604,7 @@
                                     </div>
 
                                     <div class="action-buttons">
-                                        <a href="{{ route('buildings.edit', $building->id) }}" class="btn-edit">
+                                        <a href="{{ route('buildings.edit', $building->id) }}" class="btn-edit Admin-Building-Edit-Button hidden">
                                             <i class="fas fa-pen"></i> Edit Building
                                         </a>
 

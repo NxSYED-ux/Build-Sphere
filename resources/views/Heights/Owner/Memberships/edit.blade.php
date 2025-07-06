@@ -45,7 +45,7 @@
         }
         .form-image-upload:hover {
             border-color: #3498db;
-            background: #f8fafc;
+            background: var(--main-background-color2);
         }
         .preview-image {
             max-width: 200px;
@@ -195,7 +195,7 @@
                                 <div class="form-section">
                                     <h5 class="section-title">Pricing Details</h5>
                                     <div class="row">
-                                        <div class="col-md-4">
+                                        <div class="col-md-6 col-lg-4">
                                             <div class="mb-3">
                                                 <label for="currency" class="form-label">Currency <span class="required__field">*</span></label>
                                                 <select class="form-select" id="currency" name="currency" required>
@@ -207,14 +207,14 @@
                                                 </select>
                                             </div>
                                         </div>
-                                        <div class="col-md-4">
+                                        <div class="col-md-6 col-lg-4">
                                             <div class="mb-3">
                                                 <label for="price" class="form-label">Monthly Price <span class="required__field">*</span></label>
                                                 <input type="number" class="form-control" id="price" name="price"
                                                        min="0" step="0.01" required value="{{ old('price', $membership->price) }}" placeholder="49.99">
                                             </div>
                                         </div>
-                                        <div class="col-md-4">
+                                        <div class="col-md-6 col-lg-4">
                                             <div class="mb-3">
                                                 <label for="original_price" class="form-label">Original Price</label>
                                                 <input type="number" class="form-control" id="original_price" name="original_price"
@@ -222,9 +222,7 @@
                                                 <small class="text-muted">Leave blank if no discount</small>
                                             </div>
                                         </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-6">
+                                        <div class="col-md-6 col-lg-12">
                                             <div class="mb-3">
                                                 <label for="duration_months" class="form-label">Duration (Months) <span class="required__field">*</span></label>
                                                 <input type="number" class="form-control" id="duration_months" name="duration_months"
@@ -257,7 +255,7 @@
                                                     <div class="text-center">
                                                         <x-icon name="image" size="30" class="text-muted mb-2" />
                                                         <p class="mb-1">Click to upload new image</p>
-                                                        <small class="text-muted">Recommended size: 800x600px</small>
+                                                        <small class="text">Recommended size: 800x600px</small>
                                                         <input type="file" id="image_upload" name="image" accept="image/*" style="display: none;" onchange="previewImage(this)">
                                                     </div>
                                                     <img id="image_preview" class="preview-image d-none">

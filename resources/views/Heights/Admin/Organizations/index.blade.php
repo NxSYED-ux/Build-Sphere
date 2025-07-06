@@ -801,8 +801,8 @@
                                                                 <i class="fas fa-cloud-upload-alt fa-3x text-primary mb-3"></i>
                                                                 <h6 class="mb-2">Drag & Drop Images Here</h6>
                                                                 <p class="mb-3">or</p>
-                                                                <label for="image-input" class="btn btn-primary">
-                                                                    <i class="fas fa-folder-open me-2"></i> Browse Files
+                                                                <label for="image-input" class="btn btn-primary" style="color: #ffff !important;">
+                                                                    <i class="fas fa-folder-open text-white me-2"></i> Browse Files
                                                                 </label>
                                                                 <input type="file" id="image-input" name="organization_pictures[]"
                                                                        accept="image/png, image/jpeg, image/jpg, image/gif"

@@ -44,7 +44,7 @@
         }
         .form-image-upload:hover {
             border-color: #3498db;
-            background: #f8fafc;
+            background: var(--main-background-color2);
         }
         .preview-image {
             max-width: 200px;
@@ -247,7 +247,7 @@
                                                     <div class="text-center">
                                                         <x-icon name="image" size="30" class="text-muted mb-2" />
                                                         <p class="mb-1">Click to upload image</p>
-                                                        <small class="text-muted">Recommended size: 800x600px</small>
+                                                        <small class="text">Recommended size: 800x600px</small>
                                                         <input type="file" id="image_upload" name="image" accept="image/*" style="display: none;" onchange="previewImage(this)" required>
                                                     </div>
                                                     <img id="image_preview" class="preview-image d-none">

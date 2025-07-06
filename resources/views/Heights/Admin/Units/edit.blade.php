@@ -155,233 +155,229 @@
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-md-12">
-                        <div class="box" style="overflow-x: auto;">
-                            <div class="container mt-2">
-                                <div class="d-flex justify-content-between align-items-center mb-2">
-                                    <h4 class="mb-0">Edit Unit</h4>
-                                    <a href="{{ route('units.index') }}" class="btn btn-secondary">Go Back</a>
-                                </div>
-                                <div class="card shadow p-3 mb-5 bg-body rounded" style="border: none;">
-                                    <div class="card-body " >
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h4 class="mb-0">Edit Unit</h4>
+                            <a href="{{ route('units.index') }}" class="btn btn-secondary"><i class="fas fa-arrow-left me-2"></i> Go Back</a>
+                        </div>
+                        <div class="card shadow p-3 mb-5 bg-body rounded" style="border: none;">
+                            <div class="card-body " >
 
-                                        <form action="{{ route('units.update') }}" method="POST" enctype="multipart/form-data">
-                                        @method('PUT')
-                                            <input type="hidden" name="unit_id" value="{{ $unit->id }}">
-                                            <input type="hidden" name="updated_at" value="{{ $unit->updated_at }}">
-                                            <div class="row my-0 py-0">
-                                                <div class="col-sm-12 col-md-6 col-lg-4">
-                                                    <div class="form-group mb-2">
-                                                        <label for="unit_name">Unit Name</label>
-                                                        <span class="required__field">*</span><br>
-                                                        <input type="text" name="unit_name" id="unit_name" class="form-control @error('unit_name') is-invalid @enderror" value="{{ old('unit_name', $unit->unit_name) }}" maxlength="50" placeholder="User Name" required>
-                                                        @error('unit_name')
-                                                            <span class="invalid-feedback" role="alert">
-                                                                <strong>{{ $message }}</strong>
-                                                            </span>
-                                                        @enderror
-                                                    </div>
-                                                </div>
-
-                                                <!--  -->
-                                                <div class="col-lg-4 col-md-6 col-sm-12">
-                                                    <div class="form-group mb-2">
-                                                        <label for="unit_type">Unit Type</label>
-                                                        <span class="required__field">*</span><br>
-                                                        <select name="unit_type" id="unit_type" class="form-select" required>
-                                                            @foreach($unitTypes as $value)
-                                                                <option value="{{ $value->value_name }}" {{ old('unit_type', $unit->unit_type) == $value->value_name ? 'selected' : '' }}>
-                                                                    {{ $value->value_name }}
-                                                                </option>
-                                                            @endforeach
-                                                        </select>
-                                                        @error('unit_type')
-                                                            <span class="invalid-feedback" role="alert">
-                                                                <strong>{{ $message }}</strong>
-                                                            </span>
-                                                        @enderror
-                                                    </div>
-                                                </div>
-
-                                                <!--  -->
-                                                <div class="col-lg-4 col-md-6 col-sm-12">
-                                                    <div class="form-group mb-2">
-                                                        <label for="sale_or_rent">Sale or Rent</label>
-                                                        <span class="required__field">*</span><br>
-                                                        <select name="sale_or_rent" id="sale_or_rent" class="form-select" required>
-                                                            <option value="Sale" {{ old('sale_or_rent', $unit->sale_or_rent) == 'Sale' ? 'selected' : '' }}>Sale</option>
-                                                            <option value="Rent" {{ old('sale_or_rent', $unit->sale_or_rent) == 'Rent' ? 'selected' : '' }}>Rent</option>
-                                                            <option value="Not Available" {{ old('sale_or_rent', $unit->sale_or_rent) == 'Not Available' ? 'selected' : '' }}>Not Available</option>
-                                                        </select>
-                                                        @error('sale_or_rent')
-                                                        <span class="invalid-feedback" role="alert">
-                                                                <strong>{{ $message }}</strong>
-                                                            </span>
-                                                        @enderror
-                                                    </div>
-                                                </div>
-
-                                                <!--  -->
-                                                <div class="col-sm-12 col-md-6 col-lg-4">
-                                                    <div class="form-group mb-2">
-                                                        <label for="price">Price</label>
-                                                        <span class="required__field">*</span><br>
-                                                        <input type="number" name="price" id="price" class="form-control @error('price') is-invalid @enderror" value="{{ old('price', $unit->price) }}" placeholder="Enter unit price" required>
-                                                        @error('price')
-                                                            <span class="invalid-feedback" role="alert">
-                                                                <strong>{{ $message }}</strong>
-                                                            </span>
-                                                        @enderror
-                                                    </div>
-                                                </div>
-
-                                                 <!--  -->
-                                                 <div class="col-sm-12 col-md-6 col-lg-4">
-                                                    <div class="form-group mb-2">
-                                                        <label for="area">Area</label>
-                                                        <span class="required__field">*</span><br>
-                                                        <input type="number" name="area" id="area" class="form-control @error('area') is-invalid @enderror" value="{{ old('area', $unit->area) }}" placeholder="1234" required>
-                                                        @error('area')
-                                                            <span class="invalid-feedback" role="alert">
-                                                                <strong>{{ $message }}</strong>
-                                                            </span>
-                                                        @enderror
-                                                    </div>
-                                                </div>
-
-                                                <!--  -->
-                                                <div class="col-lg-4 col-md-6 col-sm-12">
-                                                    <div class="form-group mb-2">
-                                                        <label for="status">Status</label>
-                                                        <span class="required__field">*</span><br>
-                                                        <select name="status" id="status" class="form-select" required>
-                                                            <option value="Approved" {{ old('status', $unit->status) == 'Approved' ? 'selected' : '' }}>Approved</option>
-                                                            <option value="Rejected" {{ old('status', $unit->status) == 'Rejected' ? 'selected' : '' }}>Rejected</option>
-                                                        </select>
-                                                        @error('status')
-                                                        <span class="invalid-feedback" role="alert">
-                                                                <strong>{{ $message }}</strong>
-                                                            </span>
-                                                        @enderror
-                                                    </div>
-                                                </div>
-
-                                                <!-- Organization Dropdown -->
-                                                <div class="col-sm-12 col-md-6 col-lg-4">
-                                                    <div class="form-group mb-2">
-                                                        <label for="organization_id">Organization</label>
-                                                        <span class="required__field">*</span><br>
-                                                        <select class="form-select" id="organization_id" name="organization_id" required>
-                                                            <option value="" disabled selected>Select Organization</option>
-                                                            @foreach($organizations as $organization)
-                                                                <option value="{{ $organization->id }}" {{ old('organization_id', $unit->organization_id) == $organization->id ? 'selected' : '' }}>
-                                                                    {{ $organization->name }}
-                                                                </option>
-                                                            @endforeach
-                                                        </select>
-                                                        @error('organization_id')
-                                                            <span class="invalid-feedback" role="alert">
-                                                                <strong>{{ $message }}</strong>
-                                                            </span>
-                                                        @enderror
-                                                    </div>
-                                                </div>
-
-                                                <!-- Building Dropdown -->
-                                                <div class="col-sm-12 col-md-6 col-lg-4">
-                                                    <div class="form-group mb-2">
-                                                        <label for="building_id">Building</label>
-                                                        <span class="required__field">*</span><br>
-                                                        <select class="form-select" id="building_id" name="building_id" required>
-                                                            <option value="" disabled selected>Select Building</option>
-                                                        </select>
-                                                        @error('building_id')
-                                                            <span class="invalid-feedback" role="alert">
-                                                                <strong>{{ $message }}</strong>
-                                                            </span>
-                                                        @enderror
-                                                    </div>
-                                                </div>
-
-                                                <!-- Level Dropdown -->
-                                                <div class="col-sm-12 col-md-6 col-lg-4">
-                                                    <div class="form-group mb-2">
-                                                        <label for="level_id">Level</label>
-                                                        <span class="required__field">*</span><br>
-                                                        <select class="form-select" id="level_id" name="level_id" required>
-                                                            <option value="" disabled selected>Select Level</option>
-                                                        </select>
-                                                        @error('level_id')
-                                                            <span class="invalid-feedback" role="alert">
-                                                                <strong>{{ $message }}</strong>
-                                                            </span>
-                                                        @enderror
-                                                    </div>
-                                                </div>
-
-                                                <!--  -->
-                                                <div class="col-sm-12 col-md-6 col-lg-12">
-                                                    <div class="form-group mb-2">
-                                                        <label for="description">Description</label>
-                                                        <input type="text" name="description" id="description" class="form-control @error('description') is-invalid @enderror" value="{{ old('description', $unit->description) }}" maxlength="50" placeholder="Description">
-                                                        @error('description')
-                                                        <span class="invalid-feedback" role="alert">
-                                                                <strong>{{ $message }}</strong>
-                                                            </span>
-                                                        @enderror
-                                                    </div>
-                                                </div>
-
-
+                                <form action="{{ route('units.update') }}" method="POST" enctype="multipart/form-data">
+                                @method('PUT')
+                                    <input type="hidden" name="unit_id" value="{{ $unit->id }}">
+                                    <input type="hidden" name="updated_at" value="{{ $unit->updated_at }}">
+                                    <div class="row my-0 py-0">
+                                        <div class="col-sm-12 col-md-6 col-lg-4">
+                                            <div class="form-group mb-2">
+                                                <label for="unit_name">Unit Name</label>
+                                                <span class="required__field">*</span><br>
+                                                <input type="text" name="unit_name" id="unit_name" class="form-control @error('unit_name') is-invalid @enderror" value="{{ old('unit_name', $unit->unit_name) }}" maxlength="50" placeholder="User Name" required>
+                                                @error('unit_name')
+                                                    <span class="invalid-feedback" role="alert">
+                                                        <strong>{{ $message }}</strong>
+                                                    </span>
+                                                @enderror
                                             </div>
+                                        </div>
 
-                                            <h4>
-                                                <button class="collapse-btn w-100 text-start mt-3 d-flex justify-content-between align-items-center"  type="button" data-bs-toggle="collapse" data-bs-target="#pictures" aria-expanded="false" aria-controls="pictures">
-                                                    Pictures <i class="fa fa-chevron-down"></i>
-                                                </button>
-                                            </h4>
-                                            <div id="pictures" class="collapse show collapsible-section">
-                                                <div class="row">
-                                                    <div class="col-lg-6 col-md-6 col-sm-12">
-                                                        <label class="form-label">Already Uploaded</label>
-                                                        <div id="imagePreview" class="">
-                                                            @forelse ($unit->pictures as $image)
-                                                                <div class="image-thumbnail">
-                                                                    <img src="{{ asset($image->file_path) }}" class="thumbnail-image" alt="Uploaded Image">
-                                                                    <button type="button" class="thumbnail-remove" data-image-id="{{ $image->id }}" onclick="removeExistingImage('{{ $image->id }}')">&times;</button>
-                                                                </div>
-                                                            @empty
-                                                                <p >No images selected</p>
-                                                            @endforelse
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-lg-6 col-md-6 col-sm-12">
-                                                        <label class="form-label">New Uploads</label>
-                                                        <div class="">
-                                                            <input type="file" id="imageInput" name="unit_pictures[]" accept="image/png, image/jpeg, image/jpg, image/gif" multiple hidden>
-                                                            @error('unit_pictures.*')
-                                                            <span class="invalid-feedback" role="alert">
-                                                                <strong>{{ $message }}</strong>
-                                                            </span>
-                                                            @enderror
-                                                            <div class="flex-grow-4" id="uploadImagePreview">
-                                                                <p id="image-message">No images selected</p>
-                                                                <div id="imageThumbnails"></div>
-                                                                <label for="imageInput" class="upload-btn">
-                                                                    <i class='bx bx-upload'></i>
-                                                                </label>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-
-                                                </div>
+                                        <!--  -->
+                                        <div class="col-lg-4 col-md-6 col-sm-12">
+                                            <div class="form-group mb-2">
+                                                <label for="unit_type">Unit Type</label>
+                                                <span class="required__field">*</span><br>
+                                                <select name="unit_type" id="unit_type" class="form-select" required>
+                                                    @foreach($unitTypes as $value)
+                                                        <option value="{{ $value->value_name }}" {{ old('unit_type', $unit->unit_type) == $value->value_name ? 'selected' : '' }}>
+                                                            {{ $value->value_name }}
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+                                                @error('unit_type')
+                                                    <span class="invalid-feedback" role="alert">
+                                                        <strong>{{ $message }}</strong>
+                                                    </span>
+                                                @enderror
                                             </div>
+                                        </div>
 
-                                            <div class="col-12 mt-3">
-                                                <button type="submit" class="btn btn-primary w-100">Save</button>
+                                        <!--  -->
+                                        <div class="col-lg-4 col-md-6 col-sm-12">
+                                            <div class="form-group mb-2">
+                                                <label for="sale_or_rent">Sale or Rent</label>
+                                                <span class="required__field">*</span><br>
+                                                <select name="sale_or_rent" id="sale_or_rent" class="form-select" required>
+                                                    <option value="Sale" {{ old('sale_or_rent', $unit->sale_or_rent) == 'Sale' ? 'selected' : '' }}>Sale</option>
+                                                    <option value="Rent" {{ old('sale_or_rent', $unit->sale_or_rent) == 'Rent' ? 'selected' : '' }}>Rent</option>
+                                                    <option value="Not Available" {{ old('sale_or_rent', $unit->sale_or_rent) == 'Not Available' ? 'selected' : '' }}>Not Available</option>
+                                                </select>
+                                                @error('sale_or_rent')
+                                                <span class="invalid-feedback" role="alert">
+                                                        <strong>{{ $message }}</strong>
+                                                    </span>
+                                                @enderror
                                             </div>
-                                        </form>
+                                        </div>
+
+                                        <!--  -->
+                                        <div class="col-sm-12 col-md-6 col-lg-4">
+                                            <div class="form-group mb-2">
+                                                <label for="price">Price</label>
+                                                <span class="required__field">*</span><br>
+                                                <input type="number" name="price" id="price" class="form-control @error('price') is-invalid @enderror" value="{{ old('price', $unit->price) }}" placeholder="Enter unit price" required>
+                                                @error('price')
+                                                    <span class="invalid-feedback" role="alert">
+                                                        <strong>{{ $message }}</strong>
+                                                    </span>
+                                                @enderror
+                                            </div>
+                                        </div>
+
+                                         <!--  -->
+                                         <div class="col-sm-12 col-md-6 col-lg-4">
+                                            <div class="form-group mb-2">
+                                                <label for="area">Area</label>
+                                                <span class="required__field">*</span><br>
+                                                <input type="number" name="area" id="area" class="form-control @error('area') is-invalid @enderror" value="{{ old('area', $unit->area) }}" placeholder="1234" required>
+                                                @error('area')
+                                                    <span class="invalid-feedback" role="alert">
+                                                        <strong>{{ $message }}</strong>
+                                                    </span>
+                                                @enderror
+                                            </div>
+                                        </div>
+
+                                        <!--  -->
+                                        <div class="col-lg-4 col-md-6 col-sm-12">
+                                            <div class="form-group mb-2">
+                                                <label for="status">Status</label>
+                                                <span class="required__field">*</span><br>
+                                                <select name="status" id="status" class="form-select" required>
+                                                    <option value="Approved" {{ old('status', $unit->status) == 'Approved' ? 'selected' : '' }}>Approved</option>
+                                                    <option value="Rejected" {{ old('status', $unit->status) == 'Rejected' ? 'selected' : '' }}>Rejected</option>
+                                                </select>
+                                                @error('status')
+                                                <span class="invalid-feedback" role="alert">
+                                                        <strong>{{ $message }}</strong>
+                                                    </span>
+                                                @enderror
+                                            </div>
+                                        </div>
+
+                                        <!-- Organization Dropdown -->
+                                        <div class="col-sm-12 col-md-6 col-lg-4">
+                                            <div class="form-group mb-2">
+                                                <label for="organization_id">Organization</label>
+                                                <span class="required__field">*</span><br>
+                                                <select class="form-select" id="organization_id" name="organization_id" required>
+                                                    <option value="" disabled selected>Select Organization</option>
+                                                    @foreach($organizations as $organization)
+                                                        <option value="{{ $organization->id }}" {{ old('organization_id', $unit->organization_id) == $organization->id ? 'selected' : '' }}>
+                                                            {{ $organization->name }}
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+                                                @error('organization_id')
+                                                    <span class="invalid-feedback" role="alert">
+                                                        <strong>{{ $message }}</strong>
+                                                    </span>
+                                                @enderror
+                                            </div>
+                                        </div>
+
+                                        <!-- Building Dropdown -->
+                                        <div class="col-sm-12 col-md-6 col-lg-4">
+                                            <div class="form-group mb-2">
+                                                <label for="building_id">Building</label>
+                                                <span class="required__field">*</span><br>
+                                                <select class="form-select" id="building_id" name="building_id" required>
+                                                    <option value="" disabled selected>Select Building</option>
+                                                </select>
+                                                @error('building_id')
+                                                    <span class="invalid-feedback" role="alert">
+                                                        <strong>{{ $message }}</strong>
+                                                    </span>
+                                                @enderror
+                                            </div>
+                                        </div>
+
+                                        <!-- Level Dropdown -->
+                                        <div class="col-sm-12 col-md-6 col-lg-4">
+                                            <div class="form-group mb-2">
+                                                <label for="level_id">Level</label>
+                                                <span class="required__field">*</span><br>
+                                                <select class="form-select" id="level_id" name="level_id" required>
+                                                    <option value="" disabled selected>Select Level</option>
+                                                </select>
+                                                @error('level_id')
+                                                    <span class="invalid-feedback" role="alert">
+                                                        <strong>{{ $message }}</strong>
+                                                    </span>
+                                                @enderror
+                                            </div>
+                                        </div>
+
+                                        <!--  -->
+                                        <div class="col-sm-12 col-md-6 col-lg-12">
+                                            <div class="form-group mb-2">
+                                                <label for="description">Description</label>
+                                                <input type="text" name="description" id="description" class="form-control @error('description') is-invalid @enderror" value="{{ old('description', $unit->description) }}" maxlength="50" placeholder="Description">
+                                                @error('description')
+                                                <span class="invalid-feedback" role="alert">
+                                                        <strong>{{ $message }}</strong>
+                                                    </span>
+                                                @enderror
+                                            </div>
+                                        </div>
+
+
                                     </div>
-                                </div>
+
+                                    <h4>
+                                        <button class="collapse-btn w-100 text-start mt-3 d-flex justify-content-between align-items-center"  type="button" data-bs-toggle="collapse" data-bs-target="#pictures" aria-expanded="false" aria-controls="pictures">
+                                            Pictures <i class="fa fa-chevron-down"></i>
+                                        </button>
+                                    </h4>
+                                    <div id="pictures" class="collapse show collapsible-section">
+                                        <div class="row">
+                                            <div class="col-lg-6 col-md-6 col-sm-12">
+                                                <label class="form-label">Already Uploaded</label>
+                                                <div id="imagePreview" class="">
+                                                    @forelse ($unit->pictures as $image)
+                                                        <div class="image-thumbnail">
+                                                            <img src="{{ asset($image->file_path) }}" class="thumbnail-image" alt="Uploaded Image">
+                                                            <button type="button" class="thumbnail-remove" data-image-id="{{ $image->id }}" onclick="removeExistingImage('{{ $image->id }}')">&times;</button>
+                                                        </div>
+                                                    @empty
+                                                        <p >No images selected</p>
+                                                    @endforelse
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-6 col-md-6 col-sm-12">
+                                                <label class="form-label">New Uploads</label>
+                                                <div class="">
+                                                    <input type="file" id="imageInput" name="unit_pictures[]" accept="image/png, image/jpeg, image/jpg, image/gif" multiple hidden>
+                                                    @error('unit_pictures.*')
+                                                    <span class="invalid-feedback" role="alert">
+                                                        <strong>{{ $message }}</strong>
+                                                    </span>
+                                                    @enderror
+                                                    <div class="flex-grow-4" id="uploadImagePreview">
+                                                        <p id="image-message">No images selected</p>
+                                                        <div id="imageThumbnails"></div>
+                                                        <label for="imageInput" class="upload-btn">
+                                                            <i class='bx bx-upload'></i>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+
+                                    <div class="col-12 mt-3">
+                                        <button type="submit" class="btn btn-primary w-100">Save</button>
+                                    </div>
+                                </form>
                             </div>
                         </div>
                     </div>

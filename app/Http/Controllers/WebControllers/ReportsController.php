@@ -180,279 +180,239 @@ class ReportsController extends Controller
     }
 
 
+    // API 1: Metrics data (Total Units, Total Levels, Total Income, Total Expenses)
     public function getMetrics(Request $request)
     {
-        $params = $this->getFilterParams($request);
+        // Get filters from request
+        $buildingId = $request->input('building_id', 'all');
+        $startDate = $request->input('start_date', Carbon::now()->subDays(30)->format('Y-m-d'));
+        $endDate = $request->input('end_date', Carbon::now()->format('Y-m-d'));
 
+        // Dummy data - in a real app, you would query your database here
         $data = [
-            'total_units' => $params['building_id'] == 'all' ? 248 : 80,
-            'total_levels' => $params['building_id'] == 'all' ? 24 : 8,
-            'total_income' => $params['building_id'] == 'all' ? 24580 : 8500,
-            'total_expenses' => $params['building_id'] == 'all' ? 8420 : 3200,
-            'units_change' => $params['building_id'] == 'all' ? 5 : 2,
-            'levels_change' => 0,
-            'income_change' => $params['building_id'] == 'all' ? 12 : 8,
-            'expenses_change' => $params['building_id'] == 'all' ? -5 : -3,
+            'total_units' => $buildingId === 'all' ? 248 : 80,
+            'total_levels' => $buildingId === 'all' ? 24 : 8,
+            'total_income' => $buildingId === 'all' ? 24580 : 8500,
+            'total_expenses' => $buildingId === 'all' ? 8420 : 3200,
         ];
 
         return response()->json($data);
     }
 
+    // API 2: Income/Expense data (Income vs Expense, Financial Summary, Income Sources, Expense Categories, Recent Transactions)
     public function getIncomeExpense(Request $request)
     {
-        $params = $this->getFilterParams($request);
+        $buildingId = $request->input('building_id', 'all');
+        $startDate = $request->input('start_date', Carbon::now()->subDays(30)->format('Y-m-d'));
+        $endDate = $request->input('end_date', Carbon::now()->format('Y-m-d'));
+        $transactions = $this->generateDummyTransactions($request->building_id);
 
+        // Dummy data
         $data = [
-            'income' => $params['building_id'] == 'all' ? 24580 : 8500,
-            'expenses' => $params['building_id'] == 'all' ? 8420 : 3200,
-            'income_growth' => $params['building_id'] == 'all' ? 12 : 8,
-            'expense_growth' => $params['building_id'] == 'all' ? -5 : -3,
+            'total_income' => $buildingId === 'all' ? 24580 : 8500,
+            'total_expenses' => $buildingId === 'all' ? 8420 : 3200,
+            'income_sources' => [
+                'labels' => ['Rent', 'Parking', 'Amenities', 'Other'],
+                'data' => $buildingId === 'all' ? [18000, 4200, 1500, 880] : [6000, 1500, 700, 300],
+                'colors' => ['#184E83', '#1A6FC9', '#2ecc71', '#ffbe0b']
+            ],
+            'expense_categories' => [
+                'labels' => ['Maintenance', 'Utilities', 'Staff', 'Insurance', 'Other'],
+                'data' => $buildingId === 'all' ? [3200, 2800, 1500, 500, 420] : [1200, 1000, 600, 200, 200],
+                'colors' => ['#ff4d6d', '#ff758f', '#ff8fa3', '#ffb3c1', '#ffccd5']
+            ],
+            'recent_transactions' => $transactions
         ];
 
         return response()->json($data);
     }
 
-    public function getIncomeSources(Request $request)
-    {
-        $params = $this->getFilterParams($request);
-
-        $data = [
-            'labels' => ['Rent', 'Parking', 'Amenities', 'Other'],
-            'data' => $params['building_id'] == 'all' ? [18000, 4200, 1500, 880] : [6000, 1500, 700, 300],
-            'colors' => ['#184E83', '#1A6FC9', '#2ecc71', '#ffbe0b']
-        ];
-
-        return response()->json($data);
-    }
-
-    public function getExpenseCategories(Request $request)
-    {
-        $params = $this->getFilterParams($request);
-
-        $data = [
-            'labels' => ['Maintenance', 'Utilities', 'Staff', 'Insurance', 'Other'],
-            'data' => $params['building_id'] == 'all' ? [3200, 2800, 1500, 500, 420] : [1200, 1000, 600, 200, 200],
-            'colors' => ['#ff4d6d', '#ff758f', '#ff8fa3', '#ffb3c1', '#ffccd5']
-        ];
-
-        return response()->json($data);
-    }
-
+    // API 3: Occupancy data
     public function getOccupancy(Request $request)
     {
-        $params = $this->getFilterParams($request);
+        $buildingId = $request->input('building_id', 'all');
+        $startDate = $request->input('start_date', Carbon::now()->subDays(30)->format('Y-m-d'));
+        $endDate = $request->input('end_date', Carbon::now()->format('Y-m-d'));
 
-        // Generate time-based data based on the selected range
-        $timeLabels = $this->getTimeLabels($params['range'], $params['start_date'] ?? null, $params['end_date'] ?? null);
+        // Generate time labels based on date range
+        $timeLabels = $this->generateTimeLabels($startDate, $endDate);
 
-        $availableData = array_map(function() { return rand(5, 15); }, $timeLabels);
-        $rentedData = array_map(function() { return rand(150, 200); }, $timeLabels);
-        $soldData = array_map(function() { return rand(5, 15); }, $timeLabels);
-
+        // Dummy data
         $data = [
-            'labels' => $timeLabels,
-            'available' => $availableData,
-            'rented' => $rentedData,
-            'sold' => $soldData,
-            'occupancy_rate' => $params['building_id'] == 'all' ? 92 : 90,
-            'rented_units' => $params['building_id'] == 'all' ? 200 : 70,
-            'sold_units' => $params['building_id'] == 'all' ? 28 : 4,
-            'available_units' => $params['building_id'] == 'all' ? 20 : 6,
+            'total_units' => $buildingId === 'all' ? 248 : 80,
+            'rented_units' => $buildingId === 'all' ? 200 : 70,
+            'sold_units' => $buildingId === 'all' ? 28 : 4,
+            'available_units' => $buildingId === 'all' ? 20 : 6,
+            'occupancy_trend' => [
+                'labels' => $timeLabels,
+                'available' => array_map(function() { return rand(5, 15); }, $timeLabels),
+                'rented' => array_map(function() { return rand(150, 200); }, $timeLabels),
+                'sold' => array_map(function() { return rand(5, 15); }, $timeLabels)
+            ]
         ];
 
         return response()->json($data);
     }
 
+    // API 4: Staff data
     public function getStaff(Request $request)
     {
-        $params = $this->getFilterParams($request);
+        $buildingId = $request->input('building_id', 'all');
+        $startDate = $request->input('start_date', Carbon::now()->subDays(30)->format('Y-m-d'));
+        $endDate = $request->input('end_date', Carbon::now()->format('Y-m-d'));
 
+        // Dummy data
         $data = [
-            'labels' => ['Maintenance', 'Security', 'Cleaning', 'Admin', 'Other'],
-            'data' => $params['building_id'] == 'all' ? [18, 12, 10, 5, 3] : [6, 4, 5, 3, 2],
-            'colors' => ['#184E83', '#1A6FC9', '#2ecc71', '#ffbe0b', '#ff4d6d'],
-            'total_staff' => $params['building_id'] == 'all' ? 48 : 20,
-            'maintenance' => $params['building_id'] == 'all' ? 18 : 6,
-            'security' => $params['building_id'] == 'all' ? 12 : 4,
-            'cleaning' => $params['building_id'] == 'all' ? 10 : 5,
-            'admin' => $params['building_id'] == 'all' ? 5 : 3,
-            'other' => $params['building_id'] == 'all' ? 3 : 2,
-            'satisfaction' => $params['building_id'] == 'all' ? 84 : 82,
-            'turnover' => $params['building_id'] == 'all' ? 12 : 10,
+            'total_staff' => $buildingId === 'all' ? 48 : 20,
+            'staff_by_department' => [
+                'labels' => ['Maintenance', 'Security', 'Cleaning', 'Admin', 'Other'],
+                'data' => $buildingId === 'all' ? [18, 12, 10, 5, 3] : [6, 4, 5, 3, 2],
+                'colors' => ['#184E83', '#1A6FC9', '#2ecc71', '#ffbe0b', '#ff4d6d']
+            ]
         ];
 
         return response()->json($data);
     }
 
+    // API 5: Memberships data
     public function getMemberships(Request $request)
     {
-        $params = $this->getFilterParams($request);
+        $buildingId = $request->input('building_id', 'all');
+        $startDate = $request->input('start_date', Carbon::now()->subDays(30)->format('Y-m-d'));
+        $endDate = $request->input('end_date', Carbon::now()->format('Y-m-d'));
 
-        $timeLabels = $this->getTimeLabels($params['range'], $params['start_date'] ?? null, $params['end_date'] ?? null);
+        // Generate time labels based on date range
+        $timeLabels = $this->generateTimeLabels($startDate, $endDate);
 
-        $activeData = array_map(function($i) { return 120 + ($i * 5); }, range(0, count($timeLabels) - 1));
-        $expiredData = array_map(function() { return rand(35, 45); }, $timeLabels);
-
+        // Dummy data
         $data = [
-            'labels' => $timeLabels,
-            'active' => $activeData,
-            'expired' => $expiredData,
-            'total' => $params['building_id'] == 'all' ? 185 : 65,
-            'active_count' => end($activeData),
-            'expired' => end($expiredData),
-            'new_members' => $params['building_id'] == 'all' ? 24 : 8,
-            'renewal_rate' => $params['building_id'] == 'all' ? 78 : 75,
-            'growth' => $params['building_id'] == 'all' ? 15 : 12,
-            'engagement' => $params['building_id'] == 'all' ? 72 : 70,
-            'colors' => ['#184E83', '#ff4d6d']
+            'active_members' => $buildingId === 'all' ? 142 : 50,
+            'expired_members' => $buildingId === 'all' ? 43 : 15,
+            'new_members' => $buildingId === 'all' ? 24 : 8,
+            'membership_trend' => [
+                'labels' => $timeLabels,
+                'active' => array_map(function() use ($buildingId) {
+                    return $buildingId === 'all' ? rand(120, 142) : rand(40, 50);
+                }, $timeLabels),
+                'expired' => array_map(function() use ($buildingId) {
+                    return $buildingId === 'all' ? rand(38, 43) : rand(14, 15);
+                }, $timeLabels)
+            ]
         ];
 
         return response()->json($data);
     }
 
+    // API 6: Maintenance data
     public function getMaintenance(Request $request)
     {
-        $params = $this->getFilterParams($request);
+        $buildingId = $request->input('building_id', 'all');
+        $startDate = $request->input('start_date', Carbon::now()->subDays(30)->format('Y-m-d'));
+        $endDate = $request->input('end_date', Carbon::now()->format('Y-m-d'));
 
-        $timeLabels = $this->getTimeLabels($params['range'], $params['start_date'] ?? null, $params['end_date'] ?? null);
+        // Generate time labels based on date range
+        $timeLabels = $this->generateTimeLabels($startDate, $endDate);
 
-        $completedData = array_map(function($i) { return 10 + ($i * 2); }, range(0, count($timeLabels) - 1));
-        $pendingData = array_map(function() { return rand(5, 8); }, $timeLabels);
-        $rejectedData = array_map(function() { return rand(1, 4); }, $timeLabels);
+        // Dummy data with more realistic workflow patterns
+        $completed = [];
+        $pending = [];
+        $rejected = [];
+
+        // Start with some baseline numbers
+        $baseCompleted = $buildingId === 'all' ? 10 : 4;
+        $basePending = $buildingId === 'all' ? 5 : 2;
+        $baseRejected = $buildingId === 'all' ? 2 : 1;
+
+        // Generate trend data that shows workflow
+        foreach ($timeLabels as $index => $label) {
+            // Completed requests tend to follow pending requests from previous period
+            $completed[] = $baseCompleted + ($index > 0 ? $pending[$index-1] * 0.8 : 0) + rand(0, 3);
+
+            // New pending requests come in
+            $pending[] = $basePending + rand(0, 2) + ($index % 3 === 0 ? 3 : 0); // spike every 3rd period
+
+            // Rejections are a small percentage of pending
+            $rejected[] = min($baseRejected + rand(0, 2), $pending[$index]); // Can't reject more than pending
+        }
 
         $data = [
-            'labels' => $timeLabels,
-            'completed' => $completedData,
-            'pending' => $pendingData,
-            'rejected' => $rejectedData,
-            'total' => array_sum($completedData) + array_sum($pendingData) + array_sum($rejectedData),
-            'completed_count' => array_sum($completedData),
-            'pending' => array_sum($pendingData),
-            'rejected' => array_sum($rejectedData),
-            'colors' => ['#2ecc71', '#ffbe0b', '#ff4d6d']
+            'completed_requests' => array_sum($completed),
+            'pending_requests' => array_sum($pending),
+            'rejected_requests' => array_sum($rejected),
+            'maintenance_trend' => [
+                'labels' => $timeLabels,
+                'completed' => $completed,
+                'pending' => $pending,
+                'rejected' => $rejected
+            ]
         ];
 
         return response()->json($data);
     }
 
-    public function getTransactions(Request $request)
+    // Helper function to generate time labels based on date range
+    private function generateTimeLabels($startDate, $endDate)
     {
-        $params = $this->getFilterParams($request);
-        $perPage = $request->input('per_page', 7);
-        $page = $request->input('page', 1);
+        $start = Carbon::parse($startDate);
+        $end = Carbon::parse($endDate);
+        $diffDays = $end->diffInDays($start);
 
-        // Simulated transaction data
-        $transactions = [
-            [
-                'id' => 'TX-' . rand(100000, 999999),
-                'title' => 'June Rent Payment',
-                'unit' => 'Apt ' . rand(100, 500),
-                'type' => 'Income',
-                'status' => 'Completed',
-                'amount' => rand(800, 1500),
-                'date' => now()->subDays(rand(1, 30))->format('Y-m-d')
-            ],
-            // Add more simulated transactions...
-        ];
+        if ($diffDays > 60) {
+            // More than 2 months - show monthly
+            $labels = [];
+            $current = $start->copy();
+            while ($current <= $end) {
+                $labels[] = $current->format('M Y');
+                $current->addMonth();
+            }
+            return $labels;
+        } elseif ($diffDays > 14) {
+            // 2 weeks to 2 months - show weekly
+            $weeks = ceil($diffDays / 7);
+            return array_map(function($i) { return "Week $i"; }, range(1, $weeks));
+        } else {
+            // Less than 2 weeks - show daily
+            $labels = [];
+            $current = $start->copy();
+            while ($current <= $end) {
+                $labels[] = $current->format('M d');
+                $current->addDay();
+            }
+            return $labels;
+        }
+    }
 
-        // Generate more transactions for pagination
-        for ($i = 0; $i < 42; $i++) {
-            $type = rand(0, 1) ? 'Income' : 'Expense';
-            $statuses = ['Completed', 'Pending', 'Rejected'];
+    // Helper function to generate dummy transactions
+    private function generateDummyTransactions($buildingId)
+    {
+        $types = ['Income', 'Expense'];
+        $statuses = ['completed', 'pending', 'rejected'];
+        $incomeTitles = ['Rent Payment', 'Parking Fee', 'Amenity Fee', 'Service Charge'];
+        $expenseTitles = ['Maintenance', 'Utilities', 'Staff Salary', 'Insurance'];
+        $units = ['Apt 101', 'Apt 202', 'Apt 303', 'Common Area', 'Building'];
+
+        $transactions = [];
+        $count = $buildingId === 'all' ? 50 : 30; // More records for client-side pagination
+
+        for ($i = 0; $i < $count; $i++) {
+            $type = $types[array_rand($types)];
+            $status = $statuses[array_rand($statuses)];
+            $title = $type === 'Income'
+                ? $incomeTitles[array_rand($incomeTitles)]
+                : $expenseTitles[array_rand($expenseTitles)];
 
             $transactions[] = [
-                'id' => 'TX-' . rand(100000, 999999),
-                'title' => $type == 'Income' ?
-                    ['Rent Payment', 'Parking Fee', 'Amenity Fee', 'Service Charge'][rand(0, 3)] :
-                    ['Maintenance', 'Utilities', 'Staff Salary', 'Insurance'][rand(0, 3)],
-                'unit' => $type == 'Income' ? 'Apt ' . rand(100, 500) : ['Common Area', 'Building', 'Parking Lot'][rand(0, 2)],
+                'id' => 'TX-' . str_pad($i + 1000, 4, '0', STR_PAD_LEFT),
+                'title' => $title,
+                'unit' => $units[array_rand($units)],
                 'type' => $type,
-                'status' => $statuses[rand(0, 2)],
-                'amount' => $type == 'Income' ? rand(50, 1500) : rand(100, 2000),
-                'date' => now()->subDays(rand(1, 90))->format('Y-m-d')
+                'status' => ucfirst($status),
+                'amount' => $type === 'Income' ? rand(50, 2000) : rand(100, 1500),
+                'date' => Carbon::now()->subDays(rand(0, 30))->format('Y-m-d')
             ];
         }
 
-        // Sort by date
-        usort($transactions, function($a, $b) {
-            return strtotime($b['date']) - strtotime($a['date']);
-        });
-
-        // Paginate the results
-        $total = count($transactions);
-        $offset = ($page - 1) * $perPage;
-        $paginated = array_slice($transactions, $offset, $perPage);
-
-        return response()->json([
-            'current_page' => $page,
-            'data' => $paginated,
-            'from' => $offset + 1,
-            'to' => $offset + count($paginated),
-            'total' => $total,
-            'per_page' => $perPage,
-            'last_page' => ceil($total / $perPage)
-        ]);
+        // Return just the data array without pagination info
+        return $transactions;
     }
-
-    private function getFilterParams(Request $request)
-    {
-        return [
-            'building_id' => $request->input('building_id', 'all'),
-            'range' => $request->input('range', '30days'),
-            'start_date' => $request->input('start_date'),
-            'end_date' => $request->input('end_date')
-        ];
-    }
-
-    private function getTimeLabels($range, $startDate = null, $endDate = null)
-    {
-        if ($range === 'custom' && $startDate && $endDate) {
-            $start = new \DateTime($startDate);
-            $end = new \DateTime($endDate);
-            $diff = $start->diff($end);
-            $days = $diff->days;
-
-            if ($days > 60) {
-                // Monthly labels
-                $labels = [];
-                $current = clone $start;
-                $monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-
-                while ($current <= $end) {
-                    $labels[] = $monthNames[$current->format('n') - 1] . ' ' . $current->format('Y');
-                    $current->add(new \DateInterval('P1M'));
-                }
-
-                return $labels;
-            } elseif ($days > 14) {
-                // Weekly labels
-                $weeks = ceil($days / 7);
-                return array_map(function($i) { return 'Week ' . ($i + 1); }, range(0, $weeks - 1));
-            } else {
-                // Daily labels
-                $labels = [];
-                $current = clone $start;
-
-                while ($current <= $end) {
-                    $labels[] = $current->format('M j');
-                    $current->add(new \DateInterval('P1D'));
-                }
-
-                return $labels;
-            }
-        }
-
-        // Default ranges
-        switch ($range) {
-            case '7days':
-                return ['Day 1', 'Day 2', 'Day 3', 'Day 4', 'Day 5', 'Day 6', 'Day 7'];
-            case '30days':
-                return ['Week 1', 'Week 2', 'Week 3', 'Week 4'];
-            case '90days':
-                return ['Month 1', 'Month 2', 'Month 3'];
-            default:
-                return ['Week 1', 'Week 2', 'Week 3', 'Week 4'];
-        }
-    }
-
 }

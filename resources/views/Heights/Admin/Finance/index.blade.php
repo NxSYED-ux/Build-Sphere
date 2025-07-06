@@ -365,7 +365,7 @@
                             <div class="filter-section mb-3">
                                 <h5 class="section-title mb-4">Transaction Filters</h5>
                                 <div class="row g-3">
-                                    <div class="col-md-4">
+                                    <div class="col-md-6 col-lg-3">
                                         <label class="form-label">Date Range</label>
                                         <select name="date_range" class="form-select">
                                             <option value="7" {{ request('date_range') == 7 ? 'selected' : '' }}>Last 7 days</option>
@@ -373,7 +373,7 @@
                                             <option value="90" {{ request('date_range') == 90 ? 'selected' : '' }}>Last 3 months</option>
                                         </select>
                                     </div>
-                                    <div class="col-md-4">
+                                    <div class="col-md-6 col-lg-3">
                                         <label class="form-label">Transaction Type</label>
                                         <select name="type" class="form-select">
                                             <option value="">All Transactions</option>
@@ -381,7 +381,7 @@
                                             <option value="Credit" {{ request('type') == 'Credit' ? 'selected' : '' }}>Credit</option>
                                         </select>
                                     </div>
-                                    <div class="col-md-4">
+                                    <div class="col-md-6 col-lg-3">
                                         <label class="form-label">Status</label>
                                         <select name="status" class="form-select">
                                             <option value="">All Statuses</option>
@@ -390,22 +390,14 @@
                                             <option value="Failed" {{ request('status') == 'Failed' ? 'selected' : '' }}>Failed</option>
                                         </select>
                                     </div>
-                                    <div class="col-md-4">
-                                        <label class="form-label">Min Amount (PKR)</label>
-                                        <input type="number" name="min_price" class="form-control" placeholder="0" value="{{ request('min_price') }}" >
-                                    </div>
-                                    <div class="col-md-4">
-                                        <label class="form-label">Max Amount (PKR)</label>
-                                        <input type="number" name="max_price" class="form-control" placeholder="100000" value="{{ request('max_price') }}">
-                                    </div>
 
-                                    <div class="col-md-4 d-flex align-items-end">
+                                    <div class="col-md-6 col-lg-3 d-flex align-items-end">
                                         <div class="d-flex w-100 justify-content-between gap-2">
                                             <a href="{{ route('finance.index') }}" class="btn btn-secondary flex-grow-1 d-flex align-items-center justify-content-center">
                                                 <i class="fas fa-undo me-2"></i> Reset
                                             </a>
                                             <button class="btn btn-primary flex-grow-1 d-flex align-items-center justify-content-center">
-                                                <i class="fas fa-filter me-2"></i> Apply Filters
+                                                <i class="fas fa-filter me-2"></i> Apply
                                             </button>
                                         </div>
                                     </div>

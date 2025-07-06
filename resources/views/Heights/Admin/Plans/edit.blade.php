@@ -78,12 +78,15 @@
 
         .btn-primary-custom {
             background-color: var(--primary-color);
+            color: #fff;
             border-color: var(--primary-color);
         }
 
         .btn-primary-custom:hover {
-            background-color: #2e59d9;
-            border-color: #2653d4;
+            background-color: var(--primary-color);
+            color: #fff;
+            border-color: var(--primary-color);
+            opacity: 0.9;
         }
 
         .summary-card {
