@@ -3,13 +3,9 @@
 @section('title', 'Building Management Dashboard')
 
 @push('styles')
-    <!-- External Resources -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 
     <style>
-        /* ================ */
-        /* CSS Variables */
-        /* ================ */
         :root {
             --primary: #184E83;
             --primary-light: #1A6FC9;
@@ -24,9 +20,6 @@
             --accent: #FA8072;
         }
 
-        /* ================ */
-        /* Base Styles */
-        /* ================ */
         body {
             font-family: 'Inter', sans-serif;
         }
@@ -35,9 +28,6 @@
             margin-top: 45px;
         }
 
-        /* ================ */
-        /* Utility Classes */
-        /* ================ */
         .bg-gradient-primary {
             background: linear-gradient(135deg, var(--primary), var(--primary-light));
         }
@@ -54,9 +44,6 @@
             background: linear-gradient(135deg, var(--accent), #FFA07A);
         }
 
-        /* ================ */
-        /* Report Header */
-        /* ================ */
         .report-header {
             margin-bottom: 15px;
         }
@@ -200,7 +187,7 @@
         .chart-header .chart-value {
             font-size: 16px;
             font-weight: 600;
-            color: var(--primary);
+            color: var(--sidenavbar-text-color);
         }
 
         .chart-canvas-container {
@@ -358,7 +345,7 @@
 
         .progress-label {
             font-size: 13px;
-            color: var(--gray);
+            color: var(--sidenavbar-text-color);
         }
 
         .progress-value {
@@ -706,11 +693,11 @@
                                     <div class="value" id="totalExpenses">$0</div>
                                 </div>
                             </div>
-                            <p class="section-description">
-                                The key metrics section provides a quick snapshot of your property's performance.
-                                You can see the total number of units and levels across all buildings, along with
-                                financial metrics showing income and expenses.
-                            </p>
+{{--                            <p class="section-description">--}}
+{{--                                The key metrics section provides a quick snapshot of your property's performance.--}}
+{{--                                You can see the total number of units and levels across all buildings, along with--}}
+{{--                                financial metrics showing income and expenses.--}}
+{{--                            </p>--}}
 
                             <!-- Income vs Expense Pie Chart with Summary -->
                             <div class="chart-summary-row">
@@ -726,28 +713,49 @@
                                 <div class="summary-container">
                                     <h3 class="summary-title">Financial Summary</h3>
                                     <div class="summary-item">
-                                        <span class="summary-label"><i class='bx bx-dollar-circle'></i> Total Income</span>
+                                        <span class="summary-label"><i class='bx bx-dollar-circle me-2'></i> Total Income</span>
                                         <span class="summary-value" id="summaryIncome">$0</span>
                                     </div>
                                     <div class="summary-item">
-                                        <span class="summary-label"><i class='bx bx-money-withdraw'></i> Total Expenses</span>
+                                        <span class="summary-label"><i class='bx bx-money-withdraw me-2'></i> Total Expenses</span>
                                         <span class="summary-value" id="summaryExpenses">$0</span>
                                     </div>
                                     <div class="summary-item">
-                                        <span class="summary-label"><i class='bx bx-trending-up'></i> Net Profit</span>
+                                        <span class="summary-label"><i class='bx bx-trending-up me-2'></i> Net Profit</span>
                                         <span class="summary-value positive" id="summaryProfit">$0</span>
                                     </div>
                                     <div class="summary-item">
-                                        <span class="summary-label"><i class='bx bx-line-chart'></i> Profit Margin</span>
+                                        <span class="summary-label"><i class='bx bx-line-chart me-2'></i> Profit Margin</span>
                                         <span class="summary-value positive" id="summaryMargin">0%</span>
+                                    </div>
+
+                                    <div class="progress-container">
+                                        <div class="progress-item">
+                                            <div class="progress-header">
+                                                <span class="progress-label">Income Growth</span>
+                                                <span class="progress-value positive">+12%</span>
+                                            </div>
+                                            <div class="progress-bar">
+                                                <div class="progress-fill" style="width: 62%; background-color: var(--primary);"></div>
+                                            </div>
+                                        </div>
+                                        <div class="progress-item">
+                                            <div class="progress-header">
+                                                <span class="progress-label">Expense Growth</span>
+                                                <span class="progress-value negative">+5%</span>
+                                            </div>
+                                            <div class="progress-bar">
+                                                <div class="progress-fill" style="width: 25%; background-color: var(--danger);"></div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                            <p class="section-description">
-                                The income vs expenses visualization helps you understand your property's financial health at a glance.
-                                The doughnut chart shows the proportion of income to expenses, while the financial summary provides
-                                detailed numbers.
-                            </p>
+{{--                            <p class="section-description">--}}
+{{--                                The income vs expenses visualization helps you understand your property's financial health at a glance.--}}
+{{--                                The doughnut chart shows the proportion of income to expenses, while the financial summary provides--}}
+{{--                                detailed numbers.--}}
+{{--                            </p>--}}
 
                             <!-- Income and Expense Distribution -->
                             <div class="chart-summary-row">
@@ -782,15 +790,15 @@
                                 </div>
                                 <div class="status-grid">
                                     <div class="status-card">
-                                        <div class="status-count" style="color: var(--primary);" id="rentedUnits">0</div>
+                                        <div class="status-count" style="color: #4BC0C0;" id="rentedUnits">0</div>
                                         <div class="status-label">Rented Units</div>
                                     </div>
                                     <div class="status-card">
-                                        <div class="status-count" style="color: var(--success);" id="soldUnits">0</div>
+                                        <div class="status-count" style="color: #FF6384;" id="soldUnits">0</div>
                                         <div class="status-label">Sold Units</div>
                                     </div>
                                     <div class="status-card">
-                                        <div class="status-count" style="color: var(--gray);" id="availableUnits">0</div>
+                                        <div class="status-count" style="color: #FFCD56;" id="availableUnits">0</div>
                                         <div class="status-label">Available Units</div>
                                     </div>
                                 </div>
@@ -829,23 +837,23 @@
                                 <div class="summary-container">
                                     <h3 class="summary-title">Membership Analytics</h3>
                                     <div class="summary-item">
-                                        <span class="summary-label"><i class='bx bx-user'></i> Total Members</span>
+                                        <span class="summary-label"><i class='bx bx-user me-2'></i> Total Members</span>
                                         <span class="summary-value" id="summaryTotalMembers">0</span>
                                     </div>
                                     <div class="summary-item">
-                                        <span class="summary-label"><i class='bx bx-check-circle'></i> Active Members</span>
+                                        <span class="summary-label"><i class='bx bx-check-circle me-2'></i> Active Members</span>
                                         <span class="summary-value" id="summaryActiveMembers">0</span>
                                     </div>
                                     <div class="summary-item">
-                                        <span class="summary-label"><i class='bx bx-time'></i> Expired Members</span>
+                                        <span class="summary-label"><i class='bx bx-time me-2'></i> Expired Members</span>
                                         <span class="summary-value" id="summaryExpiredMembers">0</span>
                                     </div>
                                     <div class="summary-item">
-                                        <span class="summary-label"><i class='bx bx-plus-circle'></i> New This Period</span>
+                                        <span class="summary-label"><i class='bx bx-plus-circle me-2'></i> New This Period</span>
                                         <span class="summary-value positive" id="summaryNewMembers">+0</span>
                                     </div>
                                     <div class="summary-item">
-                                        <span class="summary-label"><i class='bx bx-refresh'></i> Renewal Rate</span>
+                                        <span class="summary-label"><i class='bx bx-refresh me-2'></i> Renewal Rate</span>
                                         <span class="summary-value positive" id="summaryRenewalRate">0%</span>
                                     </div>
                                 </div>
@@ -862,15 +870,15 @@
                                 </div>
                                 <div class="status-grid">
                                     <div class="status-card">
-                                        <div class="status-count" style="color: var(--success);" id="completedRequests">0</div>
+                                        <div class="status-count" style="color: #4BC0C0;" id="completedRequests">0</div>
                                         <div class="status-label">Completed</div>
                                     </div>
                                     <div class="status-card">
-                                        <div class="status-count" style="color: var(--warning);" id="pendingRequests">0</div>
+                                        <div class="status-count" style="color: #FFCD56;" id="pendingRequests">0</div>
                                         <div class="status-label">In Progress</div>
                                     </div>
                                     <div class="status-card">
-                                        <div class="status-count" style="color: var(--danger);" id="rejectedRequests">0</div>
+                                        <div class="status-count" style="color: #FF6384;" id="rejectedRequests">0</div>
                                         <div class="status-label">Rejected</div>
                                     </div>
                                 </div>
@@ -911,7 +919,6 @@
                                             <th>Title</th>
                                             <th>Unit</th>
                                             <th>Type</th>
-                                            <th>Status</th>
                                             <th>Amount</th>
                                             <th>Date</th>
                                         </tr>
@@ -1183,7 +1190,7 @@
 
                                 const summaryLabel = document.createElement('span');
                                 summaryLabel.className = 'summary-label';
-                                summaryLabel.innerHTML = `<i class='bx bx-group'></i> ${label}`;
+                                summaryLabel.innerHTML = `${label}`;
 
                                 const summaryValue = document.createElement('span');
                                 summaryValue.className = 'summary-value';
@@ -1339,29 +1346,29 @@
                                 return `<span class="transaction-type ${typeClass}">${data}</span>`;
                             }
                         },
-                        {
-                            data: 'status',
-                            render: function(data, type, row) {
-                                let icon = '';
-                                let text = data;
-
-                                switch(data.toLowerCase()) {
-                                    case 'completed':
-                                        icon = '<i class="bx bx-check-circle"></i>';
-                                        break;
-                                    case 'pending':
-                                        icon = '<i class="bx bx-time"></i>';
-                                        break;
-                                    case 'rejected':
-                                        icon = '<i class="bx bx-x-circle"></i>';
-                                        break;
-                                    default:
-                                        icon = '<i class="bx bx-question-mark"></i>';
-                                }
-
-                                return `<span class="transaction-status">${icon} ${text}</span>`;
-                            }
-                        },
+                        // {
+                        //     data: 'status',
+                        //     render: function(data, type, row) {
+                        //         let icon = '';
+                        //         let text = data;
+                        //
+                        //         switch(data.toLowerCase()) {
+                        //             case 'completed':
+                        //                 icon = '<i class="bx bx-check-circle"></i>';
+                        //                 break;
+                        //             case 'pending':
+                        //                 icon = '<i class="bx bx-time"></i>';
+                        //                 break;
+                        //             case 'rejected':
+                        //                 icon = '<i class="bx bx-x-circle"></i>';
+                        //                 break;
+                        //             default:
+                        //                 icon = '<i class="bx bx-question-mark"></i>';
+                        //         }
+                        //
+                        //         return `<span class="transaction-status">${icon} ${text}</span>`;
+                        //     }
+                        // },
                         {
                             data: 'amount',
                             render: function(data, type, row) {
@@ -1592,21 +1599,21 @@
                             {
                                 label: 'Available',
                                 data: data.available || [],
-                                backgroundColor: '#e0e0e0',
+                                backgroundColor: '#FFCD56',
                                 borderRadius: 4,
                                 borderWidth: 0
                             },
                             {
                                 label: 'Rented',
                                 data: data.rented || [],
-                                backgroundColor: '#184E83',
+                                backgroundColor: '#4BC0C0',
                                 borderRadius: 4,
                                 borderWidth: 0
                             },
                             {
                                 label: 'Sold',
                                 data: data.sold || [],
-                                backgroundColor: '#2ecc71',
+                                backgroundColor: '#FF6384',
                                 borderRadius: 4,
                                 borderWidth: 0
                             }
@@ -1652,7 +1659,7 @@
                                 },
                                 title: {
                                     display: true,
-                                    text: getTimePeriodLabel()
+                                    text: 'Days'
                                 }
                             }
                         }

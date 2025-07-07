@@ -57,11 +57,9 @@ class SubscriptionController extends Controller
             }
 
             if ($originalStatus === 'Active') {
-                $subscription->subscription_status = 'Cancelled';
-                $subscription->ends_at = now();
-            } elseif ($originalStatus === 'Cancelled') {
+                $subscription->subscription_status = 'Canceled';
+            } elseif ($originalStatus === 'Canceled') {
                 $subscription->subscription_status = 'Active';
-                $subscription->ends_at = now()->addMonths($subscription->billing_cycle);
             } else {
                 return response()->json([
                     'error' => "$purpose with status '{$originalStatus}' cannot be toggled.",
