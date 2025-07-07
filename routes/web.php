@@ -401,7 +401,7 @@ Route::prefix('owner')->middleware(['auth.jwt'])->group(function () {
             Route::get('/monthly/financial/stats', [ReportsController::class , 'getOrgMonthlyFinancialStats'])->name('owner.reports.monthlyFinancial.stats');
 
             Route::prefix('buildings')->group(function () {
-                Route::get('/', function () { return view('Heights.Owner.Reports.buildings'); })->name('owner.reports.buildings');
+                Route::get('/', function () { return view('Heights.Owner.Reports.index'); })->name('owner.reports.buildings');
 
                 Route::get('/metrics', [BuildingReportController::class, 'getMetrics'])->name('owner.reports.buildings.metrics');
                 Route::get('/finance', [BuildingReportController::class, 'getIncomeExpense'])->name('owner.reports.buildings.finance');

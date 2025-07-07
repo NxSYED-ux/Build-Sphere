@@ -521,11 +521,6 @@
             <div class="value" id="totalExpenses">$0</div>
         </div>
     </div>
-    <p class="section-description">
-        The key metrics section provides a quick snapshot of your property's performance.
-        You can see the total number of units and levels across all buildings, along with
-        financial metrics showing income and expenses.
-    </p>
 
     <!-- Income vs Expense Pie Chart with Summary -->
     <div class="chart-summary-row">
@@ -555,6 +550,26 @@
             <div class="summary-item">
                 <span class="summary-label"><i class='bx bx-line-chart'></i> Profit Margin</span>
                 <span class="summary-value positive" id="summaryMargin">0%</span>
+            </div>
+            <div class="progress-container">
+                <div class="progress-item">
+                    <div class="progress-header">
+                        <span class="progress-label">Income Growth</span>
+                        <span class="progress-value positive">+12%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 62%; background-color: var(--primary);"></div>
+                    </div>
+                </div>
+                <div class="progress-item">
+                    <div class="progress-header">
+                        <span class="progress-label">Expense Growth</span>
+                        <span class="progress-value negative">+5%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 25%; background-color: var(--danger);"></div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
