@@ -111,7 +111,7 @@
         /* Grid Layout */
         .departments-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
             gap: 20px;
             margin: 0 -10px;
         }
@@ -122,115 +122,141 @@
             }
         }
 
-
         /* Department Cards */
         .department-card {
             transition: all 0.3s ease;
             border-radius: 12px;
             border: none;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-            margin-bottom: 20px;
-            height: 100%;
-            background: var(--body-background-color);
+            background: linear-gradient(var(--body-background-color), #e9ecef);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+            padding: 16px;
+            height: auto;
             color: var(--sidenavbar-text-color);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            min-height: 220px; /* Reduced height */
         }
 
-        .department-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-        }
-
+        /* Card Header */
         .department-card .card-header {
-            background: var(--body-background-color);
-            color: var(--sidenavbar-text-color);
-            border-bottom: none;
-            border-radius: 12px 12px 0 0 !important;
-            padding: 15px 20px;
-            font-weight: 600;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            margin-bottom: 12px;
+            padding: 0;
+            background: transparent;
+            border: none;
         }
 
-        .department-card .card-body {
-            background: var(--body-background-color);
-            padding: 20px;
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            border-radius: 0 0 12px 12px  !important;
-        }
-
-        .department-card .department-description {
+        .department-card .card-header span {
+            font-weight: 600;
+            font-size: 1rem;
             color: var(--sidenavbar-text-color);
-            font-size: 0.9rem;
-            line-height: 1.5;
-            margin-bottom: 5px;
-            flex-grow: 1;
-            overflow: hidden;
-            display: -webkit-box;
-            -webkit-line-clamp: 4;
-            -webkit-box-orient: vertical;
         }
 
         .department-card .department-id {
-            font-size: 0.8rem;
-            color: var(--color-blue);
-            margin-bottom: 5px;
+            font-size: 0.75rem;
+            color: var(--sidenavbar-text-color);
+            background: rgba(255,255,255,0.7);
+            padding: 2px 6px;
+            border-radius: 10px;
         }
 
-        .department-card .action-buttons {
+        /* Card Body */
+        .department-card .card-body {
+            padding: 0;
+            flex-grow: 1;
             display: flex;
-            gap: 10px;
-            justify-content: flex-end;
-            margin-top: 0;
-            padding-top: 15px;
+            flex-direction: column;
         }
 
-        .department-card .action-btn {
+        /* Description */
+        .department-description {
+            font-size: 0.85rem;
+            color: var(--sidenavbar-text-color);
+            margin-bottom: 12px;
+            padding: 8px;
+            border-radius: 8px;
+            background-color: var(--main-background-color2);
+            flex-grow: 1;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            text-overflow: ellipsis;
+        }
+
+        /* Stats Section */
+        .department-stats {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .stat-item {
+            text-align: center;
+            flex: 1;
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--sidenavbar-text-color);
+            margin-bottom: 2px;
+        }
+
+        .stat-value {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #0d6efd;
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            justify-content: space-around;
+            padding-top: 8px;
+            border-top: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .action-btn {
             width: 36px;
             height: 36px;
-            border-radius: 50%;
+            border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
+            background: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
             transition: all 0.2s ease;
+            text-decoration: none;
         }
 
-        .department-card .action-btn:hover {
-            transform: scale(1.1);
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
 
-        .department-card .btn-view {
-            background-color: rgba(13, 110, 253, 0.1);
+        .action-btn svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .btn-view {
             color: #0d6efd;
         }
 
-        .department-card .btn-view:hover {
-            background-color: rgba(13, 110, 253, 0.1);
-            color: #0d6efd;
+        .btn-edit {
+            color: #fd7e14;
         }
 
-        .department-card .btn-edit {
-            background-color: rgba(255, 193, 7, 0.1);
-            color: #ffc107;
-        }
-
-        .department-card .btn-edit:hover {
-            background-color: rgba(255, 193, 7, 0.1);
-            color: #ffc107;
-        }
-
-        .department-card .btn-delete {
-            background-color: rgba(220, 53, 69, 0.1);
+        .btn-delete {
             color: #dc3545;
+            border: none !important;
         }
 
-        .department-card .btn-delete:hover {
-            background-color: rgba(220, 53, 69, 0.1);
-            color: #dc3545;
-        }
-
+        /* Empty State */
         .empty-state {
             grid-column: 1 / -1;
             text-align: center;
@@ -253,6 +279,7 @@
             color: var(--sidenavbar-text-color);
         }
 
+        /* Animations */
         @keyframes fadeInUp {
             from {
                 opacity: 0;
@@ -277,7 +304,7 @@
         .department-card:nth-child(7) { animation-delay: 0.7s; }
         .department-card:nth-child(8) { animation-delay: 0.8s; }
 
-        /* Model Windows */
+        /* Modal Windows */
         .modal-content{
             background: var(--modal-header-bg);
             color: var(--modal-text);
@@ -382,24 +409,37 @@
                                     <div class="departments-grid">
                                         @forelse($departments ?? [] as $department)
                                             <div class="card department-card">
+                                                <!-- Header -->
                                                 <div class="card-header">
                                                     <span>{{ $department->name }}</span>
                                                     <span class="department-id">ID: {{ $department->id }}</span>
                                                 </div>
+
+                                                <!-- Body -->
                                                 <div class="card-body">
                                                     <p class="department-description">
                                                         {{ $department->description ?? 'No description provided' }}
                                                     </p>
-                                                    <div class="action-buttons  border-top">
+
+                                                    <!-- Stats Section -->
+                                                    <div class="department-stats">
+                                                        <div class="stat-item">
+                                                            <div class="stat-label">Total Staff</div>
+                                                            <div class="stat-value">{{ $department->staff_count ?? 0 }}</div>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Action Buttons -->
+                                                    <div class="action-buttons">
                                                         <a href="{{ route('owner.departments.show', ['department' => $department->id]) }}"
-                                                           class="btn btn-sm btn-view rounded-circle p-2"
+                                                           class="action-btn btn-view"
                                                            data-bs-toggle="tooltip"
                                                            data-bs-placement="top"
                                                            title="View">
                                                             <x-icon name="view" type="icon" size="16px" />
                                                         </a>
                                                         <a href="#"
-                                                           class="btn btn-sm btn-edit rounded-circle p-2 Owner-Department-Edit-Button"
+                                                           class="action-btn btn-edit Owner-Department-Edit-Button"
                                                            data-id="{{ $department->id }}"
                                                            data-bs-toggle="tooltip"
                                                            data-bs-placement="top"
@@ -414,7 +454,7 @@
                                                             @method('DELETE')
                                                             <input type="hidden" name="id" value="{{ $department->id }}">
                                                             <button type="button"
-                                                                    class="btn btn-sm btn-delete rounded-circle p-2 delete-department-btn"
+                                                                    class="action-btn btn-delete delete-department-btn"
                                                                     title="Delete Department"
                                                                     data-id="{{ $department->id }}">
                                                                 <x-icon name="delete" type="icon" size="16px" />
@@ -423,6 +463,7 @@
                                                     </div>
                                                 </div>
                                             </div>
+
                                         @empty
                                             <div class="empty-state">
                                                 <div class="empty-state-icon">
@@ -480,7 +521,6 @@
                                             </tbody>
                                         </table>
                                     </div>
-
                                 </div>
                             </div>
                         </div>
@@ -510,8 +550,8 @@
                                     <input type="text" name="name" id="name" class="form-control @error('name') is-invalid @enderror" value="{{ old('name') }}" maxlength="50" placeholder="Department Name" required>
                                     @error('name')
                                     <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
+                                    <strong>{{ $message }}</strong>
+                                </span>
                                     @enderror
                                 </div>
                             </div>
@@ -523,8 +563,8 @@
                                     <textarea name="description" id="description" rows="3" class="form-control @error('description') is-invalid @enderror" maxlength="250" placeholder="Department Description">{{ old('description') }}</textarea>
                                     @error('description')
                                     <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
+                                    <strong>{{ $message }}</strong>
+                                </span>
                                     @enderror
                                 </div>
                             </div>
@@ -565,8 +605,8 @@
                                     <input type="text" name="edit_name" id="edit_department_name" class="form-control @error('edit_name') is-invalid @enderror" value="{{ old('edit_name') }}" maxlength="50" placeholder="Department Name" required>
                                     @error('edit_name')
                                     <span class="invalid-feedback" role="alert">
-                                    <strong>{{ $message }}</strong>
-                                </span>
+                                <strong>{{ $message }}</strong>
+                            </span>
                                     @enderror
                                 </div>
                             </div>
@@ -577,8 +617,8 @@
                                     <textarea name="edit_description" id="edit_department_description" rows="3" class="form-control @error('edit_description') is-invalid @enderror" maxlength="250" placeholder="Department Description">{{ old('edit_description') }}</textarea>
                                     @error('edit_description')
                                     <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
+                                    <strong>{{ $message }}</strong>
+                                </span>
                                     @enderror
                                 </div>
                             </div>
@@ -750,8 +790,9 @@
         });
     </script>
 
-    <!-- Handle all delete buttons -->
+
     <script>
+        //<!-- Handle all delete buttons -->
         document.addEventListener('DOMContentLoaded', function() {
             document.querySelectorAll('.delete-department-btn').forEach(button => {
                 button.addEventListener('click', function() {
@@ -773,6 +814,190 @@
                     });
                 });
             });
+        });
+
+        //Handle card size
+        // document.addEventListener('DOMContentLoaded', function() {
+        //     // Function to equalize card description heights
+        //     function equalizeCardHeights() {
+        //         const cards = document.querySelectorAll('.department-card');
+        //         let maxHeight = 0;
+        //
+        //         // Reset all heights first to get natural heights
+        //         cards.forEach(card => {
+        //             const desc = card.querySelector('.department-description');
+        //             desc.style.height = 'auto';
+        //         });
+        //
+        //         // Find the maximum height
+        //         cards.forEach(card => {
+        //             const desc = card.querySelector('.department-description');
+        //             maxHeight = Math.max(maxHeight, desc.offsetHeight);
+        //         });
+        //
+        //         // Apply the maximum height to all
+        //         cards.forEach(card => {
+        //             const desc = card.querySelector('.department-description');
+        //             desc.style.height = `${maxHeight}px`;
+        //         });
+        //     }
+        //
+        //     // Run initially
+        //     equalizeCardHeights();
+        //
+        //     // Run after search/filter operations
+        //     const searchInput = document.getElementById('search');
+        //     if (searchInput) {
+        //         searchInput.addEventListener('input', function() {
+        //             // Use setTimeout to allow DOM to update first
+        //             setTimeout(equalizeCardHeights, 100);
+        //         });
+        //     }
+        //
+        //     // Run when switching between grid/table view
+        //     const gridViewBtn = document.getElementById('gridViewBtn');
+        //     const tableViewBtn = document.getElementById('tableViewBtn');
+        //
+        //     if (gridViewBtn && tableViewBtn) {
+        //         gridViewBtn.addEventListener('click', function() {
+        //             setTimeout(equalizeCardHeights, 100);
+        //         });
+        //     }
+        //
+        //     // Optional: Use MutationObserver to detect DOM changes
+        //     const observer = new MutationObserver(function(mutations) {
+        //         mutations.forEach(function(mutation) {
+        //             if (mutation.addedNodes.length || mutation.removedNodes.length) {
+        //                 equalizeCardHeights();
+        //             }
+        //         });
+        //     });
+        //
+        //     const gridContainer = document.querySelector('.departments-grid');
+        //     if (gridContainer) {
+        //         observer.observe(gridContainer, {
+        //             childList: true,
+        //             subtree: true
+        //         });
+        //     }
+        // });
+
+        //Hnadle search
+        document.addEventListener('DOMContentLoaded', function() {
+            // 1. Get all necessary elements
+            const searchInput = document.getElementById('search');
+            if (!searchInput) {
+                console.error('Search input not found!');
+                return;
+            }
+
+            const departmentsGrid = document.querySelector('.departments-grid');
+            const tableView = document.getElementById('tableView');
+
+            if (!departmentsGrid || !tableView) {
+                console.error('Required containers not found!');
+                return;
+            }
+
+            // 2. Store original elements
+            const originalCards = Array.from(departmentsGrid.querySelectorAll('.department-card'));
+            const originalRows = Array.from(tableView.querySelectorAll('tbody tr'));
+
+            // 3. Debounce function to prevent rapid firing
+            function debounce(func, wait) {
+                let timeout;
+                return function() {
+                    const context = this, args = arguments;
+                    clearTimeout(timeout);
+                    timeout = setTimeout(() => {
+                        func.apply(context, args);
+                    }, wait);
+                };
+            }
+
+            // 4. Search function
+            const performSearch = debounce(function(searchTerm) {
+                searchTerm = searchTerm.toLowerCase().trim();
+
+                let hasCardResults = false;
+                let hasTableResults = false;
+
+                // Search cards
+                originalCards.forEach(card => {
+                    const cardText = [
+                        card.querySelector('.card-header span:first-child')?.textContent || '',
+                        card.querySelector('.department-description')?.textContent || '',
+                        card.querySelector('.department-id')?.textContent || ''
+                    ].join(' ').toLowerCase();
+
+                    const isVisible = cardText.includes(searchTerm);
+                    card.style.display = isVisible ? 'block' : 'none';
+                    if (isVisible) hasCardResults = true;
+                });
+
+                // Search table rows
+                originalRows.forEach(row => {
+                    const rowText = Array.from(row.querySelectorAll('td'))
+                        .map(td => td.textContent || '')
+                        .join(' ')
+                        .toLowerCase();
+
+                    const isVisible = rowText.includes(searchTerm);
+                    row.style.display = isVisible ? '' : 'none';
+                    if (isVisible) hasTableResults = true;
+                });
+
+                // Handle empty states
+                handleEmptyStates(!hasCardResults, !hasTableResults, searchTerm);
+            }, 300);
+
+            // 5. Empty state handler
+            function handleEmptyStates(showCardEmpty, showTableEmpty, searchTerm) {
+                // Card view empty state
+                const cardEmptyState = departmentsGrid.querySelector('.empty-state');
+                if (showCardEmpty) {
+                    if (!cardEmptyState) {
+                        departmentsGrid.insertAdjacentHTML('beforeend', `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">
+                            <i class='bx bx-sitemap'></i>
+                        </div>
+                        <h4 class="empty-state-text">No departments found</h4>
+                        <p>No departments match your search for "${searchTerm}".</p>
+                    </div>
+                `);
+                    }
+                } else if (cardEmptyState) {
+                    cardEmptyState.remove();
+                }
+
+                // Table view empty state
+                const tableEmptyRow = tableView.querySelector('tr.empty-row');
+                if (showTableEmpty) {
+                    if (!tableEmptyRow) {
+                        const tbody = tableView.querySelector('tbody');
+                        tbody.insertAdjacentHTML('beforeend', `
+                    <tr class="empty-row">
+                        <td colspan="4" class="text-center">
+                            No departments match your search for "${searchTerm}"
+                        </td>
+                    </tr>
+                `);
+                    }
+                } else if (tableEmptyRow) {
+                    tableEmptyRow.remove();
+                }
+            }
+
+            // 6. Event listeners
+            searchInput.addEventListener('input', function() {
+                performSearch(this.value);
+            });
+
+            // Initial check in case there's a search term on page load
+            if (searchInput.value) {
+                performSearch(searchInput.value);
+            }
         });
     </script>
 

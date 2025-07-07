@@ -1115,6 +1115,7 @@
                                         </div>
                                     </div>
                                 </div>
+
                                 <!-- Unit Status Timeline -->
                                 <div class="timeline-container">
                                     <h3>Unit Status History</h3>
