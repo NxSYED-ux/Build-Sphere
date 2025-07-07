@@ -6,6 +6,7 @@ use App\Http\Controllers\GeneralControllers\ProfileController;
 use App\Http\Controllers\WebControllers\AdminDashboardController;
 use App\Http\Controllers\WebControllers\BuildingController;
 use App\Http\Controllers\WebControllers\BuildingLevelController;
+use App\Http\Controllers\WebControllers\BuildingReportController;
 use App\Http\Controllers\WebControllers\BuildingUnitController;
 use App\Http\Controllers\WebControllers\CheckOutController;
 use App\Http\Controllers\WebControllers\DepartmentController;
@@ -402,12 +403,12 @@ Route::prefix('owner')->middleware(['auth.jwt'])->group(function () {
             Route::prefix('buildings')->group(function () {
                 Route::get('/', function () { return view('Heights.Owner.Reports.buildings'); })->name('owner.reports.buildings');
 
-                Route::get('/metrics', [ReportsController::class, 'getMetrics'])->name('owner.reports.buildings.metrics');
-                Route::get('/income-expense', [ReportsController::class, 'getIncomeExpense'])->name('owner.reports.buildings.income-expense');
-                Route::get('/occupancy', [ReportsController::class, 'getOccupancy'])->name('owner.reports.buildings.occupancy');
-                Route::get('/staff', [ReportsController::class, 'getStaff'])->name('owner.reports.buildings.staff');
-                Route::get('/memberships', [ReportsController::class, 'getMemberships'])->name('owner.reports.buildings.memberships');
-                Route::get('/maintenance', [ReportsController::class, 'getMaintenance'])->name('owner.reports.buildings.maintenance');
+                Route::get('/metrics', [BuildingReportController::class, 'getMetrics'])->name('owner.reports.buildings.metrics');
+                Route::get('/finance', [BuildingReportController::class, 'getIncomeExpense'])->name('owner.reports.buildings.finance');
+                Route::get('/occupancy', [BuildingReportController::class, 'getOccupancy'])->name('owner.reports.buildings.occupancy');
+                Route::get('/staff', [BuildingReportController::class, 'getStaff'])->name('owner.reports.buildings.staff');
+                Route::get('/memberships', [BuildingReportController::class, 'getMemberships'])->name('owner.reports.buildings.memberships');
+                Route::get('/maintenance', [BuildingReportController::class, 'getMaintenance'])->name('owner.reports.buildings.maintenance');
             });
         });
 

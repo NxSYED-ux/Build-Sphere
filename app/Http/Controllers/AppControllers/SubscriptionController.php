@@ -49,7 +49,7 @@ class SubscriptionController extends Controller
                     ], 400);
                 }
 
-                if ($rentalContract->renew_canceled && $originalStatus === 'Cancelled') {
+                if ($rentalContract->renew_canceled && $originalStatus === 'Canceled') {
                     return response()->json([
                         'error' => 'This rental contract has been officially terminated by the building administration and is no longer eligible for reactivation.',
                     ], 403);

@@ -775,7 +775,7 @@
 
             // API 2: Fetch income/expense data (Income vs Expense, Financial Summary, Income Sources, Expense Categories, Recent Transactions)
             function fetchIncomeExpenseData() {
-                return fetch(`{{ route('owner.reports.buildings.income-expense') }}?building_id=${currentBuilding}&start_date=${currentStartDate}&end_date=${currentEndDate}`, {
+                return fetch(`{{ route('owner.reports.buildings.finance') }}?building_id=${currentBuilding}&start_date=${currentStartDate}&end_date=${currentEndDate}`, {
                     method: 'GET',
                     headers: {
                         'X-CSRF-TOKEN': csrfToken,
