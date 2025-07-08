@@ -5,417 +5,514 @@ namespace App\Http\Controllers\WebControllers;
 use App\Http\Controllers\Controller;
 use App\Models\BuildingUnit;
 use App\Models\ManagerBuilding;
+use App\Models\MembershipUser;
+use App\Models\Query;
+use App\Models\Subscription;
 use App\Models\Transaction;
+use App\Models\UserBuildingUnit;
+use App\Services\OwnerFiltersService;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class ReportsController extends Controller
 {
-    public function getOccupancyStats(Request $request){
-        $user = $request->user();
-        $token = $request->attributes->get('token');
-        $organization_id = $token['organization_id'];
-        $role_id = $token['role_id'];
-
-        return $this->orgOccupancyStats($request, $organization_id, $role_id, $user->id, 'user_id');
-    }
-
-    public function getOrgMonthlyFinancialStats(Request $request)
+    public function index()
     {
-        $user = $request->user();
-        $token = $request->attributes->get('token');
-        $organization_id = $token['organization_id'];
-        $role_id = $token['role_id'];
-
-        return $this->orgMonthlyStats($request, $organization_id, $role_id, $user->id, 'user_id');
-    }
-
-
-    // Manager Detail Page
-    public function getManagerBuildingsMonthlyStats(Request $request, string $id)
-    {
-        $token = $request->attributes->get('token');
-        $organization_id = $token['organization_id'];
-
-        return $this->orgMonthlyStats($request, $organization_id, 3, $id, 'staff_id');
-    }
-
-    public function getManagerBuildingsOccupancyStats(Request $request, string $id)
-    {
-        $token = $request->attributes->get('token');
-        $organization_id = $token['organization_id'];
-
-        return $this->orgOccupancyStats($request, $organization_id, 3, $id, 'staff_id');
-    }
-
-
-    // Helper function
-    private function orgOccupancyStats(Request $request, string $organization_id, int $roleId, string $id, string $trackOn)
-    {
-        $building_id = $request->input('buildingId');
-
         try {
-            $buildingIds = [];
-            if ($roleId === 3) {
-                $buildingIds = ManagerBuilding::where($trackOn, $id)->pluck('building_id')->toArray();
+            $ownerService = new OwnerFiltersService();
+            $buildingIds = $ownerService->getAccessibleBuildingIds();
+            $buildings = $ownerService->buildings($buildingIds);
+            $units = $ownerService->allUnitsExceptMembershipUnits($buildingIds);
 
-                if ($building_id && !in_array($building_id, $buildingIds)) {
-                    return response()->json(['error' => 'You do not have access to this building.'], 403);
+            return view('Heights.Owner.Reports.index', compact('buildings', 'units'));
+        } catch (\Throwable $e) {
+            Log::error('Error in Owner Report: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Something went wrong. Please try again later.');
+        }
+    }
+
+
+    // For both Building and Unit
+    public function getFinance(Request $request)
+    {
+        try {
+            $building_id = $request->input('building');
+            $unit_id = $request->input('unit');
+            $start = $request->input('start') ? Carbon::parse($request->input('start'))->startOfDay() : now()->subDays(29)->startOfDay();
+            $end = $request->input('end') ? Carbon::parse($request->input('end'))->endOfDay() : now()->endOfDay();
+
+            $token = $request->attributes->get('token');
+            $organization_id = $token['organization_id'];
+            $roleId = $request->user()->role_id;
+
+            $ownerService = new OwnerFiltersService();
+            if ($roleId !== 2) {
+                $accessibleBuildingIds = $ownerService->getAccessibleBuildingIds();
+
+                if ($building_id && !in_array($building_id, $accessibleBuildingIds)) {
+                    return response()->json(['message' => 'You do not have access to the selected building.'], 403);
                 }
             }
 
-            $units = BuildingUnit::where('organization_id', $organization_id)
-                ->when($building_id, function ($query) use ($building_id) {
-                    $query->where('building_id', $building_id);
-                }, function ($query) use ($roleId, $buildingIds) {
-                    if ($roleId === 3) {
-                        $query->whereIn('building_id', $buildingIds);
-                    }
+            $baseQuery = Transaction::whereBetween('created_at', [$start, $end])
+                ->where('status', 'Completed');
+
+            $incomeQuery = (clone $baseQuery)
+                ->where('seller_type', 'organization')
+                ->where('seller_id', $organization_id)
+                ->when($roleId !== 2, fn($q) => $q->whereIn('building_id', $accessibleBuildingIds))
+                ->when($building_id, fn($q) => $q->where('building_id', $building_id))
+                ->when($unit_id, fn($q) => $q->where('unit_id', $unit_id));
+
+            $expenseQuery = (clone $baseQuery)
+                ->where('buyer_type', 'organization')
+                ->where('buyer_id', $organization_id)
+                ->when($roleId !== 2, fn($q) => $q->whereIn('building_id', $accessibleBuildingIds))
+                ->when($building_id, fn($q) => $q->where('building_id', $building_id))
+                ->when($unit_id, fn($q) => $q->where('unit_id', $unit_id));
+
+            $incomeTransactions = $incomeQuery->with('unit')->get();
+            $expenseTransactions = $expenseQuery->with('unit')->get();
+
+            $totalIncome = $incomeTransactions->sum('price');
+            $totalExpense = $expenseTransactions->sum('price');
+            $netProfit = $totalIncome - $totalExpense;
+            $profitMargin = $totalIncome > 0 ? round(($netProfit / $totalIncome) * 100, 2) : 0;
+
+            $incomeSources = $incomeTransactions->groupBy('transaction_title')->map(fn($g) => $g->sum('price'));
+            $expenseSources = $expenseTransactions->groupBy('transaction_title')->map(fn($g) => $g->sum('price'));
+
+            $recentTransactions = collect([...$incomeTransactions, ...$expenseTransactions])
+                ->sortByDesc('created_at')
+                ->map(function ($t) {
+                    return [
+                        'id' => 'TX-' . str_pad($t->id, 4, '0', STR_PAD_LEFT),
+                        'title' => $t->transaction_title,
+                        'unit' => $t->unit?->unit_name ?? 'N/A',
+                        'source' => match (true) {
+                            $t->source_name === 'unit contract' => 'Sale',
+                            ($t->source_name === 'subscription' || $t->source_name === 'membership') && $t->membership_id != null => 'Membership',
+                            $t->source_name === 'subscription' && $t->membership_id === null => 'Rent',
+                            $t->source_name === 'query' => 'Maintenance Request',
+                            default => 'Other',
+                        },
+                        'type' => $t->seller_type === 'organization' ? 'Income' : 'Expense',
+                        'amount' => $t->price,
+                        'date' => $t->created_at->format('Y-m-d')
+                    ];
                 })
-                ->select('availability_status')
-                ->get()
-                ->groupBy('availability_status')
-                ->map->count();
+                ->values()
+                ->toArray();
+
+            $days = $start->diffInDays($end);
+            $previousStart = (clone $start)->subDays($days + 1);
+            $previousEnd = (clone $start)->subDay();
+
+            $prevIncome = Transaction::where('seller_type', 'organization')
+                ->where('seller_id', $organization_id)
+                ->where('status', 'Completed')
+                ->whereBetween('created_at', [$previousStart, $previousEnd])
+                ->when($roleId !== 2, fn($q) => $q->whereIn('building_id', $accessibleBuildingIds))
+                ->when($building_id, fn($q) => $q->where('building_id', $building_id))
+                ->when($unit_id, fn($q) => $q->where('unit_id', $unit_id))
+                ->sum('price');
+
+            $prevExpense = Transaction::where('buyer_type', 'organization')
+                ->where('buyer_id', $organization_id)
+                ->where('status', 'Completed')
+                ->whereBetween('created_at', [$previousStart, $previousEnd])
+                ->when($roleId !== 2, fn($q) => $q->whereIn('building_id', $accessibleBuildingIds))
+                ->when($building_id, fn($q) => $q->where('building_id', $building_id))
+                ->when($unit_id, fn($q) => $q->where('unit_id', $unit_id))
+                ->sum('price');
+
+            $incomeGrowth = $prevIncome > 0 ? round((($totalIncome - $prevIncome) / $prevIncome) * 100, 2) : ($totalIncome > 0 ? 100 : 0);
+            $expenseGrowth = $prevExpense > 0 ? round((($totalExpense - $prevExpense) / $prevExpense) * 100, 2) : ($totalExpense > 0 ? 100 : 0);
 
             return response()->json([
-                'availableUnits' => $units['Available'] ?? 0,
-                'rentedUnits' => $units['Rented'] ?? 0,
-                'soldUnits' => $units['Sold'] ?? 0,
-            ], 200);
-
+                'overview' => [
+                    'income' => $totalIncome,
+                    'expense' => $totalExpense,
+                    'net_profit' => $netProfit,
+                    'profit_margin' => $profitMargin,
+                ],
+                'growth' => [
+                    'income' => $incomeGrowth,
+                    'expense' => $expenseGrowth,
+                ],
+                'income_sources' => [
+                    'labels' => $incomeSources->keys()->toArray(),
+                    'data' => array_values($incomeSources->toArray()),
+                    'colors' => ['#184E83', '#1A6FC9', '#2ecc71'],
+                ],
+                'expense_sources' => [
+                    'labels' => $expenseSources->keys()->toArray(),
+                    'data' => array_values($expenseSources->toArray()),
+                    'colors' => ['#ff4d6d', '#e67e22', '#9b59b6'],
+                ],
+//                'income_sources' => [
+//                    'labels' => $incomeSources->keys()->toArray(),
+//                    'data' => array_values($incomeSources->toArray()),
+//                    'colors' => ['#184E83', '#1A6FC9', '#2ecc71'],
+//                ],
+//                'expense_sources' => [
+//                    'labels' => $expenseSources->keys()->toArray(),
+//                    'data' => array_values($expenseSources->toArray()),
+//                    'colors' => ['#ff4d6d', '#e67e22', '#9b59b6'],
+//                ],
+                'recent_transactions' => $recentTransactions
+            ]);
         } catch (\Throwable $e) {
-            Log::error('Error in occupancy chart: ' . $e->getMessage());
-            return response()->json(['error' => 'Something went wrong. Please try again later.'], 500);
+            Log::error('Error in getFinance: ' . $e->getMessage());
+
+            return response()->json([
+                'message' => 'Failed to retrieve financial overview.',
+                'error' => $e->getMessage()
+            ], 500);
         }
     }
 
-    private function orgMonthlyStats(Request $request, string $organization_id, int $roleId, string $id, string $trackOn)
-    {
-        $selectedBuildingId = $request->input('buildingId');
-        try {
 
-            $buildingIds = [];
-            if ($roleId === 3) {
-                $buildingIds = ManagerBuilding::where($trackOn, $id)
-                    ->pluck('building_id')
+    // Building
+    public function getBuildingOccupancy(Request $request)
+    {
+        try {
+            $start = $request->input('start') ? Carbon::parse($request->input('start'))->startOfDay() : now()->subDays(29)->startOfDay();
+            $end = $request->input('end') ? Carbon::parse($request->input('end'))->endOfDay() : now()->endOfDay();
+
+            $building_id = $request->input('building');
+            $ownerService = new OwnerFiltersService();
+            $accessibleBuildingIds = $ownerService->getAccessibleBuildingIds();
+
+            if ($building_id && !in_array($building_id, $accessibleBuildingIds)) {
+                return response()->json([
+                    'message' => 'You do not have access to the selected building.'
+                ], 403);
+            }
+
+            $buildingIds = $building_id ? [$building_id] : $accessibleBuildingIds;
+
+            $units = BuildingUnit::whereIn('building_id', $buildingIds)
+                ->where('sale_or_rent', '!=', 'Not Available')
+                ->where('created_at', '<=', $end)
+                ->get(['id', 'created_at']);
+
+            $unitIds = $units->pluck('id')->toArray();
+
+            $soldContracts = UserBuildingUnit::whereIn('unit_id', $unitIds)
+                ->where('contract_status', 1)
+                ->where('type', 'Sold')
+                ->get(['unit_id', 'created_at']);
+
+            $subscriptions = Subscription::where('source_name', 'unit contract')
+                ->whereIn('unit_id', $unitIds)
+                ->whereIn('building_id', $buildingIds)
+                ->get(['unit_id', 'created_at', 'ends_at']);
+
+            $totalDays = (int) $start->diffInDays($end) + 1;
+            $segments = min($totalDays, 15);
+            $daysPerSegment = max(1, ceil($totalDays / $segments));
+
+            $labels = [];
+            $availableData = $rentedData = $soldData = [];
+
+            $segmentStart = $start->copy();
+            while ($segmentStart->lte($end)) {
+                $segmentEnd = $segmentStart->copy()->addDays($daysPerSegment - 1)->endOfDay();
+                if ($segmentEnd->gt($end)) {
+                    $segmentEnd = $end->copy()->endOfDay();
+                }
+
+                $label = $segmentStart->isSameDay($segmentEnd)
+                    ? $segmentStart->format('d M')
+                    : $segmentStart->format('d M') . ' - ' . $segmentEnd->format('d M');
+
+                $labels[] = $label;
+
+                $segmentUnits = $units->filter(fn($q) => $q->created_at <= $segmentEnd)->pluck('id')->toArray();
+
+                $segmentSold = $soldContracts
+                    ->filter(fn($s) => in_array($s->unit_id, $segmentUnits) && $s->created_at <= $segmentEnd)
+                    ->pluck('unit_id')
+                    ->unique()
                     ->toArray();
 
-                if ($selectedBuildingId && !in_array($selectedBuildingId, $buildingIds)) {
-                    return response()->json(['error' => 'Unauthorized building access'], 403);
-                }
+                $soldCount = $soldContracts
+                    ->filter(fn($s) => in_array($s->unit_id, $segmentUnits) && $s->created_at->between($segmentStart, $segmentEnd))
+                    ->pluck('unit_id')
+                    ->unique()
+                    ->count();
+
+                $segmentRented = $subscriptions
+                    ->filter(fn($s) => in_array($s->unit_id, $segmentUnits) && (is_null($s->ends_at) || $s->ends_at >= $segmentStart) && ($s->created_at <= $segmentEnd))
+                    ->pluck('unit_id')
+                    ->unique()
+                    ->toArray();
+
+                $rentedCount = $subscriptions
+                    ->filter(fn($s) => in_array($s->unit_id, $segmentUnits) && $s->created_at->between($segmentStart, $segmentEnd))
+                    ->pluck('unit_id')
+                    ->unique()
+                    ->count();
+
+                $occupied = array_unique(array_merge($segmentRented, $segmentSold));
+                $available = count($segmentUnits) - count($occupied);
+
+                $availableData[] = max($available, 0);
+                $rentedData[] = $rentedCount;
+                $soldData[] = $soldCount;
+
+                $segmentStart = $segmentEnd->copy()->addSecond();
             }
 
-            $year = $request->input('year', now()->year);
+            $totalAvailable = max($availableData);
+            $totalRented = array_sum($rentedData);
+            $totalSold = array_sum($soldData);
+            $occupiedUnits = $totalRented + $totalSold;
+            $totalUnits = 0;
 
-            $startDate = Carbon::createFromDate($year, 1, 1)->startOfDay();
-            $endDate = Carbon::createFromDate($year, 12, 31)->endOfDay();
+            if($occupiedUnits > 0){
+                $totalUnits = BuildingUnit::whereIn('building_id', $buildingIds)
+                    ->where('sale_or_rent', '!=', 'Not Available')
+                    ->where('created_at', '<=', $end)
+                    ->count();
+            }
 
-            $chartData = [
-                'labels' => [],
-                'datasets' => [
-                    [
-                        'label' => 'Revenue',
-                        'data' => [],
-                        'borderColor' => 'rgba(75, 192, 192, 1)',
-                        'backgroundColor' => 'rgba(75, 192, 192, 0.2)',
-                    ],
-                    [
-                        'label' => 'Expenses',
-                        'data' => [],
-                        'borderColor' => 'rgba(255, 99, 132, 1)',
-                        'backgroundColor' => 'rgba(255, 99, 132, 0.2)',
-                    ],
-                    [
-                        'label' => 'Profit',
-                        'data' => [],
-                        'borderColor' => 'rgba(54, 162, 235, 1)',
-                        'backgroundColor' => 'rgba(54, 162, 235, 0.2)',
-                    ]
+            $occupancyRate = $totalUnits > 0
+                ? round(($occupiedUnits / $totalUnits) * 100, 2)
+                : 0;
+
+
+            return response()->json([
+                'occupancyRate' => $occupancyRate,
+                'totals' => [
+                    'available' => $totalAvailable,
+                    'rented' => $totalRented,
+                    'sold' => $totalSold
+                ],
+                'occupancy_trend' => [
+                    'labels' => $labels,
+                    'available' => $availableData,
+                    'rented' => $rentedData,
+                    'sold' => $soldData,
                 ]
-            ];
-
-            $currentDate = $startDate->copy();
-            while ($currentDate <= $endDate) {
-                $monthLabel = $currentDate->format('M');
-                $chartData['labels'][] = $monthLabel;
-
-                $revenue = Transaction::whereBetween('created_at', [$currentDate->copy()->startOfMonth(), $currentDate->copy()->endOfMonth()])
-                    ->where('seller_type', 'organization')
-                    ->where('seller_id', $organization_id)
-                    ->where('status', 'Completed')
-                    ->when($selectedBuildingId, function ($query) use ($selectedBuildingId) {
-                        return $query->where('building_id', $selectedBuildingId);
-                    })
-                    ->when($roleId === 3 && !$selectedBuildingId, function ($query) use ($buildingIds) {
-                        return $query->whereIn('building_id', $buildingIds);
-                    })
-                    ->sum('price');
-
-                $expenses = Transaction::whereBetween('created_at', [$currentDate->copy()->startOfMonth(), $currentDate->copy()->endOfMonth()])
-                    ->where('buyer_type', 'organization')
-                    ->where('buyer_id', $organization_id)
-                    ->where('status', 'Completed')
-                    ->when($selectedBuildingId, function ($query) use ($selectedBuildingId) {
-                        return $query->where('building_id', $selectedBuildingId);
-                    })
-                    ->when($roleId === 3 && !$selectedBuildingId, function ($query) use ($buildingIds) {
-                        return $query->whereIn('building_id', $buildingIds);
-                    })
-                    ->sum('price');
-
-                $chartData['datasets'][0]['data'][] = $revenue;
-                $chartData['datasets'][1]['data'][] = $expenses;
-                $chartData['datasets'][2]['data'][] = $revenue - $expenses;
-
-                $currentDate->addMonth();
-            }
-
-            return response()->json($chartData);
+            ]);
 
         } catch (\Throwable $e) {
-            Log::error('Financial chart data failed (Owner): ' . $e->getMessage());
-            return response()->json(['error' => 'Failed to load chart data'], 500);
+            Log::error('Error in Building Report (getOccupancy): ' . $e->getMessage());
+            return response()->json([
+                'message' => 'An error occurred while preparing the unit occupancy chart.'
+            ], 500);
         }
     }
 
-    // API 1: Metrics data (Total Units, Total Levels, Total Income, Total Expenses)
-    public function getMetrics(Request $request)
+    public function getMembershipsStats(Request $request)
     {
-        // Get filters from request
-        $buildingId = $request->input('building_id', 'all');
-        $startDate = $request->input('start_date', Carbon::now()->subDays(30)->format('Y-m-d'));
-        $endDate = $request->input('end_date', Carbon::now()->format('Y-m-d'));
+        try {
+            $building_id = $request->input('building');
+            $membership_id = $request->input('membership');
 
-        // Dummy data - in a real app, you would query your database here
-        $data = [
-            'total_units' => $buildingId === 'all' ? 248 : 80,
-            'total_levels' => $buildingId === 'all' ? 24 : 8,
-            'total_income' => $buildingId === 'all' ? 24580 : 8500,
-            'total_expenses' => $buildingId === 'all' ? 8420 : 3200,
-        ];
+            $start = $request->input('start')
+                ? Carbon::parse($request->input('start'))->startOfDay()
+                : now()->subDays(29)->startOfDay();
 
-        return response()->json($data);
-    }
+            $end = $request->input('end')
+                ? Carbon::parse($request->input('end'))->endOfDay()
+                : now()->endOfDay();
 
-    // API 2: Income/Expense data (Income vs Expense, Financial Summary, Income Sources, Expense Categories, Recent Transactions)
-    public function getIncomeExpense(Request $request)
-    {
-        $buildingId = $request->input('building_id', 'all');
-        $startDate = $request->input('start_date', Carbon::now()->subDays(30)->format('Y-m-d'));
-        $endDate = $request->input('end_date', Carbon::now()->format('Y-m-d'));
-        $transactions = $this->generateDummyTransactions($request->building_id);
+            $ownerService = new OwnerFiltersService();
+            $accessibleBuildingIds = $ownerService->getAccessibleBuildingIds();
 
-        // Dummy data
-        $data = [
-            'total_income' => $buildingId === 'all' ? 24580 : 8500,
-            'total_expenses' => $buildingId === 'all' ? 8420 : 3200,
-            'income_sources' => [
-                'labels' => ['Rent', 'Parking', 'Amenities', 'Other'],
-                'data' => $buildingId === 'all' ? [18000, 4200, 1500, 880] : [6000, 1500, 700, 300],
-                'colors' => ['#184E83', '#1A6FC9', '#2ecc71', '#ffbe0b']
-            ],
-            'expense_categories' => [
-                'labels' => ['Maintenance', 'Utilities', 'Staff', 'Insurance', 'Other'],
-                'data' => $buildingId === 'all' ? [3200, 2800, 1500, 500, 420] : [1200, 1000, 600, 200, 200],
-                'colors' => ['#ff4d6d', '#ff758f', '#ff8fa3', '#ffb3c1', '#ffccd5']
-            ],
-            'recent_transactions' => $transactions
-        ];
-
-        return response()->json($data);
-    }
-
-    // API 3: Occupancy data
-    public function getOccupancy(Request $request)
-    {
-        $buildingId = $request->input('building_id', 'all');
-        $startDate = $request->input('start_date', Carbon::now()->subDays(30)->format('Y-m-d'));
-        $endDate = $request->input('end_date', Carbon::now()->format('Y-m-d'));
-
-        // Generate time labels based on date range
-        $timeLabels = $this->generateTimeLabels($startDate, $endDate);
-
-        // Dummy data
-        $data = [
-            'total_units' => $buildingId === 'all' ? 248 : 80,
-            'rented_units' => $buildingId === 'all' ? 200 : 70,
-            'sold_units' => $buildingId === 'all' ? 28 : 4,
-            'available_units' => $buildingId === 'all' ? 20 : 6,
-            'occupancy_trend' => [
-                'labels' => $timeLabels,
-                'available' => array_map(function() { return rand(5, 15); }, $timeLabels),
-                'rented' => array_map(function() { return rand(150, 200); }, $timeLabels),
-                'sold' => array_map(function() { return rand(5, 15); }, $timeLabels)
-            ]
-        ];
-
-        return response()->json($data);
-    }
-
-    // API 4: Staff data
-    public function getStaff(Request $request)
-    {
-        $buildingId = $request->input('building_id', 'all');
-        $startDate = $request->input('start_date', Carbon::now()->subDays(30)->format('Y-m-d'));
-        $endDate = $request->input('end_date', Carbon::now()->format('Y-m-d'));
-
-        // Dummy data
-        $data = [
-            'total_staff' => $buildingId === 'all' ? 48 : 20,
-            'staff_by_department' => [
-                'labels' => ['Maintenance', 'Security', 'Cleaning', 'Admin', 'Other'],
-                'data' => $buildingId === 'all' ? [18, 12, 10, 5, 3] : [6, 4, 5, 3, 2],
-                'colors' => ['#184E83', '#1A6FC9', '#2ecc71', '#ffbe0b', '#ff4d6d']
-            ]
-        ];
-
-        return response()->json($data);
-    }
-
-    // API 5: Memberships data
-    public function getMemberships(Request $request)
-    {
-        $buildingId = $request->input('building_id', 'all');
-        $startDate = $request->input('start_date', Carbon::now()->subDays(30)->format('Y-m-d'));
-        $endDate = $request->input('end_date', Carbon::now()->format('Y-m-d'));
-
-        // Generate time labels based on date range
-        $timeLabels = $this->generateTimeLabels($startDate, $endDate);
-
-        // Dummy data
-        $data = [
-            'active_members' => $buildingId === 'all' ? 142 : 50,
-            'expired_members' => $buildingId === 'all' ? 43 : 15,
-            'new_members' => $buildingId === 'all' ? 24 : 8,
-            'membership_trend' => [
-                'labels' => $timeLabels,
-                'active' => array_map(function() use ($buildingId) {
-                    return $buildingId === 'all' ? rand(120, 142) : rand(40, 50);
-                }, $timeLabels),
-                'expired' => array_map(function() use ($buildingId) {
-                    return $buildingId === 'all' ? rand(38, 43) : rand(14, 15);
-                }, $timeLabels)
-            ]
-        ];
-
-        return response()->json($data);
-    }
-
-    // API 6: Maintenance data
-    public function getMaintenance(Request $request)
-    {
-        $buildingId = $request->input('building_id', 'all');
-        $startDate = $request->input('start_date', Carbon::now()->subDays(30)->format('Y-m-d'));
-        $endDate = $request->input('end_date', Carbon::now()->format('Y-m-d'));
-
-        // Generate time labels based on date range
-        $timeLabels = $this->generateTimeLabels($startDate, $endDate);
-
-        // Dummy data with more realistic workflow patterns
-        $completed = [];
-        $pending = [];
-        $rejected = [];
-
-        // Start with some baseline numbers
-        $baseCompleted = $buildingId === 'all' ? 10 : 4;
-        $basePending = $buildingId === 'all' ? 5 : 2;
-        $baseRejected = $buildingId === 'all' ? 2 : 1;
-
-        // Generate trend data that shows workflow
-        foreach ($timeLabels as $index => $label) {
-            // Completed requests tend to follow pending requests from previous period
-            $completed[] = $baseCompleted + ($index > 0 ? $pending[$index-1] * 0.8 : 0) + rand(0, 3);
-
-            // New pending requests come in
-            $pending[] = $basePending + rand(0, 2) + ($index % 3 === 0 ? 3 : 0); // spike every 3rd period
-
-            // Rejections are a small percentage of pending
-            $rejected[] = min($baseRejected + rand(0, 2), $pending[$index]); // Can't reject more than pending
-        }
-
-        $data = [
-            'completed_requests' => array_sum($completed),
-            'pending_requests' => array_sum($pending),
-            'rejected_requests' => array_sum($rejected),
-            'maintenance_trend' => [
-                'labels' => $timeLabels,
-                'completed' => $completed,
-                'pending' => $pending,
-                'rejected' => $rejected
-            ]
-        ];
-
-        return response()->json($data);
-    }
-
-    // Helper function to generate time labels based on date range
-    private function generateTimeLabels($startDate, $endDate)
-    {
-        $start = Carbon::parse($startDate);
-        $end = Carbon::parse($endDate);
-        $diffDays = $end->diffInDays($start);
-
-        if ($diffDays > 60) {
-            // More than 2 months - show monthly
-            $labels = [];
-            $current = $start->copy();
-            while ($current <= $end) {
-                $labels[] = $current->format('M Y');
-                $current->addMonth();
+            if ($building_id && !in_array($building_id, $accessibleBuildingIds)) {
+                return response()->json(['message' => 'You do not have access to the selected building.'], 403);
             }
-            return $labels;
-        } elseif ($diffDays > 14) {
-            // 2 weeks to 2 months - show weekly
-            $weeks = ceil($diffDays / 7);
-            return array_map(function($i) { return "Week $i"; }, range(1, $weeks));
-        } else {
-            // Less than 2 weeks - show daily
-            $labels = [];
-            $current = $start->copy();
-            while ($current <= $end) {
-                $labels[] = $current->format('M d');
-                $current->addDay();
+
+            $buildingIds = $building_id ? [$building_id] : $accessibleBuildingIds;
+            $validMemberships = $ownerService->memberships($buildingIds);
+            $accessibleMemberships = $validMemberships->pluck('id')->toArray();
+
+            if ($membership_id && !in_array($membership_id, $accessibleMemberships)) {
+                return response()->json(['message' => 'You do not have access to the selected membership.'], 403);
             }
-            return $labels;
+
+            $accessibleMemberships = $membership_id ? [$membership_id] : $accessibleMemberships;
+
+            $totalDays = (int) $start->diffInDays($end) + 1;
+            $maxSegments = 15;
+            $daysPerSegment = max(1, ceil($totalDays / $maxSegments));
+
+            $labels = [];
+            $activeTrend = [];
+            $expiredTrend = [];
+
+            $segmentStart = $start->copy();
+            while ($segmentStart->lte($end)) {
+                $segmentEnd = $segmentStart->copy()->addDays($daysPerSegment - 1)->endOfDay();
+                if ($segmentEnd->gt($end)) {
+                    $segmentEnd = $end->copy()->endOfDay();
+                }
+
+                $label = $segmentStart->isSameDay($segmentEnd)
+                    ? $segmentStart->format('d M')
+                    : $segmentStart->format('d M') . ' - ' . $segmentEnd->format('d M');
+
+                $labels[] = $label;
+
+                $segmentActive = MembershipUser::whereIn('membership_id', $accessibleMemberships)
+                    ->where('ends_at', '>=', $segmentStart)
+                    ->where('created_at', '<=', $segmentEnd)
+                    ->count();
+
+                $segmentExpired = MembershipUser::whereIn('membership_id', $accessibleMemberships)
+                    ->whereNotNull('ends_at')
+                    ->whereBetween('ends_at', [$segmentStart, $segmentEnd])
+                    ->count();
+
+                $activeTrend[] = $segmentActive;
+                $expiredTrend[] = $segmentExpired;
+
+                $segmentStart = $segmentEnd->copy()->addSecond();
+            }
+
+            $activeMembers = MembershipUser::whereIn('membership_id', $accessibleMemberships)
+                ->where('ends_at', '>=', $segmentStart)
+                ->where('created_at', '<=', $segmentEnd)
+                ->count();
+
+            $expiredMembers = array_sum($expiredTrend);
+
+            // New members — first-time joiners
+            $newMembers = DB::table('membership_users as mu1')
+                ->select('mu1.user_id')
+                ->whereIn('mu1.membership_id', $accessibleMemberships)
+                ->whereBetween('mu1.created_at', [$start, $end])
+                ->whereNotExists(function ($q) use ($start, $accessibleMemberships) {
+                    $q->select(DB::raw(1))
+                        ->from('membership_users as mu2')
+                        ->whereColumn('mu1.user_id', 'mu2.user_id')
+                        ->where('mu2.created_at', '<', $start)
+                        ->whereIn('mu2.membership_id', $accessibleMemberships);
+                })
+                ->distinct()
+                ->count();
+
+
+            $totalUsers = $activeMembers + $expiredMembers;
+            $churnRate = $totalUsers > 0 ? round(($expiredMembers / $totalUsers) * 100, 2) : 0;
+
+            $renewals = max(0, $activeMembers - $newMembers);
+            $renewalRate = $expiredMembers > 0 ? round(($renewals / $expiredMembers) * 100, 2) : 0;
+
+            return response()->json([
+                'total_users' => $totalUsers,
+                'active_members' => $activeMembers,
+                'expired_members' => $expiredMembers,
+                'new_members' => $newMembers,
+                'renewal_rate' => $renewalRate,
+                'churn_rate' => $churnRate,
+                'membership_trend' => [
+                    'labels' => $labels,
+                    'active' => $activeTrend,
+                    'expired' => $expiredTrend,
+                ]
+            ]);
+
+        } catch (\Throwable $e) {
+            Log::error('Error in getBuildingMemberships: ' . $e->getMessage());
+            return response()->json(['message' => 'An error occurred while loading membership data.'], 500);
         }
     }
 
-    // Helper function to generate dummy transactions
-    private function generateDummyTransactions($buildingId)
+    public function getMaintenanceRequests(Request $request)
     {
-        $types = ['Income', 'Expense'];
-        $statuses = ['completed', 'pending', 'rejected'];
-        $incomeTitles = ['Rent Payment', 'Parking Fee', 'Amenity Fee', 'Service Charge'];
-        $expenseTitles = ['Maintenance', 'Utilities', 'Staff Salary', 'Insurance'];
-        $units = ['Apt 101', 'Apt 202', 'Apt 303', 'Common Area', 'Building'];
+        try {
+            $start = $request->input('start')
+                ? Carbon::parse($request->input('start'))->startOfDay()
+                : now()->subDays(29)->startOfDay();
 
-        $transactions = [];
-        $count = $buildingId === 'all' ? 50 : 30; // More records for client-side pagination
+            $end = $request->input('end')
+                ? Carbon::parse($request->input('end'))->endOfDay()
+                : now()->endOfDay();
 
-        for ($i = 0; $i < $count; $i++) {
-            $type = $types[array_rand($types)];
-            $status = $statuses[array_rand($statuses)];
-            $title = $type === 'Income'
-                ? $incomeTitles[array_rand($incomeTitles)]
-                : $expenseTitles[array_rand($expenseTitles)];
+            $building_id = $request->input('building');
+            $unit_id = $request->input('unit');
 
-            $transactions[] = [
-                'id' => 'TX-' . str_pad($i + 1000, 4, '0', STR_PAD_LEFT),
-                'title' => $title,
-                'unit' => $units[array_rand($units)],
-                'type' => $type,
-                'status' => ucfirst($status),
-                'amount' => $type === 'Income' ? rand(50, 2000) : rand(100, 1500),
-                'date' => Carbon::now()->subDays(rand(0, 30))->format('Y-m-d')
-            ];
+            $ownerService = new OwnerFiltersService();
+            $accessibleBuildingIds = $ownerService->getAccessibleBuildingIds();
+
+            if ($building_id && !in_array($building_id, $accessibleBuildingIds)) {
+                return response()->json(['message' => 'You do not have access to the selected building.'], 403);
+            }
+
+            $buildingIds = $building_id ? [$building_id] : $accessibleBuildingIds;
+
+            $totalDays = (int) $start->diffInDays($end) + 1;
+            $maxSegments = 15;
+            $daysPerSegment = max(1, ceil($totalDays / $maxSegments));
+
+            $labels = [];
+            $opened = [];
+            $completed = [];
+            $rejected = [];
+
+            $segmentStart = $start->copy();
+            while ($segmentStart->lte($end)) {
+                $segmentEnd = $segmentStart->copy()->addDays($daysPerSegment - 1)->endOfDay();
+                if ($segmentEnd->gt($end)) {
+                    $segmentEnd = $end->copy()->endOfDay();
+                }
+
+                $label = $segmentStart->isSameDay($segmentEnd)
+                    ? $segmentStart->format('d M')
+                    : $segmentStart->format('d M') . ' - ' . $segmentEnd->format('d M');
+
+                $labels[] = $label;
+
+                $openedCount = Query::whereIn('building_id', $buildingIds)
+                    ->when($unit_id, fn($q) => $q->where('unit_id', $unit_id))
+                    ->whereBetween('created_at', [$segmentStart, $segmentEnd])
+                    ->count();
+
+                $completedCount = Query::whereIn('building_id', $buildingIds)
+                    ->when($unit_id, fn($q) => $q->where('unit_id', $unit_id))
+                    ->whereIn('status', ['Closed', 'Closed Late'])
+                    ->whereBetween('created_at', [$segmentStart, $segmentEnd])
+                    ->count();
+
+                $rejectedCount = Query::whereIn('building_id', $buildingIds)
+                    ->when($unit_id, fn($q) => $q->where('unit_id', $unit_id))
+                    ->where('status', 'Rejected')
+                    ->whereBetween('created_at', [$segmentStart, $segmentEnd])
+                    ->count();
+
+                $opened[] = $openedCount;
+                $completed[] = $completedCount;
+                $rejected[] = $rejectedCount;
+
+                $segmentStart = $segmentEnd->copy()->addSecond();
+            }
+
+            return response()->json([
+                'opened_requests' => array_sum($opened),
+                'completed_requests' => array_sum($completed),
+                'rejected_requests' => array_sum($rejected),
+                'maintenance_trend' => [
+                    'labels' => $labels,
+                    'opened' => $opened,
+                    'completed' => $completed,
+                    'rejected' => $rejected,
+                ]
+            ]);
+        } catch (\Throwable $e) {
+            Log::error('Error in Building Maintenance Chart: ' . $e->getMessage());
+            return response()->json(['message' => 'An error occurred while loading the maintenance data.'], 500);
         }
-
-        // Return just the data array without pagination info
-        return $transactions;
     }
 
-    //    unitssssssssssssssssssss
+
+    // Unit
     public function getUnitDetails($unitId)
     {
         // In a real app, you would query your database here

@@ -390,25 +390,23 @@ Route::prefix('owner')->middleware(['auth.jwt'])->group(function () {
             Route::post('/demotion', [hrController::class , 'demotion'])->name('owner.managers.demote.store');
 
             Route::get('/{manager}/show', [hrController::class , 'managerShow'])->name('owner.managers.show');
-            Route::get('/{manager}/occupancy-stats', [ReportsController::class , 'getManagerBuildingsOccupancyStats'])->name('owner.managers.occupancy.stats');
-            Route::get('/{manager}/monthly/financial/stats', [ReportsController::class , 'getManagerBuildingsMonthlyStats'])->name('owner.managers.monthlyFinancial.stats');
+            Route::get('/{manager}/occupancy-stats', [BuildingController::class , 'getManagerBuildingsOccupancyStats'])->name('owner.managers.occupancy.stats');
+            Route::get('/{manager}/monthly/financial/stats', [FinanceController::class , 'getManagerBuildingsMonthlyStats'])->name('owner.managers.monthlyFinancial.stats');
 
         });
 
         Route::prefix('reports')->group(function () {
 
-            Route::get('/occupancy-stats', [ReportsController::class , 'getOccupancyStats'])->name('owner.reports.occupancy.stats');
-            Route::get('/monthly/financial/stats', [ReportsController::class , 'getOrgMonthlyFinancialStats'])->name('owner.reports.monthlyFinancial.stats');
+            Route::get('/', [ReportsController::class, 'index'])->name('owner.reports.index');
 
             Route::prefix('buildings')->group(function () {
-                Route::get('/', function () { return view('Heights.Owner.Reports.index'); })->name('owner.reports.buildings');
+                Route::get('/details', [BuildingController::class, 'getBuildingDetails'])->name('owner.reports.building.details');
+                Route::get('/finance', [ReportsController::class, 'getFinance'])->name('owner.reports.buildings.finance');
+                Route::get('/occupancy', [ReportsController::class, 'getBuildingOccupancy'])->name('owner.reports.buildings.occupancy');
+                Route::get('/staff', [OwnerDashboardController::class, 'getStaffDistribution'])->name('owner.reports.buildings.staff');
+                Route::get('/memberships', [ReportsController::class, 'getMembershipsStats'])->name('owner.reports.buildings.memberships');
+                Route::get('/maintenance', [ReportsController::class, 'getMaintenanceRequests'])->name('owner.reports.buildings.maintenance');
 
-                Route::get('/metrics', [BuildingReportController::class, 'getMetrics'])->name('owner.reports.buildings.metrics');
-                Route::get('/finance', [BuildingReportController::class, 'getIncomeExpense'])->name('owner.reports.buildings.finance');
-                Route::get('/occupancy', [BuildingReportController::class, 'getOccupancy'])->name('owner.reports.buildings.occupancy');
-                Route::get('/staff', [BuildingReportController::class, 'getStaff'])->name('owner.reports.buildings.staff');
-                Route::get('/memberships', [BuildingReportController::class, 'getMemberships'])->name('owner.reports.buildings.memberships');
-                Route::get('/maintenance', [BuildingReportController::class, 'getMaintenance'])->name('owner.reports.buildings.maintenance');
             });
         });
 

@@ -109,7 +109,7 @@
         #BuildingReports .chart-header .chart-value {
             font-size: 16px;
             font-weight: 600;
-            color: var(--primary);
+            color: var(--sidenavbar-text-color);
         }
 
         #BuildingReports .chart-canvas-container {
@@ -267,7 +267,7 @@
 
         #BuildingReports .progress-label {
             font-size: 13px;
-            color: var(--gray);
+            color: var(--sidenavbar-text-color);
         }
 
         #BuildingReports .progress-value {
@@ -473,30 +473,30 @@
     <!-- Unit Details -->
     <div class="building-details-container">
         <div class="building-image-container">
-            <img src="https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" alt="Building Image" class="building-image">
+            <img id="buildingImage" src="https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" alt="Building Image" class="building-image">
         </div>
         <div class="building-info">
-            <h3>Bahria Prime Details</h3>
+            <h3 id="buildingName">Bahria Prime Details</h3>
             <div class="building-info-grid">
                 <div class="info-item">
                     <span class="info-label">Building Type:</span>
-                    <span class="info-value">Residential</span>
+                    <span class="info-value" id="buildingType">Residential</span>
                 </div>
                 <div class="info-item">
                     <span class="info-label">Status:</span>
-                    <span class="info-value"><span class="badge badge-success">Approved</span></span>
+                    <span class="info-value"><span class="badge badge-success" id="buildingStatus">Approved</span></span>
                 </div>
                 <div class="info-item">
                     <span class="info-label">Year Built:</span>
-                    <span class="info-value">2012</span>
+                    <span class="info-value" id="constructionYear">2012</span>
                 </div>
                 <div class="info-item">
                     <span class="info-label">Area:</span>
-                    <span class="info-value">100000.00 sq.f</span>
+                    <span class="info-value" id="buildingArea">100000.00 sq.f</span>
                 </div>
                 <div class="info-item">
                     <span class="info-label">City:</span>
-                    <span class="info-value">Islamabad</span>
+                    <span class="info-value" id="buildingCity">Islamabad</span>
                 </div>
             </div>
         </div>
@@ -505,20 +505,20 @@
     <!-- Key Metrics -->
     <div class="metrics-grid">
         <div class="metric-card bg-gradient-primary">
-            <h4>Total Units</h4>
-            <div class="value" id="totalUnits">0</div>
-        </div>
-        <div class="metric-card bg-gradient-info">
-            <h4>Total Levels</h4>
-            <div class="value" id="totalLevels">0</div>
+            <h4>Occupancy Rate</h4>
+            <div class="value" id="occupancyRateMetric">0.00%</div>
         </div>
         <div class="metric-card bg-gradient-success">
-            <h4>Total Income</h4>
-            <div class="value" id="totalIncome">$0</div>
+            <h4>Memberships Renewal Rate</h4>
+            <div class="value" id="membershipsMetric">0.00%</div>
+        </div>
+        <div class="metric-card bg-gradient-info">
+            <h4>Hired Staff</h4>
+            <div class="value" id="staffMetric">0</div>
         </div>
         <div class="metric-card bg-gradient-warning">
-            <h4>Total Expenses</h4>
-            <div class="value" id="totalExpenses">$0</div>
+            <h4>Maintenance Requests</h4>
+            <div class="value" id="requestsMetric">0</div>
         </div>
     </div>
 
@@ -527,7 +527,7 @@
         <div class="chart-container">
             <div class="chart-header">
                 <h3>Income vs Expenses</h3>
-                <div class="chart-value" id="profitValue">$0 Net Profit</div>
+                <div class="chart-value" id="profitValue">PKR 0.00 Net Profit</div>
             </div>
             <div class="chart-canvas-container">
                 <canvas id="incomeExpenseChart"></canvas>
@@ -536,48 +536,43 @@
         <div class="summary-container">
             <h3 class="summary-title">Financial Summary</h3>
             <div class="summary-item">
-                <span class="summary-label"><i class='bx bx-dollar-circle'></i> Total Income</span>
-                <span class="summary-value" id="summaryIncome">$0</span>
+                <span class="summary-label"><i class='bx bx-dollar-circle me-2'></i> Total Income</span>
+                <span class="summary-value" id="summaryIncome">PKR 0.00</span>
             </div>
             <div class="summary-item">
-                <span class="summary-label"><i class='bx bx-money-withdraw'></i> Total Expenses</span>
-                <span class="summary-value" id="summaryExpenses">$0</span>
+                <span class="summary-label"><i class='bx bx-money-withdraw me-2'></i> Total Expenses</span>
+                <span class="summary-value" id="summaryExpenses">PKR 0.00</span>
             </div>
             <div class="summary-item">
-                <span class="summary-label"><i class='bx bx-trending-up'></i> Net Profit</span>
-                <span class="summary-value positive" id="summaryProfit">$0</span>
+                <span class="summary-label"><i class='bx bx-trending-up me-2'></i> Net Profit</span>
+                <span class="summary-value positive" id="summaryProfit">PKR 0.00</span>
             </div>
             <div class="summary-item">
-                <span class="summary-label"><i class='bx bx-line-chart'></i> Profit Margin</span>
+                <span class="summary-label"><i class='bx bx-line-chart me-2'></i> Profit Margin</span>
                 <span class="summary-value positive" id="summaryMargin">0%</span>
             </div>
             <div class="progress-container">
                 <div class="progress-item">
                     <div class="progress-header">
                         <span class="progress-label">Income Growth</span>
-                        <span class="progress-value positive">+12%</span>
+                        <span class="progress-value positive">+0%</span>
                     </div>
                     <div class="progress-bar">
-                        <div class="progress-fill" style="width: 62%; background-color: var(--primary);"></div>
+                        <div class="progress-fill" style="width: 0%; background-color: var(--primary);"></div>
                     </div>
                 </div>
                 <div class="progress-item">
                     <div class="progress-header">
                         <span class="progress-label">Expense Growth</span>
-                        <span class="progress-value negative">+5%</span>
+                        <span class="progress-value negative">+0%</span>
                     </div>
                     <div class="progress-bar">
-                        <div class="progress-fill" style="width: 25%; background-color: var(--danger);"></div>
+                        <div class="progress-fill" style="width: 0%; background-color: var(--danger);"></div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <p class="section-description">
-        The income vs expenses visualization helps you understand your property's financial health at a glance.
-        The doughnut chart shows the proportion of income to expenses, while the financial summary provides
-        detailed numbers.
-    </p>
 
     <!-- Income and Expense Distribution -->
     <div class="chart-summary-row">
@@ -592,8 +587,8 @@
         </div>
         <div class="chart-container">
             <div class="chart-header">
-                <h3>Expense Categories</h3>
-                <div class="chart-value" id="expenseCategoriesValue">0 Categories</div>
+                <h3>Expense Sources</h3>
+                <div class="chart-value" id="expenseCategoriesValue">0 Sources</div>
             </div>
             <div class="chart-canvas-container">
                 <canvas id="expenseCategoriesChart"></canvas>
@@ -612,15 +607,15 @@
         </div>
         <div class="status-grid">
             <div class="status-card">
-                <div class="status-count" style="color: var(--primary);" id="rentedUnits">0</div>
+                <div class="status-count" style="color: #4BC0C0;" id="rentedUnits">0</div>
                 <div class="status-label">Rented Units</div>
             </div>
             <div class="status-card">
-                <div class="status-count" style="color: var(--success);" id="soldUnits">0</div>
+                <div class="status-count" style="color: #FF6384;" id="soldUnits">0</div>
                 <div class="status-label">Sold Units</div>
             </div>
             <div class="status-card">
-                <div class="status-count" style="color: var(--gray);" id="availableUnits">0</div>
+                <div class="status-count" style="color: #FFCD56;" id="availableUnits">0</div>
                 <div class="status-label">Available Units</div>
             </div>
         </div>
@@ -659,24 +654,40 @@
         <div class="summary-container">
             <h3 class="summary-title">Membership Analytics</h3>
             <div class="summary-item">
-                <span class="summary-label"><i class='bx bx-user'></i> Total Members</span>
+                <span class="summary-label"><i class='bx bx-user me-2'></i> Total Members</span>
                 <span class="summary-value" id="summaryTotalMembers">0</span>
             </div>
             <div class="summary-item">
-                <span class="summary-label"><i class='bx bx-check-circle'></i> Active Members</span>
+                <span class="summary-label"><i class='bx bx-check-circle me-2'></i> Active Members</span>
                 <span class="summary-value" id="summaryActiveMembers">0</span>
             </div>
             <div class="summary-item">
-                <span class="summary-label"><i class='bx bx-time'></i> Expired Members</span>
+                <span class="summary-label"><i class='bx bx-time me-2'></i> Expired Members</span>
                 <span class="summary-value" id="summaryExpiredMembers">0</span>
             </div>
             <div class="summary-item">
-                <span class="summary-label"><i class='bx bx-plus-circle'></i> New This Period</span>
+                <span class="summary-label"><i class='bx bx-plus-circle me-2'></i> New Members</span>
                 <span class="summary-value positive" id="summaryNewMembers">+0</span>
             </div>
-            <div class="summary-item">
-                <span class="summary-label"><i class='bx bx-refresh'></i> Renewal Rate</span>
-                <span class="summary-value positive" id="summaryRenewalRate">0%</span>
+            <div class="progress-container">
+                <div class="progress-item" id="renewalRateItem">
+                    <div class="progress-header">
+                        <span class="progress-label">Renewal Rate</span>
+                        <span class="progress-value positive" id="renewalRateValue">+0%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="renewalRateBar" style="width: 0%; background-color: var(--primary);"></div>
+                    </div>
+                </div>
+                <div class="progress-item" id="churnRateItem">
+                    <div class="progress-header">
+                        <span class="progress-label">Churn Rate</span>
+                        <span class="progress-value negative" id="churnRateValue">+0%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="churnRateBar" style="width: 0%; background-color: var(--danger);"></div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -692,15 +703,15 @@
         </div>
         <div class="status-grid">
             <div class="status-card">
-                <div class="status-count" style="color: var(--success);" id="completedRequests">0</div>
+                <div class="status-count" style="color: #FFCD56;" id="pendingRequests">0</div>
+                <div class="status-label">Opened</div>
+            </div>
+            <div class="status-card">
+                <div class="status-count" style="color: #4BC0C0;" id="completedRequests">0</div>
                 <div class="status-label">Completed</div>
             </div>
             <div class="status-card">
-                <div class="status-count" style="color: var(--warning);" id="pendingRequests">0</div>
-                <div class="status-label">In Progress</div>
-            </div>
-            <div class="status-card">
-                <div class="status-count" style="color: var(--danger);" id="rejectedRequests">0</div>
+                <div class="status-count" style="color: #FF6384;" id="rejectedRequests">0</div>
                 <div class="status-label">Rejected</div>
             </div>
         </div>
@@ -741,8 +752,8 @@
                         <th>Transaction ID</th>
                         <th>Title</th>
                         <th>Unit</th>
+                        <th>Source</th>
                         <th>Type</th>
-                        <th>Status</th>
                         <th>Amount</th>
                         <th>Date</th>
                     </tr>
@@ -758,39 +769,54 @@
 
 @push('scripts')
     <script>
-
             // Chart instances
             let incomeExpenseChart, incomeSourcesChart, expenseCategoriesChart,
                 occupancyChart, staffChart, membershipChart, maintenanceChart;
 
-
-
-            // API 1: Fetch metrics data (Total Units, Total Levels, Total Income, Total Expenses)
-            function fetchMetricsData() {
-                return fetch(`{{ route('owner.reports.buildings.metrics') }}?building_id=${currentBuilding}&start_date=${currentStartDate}&end_date=${currentEndDate}`, {
+            // API 1: For Building Details
+            function fetchBuildingDetails() {
+                fetch( `{{ route('owner.reports.building.details') }}?building=${currentBuilding}` , {
                     method: 'GET',
                     headers: {
                         'X-CSRF-TOKEN': csrfToken,
-                        'Content-Type': 'application/json',
                         'X-Requested-With': 'XMLHttpRequest'
                     }
                 })
-                    .then(response => {
-                        if (!response.ok) throw new Error('Network response was not ok');
-                        return response.json();
+                    .then(res => {
+                        if (!res.ok) throw new Error('Network response was not ok');
+                        return res.json();
                     })
                     .then(data => {
-                        // Update metric cards
-                        document.getElementById('totalUnits').textContent = data.total_units || 0;
-                        document.getElementById('totalLevels').textContent = data.total_levels || 0;
-                        document.getElementById('totalIncome').textContent = '$' + (data.total_income || 0).toLocaleString();
-                        document.getElementById('totalExpenses').textContent = '$' + (data.total_expenses || 0).toLocaleString();
-                    });
+                        const img = document.getElementById('buildingImage');
+
+                        if (img && data.image) {
+                            img.src = '{{ asset('') }}' + data.image;
+                            img.alt = data.name + ' Image';
+                        } else {
+                            img.src = 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80';
+                            img.alt = 'Default Building Image';
+                        }
+
+                        document.getElementById('buildingName').textContent = (data.name || 'N/A') + ' Details';
+                        document.getElementById('buildingType').textContent = data.building_type || 'N/A';
+                        document.getElementById('constructionYear').textContent = data.construction_year || 'N/A';
+                        document.getElementById('buildingArea').textContent = (parseFloat(data.area) || 0).toLocaleString() + ' sq.f';
+                        document.getElementById('buildingCity').textContent = data.city || 'N/A';
+
+                        const statusEl = document.getElementById('buildingStatus');
+                        const status = data.status || 'N/A';
+                        statusEl.textContent = status;
+                        statusEl.className = 'badge ' + (
+                            status === 'Approved' || status === 'For Re-Approval' ? 'badge-success' :
+                                status === 'Under Review' || status === 'Under Processing' ? 'badge-warning' :
+                                    status === 'Rejected' ? 'badge-danger' : 'badge-secondary'
+                        );
+                    })
             }
 
             // API 2: Fetch income/expense data (Income vs Expense, Financial Summary, Income Sources, Expense Categories, Recent Transactions)
             function fetchIncomeExpenseData() {
-                return fetch(`{{ route('owner.reports.buildings.finance') }}?building_id=${currentBuilding}&start_date=${currentStartDate}&end_date=${currentEndDate}`, {
+                return fetch(`{{ route('owner.reports.buildings.finance') }}?building=${currentBuilding}&start=${currentStartDate}&end=${currentEndDate}`, {
                     method: 'GET',
                     headers: {
                         'X-CSRF-TOKEN': csrfToken,
@@ -803,34 +829,30 @@
                         return response.json();
                     })
                     .then(data => {
-                        // Update financial summary
-                        const profit = (data.total_income || 0) - (data.total_expenses || 0);
-                        const margin = (data.total_income > 0) ? (profit / data.total_income) * 100 : 0;
+                        document.getElementById('profitValue').textContent = 'PKR ' + data.overview.net_profit.toLocaleString() + ' Net Profit';
+                        document.getElementById('summaryIncome').textContent = 'PKR ' + (data.overview.income || 0).toLocaleString();
+                        document.getElementById('summaryExpenses').textContent = 'PKR ' + (data.overview.expense || 0).toLocaleString();
+                        document.getElementById('summaryProfit').textContent = 'PKR ' + data.overview.net_profit.toLocaleString();
+                        document.getElementById('summaryMargin').textContent = data.overview.profit_margin.toFixed(1) + '%';
 
-                        document.getElementById('profitValue').textContent = '$' + profit.toLocaleString() + ' Net Profit';
-                        document.getElementById('summaryIncome').textContent = '$' + (data.total_income || 0).toLocaleString();
-                        document.getElementById('summaryExpenses').textContent = '$' + (data.total_expenses || 0).toLocaleString();
-                        document.getElementById('summaryProfit').textContent = '$' + profit.toLocaleString();
-                        document.getElementById('summaryMargin').textContent = margin.toFixed(1) + '%';
+                        updateGrowthProgress(data);
 
-                        // Render income vs expense chart
-                        renderIncomeExpenseChart(data.total_income || 0, data.total_expenses || 0);
+                        renderIncomeExpenseChart(data.overview.income || 0, data.overview.expense || 0);
 
-                        // Render income sources chart if data exists
+                        // Render Income sources chart if data exists
                         if (data.income_sources && data.income_sources.labels && data.income_sources.data) {
                             renderIncomeSourcesChart(data.income_sources);
                             document.getElementById('incomeSourcesValue').textContent = data.income_sources.labels.length + ' Sources';
                         }
 
                         // Render expense categories chart if data exists
-                        if (data.expense_categories && data.expense_categories.labels && data.expense_categories.data) {
-                            renderExpenseCategoriesChart(data.expense_categories);
-                            document.getElementById('expenseCategoriesValue').textContent = data.expense_categories.labels.length + ' Categories';
+                        if (data.expense_sources && data.expense_sources.labels && data.expense_sources.data) {
+                            renderExpenseCategoriesChart(data.expense_sources);
+                            document.getElementById('expenseCategoriesValue').textContent = data.expense_sources.labels.length + ' Sources';
                         }
 
-                        console.log('Received data:', data); // Add this line
+                        // Fill the recent transactions if the data exists
                         if (data.recent_transactions) {
-                            console.log('Transactions data:', data.recent_transactions); // And this line
                             initTransactionsTable(data.recent_transactions);
                         }
                     });
@@ -838,7 +860,7 @@
 
             // API 3: Fetch occupancy data
             function fetchOccupancyData() {
-                return fetch(`{{ route('owner.reports.buildings.occupancy') }}?building_id=${currentBuilding}&start_date=${currentStartDate}&end_date=${currentEndDate}`, {
+                return fetch(`{{ route('owner.reports.buildings.occupancy') }}?building=${currentBuilding}&start=${currentStartDate}&end=${currentEndDate}`, {
                     method: 'GET',
                     headers: {
                         'X-CSRF-TOKEN': csrfToken,
@@ -851,17 +873,12 @@
                         return response.json();
                     })
                     .then(data => {
-                        // Update occupancy rate
-                        const occupied = (data.rented_units || 0) + (data.sold_units || 0);
-                        const total = data.total_units || 1; // Avoid division by zero
-                        const occupancyRate = (occupied / total) * 100;
+                        document.getElementById('occupancyRateMetric').textContent = (data.occupancyRate || 0) + '%';
+                        document.getElementById('occupancyRate').textContent = data.occupancyRate + '% Occupancy Rate';
+                        document.getElementById('rentedUnits').textContent = data.totals.rented || 0;
+                        document.getElementById('soldUnits').textContent = data.totals.sold || 0;
+                        document.getElementById('availableUnits').textContent = data.totals.available || 0;
 
-                        document.getElementById('occupancyRate').textContent = occupancyRate.toFixed(0) + '% Occupancy Rate';
-                        document.getElementById('rentedUnits').textContent = data.rented_units || 0;
-                        document.getElementById('soldUnits').textContent = data.sold_units || 0;
-                        document.getElementById('availableUnits').textContent = data.available_units || 0;
-
-                        // Render occupancy chart if data exists
                         if (data.occupancy_trend && data.occupancy_trend.labels) {
                             renderOccupancyChart(data.occupancy_trend);
                         }
@@ -870,7 +887,7 @@
 
             // API 4: Fetch staff data
             function fetchStaffData() {
-                return fetch(`{{ route('owner.reports.buildings.staff') }}?building_id=${currentBuilding}&start_date=${currentStartDate}&end_date=${currentEndDate}`, {
+                return fetch(`{{ route('owner.reports.buildings.staff') }}?building=${currentBuilding}&start=${currentStartDate}&end=${currentEndDate}`, {
                     method: 'GET',
                     headers: {
                         'X-CSRF-TOKEN': csrfToken,
@@ -883,29 +900,32 @@
                         return response.json();
                     })
                     .then(data => {
-                        // Update staff summary
+                        document.getElementById('staffMetric').textContent = data.total_staff || 0;
                         document.getElementById('totalStaff').textContent = (data.total_staff || 0) + ' Employees';
 
-                        // Update staff distribution summary
                         const staffSummaryContainer = document.getElementById('staffDistributionSummary');
                         staffSummaryContainer.innerHTML = '';
 
-                        if (data.staff_by_department && data.staff_by_department.labels && data.staff_by_department.data) {
-                            // Render staff chart
-                            renderStaffChart(data.staff_by_department);
+                        if (data.labels && data.data) {
 
-                            // Create summary items for each department
-                            data.staff_by_department.labels.forEach((label, index) => {
+                            const staff_by_department = {
+                                labels: data.labels,
+                                data: data.data
+                            };
+
+                            renderStaffChart(staff_by_department);
+
+                            staff_by_department.labels.forEach((label, index) => {
                                 const summaryItem = document.createElement('div');
                                 summaryItem.className = 'summary-item';
 
                                 const summaryLabel = document.createElement('span');
                                 summaryLabel.className = 'summary-label';
-                                summaryLabel.innerHTML = `<i class='bx bx-group'></i> ${label}`;
+                                summaryLabel.innerHTML = `${label}`;
 
                                 const summaryValue = document.createElement('span');
                                 summaryValue.className = 'summary-value';
-                                summaryValue.textContent = data.staff_by_department.data[index] || 0;
+                                summaryValue.textContent = staff_by_department.data[index] || 0;
 
                                 summaryItem.appendChild(summaryLabel);
                                 summaryItem.appendChild(summaryValue);
@@ -917,7 +937,7 @@
 
             // API 5: Fetch memberships data
             function fetchMembershipsData() {
-                return fetch(`{{ route('owner.reports.buildings.memberships') }}?building_id=${currentBuilding}&start_date=${currentStartDate}&end_date=${currentEndDate}`, {
+                return fetch(`{{ route('owner.reports.buildings.memberships') }}?building=${currentBuilding}&start=${currentStartDate}&end=${currentEndDate}`, {
                     method: 'GET',
                     headers: {
                         'X-CSRF-TOKEN': csrfToken,
@@ -930,19 +950,18 @@
                         return response.json();
                     })
                     .then(data => {
-                        // Update membership summary
-                        const active = data.active_members || 0;
-                        const expired = data.expired_members || 0;
-                        const totalMembers = active + expired;
-                        const newMembers = data.new_members || 0;
-                        const renewalRate = (active > 0) ? Math.round(((active - newMembers) / active) * 100) : 0;
+                        document.getElementById('membershipsMetric').textContent = `${data.renewal_rate || 0}%`;
+                        document.getElementById('activeMembers').textContent = (data.active_members || 0) + ' Active';
+                        document.getElementById('summaryTotalMembers').textContent = data.total_users || 0;
+                        document.getElementById('summaryActiveMembers').textContent = data.active_members || 0;
+                        document.getElementById('summaryExpiredMembers').textContent = data.expired_members || 0;
+                        document.getElementById('summaryNewMembers').textContent = '+' + (data.new_members || 0);
 
-                        document.getElementById('activeMembers').textContent = active + ' Active';
-                        document.getElementById('summaryTotalMembers').textContent = totalMembers;
-                        document.getElementById('summaryActiveMembers').textContent = active;
-                        document.getElementById('summaryExpiredMembers').textContent = expired;
-                        document.getElementById('summaryNewMembers').textContent = '+' + newMembers;
-                        document.getElementById('summaryRenewalRate').textContent = renewalRate + '%';
+                        document.getElementById('renewalRateValue').textContent = `+${data.renewal_rate || 0}%`;
+                        document.getElementById('renewalRateBar').style.width = `${data.renewal_rate || 0}%`;
+
+                        document.getElementById('churnRateValue').textContent = `+${data.churn_rate || 0}%`;
+                        document.getElementById('churnRateBar').style.width = `${data.churn_rate || 0}%`;
 
                         // Render membership chart if data exists
                         if (data.membership_trend && data.membership_trend.labels) {
@@ -953,7 +972,7 @@
 
             // API 6: Fetch maintenance data
             function fetchMaintenanceData() {
-                return fetch(`{{ route('owner.reports.buildings.maintenance') }}?building_id=${currentBuilding}&start_date=${currentStartDate}&end_date=${currentEndDate}`, {
+                return fetch(`{{ route('owner.reports.buildings.maintenance') }}?building=${currentBuilding}&start=${currentStartDate}&end=${currentEndDate}`, {
                     method: 'GET',
                     headers: {
                         'X-CSRF-TOKEN': csrfToken,
@@ -966,15 +985,15 @@
                         return response.json();
                     })
                     .then(data => {
-                        // Update maintenance summary
+                        const opened = data.opened_requests || 0;
                         const completed = data.completed_requests || 0;
-                        const pending = data.pending_requests || 0;
                         const rejected = data.rejected_requests || 0;
-                        const totalRequests = completed + pending + rejected;
 
-                        document.getElementById('totalRequests').textContent = totalRequests + ' Requests';
+
+                        document.getElementById('requestsMetric').textContent = opened;
+                        document.getElementById('totalRequests').textContent = opened + ' Requests';
                         document.getElementById('completedRequests').textContent = completed;
-                        document.getElementById('pendingRequests').textContent = pending;
+                        document.getElementById('pendingRequests').textContent = opened;
                         document.getElementById('rejectedRequests').textContent = rejected;
 
                         // Render maintenance chart if data exists
@@ -986,12 +1005,10 @@
 
             // Initialize DataTable for transactions
             function initTransactionsTable(data) {
-                // Destroy existing DataTable if it exists
                 if ($.fn.DataTable.isDataTable('#transactionsTable')) {
                     $('#transactionsTable').DataTable().destroy();
                 }
 
-                // Initialize DataTable with pagination and export buttons
                 var table = $('#transactionsTable').DataTable({
                     data: data,
                     pageLength: 10,
@@ -1051,6 +1068,12 @@
                             }
                         },
                         {
+                            data: 'source',
+                            render: function(data, type, row) {
+                                return `<span>${data || 'N/A'}</span>`;
+                            }
+                        },
+                        {
                             data: 'type',
                             render: function(data, type, row) {
                                 const typeClass = data.toLowerCase() === 'income' ? 'type-income' : 'type-expense';
@@ -1058,34 +1081,11 @@
                             }
                         },
                         {
-                            data: 'status',
-                            render: function(data, type, row) {
-                                let icon = '';
-                                let text = data;
-
-                                switch(data.toLowerCase()) {
-                                    case 'completed':
-                                        icon = '<i class="bx bx-check-circle"></i>';
-                                        break;
-                                    case 'pending':
-                                        icon = '<i class="bx bx-time"></i>';
-                                        break;
-                                    case 'rejected':
-                                        icon = '<i class="bx bx-x-circle"></i>';
-                                        break;
-                                    default:
-                                        icon = '<i class="bx bx-question-mark"></i>';
-                                }
-
-                                return `<span class="transaction-status">${icon} ${text}</span>`;
-                            }
-                        },
-                        {
                             data: 'amount',
                             render: function(data, type, row) {
                                 const amountClass = row.type.toLowerCase() === 'income' ? 'amount-income' : 'amount-expense';
                                 const sign = row.type === 'Income' ? '+' : '-';
-                                return `<span class="transaction-amount ${amountClass}">${sign} $${data.toFixed(2)}</span>`;
+                                return `<span class="transaction-amount ${amountClass}">${sign} $${data}</span>`;
                             }
                         },
                         {
@@ -1107,7 +1107,6 @@
                     }
                 });
 
-                // Connect dropdown buttons to DataTable export functions
                 document.getElementById("copyButton")?.addEventListener("click", function() {
                     table.button('.buttons-copy').trigger();
                 });
@@ -1163,7 +1162,7 @@
                             tooltip: {
                                 callbacks: {
                                     label: function(context) {
-                                        return `${context.label}: $${context.raw.toLocaleString()}`;
+                                        return `${context.label}: PKR ${context.raw.toLocaleString()}`;
                                     }
                                 }
                             },
@@ -1175,11 +1174,11 @@
                                 color: '#fff',
                                 font: {
                                     weight: 'bold',
-                                    size: 12
+                                    size: 16
                                 }
                             }
                         },
-                        cutout: '70%'
+                        cutout: '65%'
                     },
                     plugins: [ChartDataLabels]
                 });
@@ -1212,7 +1211,7 @@
                             tooltip: {
                                 callbacks: {
                                     label: function(context) {
-                                        return `$${context.parsed.y.toLocaleString()}`;
+                                        return `PKR ${context.parsed.y.toLocaleString()}`;
                                     }
                                 }
                             }
@@ -1225,7 +1224,7 @@
                                 },
                                 ticks: {
                                     callback: function(value) {
-                                        return '$' + value.toLocaleString();
+                                        return 'PKR ' + value.toLocaleString();
                                     }
                                 }
                             },
@@ -1266,7 +1265,7 @@
                             tooltip: {
                                 callbacks: {
                                     label: function(context) {
-                                        return `$${context.parsed.y.toLocaleString()}`;
+                                        return `PKR ${context.parsed.y.toLocaleString()}`;
                                     }
                                 }
                             }
@@ -1279,7 +1278,7 @@
                                 },
                                 ticks: {
                                     callback: function(value) {
-                                        return '$' + value.toLocaleString();
+                                        return 'PKR ' + value.toLocaleString();
                                     }
                                 }
                             },
@@ -1308,21 +1307,21 @@
                             {
                                 label: 'Available',
                                 data: data.available || [],
-                                backgroundColor: '#e0e0e0',
+                                backgroundColor: '#FFCD56',
                                 borderRadius: 4,
                                 borderWidth: 0
                             },
                             {
                                 label: 'Rented',
                                 data: data.rented || [],
-                                backgroundColor: '#184E83',
+                                backgroundColor: '#4BC0C0',
                                 borderRadius: 4,
                                 borderWidth: 0
                             },
                             {
                                 label: 'Sold',
                                 data: data.sold || [],
-                                backgroundColor: '#2ecc71',
+                                backgroundColor: '#FF6384',
                                 borderRadius: 4,
                                 borderWidth: 0
                             }
@@ -1367,24 +1366,12 @@
                                     display: false
                                 },
                                 title: {
-                                    display: true,
-                                    text: getTimePeriodLabel()
+                                    display: false,
                                 }
                             }
                         }
                     }
                 });
-            }
-
-            function getTimePeriodLabel() {
-                const startDate = new Date(currentStartDate);
-                const endDate = new Date(currentEndDate);
-                const diffTime = Math.abs(endDate - startDate);
-                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-                if (diffDays > 60) return 'Months';
-                if (diffDays > 14) return 'Weeks';
-                return 'Days';
             }
 
             // Staff Chart
@@ -1435,11 +1422,11 @@
                                 color: '#fff',
                                 font: {
                                     weight: 'bold',
-                                    size: 12
+                                    size: 16
                                 }
                             }
                         },
-                        cutout: '70%'
+                        cutout: '65%'
                     },
                     plugins: [ChartDataLabels]
                 });
@@ -1532,38 +1519,22 @@
                         labels: data.labels,
                         datasets: [
                             {
-                                label: 'Completed',
-                                data: data.completed,
-                                type: 'line',
-                                borderColor: '#2ecc71',
-                                backgroundColor: 'transparent',
-                                borderWidth: 3,
-                                tension: 0.3,
-                                pointBackgroundColor: '#2ecc71',
-                                pointRadius: 5,
-                                pointHoverRadius: 7,
-                                order: 1 // Show on top
+                                label: 'Opened',
+                                data: data.opened,
+                                backgroundColor: '#FFCD56',
+                                borderRadius: 4
                             },
                             {
-                                label: 'Pending',
-                                data: data.pending,
-                                backgroundColor: '#ffbe0b',
-                                borderRadius: 4,
-                                borderWidth: 0,
-                                order: 2
+                                label: 'Completed',
+                                data: data.completed,
+                                backgroundColor: '#4BC0C0',
+                                borderRadius: 4
                             },
                             {
                                 label: 'Rejected',
                                 data: data.rejected,
-                                type: 'line', // Add this to make it a line
-                                borderColor: '#ff4d6d', // Line color
-                                backgroundColor: 'transparent',
-                                borderWidth: 3,
-                                tension: 0.3,
-                                pointBackgroundColor: '#ff4d6d',
-                                pointRadius: 5,
-                                pointHoverRadius: 7,
-                                order: 3
+                                backgroundColor: '#ff4d6d',
+                                borderRadius: 4
                             }
                         ]
                     },
@@ -1582,20 +1553,9 @@
                                 callbacks: {
                                     label: function(context) {
                                         let label = context.dataset.label || '';
-                                        if (label) {
-                                            label += ': ';
-                                        }
+                                        if (label) label += ': ';
                                         label += context.parsed.y;
                                         return label;
-                                    },
-                                    footer: function(tooltipItems) {
-                                        // Only show total for the bar datasets (pending + rejected)
-                                        const barItems = tooltipItems.filter(item => item.datasetIndex > 0);
-                                        if (barItems.length > 1) {
-                                            const total = barItems.reduce((a, b) => a + b.parsed.y, 0);
-                                            return `Total Open Requests: ${total}`;
-                                        }
-                                        return null;
                                     }
                                 }
                             }
@@ -1615,7 +1575,8 @@
                                 grid: {
                                     display: false
                                 },
-                                stacked: true // Only stacks the bar datasets
+                                // Set this to true if you want the bars to stack
+                                stacked: false
                             }
                         },
                         interaction: {
@@ -1624,6 +1585,55 @@
                         }
                     }
                 });
+            }
+
+            function updateGrowthBar(growthValue, barSelector, reverseColor = false) {
+                const progressBar = document.querySelector(barSelector);
+                if (!progressBar) return;
+
+                const width = Math.min(Math.abs(growthValue ?? 0), 100);
+                progressBar.style.width = `${width}%`;
+
+                const isPositive = growthValue >= 0;
+                progressBar.style.backgroundColor = reverseColor
+                    ? (isPositive ? '#e57373' : 'white')
+                    : (isPositive ? 'white' : '#e57373');
+            }
+
+            function updateGrowthProgress(data) {
+                const incomeValueEl = document.querySelector('.progress-item:nth-child(1) .progress-value');
+                const incomeFillEl = document.querySelector('.progress-item:nth-child(1) .progress-fill');
+                const incomeGrowth = data.growth.income;
+
+                incomeValueEl.textContent = (incomeGrowth > 0 ? '+' : '') + incomeGrowth.toFixed(1) + '%';
+                incomeFillEl.style.width = Math.min(Math.abs(incomeGrowth), 100) + '%';
+
+                if (incomeGrowth >= 0) {
+                    incomeValueEl.classList.add('positive');
+                    incomeValueEl.classList.remove('negative');
+                    incomeFillEl.style.backgroundColor = 'var(--primary)';
+                } else {
+                    incomeValueEl.classList.add('negative');
+                    incomeValueEl.classList.remove('positive');
+                    incomeFillEl.style.backgroundColor = 'var(--danger)';
+                }
+
+                const expenseValueEl = document.querySelector('.progress-item:nth-child(2) .progress-value');
+                const expenseFillEl = document.querySelector('.progress-item:nth-child(2) .progress-fill');
+                const expenseGrowth = data.growth.expense;
+
+                expenseValueEl.textContent = (expenseGrowth > 0 ? '+' : '') + expenseGrowth.toFixed(1) + '%';
+                expenseFillEl.style.width = Math.min(Math.abs(expenseGrowth), 100) + '%';
+
+                if (expenseGrowth <= 0) {
+                    expenseValueEl.classList.add('positive');
+                    expenseValueEl.classList.remove('negative');
+                    expenseFillEl.style.backgroundColor = 'var(--primary)';
+                } else {
+                    expenseValueEl.classList.add('negative');
+                    expenseValueEl.classList.remove('positive');
+                    expenseFillEl.style.backgroundColor = 'var(--danger)';
+                }
             }
 
 

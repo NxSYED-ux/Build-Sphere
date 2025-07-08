@@ -487,39 +487,49 @@ class FinanceController extends Controller
     {
         try {
             $financialService = new FinanceService();
-
+            $chartData = $financialService->initializeFinancialChartSkeleton();
             [$startDate, $endDate] = $financialService->getDateRange(
                 $request->input('start_date'),
                 $request->input('end_date'),
                 $request->input('days', 30)
             );
 
-            $chartData = $financialService->initializeFinancialChartSkeleton();
+            $totalDays = (int) $startDate->diffInDays($endDate) + 1;
+            $segments = min($totalDays, 20);
+            $daysPerSegment = max(1, ceil($totalDays / $segments));
 
-            $currentDate = $startDate->copy();
-            while ($currentDate <= $endDate) {
-                $chartData['labels'][] = $currentDate->format('M d');
+            $segmentStart = $startDate->copy();
+            while ($segmentStart->lte($endDate)) {
+                $segmentEnd = $segmentStart->copy()->addDays($daysPerSegment - 1)->endOfDay();
+                if ($segmentEnd->gt($endDate)) {
+                    $segmentEnd = $endDate->copy()->endOfDay();
+                }
 
-                $revenue = Transaction::whereDate('created_at', $currentDate)
+                $label = $segmentStart->isSameDay($segmentEnd)
+                    ? $segmentStart->format('d M')
+                    : $segmentStart->format('d M') . ' - ' . $segmentEnd->format('d M');
+                $chartData['labels'][] = $label;
+
+                $revenue = Transaction::whereBetween('created_at', [$segmentStart, $segmentEnd])
                     ->where('seller_type', 'platform')
                     ->where('status', 'Completed')
                     ->sum('price');
 
-                $expenses = Transaction::whereDate('created_at', $currentDate)
+                $expense = Transaction::whereBetween('created_at', [$segmentStart, $segmentEnd])
                     ->where('buyer_type', 'platform')
                     ->where('status', 'Completed')
                     ->sum('price');
 
-                $chartData['datasets'][0]['data'][] = $revenue;
-                $chartData['datasets'][1]['data'][] = $expenses;
-                $chartData['datasets'][2]['data'][] = $revenue - $expenses;
+                $chartData['datasets'][0]['data'][] = round($revenue, 2);
+                $chartData['datasets'][1]['data'][] = round($expense, 2);
+                $chartData['datasets'][2]['data'][] = round($revenue - $expense, 2);
 
-                $currentDate->addDay();
+                $segmentStart = $segmentEnd->copy()->addSecond();
             }
 
             return response()->json($chartData);
 
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             Log::error('Financial chart data failed (Admin) : ' . $e->getMessage());
             return response()->json(['error' => 'Failed to load chart data'], 500);
         }
@@ -527,11 +537,16 @@ class FinanceController extends Controller
 
     public function ownerFinancialChartData(Request $request)
     {
-        $isRestrictedToBuildings = request()->user()->id === 2;
+        $isRestrictedToBuildings = request()->user()->id !== 2;
         $token = $request->attributes->get('token');
-
         $organization_id = $token['organization_id'];
         $buildingIds = [];
+
+        $selectedBuildingId = $request->input('building');
+        $selectedUnitId = $request->input('unit');
+        $selectedMembershipId = $request->input('membership');
+        $selectedUserId = $request->input('user');
+        $max_segments = (int) $request->input('segments', 20);
 
         try {
             if ($isRestrictedToBuildings) {
@@ -540,6 +555,7 @@ class FinanceController extends Controller
             }
 
             $financialService = new FinanceService();
+            $chartData = $financialService->initializeFinancialChartSkeleton();
 
             [$startDate, $endDate] = $financialService->getDateRange(
                 $request->input('start_date'),
@@ -547,27 +563,173 @@ class FinanceController extends Controller
                 $request->input('days', 30)
             );
 
-            $chartData = $financialService->initializeFinancialChartSkeleton();
+            $totalDays = (int) $startDate->diffInDays($endDate) + 1;
+            $segments = min($totalDays, $max_segments);
+            $daysPerSegment = max(1, ceil($totalDays / $segments));
+
+            $segmentStart = $startDate->copy();
+
+            while ($segmentStart->lte($endDate)) {
+                $segmentEnd = $segmentStart->copy()->addDays($daysPerSegment - 1)->endOfDay();
+                if ($segmentEnd->gt($endDate)) {
+                    $segmentEnd = $endDate->copy()->endOfDay();
+                }
+
+                $label = $segmentStart->isSameDay($segmentEnd)
+                    ? $segmentStart->format('d M')
+                    : $segmentStart->format('d M') . ' - ' . $segmentEnd->format('d M');
+                $chartData['labels'][] = $label;
+
+                $revenueQuery = Transaction::whereBetween('created_at', [$segmentStart, $segmentEnd])
+                    ->where('seller_type', 'organization')
+                    ->where('seller_id', $organization_id)
+                    ->where('status', 'Completed');
+
+                $expenseQuery = Transaction::whereBetween('created_at', [$segmentStart, $segmentEnd])
+                    ->where('buyer_type', 'organization')
+                    ->where('buyer_id', $organization_id)
+                    ->where('status', 'Completed');
+
+                if ($isRestrictedToBuildings) {
+                    $revenueQuery->whereIn('building_id', $buildingIds);
+                    $expenseQuery->whereIn('building_id', $buildingIds);
+                }
+
+                if ($selectedUserId) {
+                    $revenueQuery->where(function ($q) use ($selectedUserId) {
+                        $q->where('buyer_type', 'user')->where('buyer_id', $selectedUserId);
+                    });
+                    $expenseQuery->where(function ($q) use ($selectedUserId) {
+                        $q->where('seller_type', 'user')->where('seller_id', $selectedUserId);
+                    });
+                }
+
+                if ($selectedBuildingId) {
+                    $revenueQuery->where('building_id', $selectedBuildingId);
+                    $expenseQuery->where('building_id', $selectedBuildingId);
+                }
+
+                if ($selectedUnitId) {
+                    $revenueQuery->where('unit_id', $selectedUnitId);
+                    $expenseQuery->where('unit_id', $selectedUnitId);
+                }
+
+                if ($selectedMembershipId) {
+                    $revenueQuery->where('membership_id', $selectedMembershipId);
+                    $expenseQuery->where('membership_id', $selectedMembershipId);
+                }
+
+                $revenue = $revenueQuery->sum('price');
+                $expense = $expenseQuery->sum('price');
+
+                $chartData['datasets'][0]['data'][] = round($revenue, 2); // Revenue
+                $chartData['datasets'][1]['data'][] = round($expense, 2); // Expense
+                $chartData['datasets'][2]['data'][] = round($revenue - $expense, 2); // Net
+
+                $segmentStart = $segmentEnd->copy()->addSecond();
+            }
+
+            return response()->json($chartData);
+
+        } catch (\Throwable $e) {
+            Log::error('Financial chart data failed (Owner): ' . $e->getMessage());
+            return response()->json(['error' => 'Failed to load chart data'], 500);
+        }
+    }
+
+
+
+    // Monthly Finance Overview
+    public function getOrgMonthlyFinancialStats(Request $request)
+    {
+        $user = $request->user();
+        $token = $request->attributes->get('token');
+        $organization_id = $token['organization_id'];
+        $role_id = $token['role_id'];
+
+        return $this->orgMonthlyStats($request, $organization_id, $role_id, $user->id, 'user_id');
+    }
+
+    // Monthly Finance Overview for Manager Detail Page
+    public function getManagerBuildingsMonthlyStats(Request $request, string $id)
+    {
+        $token = $request->attributes->get('token');
+        $organization_id = $token['organization_id'];
+
+        return $this->orgMonthlyStats($request, $organization_id, 3, $id, 'staff_id');
+    }
+
+    // Helper Function
+    private function orgMonthlyStats(Request $request, string $organization_id, int $roleId, string $id, string $trackOn)
+    {
+        $selectedBuildingId = $request->input('buildingId');
+        try {
+
+            $buildingIds = [];
+            if ($roleId === 3) {
+                $buildingIds = ManagerBuilding::where($trackOn, $id)
+                    ->pluck('building_id')
+                    ->toArray();
+
+                if ($selectedBuildingId && !in_array($selectedBuildingId, $buildingIds)) {
+                    return response()->json(['error' => 'Unauthorized building access'], 403);
+                }
+            }
+
+            $year = $request->input('year', now()->year);
+
+            $startDate = Carbon::createFromDate($year, 1, 1)->startOfDay();
+            $endDate = Carbon::createFromDate($year, 12, 31)->endOfDay();
+
+            $chartData = [
+                'labels' => [],
+                'datasets' => [
+                    [
+                        'label' => 'Revenue',
+                        'data' => [],
+                        'borderColor' => 'rgba(75, 192, 192, 1)',
+                        'backgroundColor' => 'rgba(75, 192, 192, 0.2)',
+                    ],
+                    [
+                        'label' => 'Expenses',
+                        'data' => [],
+                        'borderColor' => 'rgba(255, 99, 132, 1)',
+                        'backgroundColor' => 'rgba(255, 99, 132, 0.2)',
+                    ],
+                    [
+                        'label' => 'Profit',
+                        'data' => [],
+                        'borderColor' => 'rgba(54, 162, 235, 1)',
+                        'backgroundColor' => 'rgba(54, 162, 235, 0.2)',
+                    ]
+                ]
+            ];
 
             $currentDate = $startDate->copy();
-
             while ($currentDate <= $endDate) {
-                $chartData['labels'][] = $currentDate->format('M d');
+                $monthLabel = $currentDate->format('M');
+                $chartData['labels'][] = $monthLabel;
 
-                $revenue = Transaction::whereDate('created_at', $currentDate)
+                $revenue = Transaction::whereBetween('created_at', [$currentDate->copy()->startOfMonth(), $currentDate->copy()->endOfMonth()])
                     ->where('seller_type', 'organization')
                     ->where('seller_id', $organization_id)
                     ->where('status', 'Completed')
-                    ->when($isRestrictedToBuildings, function($query) use ($buildingIds) {
+                    ->when($selectedBuildingId, function ($query) use ($selectedBuildingId) {
+                        return $query->where('building_id', $selectedBuildingId);
+                    })
+                    ->when($roleId === 3 && !$selectedBuildingId, function ($query) use ($buildingIds) {
                         return $query->whereIn('building_id', $buildingIds);
                     })
                     ->sum('price');
 
-                $expenses = Transaction::whereDate('created_at', $currentDate)
+                $expenses = Transaction::whereBetween('created_at', [$currentDate->copy()->startOfMonth(), $currentDate->copy()->endOfMonth()])
                     ->where('buyer_type', 'organization')
                     ->where('buyer_id', $organization_id)
                     ->where('status', 'Completed')
-                    ->when($isRestrictedToBuildings, function($query) use ($buildingIds) {
+                    ->when($selectedBuildingId, function ($query) use ($selectedBuildingId) {
+                        return $query->where('building_id', $selectedBuildingId);
+                    })
+                    ->when($roleId === 3 && !$selectedBuildingId, function ($query) use ($buildingIds) {
                         return $query->whereIn('building_id', $buildingIds);
                     })
                     ->sum('price');
@@ -576,7 +738,7 @@ class FinanceController extends Controller
                 $chartData['datasets'][1]['data'][] = $expenses;
                 $chartData['datasets'][2]['data'][] = $revenue - $expenses;
 
-                $currentDate->addDay();
+                $currentDate->addMonth();
             }
 
             return response()->json($chartData);

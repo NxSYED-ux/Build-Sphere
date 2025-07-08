@@ -12,6 +12,7 @@ use App\Models\BuildingPicture;
 use App\Models\BuildingUnit;
 use App\Models\DropdownType;
 use App\Models\ManagerBuilding;
+use App\Models\Membership;
 use App\Models\Organization;
 use App\Models\PlanSubscriptionItem;
 use App\Services\AdminFiltersService;
@@ -389,14 +390,23 @@ class BuildingController extends Controller
             $levels = $building->levels ?? collect();
             $units = $levels->flatMap->units ?? collect();
 
-            $view = $portal == 'admin' ? 'Heights.Admin.Buildings.show' : 'Heights.Owner.Buildings.show';
-            return view($view, compact('building', 'levels', 'units', 'owner'));
+            if ($portal === 'admin') {
+                return view('Heights.Admin.Buildings.show', compact('building', 'levels', 'units', 'owner'));
+            }
+
+            if ($portal === 'owner') {
+                $memberships = Membership::where('building_id', $building->id)->count();
+                return view('Heights.Owner.Buildings.show', compact('building', 'levels', 'units', 'owner', 'memberships'));
+            }
+
+            return redirect()->back()->with('error', 'Invalid portal access.');
 
         } catch (\Throwable $e) {
             Log::error('Error in show building: ' . $e->getMessage());
             return redirect()->back()->with('error', 'An error occurred while retrieving building details.');
         }
     }
+
 
 
     // Edit Functions
@@ -927,6 +937,48 @@ class BuildingController extends Controller
     }
 
 
+    // For Report
+    public function getBuildingDetails(Request $request)
+    {
+        try {
+            $buildingId = $request->input('building');
+
+            if (!$buildingId) {
+                return response()->json([
+                    'message' => 'Building ID is required.'
+                ], 400);
+            }
+
+            $building = Building::with('address', 'pictures')->find($buildingId);
+
+            if (!$building) {
+                return response()->json([
+                    'message' => 'Building not found.'
+                ], 404);
+            }
+
+            $imageUrl = $building->pictures->first()?->file_path;
+
+            return response()->json([
+                'name' => $building->name,
+                'building_type' => $building->building_type,
+                'status' => $building->status,
+                'area' => $building->area,
+                'construction_year' => $building->construction_year,
+                'city' => $building->address->city ?? 'N/A',
+                'image' => $imageUrl,
+            ]);
+        } catch (\Throwable $e) {
+            Log::error('Error in getBuildingDetails: ' . $e->getMessage());
+
+            return response()->json([
+                'message' => 'Failed to retrieve building details.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+
     // Helper Functions
     private function validateOwnerBuildingAccess(Request $request, $id)
     {
@@ -1043,6 +1095,64 @@ class BuildingController extends Controller
         } catch (Exception $e) {
             Log::error('Error in Update Document' . $e->getMessage());
             return redirect()->back()->with('error', 'An error occurred: ' . $e->getMessage());
+        }
+    }
+
+    public function getOccupancyStats(Request $request){
+        $user = $request->user();
+        $token = $request->attributes->get('token');
+        $organization_id = $token['organization_id'];
+        $role_id = $token['role_id'];
+
+        return $this->orgOccupancyStats($request, $organization_id, $role_id, $user->id, 'user_id');
+    }
+
+    public function getManagerBuildingsOccupancyStats(Request $request, string $id)
+    {
+        $token = $request->attributes->get('token');
+        $organization_id = $token['organization_id'];
+
+        return $this->orgOccupancyStats($request, $organization_id, 3, $id, 'staff_id');
+    }
+
+
+    // Helper function
+    private function orgOccupancyStats(Request $request, string $organization_id, int $roleId, string $id, string $trackOn)
+    {
+        $building_id = $request->input('buildingId');
+
+        try {
+            $buildingIds = [];
+            if ($roleId === 3) {
+                $buildingIds = ManagerBuilding::where($trackOn, $id)->pluck('building_id')->toArray();
+
+                if ($building_id && !in_array($building_id, $buildingIds)) {
+                    return response()->json(['error' => 'You do not have access to this building.'], 403);
+                }
+            }
+
+            $units = BuildingUnit::where('organization_id', $organization_id)
+                ->when($building_id, function ($query) use ($building_id) {
+                    $query->where('building_id', $building_id);
+                }, function ($query) use ($roleId, $buildingIds) {
+                    if ($roleId === 3) {
+                        $query->whereIn('building_id', $buildingIds);
+                    }
+                })
+                ->select('availability_status')
+                ->get()
+                ->groupBy('availability_status')
+                ->map->count();
+
+            return response()->json([
+                'availableUnits' => $units['Available'] ?? 0,
+                'rentedUnits' => $units['Rented'] ?? 0,
+                'soldUnits' => $units['Sold'] ?? 0,
+            ], 200);
+
+        } catch (\Throwable $e) {
+            Log::error('Error in occupancy chart: ' . $e->getMessage());
+            return response()->json(['error' => 'Something went wrong. Please try again later.'], 500);
         }
     }
 

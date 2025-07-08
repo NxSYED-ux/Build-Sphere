@@ -130,25 +130,10 @@
             <!-- Reports -->
             <li class="mb-1 hidden" id="OwnerReports">
                 <div id="link-a">
-                    <a href="#"
-                       class="link-dark link-toggle collapsed d-flex justify-content-between align-items-center"
-                       data-bs-toggle="collapse" data-bs-target="#OwnerReports" aria-expanded="{{ in_array('Reports', $openSections) ? 'true' : 'false' }}">
-                        <span class="d-flex align-items-center">
-                            <i class="bx bxs-pie-chart-alt-2 icons"></i>
-                            <span>Reports</span>
-                        </span>
-                        <i class="fa fa-chevron-left  chevron-icon" style="cursor: pointer;"></i>
-                    </a>
+                    <a href="{{ route('owner.reports.index') }}" class="link-dark collapsed {{ in_array('Reports', $openSections) ? 'Link-background-color' : '' }} px-1" >
+                        <i class="bx bxs-pie-chart-alt-2 icons"></i> Reports </a>
                 </div>
-
-                <div class="collapse {{ in_array('Reports', $openSections) ? 'show' : '' }}" id="OwnerReports" style="">
-                    <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                        <li  id="OwnerBuildingsReport" class=""><a href="{{ route('owner.reports.buildings') }}" class="link-dark {{ in_array('BuildingsReports', $openSections) ? 'Link-background-color' : '' }}" data-bs-target="#OwnerReports"><i class="bx bx-buildings icons"></i> Buildings</a></li>
-                    </ul>
-                </div>
-
             </li>
-
         </ul>
     </div>
 

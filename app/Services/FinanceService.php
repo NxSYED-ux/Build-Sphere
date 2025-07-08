@@ -109,7 +109,7 @@ class FinanceService
             $endDate = Carbon::parse($end)->endOfDay();
         } else {
             $endDate = now()->endOfDay();
-            $startDate = now()->subDays($days)->startOfDay();
+            $startDate = now()->subDays(($days - 1))->startOfDay();
         }
 
         return [$startDate, $endDate];

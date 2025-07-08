@@ -80,6 +80,7 @@ class MembershipService
             'transaction_category' => $purpose ? 'Renew' : 'New',
             'building_id' => $membership->building_id,
             'unit_id' => $membership->unit_id,
+            'membership_id' => $membership->id,
             'buyer_id' => $user->id,
             'buyer_type' => 'user',
             'seller_type' => 'organization',

@@ -433,6 +433,7 @@ class OwnerDashboardController extends Controller
             return response()->json([
                 'labels' => $labels,
                 'data' => $data,
+                'total_staff' => array_sum($data),
             ]);
 
         } catch (\Throwable $e) {
@@ -450,7 +451,8 @@ class OwnerDashboardController extends Controller
             $building_id = $request->input('building');
             $source = strtolower($request->input('source'));
             $source_id = $request->input('source_id');
-            $organization_id = 1;
+            $token = request()->attributes->get('token');
+            $organization_id = $token['organization_id'];
 
             $roleId = request()->user()->role_id;
 

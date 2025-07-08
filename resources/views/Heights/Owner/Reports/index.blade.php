@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Building Management Dashboard')
+@section('title', 'Reports')
 
 @push('styles')
     <!-- External Resources -->
@@ -348,15 +348,15 @@
                                     <div>
                                         <h1>Reports</h1>
                                         <p class="report-description">
-                                            Comprehensive overview of financial performance, occupancy rates, and operational metrics.
+                                            Comprehensive overview of financial performance, and other operational metrics.
                                         </p>
                                     </div>
                                     <div class="export-actions">
                                         <button class="export-btn btn btn-outline-secondary" id="exportPdf">
-                                            <i class='bx bx-download'></i> Export PDF
+                                            <i class='bx bx-download me-2'></i> Export PDF
                                         </button>
                                         <button class="export-btn btn btn-primary" id="exportImage">
-                                            <i class='bx bx-image-alt'></i> Export Image
+                                            <i class='bx bx-image-alt me-2'></i> Export Image
                                         </button>
                                     </div>
                                 </div>
@@ -381,17 +381,29 @@
                                     <input type="date" id="endDate" class="filter-input">
                                 </div>
                                 <div class="filter-group">
-                                    <label for="buildingSelect">Building</label>
-                                    <select id="buildingSelect" class="filter-input form-select">
-                                        <option value="all">Select Building</option>
-                                        <option value="1">Building 1</option>
+                                    <label for="buildingSelect">Select Building</label>
+                                    <select id="buildingSelect" class="form-select" {{ empty($buildings) || $buildings->isEmpty() ? 'disabled' : '' }}>
+                                        <option value="">All Buildings</option>
+                                        @if (!empty($buildings) && $buildings->isNotEmpty())
+                                            @foreach ($buildings as $building)
+                                                <option value="{{ $building->id }}">{{ $building->name }}</option>
+                                            @endforeach
+                                        @else
+                                            <option disabled>No Building available</option>
+                                        @endif
                                     </select>
                                 </div>
                                 <div class="filter-group" id="unitSelectGroup">
-                                    <label for="unitSelect">Unit</label>
-                                    <select id="unitSelect" class="filter-input form-select">
-                                        <option value="all">Select Unit</option>
-                                        <option value="1">Unit 1</option>
+                                    <label for="unitSelect">Select Unit</label>
+                                    <select id="unitSelect" class="form-select" {{ empty($units) || $units->isEmpty() ? 'disabled' : '' }}>
+                                        <option value="">All Units</option>
+                                        @if (!empty($units) && $units->isNotEmpty())
+                                            @foreach ($units as $unit)
+                                                <option value="{{ $unit->id }}">{{ $unit->unit_name }}</option>
+                                            @endforeach
+                                        @else
+                                            <option disabled>No Units available</option>
+                                        @endif
                                     </select>
                                 </div>
                                 <div class="filter-group filter-button">
@@ -594,7 +606,7 @@
         // Set default dates (last 30 days)
         const endDate = new Date();
         const startDate = new Date();
-        startDate.setDate(endDate.getDate() - 30);
+        startDate.setDate(endDate.getDate() - 29);
 
         document.getElementById('startDate').valueAsDate = startDate;
         document.getElementById('endDate').valueAsDate = endDate;
@@ -631,6 +643,7 @@
             document.getElementById('applyFilters').addEventListener('click', function () {
                 const startDateInput = document.getElementById('startDate').valueAsDate;
                 const endDateInput = document.getElementById('endDate').valueAsDate;
+                const selectedBuilding = document.getElementById('buildingSelect').value;
                 const reportType = document.getElementById('reportType').value;
                 const BuildingReports = document.getElementById('BuildingReports');
                 const defaultContainer = document.getElementById('defaultReportContainer');
@@ -668,6 +681,15 @@
                     return;
                 }
 
+                if (reportType === "building" && selectedBuilding === '') {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Invalid Request',
+                        text: 'Please select a building.'
+                    });
+                    return;
+                }
+
                 currentStartDate = formatDate(startDateInput);
                 currentEndDate = formatDate(endDateInput);
                 currentBuilding = document.getElementById('buildingSelect').value;
@@ -679,8 +701,6 @@
 
         // Load all data from APIs
         function loadAllData() {
-            const startDateInput = document.getElementById('startDate').valueAsDate;
-            const endDateInput = document.getElementById('endDate').valueAsDate;
             const reportType = document.getElementById('reportType').value;
             const BuildingReports = document.getElementById('BuildingReports');
             const defaultContainer = document.getElementById('defaultReportContainer');
@@ -704,8 +724,8 @@
 
             showLoading();
 
-            fetchMetricsData()
-                .then(fetchIncomeExpenseData)
+            fetchIncomeExpenseData()
+                .then(fetchBuildingDetails)
                 .then(fetchOccupancyData)
                 .then(fetchStaffData)
                 .then(fetchMembershipsData)

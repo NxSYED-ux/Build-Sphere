@@ -1339,29 +1339,6 @@
                                 return `<span class="transaction-type ${typeClass}">${data}</span>`;
                             }
                         },
-                        // {
-                        //     data: 'status',
-                        //     render: function(data, type, row) {
-                        //         let icon = '';
-                        //         let text = data;
-                        //
-                        //         switch(data.toLowerCase()) {
-                        //             case 'completed':
-                        //                 icon = '<i class="bx bx-check-circle"></i>';
-                        //                 break;
-                        //             case 'pending':
-                        //                 icon = '<i class="bx bx-time"></i>';
-                        //                 break;
-                        //             case 'rejected':
-                        //                 icon = '<i class="bx bx-x-circle"></i>';
-                        //                 break;
-                        //             default:
-                        //                 icon = '<i class="bx bx-question-mark"></i>';
-                        //         }
-                        //
-                        //         return `<span class="transaction-status">${icon} ${text}</span>`;
-                        //     }
-                        // },
                         {
                             data: 'amount',
                             render: function(data, type, row) {
@@ -1658,17 +1635,6 @@
                         }
                     }
                 });
-            }
-
-            function getTimePeriodLabel() {
-                const startDate = new Date(currentStartDate);
-                const endDate = new Date(currentEndDate);
-                const diffTime = Math.abs(endDate - startDate);
-                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-                if (diffDays > 60) return 'Months';
-                if (diffDays > 14) return 'Weeks';
-                return 'Days';
             }
 
             // Staff Chart
