@@ -455,6 +455,36 @@
         .content-wrapper {
             padding: 15px;
         }
+
+        .mini-chart-container canvas,
+        .donut-chart-container canvas {
+            width: 100% !important;
+            height: 100% !important;
+            display: block;
+        }
+
+        .flip-container {
+            min-height: 300px;
+        }
+
+        @media (max-width: 768px) {
+            .data-grid {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+
+            .card-header h3 {
+                font-size: 16px;
+            }
+
+            .card-actions {
+                font-size: 12px;
+            }
+
+            .data-value {
+                font-size: 20px;
+            }
+        }
     </style>
 @endpush
 
@@ -545,32 +575,33 @@
 
                             <!-- 1st Charts Row -->
                             <div class="row my-3">
-
                                 <!-- Subscription Plans Summary -->
-                                <div class="col-md-6 mb-4">
-                                    <div class="advanced-data-card">
+                                <div class="col-xl-6 col-lg-12 mb-4">
+                                    <div class="advanced-data-card h-100">
                                         <div class="card-header">
-                                            <h3>Subscription Plans</h3>
+                                            <h3 class="mb-2 mb-md-0">Subscription Plans</h3>
                                             <div class="card-actions">
-                                                <span class="currentMonth" id="currentMonthChart1"></span>
-                                                <span class="currentPlan" id="currentPlanChart1">All Plans</span>
-                                                <div class="chart-controls">
-                                                    <button class="chart-btn reload-btn" data-chart="subscription">
-                                                        <i class="bx bx-refresh"></i>
-                                                        <span class="tooltip">Reload Data</span>
-                                                    </button>
-                                                    <button class="chart-btn settings-btn" data-chart="subscription">
-                                                        <i class="bx bx-cog"></i>
-                                                        <span class="tooltip">Chart Settings</span>
-                                                    </button>
+                                                <div class="d-flex flex-wrap align-items-center justify-content-end">
+                                                    <span class="currentMonth me-2 mb-1 mb-md-0" id="currentMonthChart1"></span>
+                                                    <span class="currentPlan me-2 mb-1 mb-md-0" id="currentPlanChart1">All Plans</span>
+                                                    <div class="chart-controls d-flex mb-1 mb-md-0">
+                                                        <button class="chart-btn reload-btn me-1" data-chart="subscription">
+                                                            <i class="bx bx-refresh"></i>
+                                                            <span class="tooltip">Reload Data</span>
+                                                        </button>
+                                                        <button class="chart-btn settings-btn" data-chart="subscription">
+                                                            <i class="bx bx-cog"></i>
+                                                            <span class="tooltip">Chart Settings</span>
+                                                        </button>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="card-body">
-                                            <div class="flip-container" id="subscriptionFlipContainer">
-                                                <div class="flipper">
-                                                    <div class="chart-container">
-                                                        <div class="data-grid">
+                                        <div class="card-body p-2 p-md-3">
+                                            <div class="flip-container" id="subscriptionFlipContainer" style="min-height: 250px;">
+                                                <div class="flipper h-100">
+                                                    <div class="chart-container h-100 position-relative">
+                                                        <div class="data-grid mb-3">
                                                             <div class="data-item" data-type="active">
                                                                 <div class="data-value" id="activeSubscriptions">0</div>
                                                                 <div class="data-label">Active</div>
@@ -588,15 +619,15 @@
                                                             </div>
                                                         </div>
 
-                                                        <div class="mini-chart-container pb-0 mb-0">
+                                                        <div class="mini-chart-container" style="height: 180px;">
                                                             <canvas id="subscriptionTrendChart"></canvas>
                                                             <div id="subscriptionError"
-                                                                 class="text-center text-danger"
-                                                                 style="display: none; position: absolute; top: 45%; left: 50%; transform: translate(-50%, -50%); z-index: 2;">
+                                                                 class="text-center text-danger w-100"
+                                                                 style="display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    <div class="filter-panel">
+                                                    <div class="filter-panel p-3">
                                                         <h5>Subscription Plans Filters</h5>
                                                         <div class="filter-group" data-chart="subscription">
                                                             <label for="filterYear">Year</label>
@@ -635,8 +666,8 @@
                                                             </select>
                                                         </div>
 
-                                                        <div class="filter-actions">
-                                                            <button class="btn-filter btn-cancel" id="btn-cancel-chart1">Cancel</button>
+                                                        <div class="filter-actions mt-3">
+                                                            <button class="btn-filter btn-cancel me-2" id="btn-cancel-chart1">Cancel</button>
                                                             <button class="btn-filter btn-apply">Apply Filters</button>
                                                         </div>
                                                     </div>
@@ -647,31 +678,33 @@
                                 </div>
 
                                 <!-- Approval Requests -->
-                                <div class="col-md-6 mb-4">
-                                    <div class="advanced-data-card">
+                                <div class="col-xl-6 col-lg-12 mb-4">
+                                    <div class="advanced-data-card h-100">
                                         <div class="card-header">
-                                            <h3>Approval Requests</h3>
+                                            <h3 class="mb-2 mb-md-0">Approval Requests</h3>
                                             <div class="card-actions">
-                                                <span class="currentMonth" id="currentMonthChart2"></span>
-                                                <span class="currentOrganization" id="currentOrganizationChart2">All Organizations</span>
-                                                <div class="chart-controls">
-                                                    <button class="chart-btn reload-btn" data-chart="approval">
-                                                        <i class="bx bx-refresh"></i>
-                                                        <span class="tooltip">Reload Data</span>
-                                                    </button>
-                                                    <button class="chart-btn settings-btn" data-chart="approval">
-                                                        <i class="bx bx-cog"></i>
-                                                        <span class="tooltip">Chart Settings</span>
-                                                    </button>
+                                                <div class="d-flex flex-wrap align-items-center justify-content-end">
+                                                    <span class="currentMonth me-2 mb-1 mb-md-0" id="currentMonthChart2"></span>
+                                                    <span class="currentOrganization me-2 mb-1 mb-md-0" id="currentOrganizationChart2">All Organizations</span>
+                                                    <div class="chart-controls d-flex me-2 mb-1 mb-md-0">
+                                                        <button class="chart-btn reload-btn me-1" data-chart="approval">
+                                                            <i class="bx bx-refresh"></i>
+                                                            <span class="tooltip">Reload Data</span>
+                                                        </button>
+                                                        <button class="chart-btn settings-btn" data-chart="approval">
+                                                            <i class="bx bx-cog"></i>
+                                                            <span class="tooltip">Chart Settings</span>
+                                                        </button>
+                                                    </div>
+                                                    <button class="btn-details">Manage <i class="bx bx-chevron-right"></i></button>
                                                 </div>
-                                                <button class="btn-details">Manage <i class="bx bx-chevron-right"></i></button>
                                             </div>
                                         </div>
-                                        <div class="card-body">
-                                            <div class="flip-container" id="approvalFlipContainer">
-                                                <div class="flipper">
-                                                    <div class="chart-container">
-                                                        <div class="data-grid">
+                                        <div class="card-body p-2 p-md-3">
+                                            <div class="flip-container" id="approvalFlipContainer" style="min-height: 250px;">
+                                                <div class="flipper h-100">
+                                                    <div class="chart-container h-100 position-relative">
+                                                        <div class="data-grid mb-3">
                                                             <div class="data-item" data-type="pending">
                                                                 <div class="data-value" id="pendingRequests">0</div>
                                                                 <div class="data-label">Pending</div>
@@ -688,15 +721,15 @@
                                                                 <div class="data-trend"><span>-</span></div>
                                                             </div>
                                                         </div>
-                                                        <div class="donut-chart-container">
+                                                        <div class="donut-chart-container" style="height: 180px;">
                                                             <canvas id="approvalDonutChart"></canvas>
                                                             <div id="approvalError"
-                                                                 class="text-center text-danger"
-                                                                 style="display: none; position: absolute; top: 45%; left: 50%; transform: translate(-50%, -50%); z-index: 2;">
+                                                                 class="text-center text-danger w-100"
+                                                                 style="display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    <div class="filter-panel">
+                                                    <div class="filter-panel p-3">
                                                         <h5>Approval Requests Filters</h5>
                                                         <div class="filter-group" data-chart="approval">
                                                             <label for="filterYear">Year</label>
@@ -734,8 +767,8 @@
                                                                 @endif
                                                             </select>
                                                         </div>
-                                                        <div class="filter-actions">
-                                                            <button class="btn-filter btn-cancel" id="btn-cancel-chart2">Cancel</button>
+                                                        <div class="filter-actions mt-3">
+                                                            <button class="btn-filter btn-cancel me-2" id="btn-cancel-chart2">Cancel</button>
                                                             <button class="btn-filter btn-apply">Apply Filters</button>
                                                         </div>
                                                     </div>
@@ -744,7 +777,6 @@
                                         </div>
                                     </div>
                                 </div>
-
                             </div>
 
                             <!-- 2nd Charts Row -->

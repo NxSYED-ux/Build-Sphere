@@ -639,6 +639,53 @@ class BuildingUnitController extends Controller
         }
     }
 
+    public function getUnitReportDetails($id)
+    {
+        try {
+            $unit = BuildingUnit::with([
+                'pictures' => function ($query) {
+                    $query->select('unit_id', 'file_path');
+                },
+                'building' => function ($query) {
+                    $query->select('id', 'name');
+                },
+                'level' => function ($query) {
+                    $query->select('id', 'level_name');
+                },
+                'userUnits' => function ($query) {
+                    $query->where('contract_status', 1)
+                        ->select('id', 'unit_id', 'user_id', 'type', 'created_at', 'subscription_id')
+                        ->with([
+                            'user:id,name,email,cnic,phone_no,picture',
+                            'subscription:id,created_at,ends_at'
+                        ]);
+                }
+            ])->findOrFail($id);
+
+            $ownerService = new OwnerFiltersService();
+            $result = $ownerService->checkBuildingAccess($unit->building_id);
+
+            if (!$result['access']) {
+                return redirect()->back()->with('error', $result['message']);
+            }
+
+            $organization_id = $result['organization_id'];
+
+            if ($unit->organization_id !== $organization_id) {
+                return response()->json(['error' => 'Invalid Unit Id.'], 404);
+            }
+
+            return response()->json(['Unit' => $unit]);
+
+        } catch (ModelNotFoundException $e){
+            return response()->json(['error' => 'Invalid Unit Id.'], 404);
+
+        } catch (\Throwable $e) {
+            Log::error('Error fetching Unit Data: ' . $e->getMessage());
+            return response()->json(['error' => 'An error occurred while fetching unit data.'], 500);
+        }
+    }
+
 
     // Owner Tree Function
     public function getUnitDetailsWithActiveContract($id)

@@ -431,6 +431,7 @@
 
 
                             <x-Building-Reports />
+                            <x-Unit-Reports />
 
                         </div>
                     </div>
@@ -600,6 +601,7 @@
         // Current filters
         let currentReportType = '';
         let currentBuilding = '';
+        let currentUnit = '';
         let currentStartDate = '';
         let currentEndDate = '';
 
@@ -644,11 +646,14 @@
                 const startDateInput = document.getElementById('startDate').valueAsDate;
                 const endDateInput = document.getElementById('endDate').valueAsDate;
                 const selectedBuilding = document.getElementById('buildingSelect').value;
+                const selectedUnit = document.getElementById('unitSelect').value;
                 const reportType = document.getElementById('reportType').value;
                 const BuildingReports = document.getElementById('BuildingReports');
+                const UnitReports = document.getElementById('UnitReports');
                 const defaultContainer = document.getElementById('defaultReportContainer');
 
                 BuildingReports.style.display = 'none';
+                UnitReports.style.display = 'none';
                 defaultContainer.style.display = 'flex';
 
                 // Check if both dates are selected
@@ -689,10 +694,19 @@
                     });
                     return;
                 }
+                if (reportType === "unit" && selectedUnit === '') {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Invalid Request',
+                        text: 'Please select a unit.'
+                    });
+                    return;
+                }
 
                 currentStartDate = formatDate(startDateInput);
                 currentEndDate = formatDate(endDateInput);
                 currentBuilding = document.getElementById('buildingSelect').value;
+                currentUnit = document.getElementById('unitSelect').value;
 
                 loadAllData();
             });
@@ -703,44 +717,57 @@
         function loadAllData() {
             const reportType = document.getElementById('reportType').value;
             const BuildingReports = document.getElementById('BuildingReports');
+            const UnitReports = document.getElementById('UnitReports');
             const defaultContainer = document.getElementById('defaultReportContainer');
 
             if (reportType === "building") {
                 BuildingReports.style.display = 'block';
+                UnitReports.style.display = 'none';
                 defaultContainer.style.display = 'none';
+
+                showLoading();
+
+                fetchIncomeExpenseData()
+                    .then(fetchBuildingDetails)
+                    .then(fetchOccupancyData)
+                    .then(fetchStaffData)
+                    .then(fetchMembershipsData)
+                    .then(fetchMaintenanceData)
+                    .catch(error => {
+                        console.error('Error loading data:', error);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Data Load Failed',
+                            text: 'There was an error while loading data. Please try again.'
+                        });
+                    })
+                    .finally(() => {
+                        hideLoading();
+                    });
             }
 
             if (reportType === 'unit') {
-                Swal.fire({
-                    icon: 'info',
-                    title: 'Coming Soon',
-                    text: 'Unit reports will be available in a future update.'
-                });
                 BuildingReports.style.display = 'none';
-                defaultContainer.style.display = 'flex';
-                hideLoading();
-                return;
-            }
+                UnitReports.style.display = 'block';
+                defaultContainer.style.display = 'none';
 
-            showLoading();
+                showLoading();
 
-            fetchIncomeExpenseData()
-                .then(fetchBuildingDetails)
-                .then(fetchOccupancyData)
-                .then(fetchStaffData)
-                .then(fetchMembershipsData)
-                .then(fetchMaintenanceData)
-                .catch(error => {
-                    console.error('Error loading data:', error);
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Data Load Failed',
-                        text: 'There was an error while loading data. Please try again.'
+                fetchUnitDetails()
+                    .then(fetchUnitIncomeExpenseData)
+                    .then(fetchUnitMaintenanceData)
+                    .catch(error => {
+                        console.error('Error loading data:', error);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Data Load Failed',
+                            text: 'There was an error while loading data. Please try again.'
+                        });
+                    })
+                    .finally(() => {
+                        hideLoading();
                     });
-                })
-                .finally(() => {
-                    hideLoading();
-                });
+            }
         }
 
         // Initialize the dashboard

@@ -513,132 +513,90 @@ class ReportsController extends Controller
 
 
     // Unit
-    public function getUnitDetails($unitId)
+
+    public function getUnitMaintenanceData(Request $request)
     {
-        // In a real app, you would query your database here
-        $data = [
-            'id' => $unitId,
-            'name' => "UNIT-$unitId",
-            'building' => 'Downtown Tower',
-            'type' => '2 Bedroom',
-            'size' => '850 sq.ft',
-            'status' => 'rented', // or 'sold'
-            'tenant' => 'John Smith',
-            'tenant_since' => 'May 2022',
-            'purchase_price' => '$350,000',
-            'market_value' => '$420,000',
-            'image_url' => 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80'
-        ];
+        try {
+            // Validate inputs (commented out for dummy data)
+            /*
+            $validated = $request->validate([
+                'building' => 'required|exists:buildings,id',
+                'unit' => 'required|exists:units,id',
+                'start' => 'required|date',
+                'end' => 'required|date|after_or_equal:start'
+            ]);
+            */
 
-        return response()->json($data);
-    }
+            $buildingId = $request->input('building');
+            $unitId = $request->input('unit');
+            $startDate = $request->input('start') ?? Carbon::now()->subMonth()->format('Y-m-d');
+            $endDate = $request->input('end') ?? Carbon::now()->format('Y-m-d');
 
-    // Get unit trends and metrics
-    public function getUnitTrends($unitId)
-    {
-        $data = [
-            'total_income' => '$2,400',
-            'total_expenses' => '$850',
-            'net_profit' => '$1,550',
-            'occupancy_rate' => '92%',
-            'income_change' => '12%',
-            'expenses_change' => '5%',
-            'profit_change' => '18%',
-            'occupancy_change' => '3%'
-        ];
+            // Generate dummy time labels (last 30 days)
+            $timeLabels = [];
+            $currentDate = Carbon::parse($startDate);
+            $endDateObj = Carbon::parse($endDate);
 
-        return response()->json($data);
-    }
+            while ($currentDate <= $endDateObj) {
+                $timeLabels[] = $currentDate->format('M d');
+                $currentDate->addDay();
+            }
 
-    // Get income vs expense data for charts
-    public function getIncomeExpenseData($unitId)
-    {
-        $data = [
-            'labels' => ['Income', 'Expenses'],
-            'data' => [2400, 850],
-            'colors' => ['#184E83', '#ff4d6d']
-        ];
+            // Generate dummy chart data (random values between 0-5)
+            $chartData = array_map(function() {
+                return rand(0, 5);
+            }, $timeLabels);
 
-        return response()->json($data);
-    }
+            // Generate dummy maintenance requests
+            $statuses = ['opened', 'closed', 'rejected'];
+            $departments = ['Electrical', 'Plumbing', 'HVAC', 'General'];
 
-    // Get income sources breakdown
-    public function getUnitIncomeSources($unitId)
-    {
-        $data = [
-            'labels' => ['Rent', 'Parking', 'Amenities'],
-            'data' => [1200, 75, 1125],
-            'colors' => ['#184E83', '#1A6FC9', '#2ecc71']
-        ];
+            $requests = [];
+            for ($i = 0; $i < 15; $i++) {
+                $randomDays = rand(0, 30);
+                $randomStatus = $statuses[array_rand($statuses)];
+                $randomDept = $departments[array_rand($departments)];
 
-        return response()->json($data);
-    }
+                $requests[] = [
+                    'id' => $i + 1,
+                    'department' => $randomDept,
+                    'user' => 'User ' . ($i + 1),
+                    'description' => 'Maintenance request for issue #' . ($i + 100),
+                    'status' => $randomStatus,
+                    'formatted_date' => Carbon::now()->subDays($randomDays)->format('Y-m-d H:i'),
+                    'created_at' => Carbon::now()->subDays($randomDays)->toDateTimeString(),
+                ];
+            }
 
-    // Get expense categories breakdown
-    public function getUnitExpenseSources($unitId)
-    {
-        $data = [
-            'labels' => ['Maintenance', 'Utilities', 'Insurance', 'Other'],
-            'data' => [450, 250, 100, 50],
-            'colors' => ['#ff4d6d', '#ff758f', '#ff8fa3', '#ffb3c1']
-        ];
+            // Calculate status counts
+            $statusCounts = [
+                'closed' => count(array_filter($requests, fn($r) => $r['status'] === 'closed')),
+                'opened' => count(array_filter($requests, fn($r) => $r['status'] === 'opened')),
+                'rejected' => count(array_filter($requests, fn($r) => $r['status'] === 'rejected')),
+            ];
 
-        return response()->json($data);
-    }
-
-    // Get current rental contract details
-    public function getCurrentContract($unitId)
-    {
-        $data = [
-            'tenant_name' => 'John Smith',
-            'start_date' => 'June 1, 2023',
-            'end_date' => 'May 31, 2024',
-            'monthly_rent' => '$1,200',
-            'deposit' => '$1,200',
-            'payment_status' => 'current',
-            'lease_type' => 'Fixed Term',
-            'tenant_details' => [
-                'contact' => 'john.smith@example.com | (555) 123-4567',
-                'emergency_contact' => 'Jane Smith (Spouse) - (555) 987-6543',
-                'occupation' => 'Software Engineer at Tech Corp',
-                'notes' => 'Prefers communication via email. Has one pet (cat).'
-            ]
-        ];
-
-        return response()->json($data);
-    }
-
-    // Get maintenance data
-    public function getMaintenanceData($unitId)
-    {
-        $data = [
-            'active_requests' => [
-                [
-                    'id' => "MR-2023-$unitId-1",
-                    'type' => 'Plumbing - Leaky faucet',
-                    'reported' => 'June 15, 2023',
-                    'status' => 'in_progress'
-                ],
-                [
-                    'id' => "MR-2023-$unitId-2",
-                    'type' => 'Electrical - Outlet not working',
-                    'reported' => 'June 20, 2023',
-                    'status' => 'pending'
+            return response()->json([
+                'time_labels' => $timeLabels,
+                'chart_data' => $chartData,
+                'requests' => $requests,
+                'status_counts' => $statusCounts,
+                'meta' => [
+                    'building_id' => $buildingId,
+                    'unit_id' => $unitId,
+                    'start_date' => $startDate,
+                    'end_date' => $endDate,
+                    'generated_at' => now()->toDateTimeString(),
+                    'note' => 'This is dummy data for testing purposes'
                 ]
-            ],
-            'history' => [
-                'completed' => 8,
-                'in_progress' => 2,
-                'pending' => 2
-            ],
-            'chart_data' => [
-                'labels' => ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
-                'data' => [3, 5, 2, 4],
-                'color' => '#184E83'
-            ]
-        ];
+            ]);
 
-        return response()->json($data);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Server error',
+                'message' => $e->getMessage(),
+                'trace' => env('APP_DEBUG') ? $e->getTrace() : null
+            ], 500);
+        }
     }
 
     // Get unit status history timeline
@@ -669,55 +627,6 @@ class ReportsController extends Controller
                 'date' => 'February 15, 2022',
                 'title' => 'Purchased by Property',
                 'description' => 'Purchase price: $350,000 | Closing costs: $10,500'
-            ]
-        ];
-
-        return response()->json($data);
-    }
-
-    // Get unit transaction history
-    public function getTransactionHistory($unitId)
-    {
-        $data = [
-            [
-                'date' => 'June 1, 2023',
-                'id' => "TXN-2023-$unitId-001",
-                'description' => 'June Rent Payment',
-                'type' => 'income',
-                'amount' => '$1,200.00',
-                'status' => 'completed'
-            ],
-            [
-                'date' => 'June 15, 2023',
-                'id' => "TXN-2023-$unitId-002",
-                'description' => 'Plumbing Repair - Leaky faucet',
-                'type' => 'expense',
-                'amount' => '$85.00',
-                'status' => 'pending'
-            ],
-            [
-                'date' => 'June 1, 2023',
-                'id' => "TXN-2023-$unitId-003",
-                'description' => 'Parking Spot Rental',
-                'type' => 'income',
-                'amount' => '$75.00',
-                'status' => 'completed'
-            ],
-            [
-                'date' => 'May 1, 2023',
-                'id' => "TXN-2023-$unitId-004",
-                'description' => 'May Rent Payment',
-                'type' => 'income',
-                'amount' => '$1,200.00',
-                'status' => 'completed'
-            ],
-            [
-                'date' => 'April 15, 2023',
-                'id' => "TXN-2023-$unitId-005",
-                'description' => 'HVAC Maintenance',
-                'type' => 'expense',
-                'amount' => '$120.00',
-                'status' => 'completed'
             ]
         ];
 

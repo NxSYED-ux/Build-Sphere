@@ -408,6 +408,10 @@ Route::prefix('owner')->middleware(['auth.jwt'])->group(function () {
                 Route::get('/maintenance', [ReportsController::class, 'getMaintenanceRequests'])->name('owner.reports.buildings.maintenance');
 
             });
+            Route::prefix('units')->group(function () {
+                Route::get('/{id}/details', [BuildingUnitController::class, 'getUnitReportDetails'])->name('owner.reports.units.details');
+                Route::get('/maintenance', [ReportsController::class, 'getUnitMaintenanceData'])->name('owner.reports.units.maintenance');
+            });
         });
 
         Route::prefix('memberships')->group(function () {

@@ -1389,6 +1389,14 @@
                         unitStatusChart.data.labels = data.labels || [];
                         unitStatusChart.data.datasets = [
                             {
+                                label: 'Available',
+                                data: data.available || [],
+                                backgroundColor: 'rgba(255, 205, 86, 0.7)',
+                                borderColor: 'rgba(255, 205, 86, 1)',
+                                borderWidth: 0,
+                                borderRadius: 4
+                            },
+                            {
                                 label: 'Rented',
                                 data: data.rented || [],
                                 backgroundColor: 'rgba(75, 192, 192, 0.7)',
@@ -1401,14 +1409,6 @@
                                 data: data.sold || [],
                                 backgroundColor: 'rgba(255, 99, 132, 0.7)',
                                 borderColor: 'rgba(255, 99, 132, 1)',
-                                borderWidth: 0,
-                                borderRadius: 4
-                            },
-                            {
-                                label: 'Available',
-                                data: data.available || [],
-                                backgroundColor: 'rgba(255, 205, 86, 0.7)',
-                                borderColor: 'rgba(255, 205, 86, 1)',
                                 borderWidth: 0,
                                 borderRadius: 4
                             }
