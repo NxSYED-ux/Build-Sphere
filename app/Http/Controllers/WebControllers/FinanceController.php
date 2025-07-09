@@ -542,10 +542,10 @@ class FinanceController extends Controller
         $organization_id = $token['organization_id'];
         $buildingIds = [];
 
-        $selectedBuildingId = $request->input('building');
-        $selectedUnitId = $request->input('unit');
-        $selectedMembershipId = $request->input('membership');
-        $selectedUserId = $request->input('user');
+        $building_id = $request->input('building');
+        $unit_id = $request->input('unit');
+        $membership_id = $request->input('membership');
+        $user_id = $request->input('user_id');
         $max_segments = (int) $request->input('segments', 20);
 
         try {
@@ -595,39 +595,41 @@ class FinanceController extends Controller
                     $expenseQuery->whereIn('building_id', $buildingIds);
                 }
 
-                if ($selectedUserId) {
-                    $revenueQuery->where(function ($q) use ($selectedUserId) {
-                        $q->where('buyer_type', 'user')->where('buyer_id', $selectedUserId);
+                if ($user_id) {
+                    $revenueQuery->where(function ($q) use ($user_id) {
+                        $q->where('buyer_type', 'user')->where('buyer_id', $user_id);
                     });
-                    $expenseQuery->where(function ($q) use ($selectedUserId) {
-                        $q->where('seller_type', 'user')->where('seller_id', $selectedUserId);
+                    $expenseQuery->where(function ($q) use ($user_id) {
+                        $q->where('seller_type', 'user')->where('seller_id', $user_id);
                     });
                 }
 
-                if ($selectedBuildingId) {
-                    $revenueQuery->where('building_id', $selectedBuildingId);
-                    $expenseQuery->where('building_id', $selectedBuildingId);
+                if ($building_id) {
+                    $revenueQuery->where('building_id', $building_id);
+                    $expenseQuery->where('building_id', $building_id);
                 }
 
-                if ($selectedUnitId) {
-                    $revenueQuery->where('unit_id', $selectedUnitId);
-                    $expenseQuery->where('unit_id', $selectedUnitId);
+                if ($unit_id) {
+                    $revenueQuery->where('unit_id', $unit_id);
+                    $expenseQuery->where('unit_id', $unit_id);
                 }
 
-                if ($selectedMembershipId) {
-                    $revenueQuery->where('membership_id', $selectedMembershipId);
-                    $expenseQuery->where('membership_id', $selectedMembershipId);
+                if ($membership_id) {
+                    $revenueQuery->where('membership_id', $membership_id);
+                    $expenseQuery->where('membership_id', $membership_id);
                 }
 
                 $revenue = $revenueQuery->sum('price');
                 $expense = $expenseQuery->sum('price');
 
-                $chartData['datasets'][0]['data'][] = round($revenue, 2); // Revenue
-                $chartData['datasets'][1]['data'][] = round($expense, 2); // Expense
-                $chartData['datasets'][2]['data'][] = round($revenue - $expense, 2); // Net
+                $chartData['datasets'][0]['data'][] = round($revenue, 2);
+                $chartData['datasets'][1]['data'][] = round($expense, 2);
+                $chartData['datasets'][2]['data'][] = round($revenue - $expense, 2);
 
                 $segmentStart = $segmentEnd->copy()->addSecond();
             }
+
+            Log::info('Chart Data' . json_encode($chartData));
 
             return response()->json($chartData);
 
