@@ -280,7 +280,9 @@ class AdminDashboardController extends Controller
             for ($i = 1; $i < count($allRevenues); $i++) {
                 $prev = $allRevenues[$i - 1];
                 $curr = $allRevenues[$i];
-                $rate = $prev == 0 ? 0 : round((($curr - $prev) / $prev) * 100, 1);
+                $rate = $prev == 0
+                    ? ($curr > 0 ? 100 : 0)
+                    : round((($curr - $prev) / $prev) * 100, 1);
                 $growthRate[] = $rate;
             }
 
