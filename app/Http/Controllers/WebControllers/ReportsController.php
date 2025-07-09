@@ -513,20 +513,9 @@ class ReportsController extends Controller
 
 
     // Unit
-
     public function getUnitMaintenanceData(Request $request)
     {
         try {
-            // Validate inputs (commented out for dummy data)
-            /*
-            $validated = $request->validate([
-                'building' => 'required|exists:buildings,id',
-                'unit' => 'required|exists:units,id',
-                'start' => 'required|date',
-                'end' => 'required|date|after_or_equal:start'
-            ]);
-            */
-
             $buildingId = $request->input('building');
             $unitId = $request->input('unit');
             $startDate = $request->input('start') ?? Carbon::now()->subMonth()->format('Y-m-d');
@@ -599,7 +588,6 @@ class ReportsController extends Controller
         }
     }
 
-    // Get unit status history timeline
     public function getStatusHistory($unitId)
     {
         $data = [

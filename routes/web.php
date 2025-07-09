@@ -410,6 +410,7 @@ Route::prefix('owner')->middleware(['auth.jwt'])->group(function () {
             });
             Route::prefix('units')->group(function () {
                 Route::get('/{id}/details', [BuildingUnitController::class, 'getUnitReportDetails'])->name('owner.reports.units.details');
+                Route::get('/finance', [ReportsController::class, 'getFinance'])->name('owner.reports.units.finance');
                 Route::get('/maintenance', [ReportsController::class, 'getUnitMaintenanceData'])->name('owner.reports.units.maintenance');
             });
         });
