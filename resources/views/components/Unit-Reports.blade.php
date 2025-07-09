@@ -961,7 +961,7 @@
 
         // API 2: Fetch income/expense data
         function fetchUnitIncomeExpenseData() {
-            return fetch(`{{ route('owner.reports.buildings.finance') }}?building=${currentBuilding}&unit=${currentUnit}&start=${currentStartDate}&end=${currentEndDate}`, {
+            return fetch(`{{ route('owner.reports.units.finance') }}?building=${currentBuilding}&unit=${currentUnit}&start=${currentStartDate}&end=${currentEndDate}`, {
                 method: 'GET',
                 headers: {
                     'X-CSRF-TOKEN': csrfToken,
@@ -1308,13 +1308,13 @@
         // Update the updateStatusCounts function
         function updateStatusCounts(counts) {
             document.querySelector('.status-card:nth-child(1) .status-count').textContent = counts.closed;
-            document.querySelector('.status-card:nth-child(1) .status-label').textContent = 'Closed';
+            // document.querySelector('.status-card:nth-child(1) .status-label').textContent = 'Closed';
 
             document.querySelector('.status-card:nth-child(2) .status-count').textContent = counts.opened;
-            document.querySelector('.status-card:nth-child(2) .status-label').textContent = 'Opened';
+            // document.querySelector('.status-card:nth-child(2) .status-label').textContent = 'Opened';
 
             document.querySelector('.status-card:nth-child(3) .status-count').textContent = counts.rejected;
-            document.querySelector('.status-card:nth-child(3) .status-label').textContent = 'Rejected';
+            // document.querySelector('.status-card:nth-child(3) .status-label').textContent = 'Rejected';
 
             document.getElementById('unitMaintenanceValue').textContent =
                 `${counts.opened + counts.closed + counts.rejected} Requests (Last 12 months)`;

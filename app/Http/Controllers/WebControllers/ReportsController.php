@@ -47,6 +47,10 @@ class ReportsController extends Controller
             $organization_id = $token['organization_id'];
             $roleId = $request->user()->role_id;
 
+            if($unit_id && !$building_id){
+                return response()->json(['message' => 'Building is required'], 401);
+            }
+
             $ownerService = new OwnerFiltersService();
             if ($roleId !== 2) {
                 $accessibleBuildingIds = $ownerService->getAccessibleBuildingIds();
@@ -438,6 +442,10 @@ class ReportsController extends Controller
 
             $building_id = $request->input('building');
             $unit_id = $request->input('unit');
+
+            if($unit_id && !$building_id){
+                return response()->json(['message' => 'Building is required'], 401);
+            }
 
             $ownerService = new OwnerFiltersService();
             $accessibleBuildingIds = $ownerService->getAccessibleBuildingIds();

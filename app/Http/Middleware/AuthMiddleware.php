@@ -27,11 +27,15 @@ class AuthMiddleware
             $payload = JWTAuth::setToken($token)->getPayload();
             $tokenData = $payload['user'] ?? null;
 
-            $currentIp = $request->ip();
-            $currentAgent = $request->header('User-Agent');
-
-            $tokenIp = $tokenData['ip'] ?? null;
-            $tokenAgent = $tokenData['agent'] ?? null;
+//            $currentIp = $request->ip();
+//            $currentAgent = $request->header('User-Agent');
+//
+//            $tokenIp = $tokenData['ip'] ?? null;
+//            $tokenAgent = $tokenData['agent'] ?? null;
+//
+//            if ($tokenIp !== $currentIp || $tokenAgent !== $currentAgent) {
+//                return $this->handleResponse($request, 'For security reasons, we have terminated your session. Please log in again.', 401);
+//            }
 
             if (!$user || $user->status === 0) {
                 return $this->handleResponse($request,'User account is deactivated or deleted by administrator', 401);
@@ -39,10 +43,6 @@ class AuthMiddleware
 
             if (!$tokenData) {
                 return $this->handleResponse($request,'Invalid session ID', 401);
-            }
-
-            if ($tokenIp !== $currentIp || $tokenAgent !== $currentAgent) {
-                return $this->handleResponse($request, 'For security reasons, we have terminated your session. Please log in again.', 401);
             }
 
             if ($tokenData['role_id'] !== $user->role_id) {
