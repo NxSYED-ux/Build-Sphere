@@ -506,7 +506,7 @@
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-md-12">
-                        <div class="d-flex justify-content-between align-items-center mb-2">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
                             <h4 class="mb-1">User Management</h4>
                             <a href="{{ route('users.create') }}" class="btn btn-primary" title="Add New User">
                                 <i class="fas fa-user-plus me-2"></i> Add User
@@ -613,7 +613,7 @@
                                         <a href="javascript:void(0);" class="btn btn-add btn-sm btn-view view-user btn-member gap-1" data-id="{{ $user->id }}" title="View Details">
                                             <i class="fas fa-eye"></i> View
                                         </a>
-                                        @if($user->is_verified === 1)
+                                        @if($user->is_verified === 0)
                                             <a href="{{ route('users.edit', $user->id) }}" class="btn btn-add btn-sm btn-edit btn-member gap-1" title="Edit Manager">
                                                 <i class="fas fa-edit"></i> Edit
                                             </a>

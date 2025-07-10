@@ -356,7 +356,7 @@
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-md-12">
-                        <div class="d-flex justify-content-between align-items-center mb-2">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
                             <h3 class="mb-1">Levels</h3>
                             <a href="#" class="btn btn-primary hidden Admin-Level-Add-Button" id="Admin-Level-Add-Button">
                                 <x-icon name="add" type="svg" class="me-1" size="18" />
@@ -375,7 +375,7 @@
 
                             <div class="filter-group">
                                 <label for="organization_id">Organization</label>
-                                <select name="organization_id" id="organization_id" class="form-select filter-select">
+                                <select name="organization_id" id="filter_organization_id" class="form-select filter-select">
                                     <option value="">All Organizations</option>
                                     @forelse($organizations ?? [] as $organization)
                                         <option value="{{ $organization->id }}" {{ request('organization_id') == $organization->id ? 'selected' : '' }}>
@@ -387,8 +387,8 @@
                             </div>
 
                             <div class="filter-group">
-                                <label for="building_id">Building</label>
-                                <select name="building_id" id="building_id" class="form-select filter-select">
+                                <label for="building_id_filter">Building</label>
+                                <select name="building_id" id="building_id_filter" class="form-select filter-select">
                                     <option value="">All buildings</option>
                                     @forelse($buildings ?? [] as $building)
                                         <option value="{{ $building->id }}" {{ request('building_id') == $building->id ? 'selected' : '' }}>
@@ -626,27 +626,20 @@
             window.location.href = '{{ route("levels.index") }}';
         }
 
-        document.addEventListener('DOMContentLoaded', function() {
-            const buildingSelect = document.getElementById('building_id');
-            const organizationIdInput = document.getElementById('organization_id');
-
-            buildingSelect.addEventListener('change', function() {
-                const selectedOption = this.options[this.selectedIndex];
-                const organizationId = selectedOption.getAttribute('data-organization-id');
-                organizationIdInput.value = organizationId;
-            });
-
-            const editBuildingSelect = document.getElementById('edit_building_id');
-            const editOrganizationIdInput = document.getElementById('edit_organization_id');
-
-            editBuildingSelect.addEventListener('change', function() {
-                const editSelectedOption = this.options[this.selectedIndex];
-                const editOrganizationId = editSelectedOption.getAttribute('data-organization-id');
-                editOrganizationIdInput.value = editOrganizationId;
-            });
-        });
-
         document.addEventListener("DOMContentLoaded", function () {
+            document.getElementById('building_id').addEventListener('change', function () {
+                const buildingSelect = document.getElementById('building_id');
+                const selectedOption = buildingSelect.options[buildingSelect.selectedIndex];
+                const organizationId = selectedOption.dataset.organization;
+                const hiddenInput = document.getElementById('organization_id');
+
+                console.log('working 1');
+                if (hiddenInput) {
+                    console.log('working 2');
+                    hiddenInput.value = organizationId;
+                }
+            });
+
             // Show the 'Create Level' modal
             document.getElementById("Admin-Level-Add-Button").addEventListener("click", function (e) {
                 e.preventDefault();
@@ -695,6 +688,7 @@
                         // Add building options
                         buildings.forEach(building => {
                             const option = new Option(building.name, building.id);
+                            option.dataset.organization = building.organization_id;
                             buildingSelect.appendChild(option);
                         });
 
@@ -711,6 +705,7 @@
                         }
                     });
             }
+
 
             const editButtons = document.querySelectorAll(".Admin-Level-Edit-Button");
 

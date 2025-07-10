@@ -14,6 +14,7 @@ use App\Models\Role;
 class AdminFiltersService
 {
     private $allowedStatusesForBuilding = ['Approved', 'Under Review', 'For Re-Approval'];
+    private $approvedStatusesForBuilding = ['Approved', 'For Re-Approval'];
 
     public function getAllowedStatusesForBuilding()
     {
@@ -31,7 +32,15 @@ class AdminFiltersService
     {
         return Building::whereIn('status', $this->allowedStatusesForBuilding)
             ->orderBy('name', 'asc')
-            ->select('id', 'name')
+            ->select('id', 'name', 'organization_id')
+            ->get();
+    }
+
+    public function approvedBuildings()
+    {
+        return Building::whereIn('status',$this->approvedStatusesForBuilding )
+            ->orderBy('name', 'asc')
+            ->select('id', 'name', 'organization_id')
             ->get();
     }
 

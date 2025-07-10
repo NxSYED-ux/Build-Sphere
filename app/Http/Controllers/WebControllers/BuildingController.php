@@ -646,7 +646,7 @@ class BuildingController extends Controller
                 return $building;
             }
 
-            if($building->status !== 'Under Processing'){
+            if(!($building->status === 'Under Processing' || $building->status === 'Rejected')){
                 return redirect()->back()->with('error', 'This building cannot be submitted. It is already under review or approved.');
             }
 

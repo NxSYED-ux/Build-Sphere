@@ -101,6 +101,10 @@
     <x-Admin.side-navbar :openSections="['AdminControl', 'UserManagement']" />
     <x-error-success-model />
 
+    @php
+        $maxDate = \Carbon\Carbon::now()->subYears(10)->format('Y-m-d');
+    @endphp
+
     <div id="main">
         @php
         $errorsFromQuery = request()->get('errors', []);
@@ -110,7 +114,7 @@
             <div class="container-fluid ">
                 <div class="row">
                     <div class="col-md-12">
-                        <div class="d-flex justify-content-between align-items-center mb-2">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
                             <h4 class="mb-0">Edit User</h4>
                             <a href="{{ route('users.index') }}" class="btn btn-secondary"><i class="fas fa-arrow-left me-2"></i> Go Back</a>
                         </div>
@@ -180,7 +184,7 @@
                                                         <label for="contact" class="form-label">Phone no:</label>
                                                         <span class="required__field">*</span>
                                                         <div class="position-relative">
-                                                            <input type="text" name="phone_no" id="contact" value="{{ old('phone_no', $user->phone_no) }}" class="form-control contact" placeholder="0312-3456789" maxlength="14" required>
+                                                            <input type="text" name="phone_no" id="contact" value="{{ old('phone_no', $user->phone_no) }}" class="form-control contact" placeholder="0300-0000000" maxlength="12" required>
                                                             <i class='bx bxs-mobile input-icon position-absolute top-50 end-0 translate-middle-y me-3'></i>
                                                         </div>
                                                         @error('phone_no')
@@ -212,7 +216,10 @@
                                                     <div class="form-group mb-3">
                                                         <label for="date_of_birth" class="form-label">Date of Birth</label>
                                                         <span class="required__field">*</span>
-                                                        <input type="date" class="form-control" id="date_of_birth" name="date_of_birth" value="{{ old('date_of_birth', isset($user->date_of_birth) ? \Carbon\Carbon::parse($user->date_of_birth )->format('Y-m-d') : '') }}" required>
+                                                        <input type="date" class="form-control" id="date_of_birth" name="date_of_birth" max="{{ $maxDate }}" value="{{ old('date_of_birth', isset($user->date_of_birth) ? \Carbon\Carbon::parse($user->date_of_birth )->format('Y-m-d') : '') }}" required>
+                                                        <div id="dob_error" class="invalid-feedback d-none">
+                                                            User must be at least 10 years old.
+                                                        </div>
                                                         @error('date_of_birth')
                                                             <div class="text-danger">{{ $message }}</div>
                                                         @enderror
@@ -358,7 +365,7 @@
                                                     </div>
                                                 </div>
                                                 <div class="col-sm-12 col-md-6 col-lg-4 mt-2  d-flex justify-content-center align-items-center">
-                                                    <img id="avatar" class="avatar" src="{{ asset($user->picture ??  'https://via.placeholder.com/150') }}" alt="User Picture">
+                                                    <img id="avatar" class="avatar" src="{{ asset($user->picture ??  asset('img/placeholder-profile.png')) }}" alt="User Picture">
                                                 </div>
                                             </div>
                                             </div>
@@ -405,6 +412,31 @@
         document.getElementById('cnic').addEventListener('input', function (e) {
             const x = e.target.value.replace(/\D/g, '').match(/(\d{0,5})(\d{0,7})(\d{0,1})/);
             e.target.value = !x[2] ? x[1] : x[1] + '-' + x[2] + (x[3] ? '-' + x[3] : '');
+        });
+        // Phone number formatting
+        document.getElementById('contact').addEventListener('input', function(e) {
+            let x = e.target.value.replace(/\D/g, '').match(/(\d{0,4})(\d{0,7})/);
+            e.target.value = !x[2] ? x[1] : x[1] + '-' + x[2];
+        });
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const dobInput = document.getElementById('date_of_birth');
+            const errorDiv = document.getElementById('dob_error');
+
+            dobInput.addEventListener('change', function () {
+                const inputDate = new Date(this.value);
+                const today = new Date();
+                const tenYearsAgo = new Date();
+                tenYearsAgo.setFullYear(today.getFullYear() - 10);
+
+                if (inputDate > tenYearsAgo) {
+                    this.classList.add('is-invalid');
+                    errorDiv.classList.remove('d-none');
+                } else {
+                    this.classList.remove('is-invalid');
+                    errorDiv.classList.add('d-none');
+                }
+            });
         });
     </script>
 

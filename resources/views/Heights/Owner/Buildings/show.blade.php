@@ -399,7 +399,7 @@
             flex-wrap: wrap;
         }
 
-        .building-stat-card {
+        .building-stats-cards .building-stat-card {
             flex: 1;
             min-width: 300px;
             background-color: var(--body-background-color);
@@ -415,13 +415,13 @@
             overflow: hidden;
         }
 
-        .building-stat-card:hover {
+        .building-stats-cards .building-stat-card:hover {
             transform: translateY(-3px);
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
             border-color: #dee2e6;
         }
 
-        .stat-icon {
+        .building-stats-cards .stat-icon {
             font-size: 1.75rem;
             width: 60px;
             height: 60px;
@@ -434,19 +434,19 @@
             transition: all 0.3s ease;
         }
 
-        .building-stat-card:hover .stat-icon {
+        .building-stats-cards .building-stat-card:hover .stat-icon {
             color: var(--sidenavbar-text-color);
             transform: scale(1.05);
         }
 
-        .stat-content h3 {
+        .building-stats-cards .stat-content h3 {
             font-size: 1rem;
             color: var(--sidenavbar-text-color);
             margin-bottom: 0.5rem;
             font-weight: 600;
         }
 
-        .stat-content p {
+        .building-stats-cards .stat-content p {
             font-size: 1.75rem;
             font-weight: 700;
             color: var(--sidenavbar-text-color);
@@ -454,7 +454,7 @@
             line-height: 1;
         }
 
-        .stat-description {
+        .building-stats-cards .stat-description {
             display: block;
             font-size: 0.8rem;
             color: var(--sidenavbar-text-color);
@@ -504,7 +504,7 @@
             /*    flex-direction: column;*/
             /*}*/
 
-            .building-stat-card {
+            .building-stats-cards .building-stat-card {
                 width: 100%;
             }
         }

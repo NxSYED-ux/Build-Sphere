@@ -586,7 +586,7 @@
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-md-12">
-                        <div class="d-flex justify-content-between align-items-center mb-2">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
                             <h4 class="mb-1">Units</h4>
                             <a href="{{ route('units.create') }}" class="btn btn-primary hidden Admin-Unit-Add-Button">
                                 <x-icon name="add" type="svg" class="me-1" size="18" />

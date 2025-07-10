@@ -116,7 +116,7 @@ class BuildingLevelController extends Controller
     public function adminCreate(): JsonResponse
     {
         $adminService = new AdminFiltersService();
-        $buildings = $adminService->buildings();
+        $buildings = $adminService->approvedBuildings();
 
         return response()->json($buildings);
     }

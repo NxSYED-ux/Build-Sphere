@@ -25,9 +25,6 @@
         }
 
         .dashboard_Header {
-            font-family: 'Poppins', sans-serif;
-            font-size: 24px;
-            font-weight: 600;
             color: var(--sidenavbar-text-color);
             margin-bottom: 1.5rem;
             display: block;
@@ -313,30 +310,6 @@
             border-color: var(--primary);
         }
 
-        .chart-btn .tooltip {
-            visibility: hidden;
-            width: 120px;
-            background-color: #555;
-            color: #fff;
-            text-align: center;
-            border-radius: 6px;
-            padding: 5px;
-            position: absolute;
-            z-index: 1;
-            bottom: 125%;
-            left: 50%;
-            transform: translateX(-50%);
-            opacity: 0;
-            transition: opacity 0.3s;
-            font-size: 12px;
-            font-weight: normal;
-        }
-
-        .chart-btn:hover .tooltip {
-            visibility: visible;
-            opacity: 1;
-        }
-
         /* Filter Panel */
         .filter-panel {
             position: absolute;
@@ -507,74 +480,82 @@
 
                         <section class="content">
                             <!-- Stats Cards Row -->
-                            <div class="row my-3">
+                            <div class="row">
                                 <!-- Organizations Created Card -->
                                 <div class="col-md-3 col-sm-6 mb-4">
-                                    <div class="stats-card bg-gradient-primary">
-                                        <div class="icon-container">
-                                            <i class="bx bxs-business"></i>
+                                    <a class="text-decoration-none" href="{{ route('organizations.index') }}">
+                                        <div class="stats-card bg-gradient-primary">
+                                            <div class="icon-container">
+                                                <i class="bx bxs-business"></i>
+                                            </div>
+                                            <div class="stats-content">
+                                                <h3 id="totalOrganizations">0 / 0</h3>
+                                                <p>Organizations Created</p>
+                                            </div>
+                                            <div id="org-progress" class="progress-indicator">
+                                                <div class="progress-bar" style="width: 75%"></div>
+                                            </div>
                                         </div>
-                                        <div class="stats-content">
-                                            <h3 id="totalOrganizations">0 / 0</h3>
-                                            <p>Organizations Created</p>
-                                        </div>
-                                        <div id="org-progress" class="progress-indicator">
-                                            <div class="progress-bar" style="width: 75%"></div>
-                                        </div>
-                                    </div>
+                                    </a>
                                 </div>
 
                                 <!-- Active Users Card -->
                                 <div class="col-md-3 col-sm-6 mb-4">
-                                    <div class="stats-card bg-gradient-info">
-                                        <div class="icon-container">
-                                            <i class="bx bx-user"></i>
+                                    <a class="text-decoration-none" href="{{ route('users.index') }}">
+                                        <div class="stats-card bg-gradient-info">
+                                            <div class="icon-container">
+                                                <i class="bx bx-user"></i>
+                                            </div>
+                                            <div class="stats-content">
+                                                <h3 id="totalUsers">0 / 0</h3>
+                                                <p>Active Users</p>
+                                            </div>
+                                            <div id="user-progress" class="progress-indicator">
+                                                <div class="progress-bar" style="width: 60%"></div>
+                                            </div>
                                         </div>
-                                        <div class="stats-content">
-                                            <h3 id="totalUsers">0 / 0</h3>
-                                            <p>Active Users</p>
-                                        </div>
-                                        <div id="user-progress" class="progress-indicator">
-                                            <div class="progress-bar" style="width: 60%"></div>
-                                        </div>
-                                    </div>
+                                    </a>
                                 </div>
 
                                 <!-- Buildings For Approval Card -->
                                 <div class="col-md-3 col-sm-6 mb-4">
-                                    <div class="stats-card bg-gradient-warning">
-                                        <div class="icon-container">
-                                            <i class="bx bx-buildings"></i>
+                                    <a class="text-decoration-none" href="{{ route('buildings.index',['status'=>'Under Review']) }}">
+                                        <div class="stats-card bg-gradient-warning">
+                                            <div class="icon-container">
+                                                <i class="bx bx-buildings"></i>
+                                            </div>
+                                            <div class="stats-content">
+                                                <h3 id="pendingApprovals">0 / 0</h3>
+                                                <p>Pending Approvals</p>
+                                            </div>
+                                            <div id="building-progress" class="progress-indicator">
+                                                <div class="progress-bar" style="width: 45%"></div>
+                                            </div>
                                         </div>
-                                        <div class="stats-content">
-                                            <h3 id="pendingApprovals">0 / 0</h3>
-                                            <p>Pending Approvals</p>
-                                        </div>
-                                        <div id="building-progress" class="progress-indicator">
-                                            <div class="progress-bar" style="width: 45%"></div>
-                                        </div>
-                                    </div>
+                                    </a>
                                 </div>
 
                                 <!-- Monthly Revenue Card -->
                                 <div class="col-md-3 col-sm-6 mb-4">
-                                    <div class="stats-card bg-gradient-success">
-                                        <div class="icon-container">
-                                            <i class="bx bx-dollar"></i>
+                                    <a class="text-decoration-none" href="{{ route('finance.index') }}">
+                                        <div class="stats-card bg-gradient-success">
+                                            <div class="icon-container">
+                                                <i class="bx bx-dollar"></i>
+                                            </div>
+                                            <div class="stats-content">
+                                                <h3 id="totalRevenue">PKR 0</h3>
+                                                <p>Monthly Revenue</p>
+                                            </div>
+                                            <div id="revenue-progress" class="progress-indicator">
+                                                <div class="progress-bar" style="width: 90%"></div>
+                                            </div>
                                         </div>
-                                        <div class="stats-content">
-                                            <h3 id="totalRevenue">PKR 0</h3>
-                                            <p>Monthly Revenue</p>
-                                        </div>
-                                        <div id="revenue-progress" class="progress-indicator">
-                                            <div class="progress-bar" style="width: 90%"></div>
-                                        </div>
-                                    </div>
+                                    </a>
                                 </div>
                             </div>
 
                             <!-- 1st Charts Row -->
-                            <div class="row my-3">
+                            <div class="row">
                                 <!-- Subscription Plans Summary -->
                                 <div class="col-xl-6 col-lg-12 mb-4">
                                     <div class="advanced-data-card h-100">
@@ -585,13 +566,11 @@
                                                     <span class="currentMonth me-2 mb-1 mb-md-0" id="currentMonthChart1"></span>
                                                     <span class="currentPlan me-2 mb-1 mb-md-0" id="currentPlanChart1">All Plans</span>
                                                     <div class="chart-controls d-flex mb-1 mb-md-0">
-                                                        <button class="chart-btn reload-btn me-1" data-chart="subscription">
+                                                        <button class="chart-btn reload-btn me-1" title="Reload Data" data-chart="subscription">
                                                             <i class="bx bx-refresh"></i>
-                                                            <span class="tooltip">Reload Data</span>
                                                         </button>
-                                                        <button class="chart-btn settings-btn" data-chart="subscription">
+                                                        <button class="chart-btn settings-btn" title="Chart Settings" data-chart="subscription">
                                                             <i class="bx bx-cog"></i>
-                                                            <span class="tooltip">Chart Settings</span>
                                                         </button>
                                                     </div>
                                                 </div>
@@ -687,16 +666,14 @@
                                                     <span class="currentMonth me-2 mb-1 mb-md-0" id="currentMonthChart2"></span>
                                                     <span class="currentOrganization me-2 mb-1 mb-md-0" id="currentOrganizationChart2">All Organizations</span>
                                                     <div class="chart-controls d-flex me-2 mb-1 mb-md-0">
-                                                        <button class="chart-btn reload-btn me-1" data-chart="approval">
+                                                        <button class="chart-btn reload-btn me-1" title="Reload Data" data-chart="approval">
                                                             <i class="bx bx-refresh"></i>
-                                                            <span class="tooltip">Reload Data</span>
                                                         </button>
-                                                        <button class="chart-btn settings-btn" data-chart="approval">
+                                                        <button class="chart-btn settings-btn" title="Chart Settings" data-chart="approval">
                                                             <i class="bx bx-cog"></i>
-                                                            <span class="tooltip">Chart Settings</span>
                                                         </button>
                                                     </div>
-                                                    <button class="btn-details">Manage <i class="bx bx-chevron-right"></i></button>
+                                                    <button class="btn-details" data-route="{{ route('buildings.index') }}" id="detailButtonChart2">Manage <i class="bx bx-chevron-right"></i></button>
                                                 </div>
                                             </div>
                                         </div>
@@ -790,13 +767,11 @@
                                                 <div class="chart-controls">
                                                     <span class="currentYear" id="currentYearChart3">{{ now()->year }}</span>
                                                     <span class="currentPlan" id="currentPlanChart3">All Plans</span>
-                                                    <button class="chart-btn reload-btn" data-chart="revenue">
+                                                    <button class="chart-btn reload-btn" title="Reload Settings" data-chart="revenue">
                                                         <i class="bx bx-refresh"></i>
-                                                        <span class="tooltip">Reload Data</span>
                                                     </button>
-                                                    <button class="chart-btn settings-btn" data-chart="revenue">
+                                                    <button class="chart-btn settings-btn" title="Chart Settings" data-chart="revenue">
                                                         <i class="bx bx-cog"></i>
-                                                        <span class="tooltip">Chart Settings</span>
                                                     </button>
                                                 </div>
                                             </div>
@@ -857,13 +832,11 @@
                                                 <span class="currentEnd" id="currentEndChart4">{{ strtoupper(now()->format('d F Y')) }}</span>
                                                 <span class="legend-item"><i class="bx bx-pie-chart-alt"></i> By Subscriptions</span>
                                                 <div class="chart-controls">
-                                                    <button class="chart-btn reload-btn" data-chart="plan">
+                                                    <button class="chart-btn reload-btn" title="Reload Settings" data-chart="plan">
                                                         <i class="bx bx-refresh"></i>
-                                                        <span class="tooltip">Reload Data</span>
                                                     </button>
-                                                    <button class="chart-btn settings-btn" data-chart="plan">
+                                                    <button class="chart-btn settings-btn" title="Chart Settings" data-chart="plan">
                                                         <i class="bx bx-cog"></i>
-                                                        <span class="tooltip">Chart Settings</span>
                                                     </button>
                                                 </div>
                                             </div>
@@ -918,13 +891,11 @@
                                                 <span class="currentYear" id="currentYearChart5">{{ now()->year }}</span>
                                                 <span class="currentPlan" id="currentPlanChart5">All Plans</span>
                                                 <div class="chart-controls">
-                                                    <button class="chart-btn reload-btn" data-chart="distribution">
+                                                    <button class="chart-btn reload-btn" title="Reload Settings" data-chart="distribution">
                                                         <i class="bx bx-refresh"></i>
-                                                        <span class="tooltip">Reload Data</span>
                                                     </button>
-                                                    <button class="chart-btn settings-btn" data-chart="distribution">
+                                                    <button class="chart-btn settings-btn" title="Chart Settings" data-chart="distribution">
                                                         <i class="bx bx-cog"></i>
-                                                        <span class="tooltip">Chart Settings</span>
                                                     </button>
                                                 </div>
                                             </div>
@@ -983,13 +954,11 @@
                                                 <span class="currentYear" id="currentYearChart6">{{ now()->year }}</span>
                                                 <span class="currentOrganization" id="currentOrganizationChart6">All Organizations</span>
                                                 <div class="chart-controls">
-                                                    <button class="chart-btn reload-btn" data-chart="timeline">
+                                                    <button class="chart-btn reload-btn" title="Reload Settings" data-chart="timeline">
                                                         <i class="bx bx-refresh"></i>
-                                                        <span class="tooltip">Reload Data</span>
                                                     </button>
-                                                    <button class="chart-btn settings-btn" data-chart="timeline">
+                                                    <button class="chart-btn settings-btn" title="Chart Settings" data-chart="timeline">
                                                         <i class="bx bx-cog"></i>
-                                                        <span class="tooltip">Chart Settings</span>
                                                     </button>
                                                 </div>
                                             </div>
@@ -1017,7 +986,7 @@
 
                                                         <div class="filter-group" data-chart="timeline">
                                                             <label for="filterPlan">Select Organization</label>
-                                                            <select id="filterOrganizationChart2" class="form-select" {{ empty($organizations) || $organizations->isEmpty() ? 'disabled' : '' }}>
+                                                            <select id="filterOrganization" class="form-select" {{ empty($organizations) || $organizations->isEmpty() ? 'disabled' : '' }}>
                                                                 <option value="">All Organizations</option>
                                                                 @if (!empty($organizations) && $organizations->isNotEmpty())
                                                                     @foreach ($organizations as $organization)
@@ -1726,13 +1695,6 @@
                     // Reset button after a short delay
                     setTimeout(() => {
                         this.innerHTML = originalHTML;
-                        const tooltip = this.querySelector('.tooltip');
-                        if (tooltip) {
-                            tooltip.textContent = 'Data reloaded!';
-                            setTimeout(() => {
-                                tooltip.textContent = 'Reload Data';
-                            }, 2000);
-                        }
                     }, 1000);
                 });
             });
@@ -1775,21 +1737,8 @@
                         if (reloadBtn) {
                             reloadBtn.disabled = false;
                             reloadBtn.classList.remove('disabled');
-
-                            const tooltip = reloadBtn.querySelector('.tooltip');
-                            if (tooltip) {
-                                tooltip.textContent = 'Filters applied!';
-                            }
                         }
                     }, 500);
-                });
-            });
-
-            // Details buttons functionality
-            document.querySelectorAll('.btn-details').forEach(button => {
-                button.addEventListener('click', function() {
-                    const cardTitle = this.closest('.card-header').querySelector('h3').textContent;
-                    alert(`Viewing details for: ${cardTitle}`);
                 });
             });
 
@@ -1807,6 +1756,17 @@
                         reloadBtn.classList.remove('disabled');
                     }
                 });
+            });
+
+            document.getElementById('detailButtonChart2').addEventListener('click', function(e) {
+                e.preventDefault();
+
+                const organizationSelect = document.getElementById('filterOrganizationChart2');
+                const selectedOrganization = organizationSelect ? organizationSelect.value : null;
+
+                const baseRoute = this.getAttribute('data-route');
+
+                window.location.href = `${baseRoute}?organization_id=${encodeURIComponent(selectedOrganization)}&status=Under Review`;
             });
 
             const monthNames = [

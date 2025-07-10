@@ -208,7 +208,7 @@ class UsersController extends Controller
             'role_id' => 'required|exists:roles,id'
         ]);
 
-        return $this->update($request, $request, 'users.index');
+        return $this->update($request, $request->role_id, 'users.index');
     }
 
     public function toggleStatus(Request $request)
