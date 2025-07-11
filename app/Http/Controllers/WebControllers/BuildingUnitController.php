@@ -101,7 +101,8 @@ class BuildingUnitController extends Controller
 
             $unitsQuery = BuildingUnit::with(['level', 'building', 'organization', 'pictures'])
                 ->where('organization_id', $organization_id)
-                ->whereIn('building_id', $buildingIds);
+                ->whereIn('building_id', $buildingIds)
+                ->groupBy('id', 'asc');
 
             if (!empty($search)) {
                 $unitsQuery->where(function ($query) use ($search) {
@@ -639,7 +640,7 @@ class BuildingUnitController extends Controller
         }
     }
 
-    
+
     // For Report to fetch unit details
     public function getUnitReportDetails($id)
     {
