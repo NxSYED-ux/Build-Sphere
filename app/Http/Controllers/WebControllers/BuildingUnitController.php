@@ -43,7 +43,7 @@ class BuildingUnitController extends Controller
                 ->whereHas('building', function ($query) use ($allowedStatusesForBuilding) {
                     $query->whereIn('status', $allowedStatusesForBuilding);
                 })
-                ->groupBy('id', 'asc');
+                ->orderBy('id', 'asc');
 
             if(!empty($search)) {
                 $unitsQuery->where(function ($query) use ($search) {
@@ -103,7 +103,7 @@ class BuildingUnitController extends Controller
             $unitsQuery = BuildingUnit::with(['level', 'building', 'organization', 'pictures'])
                 ->where('organization_id', $organization_id)
                 ->whereIn('building_id', $buildingIds)
-                ->groupBy('id', 'asc');
+                ->orderBy('id', 'asc');
 
             if (!empty($search)) {
                 $unitsQuery->where(function ($query) use ($search) {
