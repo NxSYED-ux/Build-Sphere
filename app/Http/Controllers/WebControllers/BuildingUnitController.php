@@ -227,7 +227,7 @@ class BuildingUnitController extends Controller
                 'level_id' => $validated['level_id'],
                 'building_id' => $validated['building_id'],
                 'organization_id' => $organization_id,
-                'status' => $portal === 'Admin' ? 'Approved' : 'Rejected',
+                'status' => $portal === 'admin' ? 'Approved' : 'Rejected',
             ]);
 
             if ($request->hasFile('unit_pictures')) {
@@ -639,6 +639,8 @@ class BuildingUnitController extends Controller
         }
     }
 
+    
+    // For Report to fetch unit details
     public function getUnitReportDetails($id)
     {
         try {
