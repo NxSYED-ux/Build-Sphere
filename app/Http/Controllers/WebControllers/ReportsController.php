@@ -24,9 +24,8 @@ class ReportsController extends Controller
             $ownerService = new OwnerFiltersService();
             $buildingIds = $ownerService->getAccessibleBuildingIds();
             $buildings = $ownerService->buildings($buildingIds);
-            $units = $ownerService->allUnitsExceptMembershipUnits($buildingIds);
 
-            return view('Heights.Owner.Reports.index', compact('buildings', 'units'));
+            return view('Heights.Owner.Reports.index', compact('buildings'));
         } catch (\Throwable $e) {
             Log::error('Error in Owner Report: ' . $e->getMessage());
             return redirect()->back()->with('error', 'Something went wrong. Please try again later.');
@@ -524,109 +523,167 @@ class ReportsController extends Controller
     public function getUnitMaintenanceData(Request $request)
     {
         try {
-            $buildingId = $request->input('building');
-            $unitId = $request->input('unit');
-            $startDate = $request->input('start') ?? Carbon::now()->subMonth()->format('Y-m-d');
-            $endDate = $request->input('end') ?? Carbon::now()->format('Y-m-d');
+            $start = $request->input('start')
+                ? Carbon::parse($request->input('start'))->startOfDay()
+                : now()->subDays(29)->startOfDay();
 
-            // Generate dummy time labels (last 30 days)
-            $timeLabels = [];
-            $currentDate = Carbon::parse($startDate);
-            $endDateObj = Carbon::parse($endDate);
+            $end = $request->input('end')
+                ? Carbon::parse($request->input('end'))->endOfDay()
+                : now()->endOfDay();
 
-            while ($currentDate <= $endDateObj) {
-                $timeLabels[] = $currentDate->format('M d');
-                $currentDate->addDay();
+            $building_id = $request->input('building');
+            $unit_id = $request->input('unit');
+
+            if ($unit_id && !$building_id) {
+                return response()->json(['message' => 'Building is required'], 401);
             }
 
-            // Generate dummy chart data (random values between 0-5)
-            $chartData = array_map(function() {
-                return rand(0, 5);
-            }, $timeLabels);
+            $ownerService = new OwnerFiltersService();
+            $accessibleBuildingIds = $ownerService->getAccessibleBuildingIds();
 
-            // Generate dummy maintenance requests
-            $statuses = ['opened', 'closed', 'rejected'];
-            $departments = ['Electrical', 'Plumbing', 'HVAC', 'General'];
-
-            $requests = [];
-            for ($i = 0; $i < 15; $i++) {
-                $randomDays = rand(0, 30);
-                $randomStatus = $statuses[array_rand($statuses)];
-                $randomDept = $departments[array_rand($departments)];
-
-                $requests[] = [
-                    'id' => $i + 1,
-                    'department' => $randomDept,
-                    'user' => 'User ' . ($i + 1),
-                    'description' => 'Maintenance request for issue #' . ($i + 100),
-                    'status' => $randomStatus,
-                    'formatted_date' => Carbon::now()->subDays($randomDays)->format('Y-m-d H:i'),
-                    'created_at' => Carbon::now()->subDays($randomDays)->toDateTimeString(),
-                ];
+            if ($building_id && !in_array($building_id, $accessibleBuildingIds)) {
+                return response()->json(['message' => 'You do not have access to the selected building.'], 403);
             }
 
-            // Calculate status counts
-            $statusCounts = [
-                'closed' => count(array_filter($requests, fn($r) => $r['status'] === 'closed')),
-                'opened' => count(array_filter($requests, fn($r) => $r['status'] === 'opened')),
-                'rejected' => count(array_filter($requests, fn($r) => $r['status'] === 'rejected')),
-            ];
+            $buildingIds = $building_id ? [$building_id] : $accessibleBuildingIds;
+
+            $queries = Query::with(['department:id,name', 'user:id,name', 'staffMember:id,user_id', 'staffMember.user:id,name'])
+                ->whereIn('building_id', $buildingIds)
+                ->when($unit_id, fn($q) => $q->where('unit_id', $unit_id))
+                ->whereBetween('created_at', [$start, $end])
+                ->get();
+
+            $totalDays = (int) $start->diffInDays($end) + 1;
+            $maxSegments = 15;
+            $daysPerSegment = max(1, ceil($totalDays / $maxSegments));
+
+            $labels = [];
+            $opened = [];
+            $completed = [];
+            $rejected = [];
+
+            $segmentStart = $start->copy();
+            while ($segmentStart->lte($end)) {
+                $segmentEnd = $segmentStart->copy()->addDays($daysPerSegment - 1)->endOfDay();
+                if ($segmentEnd->gt($end)) {
+                    $segmentEnd = $end->copy()->endOfDay();
+                }
+
+                $label = $segmentStart->isSameDay($segmentEnd)
+                    ? $segmentStart->format('d M')
+                    : $segmentStart->format('d M') . ' - ' . $segmentEnd->format('d M');
+
+                $segmentData = $queries->filter(function ($query) use ($segmentStart, $segmentEnd) {
+                    return $query->created_at >= $segmentStart && $query->created_at <= $segmentEnd;
+                });
+
+                $openedCount = $segmentData->count();
+                $completedCount = $segmentData->whereIn('status', ['Closed', 'Closed Late'])->count();
+                $rejectedCount = $segmentData->where('status', 'Rejected')->count();
+
+                $labels[] = $label;
+                $opened[] = $openedCount;
+                $completed[] = $completedCount;
+                $rejected[] = $rejectedCount;
+
+                $segmentStart = $segmentEnd->copy()->addSecond();
+            }
+
+            $requestsData = collect($queries)
+                ->sortByDesc('created_at')
+                ->map(function ($query) {
+                    return [
+                        'id' => 'QR-' . str_pad($query->id, 4, '0', STR_PAD_LEFT),
+                        'department' => $query->department?->name ?? 'N/A',
+                        'description' => $query->description,
+                        'staff' => $query->staffMember?->user?->name ?? 'N/A',
+                        'user' => $query->user?->name ?? 'N/A',
+                        'expense' => $query->expense,
+                        'date' => $query->created_at->format('Y-m-d'),
+                        'status' => $query->status,
+                    ];
+                })
+                ->values()
+                ->toArray();
 
             return response()->json([
-                'time_labels' => $timeLabels,
-                'chart_data' => $chartData,
-                'requests' => $requests,
-                'status_counts' => $statusCounts,
-                'meta' => [
-                    'building_id' => $buildingId,
-                    'unit_id' => $unitId,
-                    'start_date' => $startDate,
-                    'end_date' => $endDate,
-                    'generated_at' => now()->toDateTimeString(),
-                    'note' => 'This is dummy data for testing purposes'
-                ]
+                'opened_requests' => array_sum($opened),
+                'completed_requests' => array_sum($completed),
+                'rejected_requests' => array_sum($rejected),
+                'maintenance_trend' => [
+                    'labels' => $labels,
+                    'opened' => $opened,
+                    'completed' => $completed,
+                    'rejected' => $rejected,
+                ],
+                'maintenanceData' => $requestsData,
             ]);
 
-        } catch (\Exception $e) {
-            return response()->json([
-                'error' => 'Server error',
-                'message' => $e->getMessage(),
-                'trace' => env('APP_DEBUG') ? $e->getTrace() : null
-            ], 500);
+        } catch (\Throwable $e) {
+            Log::error('Error in Unit Maintenance Chart: ' . $e->getMessage());
+            return response()->json(['message' => 'An error occurred while loading the maintenance data.'], 500);
         }
     }
 
-    public function getStatusHistory($unitId)
+    public function getPeriodContracts(Request $request)
     {
-        $data = [
-            [
-                'date' => 'June 1, 2023 - Present',
-                'title' => 'Rented to John Smith',
-                'description' => 'Monthly rent: $1,200 | Lease term: 12 months | Deposit: $1,200'
-            ],
-            [
-                'date' => 'May 15 - May 31, 2023',
-                'title' => 'Available for Rent',
-                'description' => 'Listed at $1,250/month | 5 showings | 2 applications'
-            ],
-            [
-                'date' => 'January 1 - May 14, 2023',
-                'title' => 'Rented to Sarah Johnson',
-                'description' => 'Monthly rent: $1,150 | Early termination due to relocation'
-            ],
-            [
-                'date' => 'March 2022 - December 2022',
-                'title' => 'Owned by Property Management',
-                'description' => 'Used for corporate housing and short-term rentals'
-            ],
-            [
-                'date' => 'February 15, 2022',
-                'title' => 'Purchased by Property',
-                'description' => 'Purchase price: $350,000 | Closing costs: $10,500'
-            ]
-        ];
+        try {
+            $start = $request->input('start')
+                ? Carbon::parse($request->input('start'))->startOfDay()
+                : now()->subDays(29)->startOfDay();
 
-        return response()->json($data);
+            $end = $request->input('end')
+                ? Carbon::parse($request->input('end'))->endOfDay()
+                : now()->endOfDay();
+
+            $building_id = $request->input('building');
+            $unit_id = $request->input('unit');
+
+            if ($unit_id && !$building_id) {
+                return response()->json(['message' => 'Building is required'], 401);
+            }
+
+            $ownerService = new OwnerFiltersService();
+            $accessibleBuildingIds = $ownerService->getAccessibleBuildingIds();
+
+            if ($building_id && !in_array($building_id, $accessibleBuildingIds)) {
+                return response()->json(['message' => 'You do not have access to the selected building.'], 403);
+            }
+
+            $buildingIds = $building_id ? [$building_id] : $accessibleBuildingIds;
+
+            $contracts = UserBuildingUnit::with(['user:id,name', 'subscription:id,created_at,ends_at,price_at_subscription'])
+                ->whereIn('building_id', $buildingIds)
+                ->when($unit_id, fn($q) => $q->where('unit_id', $unit_id))
+                ->whereBetween('created_at', [$start, $end])
+                ->orderByDesc('created_at')
+                ->get();
+
+            $lastContract = $contracts->first();
+
+            if ($lastContract) {
+                $lastContract->load(['user:id,name,email,cnic,phone_no', 'subscription:id,created_at,ends_at,price_at_subscription']);
+            }
+
+            $contractsWithinPeriod = $contracts->map(function ($details) {
+                return [
+                    'date' => $details->type === 'Rented'
+                        ? $details->subscription?->created_at->format('Y-m-d') . ' - ' . optional($details->subscription?->ends_at)->format('Y-m-d')
+                        : $details->created_at->format('Y-m-d'),
+                    'tittle' => $details->type . ' to ' . ($details->user?->name ?? 'N/A'),
+                    'price' => 'PKR ' . ($details->subscription?->price_at_subscription ?? $details->price),
+                ];
+            })->values()->toArray();
+
+            return response()->json([
+                'lastContract' => $lastContract,
+                'contracts' => $contractsWithinPeriod,
+            ]);
+
+        } catch (\Throwable $e) {
+            Log::error('Error in Unit Maintenance Chart: ' . $e->getMessage());
+            return response()->json(['message' => 'An error occurred while loading the maintenance data.'], 500);
+        }
     }
 
 }

@@ -792,4 +792,27 @@ class BuildingUnitController extends Controller
         return response()->json(['units' => $units]);
     }
 
+    // Get Building All units except Not available
+    public function getAllUnits(Request $request)
+    {
+        $buildingId = $request->query('building_id');
+
+        if (!$buildingId) {
+            return response()->json([], 400);
+        }
+
+        $ownerService = new OwnerFiltersService();
+
+        $result = $ownerService->checkBuildingAccess($request->building_id);
+
+        if(!$result['access']){
+            DB::rollBack();
+            return response()->json([], 400);
+        }
+
+        $units = $ownerService->allUnitsExceptMembershipUnits([$request->building_id]);
+
+        return response()->json($units);
+    }
+
 }

@@ -201,7 +201,7 @@
             margin-bottom: 5px;
         }
 
-        #UnitReports .timeline-description {
+        #UnitReports .timeline-price {
             font-size: 13px;
             color: var(--sidenavbar-text-color);
         }
@@ -608,7 +608,7 @@
 
     <!-- Last Contract -->
     <div class="contract-details-container">
-        <h3>Last Contract: <span class="contract-type-badge" id="contractTypeBadge">Rental</span></h3>
+        <h3>Last Contract of selected period: <span class="contract-type-badge" id="contractTypeBadge">Rental</span></h3>
 
         <!-- Rental Contract View -->
         <div class="contract-section rental-contract">
@@ -681,6 +681,66 @@
                 </div>
             </div>
         </div>
+
+    </div>
+
+    <!-- Unit Status Timeline -->
+    <div class="timeline-container">
+        <h3>Unit Contract History</h3>
+        <p>Review the historical record of rental and ownership contracts within the selected period, including tenant details and contract durations.</p>
+
+        <div class="timeline">
+            <div class="timeline-item">
+                <div class="timeline-dot"><i class='bx bx-calendar'></i></div>
+                <div class="timeline-content">
+                    <div class="timeline-date">May 15 - May 31, 2023</div>
+                    <div class="timeline-title">Rented to Ali</div>
+                    <div class="timeline-price">
+                        Price: PKR 23,000
+                    </div>
+                </div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-dot"><i class='bx bx-calendar'></i></div>
+                <div class="timeline-content">
+                    <div class="timeline-date">May 15 - May 31, 2023</div>
+                    <div class="timeline-title">Rented to Ali</div>
+                    <div class="timeline-price">
+                        Price: PKR 23,000
+                    </div>
+                </div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-dot"><i class='bx bx-calendar'></i></div>
+                <div class="timeline-content">
+                    <div class="timeline-date">May 15 - May 31, 2023</div>
+                    <div class="timeline-title">Rented to Ali</div>
+                    <div class="timeline-price">
+                        Price: PKR 23,000
+                    </div>
+                </div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-dot"><i class='bx bx-calendar'></i></div>
+                <div class="timeline-content">
+                    <div class="timeline-date">May 15 - May 31, 2023</div>
+                    <div class="timeline-title">Rented to Ali</div>
+                    <div class="timeline-price">
+                        Price: PKR 23,000
+                    </div>
+                </div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-dot"><i class='bx bx-calendar'></i></div>
+                <div class="timeline-content">
+                    <div class="timeline-date">May 15 - May 31, 2023</div>
+                    <div class="timeline-title">Rented to Ali</div>
+                    <div class="timeline-price">
+                        Price: PKR 23,000
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Maintenance Requests -->
@@ -735,65 +795,6 @@
         </div>
     </div>
 
-    <!-- Unit Status Timeline -->
-    <div class="timeline-container">
-        <h3>Unit Status History</h3>
-        <p>Timeline of unit status changes and occupancy history</p>
-
-        <div class="timeline">
-            <div class="timeline-item">
-                <div class="timeline-dot"><i class='bx bx-check'></i></div>
-                <div class="timeline-content">
-                    <div class="timeline-date">June 1, 2023 - Present</div>
-                    <div class="timeline-title">Rented to John Smith</div>
-                    <div class="timeline-description">
-                        Monthly rent: $1,200 | Lease term: 12 months | Deposit: $1,200
-                    </div>
-                </div>
-            </div>
-            <div class="timeline-item">
-                <div class="timeline-dot"><i class='bx bx-calendar'></i></div>
-                <div class="timeline-content">
-                    <div class="timeline-date">May 15 - May 31, 2023</div>
-                    <div class="timeline-title">Available for Rent</div>
-                    <div class="timeline-description">
-                        Listed at $1,250/month | 5 showings | 2 applications
-                    </div>
-                </div>
-            </div>
-            <div class="timeline-item">
-                <div class="timeline-dot"><i class='bx bx-user'></i></div>
-                <div class="timeline-content">
-                    <div class="timeline-date">January 1 - May 14, 2023</div>
-                    <div class="timeline-title">Rented to Sarah Johnson</div>
-                    <div class="timeline-description">
-                        Monthly rent: $1,150 | Early termination due to relocation
-                    </div>
-                </div>
-            </div>
-            <div class="timeline-item">
-                <div class="timeline-dot"><i class='bx bx-home'></i></div>
-                <div class="timeline-content">
-                    <div class="timeline-date">March 2022 - December 2022</div>
-                    <div class="timeline-title">Owned by Property Management</div>
-                    <div class="timeline-description">
-                        Used for corporate housing and short-term rentals
-                    </div>
-                </div>
-            </div>
-            <div class="timeline-item">
-                <div class="timeline-dot"><i class='bx bx-dollar'></i></div>
-                <div class="timeline-content">
-                    <div class="timeline-date">February 15, 2022</div>
-                    <div class="timeline-title">Purchased by Property</div>
-                    <div class="timeline-description">
-                        Purchase price: $350,000 | Closing costs: $10,500
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <!-- Unit Transactions -->
     <div class="transaction-section p-3 pb-1 shadow rounded">
         <div class="section-header d-flex justify-content-between align-items-center">
@@ -828,8 +829,8 @@
                     <tr>
                         <th>Transaction ID</th>
                         <th>Title</th>
+                        <th>Source</th>
                         <th>Type</th>
-                        <th>Status</th>
                         <th>Amount</th>
                         <th>Date</th>
                     </tr>
@@ -899,7 +900,6 @@
             document.getElementById("soldUnitContractPrice").textContent = data.Unit.price;
         }
 
-
         function fetchUnitDetails() {
             return fetch(`{{ route('owner.reports.units.details', ':id') }}`.replace(':id', currentUnit) , {
                 method: 'GET',
@@ -958,6 +958,7 @@
 
                 });
         }
+
 
         // API 2: Fetch income/expense data
         function fetchUnitIncomeExpenseData() {
@@ -1322,21 +1323,12 @@
 
         // Initialize unit charts when the component is loaded
         function initUnitCharts() {
-            // Initialize empty charts
             renderUnitIncomeExpenseChart(0, 0);
             initUnitTransactionsTable([]);
             renderUnitMaintenanceChart({ time_labels: [], chart_data: [] });
             populateMaintenanceTable([]);
             updateStatusCounts({ closed: 0, opened: 0, rejected: 0 });
         }
-
-        // Call this when the unit reports section is shown
-        document.addEventListener('DOMContentLoaded', function() {
-            // Check if we're on the unit reports page
-            if (document.getElementById('UnitReports')) {
-                initUnitCharts();
-            }
-        });
 
         function updateUnitGrowthProgress(data) {
             const incomeValueEl = document.querySelector('.unit-progress-item:nth-child(1) .unit-progress-value');

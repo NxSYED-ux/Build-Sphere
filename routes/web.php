@@ -300,6 +300,7 @@ Route::prefix('owner')->middleware(['auth.jwt'])->group(function () {
 
             Route::get('/{building}/available-units', [BuildingUnitController::class, 'getAvailableBuildingUnits'])->name('owner.buildings.units.available');
             Route::get('/{building}/{type}/units', [BuildingUnitController::class, 'getBuildingUnitsByType'])->name('owner.buildings.units.byType');
+            Route::get('/units', [BuildingUnitController::class, 'getAllUnits'])->name('owner.buildings.units.all');
 
         });
 
@@ -400,6 +401,7 @@ Route::prefix('owner')->middleware(['auth.jwt'])->group(function () {
             Route::get('/', [ReportsController::class, 'index'])->name('owner.reports.index');
 
             Route::prefix('buildings')->group(function () {
+
                 Route::get('/details', [BuildingController::class, 'getBuildingDetails'])->name('owner.reports.building.details');
                 Route::get('/finance', [ReportsController::class, 'getFinance'])->name('owner.reports.buildings.finance');
                 Route::get('/occupancy', [ReportsController::class, 'getBuildingOccupancy'])->name('owner.reports.buildings.occupancy');
@@ -408,10 +410,14 @@ Route::prefix('owner')->middleware(['auth.jwt'])->group(function () {
                 Route::get('/maintenance', [ReportsController::class, 'getMaintenanceRequests'])->name('owner.reports.buildings.maintenance');
 
             });
+
             Route::prefix('units')->group(function () {
+
                 Route::get('/{id}/details', [BuildingUnitController::class, 'getUnitReportDetails'])->name('owner.reports.units.details');
                 Route::get('/finance', [ReportsController::class, 'getFinance'])->name('owner.reports.units.finance');
                 Route::get('/maintenance', [ReportsController::class, 'getUnitMaintenanceData'])->name('owner.reports.units.maintenance');
+                Route::get('/contacts', [ReportsController::class, 'getPeriodContracts'])->name('owner.reports.units.contacts');
+
             });
         });
 

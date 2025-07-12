@@ -291,10 +291,10 @@
             transition: all 0.3s ease;
         }
 
-        .default-report-container:hover {
-            border-color: var(--primary-light);
-            background-color: rgba(24, 78, 131, 0.02);
-        }
+        /*.default-report-container:hover {*/
+        /*    border-color: var(--primary-light);*/
+        /*    background-color: rgba(24, 78, 131, 0.02);*/
+        /*}*/
 
         .empty-state {
             text-align: center;
@@ -351,7 +351,7 @@
                                             Comprehensive overview of financial performance, and other operational metrics.
                                         </p>
                                     </div>
-                                    <div class="export-actions">
+                                    <div class="export-actions" style="display: none;">
                                         <button class="export-btn btn btn-outline-secondary" id="exportPdf">
                                             <i class='bx bx-download me-2'></i> Export PDF
                                         </button>
@@ -383,7 +383,7 @@
                                 <div class="filter-group">
                                     <label for="buildingSelect">Select Building</label>
                                     <select id="buildingSelect" class="form-select" {{ empty($buildings) || $buildings->isEmpty() ? 'disabled' : '' }}>
-                                        <option value="">All Buildings</option>
+                                        <option value="" selected disabled>Select a building</option>
                                         @if (!empty($buildings) && $buildings->isNotEmpty())
                                             @foreach ($buildings as $building)
                                                 <option value="{{ $building->id }}">{{ $building->name }}</option>
@@ -395,15 +395,8 @@
                                 </div>
                                 <div class="filter-group" id="unitSelectGroup">
                                     <label for="unitSelect">Select Unit</label>
-                                    <select id="unitSelect" class="form-select" {{ empty($units) || $units->isEmpty() ? 'disabled' : '' }}>
-                                        <option value="">All Units</option>
-                                        @if (!empty($units) && $units->isNotEmpty())
-                                            @foreach ($units as $unit)
-                                                <option value="{{ $unit->id }}">{{ $unit->unit_name }}</option>
-                                            @endforeach
-                                        @else
-                                            <option disabled>No Units available</option>
-                                        @endif
+                                    <select id="unitSelect" class="form-select" disabled>
+                                        <option value="" selected disabled>Select a building first</option>
                                     </select>
                                 </div>
                                 <div class="filter-group filter-button">
@@ -416,7 +409,7 @@
                             <!-- Loading Overlay -->
                             <div class="loading-overlay" style="display: none;">
                                 <div class="loading-spinner"></div>
-                                <div class="loading-text">Loading dashboard data...</div>
+                                <div class="loading-text">Generating Report</div>
                             </div>
 
                             <div class="default-report-container" id="defaultReportContainer" style="display: flex;">
@@ -425,7 +418,7 @@
                                         <i class='bx bx-line-chart'></i>
                                     </div>
                                     <h3>No Report Generated Yet</h3>
-                                    <p>Apply filters and click "Generate Report" to view building analytics</p>
+                                    <p>Apply filters and click "Generate Report" to view report analytics</p>
                                 </div>
                             </div>
 
@@ -592,6 +585,76 @@
             // Add change event listener
             reportType.addEventListener('change', toggleUnitField);
         });
+
+
+        document.getElementById('buildingSelect').addEventListener('change', function () {
+            const buildingId = this.value;
+            const unitSelect = document.getElementById('unitSelect');
+
+            unitSelect.innerHTML = '';
+
+            if (!buildingId) {
+                unitSelect.disabled = true;
+
+                const defaultOption = document.createElement('option');
+                defaultOption.disabled = true;
+                defaultOption.selected = true;
+                defaultOption.textContent = 'Select a building first';
+                unitSelect.appendChild(defaultOption);
+
+                return;
+            }
+
+            const loadingOption = document.createElement('option');
+            loadingOption.disabled = true;
+            loadingOption.selected = true;
+            loadingOption.textContent = 'Loading...';
+            unitSelect.appendChild(loadingOption);
+            unitSelect.disabled = true;
+
+            fetch(`{{ route('owner.buildings.units.all') }}?building_id=${buildingId}`)
+                .then(response => {
+                    if (!response.ok) throw new Error('Network response was not ok');
+                    return response.json();
+                })
+                .then(units => {
+                    unitSelect.innerHTML = ''; // Clear loading
+
+                    if (Array.isArray(units) && units.length > 0) {
+                        const defaultOption = document.createElement('option');
+                        defaultOption.value = '';
+                        defaultOption.textContent = 'Select a unit';
+                        defaultOption.disabled = true;
+                        defaultOption.selected = true;
+                        unitSelect.appendChild(defaultOption);
+
+                        units.forEach((unit) => {
+                            const option = document.createElement('option');
+                            option.value = unit.id;
+                            option.textContent = unit.unit_name;
+                            unitSelect.appendChild(option);
+                        });
+                        unitSelect.disabled = false;
+                    } else {
+                        const noOption = document.createElement('option');
+                        noOption.disabled = true;
+                        noOption.selected = true;
+                        noOption.textContent = 'No Units available';
+                        unitSelect.appendChild(noOption);
+                        unitSelect.disabled = true;
+                    }
+                })
+                .catch(error => {
+                    console.error('Fetch error:', error);
+                    unitSelect.innerHTML = '';
+                    const errorOption = document.createElement('option');
+                    errorOption.disabled = true;
+                    errorOption.selected = true;
+                    errorOption.textContent = 'Failed to load units';
+                    unitSelect.appendChild(errorOption);
+                    unitSelect.disabled = true;
+                });
+        });
     </script>
 
     <script>
@@ -618,7 +681,7 @@
         currentEndDate = formatDate(endDate);
 
         // Initialize the dashboard
-        function initDashboard() {
+        function initReport() {
             setupEventListeners();
         }
 
@@ -655,6 +718,7 @@
                 BuildingReports.style.display = 'none';
                 UnitReports.style.display = 'none';
                 defaultContainer.style.display = 'flex';
+                document.querySelector('.export-actions').style.display = 'none';
 
                 // Check if both dates are selected
                 if (!startDateInput || !endDateInput) {
@@ -719,11 +783,9 @@
             const BuildingReports = document.getElementById('BuildingReports');
             const UnitReports = document.getElementById('UnitReports');
             const defaultContainer = document.getElementById('defaultReportContainer');
+            document.querySelector('.export-actions').style.display = 'flex';
 
             if (reportType === "building") {
-                BuildingReports.style.display = 'block';
-                UnitReports.style.display = 'none';
-                defaultContainer.style.display = 'none';
 
                 showLoading();
 
@@ -733,6 +795,10 @@
                     .then(fetchStaffData)
                     .then(fetchMembershipsData)
                     .then(fetchMaintenanceData)
+                    .then(() => {
+                        BuildingReports.style.display = 'block';
+                        defaultContainer.style.display = 'none';
+                    })
                     .catch(error => {
                         console.error('Error loading data:', error);
                         Swal.fire({
@@ -747,15 +813,16 @@
             }
 
             if (reportType === 'unit') {
-                BuildingReports.style.display = 'none';
-                UnitReports.style.display = 'block';
-                defaultContainer.style.display = 'none';
 
                 showLoading();
 
                 fetchUnitDetails()
                     .then(fetchUnitIncomeExpenseData)
                     .then(fetchUnitMaintenanceData)
+                    .then(() => {
+                        UnitReports.style.display = 'block';
+                        defaultContainer.style.display = 'none';
+                    })
                     .catch(error => {
                         console.error('Error loading data:', error);
                         Swal.fire({
@@ -770,8 +837,8 @@
             }
         }
 
-        // Initialize the dashboard
-        initDashboard();
+        // Initialize the Report
+        initReport();
     </script>
 
 
