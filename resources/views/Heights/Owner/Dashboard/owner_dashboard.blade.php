@@ -21,13 +21,9 @@
         }
 
         body {
-            font-family: 'Inter', sans-serif;
         }
 
         .dashboard_Header {
-            font-family: 'Poppins', sans-serif;
-            font-size: 24px;
-            font-weight: 600;
             color: var(--sidenavbar-text-color);
             margin-bottom: 1.5rem;
             display: block;
@@ -394,15 +390,35 @@
         @media (max-width: 768px) {
             .data-grid {
                 grid-template-columns: 1fr;
+                gap: 10px;
             }
 
-            .chart-header {
+            .data-item {
+                padding: 12px;
+            }
+
+            .card-header {
                 flex-direction: column;
                 align-items: flex-start;
             }
 
             .card-actions {
                 margin-top: 10px;
+                width: 100%;
+                justify-content: space-between;
+            }
+        }
+        @media (max-width: 576px) {
+            .card-header h3 {
+                font-size: 16px;
+            }
+
+            .data-value {
+                font-size: 20px;
+            }
+
+            .filter-panel {
+                padding: 15px !important;
             }
         }
 
@@ -436,7 +452,7 @@
 
                         <section class="content">
                             <!-- Stats Cards Row -->
-                            <div class="row my-3">
+                            <div class="row">
                                 <!-- Total Buildings Card -->
                                 <div class="col-lg-4 col-md-6 col-sm-6 mb-4">
                                     <div class="stats-card bg-gradient-primary">
@@ -535,32 +551,32 @@
                             </div>
 
                             <!-- Data Cards Row -->
-                            <div class="row my-3">
+                            <div class="row">
                                 <!-- Unit Occupancy Summary -->
-                                <div class="col-md-6 mb-4">
-                                    <div class="advanced-data-card">
+                                <div class="col-xl-6 col-lg-12 mb-4">
+                                    <div class="advanced-data-card h-100">
                                         <div class="card-header">
-                                            <h3>Unit Occupancy</h3>
+                                            <h3 class="mb-2 mb-md-0">Unit Occupancy</h3>
                                             <div class="card-actions">
-                                                <span class="currentMonth" id="currentMonthChart1"></span>
-                                                <span class="currentBuilding" id="currentBuildingChart1">All Buildings</span>
-                                                <div class="chart-controls">
-                                                    <button class="chart-btn reload-btn" data-chart="occupancy">
-                                                        <i class="bx bx-refresh"></i>
-                                                        <span class="tooltip">Reload Data</span>
-                                                    </button>
-                                                    <button class="chart-btn settings-btn" data-chart="occupancy">
-                                                        <i class="bx bx-cog"></i>
-                                                        <span class="tooltip">Chart Settings</span>
-                                                    </button>
+                                                <div class="d-flex flex-wrap align-items-center justify-content-end">
+                                                    <span class="currentMonth me-2 mb-1 mb-md-0" id="currentMonthChart1"></span>
+                                                    <span class="currentBuilding me-2 mb-1 mb-md-0" id="currentBuildingChart1">All Buildings</span>
+                                                    <div class="chart-controls d-flex mb-1 mb-md-0">
+                                                        <button class="chart-btn reload-btn me-1" title="Reload Data" data-chart="occupancy">
+                                                            <i class="bx bx-refresh"></i>
+                                                        </button>
+                                                        <button class="chart-btn settings-btn" title="Chart Settings" data-chart="occupancy">
+                                                            <i class="bx bx-cog"></i>
+                                                        </button>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="card-body">
-                                            <div class="flip-container" id="occupancyFlipContainer">
-                                                <div class="flipper">
-                                                    <div class="chart-container">
-                                                        <div class="data-grid">
+                                        <div class="card-body p-2 p-md-3">
+                                            <div class="flip-container" id="occupancyFlipContainer" style="min-height: 250px;">
+                                                <div class="flipper h-100">
+                                                    <div class="chart-container h-100 position-relative">
+                                                        <div class="data-grid mb-3">
                                                             <div class="data-item" data-type="rented">
                                                                 <div class="data-value" id="rentedUnits">0</div>
                                                                 <div class="data-label">Rented</div>
@@ -577,15 +593,15 @@
                                                                 <div class="data-trend"><span>-</span></div>
                                                             </div>
                                                         </div>
-                                                        <div class="donut-chart-container">
+                                                        <div class="donut-chart-container" style="height: 180px;">
                                                             <canvas id="unitOccupancyChart"></canvas>
                                                             <div id="occupancyError"
-                                                                 class="text-center text-danger"
-                                                                 style="display: none; position: absolute; top: 45%; left: 50%; transform: translate(-50%, -50%); z-index: 2;">
+                                                                 class="text-center text-danger w-100"
+                                                                 style="display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    <div class="filter-panel">
+                                                    <div class="filter-panel p-3">
                                                         <h5>Unit Occupancy Filters</h5>
                                                         <div class="filter-group" data-chart="occupancy">
                                                             <label for="filterYear">Year</label>
@@ -624,8 +640,8 @@
                                                             </select>
                                                         </div>
 
-                                                        <div class="filter-actions">
-                                                            <button class="btn-filter btn-cancel" id="btn-cancel-chart1">Cancel</button>
+                                                        <div class="filter-actions mt-3">
+                                                            <button class="btn-filter btn-cancel me-2" id="btn-cancel-chart1">Cancel</button>
                                                             <button class="btn-filter btn-apply">Apply Filters</button>
                                                         </div>
                                                     </div>
@@ -636,30 +652,30 @@
                                 </div>
 
                                 <!-- Membership Plans -->
-                                <div class="col-md-6 mb-4">
-                                    <div class="advanced-data-card">
+                                <div class="col-xl-6 col-lg-12 mb-4">
+                                    <div class="advanced-data-card h-100">
                                         <div class="card-header">
-                                            <h3>Membership Subscriptions</h3>
+                                            <h3 class="mb-2 mb-md-0">Membership Subscriptions</h3>
                                             <div class="card-actions">
-                                                <span class="currentMonth" id="currentMonthChart2"></span>
-                                                <span class="currentMembership" id="currentMembershipChart2">All Memberships</span>
-                                                <div class="chart-controls">
-                                                    <button class="chart-btn reload-btn" data-chart="membership">
-                                                        <i class="bx bx-refresh"></i>
-                                                        <span class="tooltip">Reload Data</span>
-                                                    </button>
-                                                    <button class="chart-btn settings-btn" data-chart="membership">
-                                                        <i class="bx bx-cog"></i>
-                                                        <span class="tooltip">Chart Settings</span>
-                                                    </button>
+                                                <div class="d-flex flex-wrap align-items-center justify-content-end">
+                                                    <span class="currentMonth me-2 mb-1 mb-md-0" id="currentMonthChart2"></span>
+                                                    <span class="currentMembership me-2 mb-1 mb-md-0" id="currentMembershipChart2">All Memberships</span>
+                                                    <div class="chart-controls d-flex mb-1 mb-md-0">
+                                                        <button class="chart-btn reload-btn me-1" title="Reload Data" data-chart="membership">
+                                                            <i class="bx bx-refresh"></i>
+                                                        </button>
+                                                        <button class="chart-btn settings-btn" title="Chart Settings" data-chart="membership">
+                                                            <i class="bx bx-cog"></i>
+                                                        </button>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="card-body">
-                                            <div class="flip-container" id="membershipFlipContainer">
-                                                <div class="flipper">
-                                                    <div class="chart-container">
-                                                        <div class="data-grid">
+                                        <div class="card-body p-2 p-md-3">
+                                            <div class="flip-container" id="membershipFlipContainer" style="min-height: 250px;">
+                                                <div class="flipper h-100">
+                                                    <div class="chart-container h-100 position-relative">
+                                                        <div class="data-grid mb-3">
                                                             <div class="data-item" data-type="active">
                                                                 <div class="data-value" id="activeMemberships">0</div>
                                                                 <div class="data-label">Active</div>
@@ -675,15 +691,15 @@
                                                                 <div class="data-label">Usage</div>
                                                             </div>
                                                         </div>
-                                                        <div class="mini-chart-container">
+                                                        <div class="mini-chart-container" style="height: 180px;">
                                                             <canvas id="membershipTrendChart"></canvas>
                                                             <div id="membershipError"
-                                                                 class="text-center text-danger"
-                                                                 style="display: none; position: absolute; top: 45%; left: 50%; transform: translate(-50%, -50%); z-index: 2;">
+                                                                 class="text-center text-danger w-100"
+                                                                 style="display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    <div class="filter-panel">
+                                                    <div class="filter-panel p-3">
                                                         <h5>Membership Subscriptions Filters</h5>
                                                         <div class="filter-group" data-chart="membership">
                                                             <label for="filterYear">Year</label>
@@ -722,8 +738,8 @@
                                                             </select>
                                                         </div>
 
-                                                        <div class="filter-actions">
-                                                            <button class="btn-filter btn-cancel" id="btn-cancel-chart2">Cancel</button>
+                                                        <div class="filter-actions mt-3">
+                                                            <button class="btn-filter btn-cancel me-2" id="btn-cancel-chart2">Cancel</button>
                                                             <button class="btn-filter btn-apply">Apply Filters</button>
                                                         </div>
                                                     </div>
@@ -745,13 +761,11 @@
                                                 <span class="currentYear" id="currentYearChart3">{{ now()->year }}</span>
                                                 <span class="currentBuilding" id="currentBuildingChart3">All Buildings</span>
                                                 <div class="chart-controls">
-                                                    <button class="chart-btn reload-btn" data-chart="unitStatus">
+                                                    <button class="chart-btn reload-btn" title="Reload Data" data-chart="unitStatus">
                                                         <i class="bx bx-refresh"></i>
-                                                        <span class="tooltip">Reload Data</span>
                                                     </button>
-                                                    <button class="chart-btn settings-btn" data-chart="unitStatus">
+                                                    <button class="chart-btn settings-btn" title="Chart Settings" data-chart="unitStatus">
                                                         <i class="bx bx-cog"></i>
-                                                        <span class="tooltip">Chart Settings</span>
                                                     </button>
                                                 </div>
                                             </div>
@@ -813,13 +827,11 @@
                                                 <span class="currentEnd" id="currentEndChart4">{{ strtoupper(now()->format('d F Y')) }}</span>
                                                 <span class="currentBuilding" id="currentBuildingChart4">All Buildings</span>
                                                 <div class="chart-controls">
-                                                    <button class="chart-btn reload-btn" data-chart="staff">
+                                                    <button class="chart-btn reload-btn" title="Reload Data" data-chart="staff">
                                                         <i class="bx bx-refresh"></i>
-                                                        <span class="tooltip">Reload Data</span>
                                                     </button>
-                                                    <button class="chart-btn settings-btn" data-chart="staff">
+                                                    <button class="chart-btn settings-btn" title="Chart Settings" data-chart="staff">
                                                         <i class="bx bx-cog"></i>
-                                                        <span class="tooltip">Chart Settings</span>
                                                     </button>
                                                 </div>
                                             </div>
@@ -889,13 +901,11 @@
                                                 <span class="currentSource" id="currentSourceChart5">All Sources</span>
                                                 <span class="currentName" id="currentNameChart5"></span>
                                                 <div class="chart-controls">
-                                                    <button class="chart-btn reload-btn" data-chart="incomeExpense">
+                                                    <button class="chart-btn reload-btn" title="Reload Data" data-chart="incomeExpense">
                                                         <i class="bx bx-refresh"></i>
-                                                        <span class="tooltip">Reload Data</span>
                                                     </button>
-                                                    <button class="chart-btn settings-btn" data-chart="incomeExpense">
+                                                    <button class="chart-btn settings-btn" title="Chart Settings" data-chart="incomeExpense">
                                                         <i class="bx bx-cog"></i>
-                                                        <span class="tooltip">Chart Settings</span>
                                                     </button>
                                                 </div>
                                             </div>
@@ -998,13 +1008,11 @@
                                                 <span class="currentMonth" id="currentMonthChart6"></span>
                                                 <span class="legend-item"><i class="bx bx-pie-chart-alt"></i> By Subscriptions</span>
                                                 <div class="chart-controls">
-                                                    <button class="chart-btn reload-btn" data-chart="membershipPlan">
+                                                    <button class="chart-btn reload-btn" title="Reload Data" data-chart="membershipPlan">
                                                         <i class="bx bx-refresh"></i>
-                                                        <span class="tooltip">Reload Data</span>
                                                     </button>
-                                                    <button class="chart-btn settings-btn" data-chart="membershipPlan">
+                                                    <button class="chart-btn settings-btn" title="Chart Settings" data-chart="membershipPlan">
                                                         <i class="bx bx-cog"></i>
-                                                        <span class="tooltip">Chart Settings</span>
                                                     </button>
                                                 </div>
                                             </div>

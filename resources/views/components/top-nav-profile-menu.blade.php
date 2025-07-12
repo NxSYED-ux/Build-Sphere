@@ -30,11 +30,11 @@
                 </a>
             </li>
         @endif
-        <li>
-            <a class="dropdown-item d-flex align-items-center" href="{{ $settingsRoute }}">
-                <i class="bx bxs-cog me-2"></i> Settings
-            </a>
-        </li>
+{{--        <li>--}}
+{{--            <a class="dropdown-item d-flex align-items-center" href="{{ $settingsRoute }}">--}}
+{{--                <i class="bx bxs-cog me-2"></i> Settings--}}
+{{--            </a>--}}
+{{--        </li>--}}
         <li>
             <a class="dropdown-item d-flex align-items-center" href="{{ $logoutRoute }}"
                onclick="event.preventDefault(); handleLogout();">

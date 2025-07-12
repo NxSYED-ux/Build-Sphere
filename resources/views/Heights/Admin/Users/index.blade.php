@@ -554,13 +554,13 @@
                             </div>
                         </form>
 
-                        <!-- Staff Cards -->
+                        <!-- User Cards -->
                         <div class="team-members">
                             @forelse($users as $user)
                                 <div class="member-card">
                                     <div class="member-header">
                                         <img src="{{ $user->picture ? asset($user->picture) : asset('img/placeholder-profile.png') }}"
-                                             alt="{{ $user->name }}"
+                                             alt="{{ $user->name }}" onerror="this.onerror=null; this.src='{{ asset('img/placeholder-profile.png') }}';"
                                              class="member-avatar">
                                         <h3 class="member-name">{{ $user->name }}</h3>
                                         <p class="member-position">
@@ -732,7 +732,7 @@
                         .then(data => {
                             let user = data.user;
 
-                            document.getElementById("userPicture").src = user.picture ? "{{ asset('/') }}" + user.picture : "{{ asset('assets/placeholder-profile.png') }}";
+                            document.getElementById("userPicture").src = user.picture ? "{{ asset('/') }}" + user.picture : "{{ asset('img/placeholder-profile.png') }}";
                             document.getElementById("userName").textContent = user.name;
                             document.getElementById("userEmail").textContent = user.email;
                             document.getElementById("userPhone").textContent = user.phone_no;

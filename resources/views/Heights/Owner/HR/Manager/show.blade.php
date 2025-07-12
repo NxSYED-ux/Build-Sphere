@@ -1002,4 +1002,91 @@
             }
         });
     </script>
+
+    <script>
+        function deleteStaffMember(memberId) {
+            const deleteUrl = "{{ route('owner.managers.destroy') }}";
+
+            return fetch(deleteUrl, {
+                method: 'DELETE',
+                headers: {
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify({ id: memberId })
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(err => { throw err; });
+                    }
+                    return response.json();
+                });
+        }
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll('.delete-member-btn').forEach(button => {
+                button.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const memberId = this.getAttribute('data-member-id');
+
+                    Swal.fire({
+                        title: 'Are you sure?',
+                        text: "You won't be able to revert this!",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Yes, delete it!',
+                        cancelButtonText: 'Cancel',
+                        background: 'var(--body-background-color)',
+                        color: 'var(--sidenavbar-text-color)',
+                        backdrop: true,
+                        allowOutsideClick: false,
+                        showClass: {
+                            popup: 'animate__animated animate__fadeInDown'
+                        },
+                        hideClass: {
+                            popup: 'animate__animated animate__fadeOutUp'
+                        }
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            Swal.fire({
+                                title: 'Deleting...',
+                                html: 'Please wait while we delete the staff member.',
+                                allowOutsideClick: false,
+                                didOpen: () => {
+                                    Swal.showLoading();
+                                },
+                                background: 'var(--body-background-color)',
+                                color: 'var(--sidenavbar-text-color)',
+                            });
+
+                            deleteStaffMember(memberId)
+                                .then(data => {
+                                    Swal.fire({
+                                        title: 'Deleted!',
+                                        text: data.success || 'Staff member has been deleted.',
+                                        icon: 'success',
+                                        background: 'var(--body-background-color)',
+                                        color: 'var(--sidenavbar-text-color)',
+                                    }).then(() => {
+                                        window.location.href = '{{ route("owner.managers.index") }}';
+                                    });
+                                })
+                                .catch(error => {
+                                    Swal.fire({
+                                        title: 'Error!',
+                                        text: error.message || error.error || 'An error occurred while deleting.',
+                                        icon: 'error',
+                                        background: 'var(--body-background-color)',
+                                        color: 'var(--sidenavbar-text-color)',
+                                    });
+                                });
+                        }
+                    });
+                });
+            });
+        });
+    </script>
 @endpush

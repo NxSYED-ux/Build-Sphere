@@ -208,10 +208,11 @@
         }
         .membership-card .discount-badge {
             position: absolute;
-            top: 10px;
-            right: 10px;
+            top: 50px;
+            left: 10px;
             background: linear-gradient(135deg, #e74c3c, #c0392b);
             color: white;
+            width: 117px;
             padding: 4px 10px;
             border-radius: 12px;
             font-weight: 700;
@@ -225,6 +226,7 @@
             left: 10px;
             background: linear-gradient(135deg, #3498db, #2980b9);
             color: white;
+            width: 117px;
             padding: 4px 10px;
             border-radius: 12px;
             font-weight: 700;
@@ -417,20 +419,8 @@
         }
 
         .empty-state h3 {
-            color: #343a40;
+            color: var(--sidenavbar-text-color);
             font-weight: 600;
-        }
-
-        .btn-membership-create {
-            padding: 10px 25px;
-            font-weight: 500;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            transition: all 0.3s ease;
-        }
-
-        .btn-membership-create:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
         }
     </style>
 @endpush
@@ -448,220 +438,210 @@
     <x-error-success-model />
 
     <div id="main">
-        <section class="content mt-1 mb-3 mx-2">
+        <section class="content my-3 mx-2">
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-md-12">
-                        <div class="box">
-                            <div class="container mt-2">
-                                <div class="d-flex justify-content-between align-items-center mb-2">
-                                    <h3 class="section-title">Memberships</h3>
-                                    <a href="{{ route('owner.memberships.create') }}" class="btn btn-primary add-membership-btn" id="Owner-Level-Add-Button">
-                                        <x-icon name="add" type="svg" size="20" />
-                                        Add Membership
-                                    </a>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h4 class="section-title">Memberships</h4>
+                            <a href="{{ route('owner.memberships.create') }}" class="btn btn-primary add-membership-btn" id="Owner-Level-Add-Button">
+                                <x-icon name="add" type="svg" size="20" />
+                                Add Membership
+                            </a>
+                        </div>
+
+                        <!-- Filter Form -->
+                        <form method="GET" id="filterForm" class="filter-container">
+                            <!-- All filters with equal width -->
+                            <div class="filter-group">
+                                <label for="search">Search</label>
+                                <input type="text" name="search" id="search" class="form-control search-input"
+                                       placeholder="Search by name"
+                                       value="{{ request('search') }}">
+                            </div>
+
+
+                                <div class="filter-group">
+                                    <label for="building_id">Building</label>
+                                    <select name="building_id" id="building_id" class="form-select">
+                                        <option value="">All Buildings</option>
+                                        @foreach($buildings as $building)
+                                            <option value="{{ $building->id }}" {{ request('building_id') == $building->id ? 'selected' : '' }}>
+                                                {{ $building->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
                                 </div>
 
-                                <!-- Filter Form -->
-                                <form method="GET" id="filterForm" class="filter-container">
-                                    <!-- All filters with equal width -->
-                                    <div class="filter-group">
-                                        <label for="search">Search</label>
-                                        <input type="text" name="search" id="search" class="form-control search-input"
-                                               placeholder="Search by name"
-                                               value="{{ request('search') }}">
-                                    </div>
+                            <div class="filter-group">
+                                <label for="unit_id">Unit</label>
+                                <select name="unit_id" id="unit_id" class="form-select">
+                                    <option value="">All Units</option>
+                                    @foreach($units as $unit)
+                                        <option value="{{ $unit->id }}" {{ request('unit_id') == $unit->id ? 'selected' : '' }}>
+                                            {{ $unit->unit_name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
 
+                            <div class="filter-group">
+                                <label for="type">Type</label>
+                                <select name="type" id="type" class="form-select">
+                                    <option value="">All Types</option>
+                                    @foreach($types as $type)
+                                        <option value="{{ $type }}" {{ request('type') == $type ? 'selected' : '' }}>
+                                            {{ $type }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
 
-                                        <div class="filter-group">
-                                            <label for="building_id">Building</label>
-                                            <select name="building_id" id="building_id" class="form-select">
-                                                <option value="">All Buildings</option>
-                                                @foreach($buildings as $building)
-                                                    <option value="{{ $building->id }}" {{ request('building_id') == $building->id ? 'selected' : '' }}>
-                                                        {{ $building->name }}
-                                                    </option>
-                                                @endforeach
-                                            </select>
-                                        </div>
+                            <div class="filter-group">
+                                <label for="status">Status</label>
+                                <select name="status" id="status" class="form-select">
+                                    <option value="">All Statuses</option>
+                                    @foreach($statuses as $status)
+                                        <option value="{{ $status }}" {{ request('status') == $status ? 'selected' : '' }}>
+                                            {{ $status }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
 
-                                    <div class="filter-group">
-                                        <label for="unit_id">Unit</label>
-                                        <select name="unit_id" id="unit_id" class="form-select">
-                                            <option value="">All Units</option>
-                                            @foreach($units as $unit)
-                                                <option value="{{ $unit->id }}" {{ request('unit_id') == $unit->id ? 'selected' : '' }}>
-                                                    {{ $unit->unit_name }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                    </div>
+                            <!-- These will now match the width of the above filters -->
+                            <div class="filter-group">
+                                <label for="min_price">Min Price</label>
+                                <input type="number" name="min_price" id="min_price" class="form-control"
+                                       placeholder="Minimum price" value="{{ request('min_price') }}">
+                            </div>
 
-                                    <div class="filter-group">
-                                        <label for="type">Type</label>
-                                        <select name="type" id="type" class="form-select">
-                                            <option value="">All Types</option>
-                                            @foreach($types as $type)
-                                                <option value="{{ $type }}" {{ request('type') == $type ? 'selected' : '' }}>
-                                                    {{ $type }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                    </div>
+                            <div class="filter-group">
+                                <label for="max_price">Max Price</label>
+                                <input type="number" name="max_price" id="max_price" class="form-control"
+                                       placeholder="Maximum price" value="{{ request('max_price') }}">
+                            </div>
 
-                                    <div class="filter-group">
-                                        <label for="status">Status</label>
-                                        <select name="status" id="status" class="form-select">
-                                            <option value="">All Statuses</option>
-                                            @foreach($statuses as $status)
-                                                <option value="{{ $status }}" {{ request('status') == $status ? 'selected' : '' }}>
-                                                    {{ $status }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                    </div>
+                            <div class="filter-group">
+                                <label for="featured">Featured</label>
+                                <select name="featured" id="featured" class="form-select">
+                                    <option value="">All</option>
+                                    <option value="1" {{ request('featured') === '1' ? 'selected' : '' }}>Yes</option>
+                                    <option value="0" {{ request('featured') === '0' ? 'selected' : '' }}>No</option>
+                                </select>
+                            </div>
 
-                                    <!-- These will now match the width of the above filters -->
-                                    <div class="filter-group">
-                                        <label for="min_price">Min Price</label>
-                                        <input type="number" name="min_price" id="min_price" class="form-control"
-                                               placeholder="Minimum price" value="{{ request('min_price') }}">
-                                    </div>
+                            <div class="filter-buttons">
+                                <button type="button" class="btn btn-secondary w-100" onclick="resetFilters()">
+                                    <i class="fas fa-undo me-2"></i> Reset
+                                </button>
+                            </div>
+                            <div class="filter-buttons">
+                                <button type="submit" class="btn btn-primary w-100">
+                                    <i class="fas fa-filter me-2"></i> Apply Filters
+                                </button>
+                            </div>
+                        </form>
 
-                                    <div class="filter-group">
-                                        <label for="max_price">Max Price</label>
-                                        <input type="number" name="max_price" id="max_price" class="form-control"
-                                               placeholder="Maximum price" value="{{ request('max_price') }}">
-                                    </div>
+                        <div class="row">
+                            @if(count($memberships) > 0)
+                                @foreach($memberships as $membership)
+                                    <div class="col-md-6 col-lg-4 mb-4">
+                                        <div class="membership-card">
+                                            <div class="membership-img-container">
+                                                <img src="{{ $membership->image ? asset($membership->image) : 'https://images.unsplash.com/photo-1571902943202-507ec2618e8f?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80' }}"
+                                                     alt="{{ $membership->name }}"
+                                                     class="membership-img">
 
-                                    <div class="filter-group">
-                                        <label for="featured">Featured</label>
-                                        <select name="featured" id="featured" class="form-select">
-                                            <option value="">All</option>
-                                            <option value="1" {{ request('featured') === '1' ? 'selected' : '' }}>Yes</option>
-                                            <option value="0" {{ request('featured') === '0' ? 'selected' : '' }}>No</option>
-                                        </select>
-                                    </div>
+                                                <!-- Price Overlay -->
+                                                <div class="price-overlay">
+                                                    <span class="membership-price">{{ number_format($membership->price, 2) . ' ' . $membership->currency }}</span>
+                                                    <span class="membership-period">/ {{ $membership->duration_months }} Month</span>
+                                                </div>
 
-                                    <div class="filter-buttons">
-                                        <button type="button" class="btn btn-secondary w-100" onclick="resetFilters()">
-                                            <i class="fas fa-undo me-2"></i> Reset
-                                        </button>
-                                    </div>
-                                    <div class="filter-buttons">
-                                        <button type="submit" class="btn btn-primary w-100">
-                                            <i class="fas fa-filter me-2"></i> Apply Filters
-                                        </button>
-                                    </div>
-                                </form>
+                                                <span class="discount-badge">Flat {{ $membership->offered_discount ?? 0 }}% OFF</span>
 
-                                <div class="row">
-                                    @if(count($memberships) > 0)
-                                        @foreach($memberships as $membership)
-                                            <div class="col-md-6 col-lg-4 mb-4">
-                                                <div class="membership-card">
-                                                    <div class="membership-img-container">
-                                                        <img src="{{ $membership->image ? asset($membership->image) : 'https://images.unsplash.com/photo-1571902943202-507ec2618e8f?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80' }}"
-                                                             alt="{{ $membership->name }}"
-                                                             class="membership-img">
+                                                <span class="popular-badge">
+                                                    <span>Featured</span>
+                                                    <label class="switch">
+                                                        <input type="checkbox" class="featured-toggle" data-membership-id="{{ $membership->id }}" {{ $membership->mark_as_featured ? 'checked' : '' }}>
+                                                        <span class="slider"></span>
+                                                    </label>
+                                                </span>
 
-                                                        <!-- Price Overlay -->
-                                                        <div class="price-overlay">
-                                                            @if($membership->original_price > $membership->price)
-                                                                <span class="original-price">{{ number_format($membership->original_price, 2) . ' ' . $membership->currency }}</span>
-                                                            @endif
-                                                            <span class="membership-price">{{ number_format($membership->price, 2) . ' ' . $membership->currency }}</span>
-                                                            <span class="membership-period">/ {{ $membership->duration_months }} Month</span>
-                                                        </div>
-
-                                                        @if($membership->discount > 0)
-                                                            <span class="discount-badge">{{ $membership->discount }}% OFF</span>
-                                                        @endif
-
-                                                        <span class="popular-badge">
-                                                            <span>Featured</span>
-                                                            <label class="switch">
-                                                                <input type="checkbox" class="featured-toggle" data-membership-id="{{ $membership->id }}" {{ $membership->mark_as_featured ? 'checked' : '' }}>
-                                                                <span class="slider"></span>
-                                                            </label>
-                                                        </span>
-
-                                                        <!-- Action Menu (Three Dots) -->
-                                                        <div class="action-menu">
-                                                            <button class="action-btn" data-bs-toggle="dropdown" aria-expanded="false">
-                                                                <i class="fas fa-ellipsis-v"></i>
-                                                            </button>
-                                                            <ul class="dropdown-menu dropdown-menu-end">
-                                                                <li>
-                                                                    <a class="dropdown-item view-item" href="{{ route('owner.memberships.show', $membership->id) }}">
-                                                                        <x-icon name="view" type="material" class="icon" /> View
-                                                                    </a>
-                                                                </li>
-                                                                <li>
-                                                                    <a class="dropdown-item edit-item" href="{{ route('owner.memberships.edit', $membership->id) }}">
-                                                                        <x-icon name="edit" type="material" class="icon" /> Edit
-                                                                    </a>
-                                                                </li>
-                                                            </ul>
-                                                        </div>
-                                                    </div>
-
-                                                    <div class="membership-body">
-                                                        <!-- Status and Category Badges -->
-                                                        <div class="meta-badges d-flex justify-content-between align-items-center">
-                                                            <span class="status-badge status-{{ strtolower($membership->status) }}">
-                                                                {{ $membership->status }}
-                                                            </span>
-                                                            @if($membership->category)
-                                                                <span class="category-badge">
-                                                                {{ $membership->category }}
-                                                            </span>
-                                                            @endif
-                                                        </div>
-
-                                                        <h4 class="membership-title">{{ $membership->name }}</h4>
-
-                                                        <!-- Compact Property Info -->
-                                                        <div class="property-info">
-                                                            <span class="property-badge">{{ $membership->building->name ?? 'N/A' }}</span>
-                                                            <span class="property-badge">{{ $membership->unit->unit_name ?? 'N/A' }}</span>
-                                                        </div>
-
-                                                        <p class="membership-description">
-                                                            {{ Str::limit($membership->description, 120) }}
-                                                        </p>
-                                                    </div>
-
-                                                    <div class="membership-footer">
-                                                        <a href="{{ route('owner.memberships.assign.view', $membership->id) }}" class="btn btn-primary btn-membership text-decoration-none">
-                                                            Assign Membership
-                                                        </a>
-                                                    </div>
+                                                <!-- Action Menu (Three Dots) -->
+                                                <div class="action-menu">
+                                                    <button class="action-btn" data-bs-toggle="dropdown" aria-expanded="false">
+                                                        <i class="fas fa-ellipsis-v"></i>
+                                                    </button>
+                                                    <ul class="dropdown-menu dropdown-menu-end">
+                                                        <li>
+                                                            <a class="dropdown-item view-item" href="{{ route('owner.memberships.show', $membership->id) }}">
+                                                                <x-icon name="view" type="material" class="icon" /> View
+                                                            </a>
+                                                        </li>
+                                                        <li>
+                                                            <a class="dropdown-item edit-item" href="{{ route('owner.memberships.edit', $membership->id) }}">
+                                                                <x-icon name="edit" type="material" class="icon" /> Edit
+                                                            </a>
+                                                        </li>
+                                                    </ul>
                                                 </div>
                                             </div>
-                                        @endforeach
-                                    @else
-                                        <div class="col-12">
-                                            <div class="empty-state text-center py-5">
-                                                <i class="fas fa-users fa-3x mb-3"></i>
-                                                <h4 class="mt-3">No Memberships Found</h4>
-                                                <p class="">There are currently no memberships matching your filters.</p>
-                                                <a href="{{ route('owner.memberships.create') }}" class="btn btn-primary mt-3">
-                                                    <i class="fas fa-plus me-2"></i> Create New Membership
-                                                </a>
 
+                                            <div class="membership-body">
+                                                <!-- Status and Category Badges -->
+                                                <div class="meta-badges d-flex justify-content-between align-items-center">
+                                                    <span class="status-badge status-{{ strtolower($membership->status) }}">
+                                                        {{ $membership->status }}
+                                                    </span>
+                                                    @if($membership->category)
+                                                        <span class="category-badge">
+                                                        {{ $membership->category }}
+                                                    </span>
+                                                    @endif
+                                                </div>
+
+                                                <h4 class="membership-title">{{ $membership->name }}</h4>
+
+                                                <!-- Compact Property Info -->
+                                                <div class="property-info">
+                                                    <span class="property-badge">{{ $membership->building->name ?? 'N/A' }}</span>
+                                                    <span class="property-badge">{{ $membership->unit->unit_name ?? 'N/A' }}</span>
+                                                </div>
+
+                                                <p class="membership-description">
+                                                    {{ Str::limit($membership->description, 120) }}
+                                                </p>
+                                            </div>
+
+                                            <div class="membership-footer">
+                                                <a href="{{ route('owner.memberships.assign.view', $membership->id) }}" class="btn btn-primary btn-membership text-decoration-none">
+                                                    Assign Membership
+                                                </a>
                                             </div>
                                         </div>
-                                    @endif
+                                    </div>
+                                @endforeach
+                            @else
+                                <div class="col-12">
+                                    <div class="empty-state text-center py-5">
+                                        <i class="fas fa-users fa-3x mb-3"></i>
+                                        <h4 class="mt-3">No Memberships Found</h4>
+                                        <p class="">There are currently no memberships matching your filters.</p>
+                                        <a href="{{ route('owner.memberships.create') }}" class="btn btn-primary mt-3">
+                                            <i class="fas fa-plus me-2"></i> Create New Membership
+                                        </a>
 
-                                        @if (count($memberships) > 0)
-                                            <div class="mt-4">
-                                                {{ $memberships->appends(request()->query())->links('pagination::bootstrap-5') }}
-                                            </div>
-                                        @endif
+                                    </div>
                                 </div>
+                            @endif
 
-                            </div>
+                                @if (count($memberships) > 0)
+                                    <div class="mt-4">
+                                        {{ $memberships->appends(request()->query())->links('pagination::bootstrap-5') }}
+                                    </div>
+                                @endif
                         </div>
                     </div>
                 </div>

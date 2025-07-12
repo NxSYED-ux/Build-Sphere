@@ -44,7 +44,7 @@
             border: 2px dashed var(--sidenavbar-text-color);
             border-radius: 10px;
             padding: 15px;
-            height: 348px;
+            height: 397px;
             background-color: var(--main-background-color);
             margin-top: 10px;
             overflow-y: auto;
@@ -153,7 +153,7 @@
                                                     <div class="form-group mb-3">
                                                         <label for="unit_name">Unit Name</label>
                                                         <span class="required__field">*</span><br>
-                                                        <input type="text" name="unit_name" id="unit_name" class="form-control @error('unit_name') is-invalid @enderror" value="{{ old('unit_name') }}" maxlength="50" placeholder="User Name" required>
+                                                        <input type="text" name="unit_name" id="unit_name" class="form-control @error('unit_name') is-invalid @enderror" value="{{ old('unit_name') }}" maxlength="50" placeholder="e.g. Shop 1" required>
                                                         @error('unit_name')
                                                             <span class="invalid-feedback" role="alert">
                                                                 <strong>{{ $message }}</strong>
@@ -191,8 +191,8 @@
                                                         <select name="sale_or_rent" id="sale_or_rent" class="form-select" required>
                                                             <option value="" selected>Select Sale or Rent</option>
                                                             <option value="sale" {{ old('sale_or_rent') == 'sale' ? 'selected' : '' }}>Sale</option>
-                                                            <option value="rent" {{ old('unit_type') == 'rent' ? 'selected' : '' }}>Rent</option>
-                                                            <option value="not available" {{ old('unit_type') == 'not available' ? 'selected' : '' }}>Not Available</option>
+                                                            <option value="rent" {{ old('sale_or_rent') == 'rent' ? 'selected' : '' }}>Rent</option>
+                                                            <option value="not available" {{ old('sale_or_rent') == 'not available' ? 'selected' : '' }}>Not Available</option>
                                                         </select>
                                                         @error('sale_or_rent')
                                                             <span class="invalid-feedback" role="alert">
@@ -217,24 +217,11 @@
                                                 </div>
 
                                                 <!--  -->
-                                                <div class="col-sm-12 col-md-12 col-lg-12">
-                                                    <div class="form-group mb-3">
-                                                        <label for="description">Description</label>
-                                                        <input type="text" name="description" id="description" class="form-control @error('description') is-invalid @enderror" value="{{ old('description') }}" maxlength="50" placeholder="Description">
-                                                        @error('description')
-                                                        <span class="invalid-feedback" role="alert">
-                                                                <strong>{{ $message }}</strong>
-                                                            </span>
-                                                        @enderror
-                                                    </div>
-                                                </div>
-
-                                                <!--  -->
                                                 <div class="col-sm-12 col-md-6 col-lg-6">
                                                     <div class="form-group mb-3">
-                                                        <label for="area">Area</label>
+                                                        <label for="area">Area (sq ft)</label>
                                                         <span class="required__field">*</span><br>
-                                                        <input type="number" name="area" id="area" class="form-control @error('area') is-invalid @enderror" value="{{ old('area') }}" placeholder="1234" required>
+                                                        <input type="number" name="area" id="area" class="form-control @error('area') is-invalid @enderror" value="{{ old('area') }}" placeholder="e.g. 2500" required>
                                                         @error('area')
                                                             <span class="invalid-feedback" role="alert">
                                                                 <strong>{{ $message }}</strong>
@@ -242,8 +229,6 @@
                                                         @enderror
                                                     </div>
                                                 </div>
-
-
 
                                                 <!-- Oganization -->
                                                 <div class="col-sm-12 col-md-6 col-lg-6">
@@ -298,6 +283,19 @@
                                                     </div>
                                                 </div>
 
+                                                <!--  -->
+                                                <div class="col-sm-12 col-md-12 col-lg-12">
+                                                    <div class="form-group mb-3">
+                                                        <label for="description">Description</label>
+                                                        <textarea name="description" id="description" class="form-control @error('description') is-invalid @enderror" maxlength="250" rows="3" placeholder="Description">{{ old('description') }}</textarea>
+                                                        @error('description')
+                                                        <span class="invalid-feedback" role="alert">
+                                                                <strong>{{ $message }}</strong>
+                                                            </span>
+                                                        @enderror
+                                                    </div>
+                                                </div>
+
                                             </div>
                                             <div class="row  d-none d-md-block">
                                                 <div class="col-12">
@@ -313,7 +311,6 @@
                                                 <input type="file" id="image-input" name="unit_pictures[]" accept="image/png, image/jpeg, image/jpg, image/gif" multiple hidden>
                                                 <div class="image-preview" id="image-preview">
                                                     <p id="image-message">No images selected</p>
-                                                    {{--                                                        <p id="error-message" class="text-danger mt-2"></p>--}}
                                                 </div>
                                                 <label for="image-input" class="d-none d-md-block btn btn-primary d-flex align-items-center justify-content-center w-100" style="margin-top: 13px !important; color: #ffff !important;">
                                                     <i class='bx bx-upload fs-5 px-1'></i> Choose Images

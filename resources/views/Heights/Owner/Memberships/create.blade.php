@@ -71,7 +71,7 @@
     <!-- Top Navbar -->
     <x-Owner.top-navbar :searchVisible="false" :breadcrumbLinks="[
             ['url' => route('owner_manager_dashboard'), 'label' => 'Dashboard'],
-            ['url' => '', 'label' => 'Memberships'],
+            ['url' => route('owner.memberships.index'), 'label' => 'Memberships'],
             ['url' => '', 'label' => 'Create Membership']
         ]"
     />
@@ -80,191 +80,189 @@
     <x-error-success-model />
 
     <div id="main">
-        <section class="content mt-1 mb-5 mx-2">
+        <section class="content my-3 mx-2">
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-lg-12">
-                        <div class="create-membership-container">
-                            <div class="form-header">
-                                <h3 class="form-title">Create New Membership</h3>
-                            </div>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h4 class="mb-0">Create New Membership</h4>
+                            <a href="{{ route('owner.memberships.index') }}" class="btn btn-secondary"><i class="fas fa-arrow-left me-2"></i> Go Back</a>
+                        </div>
+                        <div class="card shadow p-3 py-1 mb-5 bg-body rounded" style="border: none;">
+                            <div class="card-body " >
+                                <form action="{{ route('owner.memberships.store') }}" class="membership-form" method="POST" enctype="multipart/form-data">
+                                    @csrf
 
-                            <form action="{{ route('owner.memberships.store') }}" class="membership-form" method="POST" enctype="multipart/form-data">
-                                @csrf
+                                    <!-- Basic Information Section -->
+                                    <div class="form-section">
+                                        <h5 class="section-title">Basic Information</h5>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label for="name" class="form-label">Membership Name <span class="required__field">*</span></label>
+                                                    <input type="text" class="form-control" id="name" name="name" required
+                                                           value="{{ old('name') }}" placeholder="e.g. Premium Gym Access">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label for="category" class="form-label">Category <span class="required__field">*</span></label>
+                                                    <select class="form-select" id="category" name="category" required>
+                                                        <option value="">Select Category</option>
+                                                        @foreach($types as $type)
+                                                            <option value="{{ $type }}" {{ old('category') == $type ? 'selected' : '' }}>
+                                                                {{ $type }}
+                                                            </option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label for="category" class="form-label">Buildings <span class="required__field">*</span></label>
+                                                    <select class="form-select" id="building_id" name="building_id" required>
+                                                        <option value="" {{ old('building_id') === null ? 'selected' : '' }}>Select Building</option>
+                                                        @foreach($buildings as $building)
+                                                            <option value="{{ $building->id }}" {{ old('building_id') == $building->id ? 'selected' : '' }}>
+                                                                {{ $building->name }}
+                                                            </option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label for="category" class="form-label">Units <span class="required__field">*</span></label>
+                                                    <select class="form-select" id="unit_id" name="unit_id" required>
+                                                        <option value="">Select Unit</option>
+                                                    </select>
+                                                </div>
+                                            </div>
 
-                                <!-- Basic Information Section -->
-                                <div class="form-section">
-                                    <h5 class="section-title">Basic Information</h5>
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <div class="mb-3">
-                                                <label for="name" class="form-label">Membership Name <span class="required__field">*</span></label>
-                                                <input type="text" class="form-control" id="name" name="name" required
-                                                       value="{{ old('name') }}" placeholder="e.g. Premium Gym Access">
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label for="scans_per_day" class="form-label">Scans Per Day <span class="required__field">*</span></label>
+                                                    <input type="number" class="form-control" id="scans_per_day" name="scans_per_day"
+                                                           min="1" required value="{{ old('scans_per_day') }}" placeholder="ie.100">
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <div class="mb-3">
-                                                <label for="category" class="form-label">Category <span class="required__field">*</span></label>
-                                                <select class="form-select" id="category" name="category" required>
-                                                    <option value="">Select Category</option>
-                                                    @foreach($types as $type)
-                                                        <option value="{{ $type }}" {{ old('category') == $type ? 'selected' : '' }}>
-                                                            {{ $type }}
-                                                        </option>
-                                                    @endforeach
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <div class="mb-3">
-                                                <label for="category" class="form-label">Buildings <span class="required__field">*</span></label>
-                                                <select class="form-select" id="building_id" name="building_id" required>
-                                                    <option value="" {{ old('building_id') === null ? 'selected' : '' }}>Select Building</option>
-                                                    @foreach($buildings as $building)
-                                                        <option value="{{ $building->id }}" {{ old('building_id') == $building->id ? 'selected' : '' }}>
-                                                            {{ $building->name }}
-                                                        </option>
-                                                    @endforeach
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <div class="mb-3">
-                                                <label for="category" class="form-label">Units <span class="required__field">*</span></label>
-                                                <select class="form-select" id="unit_id" name="unit_id" required>
-                                                    <option value="">Select Unit</option>
-                                                </select>
-                                            </div>
-                                        </div>
 
-                                        <div class="col-md-6">
-                                            <div class="mb-3">
-                                                <label for="scans_per_day" class="form-label">Scans Per Day <span class="required__field">*</span></label>
-                                                <input type="number" class="form-control" id="scans_per_day" name="scans_per_day"
-                                                       min="1" required value="{{ old('scans_per_day') }}" placeholder="ie.100">
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label for="status" class="form-label">Status <span class="required__field">*</span></label>
+                                                    <select class="form-select" id="status" name="status" required>
+                                                        <option value="">Select Status</option>
+                                                        @foreach($statuses as $status)
+                                                            <option value="{{ $status }}" {{ old('status') == $status ? 'selected' : '' }}>
+                                                                {{ $status }}
+                                                            </option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-12">
+                                                <div class="mb-3">
+                                                    <label for="url" class="form-label">Membership Url <span class="required__field">*</span></label>
+                                                    <input type="text" class="form-control" id="url" name="url" required
+                                                           value="{{ old('url') }}" placeholder="e.g. membership url">
+                                                </div>
                                             </div>
                                         </div>
-
-                                        <div class="col-md-6">
-                                            <div class="mb-3">
-                                                <label for="status" class="form-label">Status <span class="required__field">*</span></label>
-                                                <select class="form-select" id="status" name="status" required>
-                                                    <option value="">Select Status</option>
-                                                    @foreach($statuses as $status)
-                                                        <option value="{{ $status }}" {{ old('status') == $status ? 'selected' : '' }}>
-                                                            {{ $status }}
-                                                        </option>
-                                                    @endforeach
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-12">
-                                            <div class="mb-3">
-                                                <label for="url" class="form-label">Membership Url <span class="required__field">*</span></label>
-                                                <input type="text" class="form-control" id="url" name="url" required
-                                                       value="{{ old('url') }}" placeholder="e.g. membership url">
-                                            </div>
+                                        <div class="mb-3">
+                                            <label for="description" class="form-label">Description</label>
+                                            <textarea class="form-control" id="description" name="description" rows="3"
+                                                      placeholder="Brief description of the membership benefits">{{ old('description') }}</textarea>
                                         </div>
                                     </div>
-                                    <div class="mb-3">
-                                        <label for="description" class="form-label">Description</label>
-                                        <textarea class="form-control" id="description" name="description" rows="3"
-                                                  placeholder="Brief description of the membership benefits">{{ old('description') }}</textarea>
-                                    </div>
-                                </div>
 
-                                <!-- Pricing Section -->
-                                <div class="form-section">
-                                    <h5 class="section-title">Pricing Details</h5>
-                                    <div class="row">
-                                        <div class="col-md-4">
-                                            <div class="mb-3">
-                                                <label for="currency" class="form-label">Currency <span class="required__field">*</span></label>
-                                                <select class="form-select" id="currency" name="currency" required>
-                                                    @foreach($currency as $curr)
-                                                        <option value="{{ $curr }}" {{ old('currency') == $curr ? 'selected' : '' }}>
-                                                            {{ $curr }}
-                                                        </option>
-                                                    @endforeach
-                                                </select>
+                                    <!-- Pricing Section -->
+                                    <div class="form-section">
+                                        <h5 class="section-title">Pricing Details</h5>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <div class="mb-3">
+                                                    <label for="currency" class="form-label">Currency <span class="required__field">*</span></label>
+                                                    <select class="form-select" id="currency" name="currency" required>
+                                                        @foreach($currency as $curr)
+                                                            <option value="{{ $curr }}" {{ old('currency') == $curr ? 'selected' : '' }}>
+                                                                {{ $curr }}
+                                                            </option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="mb-3">
+                                                    <label for="price" class="form-label">Monthly Price <span class="required__field">*</span></label>
+                                                    <input type="number" class="form-control" id="price" name="price"
+                                                           min="0" step="0.01" required value="{{ old('price') }}" placeholder="00.00">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="mb-3">
+                                                    <label for="offered_discount" class="form-label">Offered Discount</label>
+                                                    <input type="number" class="form-control" id="offered_discount" name="offered_discount"
+                                                           min="0" step="1"  max="100" value="{{ old('offered_discount') }}" placeholder="Discount 0 to 100">
+                                                </div>
                                             </div>
                                         </div>
-                                        <div class="col-md-4">
-                                            <div class="mb-3">
-                                                <label for="price" class="form-label">Monthly Price <span class="required__field">*</span></label>
-                                                <input type="number" class="form-control" id="price" name="price"
-                                                       min="0" step="0.01" required value="{{ old('price') }}" placeholder="00.00">
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <div class="mb-3">
+                                                    <label for="billing_cycle" class="form-label">Billing Cycle <span class="required__field">*</span></label>
+                                                    <select class="form-select" id="billing_cycle" name="billing_cycle" required>
+                                                        <option value="monthly" {{ old('billing_cycle', 'monthly') == 'monthly' ? 'selected' : '' }}>Monthly</option>
+                                                        <option value="yearly" {{ old('billing_cycle') == 'yearly' ? 'selected' : '' }}>Yearly</option>
+                                                    </select>
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <div class="mb-3">
-                                                <label for="original_price" class="form-label">Original Price</label>
-                                                <input type="number" class="form-control" id="original_price" name="original_price"
-                                                       min="0" step="0.01" value="{{ old('original_price') }}" placeholder="00.00">
-                                                <small class="text-muted">Leave blank if no discount</small>
-                                                <div id="original_price_error" class="invalid-feedback" style="display: none;">
-                                                    Original price cannot be less than monthly price
+                                            <div class="col-md-4" id="months_field_container">
+                                                <div class="mb-3">
+                                                    <label for="number_of_months" class="form-label">Number of Months <span class="required__field">*</span></label>
+                                                    <input type="number" class="form-control" id="number_of_months" name="duration_months"
+                                                           min="1" value="{{ old('number_of_months', 1) }}">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4" id="years_field_container" style="display: none;">
+                                                <div class="mb-3">
+                                                    <label for="number_of_years" class="form-label">Number of Years</label>
+                                                    <input type="number" class="form-control" id="number_of_years"
+                                                           min="1" value="{{ old('number_of_years', 1) }}">
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="row">
-                                        <div class="col-md-4">
-                                            <div class="mb-3">
-                                                <label for="billing_cycle" class="form-label">Billing Cycle <span class="required__field">*</span></label>
-                                                <select class="form-select" id="billing_cycle" name="billing_cycle" required>
-                                                    <option value="monthly" {{ old('billing_cycle', 'monthly') == 'monthly' ? 'selected' : '' }}>Monthly</option>
-                                                    <option value="yearly" {{ old('billing_cycle') == 'yearly' ? 'selected' : '' }}>Yearly</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4" id="months_field_container">
-                                            <div class="mb-3">
-                                                <label for="number_of_months" class="form-label">Number of Months <span class="required__field">*</span></label>
-                                                <input type="number" class="form-control" id="number_of_months" name="duration_months"
-                                                       min="1" value="{{ old('number_of_months', 1) }}">
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4" id="years_field_container" style="display: none;">
-                                            <div class="mb-3">
-                                                <label for="number_of_years" class="form-label">Number of Years</label>
-                                                <input type="number" class="form-control" id="number_of_years"
-                                                       min="1" value="{{ old('number_of_years', 1) }}">
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
 
-                                <!-- Visual Presentation -->
-                                <div class="form-section">
-                                    <h5 class="section-title">Visual Presentation</h5>
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <div class="mb-3">
-                                                <label class="form-label">Membership Image<span class="required__field">*</span></label>
-                                                <div class="form-image-upload" onclick="document.getElementById('image_upload').click()">
-                                                    <div class="text-center">
-                                                        <x-icon name="image" size="30" class="text-muted mb-2" />
-                                                        <p class="mb-1">Click to upload image</p>
-                                                        <small class="text">Recommended size: 800x600px</small>
-                                                        <input type="file" id="image_upload" name="image" accept="image/*" style="display: none;" onchange="previewImage(this)" required>
+                                    <!-- Visual Presentation -->
+                                    <div class="form-section">
+                                        <h5 class="section-title">Visual Presentation</h5>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label class="form-label">Membership Image<span class="required__field">*</span></label>
+                                                    <div class="form-image-upload" onclick="document.getElementById('image_upload').click()">
+                                                        <div class="text-center">
+                                                            <x-icon name="image" size="30" class="text-muted mb-2" />
+                                                            <p class="mb-1">Click to upload image</p>
+                                                            <small class="text">Recommended size: 800x600px</small>
+                                                            <input type="file" id="image_upload" name="image" accept="image/*" style="display: none;" onchange="previewImage(this)" required>
+                                                        </div>
+                                                        <img id="image_preview" class="preview-image d-none">
                                                     </div>
-                                                    <img id="image_preview" class="preview-image d-none">
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
 
-                                <!-- Form Actions -->
-                                <div class="pt-3">
-                                    <button type="submit" class="btn btn-primary w-100">
-                                        <x-icon name="save" size="16" class="me-1" />
-                                        Create Membership
-                                    </button>
-                                </div>
-                            </form>
+                                    <!-- Form Actions -->
+                                    <div class="pt-3">
+                                        <button type="submit" class="btn btn-primary w-100">
+                                            <x-icon name="save" size="16" class="me-1" />
+                                            Create Membership
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
                         </div>
                     </div>
                 </div>

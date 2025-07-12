@@ -127,7 +127,7 @@
             transition: all 0.3s ease;
             border-radius: 12px;
             border: none;
-            background: linear-gradient(var(--body-background-color), #e9ecef);
+            background: var(--body-background-color) !important;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
             padding: 16px;
             height: auto;
@@ -145,6 +145,7 @@
             align-items: center;
             margin-bottom: 12px;
             padding: 0;
+            background: var(--body-background-color);
             background: transparent;
             border: none;
         }
@@ -178,7 +179,7 @@
             margin-bottom: 12px;
             padding: 8px;
             border-radius: 8px;
-            background-color: var(--main-background-color2);
+            background-color: var(--sidenavbar-body-color);
             flex-grow: 1;
             overflow: hidden;
             display: -webkit-box;
@@ -227,7 +228,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background: white;
+            background: var(--sidenavbar-body-color);
             box-shadow: 0 2px 4px rgba(0,0,0,0.05);
             transition: all 0.2s ease;
             text-decoration: none;
@@ -357,7 +358,7 @@
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-md-12">
-                        <div class="d-flex justify-content-between align-items-center mb-2">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
                             <h3 class="mb-1">Departments</h3>
                             <a href="#" class="btn btn-primary d-flex align-items-center Owner-Department-Add-Button" id="Owner-Department-Add-Button"   data-bs-toggle="modal" data-bs-target="#createDepartmentModal" title="Add Level">
                                 <x-icon name="add" type="svg" class="me-1" size="18" /> Department
@@ -422,12 +423,12 @@
                                                     </p>
 
                                                     <!-- Stats Section -->
-                                                    <div class="department-stats">
-                                                        <div class="stat-item">
-                                                            <div class="stat-label">Total Staff</div>
-                                                            <div class="stat-value">{{ $department->staff_count ?? 0 }}</div>
-                                                        </div>
-                                                    </div>
+{{--                                                    <div class="department-stats">--}}
+{{--                                                        <div class="stat-item">--}}
+{{--                                                            <div class="stat-label">Total Staff</div>--}}
+{{--                                                            <div class="stat-value">{{ $department->staff_count ?? 0 }}</div>--}}
+{{--                                                        </div>--}}
+{{--                                                    </div>--}}
 
                                                     <!-- Action Buttons -->
                                                     <div class="action-buttons">

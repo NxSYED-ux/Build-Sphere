@@ -433,8 +433,11 @@
                                         </div>
                                         <div class="level-card-detail">
                                             <i class="bx bx-info-circle card-icon"></i>
-                                            <span class="mx-2">{{ $level->description ?? 'No description provided' }}</span>
+                                            <span class="mx-2">
+                                                {{ Str::limit($level->description ?? 'No description provided', 25) }}
+                                            </span>
                                         </div>
+
                                     </div>
                                     <div class="action-buttons">
                                         <a href="{{ route('units.index', ['level_id' => $level->id]) }}" class="action-btn btn-add btn-view view-unit gap-1" title="View">
@@ -527,7 +530,7 @@
                             <div class="col-12">
                                 <div class="form-group mb-3">
                                     <label for="description">Description</label>
-                                    <textarea name="description" id="description" class="form-control @error('description') is-invalid @enderror" rows="2" maxlength="50" placeholder="Description">{{ old('description') }}</textarea>
+                                    <textarea name="description" id="description" class="form-control @error('description') is-invalid @enderror" rows="3" maxlength="250" placeholder="Description">{{ old('description') }}</textarea>
                                     @error('description')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
@@ -596,7 +599,7 @@
                             <div class="col-12">
                                 <div class="form-group mb-3">
                                     <label for="description">Description</label>
-                                    <textarea name="description" id="edit_description" class="form-control @error('description') is-invalid @enderror" rows="2" maxlength="50" placeholder="Description">{{ old('description') }}</textarea>
+                                    <textarea name="description" id="edit_description" class="form-control @error('description') is-invalid @enderror" rows="3" maxlength="250" placeholder="Description">{{ old('description') }}</textarea>
                                     @error('description')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>

@@ -836,10 +836,7 @@
                                                     <a href="{{ route('owner.staff.edit', $staffInfo->id) }}" class="btn btn-edit" title="Edit Staff">
                                                         <i class="fas fa-edit"></i> Edit
                                                     </a>
-                                                    <button type="button"
-                                                            class="btn btn-danger delete-member-btn"
-                                                            data-member-id="{{ $staffInfo->id }}"
-                                                            title="Delete Staff Member">
+                                                    <button type="button" class="btn btn-danger delete-member-btn" data-member-id="{{ $staffInfo->id }}" title="Delete Staff Member">
                                                         <i class="fas fa-trash-alt"></i> Delete
                                                     </button>
                                                 </div>
@@ -888,10 +885,7 @@
                                                     <a href="{{ route('owner.staff.edit', $staffInfo->id) }}" class="btn btn-edit" title="Edit Staff">
                                                         <i class="fas fa-edit"></i> Edit
                                                     </a>
-                                                    <button type="button"
-                                                            class="btn btn-danger delete-member-btn"
-                                                            data-member-id="{{ $staffInfo->id }}"
-                                                            title="Delete Staff Member">
+                                                    <button type="button" class="btn btn-danger delete-member-btn" data-member-id="{{ $staffInfo->id }}" title="Delete Staff Member">
                                                         <i class="fas fa-trash-alt"></i> Delete
                                                     </button>
                                                 </div>
@@ -1143,8 +1137,8 @@
                                         @endif
                                     @else
                                         <div class="text-center py-3">
-                                            <i class="fas fa-exchange-alt text-muted" style="font-size: 1.75rem; opacity: 0.7;"></i>
-                                            <p class="text-muted mb-0 mt-2" style="font-size: 0.9rem; font-weight: 500;">No queries found</p>
+                                            <i class="fas fa-exchange-alt text" style="font-size: 1.75rem; opacity: 0.7;"></i>
+                                            <p class="text mb-0 mt-2" style="font-size: 0.9rem; font-weight: 500;">No queries found</p>
                                         </div>
                                     @endif
                                 </div>
@@ -1977,6 +1971,93 @@
              if (e.target === this) {
                  closeModal();
              }
+         });
+     </script>
+
+     <script>
+         function deleteStaffMember(memberId) {
+             const deleteUrl = "{{ route('owner.staff.destroy') }}";
+
+             return fetch(deleteUrl, {
+                 method: 'DELETE',
+                 headers: {
+                     'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                     'Content-Type': 'application/json',
+                     'Accept': 'application/json'
+                 },
+                 body: JSON.stringify({ id: memberId })
+             })
+                 .then(response => {
+                     if (!response.ok) {
+                         return response.json().then(err => { throw err; });
+                     }
+                     return response.json();
+                 });
+         }
+
+         document.addEventListener('DOMContentLoaded', function () {
+             document.querySelectorAll('.delete-member-btn').forEach(button => {
+                 button.addEventListener('click', function (e) {
+                     e.preventDefault();
+                     const memberId = this.getAttribute('data-member-id');
+
+                     Swal.fire({
+                         title: 'Are you sure?',
+                         text: "You won't be able to revert this!",
+                         icon: 'warning',
+                         showCancelButton: true,
+                         confirmButtonColor: '#3085d6',
+                         cancelButtonColor: '#d33',
+                         confirmButtonText: 'Yes, delete it!',
+                         cancelButtonText: 'Cancel',
+                         background: 'var(--body-background-color)',
+                         color: 'var(--sidenavbar-text-color)',
+                         backdrop: true,
+                         allowOutsideClick: false,
+                         showClass: {
+                             popup: 'animate__animated animate__fadeInDown'
+                         },
+                         hideClass: {
+                             popup: 'animate__animated animate__fadeOutUp'
+                         }
+                     }).then((result) => {
+                         if (result.isConfirmed) {
+                             Swal.fire({
+                                 title: 'Deleting...',
+                                 html: 'Please wait while we delete the staff member.',
+                                 allowOutsideClick: false,
+                                 didOpen: () => {
+                                     Swal.showLoading();
+                                 },
+                                 background: 'var(--body-background-color)',
+                                 color: 'var(--sidenavbar-text-color)',
+                             });
+
+                             deleteStaffMember(memberId)
+                                 .then(data => {
+                                     Swal.fire({
+                                         title: 'Deleted!',
+                                         text: data.success || 'Staff member has been deleted.',
+                                         icon: 'success',
+                                         background: 'var(--body-background-color)',
+                                         color: 'var(--sidenavbar-text-color)',
+                                     }).then(() => {
+                                         window.location.href = '{{ route("owner.staff.index") }}';
+                                     });
+                                 })
+                                 .catch(error => {
+                                     Swal.fire({
+                                         title: 'Error!',
+                                         text: error.message || error.error || 'An error occurred while deleting.',
+                                         icon: 'error',
+                                         background: 'var(--body-background-color)',
+                                         color: 'var(--sidenavbar-text-color)',
+                                     });
+                                 });
+                         }
+                     });
+                 });
+             });
          });
      </script>
 @endpush

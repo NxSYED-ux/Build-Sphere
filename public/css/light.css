@@ -165,8 +165,8 @@
     --gauge-label-color: #ff7043;
     --gauge-hand-fill: #81c784;
     --gauge-hand-stroke: #66bb6a;
-    --gauge-range-0: #ff5252;
-    --gauge-range-1: #69f0ae;
+    --gauge-range-0: var(--color-blue);
+    --gauge-range-1: #eeeeee;
 }
 
 

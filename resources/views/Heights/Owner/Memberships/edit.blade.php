@@ -94,11 +94,12 @@
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-lg-12">
-                        <div class="edit-membership-container">
-                            <div class="form-header">
-                                <h3 class="form-title">Edit Membership</h3>
-                            </div>
-
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h4 class="mb-0">Edit Membership</h4>
+                            <a href="{{ route('owner.memberships.index') }}" class="btn btn-secondary"><i class="fas fa-arrow-left me-2"></i> Go Back</a>
+                        </div>
+                        <div class="card shadow p-3 py-1 mb-5 bg-body rounded" style="border: none;">
+                            <div class="card-body " >
                             <form action="{{ route('owner.memberships.update') }}" method="POST" enctype="multipart/form-data">
                                 @method('PUT')
                                 @csrf
@@ -216,10 +217,9 @@
                                         </div>
                                         <div class="col-md-6 col-lg-4">
                                             <div class="mb-3">
-                                                <label for="original_price" class="form-label">Original Price</label>
-                                                <input type="number" class="form-control" id="original_price" name="original_price"
-                                                       min="0" step="0.01" value="{{ old('original_price', $membership->original_price) }}" placeholder="59.99">
-                                                <small class="text-muted">Leave blank if no discount</small>
+                                                <label for="offered_discount" class="form-label">Offered Discount</label>
+                                                <input type="number" class="form-control" id="offered_discount" name="offered_discount"
+                                                       min="0" step="1"  max="100" value="{{ old('offered_discount', $membership->offered_discount) }}" placeholder="Discount 0 to 100">
                                             </div>
                                         </div>
                                         <div class="col-md-6 col-lg-12">

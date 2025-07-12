@@ -102,20 +102,6 @@
             background-color: var(--danger-color);
         }
 
-        .btn-primary {
-            background-color: var(--primary-color);
-            border: none;
-            padding: 10px 20px;
-            border-radius: 8px;
-            font-weight: 500;
-            box-shadow: 0 2px 10px rgba(67, 97, 238, 0.3);
-        }
-
-        .btn-primary:hover {
-            background-color: #3a56d4;
-            transform: translateY(-1px);
-        }
-
         .user-avatar {
             width: 50px;
             height: 50px;
@@ -154,7 +140,7 @@
 
         .divider {
             height: 1px;
-            background-color: rgba(0, 0, 0, 0.05);
+            background-color: #eeee;
             margin: 25px 0;
         }
 
@@ -165,11 +151,6 @@
             color: var(--sidenavbar-text-color);
             display: flex;
             align-items: center;
-        }
-
-        .section-title i {
-            margin-right: 10px;
-            color: var(--primary-color);
         }
 
         @media (max-width: 768px) {
@@ -208,7 +189,7 @@
                                     <h4>Transaction Details</h4>
                                     <div class="transaction-id">ID: {{ $transaction['transaction_id'] }}</div>
                                 </div>
-                                <span class="badge bg-{{ $transaction['status'] === 'completed' ? 'success' : ($transaction['status'] === 'failed' ? 'danger' : 'warning') }}">
+                                <span class="badge bg-{{ $transaction['status'] === 'completed' ? 'success' : ($transaction['status'] === 'failed' ? 'danger' : 'warning') }}" style="color: #fff !important;">
                                     {{ ucfirst($transaction['status']) }}
                                 </span>
                             </div>
@@ -359,7 +340,7 @@
                                                         </div>
 
                                                         <div class="detail-item col-md-6">
-                                                            <div class="detail-label">Trial End:</div>
+                                                            <div class="detail-label">Subscription End:</div>
                                                             <div class="detail-value">{{ $source->ends_at }}</div>
                                                         </div>
                                                         <div class="detail-item col-md-6">
@@ -429,25 +410,19 @@
 
                                         @if($nested_source_name === 'plan')
                                             <div class="divider"></div>
-                                            <h6 class="section-title">Related Plan</h6>
-                                            <div class="row">
-                                                <div class="col-md-6">
-                                                    <div class="detail-section">
-                                                        <div class="detail-item">
-                                                            <div class="detail-label">Plan Name:</div>
-                                                            <div class="detail-value">{{ $nested_source->name ?? 'N/A' }}</div>
-                                                        </div>
-                                                        <div class="detail-item">
-                                                            <div class="detail-label">Currency:</div>
-                                                            <div class="detail-value">{{ $nested_source->currency ?? 'N/A' }}</div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <div class="detail-section">
-                                                        <div class="detail-item">
-                                                            <div class="detail-label">Status:</div>
-                                                            <div class="detail-value">{{ $nested_source->status ?? 'N/A' }}</div>
+                                            <div class="detail-section">
+                                                <h5><i class="fas fa-crown"></i> Related Plan</h5>
+                                                <div class="row">
+                                                    <div class="col-md-12">
+                                                        <div class="detail-section">
+                                                            <div class="detail-item">
+                                                                <div class="detail-label">Plan Name:</div>
+                                                                <div class="detail-value">{{ $nested_source->name ?? 'N/A' }}</div>
+                                                            </div>
+                                                            <div class="detail-item">
+                                                                <div class="detail-label">Currency:</div>
+                                                                <div class="detail-value">{{ $nested_source->description ?? 'N/A' }}</div>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -472,9 +447,4 @@
 @endsection
 
 @push('scripts')
-    <!-- Font Awesome for icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-
-    <!-- Inter font -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 @endpush

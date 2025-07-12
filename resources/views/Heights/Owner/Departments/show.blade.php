@@ -328,7 +328,7 @@
             padding: 2rem 2rem;
             text-align: center;
             grid-column: 1 / -1;
-            background: var(--light-ivory);
+            background: var(--main-background-color2);
             border-radius: 12px;
             margin: 0.5rem;
         }
@@ -342,7 +342,7 @@
 
         .empty-title {
             font-weight: 600;
-            color: var(--dark-charcoal);
+            color: var(--sidenavbar-text-color);
             margin-bottom: 0.5rem;
         }
 
@@ -687,7 +687,7 @@
                     <div class="section-header d-flex justify-content-between align-items-center">
                         <h2 class="section-title">
                             <i class="fas fa-users section-title-icon"></i>
-                            Our Team
+                            Our Staff
                             <span class="team-count">{{ $staffCount }}</span>
                         </h2>
                         <a href="{{ route('owner.staff.create') }}" class="btn btn-invite">
@@ -769,13 +769,10 @@
                                 <div class="empty-icon">
                                     <i class="fas fa-user-friends"></i>
                                 </div>
-                                <h3 class="empty-title">Let's Build Your Team</h3>
+                                <h4 class="empty-title">No Staff Avaialble</h4>
                                 <p class="empty-text">
-                                    This department is like a garden waiting to bloom. Invite your first team member to begin cultivating something beautiful together.
+                                    Click on add new staff button
                                 </p>
-                                <a href="{{ route('owner.staff.create') }}" class="btn btn-invite">
-                                    <i class="fas fa-user-plus"></i> Add New Staff
-                                </a>
                             </div>
                         @endforelse
                     </div>
@@ -875,26 +872,15 @@
                     const departmentName = document.querySelector('.department-title').textContent;
 
                     Swal.fire({
-                        title: 'Nurture or Let Go?',
-                        html: `
-                            <div style="text-align: center; color: var(--sidenavbar-text-color);">
-                                <i class="fas fa-seedling" style="font-size: 4rem; color: var(--sage-green); margin-bottom: 1rem;"></i>
-                                <p>You're about to remove the <strong>${departmentName}</strong> department.</p>
-                            </div>
-                        `,
+                        title: 'Are you sure?',
+                        text: "You won't be able to revert this!",
+                        icon: 'warning',
                         showCancelButton: true,
+                        confirmButtonColor: '#d33',
+                        cancelButtonColor: '#3085d6',
+                        confirmButtonText: 'Yes, delete it!',
                         background: 'var(--body-background-color)',
-                        color: 'var(--sidenavbar-text-color)',
-                        confirmButtonColor: 'var(--sage-green)',
-                        cancelButtonColor: 'var(--warm-taupe)',
-                        confirmButtonText: 'Yes, remove it',
-                        cancelButtonText: 'No, keep it',
-                        reverseButtons: true,
-                        customClass: {
-                            popup: 'custom-swal-popup',
-                            confirmButton: 'custom-swal-confirm',
-                            cancelButton: 'custom-swal-cancel'
-                        }
+                        color: 'var(--sidenavbar-text-color)'
                     }).then((result) => {
                         if (result.isConfirmed) {
                             Swal.fire({

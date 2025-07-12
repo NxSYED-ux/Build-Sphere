@@ -53,16 +53,16 @@
     <x-error-success-model />
 
     <div id="main">
-        <div class="container-fluid">
+        <div class="container-fluid my-2">
             <div class="row">
                 <div class="col-md-12">
                     <div class="container pt-5 pb-3 mt-2">
                         <div class="d-flex justify-content-between align-items-center mb-2">
                             <div class="text-center text-md-start">
-                                <h2 class="h4 fw-bold mb-0">Manage Subscription Plans</h2>
+                                <h4 class="mb-0">Manage Subscription Plans</h4>
                             </div>
-                            <a href="{{ route('plans.create') }}" class="btn btn-primary rounded-pill px-4 py-2">
-                                <i class=" me-2"></i> Add Plan
+                            <a href="{{ route('plans.create') }}" class="btn btn-primary">
+                                <i class="fas fa-plus me-2"></i> Add Plan
                             </a>
                         </div>
 

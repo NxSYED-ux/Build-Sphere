@@ -38,24 +38,6 @@
             font-size: 0.9em;
         }
 
-        .btn {
-            border-radius: 8px;
-            padding: 10px 20px;
-            font-weight: 500;
-            transition: all 0.3s ease;
-        }
-
-        .btn-primary {
-            background-color: var(--primary-color);
-            border-color: var(--primary-color);
-        }
-
-        .btn-primary:hover {
-            background-color: var(--primary-hover);
-            border-color: var(--primary-hover);
-            transform: translateY(-1px);
-        }
-
         .form-label {
             font-weight: 500;
             color: var(--sidenavbar-text-color);
@@ -227,10 +209,6 @@
         }
 
         @media (max-width: 768px) {
-            .btn {
-                width: 100%;
-                margin-bottom: 10px;
-            }
 
             .accordion-body {
                 padding: 1rem;
@@ -265,275 +243,273 @@
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-md-12">
-                        <div class="box">
-                            <div class="container">
-                                <div class="d-flex justify-content-between align-items-center mb-3">
-                                    <h4 class="mb-0">Add Staff</h4>
-                                    <a href="{{ route('owner.staff.index') }}" class="btn btn-secondary" title="Go Back">
-                                        <i class="fas fa-arrow-left me-2"></i> Go Back
-                                    </a>
-                                </div>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h4 class="mb-0">Add Staff</h4>
+                            <a href="{{ route('owner.staff.index') }}" class="btn btn-secondary" title="Go Back">
+                                <i class="fas fa-arrow-left me-2"></i> Go Back
+                            </a>
+                        </div>
 
-                                <div class="card shadow py-2 px-4 mb-5 rounded">
-                                    <div class="card-body">
-                                        <form action="{{ route('owner.staff.store') }}" method="POST">
-                                            @csrf
+                        <div class="card shadow py-2 px-4 mb-5 rounded">
+                            <div class="card-body">
+                                <form action="{{ route('owner.staff.store') }}" method="POST">
+                                    @csrf
 
-                                            <!-- Basic Information Section -->
-                                            <div class="form-section">
-                                                <h5 class="section-header">
-                                                    <i class='bx bxs-user-detail'></i> Basic Information
-                                                </h5>
-                                                <div class="row">
-                                                    <!-- Name Field -->
-                                                    <div class="col-sm-12 col-md-6 col-lg-4">
-                                                        <div class="form-group mb-3">
-                                                            <label for="name" class="form-label">Name <span class="required__field">*</span></label>
-                                                            <div class="position-relative">
-                                                                <input type="text" name="name" id="name" class="form-control @error('name') is-invalid @enderror"
-                                                                       value="{{ old('name') }}" maxlength="50" placeholder="Staff Name" required>
-                                                                <i class='bx bxs-user input-icon position-absolute top-50 end-0 translate-middle-y me-3'></i>
-                                                            </div>
-                                                            @error('name')
-                                                            <div class="invalid-feedback">{{ $message }}</div>
-                                                            @enderror
-                                                        </div>
+                                    <!-- Basic Information Section -->
+                                    <div class="form-section">
+                                        <h5 class="section-header">
+                                            <i class='bx bxs-user-detail'></i> Basic Information
+                                        </h5>
+                                        <div class="row">
+                                            <!-- Name Field -->
+                                            <div class="col-sm-12 col-md-6 col-lg-4">
+                                                <div class="form-group mb-3">
+                                                    <label for="name" class="form-label">Name <span class="required__field">*</span></label>
+                                                    <div class="position-relative">
+                                                        <input type="text" name="name" id="name" class="form-control @error('name') is-invalid @enderror"
+                                                               value="{{ old('name') }}" maxlength="50" placeholder="Staff Name" required>
+                                                        <i class='bx bxs-user input-icon position-absolute top-50 end-0 translate-middle-y me-3'></i>
                                                     </div>
-
-                                                    <!-- Email Field -->
-                                                    <div class="col-sm-12 col-md-6 col-lg-4">
-                                                        <div class="form-group mb-3">
-                                                            <label for="email" class="form-label">Email <span class="required__field">*</span></label>
-                                                            <div class="position-relative">
-                                                                <input type="email" name="email" id="email" class="form-control @error('email') is-invalid @enderror"
-                                                                       value="{{ old('email') }}" placeholder="Email" maxlength="50" required>
-                                                                <i class='bx bxs-envelope input-icon position-absolute top-50 end-0 translate-middle-y me-3'></i>
-                                                            </div>
-                                                            @error('email')
-                                                            <div class="invalid-feedback">{{ $message }}</div>
-                                                            @enderror
-                                                        </div>
-                                                    </div>
-
-                                                    <!-- Gender Field -->
-                                                    <div class="col-sm-12 col-md-6 col-lg-4">
-                                                        <div class="form-group mb-3">
-                                                            <label for="gender" class="form-label">Gender <span class="required__field">*</span></label>
-                                                            <select name="gender" id="gender" class="form-select @error('gender') is-invalid @enderror" required>
-                                                                <option value="">Select Gender</option>
-                                                                <option value="Male" {{ old('gender') == 'Male' ? 'selected' : '' }}>Male</option>
-                                                                <option value="Female" {{ old('gender') == 'Female' ? 'selected' : '' }}>Female</option>
-                                                                <option value="Other" {{ old('gender') == 'Other' ? 'selected' : '' }}>Other</option>
-                                                            </select>
-                                                            @error('gender')
-                                                            <div class="invalid-feedback">{{ $message }}</div>
-                                                            @enderror
-                                                        </div>
-                                                    </div>
-
-                                                    <!-- Phone Field -->
-                                                    <div class="col-sm-12 col-md-6 col-lg-4">
-                                                        <div class="form-group mb-3">
-                                                            <label for="contact" class="form-label">Phone Number</label>
-                                                            <div class="position-relative">
-                                                                <input type="text" name="phone_no" id="contact" value="{{ old('phone_no') }}"
-                                                                       class="form-control contact @error('phone_no') is-invalid @enderror" placeholder="0312-3456789" maxlength="14">
-                                                                <i class='bx bxs-mobile input-icon position-absolute top-50 end-0 translate-middle-y me-3'></i>
-                                                            </div>
-                                                            @error('phone_no')
-                                                            <div class="invalid-feedback">{{ $message }}</div>
-                                                            @enderror
-                                                        </div>
-                                                    </div>
-
-                                                    <!-- CNIC Field -->
-                                                    <div class="col-sm-12 col-md-6 col-lg-4">
-                                                        <div class="form-group mb-3">
-                                                            <label for="cnic" class="form-label">CNIC <span class="required__field">*</span></label>
-                                                            <div class="position-relative">
-                                                                <input type="text" name="cnic" id="cnic" class="form-control @error('cnic') is-invalid @enderror"
-                                                                       value="{{ old('cnic') }}" maxlength="15" placeholder="12345-1234567-1" required>
-                                                                <i class='bx bxs-id-card input-icon position-absolute top-50 end-0 translate-middle-y me-3'></i>
-                                                            </div>
-                                                            @error('cnic')
-                                                            <div class="invalid-feedback">{{ $message }}</div>
-                                                            @enderror
-                                                        </div>
-                                                    </div>
-
-                                                    <!-- Date of Birth Field -->
-                                                    <div class="col-sm-12 col-md-6 col-lg-4">
-                                                        <div class="form-group mb-3">
-                                                            <label for="date_of_birth" class="form-label">Date of Birth</label>
-                                                            <input type="date" class="form-control @error('date_of_birth') is-invalid @enderror" id="date_of_birth" name="date_of_birth"
-                                                                   value="{{ old('date_of_birth') }}">
-                                                            @error('date_of_birth')
-                                                            <div class="invalid-feedback">{{ $message }}</div>
-                                                            @enderror
-                                                        </div>
-                                                    </div>
+                                                    @error('name')
+                                                    <div class="invalid-feedback">{{ $message }}</div>
+                                                    @enderror
                                                 </div>
                                             </div>
 
-                                            <!-- Department & Building Section -->
-                                            <div class="form-section mt-4">
-                                                <h5 class="section-header">
-                                                    <i class='bx bxs-building me-2'></i> Department & Building Details
-                                                </h5>
-                                                <div class="row">
-
-                                                    <!-- Department Dropdown -->
-                                                    <div class="col-sm-12 col-md-6 col-lg-4">
-                                                        <div class="form-group mb-3">
-                                                            <label for="department_id" class="form-label">Department <span class="required__field">*</span></label>
-                                                            <select class="form-select @error('department_id') is-invalid @enderror" id="department_id" name="department_id" required>
-                                                                <option value="" disabled {{ old('department_id') === null ? 'selected' : '' }}>Select Department</option>
-                                                                @foreach($departments as $department)
-                                                                    <option value="{{ $department->id }}" {{ old('department_id') == $department->id ? 'selected' : '' }}>
-                                                                        {{ $department->name }}
-                                                                    </option>
-                                                                @endforeach
-                                                            </select>
-                                                            @error('department_id')
-                                                            <div class="invalid-feedback">{{ $message }}</div>
-                                                            @enderror
-                                                        </div>
+                                            <!-- Email Field -->
+                                            <div class="col-sm-12 col-md-6 col-lg-4">
+                                                <div class="form-group mb-3">
+                                                    <label for="email" class="form-label">Email <span class="required__field">*</span></label>
+                                                    <div class="position-relative">
+                                                        <input type="email" name="email" id="email" class="form-control @error('email') is-invalid @enderror"
+                                                               value="{{ old('email') }}" placeholder="Email" maxlength="50" required>
+                                                        <i class='bx bxs-envelope input-icon position-absolute top-50 end-0 translate-middle-y me-3'></i>
                                                     </div>
+                                                    @error('email')
+                                                    <div class="invalid-feedback">{{ $message }}</div>
+                                                    @enderror
+                                                </div>
+                                            </div>
 
-                                                    <!-- Building Dropdown -->
-                                                    <div class="col-sm-12 col-md-6 col-lg-4">
-                                                        <div class="form-group mb-3">
-                                                            <label for="building_id" class="form-label">Building <span class="required__field">*</span></label>
-                                                            <select class="form-select @error('building_id') is-invalid @enderror" id="building_id" name="building_id" required>
-                                                                <option value="" disabled {{ old('building_id') === null ? 'selected' : '' }}>Select Building</option>
-                                                                @foreach($buildings as $building)
-                                                                    <option value="{{ $building->id }}" {{ old('building_id') == $building->id ? 'selected' : '' }}>
-                                                                        {{ $building->name }}
-                                                                    </option>
-                                                                @endforeach
-                                                            </select>
-                                                            @error('building_id')
-                                                            <div class="invalid-feedback">{{ $message }}</div>
-                                                            @enderror
-                                                        </div>
+                                            <!-- Gender Field -->
+                                            <div class="col-sm-12 col-md-6 col-lg-4">
+                                                <div class="form-group mb-3">
+                                                    <label for="gender" class="form-label">Gender <span class="required__field">*</span></label>
+                                                    <select name="gender" id="gender" class="form-select @error('gender') is-invalid @enderror" required>
+                                                        <option value="">Select Gender</option>
+                                                        <option value="Male" {{ old('gender') == 'Male' ? 'selected' : '' }}>Male</option>
+                                                        <option value="Female" {{ old('gender') == 'Female' ? 'selected' : '' }}>Female</option>
+                                                        <option value="Other" {{ old('gender') == 'Other' ? 'selected' : '' }}>Other</option>
+                                                    </select>
+                                                    @error('gender')
+                                                    <div class="invalid-feedback">{{ $message }}</div>
+                                                    @enderror
+                                                </div>
+                                            </div>
+
+                                            <!-- Phone Field -->
+                                            <div class="col-sm-12 col-md-6 col-lg-4">
+                                                <div class="form-group mb-3">
+                                                    <label for="contact" class="form-label">Phone Number</label>
+                                                    <div class="position-relative">
+                                                        <input type="text" name="phone_no" id="contact" value="{{ old('phone_no') }}"
+                                                               class="form-control contact @error('phone_no') is-invalid @enderror" placeholder="0300-0000000" maxlength="12">
+                                                        <i class='bx bxs-mobile input-icon position-absolute top-50 end-0 translate-middle-y me-3'></i>
                                                     </div>
+                                                    @error('phone_no')
+                                                    <div class="invalid-feedback">{{ $message }}</div>
+                                                    @enderror
+                                                </div>
+                                            </div>
 
-                                                    <!-- Query Handling Permissions -->
-                                                    <div class="col-sm-12 col-md-6 col-lg-4">
-                                                        <div class="form-group mb-3">
-                                                            <label for="accept_query" class="form-label d-block mb-2">Query Handling Permission</label>
-                                                            <div class="d-flex align-items-center gap-3">
-                                                                <div class="form-check form-switch m-0">
-                                                                    @php
-                                                                        // Get the old value if exists, otherwise default to false (unchecked)
-                                                                        $acceptQueryValue = old('accept_query') !== null ? old('accept_query') : false;
-                                                                    @endphp
-                                                                    <input class="form-check-input" type="checkbox" role="switch" id="accept_query" name="accept_query" value="1"
-                                                                        {{ $acceptQueryValue ? 'checked' : '' }}>
+                                            <!-- CNIC Field -->
+                                            <div class="col-sm-12 col-md-6 col-lg-4">
+                                                <div class="form-group mb-3">
+                                                    <label for="cnic" class="form-label">CNIC <span class="required__field">*</span></label>
+                                                    <div class="position-relative">
+                                                        <input type="text" name="cnic" id="cnic" class="form-control @error('cnic') is-invalid @enderror"
+                                                               value="{{ old('cnic') }}" maxlength="15" placeholder="00000-0000000-0" required>
+                                                        <i class='bx bxs-id-card input-icon position-absolute top-50 end-0 translate-middle-y me-3'></i>
+                                                    </div>
+                                                    @error('cnic')
+                                                    <div class="invalid-feedback">{{ $message }}</div>
+                                                    @enderror
+                                                </div>
+                                            </div>
+
+                                            <!-- Date of Birth Field -->
+                                            <div class="col-sm-12 col-md-6 col-lg-4">
+                                                <div class="form-group mb-3">
+                                                    <label for="date_of_birth" class="form-label">Date of Birth</label>
+                                                    <input type="date" class="form-control @error('date_of_birth') is-invalid @enderror" id="date_of_birth" name="date_of_birth"
+                                                           value="{{ old('date_of_birth') }}">
+                                                    @error('date_of_birth')
+                                                    <div class="invalid-feedback">{{ $message }}</div>
+                                                    @enderror
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Department & Building Section -->
+                                    <div class="form-section mt-4">
+                                        <h5 class="section-header">
+                                            <i class='bx bxs-building me-2'></i> Department & Building Details
+                                        </h5>
+                                        <div class="row">
+
+                                            <!-- Department Dropdown -->
+                                            <div class="col-sm-12 col-md-6 col-lg-4">
+                                                <div class="form-group mb-3">
+                                                    <label for="department_id" class="form-label">Department <span class="required__field">*</span></label>
+                                                    <select class="form-select @error('department_id') is-invalid @enderror" id="department_id" name="department_id" required>
+                                                        <option value="" disabled {{ old('department_id') === null ? 'selected' : '' }}>Select Department</option>
+                                                        @foreach($departments as $department)
+                                                            <option value="{{ $department->id }}" {{ old('department_id') == $department->id ? 'selected' : '' }}>
+                                                                {{ $department->name }}
+                                                            </option>
+                                                        @endforeach
+                                                    </select>
+                                                    @error('department_id')
+                                                    <div class="invalid-feedback">{{ $message }}</div>
+                                                    @enderror
+                                                </div>
+                                            </div>
+
+                                            <!-- Building Dropdown -->
+                                            <div class="col-sm-12 col-md-6 col-lg-4">
+                                                <div class="form-group mb-3">
+                                                    <label for="building_id" class="form-label">Building <span class="required__field">*</span></label>
+                                                    <select class="form-select @error('building_id') is-invalid @enderror" id="building_id" name="building_id" required>
+                                                        <option value="" disabled {{ old('building_id') === null ? 'selected' : '' }}>Select Building</option>
+                                                        @foreach($buildings as $building)
+                                                            <option value="{{ $building->id }}" {{ old('building_id') == $building->id ? 'selected' : '' }}>
+                                                                {{ $building->name }}
+                                                            </option>
+                                                        @endforeach
+                                                    </select>
+                                                    @error('building_id')
+                                                    <div class="invalid-feedback">{{ $message }}</div>
+                                                    @enderror
+                                                </div>
+                                            </div>
+
+                                            <!-- Query Handling Permissions -->
+                                            <div class="col-sm-12 col-md-6 col-lg-4">
+                                                <div class="form-group mb-3">
+                                                    <label for="accept_query" class="form-label d-block mb-2">Query Handling Permission</label>
+                                                    <div class="d-flex align-items-center gap-3">
+                                                        <div class="form-check form-switch m-0">
+                                                            @php
+                                                                // Get the old value if exists, otherwise default to false (unchecked)
+                                                                $acceptQueryValue = old('accept_query') !== null ? old('accept_query') : false;
+                                                            @endphp
+                                                            <input class="form-check-input" type="checkbox" role="switch" id="accept_query" name="accept_query" value="1"
+                                                                {{ $acceptQueryValue ? 'checked' : '' }}>
+                                                        </div>
+                                                        <span class="badge bg-{{ $acceptQueryValue ? 'success' : 'danger' }}"
+                                                              style="color: #fff !important;font-size: 0.85em; padding: 0.35em 0.65em;">
+                                                            {{ $acceptQueryValue ? 'Enabled' : 'Disabled' }}
+                                                        </span>
+                                                    </div>
+                                                    @error('accept_query')
+                                                    <div class="invalid-feedback d-block mt-1">{{ $message }}</div>
+                                                    @enderror
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Permissions Section -->
+                                    <div class="form-section mt-4">
+                                        <h5 class="section-header d-flex align-items-center">
+                                            <i class='bx bxs-key me-2'></i>Permissions
+                                        </h5>
+
+                                        <div class="accordion" id="permissionsAccordion">
+                                            @if ($permissions->isEmpty())
+                                                <p class="text-muted mb-4">No permissions found.</p>
+                                            @else
+                                                @php $oldPermissions = old('permissions', []); @endphp
+                                                @foreach($permissions as $header => $permissionGroup)
+                                                    <div class="accordion-item mb-3">
+                                                        <h6 class="accordion-header" id="heading{{ $loop->index }}">
+                                                            <button class="accordion-button collapsed" type="button"
+                                                                    data-bs-toggle="collapse" data-bs-target="#collapse{{ $loop->index }}"
+                                                                    aria-expanded="false" aria-controls="collapse{{ $loop->index }}">
+                                                                <div class="d-flex align-items-center w-100">
+                                                                    <i class='bx bx-category-alt me-2'></i>
+                                                                    <span class="fw-bold">{{ $header ?? 'General Permissions' }}</span>
                                                                 </div>
-                                                                <span class="badge bg-{{ $acceptQueryValue ? 'success' : 'danger' }}"
-                                                                      style="color: #fff !important;font-size: 0.85em; padding: 0.35em 0.65em;">
-                                                                    {{ $acceptQueryValue ? 'Enabled' : 'Disabled' }}
-                                                                </span>
-                                                            </div>
-                                                            @error('accept_query')
-                                                            <div class="invalid-feedback d-block mt-1">{{ $message }}</div>
-                                                            @enderror
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
+                                                            </button>
+                                                        </h6>
 
-                                            <!-- Permissions Section -->
-                                            <div class="form-section mt-4">
-                                                <h5 class="section-header d-flex align-items-center">
-                                                    <i class='bx bxs-key me-2'></i>Permissions
-                                                </h5>
+                                                        <div id="collapse{{ $loop->index }}" class="accordion-collapse collapse"
+                                                             aria-labelledby="heading{{ $loop->index }}" data-bs-parent="#permissionsAccordion">
+                                                            <div class="accordion-body pt-2">
+                                                                <div class="row">
+                                                                    @foreach ($permissionGroup ?? [] as $permission)
+                                                                        @php
+                                                                            $isChecked = array_key_exists($permission['id'], $oldPermissions)
+                                                                                ? (bool) $oldPermissions[$permission['id']]
+                                                                                : $permission['status'];
+                                                                        @endphp
 
-                                                <div class="accordion" id="permissionsAccordion">
-                                                    @if ($permissions->isEmpty())
-                                                        <p class="text-muted mb-4">No permissions found.</p>
-                                                    @else
-                                                        @php $oldPermissions = old('permissions', []); @endphp
-                                                        @foreach($permissions as $header => $permissionGroup)
-                                                            <div class="accordion-item mb-3">
-                                                                <h6 class="accordion-header" id="heading{{ $loop->index }}">
-                                                                    <button class="accordion-button collapsed" type="button"
-                                                                            data-bs-toggle="collapse" data-bs-target="#collapse{{ $loop->index }}"
-                                                                            aria-expanded="false" aria-controls="collapse{{ $loop->index }}">
-                                                                        <div class="d-flex align-items-center w-100">
-                                                                            <i class='bx bx-category-alt me-2'></i>
-                                                                            <span class="fw-bold">{{ $header ?? 'General Permissions' }}</span>
-                                                                        </div>
-                                                                    </button>
-                                                                </h6>
+                                                                        <div class="col-sm-12 mb-3 parent-permission">
+                                                                            <div class="permission-item-container">
+                                                                                <div class="permission-toggle-container border-bottom {{ $permission['children']->isNotEmpty() ? 'rounded-bottom-0' : 'rounded-bottom' }}">
 
-                                                                <div id="collapse{{ $loop->index }}" class="accordion-collapse collapse"
-                                                                     aria-labelledby="heading{{ $loop->index }}" data-bs-parent="#permissionsAccordion">
-                                                                    <div class="accordion-body pt-2">
-                                                                        <div class="row">
-                                                                            @foreach ($permissionGroup ?? [] as $permission)
-                                                                                @php
-                                                                                    $isChecked = array_key_exists($permission['id'], $oldPermissions)
-                                                                                        ? (bool) $oldPermissions[$permission['id']]
-                                                                                        : $permission['status'];
-                                                                                @endphp
-
-                                                                                <div class="col-sm-12 mb-3 parent-permission">
-                                                                                    <div class="permission-item-container">
-                                                                                        <div class="permission-toggle-container border-bottom {{ $permission['children']->isNotEmpty() ? 'rounded-bottom-0' : 'rounded-bottom' }}">
-
-                                                                                            <label class="permission-label">
-                                                                                                <i class='bx bxs-check-circle permission-icon'></i>
-                                                                                                {{ $permission['name'] }}
-                                                                                            </label>
-                                                                                            <div class="form-check form-switch">
-                                                                                                <input type="hidden" name="permissions[{{ $permission['id'] }}]" value="0">
-                                                                                                <input class="form-check-input permission-toggle parent-toggle"
-                                                                                                       type="checkbox"
-                                                                                                       name="permissions[{{ $permission['id'] }}]"
-                                                                                                       value="1"
-                                                                                                       data-permission-id="{{ $permission['id'] }}"
-                                                                                                    {{ $isChecked ? 'checked' : '' }}>
-                                                                                            </div>
-                                                                                        </div>
-
-                                                                                        @if ($permission['children']->isNotEmpty())
-                                                                                            <div class="child-permissions">
-                                                                                                @foreach ($permission['children'] as $child)
-                                                                                                    @php
-                                                                                                        $isChildChecked = array_key_exists($child['id'], $oldPermissions)
-                                                                                                            ? (bool) $oldPermissions[$child['id']]
-                                                                                                            : (bool) $child['status'];
-                                                                                                    @endphp
-                                                                                                    <div class="permission-toggle-container child-permission">
-                                                                                                        <label class="permission-label">
-                                                                                                            <i class='bx bx-radio-circle permission-icon'></i>
-                                                                                                            {{ $child['name'] }}
-                                                                                                        </label>
-                                                                                                        <div class="form-check form-switch">
-                                                                                                            <input type="hidden" name="permissions[{{ $child['id'] }}]" value="0">
-                                                                                                            <input class="form-check-input permission-toggle child-toggle"
-                                                                                                                   type="checkbox"
-                                                                                                                   name="permissions[{{ $child['id'] }}]"
-                                                                                                                   value="1"
-                                                                                                                   data-parent-id="{{ $permission['id'] }}"
-                                                                                                                {{ $isChildChecked ? 'checked' : '' }}>
-                                                                                                        </div>
-                                                                                                    </div>
-                                                                                                @endforeach
-                                                                                            </div>
-                                                                                        @endif
+                                                                                    <label class="permission-label">
+                                                                                        <i class='bx bxs-check-circle permission-icon'></i>
+                                                                                        {{ $permission['name'] }}
+                                                                                    </label>
+                                                                                    <div class="form-check form-switch">
+                                                                                        <input type="hidden" name="permissions[{{ $permission['id'] }}]" value="0">
+                                                                                        <input class="form-check-input permission-toggle parent-toggle"
+                                                                                               type="checkbox"
+                                                                                               name="permissions[{{ $permission['id'] }}]"
+                                                                                               value="1"
+                                                                                               data-permission-id="{{ $permission['id'] }}"
+                                                                                            {{ $isChecked ? 'checked' : '' }}>
                                                                                     </div>
                                                                                 </div>
-                                                                            @endforeach
+
+                                                                                @if ($permission['children']->isNotEmpty())
+                                                                                    <div class="child-permissions">
+                                                                                        @foreach ($permission['children'] as $child)
+                                                                                            @php
+                                                                                                $isChildChecked = array_key_exists($child['id'], $oldPermissions)
+                                                                                                    ? (bool) $oldPermissions[$child['id']]
+                                                                                                    : (bool) $child['status'];
+                                                                                            @endphp
+                                                                                            <div class="permission-toggle-container child-permission">
+                                                                                                <label class="permission-label">
+                                                                                                    <i class='bx bx-radio-circle permission-icon'></i>
+                                                                                                    {{ $child['name'] }}
+                                                                                                </label>
+                                                                                                <div class="form-check form-switch">
+                                                                                                    <input type="hidden" name="permissions[{{ $child['id'] }}]" value="0">
+                                                                                                    <input class="form-check-input permission-toggle child-toggle"
+                                                                                                           type="checkbox"
+                                                                                                           name="permissions[{{ $child['id'] }}]"
+                                                                                                           value="1"
+                                                                                                           data-parent-id="{{ $permission['id'] }}"
+                                                                                                        {{ $isChildChecked ? 'checked' : '' }}>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        @endforeach
+                                                                                    </div>
+                                                                                @endif
+                                                                            </div>
                                                                         </div>
-                                                                    </div>
+                                                                    @endforeach
                                                                 </div>
                                                             </div>
-                                                        @endforeach
-                                                    @endif
-                                                </div>
+                                                        </div>
+                                                    </div>
+                                                @endforeach
+                                            @endif
+                                        </div>
 
 
 {{--                                                @isset($permissions)--}}
@@ -632,17 +608,15 @@
 {{--                                                @else--}}
 {{--                                                    <div class="text-center fw-bold">No permissions found.</div>--}}
 {{--                                                @endisset--}}
-                                            </div>
-
-                                            <!-- Submit Button -->
-                                            <div class="d-flex justify-content-end mt-4">
-                                                <button type="submit" class="btn btn-primary px-4">
-                                                    <i class='bx bx-save me-1'></i> Create Staff
-                                                </button>
-                                            </div>
-                                        </form>
                                     </div>
-                                </div>
+
+                                    <!-- Submit Button -->
+                                    <div class="d-flex justify-content-end mt-4">
+                                        <button type="submit" class="btn btn-primary w-100 px-4">
+                                            <i class='bx bx-save me-1'></i> Create Staff
+                                        </button>
+                                    </div>
+                                </form>
                             </div>
                         </div>
                     </div>

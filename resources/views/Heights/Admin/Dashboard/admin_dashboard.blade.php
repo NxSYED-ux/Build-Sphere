@@ -21,7 +21,6 @@
         }
 
         body {
-            font-family: 'Inter', sans-serif;
         }
 
         .dashboard_Header {

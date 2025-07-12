@@ -467,19 +467,23 @@
             const citySelect = document.getElementById('city');
 
             const dropdownData = @json($dropdownData);
-            const userCountry = "{{ $user->address->country }}";
-            const userProvince = "{{ $user->address->province }}";
-            const userCity = "{{ $user->address->city }}";
+
+            // Use old() if available, otherwise fallback to user's current values
+            const selectedCountry = @json(old('country') ?? $user->address->country);
+            const selectedProvince = @json(old('province') ?? $user->address->province);
+            const selectedCity = @json(old('city') ?? $user->address->city);
 
             // Populate Country Dropdown
             dropdownData.forEach(country => {
                 const option = document.createElement('option');
-                option.value = country.values[0]?.value_name || 'Unnamed Country'; // Use value_name for the value
-                option.dataset.id = country.id; // Store ID in a data attribute
+                option.value = country.values[0]?.value_name || 'Unnamed Country';
+                option.dataset.id = country.id;
                 option.textContent = country.values[0]?.value_name || 'Unnamed Country';
-                if (option.value === userCountry) {
-                    option.selected = true; // Pre-select user's country
+
+                if (option.value === selectedCountry) {
+                    option.selected = true;
                 }
+
                 countrySelect.appendChild(option);
             });
 
@@ -488,19 +492,21 @@
                 provinceSelect.innerHTML = '<option value="" selected>Select Province</option>';
                 citySelect.innerHTML = '<option value="" selected>Select City</option>';
 
-                const selectedCountryId = countrySelect.options[countrySelect.selectedIndex]?.dataset.id; // Retrieve ID from data attribute
-                const selectedCountry = dropdownData.find(c => c.id == selectedCountryId);
+                const selectedCountryId = countrySelect.options[countrySelect.selectedIndex]?.dataset.id;
+                const selectedCountryObj = dropdownData.find(c => c.id == selectedCountryId);
 
-                if (selectedCountry) {
-                    selectedCountry.values.forEach(province => {
+                if (selectedCountryObj) {
+                    selectedCountryObj.values.forEach(province => {
                         province.childs.forEach(childProvince => {
                             const option = document.createElement('option');
-                            option.value = childProvince.value_name; // Use value_name for the value
-                            option.dataset.id = childProvince.id; // Store ID in a data attribute
+                            option.value = childProvince.value_name;
+                            option.dataset.id = childProvince.id;
                             option.textContent = childProvince.value_name;
-                            if (option.value === userProvince) {
-                                option.selected = true; // Pre-select user's province
+
+                            if (option.value === selectedProvince) {
+                                option.selected = true;
                             }
+
                             provinceSelect.appendChild(option);
                         });
                     });
@@ -511,24 +517,26 @@
             function populateCities() {
                 citySelect.innerHTML = '<option value="" selected>Select City</option>';
 
-                const selectedCountryId = countrySelect.options[countrySelect.selectedIndex]?.dataset.id; // Retrieve ID from data attribute
-                const selectedCountry = dropdownData.find(c => c.id == selectedCountryId);
+                const selectedCountryId = countrySelect.options[countrySelect.selectedIndex]?.dataset.id;
+                const selectedCountryObj = dropdownData.find(c => c.id == selectedCountryId);
 
-                if (selectedCountry) {
-                    const selectedProvinceId = provinceSelect.options[provinceSelect.selectedIndex]?.dataset.id; // Retrieve ID from data attribute
-                    const selectedProvince = selectedCountry.values
+                if (selectedCountryObj) {
+                    const selectedProvinceId = provinceSelect.options[provinceSelect.selectedIndex]?.dataset.id;
+                    const selectedProvinceObj = selectedCountryObj.values
                         .flatMap(province => province.childs)
                         .find(p => p.id == selectedProvinceId);
 
-                    if (selectedProvince) {
-                        selectedProvince.childs.forEach(city => {
+                    if (selectedProvinceObj) {
+                        selectedProvinceObj.childs.forEach(city => {
                             const option = document.createElement('option');
-                            option.value = city.value_name; // Use value_name for the value
-                            option.dataset.id = city.id; // Store ID in a data attribute
+                            option.value = city.value_name;
+                            option.dataset.id = city.id;
                             option.textContent = city.value_name;
-                            if (option.value === userCity) {
-                                option.selected = true; // Pre-select user's city
+
+                            if (option.value === selectedCity) {
+                                option.selected = true;
                             }
+
                             citySelect.appendChild(option);
                         });
                     }
@@ -536,17 +544,27 @@
             }
 
             // Event Listeners
-            countrySelect.addEventListener('change', populateProvinces);
+            countrySelect.addEventListener('change', () => {
+                populateProvinces();
+                // Timeout ensures province list is ready before selecting city
+                setTimeout(() => populateCities(), 150);
+            });
+
             provinceSelect.addEventListener('change', populateCities);
 
-            // Prepopulate Provinces and Cities
-            if (userCountry) {
+            // Trigger population on load if editing or error occurred
+            if (selectedCountry) {
                 populateProvinces();
-            }
-            if (userProvince) {
-                populateCities();
+
+                // Timeout ensures provinces are loaded before triggering city population
+                setTimeout(() => {
+                    if (selectedProvince) {
+                        populateCities();
+                    }
+                }, 150);
             }
         });
     </script>
+
 
 @endpush

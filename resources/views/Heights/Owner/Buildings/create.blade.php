@@ -122,8 +122,8 @@
             position: absolute;
             bottom: 10px;
             right: 10px;
-            background-color: #6c63ff;
-            color: #fff;
+            background-color: var(--color-blue);
+            color: #fff !important;
             border-radius: 50%;
             width: 40px;
             height: 40px;
@@ -136,7 +136,8 @@
         }
 
         .image-preview .upload-btn:hover {
-            background-color: #5752d3;
+            background-color: var(--color-blue);
+            opacity: 0.7 !important;
         }
 
         /* Hide default file input */
@@ -234,7 +235,7 @@
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-md-12">
-                        <div class="d-flex justify-content-between align-items-center mb-2">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
                             <h4 class="mb-0">Add New Building</h4>
                             <a href="{{ route('owner.buildings.index') }}" class="btn btn-secondary"><i class="fas fa-arrow-left me-2"></i> Go Back</a>
                         </div>
@@ -435,32 +436,31 @@
             const provinceSelect = document.getElementById('province');
             const citySelect = document.getElementById('city');
 
-            // Dropdown data passed from the controller
             const dropdownData = @json($dropdownData);
 
             // Populate Country Dropdown
             dropdownData.forEach(country => {
                 const option = document.createElement('option');
                 option.value = country.values[0]?.value_name || 'Unnamed Country';
-                option.dataset.id = country.id; // Store ID in a data attribute
+                option.dataset.id = country.id;
                 option.textContent = country.values[0]?.value_name || 'Unnamed Country';
                 countrySelect.appendChild(option);
             });
 
-            // Handle Country Change
+            // Change Listeners (as you already have)
             countrySelect.addEventListener('change', function () {
                 provinceSelect.innerHTML = '<option value="" selected>Select Province</option>';
                 citySelect.innerHTML = '<option value="" selected>Select City</option>';
 
-                const selectedCountryId = this.options[this.selectedIndex]?.dataset.id; // Retrieve ID from data attribute
+                const selectedCountryId = this.options[this.selectedIndex]?.dataset.id;
                 const selectedCountry = dropdownData.find(c => c.id == selectedCountryId);
 
                 if (selectedCountry) {
                     selectedCountry.values.forEach(province => {
                         province.childs.forEach(childProvince => {
                             const option = document.createElement('option');
-                            option.value = childProvince.value_name; // Use value_name for option value
-                            option.dataset.id = childProvince.id; // Store ID in a data attribute
+                            option.value = childProvince.value_name;
+                            option.dataset.id = childProvince.id;
                             option.textContent = childProvince.value_name;
                             provinceSelect.appendChild(option);
                         });
@@ -468,15 +468,14 @@
                 }
             });
 
-            // Handle Province Change
             provinceSelect.addEventListener('change', function () {
                 citySelect.innerHTML = '<option value="" selected>Select City</option>';
 
-                const selectedCountryId = countrySelect.options[countrySelect.selectedIndex]?.dataset.id; // Retrieve ID from data attribute
+                const selectedCountryId = countrySelect.options[countrySelect.selectedIndex]?.dataset.id;
                 const selectedCountry = dropdownData.find(c => c.id == selectedCountryId);
 
                 if (selectedCountry) {
-                    const selectedProvinceId = this.options[this.selectedIndex]?.dataset.id; // Retrieve ID from data attribute
+                    const selectedProvinceId = this.options[this.selectedIndex]?.dataset.id;
                     const selectedProvince = selectedCountry.values
                         .flatMap(province => province.childs)
                         .find(p => p.id == selectedProvinceId);
@@ -484,14 +483,46 @@
                     if (selectedProvince) {
                         selectedProvince.childs.forEach(city => {
                             const option = document.createElement('option');
-                            option.value = city.value_name; // Use value_name for option value
-                            option.dataset.id = city.id; // Store ID in a data attribute
+                            option.value = city.value_name;
+                            option.dataset.id = city.id;
                             option.textContent = city.value_name;
                             citySelect.appendChild(option);
                         });
                     }
                 }
             });
+
+            // Repopulate Old Values Only if Error Occurred
+            const oldCountry = @json(old('country'));
+            const oldProvince = @json(old('province'));
+            const oldCity = @json(old('city'));
+
+            if (oldCountry || oldProvince || oldCity) {
+                function populateOldSelections() {
+                    const countryOption = [...countrySelect.options].find(opt => opt.value === oldCountry);
+                    if (countryOption) {
+                        countryOption.selected = true;
+                        countrySelect.dispatchEvent(new Event('change'));
+
+                        setTimeout(() => {
+                            const provinceOption = [...provinceSelect.options].find(opt => opt.value === oldProvince);
+                            if (provinceOption) {
+                                provinceOption.selected = true;
+                                provinceSelect.dispatchEvent(new Event('change'));
+
+                                setTimeout(() => {
+                                    const cityOption = [...citySelect.options].find(opt => opt.value === oldCity);
+                                    if (cityOption) {
+                                        cityOption.selected = true;
+                                    }
+                                }, 200);
+                            }
+                        }, 200);
+                    }
+                }
+
+                populateOldSelections();
+            }
         });
     </script>
 

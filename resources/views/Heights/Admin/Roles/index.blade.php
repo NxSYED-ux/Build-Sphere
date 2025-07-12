@@ -470,7 +470,7 @@
                                     </div>
                                     <div class="role-body">
                                         <p class="role-description">
-                                            {{ $role->description ?: 'No description provided for this role' }}
+                                            {{ Str::limit($role->description ?? 'No description provided for this role', 30) }}
                                         </p>
 
                                         <div class="role-meta">

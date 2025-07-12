@@ -181,15 +181,10 @@ class BuildingController extends Controller
 
     public function ownerStore(Request $request)
     {
-        try{
-            $token = $request->attributes->get('token');
-            $organization_id = $token['organization_id'];
+        $token = $request->attributes->get('token');
+        $organization_id = $token['organization_id'];
 
-            return $this->store($request, 'owner',$organization_id,'Under Processing',null, $token['role_name']);
-        } catch (\Throwable $e) {
-            Log::error('Error in owner store buildings: ' . $e->getMessage());
-            return redirect()->back()->withInput()->with('error', 'An error occurred while creating the building.');
-        }
+        return $this->store($request, 'owner',$organization_id,'Under Processing',null, $token['role_name']);
     }
 
     private function store(Request $request, String $portal, $organization_id, $status, $remarks, $role = null)

@@ -109,8 +109,6 @@
 
         /* Gauge Meter Styles */
         #chartdiv {
-            width: 100%;
-            height: 200px;
         }
         .amcharts-export-menu {
             display: none !important;
@@ -423,9 +421,23 @@
 
                             <div class="col-md-6 mb-4">
                                 <div class="plan-card featured p-4 h-100 d-flex flex-column justify-content-between">
-                                    <h5 class=" fw-semibold">Plan Used</h5>
+                                    <h5 class="fw-semibold">Plan Usage</h5>
 
-                                    <div id="chartdiv" class="flex-grow-1 my-1"></div>
+                                    <div style="position: relative; width: 370px; height: 200px; margin: auto;">
+                                        <div id="chartdiv" style="width: 85%; height: 100%;"></div>
+
+                                        <div id="gaugeLabel"
+                                             style="
+                                                     position: absolute;
+                                                     top: 65%;
+                                                     left: 42%;
+                                                     transform: translate(-50%, -40%); /* adjust vertical offset as needed */
+                                                     font-size: 25px;
+                                                     font-weight: bold;
+                                                     color: var(--sidenavbar-text-color);">
+                                            {{ $usage }}%
+                                        </div>
+                                    </div>
 
                                     <div class="mt-auto pt-2">
                                         <a href="{{ route('owner.plan.upgrade.index') }}" class="btn btn-success w-100 mb-3 py-2 rounded-1" style="color: #fff !important;">
@@ -694,157 +706,114 @@
     <script src="https://cdn.amcharts.com/lib/4/themes/animated.js"></script>
 
     <script>
-        /**
-         * Gauge Chart Script
-         * Creates and manages an animated gauge chart using amCharts
-         */
-            // Chart references
-        let chart;
-        let hand;
-        let label;
-
-        /**
-         * Gets CSS variable value
-         */
-        function getCssVar(name) {
-            return getComputedStyle(document.documentElement)
-                .getPropertyValue(name)
-                .trim();
-        }
-
-        /**
-         * Updates gauge value with animation
-         */
-        function updateGaugeValue(finalValue) {
-            finalValue = Math.max(0, Math.min(100, finalValue));
-            var to100 = new am4core.Animation(hand, {
-                property: "value",
-                to: 100
-            }, 1000, am4core.ease.cubicOut);
-
-            to100.events.on("animationended", function() {
-                new am4core.Animation(hand, {
-                    property: "value",
-                    to: finalValue
-                }, 1000, am4core.ease.cubicOut).start();
-            });
-            to100.start();
-        }
-
-        // Initialize chart when amCharts is ready
-        am4core.ready(function() {
+        am4core.ready(function () {
             am4core.useTheme(am4themes_animated);
 
-            // Create chart instance
-            chart = am4core.create("chartdiv", am4charts.GaugeChart);
-            chart.innerRadius = am4core.percent(82);
+            var chart = am4core.create("chartdiv", am4charts.GaugeChart);
+            chart.innerRadius = -20;
+            chart.startAngle = -180;
+            chart.endAngle = 0;
             chart.logo.disabled = true;
 
-            // Configure main axis
+            // Remove any default container strokes
+            chart.radarContainer.strokeWidth = 0;
+
+            // Axis
             var axis = chart.xAxes.push(new am4charts.ValueAxis());
             axis.min = 0;
             axis.max = 100;
             axis.strictMinMax = true;
-            axis.fontSize = 12;
-            axis.renderer.radius = am4core.percent(82);
-            axis.renderer.inside = true;
-            axis.renderer.line.strokeOpacity = 1;
-            axis.renderer.ticks.template.disabled = false;
-            axis.renderer.ticks.template.strokeOpacity = 1;
-            axis.renderer.ticks.template.length = 9;
             axis.renderer.grid.template.disabled = true;
-            axis.renderer.labels.template.radius = 30;
-            axis.renderer.labels.template.fill = am4core.color(getCssVar('--gauge-axis-label-color'));
-            axis.renderer.ticks.template.stroke = am4core.color(getCssVar('--gauge-axis-tick-color'));
+            axis.renderer.labels.template.disabled = true;
+            axis.renderer.ticks.template.disabled = true;
+            axis.renderer.line.disabled = true;  // This removes the axis line completely
+            axis.renderer.minGridDistance = 0;   // Prevents any residual rendering
 
-            // Configure color ranges axis
-            var colorSet = new am4core.ColorSet();
-            colorSet.list = [
-                am4core.color(getCssVar('--gauge-range-0')),
-                am4core.color("#0000FF"), // Default fallback
-                am4core.color(getCssVar('--gauge-range-1'))
-            ];
+            // Background range
+            var rangeBg = axis.axisRanges.create();
+            rangeBg.value = 0;
+            rangeBg.endValue = 100;
+            rangeBg.axisFill.fill = am4core.color("#E5E7EB");
+            rangeBg.axisFill.fillOpacity = 1;
+            rangeBg.axisFill.innerRadius = -20;
+            rangeBg.axisFill.cornerRadius = 25;
+            rangeBg.axisFill.strokeWidth = 0;  // Explicitly remove stroke
 
-            var axis2 = chart.xAxes.push(new am4charts.ValueAxis());
-            axis2.min = 0;
-            axis2.max = 100;
-            axis2.strictMinMax = true;
-            axis2.renderer.labels.template.disabled = true;
-            axis2.renderer.ticks.template.disabled = true;
-            axis2.renderer.grid.template.disabled = true;
+            // Usage range
+            const usage = @json($usage);
+            var rangeFill = axis.axisRanges.create();
+            rangeFill.value = 0;
+            rangeFill.endValue = 0; // Start from 0
 
-            // Create ranges
-            var range0 = axis2.axisRanges.create();
-            range0.value = 0;
-            range0.endValue = 0;
-            range0.axisFill.fillOpacity = 1;
-            range0.axisFill.fill = colorSet.getIndex(0);
+            var gradient = new am4core.LinearGradient();
+            gradient.addColor(am4core.color("#3B82F6"));
+            gradient.addColor(am4core.color("#60A5FA"));
+            rangeFill.axisFill.fill = gradient;
+            rangeFill.axisFill.fillOpacity = 1;
+            rangeFill.axisFill.innerRadius = -20;
+            rangeFill.axisFill.cornerRadius = 25;
+            rangeFill.axisFill.strokeWidth = 0;  // Explicitly remove stroke
 
-            var range1 = axis2.axisRanges.create();
-            range1.value = 0;
-            range1.endValue = 100;
-            range1.axisFill.fillOpacity = 1;
-            range1.axisFill.fill = colorSet.getIndex(2);
+            // Create bullet
+            // var bullet = chart.radarContainer.createChild(am4core.Circle);
+            // bullet.radius = 11;
+            // bullet.fill = am4core.color("#3B82F6");
+            // bullet.strokeWidth = 3;
+            // bullet.stroke = am4core.color("#ffffff");
+            // bullet.isMeasured = false;
 
-            // Create center label
-            label = chart.radarContainer.createChild(am4core.Label);
-            label.isMeasured = false;
-            label.fontSize = 18;
-            label.x = am4core.percent(50);
-            label.y = am4core.percent(100);
-            label.horizontalCenter = "middle";
-            label.verticalCenter = "bottom";
-            label.text = "0%";
-            label.fill = am4core.color(getCssVar('--gauge-label-color'));
+            // Update bullet position
+            // function updateBulletPosition(value) {
+            //     var point = axis.renderer.positionToPoint(axis.valueToPosition(value));
+            //
+            //     bullet.x = point.x - 10;
+            //     bullet.y = point.y + 10;
+            // }
 
-            // Create gauge hand/pointer
-            hand = chart.hands.push(new am4charts.ClockHand());
-            hand.axis = axis2;
-            hand.innerRadius = am4core.percent(30);
-            hand.startWidth = 10;
-            hand.pin.disabled = true;
-            hand.value = 0;
-            hand.fill = am4core.color(getCssVar('--gauge-hand-fill'));
-            hand.stroke = am4core.color(getCssVar('--gauge-hand-stroke'));
+            // Initialize bullet
+            // updateBulletPosition(0);
 
-            // Update ranges and label when hand moves
-            hand.events.on("propertychanged", function(ev) {
-                range0.endValue = ev.target.value;
-                range1.value = ev.target.value;
-                label.text = axis2.positionToValue(hand.currentPosition).toFixed(1) + "%";
-                axis2.invalidate();
-            });
+            // First animation: 0 to 100%
+            var fillAnimation1 = rangeFill.animate(
+                { property: "endValue", to: 100 },
+                1000,
+                am4core.ease.cubicOut
+            );
 
-            // Initial animation
-            const gaugeValue = @json($usage);
-            setTimeout(() => updateGaugeValue(gaugeValue), 500);
+            // var bulletAnimation1 = bullet.animate(
+            //     { property: "dummy", to: 100 },
+            //     1000,
+            //     am4core.ease.cubicOut
+            // );
 
-            // Expose to global scope
-            window.updateGaugeValue = updateGaugeValue;
-        });
-    </script>
+            // bulletAnimation1.events.on("animationprogress", function (ev) {
+            //     // updateBulletPosition(ev.progress * 100);
+            // });
 
-    <script>
-        /**
-         * Gauge Demo Script
-         * Demonstrates how to update gauge with backend data
-         * (This is just a demo - in production you would use real API calls)
-         */
-        document.addEventListener('DOMContentLoaded', function() {
-            // Example API call (commented out for reference)
-            /*
-            fetch('/api/get-gauge-value')
-                .then(response => response.json())
-                .then(data => {
-                    updateGaugeValue(data.value);
+            // When first animation completes, animate back to usage
+            fillAnimation1.events.on("animationended", function () {
+                // Animate both the range and bullet together
+                var fillAnimation2 = rangeFill.animate(
+                    { property: "endValue", to: usage },
+                    800,
+                    am4core.ease.cubicOut
+                );
+
+                // var bulletAnimation2 = bullet.animate(
+                //     { property: "dummy", to: usage },
+                //     800,
+                //     am4core.ease.cubicOut
+                // );
+
+                // bulletAnimation2.events.on("animationprogress", function (ev) {
+                //     // updateBulletPosition(100 - ev.progress * (100 - usage));
+                // });
+
+                // Synchronize animations
+                fillAnimation2.events.on("animationprogress", function(ev) {
+                    rangeFill.endValue = 100 - ev.progress * (100 - usage);
                 });
-            */
-
-            // Demo: Random updates every 2 seconds
-            // setInterval(function() {
-            //     var value = Math.round(Math.random() * 100);
-            //     updateGaugeValue(value);
-            // }, 2000);
+            });
         });
     </script>
 

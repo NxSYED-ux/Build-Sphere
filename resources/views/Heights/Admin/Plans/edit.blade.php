@@ -237,7 +237,7 @@
                                             <div class="mb-3">
                                                 <label for="plan_description" class="form-label">Description</label>
                                                 <textarea class="form-control @error('plan_description') is-invalid @enderror" name="plan_description" id="plan_description"
-                                                          rows="3" placeholder="Brief description of what this plan offers">{{ $planDetails['plan_description'] }}</textarea>
+                                                          rows="3" maxlength="250" placeholder="Brief description of what this plan offers">{{ $planDetails['plan_description'] }}</textarea>
                                                 @error('plan_description')
                                                 <span class="invalid-feedback" role="alert">
                                                     <strong>{{ $message }}</strong>
@@ -530,8 +530,10 @@
             const planDescription = document.getElementById('plan_description').value || 'No description provided';
             const currency = document.getElementById('currency').value;
 
+            const truncatedDescription = planDescription.length > 120 ? planDescription.substring(0, 120) + '...' : planDescription;
+
             document.getElementById('summaryPlanName').textContent = planName;
-            document.getElementById('summaryPlanDescription').textContent = planDescription;
+            document.getElementById('summaryPlanDescription').textContent = truncatedDescription;
             document.getElementById('summaryCurrency').textContent = currency;
 
             const selectedCycles = Array.from(document.querySelectorAll('input[name="billing_cycles[]"]:checked'));

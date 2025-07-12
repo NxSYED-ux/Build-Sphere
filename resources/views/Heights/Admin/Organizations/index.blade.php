@@ -505,7 +505,7 @@
                                                             </div>
                                                         @empty
                                                             <div class="col-12">
-                                                                <div class="empty-state">
+                                                                <div class="empty-state text-center">
                                                                     <div class="empty-state-icon">
                                                                         <i class='bx bxl-slack'></i>
                                                                     </div>
@@ -1028,7 +1028,7 @@
 
             const dropdownData = @json($dropdownData);
 
-            // Populate Countries
+            // Populate Country Dropdown
             dropdownData.forEach(country => {
                 const option = document.createElement('option');
                 option.value = country.values[0]?.value_name || 'Unnamed Country';
@@ -1037,7 +1037,7 @@
                 countrySelect.appendChild(option);
             });
 
-            // Country Change Handler
+            // Change Listeners (as you already have)
             countrySelect.addEventListener('change', function () {
                 provinceSelect.innerHTML = '<option value="" selected>Select Province</option>';
                 citySelect.innerHTML = '<option value="" selected>Select City</option>';
@@ -1058,7 +1058,6 @@
                 }
             });
 
-            // Province Change Handler
             provinceSelect.addEventListener('change', function () {
                 citySelect.innerHTML = '<option value="" selected>Select City</option>';
 
@@ -1082,6 +1081,38 @@
                     }
                 }
             });
+
+            // Repopulate Old Values Only if Error Occurred
+            const oldCountry = @json(old('country'));
+            const oldProvince = @json(old('province'));
+            const oldCity = @json(old('city'));
+
+            if (oldCountry || oldProvince || oldCity) {
+                function populateOldSelections() {
+                    const countryOption = [...countrySelect.options].find(opt => opt.value === oldCountry);
+                    if (countryOption) {
+                        countryOption.selected = true;
+                        countrySelect.dispatchEvent(new Event('change'));
+
+                        setTimeout(() => {
+                            const provinceOption = [...provinceSelect.options].find(opt => opt.value === oldProvince);
+                            if (provinceOption) {
+                                provinceOption.selected = true;
+                                provinceSelect.dispatchEvent(new Event('change'));
+
+                                setTimeout(() => {
+                                    const cityOption = [...citySelect.options].find(opt => opt.value === oldCity);
+                                    if (cityOption) {
+                                        cityOption.selected = true;
+                                    }
+                                }, 200);
+                            }
+                        }, 200);
+                    }
+                }
+
+                populateOldSelections();
+            }
         });
     </script>
 

@@ -94,7 +94,8 @@
 
     <style>
         body {
-            font-family: 'Poppins', CircularXX, sans-serif;
+            font-family: 'Inter', sans-serif;
+            /*font-family: 'Poppins', CircularXX, sans-serif;*/
             font-size: 14px;
             font-style: normal !important;
             position: relative;

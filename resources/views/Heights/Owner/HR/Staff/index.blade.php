@@ -166,18 +166,6 @@
             color: #bdc3c7;
         }
 
-        .btn-add {
-            padding: 10px 20px;
-            border-radius: 8px;
-            font-weight: 500;
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-width: 120px;
-            font-size: 0.95rem;
-        }
-
         .btn-view {
             background-color: rgba(52, 152, 219, 0.1);
             color: #3498db;
@@ -361,148 +349,143 @@
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-md-12">
-                        <div class="box">
-                            <div class="container mt-2">
-                                <div class="d-flex justify-content-between align-items-center mb-4">
-                                    <h3 class="mb-1">Staff Members</h3>
-                                    <a href="{{ route('owner.staff.create') }}" class="btn btn-add btn-primary" title="Add New Staff Member">
-                                        <i class="fas fa-user-plus me-2"></i> Add Staff
-                                    </a>
-                                </div>
-
-                                <!-- Filter Form -->
-                                <form method="GET" id="filterForm" class="filter-container">
-                                    <div class="filter-group">
-                                        <label for="search">Search</label>
-                                        <input type="text" name="search" id="search" class="search-input"
-                                               placeholder="Search by name or email"
-                                               value="{{ request('search') }}">
-                                    </div>
-
-                                    <div class="filter-group">
-                                        <label for="DepartmentId">Department</label>
-                                        <select name="DepartmentId" id="DepartmentId" class="form-select filter-select">
-                                            <option value="">All Departments</option>
-                                            @forelse($departments ?? [] as $department)
-                                                <option value="{{ $department->id }}" {{ request('DepartmentId') == $department->id ? 'selected' : '' }}>
-                                                    {{ $department->name }}
-                                                </option>
-                                            @empty
-                                            @endforelse
-                                        </select>
-                                    </div>
-
-                                    <div class="filter-group">
-                                        <label for="BuildingId">Building</label>
-                                        <select name="BuildingId" id="BuildingId" class="form-select filter-select">
-                                            <option value="">All Buildings</option>
-                                            @forelse($buildings ?? [] as $building)
-                                                <option value="{{ $building->id }}" {{ request('BuildingId') == $building->id ? 'selected' : '' }}>
-                                                    {{ $building->name }}
-                                                </option>
-                                            @empty
-                                            @endforelse
-                                        </select>
-                                    </div>
-
-                                    <div class="filter-buttons">
-                                        <button type="button" class="btn btn-secondary flex-grow-1 d-flex align-items-center justify-content-center" onclick="resetFilters()">
-                                            <i class="fas fa-undo me-2"></i> Reset
-                                        </button>
-                                        <button type="submit" class="btn btn-primary flex-grow-1 d-flex align-items-center justify-content-center">
-                                            <i class="fas fa-filter me-2"></i> Apply Filters
-                                        </button>
-                                    </div>
-                                </form>
-
-                                <!-- Staff Cards -->
-                                <div class="team-members">
-                                    @forelse($staffMembers as $staffMember)
-                                        <div class="member-card">
-                                            <div class="member-header">
-                                                <img src="{{ $staffMember->user->picture ? asset($staffMember->user->picture) : asset('img/placeholder-profile.png') }}"
-                                                     alt="{{ $staffMember->user->name }}"
-                                                     class="member-avatar">
-                                                <h3 class="member-name">{{ $staffMember->user->name }}</h3>
-                                                <p class="member-position">
-                                                    {{ $staffMember->department->name ?? 'No Department' }}
-                                                </p>
-                                                <div class="dropdown member-actions-dropdown">
-                                                    <button class="btn btn-sm dropdown-toggle-btn rounded-circle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                                        <i class="fas fa-ellipsis-v fa-lg"></i>
-                                                    </button>
-                                                    <ul class="dropdown-menu dropdown-menu-end">
-                                                        <li>
-                                                            <a class="dropdown-item promote-item promote-btn"  href="#" data-staff-id="{{ $staffMember->id }}">
-                                                                <i class="fas fa-user-shield me-2"></i> Promote to Manager
-                                                            </a>
-                                                        </li>
-                                                        <li><hr class="dropdown-divider"></li>
-                                                        <li>
-                                                            <a class="dropdown-item delete-item delete-member-btn text-danger" href="#" data-member-id="{{ $staffMember->id }}">
-                                                                <i class="fas fa-trash-alt me-2"></i> Delete Staff
-                                                            </a>
-                                                        </li>
-                                                    </ul>
-                                                </div>
-                                            </div>
-                                            <div class="member-details">
-                                                <div class="detail-item">
-                                                    <i class="fas fa-envelope detail-icon"></i>
-                                                    <div class="detail-text">
-                                                        <a class="text-decoration-none" href="mailto:{{ $staffMember->user->email }}">{{ $staffMember->user->email }}</a>
-                                                    </div>
-                                                </div>
-                                                <div class="detail-item">
-                                                    <i class="fas fa-phone detail-icon"></i>
-                                                    <div class="detail-text">
-                                                        {{ $staffMember->user->phone_no ?? 'Not provided' }}
-                                                    </div>
-                                                </div>
-                                                <div class="detail-item">
-                                                    <i class="fas fa-building detail-icon"></i>
-                                                    <div class="detail-text">
-                                                        {{ $staffMember->building ? $staffMember->building->name : 'Building not assigned' }}
-                                                    </div>
-                                                </div>
-                                                <div class="detail-item" style="display: flex; align-items: center;">
-                                                    <i class="fas fa-award detail-icon" style="margin-right: 10px;"></i>
-                                                    <div class="detail-text" style="display: flex; align-items: center; gap: 8px;">
-                                                        <span title="Assign permission to accept or handle queries">Handle Queries</span>
-                                                        <label class="enable-query-toggle-btn">
-                                                            <input type="checkbox" class="enable-query-btn" data-staff-id="{{ $staffMember->id }}" {{ $staffMember->accept_queries ? 'checked' : '' }}>
-                                                            <span class="toggle-slider"></span>
-                                                        </label>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="member-actions">
-                                                <a href="{{ route('owner.staff.show', $staffMember->id) }}" class="btn btn-add btn-sm btn-view btn-member gap-1" title="View Details">
-                                                    <i class="fas fa-eye"></i> View
-                                                </a>
-                                                <a href="{{ route('owner.staff.edit', $staffMember->id) }}" class="btn btn-add btn-sm btn-edit btn-member gap-1" title="Edit Manager">
-                                                    <i class="fas fa-edit"></i> Edit
-                                                </a>
-                                            </div>
-                                        </div>
-                                    @empty
-                                        <div class="no-members">
-                                            <i class="fas fa-users fa-3x mb-3"></i>
-                                            <h4>No staff members found</h4>
-                                            <p>There are currently no staff members matching your filters.</p>
-                                        </div>
-                                    @endforelse
-                                </div>
-
-                                <!-- Pagination -->
-                                @if ($staffMembers)
-                                    <div class="mt-4">
-                                        {{ $staffMembers->appends(request()->query())->links('pagination::bootstrap-5') }}
-                                    </div>
-                                @endif
-
-                            </div>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h4 class="mb-1">Staff Members</h4>
+                            <a href="{{ route('owner.staff.create') }}" class="btn btn-primary" title="Add New Staff Member">
+                                <i class="fas fa-user-plus me-2"></i> Add Staff
+                            </a>
                         </div>
+
+                        <!-- Filter Form -->
+                        <form method="GET" id="filterForm" class="filter-container">
+                            <div class="filter-group">
+                                <label for="search">Search</label>
+                                <input type="text" name="search" id="search" class="search-input"
+                                       placeholder="Search by name or email"
+                                       value="{{ request('search') }}">
+                            </div>
+
+                            <div class="filter-group">
+                                <label for="DepartmentId">Department</label>
+                                <select name="DepartmentId" id="DepartmentId" class="form-select filter-select">
+                                    <option value="">All Departments</option>
+                                    @forelse($departments ?? [] as $department)
+                                        <option value="{{ $department->id }}" {{ request('DepartmentId') == $department->id ? 'selected' : '' }}>
+                                            {{ $department->name }}
+                                        </option>
+                                    @empty
+                                    @endforelse
+                                </select>
+                            </div>
+
+                            <div class="filter-group">
+                                <label for="BuildingId">Building</label>
+                                <select name="BuildingId" id="BuildingId" class="form-select filter-select">
+                                    <option value="">All Buildings</option>
+                                    @forelse($buildings ?? [] as $building)
+                                        <option value="{{ $building->id }}" {{ request('BuildingId') == $building->id ? 'selected' : '' }}>
+                                            {{ $building->name }}
+                                        </option>
+                                    @empty
+                                    @endforelse
+                                </select>
+                            </div>
+
+                            <div class="filter-buttons">
+                                <button type="button" class="btn btn-secondary flex-grow-1 d-flex align-items-center justify-content-center" onclick="resetFilters()">
+                                    <i class="fas fa-undo me-2"></i> Reset
+                                </button>
+                                <button type="submit" class="btn btn-primary flex-grow-1 d-flex align-items-center justify-content-center">
+                                    <i class="fas fa-filter me-2"></i> Apply Filters
+                                </button>
+                            </div>
+                        </form>
+
+                        <!-- Staff Cards -->
+                        <div class="team-members">
+                            @forelse($staffMembers as $staffMember)
+                                <div class="member-card">
+                                    <div class="member-header">
+                                        <img src="{{ $staffMember->user->picture ? asset($staffMember->user->picture) : asset('img/placeholder-profile.png') }}"
+                                             alt="{{ $staffMember->user->name }}"
+                                             class="member-avatar">
+                                        <h3 class="member-name">{{ $staffMember->user->name }}</h3>
+                                        <p class="member-position">
+                                            {{ $staffMember->department->name ?? 'No Department' }}
+                                        </p>
+                                        <div class="dropdown member-actions-dropdown">
+                                            <button class="btn btn-sm dropdown-toggle-btn rounded-circle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                <i class="fas fa-ellipsis-v fa-lg"></i>
+                                            </button>
+                                            <ul class="dropdown-menu dropdown-menu-end">
+                                                <li>
+                                                    <a class="dropdown-item promote-item promote-btn"  href="#" data-staff-id="{{ $staffMember->id }}">
+                                                        <i class="fas fa-user-shield me-2"></i> Promote to Manager
+                                                    </a>
+                                                </li>
+                                                <li><hr class="dropdown-divider"></li>
+                                                <li>
+                                                    <a class="dropdown-item delete-item delete-member-btn text-danger" href="#" data-member-id="{{ $staffMember->id }}">
+                                                        <i class="fas fa-trash-alt me-2"></i> Delete Staff
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <div class="member-details">
+                                        <div class="detail-item">
+                                            <i class="fas fa-envelope detail-icon"></i>
+                                            <div class="detail-text">
+                                                <a class="text-decoration-none" href="mailto:{{ $staffMember->user->email }}">{{ $staffMember->user->email }}</a>
+                                            </div>
+                                        </div>
+                                        <div class="detail-item">
+                                            <i class="fas fa-phone detail-icon"></i>
+                                            <div class="detail-text">
+                                                {{ $staffMember->user->phone_no ?? 'Not provided' }}
+                                            </div>
+                                        </div>
+                                        <div class="detail-item">
+                                            <i class="fas fa-building detail-icon"></i>
+                                            <div class="detail-text">
+                                                {{ $staffMember->building ? $staffMember->building->name : 'Building not assigned' }}
+                                            </div>
+                                        </div>
+                                        <div class="detail-item" style="display: flex; align-items: center;">
+                                            <i class="fas fa-award detail-icon" style="margin-right: 10px;"></i>
+                                            <div class="detail-text" style="display: flex; align-items: center; gap: 8px;">
+                                                <span title="Assign permission to accept or handle queries">Handle Queries</span>
+                                                <label class="enable-query-toggle-btn">
+                                                    <input type="checkbox" class="enable-query-btn" data-staff-id="{{ $staffMember->id }}" {{ $staffMember->accept_queries ? 'checked' : '' }}>
+                                                    <span class="toggle-slider"></span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="member-actions">
+                                        <a href="{{ route('owner.staff.show', $staffMember->id) }}" class="btn btn-add btn-sm btn-view btn-member gap-1" title="View Details">
+                                            <i class="fas fa-eye"></i> View
+                                        </a>
+                                        <a href="{{ route('owner.staff.edit', $staffMember->id) }}" class="btn btn-add btn-sm btn-edit btn-member gap-1" title="Edit Manager">
+                                            <i class="fas fa-edit"></i> Edit
+                                        </a>
+                                    </div>
+                                </div>
+                            @empty
+                                <div class="no-members">
+                                    <i class="fas fa-users fa-3x mb-3"></i>
+                                    <h4>No staff members found</h4>
+                                    <p>There are currently no staff members matching your filters.</p>
+                                </div>
+                            @endforelse
+                        </div>
+
+                        <!-- Pagination -->
+                        @if ($staffMembers)
+                            <div class="mt-4">
+                                {{ $staffMembers->appends(request()->query())->links('pagination::bootstrap-5') }}
+                            </div>
+                        @endif
                     </div>
                 </div>
             </div>

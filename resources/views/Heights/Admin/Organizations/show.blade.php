@@ -109,8 +109,6 @@
 
         /* Gauge Meter Styles */
         #chartdiv {
-            width: 100%;
-            height: 200px;
         }
         .amcharts-export-menu {
             display: none !important;
@@ -352,129 +350,152 @@
                     <div class="profile-card p-4 mb-4 shadow">
                         <h4 class="section-title">Current Plan</h4>
 
-                        <div class="row">
-                            <div class="col-md-6 mb-4">
-                                <div class="plan-card p-4 h-100">
-                                    <div class="d-flex justify-content-between align-items-start mb-3">
-                                        <div class="d-flex justify-content-between align-items-center">
-                                            <h5 class="mb-1">{{ $subscription['name'] ?? 'N/A' }}</h5>
-                                            <span class="badge bg-success bg-opacity-10 text-success py-1 px-2 mx-3 rounded-pill">
-                                                <i class="fas fa-check-circle me-1"></i> {{  $subscription['status'] }}
-                                            </span>
-                                        </div>
-                                        <div class="text-primary fw-bold" style="font-size: 12px;">
-                                            {{ isset($subscription['price'], $subscription['currency'], $subscription['billing_cycle']) && $subscription['billing_cycle'] > 0
-                                                ? number_format($subscription['price'] / $subscription['billing_cycle'], 2) . ' ' . $subscription['currency']
-                                                : '0.00 PKR' }}
-                                            <small>/ Month</small>
+                        @if(!empty($subscription) && isset($subscription['name']))
+                            <div class="row">
+                                {{-- Subscription Plan Details --}}
+                                <div class="col-md-6 mb-4">
+                                    <div class="plan-card p-4 h-100">
+                                        <div class="d-flex justify-content-between align-items-start mb-3">
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <h5 class="mb-1">{{ $subscription['name'] }}</h5>
+                                                <span class="badge bg-success bg-opacity-10 text-success py-1 px-2 mx-3 rounded-pill">
+                            <i class="fas fa-check-circle me-1"></i> {{ $subscription['status'] ?? 'N/A' }}
+                        </span>
+                                            </div>
+                                            <div class="text-primary fw-bold" style="font-size: 12px;">
+                                                {{ isset($subscription['price'], $subscription['currency'], $subscription['billing_cycle']) && $subscription['billing_cycle'] > 0
+                                                    ? number_format($subscription['price'] / $subscription['billing_cycle'], 2) . ' ' . $subscription['currency']
+                                                    : '0.00 PKR' }}
+                                                <small>/ Month</small>
+                                            </div>
                                         </div>
 
+                                        <table class="table table-borderless" style="background-color: var(--sidenavbar-body-color);">
+                                            <thead>
+                                            <tr class="border-bottom">
+                                                <th class="text-center">Icon</th>
+                                                <th class="text-start">Service</th>
+                                                <th class="text-center">Qty</th>
+                                                <th class="text-center">Used</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            @forelse($subscription['services'] ?? [] as $service)
+                                                <tr>
+                                                    <td class="text-center"><i class="{{ $service['icon'] ?? '' }}" style="font-size: 20px;"></i></td>
+                                                    <td class="text-start">{{ $service['title'] ?? '' }}</td>
+                                                    <td class="text-center">{{ $service['quantity'] ?? 0 }}</td>
+                                                    <td class="text-center">{{ $service['used'] ?? 0 }}</td>
+                                                </tr>
+                                            @empty
+                                                <tr>
+                                                    <td colspan="4" class="text-center">No Any Service</td>
+                                                </tr>
+                                            @endforelse
+                                            </tbody>
+                                        </table>
+
+                                        <div class="mt-3 pt-3 border-top">
+                                            <div class="d-flex justify-content-between mb-1">
+                                                <span>Billing Cycle:</span>
+                                                <span class="fw-medium">{{ $subscription['billing_cycle'] ?? 'N/A' }}<small> Months</small></span>
+                                            </div>
+                                            <div class="d-flex justify-content-between mb-1">
+                                                <span>Next Billing:</span>
+                                                <span class="fw-medium">
+                            {{ isset($subscription['ends_at']) ? \Carbon\Carbon::parse($subscription['ends_at'])->format('M d, Y') : 'N/A' }}
+                        </span>
+                                            </div>
+                                            <div class="d-flex justify-content-between fw-bold">
+                                                <span>Total:</span>
+                                                <span>
+                            {{ isset($subscription['price'], $subscription['currency'])
+                                ? $subscription['price'] . ' ' . $subscription['currency']
+                                : 'N/A' }}
+                        </span>
+                                            </div>
+                                        </div>
                                     </div>
+                                </div>
 
-                                    <table class="table table-borderless" style="background-color: var(--sidenavbar-body-color);">
-                                        <thead>
-                                        <tr class="border-bottom">
-                                            <th class="text-center">Icon</th>
-                                            <th class="text-start">Service</th>
-                                            <th class="text-center">Qty</th>
-                                            <th class="text-center">Used</th>
-                                        </tr>
-                                        </thead>
-                                        <tbody>
-                                        @forelse($subscription['services'] ?? [] as $service)
-                                            <tr>
-                                                <td class="text-center"><i class="{{ $service['icon'] ?? '' }}" style="font-size: 20px;"></i></td>
-                                                <td class="text-start">{{ $service['title'] ?? '' }}</td>
-                                                <td class="text-center">{{ $service['quantity'] ?? 0 }}</td>
-                                                <td class="text-center">{{ $service['used'] ?? 0 }}</td>
-                                            </tr>
-                                        @empty
-                                            <tr>
-                                                <td colspan="4" class="text-center">No Any Service</td>
-                                            </tr>
-                                        @endforelse
+                                {{-- Plan Actions --}}
+                                <div class="col-md-6 mb-4">
+                                    <div class="plan-card featured p-4 h-100">
+                                        <h5 class="fw-semibold">Plan Usage</h5>
 
-                                        </tbody>
-                                    </table>
+                                        <div style="position: relative; width: 370px; height: 200px; margin: auto;">
+                                            <div id="chartdiv" style="width: 85%; height: 100%;"></div>
 
-                                    <div class="mt-3 pt-3 border-top">
-                                        <div class="d-flex justify-content-between mb-1">
-                                            <span>Billing Cycle:</span>
-                                            <span class="fw-medium">{{ $subscription['billing_cycle'] ?? 'N/A' }}<small> Months</small></span>
+                                            <div id="gaugeLabel"
+                                                 style="
+                                                     position: absolute;
+                                                     top: 65%;
+                                                     left: 42%;
+                                                     transform: translate(-50%, -40%); /* adjust vertical offset as needed */
+                                                     font-size: 25px;
+                                                     font-weight: bold;
+                                                     color: var(--sidenavbar-text-color);">
+                                                {{ $usage }}%
+                                            </div>
                                         </div>
-                                        <div class="d-flex justify-content-between mb-1">
-                                            <span>Next Billing:</span>
-                                            <span class="fw-medium">
-                                                {{ isset($subscription['ends_at']) ? \Carbon\Carbon::parse($subscription['ends_at'])->format('M d, Y') : 'N/A' }}
-                                            </span>
-                                        </div>
-                                        <div class="d-flex justify-content-between fw-bold">
-                                            <span>Total:</span>
-                                            <span>  {{ isset($subscription['price'], $subscription['currency'])
-                                                    ? $subscription['price'] . ' ' . $subscription['currency']
-                                                    : 'N/A' }}
-                                            </span>
+
+                                        <div class="mt-auto pt-2">
+                                            <form id="organizationPlanUpgradeForm" action="{{ route('organizations.plan.upgrade.index', $organization->id ) }}" method="GET" class="d-inline">
+                                                @csrf
+                                                <button type="submit" class="btn btn-success w-100 py-2 mb-3 rounded-1">
+                                                    <i class="fas fa-arrow-up me-2"></i> Upgrade Plan
+                                                </button>
+                                            </form>
+
+                                            <form id="planPaymentReceivedForm" action="{{ route('organizations.planPaymentReceived') }}" method="POST" class="d-inline">
+                                                @csrf
+                                                <input type="hidden" name="id" value="{{ $organization->id }}">
+                                                <button type="button" onclick="confirmPlanPaymentReceived()" class="btn btn-primary w-100 py-2 mb-3 rounded-1">
+                                                    <i class="fas fa-money me-2"></i> Marked Payment Received
+                                                </button>
+                                            </form>
+
+                                            @if($subscription['status'] === 'Active')
+                                                <form id="cancelSubscriptionForm" action="{{ route('organizations.planSubscription.cancel') }}" method="POST" class="d-inline">
+                                                    @csrf
+                                                    @method('PUT')
+                                                    <input type="hidden" name="id" value="{{ $organization->id }}">
+                                                    <button type="button" onclick="confirmCancellation()" class="btn btn-danger w-100 py-2 rounded-1">
+                                                        <i class="fas fa-ban me-2"></i> Cancel Subscription
+                                                    </button>
+                                                </form>
+                                            @elseif($subscription['status'] === 'Cancelled')
+                                                <form id="resumeSubscriptionForm" action="{{ route('organizations.planSubscription.resume') }}" method="POST" class="d-inline">
+                                                    @csrf
+                                                    @method('PUT')
+                                                    <input type="hidden" name="id" value="{{ $organization->id }}">
+                                                    <button type="button" onclick="confirmResume()" class="btn btn-outline-success w-100 py-2 rounded-1">
+                                                        <i class="fas fa-play me-2"></i> Resume Subscription
+                                                    </button>
+                                                </form>
+                                            @endif
                                         </div>
                                     </div>
                                 </div>
                             </div>
-
-                            <div class="col-md-6 mb-4">
-                                <div class="plan-card featured p-4 h-100 d-flex flex-column justify-content-between">
-                                    <h5 class=" fw-semibold">Plan Used</h5>
-
-                                    <div id="chartdiv" class="flex-grow-1 my-1"></div>
-
-                                    <div class="mt-auto pt-2">
-                                        <form id="organizationPlanUpgradeForm" action="{{ route('organizations.plan.upgrade.index', $organization->id ) }}" method="GET" class="d-inline">
-                                            @csrf
-                                            <button type="button" onclick="confirmOrganizationPlanUpgrade()" class="btn btn-success w-100 py-2 mb-3 rounded-1">
-                                                <i class="fas fa-arrow-up me-2"></i> Upgrade Plan
-                                            </button>
-                                        </form>
-                                        <form id="planPaymentReceivedForm" action="{{ route('organizations.planPaymentReceived') }}" method="POST" class="d-inline">
-                                            @csrf
-                                            <input type="hidden" name="id" value="{{ $organization->id }}">
-                                            <button type="button" onclick="confirmPlanPaymentReceived()" class="btn btn-primary w-100 py-2 mb-3 rounded-1">
-                                                <i class="fas fa-money me-2"></i> Marked Payment Received
-                                            </button>
-                                        </form>
-                                        @if($subscription['status'] === 'Active')
-                                            <form id="cancelSubscriptionForm" action="{{ route('organizations.planSubscription.cancel') }}" method="POST" class="d-inline">
-                                                @csrf
-                                                @method('PUT')
-                                                <input type="hidden" name="id" value="{{ $organization->id }}">
-                                                <button type="button" onclick="confirmCancellation()" class="btn btn-danger w-100 py-2 rounded-1">
-                                                    <i class="fas fa-ban me-2"></i> Cancel Subscription
-                                                </button>
-                                            </form>
-                                        @elseif($subscription['status'] === 'Cancelled')
-                                            <form id="resumeSubscriptionForm" action="{{ route('organizations.planSubscription.resume') }}" method="POST" class="d-inline">
-                                                @csrf
-                                                @method('PUT')
-                                                <input type="hidden" name="id" value="{{ $organization->id }}">
-                                                <button type="button" onclick="confirmResume()" class="btn btn-outline-success w-100 py-2 rounded-1">
-                                                    <i class="fas fa-play me-2"></i> Resume Subscription
-                                                </button>
-                                            </form>
-                                        @endif
-                                    </div>
-                                </div>
+                        @else
+                            <div class="alert alert-warning text-center fw-bold">
+                                No plan subscribed yet.
                             </div>
+                        @endif
 
-                        </div>
                     </div>
 
                     <!-- Billing History -->
                     <div class="profile-card p-4 shadow">
                         <div class="d-flex justify-content-between align-items-center mb-4">
                             <h4 class="section-title mb-0">Transactions</h4>
-                            <a href="{{ route('finance.index') }}" class="btn btn-sm btn-primary text-white text-decoration-none" style="color: #fff !important;">
+                            <a href="{{ route('finance.index',['organization_id'=>$organization->id]) }}" class="btn btn-sm btn-primary text-white text-decoration-none" style="color: #fff !important;">
                                 All Transactions
                             </a>
                         </div>
 
-                        <div class="row g-1" id="transactions-container">
+                        <div class="row g-3" id="transactions-container">
                             <!-- Loading state will appear here -->
                         </div>
                     </div>
@@ -526,7 +547,7 @@
 
 
                         const cardHtml = `
-                        <div class="col-md-6 col-xl-4">
+                        <div class="col-md-6 col-xl-6">
                             <a href="${'{{ route('finance.show', ':id') }}'.replace(':id', transaction.id)}" class="text-white text-decoration-none" style="color: #fff !important;">
                                 <div class="card border-0 shadow hover-shadow-lg transition-all h-100" style="background-color: var(--body-background-color) !important;">
                                     <div class="card-body p-4 d-flex flex-column">
@@ -632,7 +653,7 @@
         }
 
         // Call on page load
-        $(document).ready(function() {
+        document.addEventListener('DOMContentLoaded', function() {
             loadTransactions();
         });
     </script>
@@ -666,157 +687,75 @@
     <script src="https://cdn.amcharts.com/lib/4/themes/animated.js"></script>
 
     <script>
-        /**
-         * Gauge Chart Script
-         * Creates and manages an animated gauge chart using amCharts
-         */
-            // Chart references
-        let chart;
-        let hand;
-        let label;
-
-        /**
-         * Gets CSS variable value
-         */
-        function getCssVar(name) {
-            return getComputedStyle(document.documentElement)
-                .getPropertyValue(name)
-                .trim();
-        }
-
-        /**
-         * Updates gauge value with animation
-         */
-        function updateGaugeValue(finalValue) {
-            finalValue = Math.max(0, Math.min(100, finalValue));
-            var to100 = new am4core.Animation(hand, {
-                property: "value",
-                to: 100
-            }, 1000, am4core.ease.cubicOut);
-
-            to100.events.on("animationended", function() {
-                new am4core.Animation(hand, {
-                    property: "value",
-                    to: finalValue
-                }, 1000, am4core.ease.cubicOut).start();
-            });
-            to100.start();
-        }
-
-        // Initialize chart when amCharts is ready
-        am4core.ready(function() {
+        am4core.ready(function () {
             am4core.useTheme(am4themes_animated);
 
-            // Create chart instance
-            chart = am4core.create("chartdiv", am4charts.GaugeChart);
-            chart.innerRadius = am4core.percent(82);
+            var chart = am4core.create("chartdiv", am4charts.GaugeChart);
+            chart.innerRadius = -20;
+            chart.startAngle = -180;
+            chart.endAngle = 0;
             chart.logo.disabled = true;
 
-            // Configure main axis
+            // Remove any default container strokes
+            chart.radarContainer.strokeWidth = 0;
+
+            // Axis
             var axis = chart.xAxes.push(new am4charts.ValueAxis());
             axis.min = 0;
             axis.max = 100;
             axis.strictMinMax = true;
-            axis.fontSize = 12;
-            axis.renderer.radius = am4core.percent(82);
-            axis.renderer.inside = true;
-            axis.renderer.line.strokeOpacity = 1;
-            axis.renderer.ticks.template.disabled = false;
-            axis.renderer.ticks.template.strokeOpacity = 1;
-            axis.renderer.ticks.template.length = 9;
             axis.renderer.grid.template.disabled = true;
-            axis.renderer.labels.template.radius = 30;
-            axis.renderer.labels.template.fill = am4core.color(getCssVar('--gauge-axis-label-color'));
-            axis.renderer.ticks.template.stroke = am4core.color(getCssVar('--gauge-axis-tick-color'));
+            axis.renderer.labels.template.disabled = true;
+            axis.renderer.ticks.template.disabled = true;
+            axis.renderer.line.disabled = true;  // This removes the axis line completely
+            axis.renderer.minGridDistance = 0;   // Prevents any residual rendering
 
-            // Configure color ranges axis
-            var colorSet = new am4core.ColorSet();
-            colorSet.list = [
-                am4core.color(getCssVar('--gauge-range-0')),
-                am4core.color("#0000FF"), // Default fallback
-                am4core.color(getCssVar('--gauge-range-1'))
-            ];
+            // Background range
+            var rangeBg = axis.axisRanges.create();
+            rangeBg.value = 0;
+            rangeBg.endValue = 100;
+            rangeBg.axisFill.fill = am4core.color("#E5E7EB");
+            rangeBg.axisFill.fillOpacity = 1;
+            rangeBg.axisFill.innerRadius = -20;
+            rangeBg.axisFill.cornerRadius = 25;
+            rangeBg.axisFill.strokeWidth = 0;  // Explicitly remove stroke
 
-            var axis2 = chart.xAxes.push(new am4charts.ValueAxis());
-            axis2.min = 0;
-            axis2.max = 100;
-            axis2.strictMinMax = true;
-            axis2.renderer.labels.template.disabled = true;
-            axis2.renderer.ticks.template.disabled = true;
-            axis2.renderer.grid.template.disabled = true;
+            // Usage range
+            const usage = @json($usage);
+            var rangeFill = axis.axisRanges.create();
+            rangeFill.value = 0;
+            rangeFill.endValue = 0; // Start from 0
 
-            // Create ranges
-            var range0 = axis2.axisRanges.create();
-            range0.value = 0;
-            range0.endValue = 0;
-            range0.axisFill.fillOpacity = 1;
-            range0.axisFill.fill = colorSet.getIndex(0);
+            var gradient = new am4core.LinearGradient();
+            gradient.addColor(am4core.color("#3B82F6"));
+            gradient.addColor(am4core.color("#60A5FA"));
+            rangeFill.axisFill.fill = gradient;
+            rangeFill.axisFill.fillOpacity = 1;
+            rangeFill.axisFill.innerRadius = -20;
+            rangeFill.axisFill.cornerRadius = 25;
+            rangeFill.axisFill.strokeWidth = 0;  // Explicitly remove stroke
 
-            var range1 = axis2.axisRanges.create();
-            range1.value = 0;
-            range1.endValue = 100;
-            range1.axisFill.fillOpacity = 1;
-            range1.axisFill.fill = colorSet.getIndex(2);
+            // First animation: 0 to 100%
+            var fillAnimation1 = rangeFill.animate(
+                { property: "endValue", to: 100 },
+                1000,
+                am4core.ease.cubicOut
+            );
 
-            // Create center label
-            label = chart.radarContainer.createChild(am4core.Label);
-            label.isMeasured = false;
-            label.fontSize = 18;
-            label.x = am4core.percent(50);
-            label.y = am4core.percent(100);
-            label.horizontalCenter = "middle";
-            label.verticalCenter = "bottom";
-            label.text = "0%";
-            label.fill = am4core.color(getCssVar('--gauge-label-color'));
+            // When first animation completes, animate back to usage
+            fillAnimation1.events.on("animationended", function () {
+                // Animate both the range and bullet together
+                var fillAnimation2 = rangeFill.animate(
+                    { property: "endValue", to: usage },
+                    800,
+                    am4core.ease.cubicOut
+                );
 
-            // Create gauge hand/pointer
-            hand = chart.hands.push(new am4charts.ClockHand());
-            hand.axis = axis2;
-            hand.innerRadius = am4core.percent(30);
-            hand.startWidth = 10;
-            hand.pin.disabled = true;
-            hand.value = 0;
-            hand.fill = am4core.color(getCssVar('--gauge-hand-fill'));
-            hand.stroke = am4core.color(getCssVar('--gauge-hand-stroke'));
-
-            // Update ranges and label when hand moves
-            hand.events.on("propertychanged", function(ev) {
-                range0.endValue = ev.target.value;
-                range1.value = ev.target.value;
-                label.text = axis2.positionToValue(hand.currentPosition).toFixed(1) + "%";
-                axis2.invalidate();
-            });
-
-            // Initial animation
-            const gaugeValue = @json($usage);
-            setTimeout(() => updateGaugeValue(gaugeValue), 500);
-
-            // Expose to global scope
-            window.updateGaugeValue = updateGaugeValue;
-        });
-    </script>
-
-    <script>
-        /**
-         * Gauge Demo Script
-         * Demonstrates how to update gauge with backend data
-         * (This is just a demo - in production you would use real API calls)
-         */
-        document.addEventListener('DOMContentLoaded', function() {
-            // Example API call (commented out for reference)
-            /*
-            fetch('/api/get-gauge-value')
-                .then(response => response.json())
-                .then(data => {
-                    updateGaugeValue(data.value);
+                // Synchronize animations
+                fillAnimation2.events.on("animationprogress", function(ev) {
+                    rangeFill.endValue = 100 - ev.progress * (100 - usage);
                 });
-            */
-
-            // Demo: Random updates every 2 seconds
-            // setInterval(function() {
-            //     var value = Math.round(Math.random() * 100);
-            //     updateGaugeValue(value);
-            // }, 2000);
+            });
         });
     </script>
 
@@ -996,7 +935,7 @@
         function confirmCancellation() {
             Swal.fire({
                 title: 'Are you sure?',
-                text: "This will cancel your subscription at the end of the current billing period!",
+                text: "This will cancel subscription at the end of the current billing period!",
                 icon: 'warning',
                 showCancelButton: true,
                 background: 'var(--body-background-color)',
@@ -1014,7 +953,7 @@
         function confirmPlanPaymentReceived() {
             Swal.fire({
                 title: 'Are you sure?',
-                text: "This will marked the plan payment received!",
+                text: "This will marked the plan payment received and extend the deadline!",
                 icon: 'warning',
                 showCancelButton: true,
                 background: 'var(--body-background-color)',
@@ -1032,7 +971,7 @@
         function confirmResume() {
             Swal.fire({
                 title: 'Are you sure?',
-                text: "This will resume your subscription immediately!",
+                text: "This will resume subscription immediately!",
                 icon: 'question',
                 background: 'var(--body-background-color)',
                 color: 'var(--sidenavbar-text-color)',
@@ -1043,24 +982,6 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                     document.getElementById('resumeSubscriptionForm').submit();
-                }
-            });
-        }
-
-        function confirmOrganizationPlanUpgrade(){
-            Swal.fire({
-                title: 'Are you sure?',
-                text: "This will upgrade organization plan!",
-                icon: 'warning',
-                showCancelButton: true,
-                background: 'var(--body-background-color)',
-                color: 'var(--sidenavbar-text-color)',
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#3085d6',
-                confirmButtonText: 'Yes, received!'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    document.getElementById('organizationPlanUpgradeForm').submit();
                 }
             });
         }

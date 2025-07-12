@@ -66,7 +66,7 @@
             <!-- Assign Units -->
             <li class="mb-1 hidden" id="OwnerAssignUnits">
                 <div id="link-a">
-                    <a href="{{ route('owner.assignunits.index') }}" class="link-dark collapsed {{ in_array('Assign-Units', $openSections) ? 'Link-background-color' : '' }} px-1">
+                    <a href="{{ route('owner.assignunits.index') }}" class="link-dark collapsed {{ in_array('AssignUnit', $openSections) ? 'Link-background-color' : '' }} px-1">
                     <i class="bx bxs-user-check icons"></i> Assign Units </a>
                 </div>
             </li>
@@ -83,7 +83,7 @@
             <li class="mb-1 hidden" id="OwnerRentals">
                 <div id="link-a">
                     <a href="{{ route('owner.property.users.index') }}" class="link-dark collapsed {{ in_array('PropertyUsers', $openSections) ? 'Link-background-color' : '' }} px-1">
-                        <i class="bx bxs-business icons"></i> PropertyUsers </a>
+                        <i class="fas fa-users icons fs-6"></i> Property Users </a>
                 </div>
             </li>
 

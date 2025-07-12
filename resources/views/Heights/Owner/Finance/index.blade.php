@@ -103,20 +103,7 @@
             color: #ef4444 !important;
         }
 
-        .filter-section {
-            background:  var(--sidenavbar-body-color);
-            border-radius: 14px;
-            padding: 1.5rem;
-            margin-bottom: 2rem;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-        }
 
-        .filter-section label {
-            font-weight: 500;
-            color: var(--sidenavbar-text-color) !important;
-            margin-bottom: 0.5rem;
-            font-size: 0.875rem;
-        }
 
         .custom-pagination-wrapper {
             justify-content: center;
@@ -262,6 +249,77 @@
                 margin-top: 0;
             }
         }
+
+        .filter-section {
+            background: var(--sidenavbar-body-color);
+            border-radius: 14px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .filter-section label {
+            font-weight: 500;
+            color: var(--sidenavbar-text-color) !important;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .filter-section .filter-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+            align-items: end;
+        }
+
+        .filter-section .filter-group {
+            display: grid;
+        }
+
+        .filter-section .button-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            align-self: end;
+        }
+
+        .filter-section .custom-date-range {
+            display: none;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .filter-section .filter-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .filter-section .button-group {
+                grid-column: span 2;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .filter-section .filter-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .filter-section .button-group {
+                grid-column: span 1;
+            }
+        }
+
+        .filter-section .form-select, .form-control {
+            width: 100%;
+        }
+
+        .filter-section .btn {
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
     </style>
 @endpush
 
@@ -364,18 +422,32 @@
 
                                 <!-- Filter Section -->
                                 <form method="GET" action="{{ route('owner.finance.index') }}">
-                                    <div class="filter-section mb-3">
-                                        <h5 class="section-title mb-4">Transaction Filters</h5>
-                                        <div class="row  g-3 align-items-end">
-                                            <div class="col-md-3">
+                                    <div class="filter-section">
+                                        <h5 class="section-title">Transaction Filters</h5>
+                                        <div class="filter-grid">
+                                            <!-- Date Range Filter -->
+                                            <div class="filter-group">
                                                 <label class="form-label">Date Range</label>
-                                                <select name="date_range" class="form-select">
+                                                <select name="date_range" id="date_range" class="form-select" onchange="toggleCustomDateRange()">
                                                     <option value="7" {{ request('date_range') == 7 ? 'selected' : '' }}>Last 7 days</option>
                                                     <option value="30" {{ request('date_range', 30) == 30 ? 'selected' : '' }}>Last 30 days</option>
                                                     <option value="90" {{ request('date_range') == 90 ? 'selected' : '' }}>Last 3 months</option>
+                                                    <option value="custom" {{ request('date_range') == 'custom' ? 'selected' : '' }}>Custom Range</option>
                                                 </select>
                                             </div>
-                                            <div class="col-md-3">
+
+                                            <!-- Custom Date Range Inputs (hidden by default) -->
+                                            <div class="filter-group custom-date-range" id="custom_date_range" style="{{ request('date_range') == 'custom' ? 'display: grid;' : 'display: none;' }}">
+                                                <label class="form-label">Start Date</label>
+                                                <input type="date" name="start_date" class="form-control" value="{{ request('start_date') }}">
+                                            </div>
+                                            <div class="filter-group custom-date-range" id="custom_date_range_end" style="{{ request('date_range') == 'custom' ? 'display: grid;' : 'display: none;' }}">
+                                                <label class="form-label">End Date</label>
+                                                <input type="date" name="end_date" class="form-control" value="{{ request('end_date') }}">
+                                            </div>
+
+                                            <!-- Transaction Type -->
+                                            <div class="filter-group">
                                                 <label class="form-label">Transaction Type</label>
                                                 <select name="type" class="form-select">
                                                     <option value="">All Transactions</option>
@@ -383,18 +455,11 @@
                                                     <option value="Credit" {{ request('type') == 'Credit' ? 'selected' : '' }}>Credit</option>
                                                 </select>
                                             </div>
-                                            <div class="col-md-3">
-                                                <label class="form-label">Status</label>
-                                                <select name="status" class="form-select">
-                                                    <option value="">All Statuses</option>
-                                                    <option value="Completed" {{ request('status') == 'Completed' ? 'selected' : '' }}>Completed</option>
-                                                    <option value="Pending" {{ request('status') == 'Pending' ? 'selected' : '' }}>Pending</option>
-                                                    <option value="Failed" {{ request('status') == 'Failed' ? 'selected' : '' }}>Failed</option>
-                                                </select>
-                                            </div>
-                                            <div class="col-md-3">
-                                                <label for="buildingSelect" class="form-label">Buildings</label>
-                                                <select id="buildingSelect" name="building_id" class="form-select" {{ $buildings->isEmpty() ? 'disabled' : '' }}>
+
+                                            <!-- Building -->
+                                            <div class="filter-group">
+                                                <label class="form-label">Building</label>
+                                                <select id="buildingSelect" name="building_id" class="form-select filter-select" {{ $buildings->isEmpty() ? 'disabled' : '' }}>
                                                     @if($buildings->isEmpty())
                                                         <option selected disabled>No buildings available</option>
                                                     @else
@@ -407,16 +472,27 @@
                                                     @endif
                                                 </select>
                                             </div>
+                                            <!-- Plan -->
+                                            <div class="filter-group">
+                                                <label for="unit_id">Unit</label>
+                                                <select name="unit_id" id="unit_id" class="form-select filter-select">
+                                                    <option value="">All Units</option>
+                                                    @foreach($units ?? [] as $unit)
+                                                        <option value="{{ $unit->id }}" {{ request('unit_id') == $unit->id ? 'selected' : '' }}>
+                                                            {{ $unit->unit_name }}
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
 
-                                            <div class="col-md-6 d-flex align-items-end">
-                                                <div class="d-flex w-100 justify-content-between gap-2">
-                                                    <a href="{{ route('owner.finance.index') }}" class="btn btn-secondary flex-grow-1 d-flex align-items-center justify-content-center">
-                                                        <i class="fas fa-undo me-2"></i> Reset
-                                                    </a>
-                                                    <button class="btn btn-primary flex-grow-1 d-flex align-items-center justify-content-center">
-                                                        <i class="fas fa-filter me-2"></i> Apply Filters
-                                                    </button>
-                                                </div>
+                                            <!-- Buttons -->
+                                            <div class="filter-group button-group">
+                                                <a href="{{ route('finance.index') }}" class="btn btn-secondary">
+                                                    <i class="fas fa-undo me-2"></i> Reset
+                                                </a>
+                                                <button class="btn btn-primary">
+                                                    <i class="fas fa-filter me-2"></i> Apply
+                                                </button>
                                             </div>
                                         </div>
                                     </div>
@@ -466,6 +542,59 @@
 
 @push('scripts')
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const dateRange = document.getElementById('date_range');
+            const customStart = document.getElementById('custom_date_range');
+            const customEnd = document.getElementById('custom_date_range_end');
+            const startDateInput = document.querySelector('input[name="start_date"]');
+            const endDateInput = document.querySelector('input[name="end_date"]');
+            const form = document.querySelector('form');
+
+            // Show/hide custom date fields based on selection
+            function toggleCustomDateRange() {
+                const isCustom = dateRange.value === 'custom';
+
+                customStart.style.display = isCustom ? 'grid' : 'none';
+                customEnd.style.display = isCustom ? 'grid' : 'none';
+                startDateInput.disabled = !isCustom;
+                endDateInput.disabled = !isCustom;
+
+                if (isCustom) {
+                    startDateInput.addEventListener('change', validateDates);
+                    endDateInput.addEventListener('change', validateDates);
+                } else {
+                    startDateInput.removeEventListener('change', validateDates);
+                    endDateInput.removeEventListener('change', validateDates);
+                    startDateInput.value = '';
+                    endDateInput.value = '';
+                }
+            }
+
+            // Validate that start date is not after end date
+            function validateDates() {
+                const start = new Date(startDateInput.value);
+                const end = new Date(endDateInput.value);
+
+                if (startDateInput.value && endDateInput.value && start > end) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Invalid Date Range',
+                        text: 'Start date cannot be after end date',
+                        confirmButtonColor: '#3085d6',
+                        background: 'var(--body-background-color)',
+                        color: 'var(--sidenavbar-text-color)',
+                    });
+                    endDateInput.value = '';
+                }
+            }
+
+            // Initialize on page load
+            toggleCustomDateRange();
+            dateRange.addEventListener('change', toggleCustomDateRange);
+        });
+    </script>
     <script>
         const ctx = document.getElementById('financialChart').getContext('2d');
         const chartContainer = document.getElementById('financialChart').parentElement;

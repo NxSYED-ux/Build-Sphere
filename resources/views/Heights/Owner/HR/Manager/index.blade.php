@@ -361,107 +361,102 @@
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-md-12">
-                        <div class="box">
-                            <div class="container mt-2">
-                                <div class="d-flex justify-content-between align-items-center mb-4">
-                                    <h3 class="mb-1">Managers</h3>
-                                    <a href="{{ route('owner.managers.create') }}" class="btn btn-primary d-flex align-items-center justify-content-center" title="Add Manager">
-                                        <i class="fas fa-user-plus me-2"></i> Add Manager
-                                    </a>
-                                </div>
-
-                                <!-- Filter Form -->
-                                <form method="GET" id="filterForm" class="filter-container">
-                                    <div class="filter-group">
-                                        <label for="search">Search</label>
-                                        <input type="text" name="search" id="search" class="search-input"
-                                               placeholder="Search by name or email"
-                                               value="{{ request('search') }}">
-                                    </div>
-                                </form>
-
-                                <!-- Staff Cards -->
-                                <div class="team-members">
-                                    @forelse($staffMembers as $staffMember)
-                                        <div class="member-card">
-                                            <div class="member-header">
-                                                <img src="{{ $staffMember->user->picture ? asset($staffMember->user->picture) : asset('img/placeholder-profile.png') }}"
-                                                     alt="{{ $staffMember->user->name }}"
-                                                     class="member-avatar">
-                                                <h3 class="member-name">{{ $staffMember->user->name }}</h3>
-                                                <div class="member-position">Manager</div>
-                                                <div class="dropdown member-actions-dropdown">
-                                                    <button class="btn btn-sm dropdown-toggle-btn rounded-circle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                                        <i class="fas fa-ellipsis-v fa-lg"></i>
-                                                    </button>
-                                                    <ul class="dropdown-menu dropdown-menu-end">
-                                                        <li>
-                                                            <a class="dropdown-item promote-item demote-btn"  href="#" data-staff-id="{{ $staffMember->id }}">
-                                                                <i class="fas fa-user-shield me-2"></i> Demote to Staff
-                                                            </a>
-                                                        </li>
-                                                        <li><hr class="dropdown-divider"></li>
-                                                        <li>
-                                                            <a class="dropdown-item delete-item delete-member-btn text-danger" href="#" data-member-id="{{ $staffMember->id }}">
-                                                                <i class="fas fa-trash-alt me-2"></i> Delete Manager
-                                                            </a>
-                                                        </li>
-                                                    </ul>
-                                                </div>
-                                            </div>
-                                            <div class="member-details">
-                                                <div class="detail-item">
-                                                    <div class="detail-icon">
-                                                        <i class="fas fa-envelope"></i>
-                                                    </div>
-                                                    <div class="detail-text">
-                                                        <a class="text-decoration-none" href="mailto:{{ $staffMember->user->email }}">{{ $staffMember->user->email }}</a>
-                                                    </div>
-                                                </div>
-                                                <div class="detail-item">
-                                                    <div class="detail-icon">
-                                                        <i class="fas fa-phone"></i>
-                                                    </div>
-                                                    <div class="detail-text">
-                                                        {{ $staffMember->user->phone_no ?? 'Not provided' }}
-                                                    </div>
-                                                </div>
-                                                <div class="detail-item">
-                                                    <div class="detail-icon">
-                                                        <i class="fas fa-calendar-alt"></i>
-                                                    </div>
-                                                    <div class="detail-text">
-                                                        Joined {{ $staffMember->created_at->format('M d, Y') }}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="member-actions">
-                                                <a href="{{ route('owner.managers.show', $staffMember->id) }}" class="btn btn-sm btn-view btn-member gap-1" title="View Details">
-                                                    <i class="fas fa-eye"></i> View
-                                                </a>
-                                                <a href="{{ route('owner.managers.edit', $staffMember->id) }}" class="btn btn-sm btn-edit btn-member gap-1" title="Edit Manager">
-                                                    <i class="fas fa-edit"></i> Edit
-                                                </a>
-                                            </div>
-                                        </div>
-                                    @empty
-                                        <div class="no-members">
-                                            <i class="fas fa-users fa-3x mb-3"></i>
-                                            <h4>No Managers Found</h4>
-                                            <p>There are currently no managers matching your search criteria. Try different search keyword or add a new manager.</p>
-                                        </div>
-                                    @endforelse
-                                </div>
-
-                                <!-- Pagination -->
-                                @if ($staffMembers)
-                                    <div class="mt-4">
-                                        {{ $staffMembers->appends(request()->query())->links('pagination::bootstrap-5') }}
-                                    </div>
-                                @endif
-
-                            </div>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h4 class="mb-1">Managers</h4>
+                            <a href="{{ route('owner.managers.create') }}" class="btn btn-primary d-flex align-items-center justify-content-center" title="Add Manager">
+                                <i class="fas fa-user-plus me-2"></i> Add Manager
+                            </a>
                         </div>
+
+                        <!-- Filter Form -->
+                        <form method="GET" id="filterForm" class="filter-container">
+                            <div class="filter-group">
+                                <label for="search">Search</label>
+                                <input type="text" name="search" id="search" class="search-input"
+                                       placeholder="Search by name or email"
+                                       value="{{ request('search') }}">
+                            </div>
+                        </form>
+
+                        <!-- Staff Cards -->
+                        <div class="team-members">
+                            @forelse($staffMembers as $staffMember)
+                                <div class="member-card">
+                                    <div class="member-header">
+                                        <img src="{{ $staffMember->user->picture ? asset($staffMember->user->picture) : asset('img/placeholder-profile.png') }}"
+                                             alt="{{ $staffMember->user->name }}"
+                                             class="member-avatar">
+                                        <h3 class="member-name">{{ $staffMember->user->name }}</h3>
+                                        <div class="member-position">Manager</div>
+                                        <div class="dropdown member-actions-dropdown">
+                                            <button class="btn btn-sm dropdown-toggle-btn rounded-circle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                <i class="fas fa-ellipsis-v fa-lg"></i>
+                                            </button>
+                                            <ul class="dropdown-menu dropdown-menu-end">
+                                                <li>
+                                                    <a class="dropdown-item promote-item demote-btn"  href="#" data-staff-id="{{ $staffMember->id }}">
+                                                        <i class="fas fa-user-shield me-2"></i> Demote to Staff
+                                                    </a>
+                                                </li>
+                                                <li><hr class="dropdown-divider"></li>
+                                                <li>
+                                                    <a class="dropdown-item delete-item delete-member-btn text-danger" href="#" data-member-id="{{ $staffMember->id }}">
+                                                        <i class="fas fa-trash-alt me-2"></i> Delete Manager
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <div class="member-details">
+                                        <div class="detail-item">
+                                            <div class="detail-icon">
+                                                <i class="fas fa-envelope"></i>
+                                            </div>
+                                            <div class="detail-text">
+                                                <a class="text-decoration-none" href="mailto:{{ $staffMember->user->email }}">{{ $staffMember->user->email }}</a>
+                                            </div>
+                                        </div>
+                                        <div class="detail-item">
+                                            <div class="detail-icon">
+                                                <i class="fas fa-phone"></i>
+                                            </div>
+                                            <div class="detail-text">
+                                                {{ $staffMember->user->phone_no ?? 'Not provided' }}
+                                            </div>
+                                        </div>
+                                        <div class="detail-item">
+                                            <div class="detail-icon">
+                                                <i class="fas fa-calendar-alt"></i>
+                                            </div>
+                                            <div class="detail-text">
+                                                Joined {{ $staffMember->created_at->format('M d, Y') }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="member-actions">
+                                        <a href="{{ route('owner.managers.show', $staffMember->id) }}" class="btn btn-sm btn-view btn-member gap-1" title="View Details">
+                                            <i class="fas fa-eye"></i> View
+                                        </a>
+                                        <a href="{{ route('owner.managers.edit', $staffMember->id) }}" class="btn btn-sm btn-edit btn-member gap-1" title="Edit Manager">
+                                            <i class="fas fa-edit"></i> Edit
+                                        </a>
+                                    </div>
+                                </div>
+                            @empty
+                                <div class="no-members">
+                                    <i class="fas fa-users fa-3x mb-3"></i>
+                                    <h4>No Managers Found</h4>
+                                    <p>There are currently no managers matching your search criteria. Try different search keyword or add a new manager.</p>
+                                </div>
+                            @endforelse
+                        </div>
+
+                        <!-- Pagination -->
+                        @if ($staffMembers)
+                            <div class="mt-4">
+                                {{ $staffMembers->appends(request()->query())->links('pagination::bootstrap-5') }}
+                            </div>
+                        @endif
                     </div>
                 </div>
             </div>
@@ -473,7 +468,7 @@
 @push('scripts')
     <script>
         function resetFilters() {
-            window.location.href = '{{ route("owner.staff.index") }}';
+            window.location.href = '{{ route("owner.managers.index") }}';
         }
 
         function deleteStaffMember(memberId) {

@@ -222,9 +222,6 @@
         }
 
         .member-card:hover .member-avatar{
-            transform: scale(1.05);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-            border-color: #e8c7c8;
         }
 
         .member-name {
@@ -471,8 +468,8 @@
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-md-12">
-                        <div class="d-flex justify-content-between align-items-center mb-2">
-                            <h3 class="mb-1">Property Users</h3>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h4 class="mb-1">Property Users</h4>
                             <a href="{{ route('owner.assignunits.index') }}" class="btn btn-primary">
                                 <i class="bx bxs-user-check me-1"></i>
                                 Assign Unit
@@ -540,7 +537,7 @@
                                 <div class="member-card">
                                     <div class="member-header">
                                         <img src="{{ $user->picture ? asset($user->picture) : asset('img/placeholder-profile.png') }}"
-                                             alt="{{ $user->name }}"
+                                             alt="{{ $user->name }}" onerror="this.onerror=null; this.src='{{ asset('img/placeholder-profile.png') }}';"
                                              class="member-avatar">
                                         <h3 class="member-name">{{ $user->name }}</h3>
                                     </div>

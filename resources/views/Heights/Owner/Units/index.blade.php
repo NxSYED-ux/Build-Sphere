@@ -472,7 +472,7 @@
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-md-12">
-                        <div class="d-flex justify-content-between align-items-center mb-2">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
                             <h3 class="mb-1">Units</h3>
                             <a href="{{ route('owner.units.create') }}" class="btn btn-primary d-flex align-items-center Owner-Unit-Add-Button hidden" data-bs-toggle="tooltip" data-bs-placement="top" title="Add Unit">
                                 <x-icon name="add" type="svg" class="me-1" size="18" />
@@ -569,15 +569,17 @@
                                                     <div class="unit-type-badge">
                                                         {{ $unit->unit_type }}
                                                     </div>
-                                                    <div class="unit-sale-rent-badge">
-                                                        {{ $unit->sale_or_rent }}
-                                                    </div>
-                                                    <div class="unit-price-tag">
-                                                        PKR {{ $unit->price ?? 'N/A' }}
-                                                    </div>
-                                                    <div class="unit-availability-tag">
-                                                        {{ $unit->availability_status ?? 'N/A' }}
-                                                    </div>
+                                                    @if (!in_array($unit->unit_type, ['Restaurant', 'Gym', 'Other']))
+                                                        <div class="unit-sale-rent-badge">
+                                                            For {{ $unit->sale_or_rent }}
+                                                        </div>
+                                                        <div class="unit-price-tag">
+                                                            PKR {{ $unit->price ?? 'N/A' }}
+                                                        </div>
+                                                        <div class="unit-availability-tag">
+                                                            {{ $unit->availability_status ?? 'N/A' }}
+                                                        </div>
+                                                    @endif
                                                 </div>
                                                 <div class="card-body">
                                                     <div class="d-flex justify-content-between align-items-start">

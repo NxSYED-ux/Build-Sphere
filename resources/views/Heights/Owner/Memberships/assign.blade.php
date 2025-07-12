@@ -434,10 +434,10 @@
 
     <div id="main">
         <div class="container my-3 px-3">
-            <div class="d-flex justify-content-between align-items-center mb-2">
+            <div class="d-flex justify-content-between align-items-center mb-3">
                 <h4 >Assign Membership</h4>
                 <a href="{{ route('owner.memberships.index') }}" class="btn btn-secondary">
-                    <i class="fas fa-arrow-left me-2"></i> Back
+                    <i class="fas fa-arrow-left me-2"></i> Go Back
                 </a>
             </div>
 
@@ -614,12 +614,9 @@
                                     <div class="price-label">Price</div>
                                     <div class="price-value">
                                         <span class="price-display">{{ $membership->currency }} {{ number_format($membership->price, 2) }}</span>
-                                        @if($membership->original_price && $membership->original_price > $membership->price)
-                                            <span class="original-price">{{ $membership->currency }} {{ number_format($membership->original_price, 2) }}</span>
                                             <span class="discount-badge">
-                                                {{ number_format(100 - ($membership->price / $membership->original_price * 100), 0) }}% OFF
+                                                Flat {{ $membership->offered_discount ?? 0 }}% OFF
                                             </span>
-                                        @endif
                                     </div>
                                 </div>
                             </div>

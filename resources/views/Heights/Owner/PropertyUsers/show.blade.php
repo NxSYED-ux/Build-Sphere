@@ -924,7 +924,7 @@
                                                         @endif
                                                     </div>
                                                     <div class="unit-price-tag">
-                                                        PKR {{ $unit->price ?? 'N/A' }}
+                                                        PKR {{ $userUnit->subscription->price_at_subscription ?? 'N/A' }}
                                                     </div>
                                                     <div class="unit-availability-tag">
                                                         {{ $unit->availability_status ?? 'N/A' }}
@@ -943,19 +943,19 @@
                                                     </div>
                                                     <p class="card-text"><i class='bx bx-buildings me-1'></i> {{ $unit->building->name ?? 'N/A' }}</p>
                                                     <p class="card-text"><i class='bx bxs-layer me-1'></i> {{ $unit->level->level_name ?? 'N/A' }}</p>
-                                                    <p class="card-text"><i class='bx bx-time me-1'></i> Billing Cycle: {{ $userUnit->subscription->billing_cycle ?? 'N/A' }} Month</p>
+                                                    <p class="card-text"><i class='bx bx-time me-1'></i> Billing Cycle: {{ $userUnit->billing_cycle ?? 'N/A' }} Month</p>
                                                     <p class="card-text"><i class='bx bx-calendar me-1'></i> Start Date: {{ $userUnit->subscription->created_at ? \Carbon\Carbon::parse($userUnit->subscription->created_at)->format('M d, Y') : 'N/A' }}</p>
                                                     <p class="card-text"><i class='bx bx-calendar me-1'></i> Next Billing: {{ $userUnit->subscription->ends_at ? \Carbon\Carbon::parse($userUnit->subscription->ends_at)->format('M d, Y') : 'N/A' }}</p>
-                                                    <p class="card-text"><i class='bx bx-money me-1'></i> Next Billing Amount: {{ $unit->price ?? 'N/A' }}</p>
+                                                    <p class="card-text"><i class='bx bx-money me-1'></i> Next Billing Amount: {{ $userUnit->price ?? 'N/A' }}</p>
 
                                                     <div class="action-buttons">
                                                         <a href="{{ route('owner.units.show', $unit->id) }}" class="action-btn btn-add btn-view view-unit gap-1" title="View">
                                                             <i class='bx bx-show'></i> View
                                                         </a>
-                                                        <form action="#" method="POST" class="d-inline">
+                                                        <form action="#" method="POST" class="d-inline delete-form">
                                                             @csrf
                                                             @method('DELETE')
-                                                            <button type="submit" class="action-btn btn-add btn-danger gap-1" title="Delete" onclick="return confirm('Are you sure you want to delete this unit?')">
+                                                            <button type="button" class="action-btn btn-add btn-danger gap-1 delete-btn" title="Delete">
                                                                 <i class='bx bx-trash'></i> Delete
                                                             </button>
                                                         </form>
@@ -1273,6 +1273,33 @@
                     modalContainer.remove();
                 });
             }
+        });
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const deleteButtons = document.querySelectorAll('.delete-btn');
+
+            deleteButtons.forEach(function (btn) {
+                btn.addEventListener('click', function (e) {
+                    const form = btn.closest('.delete-form');
+                    Swal.fire({
+                        title: 'Are you sure?',
+                        text: "You won't be able to revert this!",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#d33',
+                        cancelButtonColor: '#3085d6',
+                        confirmButtonText: 'Yes, delete it!',
+                        background: 'var(--body-background-color)',
+                        color: 'var(--sidenavbar-text-color)'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            form.submit();
+                        }
+                    });
+                });
+            });
         });
     </script>
 @endpush

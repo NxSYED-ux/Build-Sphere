@@ -171,7 +171,7 @@
                                             <div class="form-group mb-2">
                                                 <label for="unit_name">Unit Name</label>
                                                 <span class="required__field">*</span><br>
-                                                <input type="text" name="unit_name" id="unit_name" class="form-control @error('unit_name') is-invalid @enderror" value="{{ old('unit_name', $unit->unit_name) }}" maxlength="50" placeholder="User Name" required>
+                                                <input type="text" name="unit_name" id="unit_name" class="form-control @error('unit_name') is-invalid @enderror" value="{{ old('unit_name', $unit->unit_name) }}" maxlength="50" placeholder="e.g. Shop 1" required>
                                                 @error('unit_name')
                                                     <span class="invalid-feedback" role="alert">
                                                         <strong>{{ $message }}</strong>
@@ -235,28 +235,11 @@
                                          <!--  -->
                                          <div class="col-sm-12 col-md-6 col-lg-4">
                                             <div class="form-group mb-2">
-                                                <label for="area">Area</label>
+                                                <label for="area">Area (sq ft)</label>
                                                 <span class="required__field">*</span><br>
-                                                <input type="number" name="area" id="area" class="form-control @error('area') is-invalid @enderror" value="{{ old('area', $unit->area) }}" placeholder="1234" required>
+                                                <input type="number" name="area" id="area" class="form-control @error('area') is-invalid @enderror" value="{{ old('area', $unit->area) }}" placeholder="e.g. 2500" required>
                                                 @error('area')
                                                     <span class="invalid-feedback" role="alert">
-                                                        <strong>{{ $message }}</strong>
-                                                    </span>
-                                                @enderror
-                                            </div>
-                                        </div>
-
-                                        <!--  -->
-                                        <div class="col-lg-4 col-md-6 col-sm-12">
-                                            <div class="form-group mb-2">
-                                                <label for="status">Status</label>
-                                                <span class="required__field">*</span><br>
-                                                <select name="status" id="status" class="form-select" required>
-                                                    <option value="Approved" {{ old('status', $unit->status) == 'Approved' ? 'selected' : '' }}>Approved</option>
-                                                    <option value="Rejected" {{ old('status', $unit->status) == 'Rejected' ? 'selected' : '' }}>Rejected</option>
-                                                </select>
-                                                @error('status')
-                                                <span class="invalid-feedback" role="alert">
                                                         <strong>{{ $message }}</strong>
                                                     </span>
                                                 @enderror
@@ -317,17 +300,25 @@
                                         </div>
 
                                         <!--  -->
-                                        <div class="col-sm-12 col-md-6 col-lg-12">
+                                        <div class="col-sm-12 col-md-12 col-lg-12">
                                             <div class="form-group mb-2">
                                                 <label for="description">Description</label>
-                                                <input type="text" name="description" id="description" class="form-control @error('description') is-invalid @enderror" value="{{ old('description', $unit->description) }}" maxlength="50" placeholder="Description">
+                                                <textarea
+                                                    name="description" id="description"
+                                                    class="form-control @error('description') is-invalid @enderror"
+                                                    maxlength="250"
+                                                    placeholder="Description"
+                                                    rows="3"
+                                                >{{ old('description', $unit->description) }}</textarea>
+
                                                 @error('description')
                                                 <span class="invalid-feedback" role="alert">
-                                                        <strong>{{ $message }}</strong>
-                                                    </span>
+                                                    <strong>{{ $message }}</strong>
+                                                </span>
                                                 @enderror
                                             </div>
                                         </div>
+
 
 
                                     </div>

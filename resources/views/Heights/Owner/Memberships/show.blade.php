@@ -206,7 +206,7 @@
             left: 0;
             right: 0;
             background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.4) 60%, transparent 100%);
-            padding: 30px 20px 20px;
+            padding: 30px 20px 0px;
             color: white;
             border-bottom-left-radius: 10px;
             border-bottom-right-radius: 10px;
@@ -239,13 +239,17 @@
         }
 
         .discount-badge {
-            background: var(--color-blue);
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white !important;
             padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 14px;
-            font-weight: 600;
-            color: white;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 1.2rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            z-index: 2;
         }
 
         .billing-info i {
@@ -522,19 +526,19 @@
                             <!-- Membership Header -->
                             <div class="membership-header">
                                 <div class="membership-title-container">
-                                    <h1 class="membership-name">{{ $membership->name }}</h1>
+                                    <h3 class="membership-name">{{ $membership->name }}</h3>
                                     <div class="membership-meta">
-                                <span class="meta-badge category-badge">
-                                    <i class="fas fa-tag me-1"></i>
-                                    {{ $membership->category }}
-                                </span>
+                                        <span class="meta-badge category-badge">
+                                            <i class="fas fa-tag me-1"></i>
+                                            {{ $membership->category }}
+                                        </span>
                                         <span class="meta-badge {{ $membership->status === 'Published' ? 'status-badge' : 'status-draft' }}">
-                                    {{ $membership->status }}
-                                </span>
+                                            {{ $membership->status }}
+                                        </span>
                                         @if($membership->mark_as_featured)
                                             <span class="meta-badge featured-badge">
-                                        <i class="fas fa-star"></i> Featured
-                                    </span>
+                                                <i class="fas fa-star me-1"></i> Featured
+                                            </span>
                                         @endif
                                     </div>
                                 </div>
@@ -555,17 +559,14 @@
                                          alt="{{ $membership->name }}"
                                          class="membership-image">
 
+                                    <span class="discount-badge" style="color: #fff !important;">Flat {{ $membership->offered_discount ?? 0 }}% OFF</span>
+
                                     <!-- Price Overlay -->
                                     <div class="price-overlay">
                                         <div class="price-content">
-                                            <div class="price-display">
+                                            <div class="price-display d-flex justify-content-between align-items-center">
                                                 <span class="current-price">{{ number_format($membership->price, 2) }} {{ $membership->currency }}</span>
-                                                @if($membership->original_price > $membership->price)
-                                                    <span class="original-price">{{ number_format($membership->original_price, 2) }} {{ $membership->currency }}</span>
-                                                    <span class="discount-badge">
-                                                        {{ round(100 - ($membership->price / $membership->original_price * 100)) }}% OFF
-                                                    </span>
-                                                @endif
+                                                <span class="membership-period">/ {{ $membership->duration_months }} Month</span>
                                             </div>
                                         </div>
                                     </div>
@@ -785,25 +786,24 @@
                                     return response.json();
                                 })
                                 .then(data => {
-                                    if (data.message) {
-                                        Swal.fire(
-                                            'Success!',
-                                            data.message,
-                                            'success'
-                                        );
-                                        // Optional: reload the page or update the UI
-                                        // window.location.reload();
-                                    } else {
-                                        throw new Error('Unexpected response format');
-                                    }
+                                    Swal.fire({
+                                        title: 'Deleted!',
+                                        text: data.success || 'Payment marked as received and transaction recorded.',
+                                        icon: 'success',
+                                        background: 'var(--body-background-color)',
+                                        color: 'var(--sidenavbar-text-color)',
+                                    }).then(() => {
+                                        window.location.reload();
+                                    });
                                 })
                                 .catch(error => {
-                                    console.error('Error:', error);
-                                    Swal.fire(
-                                        'Error!',
-                                        error.message || 'Failed to mark payment as received.',
-                                        'error'
-                                    );
+                                    Swal.fire({
+                                        title: 'Error!',
+                                        text: error.message || error.error || 'Failed to mark payment as received.',
+                                        icon: 'error',
+                                        background: 'var(--body-background-color)',
+                                        color: 'var(--sidenavbar-text-color)',
+                                    });
                                 });
                         }
                     });

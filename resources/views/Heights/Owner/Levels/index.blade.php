@@ -354,98 +354,94 @@
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-md-12">
-                        <div class="box">
-                            <div class="container mt-2">
-                                <div class="d-flex justify-content-between align-items-center mb-2">
-                                    <h3 class="mb-1">Levels</h3>
-                                    <a href="#" class="btn btn-primary d-flex align-items-center hidden Owner-Level-Add-Button" id="Owner-Level-Add-Button"  data-bs-toggle="tooltip" data-bs-placement="top" title="Add Level">
-                                        <x-icon name="add" type="svg" class="me-1" size="18" /> Add Level
-                                    </a>
-                                </div>
-
-                                <!-- Filter Form -->
-                                <form method="GET" id="filterForm" class="filter-container">
-                                    <div class="filter-group">
-                                        <label for="search">Search</label>
-                                        <input type="text" name="search" id="search" class="search-input"
-                                               placeholder="Search by name or description"
-                                               value="{{ request('search') }}">
-                                    </div>
-
-                                    <div class="filter-group">
-                                        <label for="organization_id">Building</label>
-                                        <select name="building_id" id="building_id" class="form-select filter-select">
-                                            <option value="">All buildings</option>
-                                            @foreach($buildings ?? [] as $building)
-                                                <option value="{{ $building->id }}" {{ request('building_id') == $building->id ? 'selected' : '' }}>
-                                                    {{ $building->name }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-
-                                    <div class="filter-buttons">
-                                        <button type="button" class="btn btn-secondary flex-grow-1 d-flex align-items-center justify-content-center" onclick="resetFilters()">
-                                            <i class="fas fa-undo me-2"></i> Reset
-                                        </button>
-                                        <button type="submit" class="btn btn-primary flex-grow-1 d-flex align-items-center justify-content-center">
-                                            <i class="fas fa-filter me-2"></i> Apply Filters
-                                        </button>
-                                    </div>
-                                </form>
-
-                                <div class="levels-container">
-                                    @forelse($levels ?? [] as $level)
-                                        <div class="level-card">
-                                            <div class="level-card-header">
-                                                <h3 class="level-card-title">{{ $level->level_name }}</h3>
-                                                <span class="level-card-number">Level {{ $level->level_number ?? 'N/A' }}</span>
-                                            </div>
-                                            <div class="level-card-body">
-                                                <div class="level-card-detail">
-                                                    <i class="bx bx-buildings card-icon"></i>
-                                                    <span class="building-tag">{{ $level->building->name ?? 'N/A' }}</span>
-                                                </div>
-                                                <div class="level-card-detail">
-                                                    <i class="bx bx-stats card-icon"></i>
-                                                    <span class="status-badge status-{{ strtolower($level->status) }} mx-2">
-                                                        {{ $level->status ?? 'N/A' }}
-                                                    </span>
-                                                </div>
-                                                <div class="level-card-detail">
-                                                    <i class="bx bx-info-circle card-icon"></i>
-                                                    <span class="mx-2">{{ $level->description ?? 'No description provided' }}</span>
-                                                </div>
-                                            </div>
-                                            <div class="action-buttons">
-                                                <a href="{{ route('owner.units.index', ['level_id' => $level->id]) }}" class="action-btn btn-add btn-view view-unit gap-1" title="View">
-                                                    <i class='bx bxs-home'></i> Units
-                                                </a>
-
-                                                <a href="#" class="action-btn btn-add btn-edit gap-1 Owner-Level-Edit-Button hidden" id="Owner-Level-Edit-Button" data-id="{{ $level->id }}"  title="Edit">
-                                                    <i class='bx bx-edit'></i> Edit
-                                                </a>
-                                            </div>
-                                        </div>
-                                    @empty
-                                        <div class="empty-state">
-                                            <div class="empty-state-icon">
-                                                <i class="bx bx-layer"></i>
-                                            </div>
-                                            <h4>No Levels Found</h4>
-                                            <p class="empty-state-text">You haven't added any levels yet. Click the button above to add your first level.</p>
-                                        </div>
-                                    @endforelse
-                                </div>
-
-                                @if ($levels && $levels->count() > 0)
-                                    <div class="mt-3">
-                                        {{ $levels->appends(request()->query())->links('pagination::bootstrap-5') }}
-                                    </div>
-                                @endif
-
-                            </div>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h3 class="mb-1">Levels</h3>
+                            <a href="#" class="btn btn-primary d-flex align-items-center hidden Owner-Level-Add-Button" id="Owner-Level-Add-Button"  data-bs-toggle="tooltip" data-bs-placement="top" title="Add Level">
+                                <x-icon name="add" type="svg" class="me-1" size="18" /> Add Level
+                            </a>
                         </div>
+
+                        <!-- Filter Form -->
+                        <form method="GET" id="filterForm" class="filter-container">
+                            <div class="filter-group">
+                                <label for="search">Search</label>
+                                <input type="text" name="search" id="search" class="search-input"
+                                       placeholder="Search by name or description"
+                                       value="{{ request('search') }}">
+                            </div>
+
+                            <div class="filter-group">
+                                <label for="organization_id">Building</label>
+                                <select name="building_id" id="building_id" class="form-select filter-select">
+                                    <option value="">All buildings</option>
+                                    @foreach($buildings ?? [] as $building)
+                                        <option value="{{ $building->id }}" {{ request('building_id') == $building->id ? 'selected' : '' }}>
+                                            {{ $building->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <div class="filter-buttons">
+                                <button type="button" class="btn btn-secondary flex-grow-1 d-flex align-items-center justify-content-center" onclick="resetFilters()">
+                                    <i class="fas fa-undo me-2"></i> Reset
+                                </button>
+                                <button type="submit" class="btn btn-primary flex-grow-1 d-flex align-items-center justify-content-center">
+                                    <i class="fas fa-filter me-2"></i> Apply Filters
+                                </button>
+                            </div>
+                        </form>
+
+                        <div class="levels-container">
+                            @forelse($levels ?? [] as $level)
+                                <div class="level-card">
+                                    <div class="level-card-header">
+                                        <h3 class="level-card-title">{{ $level->level_name }}</h3>
+                                        <span class="level-card-number">Level {{ $level->level_number ?? 'N/A' }}</span>
+                                    </div>
+                                    <div class="level-card-body">
+                                        <div class="level-card-detail">
+                                            <i class="bx bx-buildings card-icon"></i>
+                                            <span class="building-tag">{{ $level->building->name ?? 'N/A' }}</span>
+                                        </div>
+                                        <div class="level-card-detail">
+                                            <i class="bx bx-stats card-icon"></i>
+                                            <span class="status-badge status-{{ strtolower($level->status) }} mx-2">
+                                                {{ $level->status ?? 'N/A' }}
+                                            </span>
+                                        </div>
+                                        <div class="level-card-detail">
+                                            <i class="bx bx-info-circle card-icon"></i>
+                                            <span class="mx-2">{{ Str::limit($level->description ?? 'No description provided', 25) }}</span>
+                                        </div>
+                                    </div>
+                                    <div class="action-buttons">
+                                        <a href="{{ route('owner.units.index', ['level_id' => $level->id]) }}" class="action-btn btn-add btn-view view-unit gap-1" title="View">
+                                            <i class='bx bxs-home'></i> Units
+                                        </a>
+
+                                        <a href="#" class="action-btn btn-add btn-edit gap-1 Owner-Level-Edit-Button hidden" id="Owner-Level-Edit-Button" data-id="{{ $level->id }}"  title="Edit">
+                                            <i class='bx bx-edit'></i> Edit
+                                        </a>
+                                    </div>
+                                </div>
+                            @empty
+                                <div class="empty-state">
+                                    <div class="empty-state-icon">
+                                        <i class="bx bx-layer"></i>
+                                    </div>
+                                    <h4>No Levels Found</h4>
+                                    <p class="empty-state-text">You haven't added any levels yet. Click the button above to add your first level.</p>
+                                </div>
+                            @endforelse
+                        </div>
+
+                        @if ($levels && $levels->count() > 0)
+                            <div class="mt-3">
+                                {{ $levels->appends(request()->query())->links('pagination::bootstrap-5') }}
+                            </div>
+                        @endif
+
                     </div>
                 </div>
             </div>
@@ -511,7 +507,7 @@
                             <div class="col-12">
                                 <div class="form-group mb-3">
                                     <label for="description">Description</label>
-                                    <textarea name="description" id="description" class="form-control @error('description') is-invalid @enderror" rows="2" maxlength="50" placeholder="Description">{{ old('description') }}</textarea>
+                                    <textarea name="description" id="description" class="form-control @error('description') is-invalid @enderror" rows="3" maxlength="250" placeholder="Description">{{ old('description') }}</textarea>
                                     @error('description')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
@@ -577,7 +573,7 @@
                             <div class="col-12">
                                 <div class="form-group mb-3">
                                     <label for="description">Description</label>
-                                    <textarea name="description" id="edit_description" class="form-control @error('description') is-invalid @enderror" rows="2" maxlength="50" placeholder="Description">{{ old('description') }}</textarea>
+                                    <textarea name="description" id="edit_description" class="form-control @error('description') is-invalid @enderror" rows="3" maxlength="250" placeholder="Description">{{ old('description') }}</textarea>
                                     @error('description')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
