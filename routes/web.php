@@ -143,7 +143,7 @@ Route::prefix('admin')->middleware(['auth.jwt'])->group(function () {
     Route::prefix('users')->middleware(['check.permission:User Management'])->group(function () {
 
         Route::get('/', [UsersController::class, 'index'])->name('users.index');
-        Route::get('/{user}', [UsersController::class, 'show'])->name('users.show');
+        Route::get('/{user}/show', [UsersController::class, 'show'])->name('users.show');
         Route::put('/toggle-status', [UsersController::class, 'toggleStatus'])->name('user.toggleStatus');
 
         Route::middleware('check.permission:Add User')->group(function () {

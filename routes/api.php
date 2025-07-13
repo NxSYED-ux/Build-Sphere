@@ -52,6 +52,38 @@ Route::middleware(['auth.jwt'])->group(function () {
 
     });
 
+    Route::prefix('staff')->middleware(['plan'])->group(function () {
+
+        Route::get('/profile', [ProfileController::class, 'getProfile']);
+        Route::put('/profile', [ProfileController::class, 'updateProfileData']);
+        Route::post('/update-profile-pic', [ProfileController::class, 'uploadProfilePic']);
+        Route::put('/remove-profile-pic', [ProfileController::class, 'deleteProfilePic']);
+        Route::put('/change-password', [ProfileController::class, 'changePassword']);
+
+        Route::middleware('check.permission:Staff Queries')->group(function () {
+            Route::get('/get-queries', [QueryController::class, 'getStaffQueries']);
+            Route::get('/query/{id}', [QueryController::class, 'getQueryDetails']);
+        });
+
+        Route::middleware('check.permission:Accept Queries')->group(function () {
+            Route::put('/accept-query', [QueryController::class, 'acceptQuery']);
+        });
+
+        Route::middleware('check.permission:Reject Queries')->group(function () {
+            Route::put('/reject-query', [QueryController::class, 'rejectQuery']);
+        });
+
+        Route::middleware('check.permission:Close Queries')->group(function () {
+            Route::put('/close-query', [QueryController::class, 'closeQuery']);
+        });
+
+        Route::middleware('check.permission:Queries Analytics')->group(function () {
+            Route::get('/query-count', [QueryController::class, 'getYearlyQueryStats']);
+            Route::get('/query-chart', [QueryController::class, 'getMonthlyQueryStats']);
+        });
+
+    });
+
     Route::prefix('user')->group(function () {
 
         Route::get('/profile', [ProfileController::class, 'getProfile']);
@@ -114,8 +146,11 @@ Route::middleware(['auth.jwt'])->group(function () {
 
         Route::prefix('memberships')->group(function () {
 
-            Route::get('/', [MembershipController::class, 'index']);
-            Route::get('/{id}/show', [MembershipController::class, 'show']);
+            Route::middleware('check.permission:Promotions,json')->group(function () {
+                Route::get('/', [MembershipController::class, 'index']);
+                Route::get('/{id}/show', [MembershipController::class, 'show']);
+            });
+
             Route::get('/my', [MembershipController::class, 'myMemberships']);
             Route::get('/{id}/my-show', [MembershipController::class, 'myMembershipShow']);
             Route::get('/past', [MembershipController::class, 'pastMemberships']);
@@ -132,31 +167,4 @@ Route::middleware(['auth.jwt'])->group(function () {
 
     });
 
-    Route::prefix('staff')->middleware(['plan'])->group(function () {
-
-        Route::get('/profile', [ProfileController::class, 'getProfile']);
-        Route::put('/profile', [ProfileController::class, 'updateProfileData']);
-        Route::post('/update-profile-pic', [ProfileController::class, 'uploadProfilePic']);
-        Route::put('/remove-profile-pic', [ProfileController::class, 'deleteProfilePic']);
-        Route::put('/change-password', [ProfileController::class, 'changePassword']);
-
-        Route::middleware('check.permission:Staff Queries')->group(function () {
-            Route::get('/get-queries', [QueryController::class, 'getStaffQueries']);
-            Route::get('/query/{id}', [QueryController::class, 'getQueryDetails']);
-        });
-        Route::middleware('check.permission:Accept Queries')->group(function () {
-            Route::put('/accept-query', [QueryController::class, 'acceptQuery']);
-        });
-        Route::middleware('check.permission:Reject Queries')->group(function () {
-            Route::put('/reject-query', [QueryController::class, 'rejectQuery']);
-        });
-        Route::middleware('check.permission:Close Queries')->group(function () {
-            Route::put('/close-query', [QueryController::class, 'closeQuery']);
-        });
-        Route::middleware('check.permission:Queries Analytics')->group(function () {
-            Route::get('/query-count', [QueryController::class, 'getYearlyQueryStats']);
-            Route::get('/query-chart', [QueryController::class, 'getMonthlyQueryStats']);
-        });
-
-    });
 });
