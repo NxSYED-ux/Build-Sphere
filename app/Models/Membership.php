@@ -23,7 +23,7 @@ class Membership extends Model
         'mark_as_featured',
         'currency',
         'price',
-        'original_price',
+        'offered_discount',
         'status',
         'created_by',
         'updated_by',

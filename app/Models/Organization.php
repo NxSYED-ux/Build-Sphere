@@ -24,6 +24,7 @@ class Organization extends Model
         'payment_gateway_name',
         'payment_gateway_merchant_id',
         'is_online_payment_enabled',
+        'membership_api_key',
         'created_by',
         'updated_by',
     ];

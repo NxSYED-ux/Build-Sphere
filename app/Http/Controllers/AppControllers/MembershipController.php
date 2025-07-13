@@ -44,7 +44,7 @@ class MembershipController extends Controller
 
             $featuredMemberships = (clone $baseQuery)
                 ->where('mark_as_featured', 1)
-                ->select('id', 'image', 'name', 'original_price', 'price', 'category')
+                ->select('id', 'image', 'name', 'offered_discount', 'price', 'category')
                 ->get();
 
             $memberships = (clone $baseQuery)
@@ -290,6 +290,7 @@ class MembershipController extends Controller
     {
         $request->validate([
             'token' => 'required',
+            'api_key' => 'required',
         ]);
 
         try {
@@ -307,6 +308,9 @@ class MembershipController extends Controller
             $userMembership = MembershipUser::where('id', $membershipId)
                 ->where('user_id', $userId)
                 ->where('status', 1)
+                ->whereHas('membership.organization', function ($q) use ($request) {
+                    $q->where('membership_api_key', $request->api_key);
+                })
                 ->with(['membership'])
                 ->first();
 
@@ -340,6 +344,7 @@ class MembershipController extends Controller
                 'success' => true,
                 'message' => 'Token verified and use recorded.',
                 'membership' => $userMembership->membership,
+                'discount' => $userMembership->membership?->discount,
             ]);
 
         } catch (TokenExpiredException $e) {

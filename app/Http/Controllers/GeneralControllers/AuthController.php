@@ -115,8 +115,14 @@ class AuthController extends Controller
                         $route = 'admin_dashboard';
                     }
                 } else {
-                    $route = array_key_exists('Admin Portal', $permissions) ? 'admin_dashboard' :
-                        (array_key_exists('Owner Portal', $permissions) ? 'owner_manager_dashboard' : null);
+
+                    if (array_key_exists('Admin Portal', $permissions)) {
+                        $route = 'admin_dashboard';
+                    } elseif (array_key_exists('Owner Portal', $permissions)) {
+                        $route = 'owner_manager_dashboard';
+                    } elseif ($user->is_super_admin === 1) {
+                        $route = 'admin_dashboard';
+                    }
                 }
             }
             elseif (($platform === 'user-app' && array_key_exists('User Application', $permissions))) {

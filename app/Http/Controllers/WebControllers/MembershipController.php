@@ -125,7 +125,7 @@ class MembershipController extends Controller
             'scans_per_day' => 'required|integer|min:1',
             'currency' => 'required|string|max:10',
             'price' => 'required|numeric|min:0',
-            'original_price' => 'required|numeric|min:0',
+            'discount' => 'required|numeric|min:0',
             'status' => 'required|in:Draft,Published,Non Renewable,Archived',
         ] , [
             'name.unique' => 'The membership name has already been taken for this unit.',
@@ -169,7 +169,7 @@ class MembershipController extends Controller
                 'scans_per_day' => $request->scans_per_day,
                 'currency' => $request->currency,
                 'price' => $request->price,
-                'original_price' => $request->original_price,
+                'offered_discount' => $request->discount,
                 'status' => $request->status,
             ]);
 
@@ -251,7 +251,7 @@ class MembershipController extends Controller
             'scans_per_day' => 'required|integer|min:1',
             'currency' => 'nullable|string|max:10',
             'price' => 'required|numeric|min:0',
-            'original_price' => 'nullable|numeric|min:0',
+            'discount' => 'nullable|numeric|min:0',
             'status' => 'in:Draft,Published,Non Renewable,Archived',
         ] , [
             'name.unique' => 'The membership name has already been taken for this unit.',
@@ -314,7 +314,7 @@ class MembershipController extends Controller
                 'scans_per_day' => $request->scans_per_day,
                 'currency' => $request->currency,
                 'price' => $request->price,
-                'original_price' => $request->original_price,
+                'offered_discount' => $request->discount,
                 'status' => $request->status,
             ]);
 

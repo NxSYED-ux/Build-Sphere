@@ -54,18 +54,10 @@ Route::middleware(['auth.jwt'])->group(function () {
 
     Route::prefix('user')->group(function () {
 
-        Route::middleware('check.permission:User Profile')->group(function () {
-            Route::get('/profile', [ProfileController::class, 'getProfile']);
-        });
-        Route::middleware('check.permission:Update User Profile')->group(function () {
-            Route::put('/profile', [ProfileController::class, 'updateProfileData']);
-        });
-        Route::middleware('check.permission:Upload User Profile Picture')->group(function () {
-            Route::post('/update-profile-pic', [ProfileController::class, 'uploadProfilePic']);
-        });
-        Route::middleware('check.permission:Remove User Profile Picture')->group(function () {
-            Route::put('/remove-profile-pic', [ProfileController::class, 'deleteProfilePic']);
-        });
+        Route::get('/profile', [ProfileController::class, 'getProfile']);
+        Route::put('/profile', [ProfileController::class, 'updateProfileData']);
+        Route::post('/update-profile-pic', [ProfileController::class, 'uploadProfilePic']);
+        Route::put('/remove-profile-pic', [ProfileController::class, 'deleteProfilePic']);
         Route::put('/change-password', [ProfileController::class, 'changePassword']);
 
         Route::middleware('check.permission:User Homepage,json')->group(function () {
@@ -142,19 +134,10 @@ Route::middleware(['auth.jwt'])->group(function () {
 
     Route::prefix('staff')->middleware(['plan'])->group(function () {
 
-        Route::middleware('check.permission:Staff Profile')->group(function () {
-            Route::get('/profile', [ProfileController::class, 'getProfile']);
-        });
-        Route::middleware('check.permission:Update Staff Profile')->group(function () {
-            Route::put('/profile', [ProfileController::class, 'updateProfileData']);
-        });
-        Route::middleware('check.permission:Upload Staff Profile Picture')->group(function () {
-            Route::post('/update-profile-pic', [ProfileController::class, 'uploadProfilePic']);
-        });
-        Route::middleware('check.permission:Remove Staff Profile Picture')->group(function () {
-            Route::put('/remove-profile-pic', [ProfileController::class, 'deleteProfilePic']);
-        });
-
+        Route::get('/profile', [ProfileController::class, 'getProfile']);
+        Route::put('/profile', [ProfileController::class, 'updateProfileData']);
+        Route::post('/update-profile-pic', [ProfileController::class, 'uploadProfilePic']);
+        Route::put('/remove-profile-pic', [ProfileController::class, 'deleteProfilePic']);
         Route::put('/change-password', [ProfileController::class, 'changePassword']);
 
         Route::middleware('check.permission:Staff Queries')->group(function () {

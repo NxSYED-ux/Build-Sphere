@@ -2,9 +2,11 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\Permission;
+use App\Models\RolePermission;
+use App\Models\UserPermission;
 use Closure;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class ValidatePermission
@@ -17,33 +19,46 @@ class ValidatePermission
                 return $this->handleResponse($request, 'Unauthorized', 403);
             }
 
-            if($user->is_super_admin === 1){
+            if ($user->is_super_admin === 1) {
                 return $next($request);
             }
 
-            $permission = DB::selectOne("SELECT id FROM permissions WHERE name = ? AND status = 1 LIMIT 1", [$requiredPermissionName]);
+            $permission = Permission::where('name', $requiredPermissionName)
+                ->where('status', 1)
+                ->first();
+
             if (!$permission) {
-                return $this->handleResponse($request, "Access Denied: The permission for \"$requiredPermissionName\" is either inactive or does not exist.", 403);
+                return $this->handleResponse(
+                    $request,
+                    "Access Denied: The permission for \"$requiredPermissionName\" is either inactive or does not exist.",
+                    403
+                );
             }
 
             $permissionId = $permission->id;
 
-            $exists = DB::selectOne("
-                SELECT
-                    (SELECT status FROM userpermissions WHERE user_id = ? AND permission_id = ? LIMIT 1) AS user_permission,
-                    (SELECT status FROM rolepermissions WHERE role_id = ? AND permission_id = ? LIMIT 1) AS role_permission
-            ", [$user->id, $permissionId, $user->role_id, $permissionId]);
+            $userPermission = UserPermission::where('user_id', $user->id)
+                ->where('permission_id', $permissionId)
+                ->value('status');
 
-            if ($exists->user_permission !== null && $exists->role_permission !== null) {
-                if ($exists->user_permission == 1) {
-                    return $next($request);
-                }
-            } elseif ($exists->role_permission == 1) {
+            $rolePermission = null;
+            if (is_null($userPermission)) {
+                $rolePermission = RolePermission::where('role_id', $user->role_id)
+                    ->where('permission_id', $permissionId)
+                    ->value('status');
+            }
+
+            if ($userPermission === 1 || $rolePermission === 1) {
                 return $next($request);
             }
 
-            return $this->handleResponse($request, "Access denied: You do not have permission for {$requiredPermissionName}", 403);
-        } catch (\Exception $e) {
+            return $this->handleResponse(
+                $request,
+                "Access denied: You do not have permission for {$requiredPermissionName}",
+                403
+            );
+
+        } catch (\Throwable $e) {
             Log::error("Permission validation error for user {$user->id} on permission '{$requiredPermissionName}': " . $e->getMessage());
             return $this->handleResponse($request, 'Internal server error', 500);
         }

@@ -24,7 +24,7 @@ return new class extends Migration
             $table->boolean('mark_as_featured')->default(false);
             $table->string('currency', 10)->default('PKR');
             $table->decimal('price', 10, 2)->default(0);
-            $table->decimal('original_price', 10, 2)->default(0);
+            $table->float('offered_discount')->default(0);
             $table->enum('status', ['Draft', 'Published', 'Non Renewable', 'Archived'])->default('Draft');
 
             $table->foreignId('created_by')->nullable()->constrained('users')->onDelete('set null');

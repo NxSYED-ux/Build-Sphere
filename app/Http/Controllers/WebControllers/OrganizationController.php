@@ -22,12 +22,15 @@ use App\Models\User;
 use App\Notifications\DatabaseOnlyNotification;
 use App\Services\AdminFiltersService;
 use App\Services\SubscriptionService;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
 use Stripe\Refund;
+use Tymon\JWTAuth\Facades\JWTAuth;
+use Tymon\JWTAuth\Facades\JWTFactory;
 
 class OrganizationController extends Controller
 {
@@ -102,6 +105,14 @@ class OrganizationController extends Controller
                 }
             }
 
+            $customPayload = [
+                'name' => $request->name,
+                'email' => $request->email,
+                'iat' => now()->timestamp,
+            ];
+
+            $token = JWTAuth::customClaims($customPayload)->encode();
+
             $address = Address::create([
                 'location' => $request->location,
                 'country' => $request->country,
@@ -119,6 +130,7 @@ class OrganizationController extends Controller
                 'address_id' => $address->id,
                 'payment_gateway_merchant_id' => $request->merchant_id,
                 'is_online_payment_enabled' => $request->is_online_payment_enabled,
+                'membership_api_key' => $token,
             ]);
 
             if ($request->hasFile('organization_pictures')) {
