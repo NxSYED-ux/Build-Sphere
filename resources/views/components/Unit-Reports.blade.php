@@ -868,7 +868,6 @@
 
                     // Update contract timeline
                     updateContractTimeline(data.contracts);
-                    console.log("API Response Data Contract History:", data);
                 });
         }
 
@@ -891,7 +890,6 @@
                     return response.json();
                 })
                 .then(data => {
-                    console.log("Maintenance data: ", data);
                     const opened = data.opened_requests || 0;
                     const completed = data.completed_requests || 0;
                     const rejected = data.rejected_requests || 0;

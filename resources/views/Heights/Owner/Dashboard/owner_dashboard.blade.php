@@ -1691,7 +1691,7 @@
 
                 if (error instanceof Response) {
                     error.json().then(json => {
-                        message = json.message || message;
+                        message = json.message || json.error || message;
                         displayError(message);
                     }).catch(() => displayError(message));
                 } else if (error instanceof Error && error.message) {

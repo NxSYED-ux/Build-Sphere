@@ -671,22 +671,20 @@
 
                                                         <div class="row">
                                                             <div class="col-md-6 mb-3">
-                                                                <label for="stripe_merchant_id" class="form-label">
+                                                                <label for="stripe_merchant_id2" class="form-label">
                                                                     Stripe Merchant ID <span class="text-danger" id="merchant-required-star" style="display: none;">*</span>
                                                                 </label>
                                                                 <div class="input-group">
                                                                     <span class="input-group-text" style="background-color: var(--sidenavbar-body-color);">
                                                                         <i class="fab fa-stripe text-primary"></i>
-                                                                    </span>
+            </span>
                                                                     <input type="text"
                                                                            name="merchant_id"
-                                                                           id="stripe_merchant_id"
+                                                                           id="stripe_merchant_id2"
                                                                            class="form-control @error('merchant_id') is-invalid @enderror"
                                                                            value="{{ old('merchant_id') }}"
-                                                                           placeholder="e.g. acct_1L9..."
-                                                                        {{ old('is_online_payments_enabled') ? 'required' : '' }}>
+                                                                           placeholder="e.g. acct_1L9...">
                                                                 </div>
-{{--                                                                        <small class="text-muted">Found in your Stripe Dashboard</small>--}}
                                                                 @error('merchant_id')
                                                                 <div class="invalid-feedback d-block">{{ $message }}</div>
                                                                 @enderror
@@ -702,18 +700,17 @@
                                                                     </label>
                                                                     <div class="form-check form-switch m-0">
                                                                         <input type="hidden" name="is_online_payment_enabled" value="0">
-                                                                        <input class="form-check-input" type="checkbox" role="switch" id="enable_online_payments"
+                                                                        <input class="form-check-input" type="checkbox" role="switch" id="enable_online_payments2"
                                                                                name="is_online_payment_enabled" value="1" style="transform: scale(1.3);"
-                                                                            {{ old('is_online_payment_enabled', $is_online_payment_enabled ?? false) ? 'checked' : '' }}>
+                                                                            {{ old('is_online_payment_enabled') ? 'checked' : '' }}>
                                                                     </div>
                                                                 </div>
                                                                 @error('is_online_payment_enabled')
                                                                 <div class="invalid-feedback d-block">{{ $message }}</div>
                                                                 @enderror
                                                             </div>
-
-
                                                         </div>
+
                                                     </div>
 
                                                     <div class="form-section shadow-sm">
@@ -1000,8 +997,8 @@
     <!-- Merchant id -->
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            const toggle = document.getElementById('enable_online_payments');
-            const merchantInput = document.getElementById('stripe_merchant_id');
+            const toggle = document.getElementById('enable_online_payments2');
+            const merchantInput = document.getElementById('stripe_merchant_id2');
             const merchantStar = document.getElementById('merchant-required-star');
 
             function toggleMerchantRequirement() {
@@ -1015,8 +1012,12 @@
             }
 
             toggle.addEventListener('change', toggleMerchantRequirement);
-            toggleMerchantRequirement(); // on page load
+
+            // Call it on page load
+            toggleMerchantRequirement();
         });
+
+
     </script>
 
     <!-- Location Dropdowns -->

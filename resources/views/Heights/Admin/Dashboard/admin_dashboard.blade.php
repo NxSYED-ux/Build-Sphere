@@ -1302,6 +1302,7 @@
                 fetch(`{{ route('admin.dashboard.revenue.growth') }}?${queryString}`, {
                     method: 'GET',
                     headers: {
+                        'Accept': 'application/json',
                         'X-CSRF-TOKEN': '{{ csrf_token() }}',
                         'Content-Type': 'application/json',
                         'X-Requested-With': 'XMLHttpRequest'
@@ -1591,7 +1592,7 @@
 
                 if (error instanceof Response) {
                     error.json().then(json => {
-                        message = json.message || message;
+                        message = json.message || json.error || message;
                         displayError(message);
                     }).catch(() => displayError(message));
                 } else if (error instanceof Error && error.message) {
