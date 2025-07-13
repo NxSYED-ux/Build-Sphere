@@ -464,7 +464,7 @@
 
     <div id="main">
 
-        <section class="content mt-1 mb-3 mx-2">
+        <section class="content my-3 mb-3 mx-2">
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-md-12">
