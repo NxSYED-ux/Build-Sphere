@@ -177,7 +177,7 @@ function applyPermissions() {
         toggleVisibility(".Owner-Unit-View-Details-Button", storedPermissions['Owner Portal'].includes('View Unit Details'));
 
         // Other Sections
-        toggleVisibility(".OwnerAssignUnits", storedPermissions['Owner Portal'].includes('Assign Units'));
+        toggleVisibility(".OwnerAssignUnits", storedPermissions['Owner Portal'].includes('Assign Unit'));
         toggleVisibility(".OwnerPropertyUsers", storedPermissions['Owner Portal'].includes('Property Users'));
         toggleVisibility(".OwnerEditPropertyUsers", storedPermissions['Owner Portal'].includes('Edit Property User'));
         toggleVisibility(".OwnerViewDetailsPropertyUsers", storedPermissions['Owner Portal'].includes('View Details'));
