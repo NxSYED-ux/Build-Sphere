@@ -19,6 +19,7 @@ use Illuminate\Validation\ValidationException;
 use Stripe\Stripe;
 use Stripe\Customer;
 use Tymon\JWTAuth\Facades\JWTAuth;
+use Tymon\JWTAuth\Facades\JWTFactory;
 
 
 class SignUpController extends Controller
@@ -152,13 +153,13 @@ class SignUpController extends Controller
                 $organizationImage = $this->handleFileUpload($request, 'org_picture','organizations', 'logo');
             }
 
-            $customPayload = [
-                'org_name' => $request->name,
-                'org_email' => $request->email,
+            $customPayload = JWTFactory::customClaims([
+                'name' => $request->name,
+                'email' => $request->email,
                 'iat' => now()->timestamp,
-            ];
+            ])->make();
 
-            $token = JWTAuth::customClaims($customPayload)->encode();
+            $token = JWTAuth::encode($customPayload)->get();
 
             $address = Address::create([
                 'location' => $request->location,
