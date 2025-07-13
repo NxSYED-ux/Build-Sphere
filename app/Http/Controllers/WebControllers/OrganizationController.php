@@ -105,14 +105,6 @@ class OrganizationController extends Controller
                 }
             }
 
-            $customPayload = JWTFactory::customClaims([
-                'name' => $request->name,
-                'email' => $request->email,
-                'iat' => now()->timestamp,
-            ])->make();
-
-            $token = JWTAuth::encode($customPayload)->get();
-
             $address = Address::create([
                 'location' => $request->location,
                 'country' => $request->country,
@@ -130,7 +122,6 @@ class OrganizationController extends Controller
                 'address_id' => $address->id,
                 'payment_gateway_merchant_id' => $request->merchant_id,
                 'is_online_payment_enabled' => $request->is_online_payment_enabled,
-                'membership_api_key' => $token,
             ]);
 
             if ($request->hasFile('organization_pictures')) {

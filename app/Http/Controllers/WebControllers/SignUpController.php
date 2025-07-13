@@ -153,14 +153,6 @@ class SignUpController extends Controller
                 $organizationImage = $this->handleFileUpload($request, 'org_picture','organizations', 'logo');
             }
 
-            $customPayload = JWTFactory::customClaims([
-                'name' => $request->name,
-                'email' => $request->email,
-                'iat' => now()->timestamp,
-            ])->make();
-
-            $token = JWTAuth::encode($customPayload)->get();
-
             $address = Address::create([
                 'location' => $request->location,
                 'country' => $request->country,
@@ -215,7 +207,6 @@ class SignUpController extends Controller
                 'status' => 'Disable',
                 'created_by' => $user->id,
                 'updated_by' => $user->id,
-                'membership_api_key' => $token,
             ]);
 
             DB::commit();

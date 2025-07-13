@@ -73,6 +73,7 @@ Route::middleware(['auth.jwt'])->group(function () {
     Route::get('units/{id}/details', [BuildingUnitController::class, 'unitDetails'])->name('owner.units.details');
 
     Route::get('users/{user}/show', [UsersController::class, 'show'])->name('users.show');
+
 });
 
 
