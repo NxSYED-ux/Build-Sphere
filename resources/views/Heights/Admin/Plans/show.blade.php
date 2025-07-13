@@ -118,7 +118,7 @@
                                         <h1 class="display-6 fw-bold text-gradient-primary mb-2">{{ $planDetails['plan_name'] }}</h1>
                                     </div>
                                     <div class="d-flex gap-2">
-                                        <a href="{{ route('plans.edit', $planDetails['plan_id']) }}" class="btn btn-primary px-4">
+                                        <a href="{{ route('plans.edit', $planDetails['plan_id']) }}" class="btn btn-primary px-4 hidden AdminEditPlans">
                                              Edit Plan
                                         </a>
                                         <a href="{{ route('plans.index') }}" class="btn btn-outline-secondary px-4">

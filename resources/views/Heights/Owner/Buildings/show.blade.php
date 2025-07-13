@@ -683,7 +683,7 @@
                                 </div>
                                 <div class="stat-content">
                                     <h3>Levels</h3>
-                                    <p>4</p>
+                                    <p>{{ $levels->count() }}</p>
                                     <span class="stat-description">Total building floors</span>
                                 </div>
                             </div>
@@ -695,7 +695,7 @@
                                 </div>
                                 <div class="stat-content">
                                     <h3>Units</h3>
-                                    <p>10</p>
+                                    <p>{{ $units->count() }}</p>
                                     <span class="stat-description">Total units</span>
                                 </div>
                             </div>
@@ -707,7 +707,7 @@
                                 </div>
                                 <div class="stat-content">
                                     <h3>Memberships</h3>
-                                    <p>0</p>
+                                    <p>{{ $memberships }}</p>
                                     <span class="stat-description">Available Memberships</span>
                                 </div>
                             </div>
@@ -719,7 +719,7 @@
                                 </div>
                                 <div class="stat-content">
                                     <h3>Available Units</h3>
-                                    <p>4</p>
+                                    <p>{{ $units->where('availability_status', 'Available')->count() }}</p>
                                     <span class="stat-description">Ready for rent/sale</span>
                                 </div>
                             </div>
@@ -731,7 +731,7 @@
                                 </div>
                                 <div class="stat-content">
                                     <h3>Rented Units</h3>
-                                    <p>10</p>
+                                    <p>{{ $units->where('availability_status', 'Rented')->count() }}</p>
                                     <span class="stat-description">Currently occupied</span>
                                 </div>
                             </div>
@@ -743,7 +743,7 @@
                                 </div>
                                 <div class="stat-content">
                                     <h3>Sold Units</h3>
-                                    <p>2</p>
+                                    <p>{{ $units->where('availability_status', 'Sold')->count() }}</p>
                                     <span class="stat-description">Ownership transferred</span>
                                 </div>
                             </div>

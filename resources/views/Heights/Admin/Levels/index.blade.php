@@ -440,7 +440,7 @@
 
                                     </div>
                                     <div class="action-buttons">
-                                        <a href="{{ route('units.index', ['level_id' => $level->id]) }}" class="action-btn btn-add btn-view view-unit gap-1" title="View">
+                                        <a href="{{ route('units.index', ['level_id' => $level->id]) }}" class="action-btn btn-add btn-view view-unit gap-1 hidden AdminUnits" title="View">
                                             <i class='bx bxs-home'></i> Units
                                         </a>
 

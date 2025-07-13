@@ -61,7 +61,7 @@
                             <div class="text-center text-md-start">
                                 <h4 class="mb-0">Manage Subscription Plans</h4>
                             </div>
-                            <a href="{{ route('plans.create') }}" class="btn btn-primary">
+                            <a href="{{ route('plans.create') }}" class="btn btn-primary hidden AdminAddPlans">
                                 <i class="fas fa-plus me-2"></i> Add Plan
                             </a>
                         </div>
@@ -75,7 +75,7 @@
                                                 <label for="planCycle" class="form-label mb-0 fw-semibold text-muted">Billing Cycle:</label>
                                                 <div class="w-50">
                                                     <select name="planCycle" id="planCycle" class="form-select shadow-none border-0 bg-light" onchange="this.form.submit()">
-                                                        @foreach($billing_cycles as $cycle)
+                                                        @foreach($billing_cycles ?? [] as $cycle)
                                                             <option value="{{ $cycle->duration_months }}"
                                                                 {{ isset($selected_cycle) && $selected_cycle->duration_months == $cycle->duration_months ? 'selected' : '' }}>
                                                                 {{ $cycle->duration_months }} Month{{ $cycle->duration_months > 1 ? 's' : '' }}
@@ -96,13 +96,13 @@
                             </div>
                         @else
                             <div class="row row-cols-1 row-cols-md-3 g-4 mt-2">
-                                @foreach($plans as $plan)
+                                @foreach($plans ?? [] as $plan)
                                     <div class="col-lg-4 col-md-6 col-sm-12">
                                         <div class="card h-100 border-0 shadow shadow-hover overflow-hidden transition-all">
 
                                             <div class="position-absolute end-0 top-0 p-3 delete-btn-wrapper">
                                                 <button type="button"
-                                                        class="btn btn-sm btn-icon-only btn-danger rounded-circle shadow-sm transition-all delete-plan-btn"
+                                                        class="btn btn-sm btn-icon-only btn-danger rounded-circle shadow-sm transition-all delete-plan-btn hidden AdminDeletePlan"
                                                         data-plan-id="{{ $plan['id'] }}"
                                                         data-plan-name="{{ $plan['plan_name'] }}"
                                                         title="Delete Plan">
@@ -153,12 +153,12 @@
                                             <div class="card-footer bg-transparent border-0 p-4 pt-0">
                                                 <div class="d-grid gap-2">
                                                     <a href="{{ route('plans.show', ['id' => $plan['id'], 'planCycle' => $selected_cycle->duration_months]) }}"
-                                                       class="btn btn-outline-primary rounded-pill py-2 view-details-btn">
+                                                       class="btn btn-outline-primary rounded-pill py-2 view-details-btn hidden AdminViewPlansDetails">
                                                         <i class="fas fa-eye-slash me-2"></i> View Details
                                                     </a>
 
                                                     <a href="{{ route('plans.edit', $plan['id']) }}"
-                                                       class="btn btn-sm btn-light rounded-pill py-2">
+                                                       class="btn btn-sm btn-light rounded-pill py-2 hidden AdminEditPlans">
                                                         <i class="fas fa-edit me-1"></i> Edit Plan
                                                     </a>
                                                 </div>

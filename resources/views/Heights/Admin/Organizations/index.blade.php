@@ -399,7 +399,7 @@
                             <li class="nav-item" role="presentation">
                                 <a class="nav-link {{ $activeTab === 'Tab1' ? 'active' : '' }}" id="dropdwon-types-tab" data-bs-toggle="tab" href="#dropdwon-types" role="tab" aria-controls="dropdwon-types" aria-selected="{{ $activeTab === 'Tab1' ? 'true' : 'false' }}">Organization</a>
                             </li>
-                            <li class="nav-item" role="presentation">
+                            <li class="nav-item hidden AdminAddOrganizations" role="presentation">
                                 <a class="nav-link {{ $activeTab === 'Tab2' ? 'active' : '' }}" id="dropdwon-values-tab" data-bs-toggle="tab" href="#dropdwon-values" role="tab" aria-controls="dropdwon-values" aria-selected="{{ $activeTab === 'Tab2' ? 'true' : 'false' }}">Add Organization</a>
                             </li>
                         </ul>
@@ -485,14 +485,14 @@
 
                                                                             <div class="d-flex gap-2">
                                                                                 <a href="{{ route('organizations.show', ['organization' => $organization->id]) }}"
-                                                                                   class="btn btn-sm btn-view rounded-circle p-2"
+                                                                                   class="btn btn-sm btn-view rounded-circle p-2 hidden AdminViewOrganizationsDetails"
                                                                                    data-bs-toggle="tooltip"
                                                                                    data-bs-placement="top"
                                                                                    title="View">
                                                                                     <x-icon name="view" type="icon" size="16px" />
                                                                                 </a>
                                                                                 <a href="{{ route('organizations.edit', $organization->id) }}"
-                                                                                   class="btn btn-sm btn-outline-warning rounded-circle p-2"
+                                                                                   class="btn btn-sm btn-outline-warning rounded-circle p-2 hidden AdminEditOrganizations"
                                                                                    data-bs-toggle="tooltip"
                                                                                    data-bs-placement="top"
                                                                                    title="Edit">
@@ -590,7 +590,7 @@
                                 </div>
                             </div>
                             <!-- Add Organization Tab -->
-                            <div class="tab-pane fade {{ $activeTab === 'Tab2' ? 'show active' : '' }}" id="dropdwon-values" role="tabpanel" aria-labelledby="dropdwon-values-tab">
+                            <div class="tab-pane  hidden AdminAddOrganizations fade {{ $activeTab === 'Tab2' ? 'show active' : '' }}" id="dropdwon-values" role="tabpanel" aria-labelledby="dropdwon-values-tab">
                                 <div class="card shadow py-2 px-1 mb-5 bg-body rounded" style="border: none;">
                                     <div class="card-body" style="overflow-x: auto;">
                                         <form action="{{ route('organizations.store') }}" method="POST" enctype="multipart/form-data" id="organizationForm">
