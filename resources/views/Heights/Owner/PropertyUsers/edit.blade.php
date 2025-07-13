@@ -111,7 +111,7 @@
             <div class="container-fluid ">
                 <div class="row">
                     <div class="col-md-12">
-                        <div class="d-flex justify-content-between align-items-center mb-2">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
                             <h4 class="mb-0">Edit User</h4>
                             <a href="{{ route('owner.property.users.index') }}" class="btn btn-secondary"><i class="fas fa-arrow-left me-2"></i> Go Back</a>
                         </div>
@@ -323,7 +323,7 @@
                                                 </div>
                                             </div>
                                             <div class="col-sm-12 col-md-6 col-lg-4 mt-2  d-flex justify-content-center align-items-center">
-                                                <img id="avatar" class="avatar" src="{{ asset($user->picture ??  'https://via.placeholder.com/150') }}" alt="User Picture">
+                                                <img id="avatar" class="avatar" src="{{ $user->picture ? asset($user->picture) : asset('img/placeholder-profile.png') }}" alt="User Picture">
                                             </div>
                                         </div>
                                     </div>

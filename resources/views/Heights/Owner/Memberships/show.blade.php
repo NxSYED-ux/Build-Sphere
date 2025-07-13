@@ -712,7 +712,7 @@
                                                 <td>{{ $user->subscription->created_at ? \Carbon\Carbon::parse($user->subscription->created_at)->format('M d, Y') : 'N/A' }}</td>
                                                 <td>{{ $user->subscription->ends_at ? \Carbon\Carbon::parse($user->subscription->ends_at)->format('M d, Y') : 'N/A' }}</td>
                                                 <td>
-                                                    <button class="btn btn-primary mark-payment-received"
+                                                    <button class="btn btn-primary mark-payment-received" title="Mark Payment Received"
                                                             data-user-membership-id="{{ $user->id }}">
                                                         Mark Payment
                                                     </button>
@@ -781,13 +781,16 @@
                             })
                                 .then(response => {
                                     if (!response.ok) {
-                                        throw new Error('Network response was not ok');
+                                        if (response.status === 422) {
+                                            throw new Error(data.message || 'Validation error');
+                                        }
+                                        throw new Error(data.message || data.error || 'Network response was not ok');
                                     }
                                     return response.json();
                                 })
                                 .then(data => {
                                     Swal.fire({
-                                        title: 'Deleted!',
+                                        title: 'Success!',
                                         text: data.success || 'Payment marked as received and transaction recorded.',
                                         icon: 'success',
                                         background: 'var(--body-background-color)',
@@ -811,79 +814,74 @@
             });
         });
     </script>
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Only run if not on mobile
-        if (window.innerWidth > 768) {
-            const imageContainers = document.querySelectorAll('.membership-image-container');
 
-            imageContainers.forEach(container => {
-                const img = container.querySelector('.membership-image');
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Only run if not on mobile
+            if (window.innerWidth > 768) {
+                const imageContainers = document.querySelectorAll('.membership-image-container');
 
-                // Check if image is loaded
-                if (img.complete) {
-                    initScrollEffect(img, container);
-                } else {
-                    img.addEventListener('load', () => initScrollEffect(img, container));
-                }
-            });
+                imageContainers.forEach(container => {
+                    const img = container.querySelector('.membership-image');
+
+                    // Check if image is loaded
+                    if (img.complete) {
+                        initScrollEffect(img, container);
+                    } else {
+                        img.addEventListener('load', () => initScrollEffect(img, container));
+                    }
+                });
+            }
+        });
+
+        function initScrollEffect(img, container) {
+            const containerHeight = container.clientHeight;
+            const imgHeight = img.clientHeight;
+
+            // Only apply effect if image is significantly taller than container
+            if (imgHeight > containerHeight * 1.2) { // 20% taller threshold
+                img.classList.add('auto-scroll');
+
+                // Calculate the exact scroll distance needed
+                const scrollDistance = imgHeight - containerHeight;
+                img.style.setProperty('--scroll-distance', `-${scrollDistance}px`);
+
+                // Pause animation on hover for better UX
+                container.addEventListener('mouseenter', () => {
+                    img.style.animationPlayState = 'paused';
+                });
+
+                container.addEventListener('mouseleave', () => {
+                    img.style.animationPlayState = 'running';
+                });
+
+                // Handle window resize
+                window.addEventListener('resize', () => {
+                    if (window.innerWidth <= 768) {
+                        img.classList.remove('auto-scroll');
+                    } else if (imgHeight > container.clientHeight * 1.2) {
+                        img.classList.add('auto-scroll');
+                        const newScrollDistance = img.clientHeight - container.clientHeight;
+                        img.style.setProperty('--scroll-distance', `-${newScrollDistance}px`);
+                    } else {
+                        img.classList.remove('auto-scroll');
+                    }
+                });
+            }
         }
-    });
-
-    function initScrollEffect(img, container) {
-        const containerHeight = container.clientHeight;
-        const imgHeight = img.clientHeight;
-
-        // Only apply effect if image is significantly taller than container
-        if (imgHeight > containerHeight * 1.2) { // 20% taller threshold
-            img.classList.add('auto-scroll');
-
-            // Calculate the exact scroll distance needed
-            const scrollDistance = imgHeight - containerHeight;
-            img.style.setProperty('--scroll-distance', `-${scrollDistance}px`);
-
-            // Pause animation on hover for better UX
-            container.addEventListener('mouseenter', () => {
-                img.style.animationPlayState = 'paused';
-            });
-
-            container.addEventListener('mouseleave', () => {
-                img.style.animationPlayState = 'running';
-            });
-
-            // Handle window resize
-            window.addEventListener('resize', () => {
-                if (window.innerWidth <= 768) {
-                    img.classList.remove('auto-scroll');
-                } else if (imgHeight > container.clientHeight * 1.2) {
-                    img.classList.add('auto-scroll');
-                    const newScrollDistance = img.clientHeight - container.clientHeight;
-                    img.style.setProperty('--scroll-distance', `-${newScrollDistance}px`);
-                } else {
-                    img.classList.remove('auto-scroll');
-                }
-            });
-        }
-    }
-</script>
+    </script>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             document.body.addEventListener('change', function(e) {
                 if (e.target.classList.contains('featured-toggle')) {
-                    const toggle = e.target;
-                    const membershipId = toggle.dataset.membershipId;
-                    const isChecked = toggle.checked;
-                    const statusElement = toggle.closest('.info-value').querySelector('.featured-status');
+                    const button = e.target;
+                    const membershipId = button.dataset.membershipId;
+                    const isChecked = button.checked ? 1 : 0;
 
-                    // Store original state in case we need to revert
-                    const originalState = statusElement.textContent;
-                    const originalSliderHTML = toggle.nextElementSibling.innerHTML;
-
-                    // Show loading state
-                    toggle.nextElementSibling.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-                    toggle.disabled = true;
-                    statusElement.textContent = 'Updating...';
+                    const originalHTML = button.nextElementSibling.innerHTML;
+                    button.nextElementSibling.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+                    button.disabled = true;
 
                     fetch("{{ route('owner.memberships.toggle.featured') }}", {
                         method: 'PUT',
@@ -895,36 +893,50 @@
                         },
                         body: JSON.stringify({
                             membership_id: membershipId,
-                            value: isChecked ? 1 : 0
+                            value: isChecked
                         })
                     })
-                        .then(response => {
+                        .then(async response => {
                             if (!response.ok) {
-                                return response.json().then(err => {
-                                    throw new Error(
-                                        err.message ||
-                                        err.error ||
-                                        'Request failed with status ' + response.status
-                                    );
-                                });
+                                const error = await response.json();
+
+                                if (error.plan_upgrade_error) {
+                                    Swal.fire({
+                                        title: 'Upgrade Plan Error',
+                                        text: error.plan_upgrade_error || error.error || 'Request failed',
+                                        icon: 'error',
+                                        background: 'var(--body-background-color)',
+                                        color: 'var(--sidenavbar-text-color)',
+                                        showConfirmButton: true,
+                                        confirmButtonText: 'Upgrade Plan',
+                                        confirmButtonColor: '#3085d6',
+                                        showCancelButton: true,
+                                        allowOutsideClick: true,
+                                        allowEscapeKey: true
+                                    }).then((result) => {
+                                        if (result.isConfirmed) {
+                                            window.location.href = "{{ route('owner.plan.upgrade.index') }}";
+                                        }
+                                    });
+                                } else {
+                                    throw new Error(error.error || 'Request failed');
+                                }
+                                return;
                             }
                             return response.json();
                         })
                         .then(data => {
+                            if (!data) return;  // Safety check if response was already handled
+
                             if (data.redirect) {
                                 window.location.href = data.redirect;
                                 return;
                             }
 
-                            // Update status text
-                            statusElement.textContent = isChecked ? 'Featured' : 'Regular';
-
-                            // Show success message
-                            const successMessage = data.success || 'Membership featured status updated';
                             Swal.fire({
                                 icon: 'success',
                                 title: 'Success!',
-                                text: successMessage,
+                                text: data.success || 'Membership featured status updated',
                                 timer: 2000,
                                 background: 'var(--body-background-color)',
                                 color: 'var(--sidenavbar-text-color)',
@@ -932,26 +944,42 @@
                             });
                         })
                         .catch(error => {
-                            console.error('Error:', error);
+                            if (error.plan_upgrade_error) {
+                                Swal.fire({
+                                    title: 'Upgrade Plan Error',
+                                    text: error.plan_upgrade_error || error.error || 'Request failed',
+                                    icon: 'error',
+                                    background: 'var(--body-background-color)',
+                                    color: 'var(--sidenavbar-text-color)',
+                                    showConfirmButton: true,
+                                    confirmButtonText: 'Upgrade Plan',
+                                    confirmButtonColor: '#3085d6',
+                                    showCancelButton: true,
+                                    allowOutsideClick: true,
+                                    allowEscapeKey: true
+                                }).then((result) => {
+                                    if (result.isConfirmed) {
+                                        window.location.href = "{{ route('owner.plan.upgrade.index') }}";
+                                    }
+                                });
+                            } else {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error!',
+                                    text: error.message || 'Something went wrong. Please try again.',
+                                    timer: 2000,
+                                    background: 'var(--body-background-color)',
+                                    color: 'var(--sidenavbar-text-color)',
+                                    showConfirmButton: true
+                                });
+                            }
 
-                            // Revert UI to previous state
-                            toggle.checked = !isChecked;
-                            statusElement.textContent = originalState;
-
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Error!',
-                                text: error.message || 'Something went wrong. Please try again.',
-                                timer: 2000,
-                                background: 'var(--body-background-color)',
-                                color: 'var(--sidenavbar-text-color)',
-                                showConfirmButton: true
-                            });
+                            button.checked = !button.checked;  // Revert toggle
                         })
+
                         .finally(() => {
-                            // Restore slider
-                            toggle.nextElementSibling.innerHTML = originalSliderHTML;
-                            toggle.disabled = false;
+                            button.nextElementSibling.innerHTML = originalHTML;
+                            button.disabled = false;
                         });
                 }
             });

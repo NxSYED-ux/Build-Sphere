@@ -274,7 +274,7 @@ class PropertyUsersController extends Controller
     public function markAsPaymentReceived(Request $request)
     {
         $request->validate([
-            'user_unit_id' => 'required|exists:userbuildingunit,id',
+            'user_unit_id' => 'required|exists:userbuildingunits,id',
         ]);
 
         $loggedUser = request()->user();
@@ -296,7 +296,7 @@ class PropertyUsersController extends Controller
             $existingSubscription = Subscription::find($currentUnitContract->subscription_id);
 
             $assignmentUnitService = new AssignUnitService();
-            $transaction = $assignmentUnitService->unitAssignment_Transaction(
+            [$assignedUnit, $transaction] = $assignmentUnitService->unitAssignment_Transaction(
                 $user,
                 $unit,
                 $currentUnitContract->type,
@@ -310,7 +310,7 @@ class PropertyUsersController extends Controller
                 $existingSubscription,
             );
 
-            $assignmentUnitService->sendUnitAssignmentNotifications($unit, $transaction, $user->id, $currentUnitContract, $loggedUser);
+            $assignmentUnitService->sendUnitAssignmentNotifications($unit, $transaction, $user->id, $assignedUnit, $loggedUser);
 
             DB::commit();
 

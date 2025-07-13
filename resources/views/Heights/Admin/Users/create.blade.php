@@ -49,14 +49,7 @@
 
         .avatar:hover {
             transform: scale(1.05);
-        }
-
-        .btn {
-            border-radius: 8px;
-            padding: 10px 20px;
-            font-weight: 500;
-            transition: all 0.3s ease;
-        }
+        } 
 
         /* Form labels */
         .form-label {
@@ -101,11 +94,6 @@
             .avatar {
                 width: 100px;
                 height: 100px;
-            }
-
-            .btn {
-                width: 100%;
-                margin-bottom: 10px;
             }
         }
     </style>
@@ -358,7 +346,7 @@
                                     </div>
 
                                     <div class="d-flex justify-content-end mt-4">
-                                        <button type="submit" class="btn btn-primary px-4">
+                                        <button type="submit" class="btn btn-primary w-100 px-4">
                                             <i class='bx bx-save me-1'></i> Create User
                                         </button>
                                     </div>

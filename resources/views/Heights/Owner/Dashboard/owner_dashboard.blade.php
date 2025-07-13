@@ -1173,6 +1173,7 @@
                 fetch(`{{ route('owner_manager_dashboard.stats') }}`, {
                     method: 'GET',
                     headers: {
+                        'Accept': 'application/json',
                         'X-CSRF-TOKEN': '{{ csrf_token() }}',
                         'Content-Type': 'application/json',
                         'X-Requested-With': 'XMLHttpRequest'
@@ -1195,6 +1196,7 @@
                 fetch(`{{ route('owner_manager_dashboard.finance.stats') }}`, {
                     method: 'GET',
                     headers: {
+                        'Accept': 'application/json',
                         'X-CSRF-TOKEN': '{{ csrf_token() }}',
                         'Content-Type': 'application/json',
                         'X-Requested-With': 'XMLHttpRequest'
@@ -1250,6 +1252,7 @@
                 fetch(`{{ route('owner_manager_dashboard.unit.occupancy') }}?${queryString}`, {
                     method: 'GET',
                     headers: {
+                        'Accept': 'application/json',
                         'X-CSRF-TOKEN': '{{ csrf_token() }}',
                         'Content-Type': 'application/json',
                         'X-Requested-With': 'XMLHttpRequest'
@@ -1319,6 +1322,7 @@
                 fetch(`{{ route('owner_manager_dashboard.membership.subscription') }}?${queryString}`, {
                     method: 'GET',
                     headers: {
+                        'Accept': 'application/json',
                         'X-CSRF-TOKEN': '{{ csrf_token() }}',
                         'Content-Type': 'application/json',
                         'X-Requested-With': 'XMLHttpRequest'
@@ -1384,6 +1388,7 @@
                 fetch(`{{ route('owner_manager_dashboard.unit.status') }}?${queryString}`, {
                     method: 'GET',
                     headers: {
+                        'Accept': 'application/json',
                         'X-CSRF-TOKEN': '{{ csrf_token() }}',
                         'Content-Type': 'application/json',
                         'X-Requested-With': 'XMLHttpRequest'
@@ -1461,6 +1466,7 @@
                 fetch(`{{ route('owner_manager_dashboard.staff.distribution') }}?${queryString}`, {
                     method: 'GET',
                     headers: {
+                        'Accept': 'application/json',
                         'X-CSRF-TOKEN': '{{ csrf_token() }}',
                         'Content-Type': 'application/json',
                         'X-Requested-With': 'XMLHttpRequest'
@@ -1546,6 +1552,7 @@
                 fetch(`{{ route('owner_manager_dashboard.income.expense') }}?${queryString}`, {
                     method: 'GET',
                     headers: {
+                        'Accept': 'application/json',
                         'X-CSRF-TOKEN': '{{ csrf_token() }}',
                         'Content-Type': 'application/json',
                         'X-Requested-With': 'XMLHttpRequest'
@@ -1611,6 +1618,7 @@
                 fetch(`{{ route('owner_manager_dashboard.membership.subscription.distribution') }}?${queryString}`, {
                     method: 'GET',
                     headers: {
+                        'Accept': 'application/json',
                         'X-CSRF-TOKEN': '{{ csrf_token() }}',
                         'Content-Type': 'application/json',
                         'X-Requested-With': 'XMLHttpRequest'

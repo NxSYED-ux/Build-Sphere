@@ -471,29 +471,58 @@
 
                 const element = document.querySelector('.report-container');
                 const options = {
-                    scale: 2,
-                    useCORS: true,
-                    scrollY: 0,
-                    backgroundColor: '#FFFFFF',
+                    scale: 2, // Higher scale for better quality
+                    useCORS: true, // For cross-origin images
+                    allowTaint: true, // Allows tainted canvas
+                    logging: true, // Helpful for debugging
+                    scrollY: -window.scrollY, // Capture full scrollable content
+                    height: element.scrollHeight, // Full height of the element
+                    windowHeight: element.scrollHeight, // Window height matches content
+                    backgroundColor: '#FFFFFF', // White background
                     onclone: function(clonedDoc) {
                         clonedDoc.body.classList.add('exporting');
                     }
                 };
 
-                setTimeout(() => {  // Small delay to ensure rendering
-                    html2canvas(element, options).then(canvas => {
-                        const pdf = new jsPDF('p', 'mm', 'a4');
-                        const imgData = canvas.toDataURL('image/png');
-                        const pdfWidth = pdf.internal.pageSize.getWidth();
-                        const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+                html2canvas(element, options).then(canvas => {
+                    const imgData = canvas.toDataURL('image/png');
+                    const pdf = new jsPDF('p', 'mm', 'a4');
+                    const pageWidth = pdf.internal.pageSize.getWidth() - 20; // 10mm margins on each side
+                    const pageHeight = pdf.internal.pageSize.getHeight() - 20;
 
-                        pdf.addImage(imgData, 'PNG', 5, 5, pdfWidth - 10, pdfHeight - 10);
-                        pdf.save(`Building_Report_${getFormattedDate()}.pdf`);
+                    // Calculate image dimensions to fit page width
+                    const imgWidth = pageWidth;
+                    const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
-                        hideLoading();
-                        document.body.classList.remove('exporting');
+                    let position = 10; // Start position (top margin)
+                    let remainingHeight = imgHeight;
+
+                    // Add first page
+                    pdf.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight);
+                    remainingHeight -= pageHeight;
+                    position -= pageHeight;
+
+                    // Add additional pages if needed
+                    while (remainingHeight > 0) {
+                        pdf.addPage();
+                        pdf.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight);
+                        remainingHeight -= pageHeight;
+                        position -= pageHeight;
+                    }
+
+                    pdf.save(`Building_Report_${getFormattedDate()}.pdf`);
+                    hideLoading();
+                    document.body.classList.remove('exporting');
+                }).catch(error => {
+                    console.error('Error generating PDF:', error);
+                    hideLoading();
+                    document.body.classList.remove('exporting');
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Export Failed',
+                        text: 'There was an error generating the PDF. Please try again.'
                     });
-                }, 500);
+                });
             }
 
             function exportToImage() {
@@ -819,6 +848,7 @@
                 fetchUnitDetails()
                     .then(fetchUnitIncomeExpenseData)
                     .then(fetchUnitMaintenanceData)
+                    .then(fetchContractHistory)
                     .then(() => {
                         UnitReports.style.display = 'block';
                         defaultContainer.style.display = 'none';

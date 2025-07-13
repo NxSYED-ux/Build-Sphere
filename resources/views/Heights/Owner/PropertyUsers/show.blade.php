@@ -298,8 +298,8 @@
         }
         .unit-status-badge {
             position: absolute;
-            top: 15px;
-            right: 15px;
+            top: 10px;
+            right: 10px;
             /*background: rgba(0, 0, 0, 0.7);*/
             /*color: white;*/
             /*padding: 4px 10px;*/
@@ -379,18 +379,49 @@
 
         /* Action Buttons */
         .unit-card .action-buttons {
-            display: flex;
-            margin-top: auto;
-            flex-wrap: wrap;
-            gap: 2px;
+            margin-top: 15px;
+            width: 100%;
+        }
+
+        .unit-card .action-buttons .d-flex {
+            gap: 8px;
+        }
+
+        .unit-card .action-buttons .flex-grow-1 {
+            min-width: calc(33.333% - 8px);
+        }
+
+        @media (max-width: 768px) {
+            .unit-card .action-buttons .flex-grow-1 {
+                min-width: 100%;
+            }
         }
 
         .unit-card .action-btn {
-            flex: 1;
-            margin: 4px;
-            padding: 8px 0;
-            border-radius: 5px;
-            font-size: 0.85rem;
+            padding: 8px 12px !important;
+            font-size: 0.9rem !important;
+            white-space: nowrap;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .unit-card .action-btn i {
+            font-size: 1rem;
+            margin-right: 5px;
+        }
+
+        .unit-card .btn-view i {
+            color: #3498db;
+        }
+
+        .unit-card .btn-danger i {
+            color: #e74c3c;
+        }
+
+        .unit-card .mark-payment-received i {
+            color: #2ecc71;
         }
 
         /* Special Button Styles */
@@ -767,7 +798,7 @@
                                     <a href="{{ route('owner.property.users.index') }}" class="btn btn-secondary">
                                         <i class="fas fa-arrow-left me-1"></i> Back
                                     </a>
-                                    <a href="" class="btn btn-primary">
+                                    <a href="{{ route('owner.property.users.edit', $user->id) }}" class="btn btn-primary">
                                         <i class="fas fa-edit me-1"></i> Edit
                                     </a>
                                 </div>
@@ -775,7 +806,7 @@
 
                             <div class="user-profile-content">
                                 <div class="user-avatar-wrapper">
-                                    <img src="{{ $user->picture ? asset($user->picture) : asset('img/default-user.png') }}"
+                                    <img src="{{ $user->picture ? asset($user->picture) : asset('img/placeholder-profile.png') }}"
                                          class="user-avatar"
                                          alt="User Avatar">
                                     <div class="user-avatar-hover">
@@ -913,12 +944,12 @@
                                                         {{ $unit->unit_type ?? 'N/A' }}
                                                     </div>
                                                     <div class="unit-status-badge">
-                                                        @if($userUnit->renew_canceled === 1)
-                                                            <button type="button" class="action-btn rented-status-btn btn-discontinue gap-1" title="Discontinue" onclick="updateContractStatus({{ $userUnit->id }}, 0)">
+                                                        @if($userUnit->renew_canceled === 0)
+                                                            <button type="button" class="action-btn rented-status-btn btn-discontinue gap-1" title="Discontinue" onclick="updateContractStatus({{ $userUnit->id }}, 1)">
                                                                 <i class='bx bx-pause'></i> Discontinue
                                                             </button>
                                                         @else
-                                                            <button type="button" class="action-btn rented-status-btn btn-continue gap-1" title="Continue" onclick="updateContractStatus({{ $userUnit->id }}, 1)">
+                                                            <button type="button" class="action-btn rented-status-btn btn-continue gap-1" title="Continue" onclick="updateContractStatus({{ $userUnit->id }}, 0)">
                                                                 <i class='bx bx-play'></i> Continue
                                                             </button>
                                                         @endif
@@ -945,20 +976,37 @@
                                                     <p class="card-text"><i class='bx bxs-layer me-1'></i> {{ $unit->level->level_name ?? 'N/A' }}</p>
                                                     <p class="card-text"><i class='bx bx-time me-1'></i> Billing Cycle: {{ $userUnit->billing_cycle ?? 'N/A' }} Month</p>
                                                     <p class="card-text"><i class='bx bx-calendar me-1'></i> Start Date: {{ $userUnit->subscription->created_at ? \Carbon\Carbon::parse($userUnit->subscription->created_at)->format('M d, Y') : 'N/A' }}</p>
+                                                    @if($userUnit->renew_canceled === 0)
                                                     <p class="card-text"><i class='bx bx-calendar me-1'></i> Next Billing: {{ $userUnit->subscription->ends_at ? \Carbon\Carbon::parse($userUnit->subscription->ends_at)->format('M d, Y') : 'N/A' }}</p>
                                                     <p class="card-text"><i class='bx bx-money me-1'></i> Next Billing Amount: {{ $userUnit->price ?? 'N/A' }}</p>
+                                                    @else
+                                                        <p class="card-text"><i class='bx bx-calendar me-1'></i> End Date: {{ $userUnit->subscription->ends_at ? \Carbon\Carbon::parse($userUnit->subscription->ends_at)->format('M d, Y') : 'N/A' }}</p>
+                                                    @endif
 
                                                     <div class="action-buttons">
-                                                        <a href="{{ route('owner.units.show', $unit->id) }}" class="action-btn btn-add btn-view view-unit gap-1" title="View">
-                                                            <i class='bx bx-show'></i> View
-                                                        </a>
-                                                        <form action="#" method="POST" class="d-inline delete-form">
-                                                            @csrf
-                                                            @method('DELETE')
-                                                            <button type="button" class="action-btn btn-add btn-danger gap-1 delete-btn" title="Delete">
-                                                                <i class='bx bx-trash'></i> Delete
-                                                            </button>
-                                                        </form>
+                                                        <div class="d-flex flex-wrap gap-2">
+                                                            <div class="flex-grow-1">
+                                                                <a href="{{ route('owner.units.show', $unit->id) }}" class="action-btn btn-add btn-view view-unit gap-1 w-100" title="View">
+                                                                    <i class='bx bx-show'></i> View
+                                                                </a>
+                                                            </div>
+                                                            <div class="flex-grow-1">
+                                                                <form action="#" method="POST" class="d-inline delete-form w-100">
+                                                                    @csrf
+                                                                    @method('DELETE')
+                                                                    <button type="button" class="action-btn btn-add btn-danger gap-1 delete-btn w-100" title="Delete">
+                                                                        <i class='bx bx-trash'></i> Delete
+                                                                    </button>
+                                                                </form>
+                                                            </div>
+                                                            @if($userUnit->renew_canceled === 0)
+                                                            <div class="flex-grow-1 w-100">
+                                                                <a href="#" class="action-btn btn-add btn-view view-unit gap-1 w-100 mark-payment-received" title="Mark Payment Received" data-user-unit-id="{{ $userUnit->id }}">
+                                                                    <i class='bx bx-money'></i> Mark Payment
+                                                                </a>
+                                                            </div>
+                                                            @endif
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -1104,8 +1152,9 @@
                     const response = await fetch('{{ route("owner.property.users.contractStatus") }}', {
                         method: 'PUT',
                         headers: {
+                            'Accept': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
                             'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': csrfToken,
                             'X-Requested-With': 'XMLHttpRequest'
                         },
                         body: JSON.stringify({
@@ -1173,6 +1222,8 @@
                         const response = await fetch(`{{ route('owner.property.users.contract.edit', ':id') }}`.replace(':id', contractId), {
                             headers: {
                                 'Accept': 'application/json',
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                'Content-Type': 'application/json',
                                 'X-Requested-With': 'XMLHttpRequest'
                             }
                         });
@@ -1296,6 +1347,77 @@
                     }).then((result) => {
                         if (result.isConfirmed) {
                             form.submit();
+                        }
+                    });
+                });
+            });
+        });
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add event listeners to all mark payment buttons
+            document.querySelectorAll('.mark-payment-received').forEach(button => {
+                button.addEventListener('click', function() {
+                    const userUnitId = this.getAttribute('data-user-unit-id');
+
+                    // Show confirmation dialog
+                    Swal.fire({
+                        title: 'Are you sure?',
+                        text: "You want to mark this payment as received?",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Yes, mark as received!'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            // Prepare the request data
+                            const requestData = {
+                                user_unit_id: userUnitId,
+                                _token: '{{ csrf_token() }}' // CSRF token for Laravel
+                            };
+
+                            // Make the fetch request
+                            fetch("{{ route('owner.property.users.rentalPaymentReceived') }}", {
+                                method: 'POST',
+                                headers: {
+                                    'Accept': 'application/json',
+                                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                    'Content-Type': 'application/json',
+                                    'X-Requested-With': 'XMLHttpRequest'
+                                },
+                                body: JSON.stringify(requestData)
+                            })
+                                .then(response => {
+                                    if (!response.ok) {
+                                        if (response.status === 422) {
+                                            throw new Error(data.message || 'Validation error');
+                                        }
+                                        throw new Error(data.message || data.error || 'Network response was not ok');
+                                    }
+                                    return response.json();
+                                })
+                                .then(data => {
+                                    Swal.fire({
+                                        title: 'Success!',
+                                        text: data.success || 'Payment marked as received and transaction recorded.',
+                                        icon: 'success',
+                                        background: 'var(--body-background-color)',
+                                        color: 'var(--sidenavbar-text-color)',
+                                    }).then(() => {
+                                        window.location.reload();
+                                    });
+                                })
+                                .catch(error => {
+                                    Swal.fire({
+                                        title: 'Error!',
+                                        text: error.message || error.error || 'Failed to mark payment as received.',
+                                        icon: 'error',
+                                        background: 'var(--body-background-color)',
+                                        color: 'var(--sidenavbar-text-color)',
+                                    });
+                                });
                         }
                     });
                 });

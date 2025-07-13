@@ -21,7 +21,7 @@
 
         .building-image, .unit-image {
             width: 100%;
-            height: auto;
+            height: 250px;
             border-radius: 12px;
             object-fit: cover;
             box-shadow: 0 3px 10px rgba(0,0,0,0.1);
@@ -292,19 +292,23 @@
         .transaction-section {
             background-color: var(--sidenavbar-body-color);
             margin-bottom: 2.5rem;
+            padding: 10px !important;
         }
 
-        .transactions-table-container {
+        .transactions-table-container, .maintenance-table-container {
             background: var(--body-background-color);
             border-radius: 12px;
-            padding: 10px;
+            padding: 10px !important;
+            margin: 0;
             box-shadow: 0 4px 12px rgba(0,0,0,0.05);
             overflow: hidden;
             margin-bottom: 2rem;
         }
 
         .transactions-table {
-            width: 100%;
+            width: 100% !important;
+            min-width: 100%;
+            margin: 0;
             border-collapse: collapse;
         }
 
@@ -313,7 +317,7 @@
         }
 
         .transactions-table th {
-            padding: 1rem;
+            padding: 0.75rem 1rem;
             text-align: left;
             color: var(--sidenavbar-text-color);
             text-transform: uppercase;
@@ -321,14 +325,17 @@
         }
 
         .transactions-table td {
-            padding: 1rem;
             border-bottom: 1px solid #e2e8f0;
             font-size: 0.875rem;
+            padding: 0.75rem 1rem;
         }
 
         .table-responsive {
             width: 100%;
             overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            padding: 0;
+            margin: 0;
         }
 
         .transactions-table {
@@ -339,14 +346,21 @@
 
 
         .transaction-id {
-            font-family: 'Courier New', monospace;
-            color: var(--primary);
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            background: var(--sidenavbar-body-color);
+            border-radius: 4px;
+            font-size: 0.75rem;
             font-weight: 500;
         }
 
         .transaction-title {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            background: var(--sidenavbar-body-color);
+            border-radius: 4px;
+            font-size: 0.75rem;
             font-weight: 500;
-            color: var(--dark);
         }
 
         .transaction-unit {
@@ -776,7 +790,9 @@
             fetch( `{{ route('owner.reports.building.details') }}?building=${currentBuilding}` , {
                 method: 'GET',
                 headers: {
-                    'X-CSRF-TOKEN': csrfToken,
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Content-Type': 'application/json',
                     'X-Requested-With': 'XMLHttpRequest'
                 }
             })
@@ -817,7 +833,8 @@
             return fetch(`{{ route('owner.reports.buildings.finance') }}?building=${currentBuilding}&start=${currentStartDate}&end=${currentEndDate}`, {
                 method: 'GET',
                 headers: {
-                    'X-CSRF-TOKEN': csrfToken,
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
                     'Content-Type': 'application/json',
                     'X-Requested-With': 'XMLHttpRequest'
                 }
@@ -861,7 +878,8 @@
             return fetch(`{{ route('owner.reports.buildings.occupancy') }}?building=${currentBuilding}&start=${currentStartDate}&end=${currentEndDate}`, {
                 method: 'GET',
                 headers: {
-                    'X-CSRF-TOKEN': csrfToken,
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
                     'Content-Type': 'application/json',
                     'X-Requested-With': 'XMLHttpRequest'
                 }
@@ -888,7 +906,8 @@
             return fetch(`{{ route('owner.reports.buildings.staff') }}?building=${currentBuilding}&start=${currentStartDate}&end=${currentEndDate}`, {
                 method: 'GET',
                 headers: {
-                    'X-CSRF-TOKEN': csrfToken,
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
                     'Content-Type': 'application/json',
                     'X-Requested-With': 'XMLHttpRequest'
                 }
@@ -938,7 +957,8 @@
             return fetch(`{{ route('owner.reports.buildings.memberships') }}?building=${currentBuilding}&start=${currentStartDate}&end=${currentEndDate}`, {
                 method: 'GET',
                 headers: {
-                    'X-CSRF-TOKEN': csrfToken,
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
                     'Content-Type': 'application/json',
                     'X-Requested-With': 'XMLHttpRequest'
                 }
@@ -973,7 +993,8 @@
             return fetch(`{{ route('owner.reports.buildings.maintenance') }}?building=${currentBuilding}&start=${currentStartDate}&end=${currentEndDate}`, {
                 method: 'GET',
                 headers: {
-                    'X-CSRF-TOKEN': csrfToken,
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
                     'Content-Type': 'application/json',
                     'X-Requested-With': 'XMLHttpRequest'
                 }
@@ -1057,8 +1078,8 @@
                     }
                 ],
                 columns: [
-                    { data: 'id', className: 'transaction-id' },
-                    { data: 'title', className: 'transaction-title' },
+                    { data: 'id', className: '' },
+                    { data: 'title', className: '' },
                     {
                         data: 'unit',
                         render: function(data, type, row) {

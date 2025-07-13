@@ -35,13 +35,6 @@
             font-size: 0.9em;
         }
 
-        .btn {
-            border-radius: 8px;
-            padding: 10px 20px;
-            font-weight: 500;
-            transition: all 0.3s ease;
-        }
-
         /* Section headers */
         .section-header {
             color: var(--sidenavbar-text-color);
@@ -77,11 +70,6 @@
             .avatar {
                 width: 100px;
                 height: 100px;
-            }
-
-            .btn {
-                width: 100%;
-                margin-bottom: 10px;
             }
         }
 
@@ -119,265 +107,265 @@
                             <a href="{{ route('users.index') }}" class="btn btn-secondary"><i class="fas fa-arrow-left me-2"></i> Go Back</a>
                         </div>
                         <div class="card shadow p-2 px-4 mb-5 bg-body rounded" style="border: none;">
-                                    <div class="card-body">
-                                        <form action="{{ route('users.update')}}" method="POST" enctype="multipart/form-data">
-                                            @method('PUT')
-                                            <input type="hidden" name="user_id" value="{{ $user->id }}">
-                                            <input type="hidden" name="updated_at" value="{{ $user->updated_at }}">
+                            <div class="card-body">
+                                <form action="{{ route('users.update')}}" method="POST" enctype="multipart/form-data">
+                                    @method('PUT')
+                                    <input type="hidden" name="user_id" value="{{ $user->id }}">
+                                    <input type="hidden" name="updated_at" value="{{ $user->updated_at }}">
 
-                                            <div class="form-section">
-                                                <h5 class="section-header">
-                                                    <i class='bx bxs-user-detail'></i> Basic Information
-                                                </h5>
-                                                <div class="row">
-                                                <div class="col-md-4">
-                                                    <div class="form-group mb-3">
-                                                        <label for="name" class="form-label">Name</label>
-                                                        <span class="required__field">*</span>
-                                                        <div class="position-relative">
-                                                            <input type="text" name="name" id="name" class="form-control @error('name') is-invalid @enderror" value="{{ old('name', $user->name) }}" maxlength="50" placeholder="User Name" required>
-                                                            <i class='bx bxs-user input-icon position-absolute top-50 end-0 translate-middle-y me-3'></i>
-                                                        </div>
-                                                        @error('name')
-                                                            <span class="invalid-feedback text-danger" role="alert">
-                                                                <strong>{{ $message }}</strong>
-                                                            </span>
-                                                        @enderror
-                                                    </div>
+                                    <div class="form-section">
+                                        <h5 class="section-header">
+                                            <i class='bx bxs-user-detail'></i> Basic Information
+                                        </h5>
+                                        <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="form-group mb-3">
+                                                <label for="name" class="form-label">Name</label>
+                                                <span class="required__field">*</span>
+                                                <div class="position-relative">
+                                                    <input type="text" name="name" id="name" class="form-control @error('name') is-invalid @enderror" value="{{ old('name', $user->name) }}" maxlength="50" placeholder="User Name" required>
+                                                    <i class='bx bxs-user input-icon position-absolute top-50 end-0 translate-middle-y me-3'></i>
                                                 </div>
-                                                <div class="col-md-4">
-                                                    <div class="form-group mb-3">
-                                                        <label for="email" class="form-label">Email</label>
-                                                        <span class="required__field">*</span><br>
-                                                        <div class="position-relative">
-                                                            <input type="email" name="email" id="email" class="form-control @error('email') is-invalid @enderror" value="{{ old('email', $user->email) }}" maxlength="50" placeholder="Email" required>
-                                                            <i class='bx bxs-envelope input-icon position-absolute top-50 end-0 translate-middle-y me-3'></i>
-                                                        </div>
-                                                        @error('email')
-                                                            <span class="invalid-feedback text-danger" role="alert">
-                                                                <strong class="text-danger">{{ $message }}</strong>
-                                                            </span>
-                                                        @enderror
-                                                    </div>
-                                                </div>
-
-                                                <div class="col-md-4">
-                                                    <div class="form-group mb-3">
-                                                        <label for="gender" class="form-label">Gender</label>
-                                                        <span class="required__field">*</span><br>
-                                                        <select name="gender" id="gender" class="form-select" required>
-                                                            <option value="">Select Gender</option>
-                                                            <option value="Male" {{ old('gender', $user->gender) == 'Male' ? 'selected' : '' }}>Male</option>
-                                                            <option value="Female" {{ old('gender', $user->gender) == 'Female' ? 'selected' : '' }}>Female</option>
-                                                            <option value="Other" {{ old('gender', $user->gender) == 'Other' ? 'selected' : '' }}>Other</option>
-                                                        </select>
-                                                        @error('gender')
-                                                            <span class="invalid-feedback" role="alert">
-                                                                <strong>{{ $message }}</strong>
-                                                            </span>
-                                                        @enderror
-                                                    </div>
-                                                </div>
-
-                                                <div class="col-md-4">
-                                                    <div class="form-group mb-3">
-                                                        <label for="contact" class="form-label">Phone no:</label>
-                                                        <span class="required__field">*</span>
-                                                        <div class="position-relative">
-                                                            <input type="text" name="phone_no" id="contact" value="{{ old('phone_no', $user->phone_no) }}" class="form-control contact" placeholder="0300-0000000" maxlength="12" required>
-                                                            <i class='bx bxs-mobile input-icon position-absolute top-50 end-0 translate-middle-y me-3'></i>
-                                                        </div>
-                                                        @error('phone_no')
-                                                            <span class="invalid-feedback" role="alert">
-                                                                <strong>{{ $message }}</strong>
-                                                            </span>
-                                                        @enderror
-                                                    </div>
-                                                </div>
-
-                                                <div class="col-md-4">
-                                                    <div class="form-group mb-3">
-                                                        <label for="cnic" class="form-label">CNIC</label>
-                                                        <span class="required__field">*</span>
-                                                        <div class="position-relative">
-                                                            <input type="text" name="cnic" id="cnic" class="form-control @error('cnic') is-invalid @enderror" value="{{ old('cnic', $user->cnic) }}" maxlength="18" placeholder="123-4567-1234567-1" required>
-                                                            <i class='bx bxs-id-card input-icon position-absolute top-50 end-0 translate-middle-y me-3'></i>
-                                                        </div>
-                                                        @error('cnic')
-                                                            <span class="invalid-feedback" role="alert">
-                                                                <strong>{{ $message }}</strong>
-                                                            </span>
-                                                        @enderror
-                                                    </div>
-                                                </div>
-
-                                                <!--  -->
-                                                <div class="col-md-4">
-                                                    <div class="form-group mb-3">
-                                                        <label for="date_of_birth" class="form-label">Date of Birth</label>
-                                                        <span class="required__field">*</span>
-                                                        <input type="date" class="form-control" id="date_of_birth" name="date_of_birth" max="{{ $maxDate }}" value="{{ old('date_of_birth', isset($user->date_of_birth) ? \Carbon\Carbon::parse($user->date_of_birth )->format('Y-m-d') : '') }}" required>
-                                                        <div id="dob_error" class="invalid-feedback d-none">
-                                                            User must be at least 10 years old.
-                                                        </div>
-                                                        @error('date_of_birth')
-                                                            <div class="text-danger">{{ $message }}</div>
-                                                        @enderror
-                                                    </div>
-                                                </div>
-
-                                                <div class="col-md-4">
-                                                    <div class="form-group mb-3">
-                                                        <label for="status" class="form-label">Status</label>
-                                                        <span class="required__field">*</span><br>
-                                                        <select name="status" id="status" class="form-select" required>
-                                                            <option value="1" {{ old('status', $user->status) == '1' ? 'selected' : '' }}>Active</option>
-                                                            <option value="0" {{ old('status', $user->status) == '0' ? 'selected' : '' }}>Inactive</option>
-                                                        </select>
-                                                        @error('status')
-                                                            <span class="invalid-feedback" role="alert">
-                                                                <strong>{{ $message }}</strong>
-                                                            </span>
-                                                        @enderror
-                                                    </div>
-                                                </div>
-
-                                                <div class="col-md-4">
-                                                    <div class="form-group mb-3">
-                                                        <label for="role_id" class="form-label">Role</label>
-                                                        <span class="required__field">*</span><br>
-                                                        <select name="role_id" id="role_id" class="form-select" required>
-                                                            @forelse($roles ?? [] as $role)
-                                                                <option value="{{ $role->id }}" {{ old('role_id', $user->role_id) == $role->id ? 'selected' : '' }}>
-                                                                    {{ $role->name }}
-                                                                </option>
-                                                            @empty
-                                                            @endforelse
-                                                        </select>
-                                                        @error('role_id')
-                                                            <span class="invalid-feedback" role="alert">
-                                                                <strong>{{ $message }}</strong>
-                                                            </span>
-                                                        @enderror
-                                                    </div>
-                                                </div>
+                                                @error('name')
+                                                    <span class="invalid-feedback text-danger" role="alert">
+                                                        <strong>{{ $message }}</strong>
+                                                    </span>
+                                                @enderror
                                             </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group mb-3">
+                                                <label for="email" class="form-label">Email</label>
+                                                <span class="required__field">*</span><br>
+                                                <div class="position-relative">
+                                                    <input type="email" name="email" id="email" class="form-control @error('email') is-invalid @enderror" value="{{ old('email', $user->email) }}" maxlength="50" placeholder="Email" required>
+                                                    <i class='bx bxs-envelope input-icon position-absolute top-50 end-0 translate-middle-y me-3'></i>
+                                                </div>
+                                                @error('email')
+                                                    <span class="invalid-feedback text-danger" role="alert">
+                                                        <strong class="text-danger">{{ $message }}</strong>
+                                                    </span>
+                                                @enderror
                                             </div>
+                                        </div>
 
-                                            <!--  -->
-                                            <div class="form-section mt-4">
-                                                <h5 class="section-header">
-                                                    <i class='bx bxs-map'></i> Address Information
-                                                </h5>
-                                                <div class="row">
-
-                                                <!--  -->
-                                                <div class="col-lg-4 col-md-6 col-sm-12">
-                                                    <div class="form-group mb-3">
-                                                        <label for="country" class="form-label">Country</label>
-                                                        <span class="required__field">*</span>
-                                                        <select class="form-select" id="country" name="country" required>
-                                                            <option value="" selected>Select Country</option>
-                                                        </select>
-                                                        @error('country')
-                                                            <div class="text-danger">{{ $message }}</div>
-                                                        @enderror
-                                                    </div>
-                                                </div>
-                                                <!--  -->
-                                                <div class="col-lg-4 col-md-6 col-sm-12">
-                                                    <div class="form-group mb-3">
-                                                        <label for="province" class="form-label">Province</label>
-                                                        <span class="required__field">*</span>
-                                                        <select class="form-select" id="province" name="province" required>
-                                                            <option value="" selected>Select Province</option>
-                                                        </select>
-                                                        @error('province')
-                                                            <div class="text-danger">{{ $message }}</div>
-                                                        @enderror
-                                                    </div>
-                                                </div>
-
-                                                <!--  -->
-                                                <div class="col-lg-4 col-md-6 col-sm-12">
-                                                    <div class="form-group mb-3">
-                                                        <label for="city" class="form-label">City</label>
-                                                        <span class="required__field">*</span>
-                                                        <select class="form-select" id="city" name="city" required>
-                                                            <option value="" selected>Select Province</option>
-                                                        </select>
-                                                        @error('customer_city')
-                                                            <div class="text-danger">{{ $message }}</div>
-                                                        @enderror
-                                                    </div>
-                                                </div>
-
-                                                <!--  -->
-                                                <div class="col-sm-12 col-md-6 col-lg-8">
-                                                    <div class="form-group mb-3">
-                                                        <label for="location" class="form-label">Location</label>
-                                                        <span class="required__field">*</span>
-                                                        <div class="position-relative">
-                                                            <input type="text" name="location" id="location" class="form-control @error('location') is-invalid @enderror" value="{{ old('location', $user->address->location ) }}" maxlength="100" placeholder="Enter Location" required>
-                                                            <i class='bx bxs-edit-location input-icon position-absolute top-50 end-0 translate-middle-y me-3'></i>
-                                                        </div>
-                                                        @error('location')
-                                                            <span class="invalid-feedback" role="alert">
-                                                                <strong>{{ $message }}</strong>
-                                                            </span>
-                                                        @enderror
-                                                    </div>
-                                                </div>
-
-                                                <!--  -->
-                                                <div class="col-sm-12 col-md-6 col-lg-4">
-                                                    <div class="form-group mb-3">
-                                                        <label for="postal_code" class="form-label">Postal Code</label>
-                                                        <span class="required__field">*</span>
-                                                        <div class="position-relative">
-                                                            <input type="text" name="postal_code" id="postal_code" class="form-control @error('postal_code') is-invalid @enderror" value="{{ old('postal_code', $user->address->postal_code ) }}" maxlength="100" placeholder="Enter Postal Code" required>
-                                                            <i class='bx bx-current-location input-icon position-absolute top-50 end-0 translate-middle-y me-3'></i>
-                                                        </div>
-                                                        @error('postal_code')
-                                                            <span class="invalid-feedback" role="alert">
-                                                                <strong>{{ $message }}</strong>
-                                                            </span>
-                                                        @enderror
-                                                    </div>
-                                                </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group mb-3">
+                                                <label for="gender" class="form-label">Gender</label>
+                                                <span class="required__field">*</span><br>
+                                                <select name="gender" id="gender" class="form-select" required>
+                                                    <option value="">Select Gender</option>
+                                                    <option value="Male" {{ old('gender', $user->gender) == 'Male' ? 'selected' : '' }}>Male</option>
+                                                    <option value="Female" {{ old('gender', $user->gender) == 'Female' ? 'selected' : '' }}>Female</option>
+                                                    <option value="Other" {{ old('gender', $user->gender) == 'Other' ? 'selected' : '' }}>Other</option>
+                                                </select>
+                                                @error('gender')
+                                                    <span class="invalid-feedback" role="alert">
+                                                        <strong>{{ $message }}</strong>
+                                                    </span>
+                                                @enderror
                                             </div>
-                                            </div>
+                                        </div>
 
-                                            <div class="form-section mt-4">
-                                                <h5 class="section-header">
-                                                    <i class='bx bxs-image'></i> Profile Picture
-                                                </h5>
-                                                <div class="row mb-3">
-                                                <div class="col-sm-12 col-md-6 col-lg-4 ">
-                                                    <div class="form-group">
-                                                        <label for="picture" class="form-label">Picture <span style="font-size: 12px;">(Leave blank to keep current picture)</span></label>
-                                                        <input type="file" name="picture" id="picture" class="form-control" onchange="previewImage(event)">
-                                                        @error('picture')
-                                                            <span class="invalid-feedback" role="alert">
-                                                                <strong>{{ $message }}</strong>
-                                                            </span>
-                                                        @enderror
-                                                    </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group mb-3">
+                                                <label for="contact" class="form-label">Phone no:</label>
+                                                <span class="required__field">*</span>
+                                                <div class="position-relative">
+                                                    <input type="text" name="phone_no" id="contact" value="{{ old('phone_no', $user->phone_no) }}" class="form-control contact" placeholder="0300-0000000" maxlength="12" required>
+                                                    <i class='bx bxs-mobile input-icon position-absolute top-50 end-0 translate-middle-y me-3'></i>
                                                 </div>
-                                                <div class="col-sm-12 col-md-6 col-lg-4 mt-2  d-flex justify-content-center align-items-center">
-                                                    <img id="avatar" class="avatar" src="{{ asset($user->picture ??  asset('img/placeholder-profile.png')) }}" alt="User Picture">
-                                                </div>
+                                                @error('phone_no')
+                                                    <span class="invalid-feedback" role="alert">
+                                                        <strong>{{ $message }}</strong>
+                                                    </span>
+                                                @enderror
                                             </div>
-                                            </div>
+                                        </div>
 
-                                            <div class="d-flex justify-content-end mt-4">
-                                                <button type="submit" class="btn btn-primary px-4">
-                                                    <i class='bx bx-save me-1'></i> Update User
-                                                </button>
+                                        <div class="col-md-4">
+                                            <div class="form-group mb-3">
+                                                <label for="cnic" class="form-label">CNIC</label>
+                                                <span class="required__field">*</span>
+                                                <div class="position-relative">
+                                                    <input type="text" name="cnic" id="cnic" class="form-control @error('cnic') is-invalid @enderror" value="{{ old('cnic', $user->cnic) }}" maxlength="18" placeholder="123-4567-1234567-1" required>
+                                                    <i class='bx bxs-id-card input-icon position-absolute top-50 end-0 translate-middle-y me-3'></i>
+                                                </div>
+                                                @error('cnic')
+                                                    <span class="invalid-feedback" role="alert">
+                                                        <strong>{{ $message }}</strong>
+                                                    </span>
+                                                @enderror
                                             </div>
-                                        </form>
+                                        </div>
+
+                                        <!--  -->
+                                        <div class="col-md-4">
+                                            <div class="form-group mb-3">
+                                                <label for="date_of_birth" class="form-label">Date of Birth</label>
+                                                <span class="required__field">*</span>
+                                                <input type="date" class="form-control" id="date_of_birth" name="date_of_birth" max="{{ $maxDate }}" value="{{ old('date_of_birth', isset($user->date_of_birth) ? \Carbon\Carbon::parse($user->date_of_birth )->format('Y-m-d') : '') }}" required>
+                                                <div id="dob_error" class="invalid-feedback d-none">
+                                                    User must be at least 10 years old.
+                                                </div>
+                                                @error('date_of_birth')
+                                                    <div class="text-danger">{{ $message }}</div>
+                                                @enderror
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-4">
+                                            <div class="form-group mb-3">
+                                                <label for="status" class="form-label">Status</label>
+                                                <span class="required__field">*</span><br>
+                                                <select name="status" id="status" class="form-select" required>
+                                                    <option value="1" {{ old('status', $user->status) == '1' ? 'selected' : '' }}>Active</option>
+                                                    <option value="0" {{ old('status', $user->status) == '0' ? 'selected' : '' }}>Inactive</option>
+                                                </select>
+                                                @error('status')
+                                                    <span class="invalid-feedback" role="alert">
+                                                        <strong>{{ $message }}</strong>
+                                                    </span>
+                                                @enderror
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-4">
+                                            <div class="form-group mb-3">
+                                                <label for="role_id" class="form-label">Role</label>
+                                                <span class="required__field">*</span><br>
+                                                <select name="role_id" id="role_id" class="form-select" required>
+                                                    @forelse($roles ?? [] as $role)
+                                                        <option value="{{ $role->id }}" {{ old('role_id', $user->role_id) == $role->id ? 'selected' : '' }}>
+                                                            {{ $role->name }}
+                                                        </option>
+                                                    @empty
+                                                    @endforelse
+                                                </select>
+                                                @error('role_id')
+                                                    <span class="invalid-feedback" role="alert">
+                                                        <strong>{{ $message }}</strong>
+                                                    </span>
+                                                @enderror
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>
+                                    </div>
+
+                                    <!--  -->
+                                    <div class="form-section mt-4">
+                                        <h5 class="section-header">
+                                            <i class='bx bxs-map'></i> Address Information
+                                        </h5>
+                                        <div class="row">
+
+                                        <!--  -->
+                                        <div class="col-lg-4 col-md-6 col-sm-12">
+                                            <div class="form-group mb-3">
+                                                <label for="country" class="form-label">Country</label>
+                                                <span class="required__field">*</span>
+                                                <select class="form-select" id="country" name="country" required>
+                                                    <option value="" selected>Select Country</option>
+                                                </select>
+                                                @error('country')
+                                                    <div class="text-danger">{{ $message }}</div>
+                                                @enderror
+                                            </div>
+                                        </div>
+                                        <!--  -->
+                                        <div class="col-lg-4 col-md-6 col-sm-12">
+                                            <div class="form-group mb-3">
+                                                <label for="province" class="form-label">Province</label>
+                                                <span class="required__field">*</span>
+                                                <select class="form-select" id="province" name="province" required>
+                                                    <option value="" selected>Select Province</option>
+                                                </select>
+                                                @error('province')
+                                                    <div class="text-danger">{{ $message }}</div>
+                                                @enderror
+                                            </div>
+                                        </div>
+
+                                        <!--  -->
+                                        <div class="col-lg-4 col-md-6 col-sm-12">
+                                            <div class="form-group mb-3">
+                                                <label for="city" class="form-label">City</label>
+                                                <span class="required__field">*</span>
+                                                <select class="form-select" id="city" name="city" required>
+                                                    <option value="" selected>Select Province</option>
+                                                </select>
+                                                @error('customer_city')
+                                                    <div class="text-danger">{{ $message }}</div>
+                                                @enderror
+                                            </div>
+                                        </div>
+
+                                        <!--  -->
+                                        <div class="col-sm-12 col-md-6 col-lg-8">
+                                            <div class="form-group mb-3">
+                                                <label for="location" class="form-label">Location</label>
+                                                <span class="required__field">*</span>
+                                                <div class="position-relative">
+                                                    <input type="text" name="location" id="location" class="form-control @error('location') is-invalid @enderror" value="{{ old('location', $user->address->location ) }}" maxlength="100" placeholder="Enter Location" required>
+                                                    <i class='bx bxs-edit-location input-icon position-absolute top-50 end-0 translate-middle-y me-3'></i>
+                                                </div>
+                                                @error('location')
+                                                    <span class="invalid-feedback" role="alert">
+                                                        <strong>{{ $message }}</strong>
+                                                    </span>
+                                                @enderror
+                                            </div>
+                                        </div>
+
+                                        <!--  -->
+                                        <div class="col-sm-12 col-md-6 col-lg-4">
+                                            <div class="form-group mb-3">
+                                                <label for="postal_code" class="form-label">Postal Code</label>
+                                                <span class="required__field">*</span>
+                                                <div class="position-relative">
+                                                    <input type="text" name="postal_code" id="postal_code" class="form-control @error('postal_code') is-invalid @enderror" value="{{ old('postal_code', $user->address->postal_code ) }}" maxlength="100" placeholder="Enter Postal Code" required>
+                                                    <i class='bx bx-current-location input-icon position-absolute top-50 end-0 translate-middle-y me-3'></i>
+                                                </div>
+                                                @error('postal_code')
+                                                    <span class="invalid-feedback" role="alert">
+                                                        <strong>{{ $message }}</strong>
+                                                    </span>
+                                                @enderror
+                                            </div>
+                                        </div>
+                                    </div>
+                                    </div>
+
+                                    <div class="form-section mt-4">
+                                        <h5 class="section-header">
+                                            <i class='bx bxs-image'></i> Profile Picture
+                                        </h5>
+                                        <div class="row mb-3">
+                                        <div class="col-sm-12 col-md-6 col-lg-4 ">
+                                            <div class="form-group">
+                                                <label for="picture" class="form-label">Picture <span style="font-size: 12px;">(Leave blank to keep current picture)</span></label>
+                                                <input type="file" name="picture" id="picture" class="form-control" onchange="previewImage(event)">
+                                                @error('picture')
+                                                    <span class="invalid-feedback" role="alert">
+                                                        <strong>{{ $message }}</strong>
+                                                    </span>
+                                                @enderror
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-12 col-md-6 col-lg-4 mt-2  d-flex justify-content-center align-items-center">
+                                            <img id="avatar" class="avatar" src="{{ asset($user->picture ??  asset('img/placeholder-profile.png')) }}" alt="User Picture">
+                                        </div>
+                                    </div>
+                                    </div>
+
+                                    <div class="d-flex justify-content-end mt-4">
+                                        <button type="submit" class="btn btn-primary w-100 px-4">
+                                            <i class='bx bx-save me-1'></i> Update User
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
