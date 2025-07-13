@@ -416,7 +416,7 @@
                                         </div>
                                     </div>
                                     <div class="action-buttons">
-                                        <a href="{{ route('owner.units.index', ['level_id' => $level->id]) }}" class="action-btn btn-add btn-view view-unit gap-1" title="View">
+                                        <a href="{{ route('owner.units.index', ['level_id' => $level->id]) }}" class="action-btn btn-add btn-view view-unit gap-1 hidden OwnerUnits" title="View">
                                             <i class='bx bxs-home'></i> Units
                                         </a>
 

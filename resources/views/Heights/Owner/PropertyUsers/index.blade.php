@@ -470,7 +470,7 @@
                     <div class="col-md-12">
                         <div class="d-flex justify-content-between align-items-center mb-3">
                             <h4 class="mb-1">Property Users</h4>
-                            <a href="{{ route('owner.assignunits.index') }}" class="btn btn-primary">
+                            <a href="{{ route('owner.assignunits.index') }}" class="btn btn-primary hidden OwnerAssignUnits">
                                 <i class="bx bxs-user-check me-1"></i>
                                 Assign Unit
                             </a>
@@ -574,10 +574,10 @@
                                         </div>
                                     </div>
                                     <div class="member-actions">
-                                        <a href="{{ route('owner.property.users.show', $user->id) }}" class="btn btn-add btn-sm btn-view view-user btn-member gap-1" title="View Details">
+                                        <a href="{{ route('owner.property.users.show', $user->id) }}" class="btn btn-add btn-sm btn-view view-user btn-member gap-1 hidden OwnerViewDetailsPropertyUsers" title="View Details">
                                             <i class="fas fa-eye"></i> View
                                         </a>
-                                        <a href="{{ route('owner.property.users.edit', $user->id) }}" class="btn btn-add btn-sm btn-edit btn-member gap-1" title="Edit Manager">
+                                        <a href="{{ route('owner.property.users.edit', $user->id) }}" class="btn btn-add btn-sm btn-edit btn-member gap-1 hidden OwnerEditPropertyUsers" title="Edit Manager">
                                             <i class="fas fa-edit"></i> Edit
                                         </a>
                                     </div>

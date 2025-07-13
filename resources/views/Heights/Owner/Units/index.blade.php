@@ -597,7 +597,7 @@
 
 
                                                     <div class="action-buttons">
-                                                        <a href="{{ route('owner.units.show', $unit->id) }}" class="action-btn btn-add btn-view view-unit gap-1" title="View">
+                                                        <a href="{{ route('owner.units.show', $unit->id) }}" class="action-btn btn-add btn-view view-unit gap-1 hidden Owner-Unit-View-Details-Button" title="View">
                                                             <i class='bx bx-show'></i> View
                                                         </a>
 
@@ -667,7 +667,7 @@
                                                     <td>{{ $unit->level->level_name ?? 'N/A' }}</td>
                                                     <td class="text-center ">
                                                         <div class="d-flex justify-content-center align-items-center gap-3">
-                                                            <a href="{{ route('owner.units.show', $unit->id) }}" class="text-info view-unit" data-bs-toggle="tooltip" data-bs-placement="top" title="View">
+                                                            <a href="{{ route('owner.units.show', $unit->id) }}" class="text-info view-unit hidden Owner-Unit-View-Details-Button" data-bs-toggle="tooltip" data-bs-placement="top" title="View">
                                                                 <x-icon name="view" type="icon" class="" size="20px" />
                                                             </a>
                                                             <a href="{{ route('owner.units.edit', $unit->id) }}" class="text-warning Owner-Unit-Edit-Button hidden" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit">
