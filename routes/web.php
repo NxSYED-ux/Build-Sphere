@@ -72,6 +72,7 @@ Route::middleware(['auth.jwt'])->group(function () {
     Route::delete('/units/{id}/remove-picture', [BuildingUnitController::class, 'destroyImage'])->name('units.remove_picture');
     Route::get('units/{id}/details', [BuildingUnitController::class, 'unitDetails'])->name('owner.units.details');
 
+    Route::get('users/{user}/show', [UsersController::class, 'show'])->name('users.show');
 });
 
 
@@ -143,7 +144,6 @@ Route::prefix('admin')->middleware(['auth.jwt'])->group(function () {
     Route::prefix('users')->middleware(['check.permission:User Management'])->group(function () {
 
         Route::get('/', [UsersController::class, 'index'])->name('users.index');
-        Route::get('/{user}/show', [UsersController::class, 'show'])->name('users.show');
         Route::put('/toggle-status', [UsersController::class, 'toggleStatus'])->name('user.toggleStatus');
 
         Route::middleware('check.permission:Add User')->group(function () {

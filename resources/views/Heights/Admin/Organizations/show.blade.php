@@ -234,7 +234,7 @@
                         <div class="text-start mb-4">
                             <div class="d-flex justify-content-between align-items-center mb-3">
                                 <h5 class="section-title mb-0 fw-semibold">Organization Details</h5>
-                                <a href="{{ route('organizations.edit', $organization->id) }}" class="rounded-pill py-2 fw-medium">
+                                <a href="{{ route('organizations.edit', $organization->id) }}" class="rounded-pill py-2 fw-medium hidden AdminEditOrganizations">
                                     <i class="fas fa-edit me-2 text-warning fs-5"></i>
                                 </a>
                             </div>
@@ -309,7 +309,7 @@
                         <div class="text-start mb-3">
                             <div class="d-flex justify-content-between align-items-center mb-3">
                                 <h5 class="section-title mb-0 fw-semibold">Owner Details</h5>
-                                <a href="{{ route('users.edit', $organization->owner->id) }}" class="rounded-pill py-2 fw-medium">
+                                <a href="{{ route('users.edit', $organization->owner->id) }}" class="rounded-pill py-2 fw-medium hidden AdminEditUser">
                                     <i class="fas fa-edit me-2 text-warning fs-5"></i>
                                 </a>
                             </div>
@@ -359,8 +359,8 @@
                                             <div class="d-flex justify-content-between align-items-center">
                                                 <h5 class="mb-1">{{ $subscription['name'] }}</h5>
                                                 <span class="badge bg-success bg-opacity-10 text-success py-1 px-2 mx-3 rounded-pill">
-                            <i class="fas fa-check-circle me-1"></i> {{ $subscription['status'] ?? 'N/A' }}
-                        </span>
+                                                    <i class="fas fa-check-circle me-1"></i> {{ $subscription['status'] ?? 'N/A' }}
+                                                </span>
                                             </div>
                                             <div class="text-primary fw-bold" style="font-size: 12px;">
                                                 {{ isset($subscription['price'], $subscription['currency'], $subscription['billing_cycle']) && $subscription['billing_cycle'] > 0
@@ -409,10 +409,10 @@
                                             <div class="d-flex justify-content-between fw-bold">
                                                 <span>Total:</span>
                                                 <span>
-                            {{ isset($subscription['price'], $subscription['currency'])
-                                ? $subscription['price'] . ' ' . $subscription['currency']
-                                : 'N/A' }}
-                        </span>
+                                                    {{ isset($subscription['price'], $subscription['currency'])
+                                                        ? $subscription['price'] . ' ' . $subscription['currency']
+                                                        : 'N/A' }}
+                                                </span>
                                             </div>
                                         </div>
                                     </div>
@@ -440,14 +440,14 @@
                                         </div>
 
                                         <div class="mt-auto pt-2">
-                                            <form id="organizationPlanUpgradeForm" action="{{ route('organizations.plan.upgrade.index', $organization->id ) }}" method="GET" class="d-inline">
+                                            <form id="organizationPlanUpgradeForm" action="{{ route('organizations.plan.upgrade.index', $organization->id ) }}" method="GET" class="d-inline hidden AdminUpgradeOrganizationsPlan">
                                                 @csrf
                                                 <button type="submit" class="btn btn-success w-100 py-2 mb-3 rounded-1">
                                                     <i class="fas fa-arrow-up me-2"></i> Upgrade Plan
                                                 </button>
                                             </form>
 
-                                            <form id="planPaymentReceivedForm" action="{{ route('organizations.planPaymentReceived') }}" method="POST" class="d-inline">
+                                            <form id="planPaymentReceivedForm" action="{{ route('organizations.planPaymentReceived') }}" method="POST" class="d-inline hidden AdminRecordPlanPaymentOrganizationsPlan">
                                                 @csrf
                                                 <input type="hidden" name="id" value="{{ $organization->id }}">
                                                 <button type="button" onclick="confirmPlanPaymentReceived()" class="btn btn-primary w-100 py-2 mb-3 rounded-1">
@@ -490,7 +490,7 @@
                     <div class="profile-card p-4 shadow">
                         <div class="d-flex justify-content-between align-items-center mb-4">
                             <h4 class="section-title mb-0">Transactions</h4>
-                            <a href="{{ route('finance.index',['organization_id'=>$organization->id]) }}" class="btn btn-sm btn-primary text-white text-decoration-none" style="color: #fff !important;">
+                            <a href="{{ route('finance.index',['organization_id'=>$organization->id]) }}" class="btn btn-sm btn-primary text-white text-decoration-none hidden AdminFinance" style="color: #fff !important;">
                                 All Transactions
                             </a>
                         </div>

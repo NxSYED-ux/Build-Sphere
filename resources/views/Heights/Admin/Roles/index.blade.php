@@ -442,7 +442,7 @@
                     <div class="col-md-12">
                         <div class="d-flex justify-content-between align-items-center mb-3">
                             <h4 class="mb-1">Roles Management</h4>
-                            <a href="{{ route('roles.create') }}" class="btn btn-primary" title="Add New Role">
+                            <a href="{{ route('roles.create') }}" class="btn btn-primary hidden AdminAddRoles" title="Add New Role">
                                 <i class="fas fa-plus me-2"></i> Add Role
                             </a>
                         </div>
@@ -487,7 +487,7 @@
                                     <div class="role-footer">
                                         <div class="role-actions d-flex justify-content-between">
                                             <a href="{{ route('users.index', ['role_id' => $role->id]) }}"
-                                               class="action-btn users-btn"
+                                               class="action-btn users-btn hidden AdminUserManagement"
                                                data-bs-toggle="tooltip"
                                                data-bs-placement="top"
                                                title="View Users">
@@ -495,7 +495,7 @@
                                             </a>
 
                                             <a href="{{ route('role.permissions', ['role_id' => $role->id]) }}"
-                                            class="action-btn permissions-btn"
+                                            class="action-btn permissions-btn hidden AdminManageRolePermissions"
                                                data-bs-toggle="tooltip"
                                                data-bs-placement="top"
                                                title="Manage Permissions">
@@ -503,7 +503,7 @@
                                             </a>
 
                                             <a href="{{ route('roles.edit', $role->id) }}"
-                                               class="action-btn edit-btn"
+                                               class="action-btn edit-btn hidden AdminEditRoles"
                                                data-bs-toggle="tooltip"
                                                data-bs-placement="top"
                                                title="Edit Role">
@@ -512,7 +512,7 @@
 
                                             <form action="{{ route('roles.destroy', $role->id) }}"
                                                   method="POST"
-                                                  class="delete-form d-inline">
+                                                  class="delete-form d-inline hidden AdminDeleteRoles">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="button"

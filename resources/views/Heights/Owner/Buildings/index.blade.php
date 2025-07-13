@@ -495,7 +495,7 @@
                                                     @else
                                                         <img src="{{ asset('img/placeholder-img.jfif') }}" class="card-img-top" alt="Building Image">
                                                     @endif
-                                                    <a href="{{ route('owner.levels.index', ['building_id' => $building->id]) }}" class="levels-btn" title="Levels">
+                                                    <a href="{{ route('owner.levels.index', ['building_id' => $building->id]) }}" class="levels-btn hidden OwnerLevels" title="Levels">
                                                         <i class='bx bxs-layer fs-5'></i>
                                                     </a>
                                                 </div>
@@ -517,11 +517,11 @@
 
                                                     <div class="action-buttons">
                                                         @if($building->status === "Under Processing" || $building->status === "Reapproved")
-                                                            <a href="{{ route('owner.buildings.show', ['building' => $building->id]) }}" class="action-btn btn-add btn-view gap-1" title="Review">
+                                                            <a href="{{ route('owner.buildings.show', ['building' => $building->id]) }}" class="action-btn btn-add btn-view gap-1 hidden Owner-Building-View-Details-Button" title="Review">
                                                                 <i class='bx bxs-right-top-arrow-circle'></i> Submit
                                                             </a>
                                                         @else
-                                                            <a href="{{ route('owner.buildings.show', ['building' => $building->id]) }}" class="action-btn btn-add btn-view gap-1" title="View">
+                                                            <a href="{{ route('owner.buildings.show', ['building' => $building->id]) }}" class="action-btn btn-add btn-view gap-1 hidden Owner-Building-View-Details-Button" title="View">
                                                                 <i class='bx bx-show'></i> View
                                                             </a>
                                                         @endif
@@ -589,13 +589,13 @@
                                                     <td class="w-170 text-center">
                                                         <div class="d-flex justify-content-center align-items-center gap-3">
                                                             @if($building->status === "Under Processing" || $building->status === "Reapproved")
-                                                                <a href="{{ route('owner.buildings.show', ['building' => $building->id]) }}" class="text-warning" title="Submit"><i class='bx bxs-right-top-arrow-circle' style="font-size: 20px;"></i></a>
+                                                                <a href="{{ route('owner.buildings.show', ['building' => $building->id]) }}" class="text-warning hidden Owner-Building-View-Details-Button" title="Submit"><i class='bx bxs-right-top-arrow-circle' style="font-size: 20px;"></i></a>
                                                             @else
-                                                                <a href="{{ route('owner.buildings.show', ['building' => $building->id]) }}" class="text-info" title="View">
+                                                                <a href="{{ route('owner.buildings.show', ['building' => $building->id]) }}" class="text-info hidden Owner-Building-View-Details-Button" title="View">
                                                                     <x-icon name="view" type="icon" class="" size="20px" />
                                                                 </a>
                                                             @endif
-                                                            <a href="{{ route('owner.levels.index', ['building_id' => $building->id]) }}" class="text-secondary" title="View Levels"><i class="bx bxs-layer icons" style="font-size: 20px;"></i></a>
+                                                            <a href="{{ route('owner.levels.index', ['building_id' => $building->id]) }}" class="text-secondary hidden OwnerLevels" title="View Levels"><i class="bx bxs-layer icons" style="font-size: 20px;"></i></a>
                                                             <a href="{{ route('owner.buildings.edit', $building->id) }}" class="text-warning Owner-Building-Edit-Button hidden"  title="Edit">
                                                                 <x-icon name="edit" type="icon" class="" size="20px" />
                                                             </a>

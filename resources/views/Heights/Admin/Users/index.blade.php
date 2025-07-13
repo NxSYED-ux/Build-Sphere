@@ -508,7 +508,7 @@
                     <div class="col-md-12">
                         <div class="d-flex justify-content-between align-items-center mb-3">
                             <h4 class="mb-1">User Management</h4>
-                            <a href="{{ route('users.create') }}" class="btn btn-primary" title="Add New User">
+                            <a href="{{ route('users.create') }}" class="btn btn-primary hidden AdminAddUser" title="Add New User">
                                 <i class="fas fa-user-plus me-2"></i> Add User
                             </a>
                         </div>
@@ -614,11 +614,11 @@
                                             <i class="fas fa-eye"></i> View
                                         </a>
                                         @if($user->is_verified === 0)
-                                            <a href="{{ route('users.edit', $user->id) }}" class="btn btn-add btn-sm btn-edit btn-member gap-1" title="Edit Manager">
+                                            <a href="{{ route('users.edit', $user->id) }}" class="btn btn-add btn-sm btn-edit btn-member gap-1 hidden AdminEditUser" title="Edit Manager">
                                                 <i class="fas fa-edit"></i> Edit
                                             </a>
                                         @else
-                                            <span class="btn btn-add btn-sm btn-edit btn-member gap-1 disabled pointer-events-none opacity-50" title="User not verified">
+                                            <span class="btn btn-add btn-sm btn-edit btn-member gap-1 disabled pointer-events-none opacity-50 hidden AdminEditUser" title="User not verified">
                                                 <i class="fas fa-edit"></i> Edit
                                             </span>
                                         @endif

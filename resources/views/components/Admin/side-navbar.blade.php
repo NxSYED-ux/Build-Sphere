@@ -56,10 +56,10 @@
 
                     <div class="collapse {{ in_array('AdminControl', $openSections) ? 'show' : '' }}" id="AdminControl" style="">
                         <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                            <li id="AdminUserManagement" class="hidden" ><a href="{{ route('users.index') }}" class="link-dark {{ in_array('UserManagement', $openSections) ? 'Link-background-color' : '' }}" data-bs-target="#AdminControl "><i class="bx bxs-user-account icons"></i> Users Management</a></li>
-                            <li id="AdminUserRoles" class="hidden" ><a href="{{ route('roles.index') }}" class="link-dark {{ in_array('UserRoles', $openSections) ? 'Link-background-color' : '' }}" data-bs-target="#AdminControl" ><i class="bx bx-street-view icons"></i> User Roles</a></li>
-                            <li id="AdminRolePermissions" class="hidden"><a href="{{ route('role.permissions') }}" class="link-dark {{ in_array('RolePermissions', $openSections) ? 'Link-background-color' : '' }}" data-bs-target="#AdminControl" ><i class="bx bxs-low-vision icons"></i> Role Permissions</a></li>
-                            <li id="AdminDropdowns" class="hidden"><a href="{{ route('types.index') }}" class="link-dark {{ in_array('Dropdown', $openSections) ? 'Link-background-color' : '' }}" data-bs-target="#AdminControl"><i class="bx bx-menu icons"></i> List of values</a></li>
+                            <li class="hidden AdminUserManagement" ><a href="{{ route('users.index') }}" class="link-dark {{ in_array('UserManagement', $openSections) ? 'Link-background-color' : '' }}" data-bs-target="#AdminControl "><i class="bx bxs-user-account icons"></i> Users Management</a></li>
+                            <li class="hidden AdminRolesManagement" ><a href="{{ route('roles.index') }}" class="link-dark {{ in_array('UserRoles', $openSections) ? 'Link-background-color' : '' }}" data-bs-target="#AdminControl" ><i class="bx bx-street-view icons"></i> User Roles</a></li>
+                            <li class="hidden AdminManageRolePermissions"><a href="{{ route('role.permissions') }}" class="link-dark {{ in_array('RolePermissions', $openSections) ? 'Link-background-color' : '' }}" data-bs-target="#AdminControl" ><i class="bx bxs-low-vision icons"></i> Role Permissions</a></li>
+                            <li class="hidden AdminDropdowns"><a href="{{ route('types.index') }}" class="link-dark {{ in_array('Dropdown', $openSections) ? 'Link-background-color' : '' }}" data-bs-target="#AdminControl"><i class="bx bx-menu icons"></i> List of values</a></li>
                         </ul>
                     </div>
 
@@ -81,16 +81,16 @@
 
                     <div class="collapse {{ in_array('Buildings', $openSections) ? 'show' : '' }}" id="Buildings" style="">
                         <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                            <li id="AdminBuildings" class="hidden"><a href="{{ route('buildings.index') }}" class="link-dark {{ in_array('Building', $openSections) ? 'Link-background-color' : '' }}" data-bs-target="#Buildings "><i class="bx bx-buildings icons"></i> Buildings</a></li>
-                            <li id="AdminLevels" class="hidden"><a href="{{ route('levels.index') }}" class="link-dark {{ in_array('Levels', $openSections) ? 'Link-background-color' : '' }}" data-bs-target="#AdminControl" ><i class="bx bxs-layer icons"></i> Levels</a></li>
-                            <li id="AdminUnits" class="hidden"><a href="{{ route('units.index') }}" class="link-dark {{ in_array('Units', $openSections) ? 'Link-background-color' : '' }}" data-bs-target="#AdminControl" ><i class="bx bxs-home icons"></i> Units</a></li>
+                            <li class="hidden AdminBuildings"><a href="{{ route('buildings.index') }}" class="link-dark {{ in_array('Building', $openSections) ? 'Link-background-color' : '' }}" data-bs-target="#Buildings "><i class="bx bx-buildings icons"></i> Buildings</a></li>
+                            <li class="hidden AdminLevels"><a href="{{ route('levels.index') }}" class="link-dark {{ in_array('Levels', $openSections) ? 'Link-background-color' : '' }}" data-bs-target="#AdminControl" ><i class="bx bxs-layer icons"></i> Levels</a></li>
+                            <li class="hidden AdminUnits"><a href="{{ route('units.index') }}" class="link-dark {{ in_array('Units', $openSections) ? 'Link-background-color' : '' }}" data-bs-target="#AdminControl" ><i class="bx bxs-home icons"></i> Units</a></li>
                         </ul>
                     </div>
 
                 </li>
 
                 <!-- Organizations -->
-                <li class="mb-1 hidden" id="AdminOrganizations">
+                <li class="mb-1 hidden AdminOrganizations">
                     <div id="link-a">
                         <a href="{{ route('organizations.index') }}" class="link-dark collapsed {{ in_array('Organizations', $openSections) ? 'Link-background-color' : '' }} px-1" id="Organizationbtn" >
                         <i class="bx bxl-slack icons"></i> Organizations </a>
@@ -98,7 +98,7 @@
                 </li>
 
                 <!-- Plans -->
-                <li class="mb-1 " id="AdminPlans">
+                <li class="mb-1 hidden AdminPlans">
                     <div id="link-a">
                         <a href="{{ route('plans.index') }}" class="link-dark collapsed {{ in_array('Plans', $openSections) ? 'Link-background-color' : '' }} px-1" id="Planbtn" >
                             <i class="fas fa-crown icons" style="font-size: 20px;"></i> Plans </a>
@@ -106,7 +106,7 @@
                 </li>
 
                 <!-- Finance -->
-                <li class="mb-1" id="AdminFinanace">
+                <li class="mb-1 hidden AdminFinance" >
                     <div id="link-a">
                         <a href="{{ route('finance.index') }}" class="link-dark collapsed {{ in_array('Finance', $openSections) ? 'Link-background-color' : '' }} px-1" id="Financebtn" >
                             <i class="bx bx-money icons"></i> Finance </a>

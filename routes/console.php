@@ -216,7 +216,7 @@ Artisan::command('plan', function () {
 
 // Rent Scheduler
 Artisan::command('rental', function () {
-    $yesterday = Carbon::yesterday()->startOfDay();
+    $yesterday = Carbon::now()->subDays(2)->startOfDay();
     $today = Carbon::now()->endOfDay();
 
     $subscriptions = Subscription::where('source_name', 'unit contract')

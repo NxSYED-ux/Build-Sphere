@@ -727,7 +727,7 @@
                                                             <i class='bx bx-show'></i> View
                                                         </a>
 
-                                                        <a href="{{ route('units.edit', $unit->id) }}" class="action-btn btn-add btn-edit gap-1 Admin-Building-Edit-Button hidden" title="Edit">
+                                                        <a href="{{ route('units.edit', $unit->id) }}" class="action-btn btn-add btn-edit gap-1 Admin-Unit-Edit-Button hidden" title="Edit">
                                                             <i class='bx bx-edit'></i> Edit
                                                         </a>
                                                     </div>

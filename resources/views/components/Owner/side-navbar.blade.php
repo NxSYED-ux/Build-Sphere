@@ -55,16 +55,16 @@
 
                 <div class="collapse {{ in_array('Buildings', $openSections) ? 'show' : '' }}" id="Buildings" style="">
                     <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                        <li  id="OwnerBuildings" class="hidden"><a href="{{ route('owner.buildings.index') }}" class="link-dark {{ in_array('Building', $openSections) ? 'Link-background-color' : '' }}" data-bs-target="#Buildings "><i class="bx bx-buildings icons"></i> Buildings</a></li>
-                        <li  id="OwnerLevels" class="hidden"><a href="{{ route('owner.levels.index') }}" class="link-dark {{ in_array('Levels', $openSections) ? 'Link-background-color' : '' }}" data-bs-target="#AdminControl" ><i class="bx bxs-city icons"></i> Levels</a></li>
-                        <li  id="OwnerUnits" class="hidden"><a href="{{ route('owner.units.index') }}" class="link-dark {{ in_array('Units', $openSections) ? 'Link-background-color' : '' }}" data-bs-target="#AdminControl" ><i class="bx bxs-home icons"></i> Units</a></li>
+                        <li class="hidden OwnerBuildings"><a href="{{ route('owner.buildings.index') }}" class="link-dark {{ in_array('Building', $openSections) ? 'Link-background-color' : '' }}" data-bs-target="#Buildings "><i class="bx bx-buildings icons"></i> Buildings</a></li>
+                        <li class="hidden OwnerLevels"><a href="{{ route('owner.levels.index') }}" class="link-dark {{ in_array('Levels', $openSections) ? 'Link-background-color' : '' }}" data-bs-target="#AdminControl" ><i class="bx bxs-city icons"></i> Levels</a></li>
+                        <li class="hidden OwnerUnits"><a href="{{ route('owner.units.index') }}" class="link-dark {{ in_array('Units', $openSections) ? 'Link-background-color' : '' }}" data-bs-target="#AdminControl" ><i class="bx bxs-home icons"></i> Units</a></li>
                     </ul>
                 </div>
 
             </li>
 
             <!-- Assign Units -->
-            <li class="mb-1 hidden" id="OwnerAssignUnits">
+            <li class="mb-1 hidden OwnerAssignUnits">
                 <div id="link-a">
                     <a href="{{ route('owner.assignunits.index') }}" class="link-dark collapsed {{ in_array('AssignUnit', $openSections) ? 'Link-background-color' : '' }} px-1">
                     <i class="bx bxs-user-check icons"></i> Assign Units </a>
@@ -72,7 +72,7 @@
             </li>
 
             <!-- Buildings Tree -->
-            <li class="mb-1 hidden"  id="OwnerBuildingsTree">
+            <li class="mb-1 hidden OwnerBuildingsTree">
                 <div id="link-a">
                     <a href="{{ route('owner.buildings.tree') }}" class="link-dark collapsed {{ in_array('Buildings-Tree', $openSections) ? 'Link-background-color' : '' }} px-1">
                     <i class="bx bx-network-chart icons"></i> Buildings Tree </a>
@@ -80,15 +80,15 @@
             </li>
 
             <!-- Property Users -->
-            <li class="mb-1 hidden" id="OwnerRentals">
+            <li class="mb-1 hidden OwnerPropertyUsers">
                 <div id="link-a">
                     <a href="{{ route('owner.property.users.index') }}" class="link-dark collapsed {{ in_array('PropertyUsers', $openSections) ? 'Link-background-color' : '' }} px-1">
-                        <i class="fas fa-users icons fs-6"></i> Property Users </a>
+                        <i class="fas fa-users icons" style="font-size: 18px;"></i> Property Users </a>
                 </div>
             </li>
 
             <!-- Memberships -->
-            <li class="mb-1 hidden" id="OwnerMemberships">
+            <li class="mb-1 hidden OwnerMemberships">
                 <div id="link-a">
                     <a href="{{ route('owner.memberships.index') }}" class="link-dark collapsed {{ in_array('Memberships', $openSections) ? 'Link-background-color' : '' }} px-1">
                     <i class='bx bxs-credit-card-front icons' ></i> Memberships </a>
@@ -96,7 +96,7 @@
             </li>
 
             <!-- Department -->
-            <li class="mb-1 hidden" id="OwnerDepartments">
+            <li class="mb-1 hidden OwnerDepartments">
                 <div id="link-a">
                     <a href="{{ route('owner.departments.index') }}" class="link-dark collapsed {{ in_array('Departments', $openSections) ? 'Link-background-color' : '' }} px-1">
                     <i class='bx bx-sitemap icons'></i> Departments </a>
@@ -104,7 +104,7 @@
             </li>
 
             <!-- Staff -->
-            <li class="mb-1 hidden" id="OwnerStaff">
+            <li class="mb-1 hidden OwnerStaff">
                 <div id="link-a">
                     <a href="{{ route('owner.staff.index') }}" class="link-dark collapsed {{ in_array('Staff', $openSections) ? 'Link-background-color' : '' }} px-1">
                     <i class="bx bx-id-card icons"></i> Staff </a>
@@ -112,7 +112,7 @@
             </li>
 
             <!-- Managers -->
-            <li class="mb-1 hidden" id="OwnerStaff">
+            <li class="mb-1 hidden OwnerStaff">
                 <div id="link-a">
                     <a href="{{ route('owner.managers.index') }}" class="link-dark collapsed {{ in_array('Managers', $openSections) ? 'Link-background-color' : '' }} px-1" >
                         <i class="bx bx-user-voice icons"></i> Managers </a>
@@ -120,7 +120,7 @@
             </li>
 
             <!-- Finance -->
-            <li class="mb-1" id="OwnerFinance">
+            <li class="mb-1 hidden OwnerFinance">
                 <div id="link-a">
                     <a href="{{ route('owner.finance.index') }}" class="link-dark collapsed {{ in_array('Finance', $openSections) ? 'Link-background-color' : '' }} px-1">
                         <i class="bx bx-money icons"></i> Finance </a>
@@ -128,7 +128,7 @@
             </li>
 
             <!-- Reports -->
-            <li class="mb-1 hidden" id="OwnerReports">
+            <li class="mb-1 hidden OwnerReports">
                 <div id="link-a">
                     <a href="{{ route('owner.reports.index') }}" class="link-dark collapsed {{ in_array('Reports', $openSections) ? 'Link-background-color' : '' }} px-1" >
                         <i class="bx bxs-pie-chart-alt-2 icons"></i> Reports </a>
