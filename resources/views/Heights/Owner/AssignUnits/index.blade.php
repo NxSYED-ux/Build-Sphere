@@ -945,7 +945,7 @@
                     .then(data => {
                         let user = data.user;
 
-                        let placeholderImage = "{{ asset('assets/placeholder-profile.png') }}";
+                        let placeholderImage = "{{ asset('img/placeholder-profile.png') }}";
                         let baseAssetPath = "{{ asset('/') }}";
 
                         document.getElementById("avatar").src = user.picture ? baseAssetPath + user.picture : placeholderImage;

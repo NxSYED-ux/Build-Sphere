@@ -281,6 +281,10 @@
             border-color: var(--breadcrumb-text2-color);
             color: #fff;
             background-color: var(--breadcrumb-text2-color);
+            /*border-radius: 8px;*/
+            /*padding: 10px 20px;*/
+            /*font-weight: 500;*/
+            /*transition: all 0.3s ease;*/
         }
 
         .btn-primary:hover{
@@ -307,7 +311,11 @@
             font-size: 14px;
             font-weight: bold;
             background-color: #6c757d;
-            color: #ffff;
+            /*color: #ffff;*/
+            /*border-radius: 8px;*/
+            /*padding: 10px 20px;*/
+            /*font-weight: 500;*/
+            /*transition: all 0.3s ease;*/
         }
 
         .text-primary{

@@ -671,7 +671,7 @@
                     button.nextElementSibling.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
                     button.disabled = true;
 
-                    fetch( "{{ route('owner.memberships.toggle.featured') }}" , {
+                    fetch("{{ route('owner.memberships.toggle.featured') }}", {
                         method: 'PUT',
                         headers: {
                             'Accept': 'application/json',
@@ -684,30 +684,47 @@
                             value: isChecked
                         })
                     })
-                        .then(response => {
+                        .then(async response => {
                             if (!response.ok) {
-                                return response.json().then(err => {
-                                    throw new Error(
-                                        err.message ||
-                                        err.error ||
-                                        'Request failed with status ' + response.status
-                                    );
-                                });
+                                const error = await response.json();
+
+                                if (error.plan_upgrade_error) {
+                                    Swal.fire({
+                                        title: 'Upgrade Plan Error',
+                                        text: error.plan_upgrade_error || error.error || 'Request failed',
+                                        icon: 'error',
+                                        background: 'var(--body-background-color)',
+                                        color: 'var(--sidenavbar-text-color)',
+                                        showConfirmButton: true,
+                                        confirmButtonText: 'Upgrade Plan',
+                                        confirmButtonColor: '#3085d6',
+                                        showCancelButton: true,
+                                        allowOutsideClick: true,
+                                        allowEscapeKey: true
+                                    }).then((result) => {
+                                        if (result.isConfirmed) {
+                                            window.location.href = "{{ route('owner.plan.upgrade.index') }}";
+                                        }
+                                    });
+                                } else {
+                                    throw new Error(error.error || 'Request failed');
+                                }
+                                return;
                             }
                             return response.json();
                         })
                         .then(data => {
+                            if (!data) return;  // Safety check if response was already handled
+
                             if (data.redirect) {
                                 window.location.href = data.redirect;
                                 return;
                             }
 
-                            // Handle success message from redirect
-                            const successMessage = data.success || 'Membership featured status updated';
                             Swal.fire({
                                 icon: 'success',
                                 title: 'Success!',
-                                text: successMessage,
+                                text: data.success || 'Membership featured status updated',
                                 timer: 2000,
                                 background: 'var(--body-background-color)',
                                 color: 'var(--sidenavbar-text-color)',
@@ -715,18 +732,39 @@
                             });
                         })
                         .catch(error => {
-                            console.error('Error:', error);
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Error!',
-                                text: error.message || 'Something went wrong. Please try again.',
-                                timer: 2000,
-                                background: 'var(--body-background-color)',
-                                color: 'var(--sidenavbar-text-color)',
-                                showConfirmButton: true
-                            });
-                            button.checked = !button.checked;  // Revert checkbox on error
+                            if (error.plan_upgrade_error) {
+                                Swal.fire({
+                                    title: 'Upgrade Plan Error',
+                                    text: error.plan_upgrade_error || error.error || 'Request failed',
+                                    icon: 'error',
+                                    background: 'var(--body-background-color)',
+                                    color: 'var(--sidenavbar-text-color)',
+                                    showConfirmButton: true,
+                                    confirmButtonText: 'Upgrade Plan',
+                                    confirmButtonColor: '#3085d6',
+                                    showCancelButton: true,
+                                    allowOutsideClick: true,
+                                    allowEscapeKey: true
+                                }).then((result) => {
+                                    if (result.isConfirmed) {
+                                        window.location.href = "{{ route('owner.plan.upgrade.index') }}";
+                                    }
+                                });
+                            } else {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error!',
+                                    text: error.message || 'Something went wrong. Please try again.',
+                                    timer: 2000,
+                                    background: 'var(--body-background-color)',
+                                    color: 'var(--sidenavbar-text-color)',
+                                    showConfirmButton: true
+                                });
+                            }
+
+                            button.checked = !button.checked;  // Revert toggle
                         })
+
                         .finally(() => {
                             button.nextElementSibling.innerHTML = originalHTML;
                             button.disabled = false;

@@ -1115,6 +1115,7 @@
                 fetch(`{{ route('admin.dashboard.stats') }}`, {
                     method: 'GET',
                     headers: {
+                        'Accept': 'application/json',
                         'X-CSRF-TOKEN': '{{ csrf_token() }}',
                         'Content-Type': 'application/json',
                         'X-Requested-With': 'XMLHttpRequest'
@@ -1165,6 +1166,7 @@
                 fetch(`{{ route('admin.dashboard.subscription.plans') }}?${queryString}`, {
                     method: 'GET',
                     headers: {
+                        'Accept': 'application/json',
                         'X-CSRF-TOKEN': '{{ csrf_token() }}',
                         'Content-Type': 'application/json',
                         'X-Requested-With': 'XMLHttpRequest'
@@ -1234,6 +1236,7 @@
                 fetch(`{{ route('admin.dashboard.approval.requests') }}?${queryString}`, {
                     method: 'GET',
                     headers: {
+                        'Accept': 'application/json',
                         'X-CSRF-TOKEN': '{{ csrf_token() }}',
                         'Content-Type': 'application/json',
                         'X-Requested-With': 'XMLHttpRequest'
@@ -1368,6 +1371,7 @@
                 fetch(`{{ route('admin.dashboard.plan.popularity') }}?${queryString}`, {
                     method: 'GET',
                     headers: {
+                        'Accept': 'application/json',
                         'X-CSRF-TOKEN': '{{ csrf_token() }}',
                         'Content-Type': 'application/json',
                         'X-Requested-With': 'XMLHttpRequest'
@@ -1425,6 +1429,7 @@
                 fetch(`{{ route('admin.dashboard.subscription.distribution') }}?${queryString}`, {
                     method: 'GET',
                     headers: {
+                        'Accept': 'application/json',
                         'X-CSRF-TOKEN': '{{ csrf_token() }}',
                         'Content-Type': 'application/json',
                         'X-Requested-With': 'XMLHttpRequest'
@@ -1494,6 +1499,7 @@
                 fetch(`{{ route('admin.dashboard.approval.timeline') }}?${queryString}`, {
                     method: 'GET',
                     headers: {
+                        'Accept': 'application/json',
                         'X-CSRF-TOKEN': '{{ csrf_token() }}',
                         'Content-Type': 'application/json',
                         'X-Requested-With': 'XMLHttpRequest'

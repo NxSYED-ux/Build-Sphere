@@ -353,133 +353,17 @@
             color: var(--danger);
         }
 
-        /* Right Side Chart Container */
-        #UnitReports .maintenance-section .chart-container {
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            background: var(--sidenavbar-body-color);
-            border-radius: 8px;
-            box-shadow: var(--box-shadow);
-            overflow: hidden;
+
+        #unitMaintenanceTable th:nth-child(5),
+        #unitMaintenanceTable td:nth-child(5) {
+            min-width: 250px; /* Ensures the column doesn't get too narrow */
         }
 
-        #UnitReports .maintenance-section .chart-header {
-            padding: 5px 20px;
-            border-bottom: 1px solid #f0f0f0;
-        }
-
-        #UnitReports .maintenance-section .chart-header h3 {
-            margin: 0;
-            font-size: 18px;
-            font-weight: 600;
-        }
-
-        #UnitReports .maintenance-section .chart-value {
-            font-size: 13px;
-            color: var(--sidenavbar-text-color);
-            margin-top: 5px;
-        }
-
-        #UnitReports .maintenance-section .chart-canvas-container {
-            flex: 1;
-            min-height: 250px;
-            padding: 15px;
-        }
-
-        #UnitReports .maintenance-section .status-grid {
-            display: flex;
-        }
-
-        #UnitReports .maintenance-section .status-card {
-            flex: 1;
-            text-align: center;
-            padding: 10px;
-        }
-
-        #UnitReports .maintenance-section .status-count {
-            font-size: 24px;
-            font-weight: 600;
-            margin-bottom: 5px;
-        }
-
-        #UnitReports .maintenance-section .status-label {
-            font-size: 13px;
-            color: var(--sidenavbar-text-color);
-            text-transform: uppercase;
-        }
 
         /* Responsive Adjustments */
         @media (max-width: 1200px) {
-            #UnitReports .maintenance-section .data-table th:nth-child(1),
-            #UnitReports .maintenance-section .data-table td:nth-child(1),
-            #UnitReports .maintenance-section .data-table th:nth-child(2),
-            #UnitReports .maintenance-section .data-table td:nth-child(2) {
-                width: 18%;
-            }
-
-            #UnitReports .maintenance-section .data-table th:nth-child(3),
-            #UnitReports .maintenance-section .data-table td:nth-child(3) {
-                width: 34%;
-            }
         }
 
-        @media (max-width: 992px) {
-            #UnitReports .maintenance-section .col-md-6 {
-                flex: 0 0 100%;
-                max-width: 100%;
-            }
-
-            #UnitReports .maintenance-section .data-table-container {
-                margin-bottom: 20px;
-            }
-
-            #UnitReports .maintenance-section .table-wrapper {
-                max-height: 400px;
-            }
-        }
-
-        @media (max-width: 768px) {
-            #UnitReports .maintenance-section .data-table {
-                table-layout: auto;
-                min-width: 100%;
-            }
-
-            #UnitReports .maintenance-section .data-table th,
-            #UnitReports .maintenance-section .data-table td {
-                padding: 8px 12px;
-                font-size: 13px;
-            }
-
-            #UnitReports .maintenance-section .data-table th:nth-child(n),
-            #UnitReports .maintenance-section .data-table td:nth-child(n) {
-                width: auto;
-            }
-
-            #UnitReports .maintenance-section .badge {
-                font-size: 11px;
-                padding: 3px 6px;
-            }
-        }
-
-        @media (max-width: 576px) {
-            #UnitReports .maintenance-section .status-grid {
-                flex-direction: column;
-            }
-
-            #UnitReports .maintenance-section .status-card {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                text-align: left;
-                padding: 8px 15px;
-            }
-
-            #UnitReports .maintenance-section .status-count {
-                margin-bottom: 0;
-                font-size: 18px;
-            }
-        }
 
     </style>
 @endpush
@@ -530,6 +414,15 @@
                     <span class="info-label">Price:</span>
                     <span class="info-value" id="unitMarketValue">-</span>
                 </div>
+
+                <div class="info-item contract-user-info" style="display: none;">
+                    <span class="info-label" id="contractUserNameLabel"></span>
+                    <span class="info-value" id="contractUserName">-</span>
+                </div>
+                <div class="info-item contract-user-info" style="display: none;">
+                    <span class="info-label" id="contractUserEmailLabel"></span>
+                    <span class="info-value" id="contractUserEmail">-</span>
+                </div>
             </div>
         </div>
     </div>
@@ -537,20 +430,20 @@
     <!-- Key Metrics -->
     <div class="metrics-grid">
         <div class="metric-card bg-gradient-primary">
-            <h4>Occupancy Rate</h4>
-            <div class="value" id="unitOccupancyRate">92%</div>
+            <h4>Total Income</h4>
+            <div class="value" id="unitMatricTotalIncome">92%</div>
         </div>
         <div class="metric-card bg-gradient-info">
-            <h4>Net Operating Income</h4>
-            <div class="value" id="unitNetOperatingIncome">$24,500</div>
+            <h4>Total Expense</h4>
+            <div class="value" id="unitMatricTotalExpense">$24,500</div>
         </div>
         <div class="metric-card bg-gradient-success">
-            <h4>Average Rent</h4>
-            <div class="value" id="unitAverageRent">$1,250</div>
+            <h4>Net Profit</h4>
+            <div class="value" id="unitMatricNetProfit">$1,250</div>
         </div>
         <div class="metric-card bg-gradient-warning">
             <h4>Maintenance Requests</h4>
-            <div class="value" id="unitMaintenanceRequests">4</div>
+            <div class="value" id="unitMatricMaintenanceRequests">4</div>
         </div>
     </div>
 
@@ -614,10 +507,6 @@
         <div class="contract-section rental-contract">
             <div class="contract-info-grid">
                 <div class="info-item">
-                    <span class="info-label">Rented <span id="rentalUnitType"> Unit</span></span>
-                    <span class="info-value" id="rentalUnitName">-</span>
-                </div>
-                <div class="info-item">
                     <span class="info-label">User Name</span>
                     <span class="info-value" id="rentalUnitUserName">-</span>
                 </div>
@@ -651,10 +540,6 @@
         <!-- Sale Contract View (hidden by default) -->
         <div class="contract-section sale-contract" style="display:none;">
             <div class="contract-info-grid">
-                <div class="info-item">
-                    <span class="info-label">Purchased <span id="soldUnitType">Unit</span></span>
-                    <span class="info-value" id="soldUnitName">-</span>
-                </div>
                 <div class="info-item">
                     <span class="info-label">Buyer Name</span>
                     <span class="info-value" id="soldUnitUserName">-</span>
@@ -743,54 +628,76 @@
         </div>
     </div>
 
-    <!-- Maintenance Requests -->
-    <div class="maintenance-section">
-        <div class="row">
-            <div class="col-md-6">
-                <div class="data-table-container scrollable-container">
-                    <h3>Active Maintenance Requests</h3>
-                    <div class="table-wrapper">
-                        <table class="data-table">
-                            <thead>
-                            <tr>
-                                <th>Department</th>
-                                <th>User</th>
-                                <th>Description</th>
-                                <th>Date</th>
-                                <th>Status</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <!-- Will be populated by JavaScript -->
-                            </tbody>
-                        </table>
-                    </div>
+    <!-- Maintenance Requests Chart (Full Width) -->
+    <div class="full-width-chart">
+        <div class="chart-header">
+            <h3>Maintenance Requests</h3>
+            <div class="chart-value" id="unitTotalRequests">0 Requests</div>
+        </div>
+        <div class="chart-canvas-container">
+            <canvas id="unitMaintenanceChart"></canvas>
+        </div>
+        <div class="status-grid">
+            <div class="status-card">
+                <div class="status-count" style="color: #FFCD56;" id="unitPendingRequests">0</div>
+                <div class="status-label">Opened</div>
+            </div>
+            <div class="status-card">
+                <div class="status-count" style="color: #4BC0C0;" id="unitCompletedRequests">0</div>
+                <div class="status-label">Completed</div>
+            </div>
+            <div class="status-card">
+                <div class="status-count" style="color: #FF6384;" id="unitRejectedRequests">0</div>
+                <div class="status-label">Rejected</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Unit Maintenace Request -->
+    <div class="transaction-section p-3 pb-1 shadow rounded">
+        <div class="section-header d-flex justify-content-between align-items-center">
+            <div>
+                <h2 class="section-title">Active Maintenance Requests</h2>
+{{--                <p class="section-description">--}}
+{{--                    Detailed view of all financial transactions including rental payments, service charges,--}}
+{{--                    maintenance costs, and other income/expense items.--}}
+{{--                </p>--}}
+            </div>
+            <div class="export-actions">
+                <div class="dropdown">
+                    <button class="btn btn-secondary dropdown-toggle" type="button" id="maintenanceExportDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class='bx bx-export me-1'></i>
+                        Export
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="maintenanceExportDropdown">
+                        <li><button class="dropdown-item" type="button" id="maintenanceCopyButton"><i class='bx bx-copy me-2'></i>Copy</button></li>
+                        <li><button class="dropdown-item" type="button" id="maintenanceCsvButton"><i class='bx bx-file me-2'></i>CSV</button></li>
+                        <li><button class="dropdown-item" type="button" id="maintenanceExcelButton"><i class='bx bx-spreadsheet me-2'></i>Excel</button></li>
+                        <li><button class="dropdown-item" type="button" id="maintenancePdfButton"><i class='bx bxs-file-pdf me-2'></i>PDF</button></li>
+                        <li><button class="dropdown-item" type="button" id="maintenancePrintButton"><i class='bx bx-printer me-2'></i>Print</button></li>
+                    </ul>
                 </div>
             </div>
-            <div class="col-md-6">
-                <div class="chart-container">
-                    <div class="chart-header">
-                        <h3>Maintenance History</h3>
-                        <div class="chart-value" id="unitMaintenanceValue">Loading...</div>
-                    </div>
-                    <div class="chart-canvas-container">
-                        <canvas id="unitMaintenanceChart"></canvas>
-                    </div>
-                    <div class="status-grid">
-                        <div class="status-card">
-                            <div class="status-count" style="color: var(--warning);">0</div>
-                            <div class="status-label">Opened</div>
-                        </div>
-                        <div class="status-card">
-                            <div class="status-count" style="color: var(--success);">0</div>
-                            <div class="status-label">Closed</div>
-                        </div>
-                        <div class="status-card">
-                            <div class="status-count" style="color: var(--danger);">0</div>
-                            <div class="status-label">Rejected</div>
-                        </div>
-                    </div>
-                </div>
+        </div>
+
+        <div class="maintenance-table-container">
+            <div class="table-responsive px-1">
+                <table id="unitMaintenanceTable" class="transactions-table">
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Department</th>
+                        <th>Staff</th>
+                        <th>User</th>
+                        <th>Description</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <!-- Data will be loaded by DataTables -->
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
@@ -807,16 +714,16 @@
             </div>
             <div class="export-actions">
                 <div class="dropdown">
-                    <button class="btn btn-secondary dropdown-toggle" type="button" id="exportDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    <button class="btn btn-secondary dropdown-toggle" type="button" id="transactionsExportDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                         <i class='bx bx-export me-1'></i>
                         Export
                     </button>
-                    <ul class="dropdown-menu" aria-labelledby="exportDropdown">
-                        <li><button class="dropdown-item" type="button" id="copyButton"><i class='bx bx-copy me-2'></i>Copy</button></li>
-                        <li><button class="dropdown-item" type="button" id="csvButton"><i class='bx bx-file me-2'></i>CSV</button></li>
-                        <li><button class="dropdown-item" type="button" id="excelButton"><i class='bx bx-spreadsheet me-2'></i>Excel</button></li>
-                        <li><button class="dropdown-item" type="button" id="pdfButton"><i class='bx bxs-file-pdf me-2'></i>PDF</button></li>
-                        <li><button class="dropdown-item" type="button" id="printButton"><i class='bx bx-printer me-2'></i>Print</button></li>
+                    <ul class="dropdown-menu" aria-labelledby="transactionsExportDropdown">
+                        <li><button class="dropdown-item" type="button" id="transactionsCopyButton"><i class='bx bx-copy me-2'></i>Copy</button></li>
+                        <li><button class="dropdown-item" type="button" id="transactionsCsvButton"><i class='bx bx-file me-2'></i>CSV</button></li>
+                        <li><button class="dropdown-item" type="button" id="transactionsExcelButton"><i class='bx bx-spreadsheet me-2'></i>Excel</button></li>
+                        <li><button class="dropdown-item" type="button" id="transactionsPdfButton"><i class='bx bxs-file-pdf me-2'></i>PDF</button></li>
+                        <li><button class="dropdown-item" type="button" id="transactionsPrintButton"><i class='bx bx-printer me-2'></i>Print</button></li>
                     </ul>
                 </div>
             </div>
@@ -849,62 +756,13 @@
         // Initialize charts
         let unitIncomeExpenseChart, unitIncomeSourcesChart, unitExpenseCategoriesChart, unitMaintenanceChart;
 
-
-
-        function updateRentalContract(data) {
-            document.querySelectorAll('.contract-section').forEach(section => {
-                section.style.display = 'none';
-            });
-            const badge = document.getElementById('contractTypeBadge');
-            document.querySelector('.rental-contract').style.display = 'block';
-            badge.textContent = 'Rental';
-            badge.style.background = '#e8f4fd';
-            badge.style.color = '#1a73c0';
-
-            const unit = data.Unit;
-            const userUnit = data.Unit.user_units.length > 0 ? unit.user_units[0] : null;
-            const user = userUnit ? userUnit.user : null;
-
-            document.getElementById("rentalUnitType").textContent = data.Unit.unit_type || 'N/A';
-            document.getElementById("rentalUnitName").textContent = data.Unit.unit_name || 'N/A';
-            document.getElementById("rentalUnitUserName").textContent = user.name || 'N/A';
-            document.getElementById("rentalUnitUserEmail").textContent = user.email;
-            document.getElementById("rentalUnitUserCnic").textContent = user.cnic;
-            document.getElementById("rentalUnitUserPhoneNo").textContent = user.phone_no;
-            document.getElementById("rentalUnitStartDate").textContent = userUnit.subscription ? new Date(userUnit.subscription.created_at).toLocaleDateString() : 'N/A';
-            document.getElementById("rentalUnitEndDate").textContent = userUnit.subscription ? new Date(userUnit.subscription.ends_at).toLocaleDateString() : 'N/A';
-            document.getElementById("rentalUnitContractPrice").textContent = data.Unit.price;
-        }
-
-        function updateSaleContract(data) {
-            document.querySelectorAll('.contract-section').forEach(section => {
-                section.style.display = 'none';
-            });
-            const badge = document.getElementById('contractTypeBadge');
-            document.querySelector('.sale-contract').style.display = 'block';
-            badge.textContent = 'Sale';
-            badge.style.background = '#f1e8fd';
-            badge.style.color = '#7b1fa2';
-
-            const unit = data.Unit;
-            const userUnit = data.Unit.user_units.length > 0 ? unit.user_units[0] : null;
-            const user = userUnit ? userUnit.user : null;
-
-            document.getElementById("soldUnitType").textContent = data.Unit.unit_type || 'N/A';
-            document.getElementById("soldUnitName").textContent = data.Unit.unit_name || 'N/A';
-            document.getElementById("soldUnitUserName").textContent = user.name || 'N/A';
-            document.getElementById("soldUnitUserEmail").textContent = user.email;
-            document.getElementById("soldUnitUserCnic").textContent = user.cnic;
-            document.getElementById("soldUnitUserPhoneNo").textContent = user.phone_no;
-            document.getElementById("soldUnitContractDate").textContent = userUnit ? new Date(userUnit.created_at).toLocaleDateString() : 'N/A';
-            document.getElementById("soldUnitContractPrice").textContent = data.Unit.price;
-        }
-
+        // API 1: Fetch unit details
         function fetchUnitDetails() {
-            return fetch(`{{ route('owner.reports.units.details', ':id') }}`.replace(':id', currentUnit) , {
+            return fetch(`{{ route('owner.reports.units.details', ':id') }}`.replace(':id', currentUnit), {
                 method: 'GET',
                 headers: {
-                    'X-CSRF-TOKEN': csrfToken,
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
                     'Content-Type': 'application/json',
                     'X-Requested-With': 'XMLHttpRequest'
                 }
@@ -922,50 +780,41 @@
                     document.getElementById('unitMarketValue').textContent = data.Unit.price || 'N/A';
                     document.getElementById('unitSize').textContent = data.Unit.area || 'N/A';
                     document.getElementById('unitImage').src = data.Unit.pictures.length > 0 ? '/' + data.Unit.pictures[0].file_path : 'default-image.jpg';
+
                     // Set unit description
                     const descriptionElement = document.getElementById('unitDescription');
-                    if (data.Unit.description) {
-                        descriptionElement.innerHTML = `<p>${data.Unit.description}</p>`;
-                    } else {
-                        descriptionElement.innerHTML = '';
-                    }
+                    descriptionElement.innerHTML = data.Unit.description ? `<p>${data.Unit.description}</p>` : '';
 
                     // Handle status display
+                    const status = data.Unit.availability_status?.toLowerCase() || 'available';
                     const statusBadge = document.getElementById('unitStatusBadge');
-                    const statusDetails = document.getElementById('unitStatusDetails');
-                    const status = data.Unit.availability_status || 'Available';
 
-                    // Set status badge and details based on current status
-                    switch(status.toLowerCase()) {
+                    switch(status) {
                         case 'rented':
                             statusBadge.className = 'badge badge-success';
                             statusBadge.textContent = 'Rented';
-                            updateRentalContract(data)
                             break;
-
                         case 'sold':
                             statusBadge.className = 'badge badge-primary';
                             statusBadge.textContent = 'Sold';
-                            updateSaleContract(data)
                             break;
-
-                        default: // Available
+                        default:
                             statusBadge.className = 'badge badge-warning';
                             statusBadge.textContent = 'Available';
-                            statusDetails.textContent = '';
-                            break;
                     }
 
+                    // Update contract display (handles all cases)
+                    updateContractDisplay(data);
                 });
         }
-
 
         // API 2: Fetch income/expense data
         function fetchUnitIncomeExpenseData() {
             return fetch(`{{ route('owner.reports.units.finance') }}?building=${currentBuilding}&unit=${currentUnit}&start=${currentStartDate}&end=${currentEndDate}`, {
                 method: 'GET',
                 headers: {
-                    'X-CSRF-TOKEN': csrfToken,
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
                     'Content-Type': 'application/json',
                     'X-Requested-With': 'XMLHttpRequest'
                 }
@@ -981,6 +830,11 @@
                     document.getElementById('unitSummaryProfit').textContent = 'PKR ' + data.overview.net_profit.toLocaleString();
                     document.getElementById('unitSummaryMargin').textContent = data.overview.profit_margin.toFixed(1) + '%';
 
+
+                    document.getElementById('unitMatricTotalIncome').textContent = 'PKR ' + (data.overview.income || 0).toLocaleString();
+                    document.getElementById('unitMatricTotalExpense').textContent = 'PKR ' + (data.overview.expense || 0).toLocaleString();
+                    document.getElementById('unitMatricNetProfit').textContent = 'PKR ' + data.overview.net_profit.toLocaleString();
+
                     updateUnitGrowthProgress(data);
 
                     // Render income vs expense chart
@@ -990,6 +844,241 @@
                         initUnitTransactionsTable(data.recent_transactions);
                     }
                 });
+        }
+
+        // API 3: Fetch contact History
+        function fetchContractHistory() {
+            return fetch(`{{ route('owner.reports.units.contacts') }}?building=${currentBuilding}&unit=${currentUnit}&start=${currentStartDate}&end=${currentEndDate}`, {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+                .then(response => {
+                    if (!response.ok) throw new Error('Network response was not ok');
+                    return response.json();
+                })
+                .then(data => {
+
+                    // Update last contract details
+                    updateLastContract(data.lastContract);
+
+                    // Update contract timeline
+                    updateContractTimeline(data.contracts);
+                    console.log("API Response Data Contract History:", data);
+                });
+        }
+
+        // API 4: Fetch maintenance data
+        function fetchUnitMaintenanceData() {
+            // First empty the table
+            clearMaintenanceTable();
+
+            return fetch(`{{ route('owner.reports.units.maintenance') }}?building=${currentBuilding}&unit=${currentUnit}&start=${currentStartDate}&end=${currentEndDate}`, {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+                .then(response => {
+                    if (!response.ok) throw new Error('Network response was not ok');
+                    return response.json();
+                })
+                .then(data => {
+                    console.log("Maintenance data: ", data);
+                    const opened = data.opened_requests || 0;
+                    const completed = data.completed_requests || 0;
+                    const rejected = data.rejected_requests || 0;
+
+                    document.getElementById('unitTotalRequests').textContent = opened + ' Requests';
+                    document.getElementById('unitCompletedRequests').textContent = completed;
+                    document.getElementById('unitPendingRequests').textContent = opened;
+                    document.getElementById('unitRejectedRequests').textContent = rejected;
+                    document.getElementById('unitMatricMaintenanceRequests').textContent = opened;
+
+                    // Render maintenance chart if data exists
+                    if (data.maintenance_trend && data.maintenance_trend.labels) {
+                        renderUnitMaintenanceChart(data.maintenance_trend);
+                    }
+
+                    // Initialize or update table with new data
+                    if (data.maintenanceData) {
+                        initUnitMaintenanceTable(data.maintenanceData);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching maintenance data:', error);
+                });
+        }
+
+        // Current Contract
+        function updateContractDisplay(data) {
+            const contractContainer = document.querySelector('.contract-details-container');
+            const statusBadge = document.getElementById('unitStatusBadge');
+            const userInfoItems = document.querySelectorAll('.contract-user-info');
+            const contractBadge = document.getElementById('contractTypeBadge');
+
+            // Hide everything by default
+            contractContainer.style.display = 'none';
+            document.querySelectorAll('.contract-section').forEach(section => {
+                section.style.display = 'none';
+            });
+            userInfoItems.forEach(item => item.style.display = 'none');
+
+            // If no data or unit isn't rented/sold, keep everything hidden
+            if (!data || !data.Unit || !['rented', 'sold'].includes(data.Unit.availability_status?.toLowerCase())) {
+                return;
+            }
+
+            // Get contract details
+            const unit = data.Unit;
+            const userUnit = unit.user_units?.[0];
+            const user = userUnit?.user;
+            const isRental = unit.availability_status.toLowerCase() === 'rented';
+
+            // Show the appropriate contract section
+            contractContainer.style.display = 'block';
+            const activeContract = isRental ? document.querySelector('.rental-contract') : document.querySelector('.sale-contract');
+            activeContract.style.display = 'block';
+
+            // Update contract badge
+            if (contractBadge) {
+                contractBadge.textContent = isRental ? 'Rental' : 'Sale';
+                contractBadge.style.background = isRental ? '#e8f4fd' : '#f1e8fd';
+                contractBadge.style.color = isRental ? '#1a73c0' : '#7b1fa2';
+            }
+
+            // Update user info if available
+            if (user) {
+                userInfoItems.forEach(item => item.style.display = 'flex');
+                document.getElementById('contractUserNameLabel').textContent = isRental ? 'Rental User:' : 'Buyer:';
+                document.getElementById('contractUserEmailLabel').textContent = isRental ? 'Rental Email:' : 'Buyer Email:';
+                document.getElementById('contractUserName').textContent = user.name || 'N/A';
+                document.getElementById('contractUserEmail').textContent = user.email || 'N/A';
+            }
+        }
+
+        // Last Contract of selected period
+        function updateLastContract(data) {
+            // Hide the entire contract container by default
+            const contractContainer = document.querySelector('.contract-details-container');
+
+            // If no data or invalid data structure, hide everything and return
+            if (!data || !data.type || (!data.Unit && !data.user)) {
+                if (contractContainer) {
+                    contractContainer.style.display = 'none';
+                }
+                console.error("No valid contract data provided");
+                return;
+            }
+
+            // Show the container since we have valid data
+            if (contractContainer) {
+                contractContainer.style.display = 'block';
+            }
+
+            // Rest of your existing code...
+            // Hide all contract sections first
+            document.querySelectorAll('.contract-section').forEach(section => {
+                section.style.display = 'none';
+            });
+
+            const isRental = data.type === 'Rented';
+            const user = data.user || null;
+            const subscription = data.subscription || null;
+
+            // Set up contract UI based on type
+            const badge = document.getElementById('contractTypeBadge');
+            const contractSection = isRental ? document.querySelector('.rental-contract') : document.querySelector('.sale-contract');
+
+            if (contractSection) {
+                contractSection.style.display = 'block';
+            }
+
+            if (badge) {
+                if (isRental) {
+                    badge.textContent = 'Rental';
+                    badge.style.background = '#e8f4fd';
+                    badge.style.color = '#1a73c0';
+                } else {
+                    badge.textContent = 'Sale';
+                    badge.style.background = '#f1e8fd';
+                    badge.style.color = '#7b1fa2';
+                }
+            }
+
+            // Helper function to safely set text content
+            function setTextContent(id, value) {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.textContent = value || 'N/A';
+                }
+            }
+
+            // Update contract fields based on type
+            if (isRental) {
+                setTextContent("rentalUnitUserName", user?.name);
+                setTextContent("rentalUnitUserEmail", user?.email);
+                setTextContent("rentalUnitUserCnic", user?.cnic);
+                setTextContent("rentalUnitUserPhoneNo", user?.phone_no);
+
+                const startDate = subscription?.created_at ?
+                    new Date(subscription.created_at).toLocaleDateString() : null;
+                setTextContent("rentalUnitStartDate", startDate);
+
+                const endDate = subscription?.ends_at ?
+                    new Date(subscription.ends_at).toLocaleDateString() : null;
+                setTextContent("rentalUnitEndDate", endDate);
+
+                setTextContent("rentalUnitContractPrice", subscription.price_at_subscription);
+            } else {
+                setTextContent("soldUnitUserName", user?.name);
+                setTextContent("soldUnitUserEmail", user?.email);
+                setTextContent("soldUnitUserCnic", user?.cnic);
+                setTextContent("soldUnitUserPhoneNo", user?.phone_no);
+
+                const contractDate = data?.created_at ?
+                    new Date(data.created_at).toLocaleDateString() : null;
+                setTextContent("soldUnitContractDate", contractDate);
+
+                setTextContent("soldUnitContractPrice", data.price);
+            }
+        }
+
+        // Unit Contract History
+        function updateContractTimeline(contracts) {
+            const timelineContainer = document.querySelector('.timeline');
+            timelineContainer.innerHTML = ''; // Clear existing items
+
+            if (!contracts || contracts.length === 0) {
+                const noContractsMsg = document.createElement('div');
+                noContractsMsg.className = 'no-contracts';
+                noContractsMsg.textContent = 'No contracts found for the selected period';
+                timelineContainer.appendChild(noContractsMsg);
+                return;
+            }
+
+            contracts.forEach(contract => {
+                const timelineItem = document.createElement('div');
+                timelineItem.className = 'timeline-item';
+
+                timelineItem.innerHTML = `
+                <div class="timeline-dot"><i class='bx bx-calendar'></i></div>
+                <div class="timeline-content">
+                    <div class="timeline-date">${contract.date}</div>
+                    <div class="timeline-title">${contract.tittle}</div>
+                    <div class="timeline-price">${contract.price}</div>
+                </div>
+            `;
+
+                timelineContainer.appendChild(timelineItem);
+            });
         }
 
         // Income vs Expense Pie Chart
@@ -1048,7 +1137,221 @@
             });
         }
 
-        // Initialize DataTable for transactions
+        // Maintenance Chart
+        function renderUnitMaintenanceChart(data) {
+            const ctx = document.getElementById('unitMaintenanceChart');
+            if (!ctx) return;
+
+            if (maintenanceChart) maintenanceChart.destroy();
+
+            maintenanceChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: data.labels,
+                    datasets: [
+                        {
+                            label: 'Opened',
+                            data: data.opened,
+                            backgroundColor: '#FFCD56',
+                            borderRadius: 4
+                        },
+                        {
+                            label: 'Completed',
+                            data: data.completed,
+                            backgroundColor: '#4BC0C0',
+                            borderRadius: 4
+                        },
+                        {
+                            label: 'Rejected',
+                            data: data.rejected,
+                            backgroundColor: '#ff4d6d',
+                            borderRadius: 4
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: {
+                                usePointStyle: true,
+                                padding: 20
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) label += ': ';
+                                    label += context.parsed.y;
+                                    return label;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                drawBorder: false
+                            },
+                            title: {
+                                display: true,
+                                text: 'Number of Requests'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            },
+                            // Set this to true if you want the bars to stack
+                            stacked: false
+                        }
+                    },
+                    interaction: {
+                        intersect: false,
+                        mode: 'index'
+                    }
+                }
+            });
+        }
+
+        // Maintenance Table
+        function initUnitMaintenanceTable(data) {
+            // Clear any existing table first
+            if ($.fn.DataTable.isDataTable('#unitMaintenanceTable')) {
+                $('#unitMaintenanceTable').DataTable().destroy();
+            }
+
+            // Initialize new DataTable
+            var table = $('#unitMaintenanceTable').DataTable({
+                data: data,
+                pageLength: 10,
+                lengthMenu: [10, 25, 50, 100],
+                dom: "<'row'<'col-sm-12 col-md-6'l><'col-sm-12 col-md-6'f>>" +
+                    "<'row'<'col-sm-12'tr>>" +
+                    "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
+                buttons: [
+                    {
+                        extend: 'copy',
+                        text: 'Copy',
+                        className: 'd-none',
+                        exportOptions: {
+                            columns: ':visible'
+                        }
+                    },
+                    {
+                        extend: 'csv',
+                        text: 'CSV',
+                        className: 'd-none',
+                        exportOptions: {
+                            columns: ':visible'
+                        }
+                    },
+                    {
+                        extend: 'excel',
+                        text: 'Excel',
+                        className: 'd-none',
+                        exportOptions: {
+                            columns: ':visible'
+                        }
+                    },
+                    {
+                        extend: 'pdf',
+                        text: 'PDF',
+                        className: 'd-none',
+                        exportOptions: {
+                            columns: ':visible'
+                        }
+                    },
+                    {
+                        extend: 'print',
+                        text: 'Print',
+                        className: 'd-none',
+                        exportOptions: {
+                            columns: ':visible'
+                        }
+                    }
+                ],
+                columns: [
+                    { data: 'id', className: '', width: '5%' },
+                    { data: 'department', className: '', width: '10%' },
+                    { data: 'staff', className: '', width: '10%' },
+                    { data: 'user', className: '', width: '10%' },
+                    { data: 'description', className: '', width: '40%' },
+                    {
+                        data: 'date', width: '10%',
+                        render: function(data, type, row) {
+                            const date = new Date(data);
+                            return `<span class="transaction-date">${date.toLocaleDateString()}</span>`;
+                        }
+                    },
+                    {
+                        data: 'status', width: '15%',
+                        render: function(data, type, row) {
+                            // Determine badge class based on status
+                            let badgeClass = 'badge-primary';
+                            if (data === 'opened') badgeClass = 'badge-warning';
+                            if (data === 'rejected') badgeClass = 'badge-danger';
+                            if (data === 'closed') badgeClass = 'badge-success';
+
+                            // Format status text
+                            let statusText = data.charAt(0).toUpperCase() + data.slice(1);
+
+                            return `<span class="badge ${badgeClass}">${statusText}</span>`;
+                        }
+                    },
+                ],
+                language: {
+                    paginate: {
+                        first: "First",
+                        last: "Last",
+                        next: "Next",
+                        previous: "Previous"
+                    },
+                    searchPlaceholder: "Search transactions..."
+                },
+                initComplete: function() {
+                    // Set up export buttons after table initialization
+                    document.getElementById("maintenanceCopyButton")?.addEventListener("click", function() {
+                        table.button('.buttons-copy').trigger();
+                    });
+                    document.getElementById("maintenanceCsvButton")?.addEventListener("click", function() {
+                        table.button('.buttons-csv').trigger();
+                    });
+                    document.getElementById("maintenanceExcelButton")?.addEventListener("click", function() {
+                        table.button('.buttons-excel').trigger();
+                    });
+                    document.getElementById("maintenancePdfButton")?.addEventListener("click", function() {
+                        table.button('.buttons-pdf').trigger();
+                    });
+                    document.getElementById("maintenancePrintButton")?.addEventListener("click", function() {
+                        table.button('.buttons-print').trigger();
+                    });
+                }
+            });
+        }
+
+        // Clear Maintenance Table
+        function clearMaintenanceTable() {
+            // Clear DataTable if it exists
+            if ($.fn.DataTable.isDataTable('#unitMaintenanceTable')) {
+                $('#unitMaintenanceTable').DataTable().destroy();
+            }
+
+            // Clear the table body
+            $('#unitMaintenanceTable tbody').empty();
+
+            // Reset summary fields
+            document.getElementById('unitTotalRequests').textContent = '0 Requests';
+            document.getElementById('unitCompletedRequests').textContent = '0';
+            document.getElementById('unitPendingRequests').textContent = '0';
+            document.getElementById('unitRejectedRequests').textContent = '0';
+        }
+
+        // Transactions Table
         function initUnitTransactionsTable(data) {
             if ($.fn.DataTable.isDataTable('#unitTransactionsTable')) {
                 $('#unitTransactionsTable').DataTable().destroy();
@@ -1104,8 +1407,8 @@
                     }
                 ],
                 columns: [
-                    { data: 'id', className: 'transaction-id' },
-                    { data: 'title', className: 'transaction-title' },
+                    { data: 'id', className: '' },
+                    { data: 'title', className: '' },
                     {
                         data: 'source',
                         render: function(data, type, row) {
@@ -1146,188 +1449,33 @@
                 }
             });
 
-            document.getElementById("copyButton")?.addEventListener("click", function() {
+            document.getElementById("transactionsCopyButton")?.addEventListener("click", function() {
                 table.button('.buttons-copy').trigger();
             });
 
-            document.getElementById("csvButton")?.addEventListener("click", function() {
+            document.getElementById("transactionsCsvButton")?.addEventListener("click", function() {
                 table.button('.buttons-csv').trigger();
             });
 
-            document.getElementById("excelButton")?.addEventListener("click", function() {
+            document.getElementById("transactionsExcelButton")?.addEventListener("click", function() {
                 table.button('.buttons-excel').trigger();
             });
 
-            document.getElementById("pdfButton")?.addEventListener("click", function() {
+            document.getElementById("transactionsPdfButton")?.addEventListener("click", function() {
                 table.button('.buttons-pdf').trigger();
             });
 
-            document.getElementById("printButton")?.addEventListener("click", function() {
+            document.getElementById("transactionsPrintButton")?.addEventListener("click", function() {
                 table.button('.buttons-print').trigger();
             });
-        }
-
-        // Maintenance Chart (with null checks for date elements)
-        // Add this function to fetch maintenance data
-        function fetchUnitMaintenanceData() {
-            return fetch(`{{ route('owner.reports.units.maintenance') }}?building=${currentBuilding}&unit=${currentUnit}&start=${currentStartDate}&end=${currentEndDate}`, {
-                method: 'GET',
-                headers: {
-                    'X-CSRF-TOKEN': csrfToken,
-                    'Content-Type': 'application/json',
-                    'X-Requested-With': 'XMLHttpRequest'
-                }
-            })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    if (!data) {
-                        throw new Error('No data returned from API');
-                    }
-                    renderUnitMaintenanceChart(data);
-                    populateMaintenanceTable(data.requests || []);
-                    updateStatusCounts(data.status_counts || { closed: 0, opened: 0, rejected: 0 });
-                })
-                .catch(error => {
-                    console.error('Error loading maintenance data:', error);
-                    // Render empty chart with zero values
-                    renderUnitMaintenanceChart({
-                        time_labels: [],
-                        chart_data: []
-                    });
-                    populateMaintenanceTable([]);
-                    updateStatusCounts({ closed: 0, opened: 0, rejected: 0 });
-                });
-        }
-
-        // Update the renderMaintenanceChart function
-        function renderUnitMaintenanceChart(data) {
-            const ctx = document.getElementById('unitMaintenanceChart');
-            if (!ctx) return;
-
-            // Destroy existing chart if it exists
-            if (unitMaintenanceChart) unitMaintenanceChart.destroy();
-
-            // Check if data is valid
-            if (!data || !data.time_labels || !data.chart_data) {
-                console.error('Invalid maintenance chart data:', data);
-                return;
-            }
-
-            unitMaintenanceChart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: data.time_labels,
-                    datasets: [
-                        {
-                            label: 'Maintenance Requests',
-                            data: data.chart_data,
-                            borderColor: '#184E83',
-                            backgroundColor: 'rgba(24, 78, 131, 0.1)',
-                            borderWidth: 2,
-                            tension: 0.3,
-                            fill: true,
-                            pointBackgroundColor: '#184E83',
-                            pointRadius: 4,
-                            pointHoverRadius: 6
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'top',
-                            labels: {
-                                usePointStyle: true,
-                                padding: 20
-                            }
-                        },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    return `${context.dataset.label}: ${context.parsed.y}`;
-                                }
-                            }
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            grid: {
-                                drawBorder: false
-                            },
-                            title: {
-                                display: true,
-                                text: 'Number of Requests'
-                            }
-                        },
-                        x: {
-                            grid: {
-                                display: false
-                            }
-                        }
-                    }
-                }
-            });
-        }
-
-        // Update the populateMaintenanceTable function
-        function populateMaintenanceTable(requests) {
-            const tableBody = document.querySelector('.maintenance-section .data-table tbody');
-            tableBody.innerHTML = '';
-
-            requests.forEach(request => {
-                const row = document.createElement('tr');
-
-                // Determine badge class based on status
-                let badgeClass = 'badge-primary';
-                if (request.status === 'opened') badgeClass = 'badge-warning';
-                if (request.status === 'rejected') badgeClass = 'badge-danger';
-                if (request.status === 'closed') badgeClass = 'badge-success';
-
-                // Format status text
-                let statusText = request.status.charAt(0).toUpperCase() + request.status.slice(1);
-
-                row.innerHTML = `
-            <td>${request.department}</td>
-            <td>${request.user}</td>
-            <td>${request.description}</td>
-            <td>${request.formatted_date}</td>
-            <td><span class="badge ${badgeClass}">${statusText}</span></td>
-        `;
-
-                tableBody.appendChild(row);
-            });
-        }
-
-        // Update the updateStatusCounts function
-        function updateStatusCounts(counts) {
-            document.querySelector('.status-card:nth-child(1) .status-count').textContent = counts.closed;
-            // document.querySelector('.status-card:nth-child(1) .status-label').textContent = 'Closed';
-
-            document.querySelector('.status-card:nth-child(2) .status-count').textContent = counts.opened;
-            // document.querySelector('.status-card:nth-child(2) .status-label').textContent = 'Opened';
-
-            document.querySelector('.status-card:nth-child(3) .status-count').textContent = counts.rejected;
-            // document.querySelector('.status-card:nth-child(3) .status-label').textContent = 'Rejected';
-
-            document.getElementById('unitMaintenanceValue').textContent =
-                `${counts.opened + counts.closed + counts.rejected} Requests (Last 12 months)`;
         }
 
         // Initialize unit charts when the component is loaded
         function initUnitCharts() {
             renderUnitIncomeExpenseChart(0, 0);
             initUnitTransactionsTable([]);
+            initUnitMaintenanceTable([]);
             renderUnitMaintenanceChart({ time_labels: [], chart_data: [] });
-            populateMaintenanceTable([]);
-            updateStatusCounts({ closed: 0, opened: 0, rejected: 0 });
         }
 
         function updateUnitGrowthProgress(data) {
