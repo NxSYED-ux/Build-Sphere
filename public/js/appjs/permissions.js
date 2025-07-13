@@ -165,7 +165,7 @@ function applyPermissions() {
         toggleVisibility(".Owner-Building-Add-Button", storedPermissions['Owner Portal'].includes('Add Building'));
         toggleVisibility(".Owner-Building-Edit-Button", storedPermissions['Owner Portal'].includes('Edit Building'));
         toggleVisibility(".Owner-Building-View-Details-Button", storedPermissions['Owner Portal'].includes('View Building Details'));
-        toggleVisibility(".OwnerBuildingsTree", storedPermissions['Owner Portal'].includes('Buildings Tree'));
+        toggleVisibility(".OwnerBuildingsTree", storedPermissions['Owner Portal'].includes('Building Tree'));
         toggleVisibility(".OwnerSubmitBuilding", storedPermissions['Owner Portal'].includes('Submit Building'));
         toggleVisibility(".OwnerRemindAdminBuilding", storedPermissions['Owner Portal'].includes('Remind Admin'));
 
@@ -179,6 +179,8 @@ function applyPermissions() {
         // Other Sections
         toggleVisibility(".OwnerAssignUnits", storedPermissions['Owner Portal'].includes('Assign Units'));
         toggleVisibility(".OwnerPropertyUsers", storedPermissions['Owner Portal'].includes('Property Users'));
+        toggleVisibility(".OwnerEditPropertyUsers", storedPermissions['Owner Portal'].includes('Edit Property User'));
+        toggleVisibility(".OwnerViewDetailsPropertyUsers", storedPermissions['Owner Portal'].includes('View Details'));
         toggleVisibility(".OwnerDepartments", storedPermissions['Owner Portal'].includes('Departments'));
         toggleVisibility(".OwnerMemberships", storedPermissions['Owner Portal'].includes('Memberships'));
         toggleVisibility(".OwnerStaff", storedPermissions['Owner Portal'].includes('Staff'));
@@ -261,7 +263,7 @@ function showAllPermissionBlocks() {
     const allSelectors = [
         ".switch-admin-portal-btn",
         "#OwnerBuildingss", ".OwnerBuildings", ".OwnerLevels", ".OwnerUnits",
-        ".OwnerAssignUnits", ".OwnerPropertyUsers",
+        ".OwnerAssignUnits", ".OwnerPropertyUsers", ".OwnerEditPropertyUsers", ".OwnerViewDetailsPropertyUsers",
         ".Owner-Building-Add-Button", ".Owner-Building-Edit-Button", ".Owner-Building-View-Details-Button",
         ".OwnerBuildingsTree", ".OwnerSubmitBuilding", ".OwnerRemindAdminBuilding",
         ".Owner-Level-Add-Button", ".Owner-Level-Edit-Button", ".Owner-Unit-Add-Button", ".Owner-Unit-Edit-Button", ".Owner-Unit-View-Details-Button",
