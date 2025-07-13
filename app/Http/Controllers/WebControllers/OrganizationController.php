@@ -105,13 +105,13 @@ class OrganizationController extends Controller
                 }
             }
 
-            $customPayload = [
+            $customPayload = JWTFactory::customClaims([
                 'name' => $request->name,
                 'email' => $request->email,
                 'iat' => now()->timestamp,
-            ];
+            ])->make();
 
-            $token = JWTAuth::customClaims($customPayload)->encode();
+            $token = JWTAuth::encode($customPayload)->get();
 
             $address = Address::create([
                 'location' => $request->location,
@@ -125,7 +125,7 @@ class OrganizationController extends Controller
                 'name' => $request->name,
                 'email' => $request->email,
                 'phone' => $request->phone,
-                'logo' => $logo,
+                'logo' => $logo ?? null,
                 'owner_id' => $request->owner_id,
                 'address_id' => $address->id,
                 'payment_gateway_merchant_id' => $request->merchant_id,

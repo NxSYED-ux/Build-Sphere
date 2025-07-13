@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('payment_gateway_name')->default('Stripe'); // Name of the payment gateway (e.g., Stripe, PayPal)
             $table->string('payment_gateway_merchant_id')->nullable(); // Merchant ID issued by the payment gateway
             $table->boolean('is_online_payment_enabled')->default(false);
-            $table->string('membership_api_key');
+            $table->text('membership_api_key');
 
             $table->foreignId('owner_id')->unique()->constrained('users')->onDelete('cascade');
             $table->foreignId('address_id')->unique()->constrained('address')->onDelete('cascade');

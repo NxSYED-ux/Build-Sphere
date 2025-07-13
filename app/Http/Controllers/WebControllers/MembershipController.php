@@ -607,7 +607,7 @@ class MembershipController extends Controller
                 $membership,
                 null,
                 'Cash',
-                'renewal',
+                'Renew',
                 $membershipUser,
                 $existingSubscription
             );
