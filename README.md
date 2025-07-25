@@ -53,5 +53,3 @@ By combining operational efficiency with **resident-centric features**, BuildSph
 - **Mobile App:** API-integrated with backend
 - **Database:** MySQL
 - **Authentication:** JWT-based for secure multi-role access
-
----
