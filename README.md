@@ -55,10 +55,3 @@ By combining operational efficiency with **resident-centric features**, BuildSph
 - **Authentication:** JWT-based for secure multi-role access
 
 ---
-
-## 📦 Installation & Setup
-
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/your-username/buildsphere.git
-   cd buildsphere
