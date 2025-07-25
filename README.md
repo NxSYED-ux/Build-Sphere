@@ -49,7 +49,7 @@ By combining operational efficiency with **resident-centric features**, BuildSph
 ## 🛠️ Tech Stack
 
 - **Backend:** Laravel (PHP)
-- **Frontend:** Blade templates, Tailwind CSS (optional)
+- **Frontend:** Blade templates
 - **Mobile App:** API-integrated with backend
 - **Database:** MySQL
 - **Authentication:** JWT-based for secure multi-role access
