@@ -4,6 +4,10 @@
 
 ---
 
+![App Preview](./public/sample.png)
+
+---
+
 ## 🌟 Key Features
 
 ### 🧠 Centralized Management
