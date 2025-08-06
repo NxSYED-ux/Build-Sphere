@@ -4,7 +4,23 @@
 
 ---
 
-![App Preview](./public/sample.png)
+### 🧑‍💼 Admin Dashboard  
+![Admin Dashboard](./public/uploads/sample/dashboard.png)
+
+---
+
+### 🏠 Owner Dashboard  
+![Owner Dashboard](./public/uploads/sample/dashboard2.png)
+
+---
+
+### 🏢 Organization Details with Plan Usage  
+![Organization Details](./public/uploads/sample/organizations.png)
+
+---
+
+### 💰 Finance  
+![Finance Overview](./public/uploads/sample/finance.png)
 
 ---
 
